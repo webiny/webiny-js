@@ -155,6 +155,9 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
         this._filters = config.initialFilters ?? {};
         this._debounceMs = config.debounceMs ?? 300;
         this._limit = config.limit;
+        this._search = "";
+        this._appliedQuery = null;
+        this._selection.reset();
         this._initialized = true;
         this.executeQuery();
     }

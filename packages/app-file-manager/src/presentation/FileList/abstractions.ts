@@ -9,14 +9,11 @@ import type { FmTag } from "../../features/shared/types.js";
 import type { UploadJob } from "../../features/fileUploader/abstractions.js";
 
 // ---------------------------------------------------------------------------
-// Overlay configuration passed to init() for file picker mode.
+// Init config passed to presenter.init().
 // ---------------------------------------------------------------------------
 
-export interface IFileManagerOverlayConfig {
-    onChange: (files: FmFile[]) => void;
-    onClose: () => void;
-    multiple?: boolean;
-    accept?: string[];
+export interface IFileManagerInitConfig {
+    initialFolderId?: string;
     scope?: string;
 }
 
@@ -47,10 +44,6 @@ export interface IFileManagerViewModel {
         canEditFile: (file: FmFile) => boolean;
         canDeleteFile: (file: FmFile) => boolean;
     };
-    isOverlay: boolean;
-    accept: string[];
-    multiple: boolean;
-    scope: string | undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -82,8 +75,6 @@ export interface IFileManagerActions extends IListActions {
     setDragging(dragging: boolean): void;
     showFilters(): void;
     hideFilters(): void;
-    selectFile(file: FmFile): void;
-    confirmSelection(): void;
     folders: IFolderActions;
 }
 
@@ -94,7 +85,7 @@ export interface IFileManagerActions extends IListActions {
 export interface IFileManagerPresenter {
     vm: IFileManagerViewModel;
     actions: IFileManagerActions;
-    init(overlayConfig?: IFileManagerOverlayConfig): void;
+    init(config?: IFileManagerInitConfig): void;
     dispose(): void;
 }
 
@@ -105,5 +96,5 @@ export namespace FileManagerPresenter {
     export type Interface = IFileManagerPresenter;
     export type ViewModel = IFileManagerViewModel;
     export type Actions = IFileManagerActions;
-    export type OverlayConfig = IFileManagerOverlayConfig;
+    export type InitConfig = IFileManagerInitConfig;
 }

@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { isHotkey } from "is-hotkey";
 
 export interface UseShiftKeyResult {
     pressed: boolean;
@@ -12,14 +11,14 @@ export function useShiftKey(): UseShiftKeyResult {
     const onselectstartRef = useRef(document.onselectstart);
 
     const onKeyDown = useCallback((event: KeyboardEvent) => {
-        if (isHotkey("shift", event)) {
+        if (event.key === "Shift") {
             pressedRef.current = true;
             setPressed(true);
         }
     }, []);
 
     const onKeyUp = useCallback((event: KeyboardEvent) => {
-        if (event.key === "Shift" && event.shiftKey === false) {
+        if (event.key === "Shift") {
             pressedRef.current = false;
             setPressed(false);
         }

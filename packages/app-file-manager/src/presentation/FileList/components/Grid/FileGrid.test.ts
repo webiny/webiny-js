@@ -137,8 +137,6 @@ function createMockPresenter(
             refresh: vi.fn().mockResolvedValue(undefined),
             upload: vi.fn().mockResolvedValue(undefined),
             setViewMode: vi.fn(),
-            selectFile: vi.fn(),
-            confirmSelection: vi.fn(),
             showFileDetails: vi.fn(),
             hideFileDetails: vi.fn(),
             setDragging: vi.fn(),

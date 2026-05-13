@@ -10,7 +10,7 @@ import {
     type IFileManagerPresenter,
     type IFileManagerViewModel,
     type IFileManagerActions,
-    type IFileManagerOverlayConfig
+    type IFileManagerInitConfig
 } from "./abstractions.js";
 import { FileListDataSource } from "./FileListDataSource.js";
 import { FileDetailsPresenter } from "../FileDetails/abstractions.js";
@@ -28,11 +28,11 @@ const LAST_FOLDER_KEY = "fm:lastFolder";
 class FileManagerPresenterImpl implements IFileManagerPresenter {
     private _viewMode: "table" | "grid" = "grid";
     private _dragging = false;
-    private _overlayConfig: IFileManagerOverlayConfig | null = null;
     private _disposeReaction: (() => void) | null = null;
     private _fileDetails: IFileDetailsPresenter | null = null;
     private _showingFilters = false;
     private _fileModel: CmsModel | null = null;
+    private _persistFolder = true;
 
     constructor(
         private listPresenter: ListPresenter.Interface<FmFile>,
@@ -49,11 +49,11 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
     ) {
         makeAutoObservable<
             FileManagerPresenterImpl,
-            "_overlayConfig" | "_disposeReaction" | "fileDetailsPresenter"
+            "_disposeReaction" | "fileDetailsPresenter" | "_persistFolder"
         >(this, {
-            _overlayConfig: false,
             _disposeReaction: false,
             fileDetailsPresenter: false,
+            _persistFolder: false,
             vm: computed
         });
 
@@ -92,11 +92,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             showFolders: this.shouldShowFolders(),
             viewMode: this._viewMode,
             dragging: this._dragging,
-            showingFilters: this._showingFilters,
-            isOverlay: this._overlayConfig !== null,
-            accept: this._overlayConfig?.accept ?? [],
-            multiple: this._overlayConfig?.multiple ?? false,
-            scope: this._overlayConfig?.scope
+            showingFilters: this._showingFilters
         };
     }
 
@@ -116,24 +112,12 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             clearAll: () => this.listPresenter.actions.filter.clearAll()
         },
         selection: {
-            toggle: (id: string) => {
-                this.listPresenter.actions.selection.toggle(id);
-            },
-            selectRangeTo: (id: string) => {
-                this.listPresenter.actions.selection.selectRangeTo(id);
-            },
-            selectAll: () => {
-                this.listPresenter.actions.selection.selectAll();
-            },
-            deselectAll: () => {
-                this.listPresenter.actions.selection.deselectAll();
-            },
-            selectRows: (ids: string[]) => {
-                this.listPresenter.actions.selection.selectRows(ids);
-            },
-            isSelected: (id: string) => {
-                return this.listPresenter.actions.selection.isSelected(id);
-            }
+            toggle: (id: string) => this.listPresenter.actions.selection.toggle(id),
+            selectRangeTo: (id: string) => this.listPresenter.actions.selection.selectRangeTo(id),
+            selectAll: () => this.listPresenter.actions.selection.selectAll(),
+            deselectAll: () => this.listPresenter.actions.selection.deselectAll(),
+            selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
+            isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
         },
         loadMore: () => this.listPresenter.actions.loadMore(),
         refresh: () => this.listPresenter.actions.refresh(),
@@ -163,29 +147,6 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         },
         hideFilters: () => {
             this._showingFilters = false;
-        },
-        selectFile: (file: FmFile) => {
-            if (!this._overlayConfig) {
-                return;
-            }
-
-            if (this._overlayConfig.multiple) {
-                this.listPresenter.actions.selection.toggle(file.id);
-            } else {
-                this._overlayConfig.onChange([file]);
-            }
-        },
-        confirmSelection: () => {
-            if (!this._overlayConfig) {
-                return;
-            }
-
-            const selectedIds = this.listPresenter.vm.selection.selectedIds;
-            const selectedFiles = this.listPresenter.vm.rows.filter(f => selectedIds.has(f.id));
-
-            if (selectedFiles.length > 0) {
-                this._overlayConfig.onChange(selectedFiles);
-            }
         },
         showFileDetails: (id: string) => {
             this._fileDetails = this.fileDetailsPresenter;
@@ -218,18 +179,18 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         }
     };
 
-    init(overlayConfig?: IFileManagerOverlayConfig): void {
-        this._overlayConfig = overlayConfig ?? null;
+    init(config?: IFileManagerInitConfig): void {
+        const initialFolderId =
+            config?.initialFolderId ?? this.localStorage.get<string>(LAST_FOLDER_KEY) ?? "root";
 
-        const initialFolderId = overlayConfig
-            ? "root"
-            : (this.localStorage.get<string>(LAST_FOLDER_KEY) ?? "root");
+        // Don't persist folder navigation when an explicit initial folder is provided (e.g., overlay).
+        this._persistFolder = !config?.initialFolderId;
 
         const dataSource = new FileListDataSource(
             this.listFilesUseCase,
             this.filesListCache,
             this.getDescendantFoldersUseCase,
-            this._overlayConfig?.scope
+            config?.scope
         );
 
         this.listPresenter.init({
@@ -251,7 +212,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
                 const effectiveFolderId = folderId ?? "root";
                 this.listPresenter.actions.filter.set("folderId", effectiveFolderId);
 
-                if (!this._overlayConfig) {
+                if (this._persistFolder) {
                     this.localStorage.set(LAST_FOLDER_KEY, effectiveFolderId);
                 }
             }

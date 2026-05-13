@@ -2,14 +2,14 @@ import React, { useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import LazyLoad from "react-lazy-load";
 import { cn, CheckboxPrimitive, Text, TimeAgo, OverlayLoader } from "@webiny/admin-ui";
-import { useShiftKey } from "@webiny/app-admin";
+import { useOverlay } from "~/presentation/FileManager/OverlayContext.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { FolderIcon } from "@webiny/app-aco";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { useFileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
 import { FileProvider } from "~/presentation/contexts/FileProvider.js";
-import type { FmFile } from "~/features/shared/types.js";
 import type { FolderDto } from "@webiny/app-aco";
+import type { FileItem } from "~/domain/types.js";
 
 const t = i18n.ns("app-file-manager/presentation/file-grid");
 
@@ -58,21 +58,21 @@ const FolderCard = ({ folder, onNavigate }: FolderCardProps) => {
 // ---------------------------------------------------------------------------
 
 interface FileCardProps {
-    file: FmFile;
+    file: FileItem;
     selected: boolean;
-    onToggle: (id: string) => void;
+    onToggle: (id: string, shiftKey: boolean) => void;
 }
 
 const FileCard = observer(function FileCard({ file, selected, onToggle }: FileCardProps) {
     const { browser, getThumbnailRenderer } = useFileManagerConfig();
     const { itemActions } = browser.grid;
 
-    const renderer = getThumbnailRenderer(browser.grid.itemThumbnails, file as any);
+    const renderer = getThumbnailRenderer(browser.grid.itemThumbnails, file);
 
     const handleClick = useCallback(
         (e: React.MouseEvent) => {
             e.stopPropagation();
-            onToggle(file.id);
+            onToggle(file.id, e.shiftKey);
         },
         [file.id, onToggle]
     );
@@ -80,6 +80,7 @@ const FileCard = observer(function FileCard({ file, selected, onToggle }: FileCa
     return (
         <FileProvider file={file}>
             <div
+                onClick={handleClick}
                 className={cn([
                     "group",
                     "bg-neutral-base rounded-lg",
@@ -87,12 +88,13 @@ const FileCard = observer(function FileCard({ file, selected, onToggle }: FileCa
                     "border-sm border-solid border-neutral-base hover:border-neutral-dimmed-darker",
                     selected && "ring-md ring-primary-strong",
                     "transition-shadow duration-250 ease-in-out",
-                    "overflow-hidden"
+                    "overflow-hidden",
+                    "cursor-pointer"
                 ])}
                 data-testid={"fm-grid-file-card"}
                 data-file-id={file.id}
             >
-                <div onClick={handleClick} className={"relative cursor-pointer"}>
+                <div className={"relative"}>
                     {/* Selection checkbox. */}
                     <div
                         className={cn([
@@ -161,7 +163,7 @@ export const FileGrid = observer(function FileGrid() {
     const presenter = useFileManagerPresenter();
     const { vm, actions } = presenter;
 
-    const { isPressed: isShiftPressed } = useShiftKey();
+    const overlay = useOverlay();
     const childFolders = vm.folders.childFolders;
 
     // Handle folder navigation.
@@ -172,16 +174,23 @@ export const FileGrid = observer(function FileGrid() {
         [actions.filter]
     );
 
-    const handleToggle = useCallback(
-        (id: string) => {
-            if (isShiftPressed()) {
-                actions.selection.selectRangeTo(id);
-            } else {
-                actions.selection.toggle(id);
+    const handleToggle = (id: string, shiftKey: boolean) => {
+        // Shift-click always does range selection, regardless of overlay mode.
+        if (shiftKey) {
+            actions.selection.selectRangeTo(id);
+            return;
+        }
+
+        if (overlay) {
+            const file = vm.list.rows.find(f => f.id === id);
+            if (file) {
+                overlay.onFileClick(file);
             }
-        },
-        [actions.selection]
-    );
+            return;
+        }
+
+        actions.selection.toggle(id);
+    };
 
     // Deselect all when clicking the grid background.
     const handleBackgroundClick = useCallback(() => {

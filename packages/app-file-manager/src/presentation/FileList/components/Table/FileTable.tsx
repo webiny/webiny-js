@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-ui";
 import { useShiftKey } from "@webiny/app-admin";
+import { useOverlay } from "~/presentation/FileManager/OverlayContext.js";
 import { createRecordsData, Table as AcoTable } from "@webiny/app-aco";
 import type { FolderTableRow, RecordTableRow } from "@webiny/app-aco";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
@@ -43,6 +44,7 @@ export const FileTable = observer(function FileTable() {
     const { vm, actions } = presenter;
 
     const { isPressed: isShiftPressed } = useShiftKey();
+    const overlay = useOverlay();
 
     // No useMemo — MobX observer needs to track these observable accesses during render.
     const fileRows = createRecordsData(vm.list.rows);
@@ -69,18 +71,26 @@ export const FileTable = observer(function FileTable() {
         [sorting, actions.sort]
     );
 
-    const onToggleRow = useCallback(
-        (row: FileTableItem) => {
-            if (row.$type === "RECORD") {
-                if (isShiftPressed()) {
-                    actions.selection.selectRangeTo(row.id);
-                } else {
-                    actions.selection.toggle(row.id);
-                }
+    const onToggleRow = (row: FileTableItem) => {
+        if (row.$type !== "RECORD") {
+            return;
+        }
+
+        if (isShiftPressed()) {
+            actions.selection.selectRangeTo(row.id);
+            return;
+        }
+
+        if (overlay) {
+            const file = vm.list.rows.find(f => f.id === row.id);
+            if (file) {
+                overlay.onFileClick(file);
             }
-        },
-        [actions.selection]
-    );
+            return;
+        }
+
+        actions.selection.toggle(row.id);
+    };
 
     // Handle select all / bulk selection.
     const onSelectRow = useCallback(

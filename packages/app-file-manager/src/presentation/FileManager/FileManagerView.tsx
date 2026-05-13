@@ -12,7 +12,8 @@ import {
     OverlayLayout,
     RightPanel,
     SplitView,
-    DialogsProvider
+    DialogsProvider,
+    useHotkeys
 } from "@webiny/app-admin";
 import { FoldersFeature } from "@webiny/app-aco/features/folders/feature.js";
 import { FolderTreePresenterFeature } from "@webiny/app-aco/presentation/folderTree/feature.js";
@@ -47,11 +48,12 @@ import { FileTable } from "~/presentation/FileList/components/Table/index.js";
 import { TagsList } from "~/presentation/FileList/components/TagsList/index.js";
 import { UploadProgress } from "~/presentation/FileList/components/Upload/index.js";
 import { GetSettingsRepository } from "~/features/settings/abstractions.js";
+import { OverlayProvider, useOverlay } from "./OverlayContext.js";
 
 import type { FmFile } from "~/features/shared/types.js";
-import type { IFileManagerOverlayConfig } from "~/presentation/FileList/abstractions.js";
 
 export interface FileManagerViewProps {
+    overlay?: boolean;
     onChange?: (files: FmFile[]) => void;
     onClose?: () => void;
     multiple?: boolean;
@@ -69,7 +71,15 @@ const t = i18n.ns("app-admin/file-manager/file-manager-view");
 const FileManagerViewLayout = observer(function FileManagerViewLayout() {
     const { vm, actions } = useFileManagerPresenter();
     const { browser } = useFileManagerConfig();
+    const overlay = useOverlay();
     const toast = useToast();
+
+    useHotkeys({
+        zIndex: 20,
+        keys: {
+            esc: () => overlay && overlay.onClose()
+        }
+    });
 
     const container = useContainer();
     const settingsRepository = useMemo(() => container.resolve(GetSettingsRepository), [container]);
@@ -77,7 +87,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
 
     const uploadFiles = async (files: File[]) => {
         await actions.upload(files);
-        toast.showSuccessToast({ title: `File upload complete.` });
+        toast.showSuccessToast({ title: "File upload complete." });
     };
 
     const loadMoreOnScroll = useCallback(
@@ -105,19 +115,12 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
         return <FileGrid />;
     };
 
-    const withOverlay = (element: React.ReactElement) => {
-        if (vm.isOverlay) {
-            return <OverlayLayout variant={"strong"}>{element}</OverlayLayout>;
-        }
-        return element;
-    };
-
-    return (
+    const content = (
         <Files
             multiple
             maxSize={settings ? settings.uploadMaxFileSize + "b" : "1TB"}
             multipleMaxSize={"1TB"}
-            accept={vm.accept}
+            accept={overlay?.accept ?? []}
             onSuccess={files => {
                 const filesToUpload = files.map(file => file.src.file).filter(Boolean) as File[];
                 void uploadFiles(filesToUpload);
@@ -132,104 +135,110 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                 }
             }}
         >
-            {({ getDropZoneProps, browseFiles }) =>
-                withOverlay(
-                    <>
-                        <FileDetailsDrawer />
-                        <SplitView namespace={"fm/file/list"}>
-                            <LeftPanel span={2}>
-                                <div className={"flex flex-col h-main-content"}>
-                                    <div className={"py-sm px-md"}>
-                                        <Heading level={5}>{t`File Manager`}</Heading>
-                                    </div>
-                                    <Separator />
-                                    <div className={"shrink-0 overflow-y-auto max-h-[66vh]"}>
-                                        <FolderTree
-                                            vm={vm.folders}
-                                            actions={actions.folders}
-                                            folderActions={browser.folder.actions}
-                                            dropConfirmation={browser.folder.dropConfirmation}
-                                            enableActions={true}
-                                            enableCreate={true}
-                                        />
-                                    </div>
-                                    {browser.filterByTags ? (
-                                        <>
-                                            <Separator />
-                                            <div className={"flex-1 overflow-y-auto min-h-0"}>
-                                                <TagsList
-                                                    loading={false}
-                                                    activeTags={
-                                                        (vm.list.filters["tags"] as string[]) ?? []
-                                                    }
-                                                    tags={vm.tags.map(tag => ({
-                                                        tag: tag.tag,
-                                                        count: tag.count
-                                                    }))}
-                                                    onActivatedTagsChange={(tags: string[]) => {
-                                                        if (tags.length > 0) {
-                                                            actions.filter.set("tags", tags);
-                                                        } else {
-                                                            actions.filter.clear("tags");
-                                                            actions.filter.clear("tags_rule");
-                                                        }
-                                                    }}
-                                                />
-                                            </div>
-                                        </>
-                                    ) : null}
+            {({ getDropZoneProps, browseFiles }) => (
+                <>
+                    <FileDetailsDrawer />
+                    <SplitView namespace={"fm/file/list"}>
+                        <LeftPanel span={2}>
+                            <div className={"flex flex-col h-main-content"}>
+                                <div className={"py-sm px-md"}>
+                                    <Heading level={5}>{t`File Manager`}</Heading>
                                 </div>
-                            </LeftPanel>
-                            <RightPanel span={10}>
-                                <div
-                                    className={"flex flex-col relative"}
-                                    style={{ height: "calc(100vh - 45px" }}
-                                >
-                                    <FileManagerHeader browseFiles={browseFiles} />
-                                    <div
-                                        className={"flex-1"}
-                                        {...getDropZoneProps({
-                                            onDragEnter: () => actions.setDragging(true),
-                                            onDrop: () => actions.setDragging(false),
-                                            onDragLeave: (e: React.DragEvent) => {
-                                                if (
-                                                    !e.relatedTarget ||
-                                                    !e.currentTarget.contains(
-                                                        e.relatedTarget as Node
-                                                    )
-                                                ) {
-                                                    actions.setDragging(false);
-                                                }
-                                            }
-                                        })}
-                                        data-testid={"fm-list-wrapper"}
-                                    >
-                                        <BulkActionBar />
-                                        <Scrollbar
-                                            onScrollFrame={scrollFrame =>
-                                                loadMoreOnScroll({ scrollFrame })
-                                            }
-                                        >
-                                            {renderList(browseFiles)}
-                                        </Scrollbar>
-                                        {vm.dragging && <FileDropPlaceholder />}
-                                        <UploadProgress />
-                                    </div>
-                                    <BottomInfoBar
-                                        accept={vm.accept}
-                                        listing={vm.list.pagination.loadingMore}
-                                        loading={vm.list.pagination.loading}
-                                        totalCount={vm.list.pagination.totalCount}
-                                        currentCount={vm.list.pagination.currentCount}
+                                <Separator />
+                                <div className={"shrink-0 overflow-y-auto max-h-[66vh]"}>
+                                    <FolderTree
+                                        vm={vm.folders}
+                                        actions={actions.folders}
+                                        folderActions={browser.folder.actions}
+                                        dropConfirmation={browser.folder.dropConfirmation}
+                                        enableActions={true}
+                                        enableCreate={true}
                                     />
                                 </div>
-                            </RightPanel>
-                        </SplitView>
-                    </>
-                )
-            }
+                                {browser.filterByTags ? (
+                                    <>
+                                        <Separator />
+                                        <div className={"flex-1 overflow-y-auto min-h-0"}>
+                                            <TagsList
+                                                loading={false}
+                                                activeTags={
+                                                    (vm.list.filters["tags"] as string[]) ?? []
+                                                }
+                                                tags={vm.tags.map(tag => ({
+                                                    tag: tag.tag,
+                                                    count: tag.count
+                                                }))}
+                                                onActivatedTagsChange={tags => {
+                                                    if (tags.length > 0) {
+                                                        actions.filter.set("tags", tags);
+                                                    } else {
+                                                        actions.filter.clear("tags");
+                                                        actions.filter.clear("tags_rule");
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+                                    </>
+                                ) : null}
+                            </div>
+                        </LeftPanel>
+                        <RightPanel span={10}>
+                            <div
+                                className={"flex flex-col relative"}
+                                style={{ height: "calc(100vh - 45px" }}
+                            >
+                                <FileManagerHeader browseFiles={browseFiles} />
+                                <div
+                                    className={"flex-1"}
+                                    {...getDropZoneProps({
+                                        onDragEnter: () => actions.setDragging(true),
+                                        onDrop: () => actions.setDragging(false),
+                                        onDragLeave: (e: React.DragEvent) => {
+                                            if (
+                                                !e.relatedTarget ||
+                                                !e.currentTarget.contains(e.relatedTarget as Node)
+                                            ) {
+                                                actions.setDragging(false);
+                                            }
+                                        }
+                                    })}
+                                    data-testid={"fm-list-wrapper"}
+                                >
+                                    {!overlay && <BulkActionBar />}
+                                    <Scrollbar
+                                        onScrollFrame={scrollFrame =>
+                                            loadMoreOnScroll({ scrollFrame })
+                                        }
+                                    >
+                                        {renderList(browseFiles)}
+                                    </Scrollbar>
+                                    {vm.dragging && <FileDropPlaceholder />}
+                                    <UploadProgress />
+                                </div>
+                                <BottomInfoBar
+                                    accept={overlay?.accept ?? []}
+                                    listing={vm.list.pagination.loadingMore}
+                                    loading={vm.list.pagination.loading}
+                                    totalCount={vm.list.pagination.totalCount}
+                                    currentCount={vm.list.pagination.currentCount}
+                                />
+                            </div>
+                        </RightPanel>
+                    </SplitView>
+                </>
+            )}
         </Files>
     );
+
+    if (overlay) {
+        return (
+            <OverlayLayout variant={"strong"} onExited={() => overlay.onClose()}>
+                {content}
+            </OverlayLayout>
+        );
+    }
+
+    return content;
 });
 
 // ---------------------------------------------------------------------------
@@ -237,22 +246,53 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
 // ---------------------------------------------------------------------------
 
 const FileManagerViewInner = observer(
-    ({ onChange, onClose, multiple, accept, scope, children }: FileManagerViewProps) => {
+    ({
+        overlay = false,
+        onChange,
+        onClose,
+        multiple,
+        accept,
+        scope,
+        children
+    }: FileManagerViewProps) => {
         const { presenter } = useFeature(FileManagerPresenterFeature);
 
-        const overlayConfig = useMemo<IFileManagerOverlayConfig | undefined>(() => {
-            if (!onChange || !onClose) {
-                return undefined;
+        const overlayConfig = useMemo(() => {
+            if (!overlay || !onChange || !onClose) {
+                return null;
             }
-            return { onChange, onClose, multiple, accept, scope };
-        }, [onChange, onClose, multiple, accept, scope]);
+
+            const handleFileClick = (file: FmFile) => {
+                if (multiple) {
+                    presenter.actions.selection.toggle(file.id);
+                } else {
+                    onChange([file]);
+                }
+            };
+
+            const confirmSelection = () => {
+                const selectedIds = presenter.vm.list.selection.selectedIds;
+                const selectedFiles = presenter.vm.list.rows.filter(f => selectedIds.has(f.id));
+                if (selectedFiles.length > 0) {
+                    onChange(selectedFiles);
+                }
+            };
+
+            return {
+                onFileClick: handleFileClick,
+                confirmSelection,
+                onClose,
+                accept: accept ?? [],
+                multiple: multiple ?? false
+            };
+        }, [overlay, onChange, onClose, multiple, accept]);
 
         useEffect(() => {
-            presenter.init(overlayConfig);
+            presenter.init(overlay ? { initialFolderId: "root", scope } : { scope });
             return () => presenter.dispose();
-        }, [presenter, overlayConfig]);
+        }, [presenter, overlay, scope]);
 
-        return (
+        const inner = (
             <DialogsProvider>
                 <FileManagerViewWithConfig>
                     <FileManagerPresenterProvider presenter={presenter}>
@@ -262,6 +302,12 @@ const FileManagerViewInner = observer(
                 </FileManagerViewWithConfig>
             </DialogsProvider>
         );
+
+        if (overlayConfig) {
+            return <OverlayProvider config={overlayConfig}>{inner}</OverlayProvider>;
+        }
+
+        return inner;
     }
 );
 

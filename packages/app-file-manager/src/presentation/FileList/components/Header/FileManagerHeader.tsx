@@ -13,6 +13,7 @@ import { ReactComponent as TableIcon } from "@webiny/icons/format_list_bulleted.
 import { i18n } from "@webiny/app/i18n/index.js";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { useFileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
+import { useOverlay } from "~/presentation/FileManager/OverlayContext.js";
 import { SearchBar } from "../Search/SearchBar.js";
 
 const t = i18n.ns("app-file-manager/presentation/header");
@@ -68,6 +69,7 @@ export const FileManagerHeader = observer(function FileManagerHeader({
 }: FileManagerHeaderProps) {
     const { vm, actions } = useFileManagerPresenter();
     const { browser } = useFileManagerConfig();
+    const overlay = useOverlay();
 
     const applyFilters: FiltersOnSubmit = data => {
         if (!Object.keys(data).length) {
@@ -132,14 +134,24 @@ export const FileManagerHeader = observer(function FileManagerHeader({
                         data-testid={"fm-header-new-folder-button"}
                     />
                 )}
-                {browseFiles && vm.permissions.canCreate && (
+                {overlay?.multiple && vm.list.selection.selectedCount > 0 ? (
                     <Button
-                        onClick={browseFiles}
+                        onClick={() => overlay.confirmSelection()}
                         size={"md"}
-                        text={t`Upload`}
-                        icon={<FileUploadIcon />}
-                        data-testid={"fm-header-upload-button"}
+                        text={t`Select ({count})`({ count: vm.list.selection.selectedCount })}
+                        data-testid={"fm-header-select-button"}
                     />
+                ) : (
+                    browseFiles &&
+                    vm.permissions.canCreate && (
+                        <Button
+                            onClick={browseFiles}
+                            size={"md"}
+                            text={t`Upload`}
+                            icon={<FileUploadIcon />}
+                            data-testid={"fm-header-upload-button"}
+                        />
+                    )
                 )}
             </div>
             <Filters filters={browser.filters} show={vm.showingFilters} onChange={applyFilters} />

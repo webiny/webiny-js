@@ -20,7 +20,7 @@ const formatFileItem = (file: FmFile): FileManagerFileItem => {
 
 export const FileManagerRendererDecorator = BaseFileManagerRenderer.createDecorator(() => {
     return function FileManagerRendererImpl(props) {
-        const { onChange, onClose, multiple, accept, scope } = props;
+        const { onChange, onClose, multiple, accept, scope, overlay = true } = props;
 
         const handleChange = (files: FmFile[]) => {
             if (!onChange || !files.length) {
@@ -33,11 +33,14 @@ export const FileManagerRendererDecorator = BaseFileManagerRenderer.createDecora
                 (onChange as FileManagerOnChange<FileManagerFileItem>)(formatFileItem(files[0]));
             }
 
-            onClose?.();
+            if (onClose) {
+                onClose();
+            }
         };
 
         return (
             <FileManagerView
+                overlay={overlay}
                 onChange={handleChange}
                 onClose={onClose}
                 multiple={multiple}

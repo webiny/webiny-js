@@ -5,7 +5,7 @@ export type {
     IFileManagerViewModel,
     IFileManagerActions,
     IFolderActions,
-    IFileManagerOverlayConfig
+    IFileManagerInitConfig
 } from "./abstractions.js";
 export { FileManagerPresenterProvider } from "./FileManagerPresenterProvider.js";
 export { useFileManagerPresenter } from "./FileManagerPresenterProvider.js";

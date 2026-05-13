@@ -1,5 +1,5 @@
-import type { FileItem } from "~/domain/types.js";
 import { minimatch } from "minimatch";
+import type { FileItem } from "~/domain/types.js";
 
 export const getThumbnailRenderer = <T extends { type: string }>(
     renderers: T[],

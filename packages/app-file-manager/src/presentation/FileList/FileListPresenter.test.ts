@@ -381,26 +381,6 @@ describe("FileListPresenter", () => {
     });
 
     // -----------------------------------------------------------------------
-    // Overlay mode config.
-    // -----------------------------------------------------------------------
-
-    it("should set isOverlay to false when init() is called without config", () => {
-        presenter.init();
-        expect(presenter.vm.isOverlay).toBe(false);
-    });
-
-    it("should set isOverlay to true when init() is called with overlay config", () => {
-        presenter.init({
-            onChange: vi.fn(),
-            onClose: vi.fn(),
-            multiple: false,
-            accept: ["image/*"]
-        });
-
-        expect(presenter.vm.isOverlay).toBe(true);
-    });
-
-    // -----------------------------------------------------------------------
     // Upload action.
     // -----------------------------------------------------------------------
 
@@ -419,86 +399,6 @@ describe("FileListPresenter", () => {
         expect(args[0].data.type).toBe("text/plain");
         expect(args[1].data.name).toBe("photo.png");
         expect(args[1].data.type).toBe("image/png");
-    });
-
-    // -----------------------------------------------------------------------
-    // selectFile action in overlay mode.
-    // -----------------------------------------------------------------------
-
-    it("should call overlayConfig.onChange immediately in single-select overlay mode", () => {
-        const onChange = vi.fn();
-        presenter.init({ onChange, onClose: vi.fn() });
-
-        const file: FmFile = {
-            id: "file-1",
-            name: "photo.jpg",
-            key: "files/photo.jpg",
-            src: "https://cdn.example.com/files/photo.jpg",
-            type: "image/jpeg",
-            size: 1024,
-            metadata: {},
-            tags: [],
-            createdOn: "2025-01-01T00:00:00Z",
-            savedOn: "2025-01-01T00:00:00Z",
-            createdBy: { id: "user-1", displayName: "Test", type: "admin" },
-            savedBy: { id: "user-1", displayName: "Test", type: "admin" },
-            location: { folderId: "root" }
-        };
-
-        presenter.actions.selectFile(file);
-
-        expect(onChange).toHaveBeenCalledWith([file]);
-    });
-
-    it("should toggle selection in multi-select overlay mode instead of calling onChange", () => {
-        const onChange = vi.fn();
-        presenter.init({ onChange, onClose: vi.fn(), multiple: true });
-
-        const file: FmFile = {
-            id: "file-1",
-            name: "photo.jpg",
-            key: "files/photo.jpg",
-            src: "https://cdn.example.com/files/photo.jpg",
-            type: "image/jpeg",
-            size: 1024,
-            metadata: {},
-            tags: [],
-            createdOn: "2025-01-01T00:00:00Z",
-            savedOn: "2025-01-01T00:00:00Z",
-            createdBy: { id: "user-1", displayName: "Test", type: "admin" },
-            savedBy: { id: "user-1", displayName: "Test", type: "admin" },
-            location: { folderId: "root" }
-        };
-
-        presenter.actions.selectFile(file);
-
-        // In multi mode, onChange is NOT called immediately.
-        expect(onChange).not.toHaveBeenCalled();
-        // The file should be toggled in the selection.
-        expect(mocks.listPresenter.actions.selection.toggle).toHaveBeenCalledWith("file-1");
-    });
-
-    it("should not throw when actions.selectFile is called without overlay mode", () => {
-        presenter.init();
-
-        const file: FmFile = {
-            id: "file-1",
-            name: "photo.jpg",
-            key: "files/photo.jpg",
-            src: "https://cdn.example.com/files/photo.jpg",
-            type: "image/jpeg",
-            size: 1024,
-            metadata: {},
-            tags: [],
-            createdOn: "2025-01-01T00:00:00Z",
-            savedOn: "2025-01-01T00:00:00Z",
-            createdBy: { id: "user-1", displayName: "Test", type: "admin" },
-            savedBy: { id: "user-1", displayName: "Test", type: "admin" },
-            location: { folderId: "root" }
-        };
-
-        // Should not throw.
-        expect(() => presenter.actions.selectFile(file)).not.toThrow();
     });
 
     // -----------------------------------------------------------------------

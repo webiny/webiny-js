@@ -21,7 +21,7 @@ export const BulkActionBar = observer(function BulkActionBar() {
         return `${label} selected`;
     }, [selectedCount]);
 
-    if (vm.isOverlay || selectedCount === 0) {
+    if (selectedCount === 0) {
         return null;
     }
 
