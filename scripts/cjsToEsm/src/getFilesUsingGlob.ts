@@ -28,7 +28,6 @@ export function getFilesUsingGlob(rootDir: string | string[]): string[] {
             "**/*.d.ts",
             "**/webiny.config.js",
             "**/webiny.config.ts",
-            "**/babelrc.js",
             "**/dist/**"
         ]
     }).forEach(file => {

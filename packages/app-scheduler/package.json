@@ -37,7 +37,6 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@emotion/babel-plugin": "^11.13.5",
     "@types/react": "18.3.28",
     "@webiny/build-tools": "0.0.0",
     "rimraf": "^6.1.3",

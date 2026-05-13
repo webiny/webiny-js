@@ -28,12 +28,42 @@ When new backend features are discovered, update `ai-context/core-features-refer
 
 ## Commits
 
-- Do not commit by yourself when on local machine. I'll do it.
+- Always run the full pre-commit checklist and commit after every code change — do not wait to be asked:
+  ```bash
+  git add .
+  yarn > /dev/null 2>&1
+  node scripts/generateTsConfigsInPackages.js
+  yarn adio
+  yarn format > /dev/null 2>&1
+  yarn lint
+  yarn webiny sync-dependencies
+  git add .
+  ```
+  If any step fixes something, rerun from the top before committing.
 - Avoid overly verbose descriptions or unnecessary details.
 - Use conventional commit message formats like:
   - feat: for new features
   - fix: for bug fixes
   - docs: for documentation changes
+
+## Entry Data Factory Pattern (`api-headless-cms`)
+
+Entry data factories are injectable features, not imported functions. When writing use cases in `packages/api-headless-cms` that need to produce domain entry objects:
+
+- **Do not** import from `~/crud/contentEntry/entryDataFactories/`
+- **Do** inject the factory token via `createImplementation` dependencies and call `this.xyzFactory.create(...)`
+- Factories live in `packages/api-headless-cms/src/features/contentEntry/entryDataFactories/`
+- Token scope: `"Cms/Entry/<FactoryName>"` (e.g. `"Cms/Entry/CreateEntryDataFactory"`)
+- All factories are singletons
+
+Available factories:
+
+- `CreateEntryDataFactory` — new entry from raw input
+- `UpdateEntryDataFactory` — update existing entry
+- `CreateEntryRevisionFromDataFactory` — new revision from existing entry
+- `CreatePublishEntryDataFactory` — transition to published state
+- `CreateUnpublishEntryDataFactory` — transition to unpublished state
+- `CreateRepublishEntryDataFactory` — re-publish with refreshed references
 
 ## Webiny
 

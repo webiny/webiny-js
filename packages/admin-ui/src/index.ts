@@ -42,6 +42,7 @@ export * from "./RangeSlider/index.js";
 export * from "./Scrollbar/index.js";
 export * from "./ScrollArea/index.js";
 export * from "./SegmentedControl/index.js";
+export * from "./MultiSelect/index.js";
 export * from "./Select/index.js";
 export * from "./Separator/index.js";
 export * from "./Sidebar/index.js";

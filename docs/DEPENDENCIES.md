@@ -80,8 +80,6 @@ yarn update-packages
 
 When you run it, you will be presented with a list of choices (presets) or you can write your custom matcher.
 
-This will help with updating, for example, `babel` packages. Why?
-
-Because `babel` is not only that. There are numerous related packages which we want to update (and possibly we do not want update some with `babel` in the package name).
+This is useful when updating a group of related packages together, for example all `@aws-sdk/*` packages, or all `@lexical/*` packages.
 
 To add a new preset, you can add it into `scripts/updatePackagesLib/presets`. There are multiple presets there for examples.
