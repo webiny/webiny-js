@@ -1,11 +1,11 @@
 import React from "react";
-import {Dashboard} from "~/base/ui/Dashboard.js";
-import {AdminLayout} from "~/components/AdminLayout.js";
-import {NotFound} from "~/base/ui/NotFound.js";
-import {AdminConfig} from "~/config/AdminConfig.js";
-import {Routes} from "~/routes.js";
-import {Route} from "~/config/AdminConfig/Route.js";
-import {FormModelDemo} from "~/features/formModel/demo/FormModelDemo.js";
+import { Dashboard } from "~/base/ui/Dashboard.js";
+import { AdminLayout } from "~/components/AdminLayout.js";
+import { NotFound } from "~/base/ui/NotFound.js";
+import { AdminConfig } from "~/config/AdminConfig.js";
+import { Routes } from "~/routes.js";
+import { Route } from "~/config/AdminConfig/Route.js";
+import { FormModelDemo } from "~/features/formModel/demo/FormModelDemo.js";
 
 export const RoutesConfig = React.memo(() => {
     return (
@@ -14,7 +14,7 @@ export const RoutesConfig = React.memo(() => {
                 route={Routes.Dashboard}
                 element={
                     <AdminLayout title={"Welcome!"}>
-                        <Dashboard/>
+                        <Dashboard />
                     </AdminLayout>
                 }
             />
@@ -23,7 +23,7 @@ export const RoutesConfig = React.memo(() => {
                 route={Routes.FormModelDemo}
                 element={
                     <AdminLayout title={"FormModel Demo"}>
-                        <FormModelDemo/>
+                        <FormModelDemo />
                     </AdminLayout>
                 }
             />
@@ -32,7 +32,7 @@ export const RoutesConfig = React.memo(() => {
                 route={Routes.CatchAll}
                 element={
                     <AdminLayout title={"Not Accessible"}>
-                        <NotFound/>
+                        <NotFound />
                     </AdminLayout>
                 }
             />
