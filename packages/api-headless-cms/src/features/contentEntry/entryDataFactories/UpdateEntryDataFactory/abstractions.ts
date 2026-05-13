@@ -17,8 +17,7 @@ export interface IUpdateEntryDataFactory {
         model: CmsModel,
         rawInput: UpdateCmsEntryInput<TValues>,
         originalEntry: CmsEntry<TValues>,
-        options?: UpdateCmsEntryOptionsInput,
-        metaInput?: Record<string, any>
+        options?: UpdateCmsEntryOptionsInput
     ): Promise<IUpdateEntryDataResponse<TValues>>;
 }
 

@@ -8,7 +8,6 @@ import type {
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
 } from "@webiny/api-headless-cms/types/index.js";
-import type { GenericRecord } from "@webiny/api/types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import { EntryNotAuthorizedError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
@@ -24,23 +23,22 @@ class UpdateEntryWithFlpDecoratorImpl implements UpdateEntryUseCase.Interface {
         model: CmsModel,
         id: string,
         input: UpdateCmsEntryInput<T>,
-        metaInput?: GenericRecord,
         options?: UpdateCmsEntryOptionsInput
     ): Promise<Result<CmsEntry<T>, UpdateEntryUseCase.Error>> {
         if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
-            return this.decoratee.execute(model, id, input, metaInput, options);
+            return this.decoratee.execute(model, id, input, options);
         }
 
         const entryResult = await this.getRevisionById.execute(model, id);
         if (entryResult.isFail()) {
-            return this.decoratee.execute(model, id, input, metaInput, options);
+            return this.decoratee.execute(model, id, input, options);
         }
 
         const entry = entryResult.value;
         const folderId = entry?.location?.folderId;
 
         if (!folderId || folderId === ROOT_FOLDER) {
-            return this.decoratee.execute(model, id, input, metaInput, options);
+            return this.decoratee.execute(model, id, input, options);
         }
 
         const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
@@ -53,7 +51,7 @@ class UpdateEntryWithFlpDecoratorImpl implements UpdateEntryUseCase.Interface {
             return Result.fail(new EntryNotAuthorizedError());
         }
 
-        return this.decoratee.execute<T>(model, id, input, metaInput, options);
+        return this.decoratee.execute<T>(model, id, input, options);
     }
 }
 

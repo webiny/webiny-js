@@ -115,8 +115,7 @@ describe("MANAGE - resolvers - api key", () => {
                             ],
                             status: "draft",
                             version: 1,
-                            title: "Vegetables",
-                            data: {}
+                            title: "Vegetables"
                         },
                         values: {
                             title: "Vegetables",
@@ -169,8 +168,7 @@ describe("MANAGE - resolvers - api key", () => {
                             ],
                             status: "draft",
                             version: 1,
-                            title: "Vegetables",
-                            data: {}
+                            title: "Vegetables"
                         },
                         values: {
                             title: category.values.title,
@@ -227,8 +225,7 @@ describe("MANAGE - resolvers - api key", () => {
                             ],
                             status: "draft",
                             version: 1,
-                            title: "Green vegetables",
-                            data: {}
+                            title: "Green vegetables"
                         },
                         values: {
                             title: "Green vegetables",
@@ -279,8 +276,7 @@ describe("MANAGE - resolvers - api key", () => {
                                 ],
                                 status: "draft",
                                 version: 1,
-                                title: updatedCategory.values.title,
-                                data: {}
+                                title: updatedCategory.values.title
                             },
                             values: {
                                 title: updatedCategory.values.title,
