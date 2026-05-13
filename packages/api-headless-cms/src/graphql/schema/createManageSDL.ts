@@ -112,10 +112,6 @@ export const createManageSDL: CreateManageSDL = ({
             title: String
             description: String
             image: String
-            """
-            Custom meta data stored in the root of the entry object.
-            """
-            data: JSON
         }
 
         ${fields.map(f => f.typeDefs).join("\n")}
