@@ -35,7 +35,6 @@ export const categoryFields = /* GraphQL */ `
                     version
                 }
             }
-            data
         }
         wbyAco_location {
             folderId
