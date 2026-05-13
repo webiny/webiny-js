@@ -1,9 +1,8 @@
 import { createAbstraction } from "@webiny/project/abstractions/createAbstraction.js";
-import type { ApiPulumiApp } from "~/pulumi/apps/api/createApiPulumiApp.js";
 import type { CustomDomainParams } from "~/pulumi/apps/customDomain.js";
 
 export interface ISetApiCustomDomains {
-    set(app: ApiPulumiApp, params: CustomDomainParams): void;
+    execute(params: CustomDomainParams): void;
 }
 
 export const SetApiCustomDomains = createAbstraction<ISetApiCustomDomains>("SetApiCustomDomains");

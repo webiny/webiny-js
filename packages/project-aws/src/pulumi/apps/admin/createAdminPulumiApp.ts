@@ -1,19 +1,16 @@
 import { createReactPulumiApp } from "~/pulumi/apps/index.js";
 import { getProjectSdk } from "@webiny/project";
-import { AdminPulumi } from "~/abstractions/features/pulumi/index.js";
+import { AdminPulumi, SetAdminCustomDomains } from "~/abstractions/features/pulumi/index.js";
 import { adminPulumi } from "~/pulumi/features/AdminPulumi/index.js";
-import { DefaultSetAdminCustomDomains } from "~/pulumi/features/SetAdminCustomDomains/index.js";
 import { withServiceManifest } from "~/pulumi/index.js";
 import { AdminCustomDomains as adminCustomDomainsExt } from "~/pulumi/extensions/AdminCustomDomains.js";
+import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 
 export type AdminPulumiApp = ReturnType<typeof createReactPulumiApp>;
 
 export const createAdminPulumiApp = async () => {
     const sdk = await getProjectSdk();
     const projectConfig = await sdk.getProjectConfig();
-
-    // Register the SetAdminCustomDomains singleton so it can be injected into AdminPulumi impls.
-    sdk.getContainer().register(DefaultSetAdminCustomDomains);
 
     const baseApp = createReactPulumiApp({
         name: "admin",
@@ -25,19 +22,25 @@ export const createAdminPulumiApp = async () => {
                 const { domains, sslMethod, certificateArn } = adminDomains.params;
                 return {
                     domains,
-                    sslSupportMethod: sslMethod,
-                    acmCertificateArn: certificateArn
+                    sslMethod,
+                    certificateArn
                 };
             }
 
             return undefined;
         },
         pulumi: async app => {
+            // Register SetAdminCustomDomains with app captured — no need to pass app in execute().
+            sdk.getContainer().registerInstance(SetAdminCustomDomains, {
+                execute(params) {
+                    applyCustomDomain((app as AdminPulumiApp).resources.cloudfront, params);
+                }
+            });
+
             sdk.getContainer().registerComposite(adminPulumi);
             const pulumiHandlers = sdk.getContainer().resolve(AdminPulumi);
 
-            // Execute directly so implementations run before the CloudFront resource is created,
-            // allowing them to modify cloudfront.config (e.g. via injected SetAdminCustomDomains).
+            // Execute directly so implementations run before the CloudFront resource is created.
             await pulumiHandlers.execute(app as AdminPulumiApp);
         }
     });

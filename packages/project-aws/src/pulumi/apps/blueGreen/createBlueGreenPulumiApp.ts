@@ -111,8 +111,8 @@ export function createBlueGreenPulumiApp() {
 
             applyCustomDomain(cloudfront.cloudFront, {
                 domains: domainNames,
-                sslSupportMethod: attachedDomains.sslSupportMethod,
-                acmCertificateArn: attachedDomains.acmCertificateArn
+                sslMethod: attachedDomains.sslSupportMethod,
+                certificateArn: attachedDomains.acmCertificateArn
             });
 
             attachDomainsToOutput({

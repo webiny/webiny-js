@@ -24,9 +24,9 @@ import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
-import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
+import { ApiPulumi, SetApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
 import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
-import { DefaultSetApiCustomDomains } from "~/pulumi/features/SetApiCustomDomains/index.js";
+import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -138,9 +138,6 @@ export const createApiPulumiApp = () => {
             });
             // <-------------------- Enterprise end -------------------->
 
-            // Register SetApiCustomDomains singleton so it can be injected into ApiPulumi impls.
-            sdk.getContainer().register(DefaultSetApiCustomDomains);
-
             const isProduction = app.env.isProduction;
 
             // Register core output as a module available to all the other modules
@@ -238,8 +235,14 @@ export const createApiPulumiApp = () => {
             const backgroundTask = app.addModule(ApiBackgroundTask);
             const scheduler = app.addModule(ApiScheduler);
 
-            // Execute ApiPulumi implementations directly so they run before the CloudFront resource
-            // is created, allowing them to modify cloudfront config (e.g. via SetApiCustomDomains).
+            // Register SetApiCustomDomains with app captured — no need to pass app in execute().
+            sdk.getContainer().registerInstance(SetApiCustomDomains, {
+                execute(params) {
+                    applyCustomDomain(cloudfront, params);
+                }
+            });
+
+            // Execute directly so implementations run before the CloudFront resource is created.
             sdk.getContainer().registerComposite(apiPulumi);
             const pulumiHandlers = sdk.getContainer().resolve(ApiPulumi);
             await pulumiHandlers.execute(app as ApiPulumiApp);
