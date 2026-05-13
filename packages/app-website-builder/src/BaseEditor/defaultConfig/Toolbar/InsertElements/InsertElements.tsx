@@ -5,6 +5,7 @@ import { ReactComponent as ListIcon } from "@webiny/icons/format_list_bulleted.s
 import { ReactComponent as GridIcon } from "@webiny/icons/grid_view.svg";
 import { ReactComponent as DashboardIcon } from "@webiny/icons/dashboard_customize.svg";
 import { useComponentGroups } from "./useComponentGroups.js";
+import { InlineSvg } from "./InlineSvg.js";
 import { GroupItemsList } from "./GroupItemsList.js";
 import { GroupItemsGrid } from "./GroupItemsGrid.js";
 
@@ -58,7 +59,13 @@ export const InsertElements = () => {
                                 <div className={"flex gap-x-sm"}>
                                     <Icon
                                         color={"accent"}
-                                        icon={<DashboardIcon />}
+                                        icon={
+                                            group.icon ? (
+                                                <InlineSvg src={group.icon} />
+                                            ) : (
+                                                <DashboardIcon />
+                                            )
+                                        }
                                         label={group.label}
                                     />
                                     <Text size={"md"} className={"font-semibold"}>
