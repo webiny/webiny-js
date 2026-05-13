@@ -6,7 +6,7 @@ class NullWebhookDispatcherImpl implements WebhookDispatcher.Interface {
     }
 }
 
-export default WebhookDispatcher.createImplementation({
+export const NullWebhookDispatcher = WebhookDispatcher.createImplementation({
     implementation: NullWebhookDispatcherImpl,
     dependencies: []
 });

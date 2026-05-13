@@ -23,7 +23,7 @@ class ListWebhookDeliveriesUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export default UseCaseAbstraction.createImplementation({
+export const ListWebhookDeliveriesUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListWebhookDeliveriesUseCaseImpl,
     dependencies: [WebhookPermissions, ListWebhookDeliveriesRepository]
 });

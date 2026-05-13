@@ -1,11 +1,11 @@
 import { createFeature } from "@webiny/feature/api";
-import UpdateWebhookUseCaseImpl from "./UpdateWebhookUseCase.js";
-import UpdateWebhookRepositoryImpl from "./UpdateWebhookRepository.js";
+import { UpdateWebhookUseCase } from "./UpdateWebhookUseCase.js";
+import { UpdateWebhookRepository } from "./UpdateWebhookRepository.js";
 
 export const UpdateWebhookFeature = createFeature({
     name: "UpdateWebhook",
     register(container) {
-        container.register(UpdateWebhookUseCaseImpl);
-        container.register(UpdateWebhookRepositoryImpl).inSingletonScope();
+        container.register(UpdateWebhookUseCase);
+        container.register(UpdateWebhookRepository).inSingletonScope();
     }
 });

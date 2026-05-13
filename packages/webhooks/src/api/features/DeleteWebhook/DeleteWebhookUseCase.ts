@@ -26,7 +26,7 @@ class DeleteWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export default UseCaseAbstraction.createImplementation({
+export const DeleteWebhookUseCase = UseCaseAbstraction.createImplementation({
     implementation: DeleteWebhookUseCaseImpl,
     dependencies: [WebhookPermissions, GetWebhookRepository, DeleteWebhookRepository]
 });

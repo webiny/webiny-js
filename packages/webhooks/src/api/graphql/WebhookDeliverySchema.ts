@@ -5,7 +5,7 @@ import { ListWebhookDeliveriesUseCase } from "~/api/features/ListWebhookDeliveri
 import { GetWebhookDeliveryUseCase } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { ResendWebhookDeliveryUseCase } from "~/api/features/ResendWebhookDelivery/abstractions.js";
 
-class WebhookDeliverySchema implements GraphQLSchemaFactory.Interface {
+class WebhookDeliverySchema_ implements GraphQLSchemaFactory.Interface {
     async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
@@ -100,7 +100,7 @@ class WebhookDeliverySchema implements GraphQLSchemaFactory.Interface {
     }
 }
 
-export default GraphQLSchemaFactory.createImplementation({
-    implementation: WebhookDeliverySchema,
+export const WebhookDeliverySchema = GraphQLSchemaFactory.createImplementation({
+    implementation: WebhookDeliverySchema_,
     dependencies: []
 });

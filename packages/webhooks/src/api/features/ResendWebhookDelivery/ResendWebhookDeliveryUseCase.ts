@@ -68,7 +68,7 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export default UseCaseAbstraction.createImplementation({
+export const ResendWebhookDeliveryUseCase = UseCaseAbstraction.createImplementation({
     implementation: ResendWebhookDeliveryUseCaseImpl,
     dependencies: [
         WebhookPermissions,

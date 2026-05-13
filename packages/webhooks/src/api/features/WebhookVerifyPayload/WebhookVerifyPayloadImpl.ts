@@ -3,7 +3,7 @@ import { Result } from "@webiny/feature/api";
 import { WebhookVerifyPayload } from "@webiny/api-core/features/webhooks/index.js";
 import { WebhookVerificationFailedError } from "~/api/domain/errors.js";
 
-class WebhookVerifyPayloadImpl implements WebhookVerifyPayload.Interface {
+class WebhookVerifyPayloadImpl_ implements WebhookVerifyPayload.Interface {
     public async verify<T>(
         rawBody: string | Buffer,
         headers: WebhookVerifyPayload.Headers,
@@ -19,7 +19,7 @@ class WebhookVerifyPayloadImpl implements WebhookVerifyPayload.Interface {
     }
 }
 
-export default WebhookVerifyPayload.createImplementation({
-    implementation: WebhookVerifyPayloadImpl,
+export const WebhookVerifyPayloadImpl = WebhookVerifyPayload.createImplementation({
+    implementation: WebhookVerifyPayloadImpl_,
     dependencies: []
 });

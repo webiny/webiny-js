@@ -136,7 +136,7 @@ class UpdateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
     }
 }
 
-export default RepositoryAbstraction.createImplementation({
+export const UpdateWebhookDeliveryRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdateWebhookDeliveryRepositoryImpl,
     dependencies: [
         GetModelUseCase,

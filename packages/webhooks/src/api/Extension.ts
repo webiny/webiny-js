@@ -1,10 +1,10 @@
 import { createFeature } from "@webiny/feature/api";
-import WebhookModel from "./models/WebhookModel.js";
-import WebhookDeliveryModel from "./models/WebhookDeliveryModel.js";
-import WebhookCrudSchema from "./graphql/WebhookCrudSchema.js";
-import WebhookDeliverySchema from "./graphql/WebhookDeliverySchema.js";
-import WebhookEventSchema from "./graphql/WebhookEventSchema.js";
-import WebhookTriggerSchema from "./graphql/WebhookTriggerSchema.js";
+import { WebhookModel } from "./models/WebhookModel.js";
+import { WebhookDeliveryModel } from "./models/WebhookDeliveryModel.js";
+import { WebhookCrudSchema } from "./graphql/WebhookCrudSchema.js";
+import { WebhookDeliverySchema } from "./graphql/WebhookDeliverySchema.js";
+import { WebhookEventSchema } from "./graphql/WebhookEventSchema.js";
+import { WebhookTriggerSchema } from "./graphql/WebhookTriggerSchema.js";
 import { CreateWebhookFeature } from "./features/CreateWebhook/feature.js";
 import { GetWebhookFeature } from "./features/GetWebhook/feature.js";
 import { ListWebhooksFeature } from "./features/ListWebhooks/feature.js";

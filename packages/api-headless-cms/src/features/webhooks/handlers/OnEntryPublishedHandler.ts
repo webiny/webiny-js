@@ -10,7 +10,7 @@ class OnEntryPublishedHandlerImpl implements EntryAfterPublishEventHandler.Inter
     }
 }
 
-export default EntryAfterPublishEventHandler.createImplementation({
+export const OnEntryPublishedHandler = EntryAfterPublishEventHandler.createImplementation({
     implementation: OnEntryPublishedHandlerImpl,
     dependencies: [WebhookDispatcher]
 });

@@ -1,11 +1,11 @@
 import { createFeature } from "@webiny/feature/api";
-import GetWebhookDeliveryUseCaseImpl from "./GetWebhookDeliveryUseCase.js";
-import GetWebhookDeliveryRepositoryImpl from "./GetWebhookDeliveryRepository.js";
+import { GetWebhookDeliveryUseCase } from "./GetWebhookDeliveryUseCase.js";
+import { GetWebhookDeliveryRepository } from "./GetWebhookDeliveryRepository.js";
 
 export const GetWebhookDeliveryFeature = createFeature({
     name: "GetWebhookDelivery",
     register(container) {
-        container.register(GetWebhookDeliveryUseCaseImpl);
-        container.register(GetWebhookDeliveryRepositoryImpl).inSingletonScope();
+        container.register(GetWebhookDeliveryUseCase);
+        container.register(GetWebhookDeliveryRepository).inSingletonScope();
     }
 });

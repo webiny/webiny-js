@@ -7,7 +7,7 @@ import { CreateWebhookUseCase } from "~/api/features/CreateWebhook/abstractions.
 import { UpdateWebhookUseCase } from "~/api/features/UpdateWebhook/abstractions.js";
 import { DeleteWebhookUseCase } from "~/api/features/DeleteWebhook/abstractions.js";
 
-class WebhookCrudSchema implements GraphQLSchemaFactory.Interface {
+class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
     async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
@@ -184,7 +184,7 @@ class WebhookCrudSchema implements GraphQLSchemaFactory.Interface {
     }
 }
 
-export default GraphQLSchemaFactory.createImplementation({
-    implementation: WebhookCrudSchema,
+export const WebhookCrudSchema = GraphQLSchemaFactory.createImplementation({
+    implementation: WebhookCrudSchema_,
     dependencies: []
 });

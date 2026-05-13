@@ -1,7 +1,7 @@
 import { Webhook } from "standardwebhooks";
 import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
 
-class WebhookSignPayloadImpl implements WebhookSignPayload.Interface {
+class WebhookSignPayloadImpl_ implements WebhookSignPayload.Interface {
     async sign(
         msgId: string,
         timestamp: Date,
@@ -18,7 +18,7 @@ class WebhookSignPayloadImpl implements WebhookSignPayload.Interface {
     }
 }
 
-export default WebhookSignPayload.createImplementation({
-    implementation: WebhookSignPayloadImpl,
+export const WebhookSignPayloadImpl = WebhookSignPayload.createImplementation({
+    implementation: WebhookSignPayloadImpl_,
     dependencies: []
 });

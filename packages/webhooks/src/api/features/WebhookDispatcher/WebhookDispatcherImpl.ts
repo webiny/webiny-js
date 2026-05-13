@@ -4,7 +4,7 @@ import { ListWebhooksRepository } from "~/api/features/ListWebhooks/abstractions
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
 import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/api/domain/constants.js";
 
-class WebhookDispatcherImpl implements WebhookDispatcher.Interface {
+class WebhookDispatcherImpl_ implements WebhookDispatcher.Interface {
     constructor(
         private listWebhooksRepository: ListWebhooksRepository.Interface,
         private createDeliveryRepository: CreateWebhookDeliveryRepository.Interface,
@@ -50,7 +50,7 @@ class WebhookDispatcherImpl implements WebhookDispatcher.Interface {
     }
 }
 
-export default WebhookDispatcher.createImplementation({
-    implementation: WebhookDispatcherImpl,
+export const WebhookDispatcherImpl = WebhookDispatcher.createImplementation({
+    implementation: WebhookDispatcherImpl_,
     dependencies: [ListWebhooksRepository, CreateWebhookDeliveryRepository, TaskService]
 });

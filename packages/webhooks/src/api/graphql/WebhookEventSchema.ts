@@ -3,7 +3,7 @@ import { Response } from "@webiny/handler-graphql";
 import { ErrorResponse } from "@webiny/handler-graphql";
 import { ListAvailableWebhookEventsUseCase } from "~/api/features/ListAvailableWebhookEvents/abstractions.js";
 
-class WebhookEventSchema implements GraphQLSchemaFactory.Interface {
+class WebhookEventSchema_ implements GraphQLSchemaFactory.Interface {
     async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
@@ -43,7 +43,7 @@ class WebhookEventSchema implements GraphQLSchemaFactory.Interface {
     }
 }
 
-export default GraphQLSchemaFactory.createImplementation({
-    implementation: WebhookEventSchema,
+export const WebhookEventSchema = GraphQLSchemaFactory.createImplementation({
+    implementation: WebhookEventSchema_,
     dependencies: []
 });

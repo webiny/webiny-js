@@ -10,7 +10,7 @@ class OnEntryUnpublishedHandlerImpl implements EntryAfterUnpublishEventHandler.I
     }
 }
 
-export default EntryAfterUnpublishEventHandler.createImplementation({
+export const OnEntryUnpublishedHandler = EntryAfterUnpublishEventHandler.createImplementation({
     implementation: OnEntryUnpublishedHandlerImpl,
     dependencies: [WebhookDispatcher]
 });

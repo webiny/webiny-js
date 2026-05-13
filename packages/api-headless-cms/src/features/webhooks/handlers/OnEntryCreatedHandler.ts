@@ -10,7 +10,7 @@ class OnEntryCreatedHandlerImpl implements EntryAfterCreateEventHandler.Interfac
     }
 }
 
-export default EntryAfterCreateEventHandler.createImplementation({
+export const OnEntryCreatedHandler = EntryAfterCreateEventHandler.createImplementation({
     implementation: OnEntryCreatedHandlerImpl,
     dependencies: [WebhookDispatcher]
 });

@@ -1,9 +1,9 @@
 import { createFeature } from "@webiny/feature/api";
-import TriggerWebhookUseCaseImpl from "./TriggerWebhookUseCase.js";
+import { TriggerWebhookUseCase } from "./TriggerWebhookUseCase.js";
 
 export const TriggerWebhookFeature = createFeature({
     name: "TriggerWebhook",
     register(container) {
-        container.register(TriggerWebhookUseCaseImpl);
+        container.register(TriggerWebhookUseCase);
     }
 });

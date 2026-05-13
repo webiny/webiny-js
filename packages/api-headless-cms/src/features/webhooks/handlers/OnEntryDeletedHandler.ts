@@ -10,7 +10,7 @@ class OnEntryDeletedHandlerImpl implements EntryAfterDeleteEventHandler.Interfac
     }
 }
 
-export default EntryAfterDeleteEventHandler.createImplementation({
+export const OnEntryDeletedHandler = EntryAfterDeleteEventHandler.createImplementation({
     implementation: OnEntryDeletedHandlerImpl,
     dependencies: [WebhookDispatcher]
 });

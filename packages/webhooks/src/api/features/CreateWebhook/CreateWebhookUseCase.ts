@@ -88,7 +88,7 @@ class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export default UseCaseAbstraction.createImplementation({
+export const CreateWebhookUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateWebhookUseCaseImpl,
     dependencies: [WebhookPermissions, CreateWebhookRepository]
 });

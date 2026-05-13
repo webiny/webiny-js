@@ -70,7 +70,7 @@ class DeleteWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export default RepositoryAbstraction.createImplementation({
+export const DeleteWebhookRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteWebhookRepositoryImpl,
     dependencies: [GetModelUseCase, ListEntriesUseCase, DeleteEntryUseCase]
 });

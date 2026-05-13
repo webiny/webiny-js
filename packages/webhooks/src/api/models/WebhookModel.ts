@@ -67,7 +67,7 @@ class WebhookModelFactory implements ModelFactory.Interface {
     }
 }
 
-export default ModelFactory.createImplementation({
+export const WebhookModel = ModelFactory.createImplementation({
     implementation: WebhookModelFactory,
     dependencies: []
 });

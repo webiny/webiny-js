@@ -56,7 +56,7 @@ class CreateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export default RepositoryAbstraction.createImplementation({
+export const CreateWebhookRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateWebhookRepositoryImpl,
     dependencies: [GetModelUseCase, CreateEntryUseCase, ListEntriesUseCase]
 });

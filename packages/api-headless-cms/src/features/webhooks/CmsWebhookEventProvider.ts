@@ -1,10 +1,10 @@
-import { WebhookEventProvider } from "@webiny/api-core/features/webhooks/index.js";
+import { WebhookEventProvider as WebhookEventProviderAbstraction } from "@webiny/api-core/features/webhooks/index.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/abstractions.js";
 import type { IWebhookEventDefinition } from "@webiny/api-core/features/webhooks/index.js";
 
 const ACTIONS = ["created", "updated", "deleted", "published", "unpublished"] as const;
 
-class CmsWebhookEventProviderImpl implements WebhookEventProvider.Interface {
+class CmsWebhookEventProviderImpl implements WebhookEventProviderAbstraction.Interface {
     constructor(private listModels: ListModelsUseCase.Interface) {}
 
     async getAvailableEvents(): Promise<IWebhookEventDefinition[]> {
@@ -34,7 +34,7 @@ class CmsWebhookEventProviderImpl implements WebhookEventProvider.Interface {
     }
 }
 
-export default WebhookEventProvider.createImplementation({
+export const WebhookEventProvider = WebhookEventProviderAbstraction.createImplementation({
     implementation: CmsWebhookEventProviderImpl,
     dependencies: [ListModelsUseCase]
 });

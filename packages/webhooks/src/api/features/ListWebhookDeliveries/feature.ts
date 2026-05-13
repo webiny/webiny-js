@@ -1,11 +1,11 @@
 import { createFeature } from "@webiny/feature/api";
-import ListWebhookDeliveriesUseCaseImpl from "./ListWebhookDeliveriesUseCase.js";
-import ListWebhookDeliveriesRepositoryImpl from "./ListWebhookDeliveriesRepository.js";
+import { ListWebhookDeliveriesUseCase } from "./ListWebhookDeliveriesUseCase.js";
+import { ListWebhookDeliveriesRepository } from "./ListWebhookDeliveriesRepository.js";
 
 export const ListWebhookDeliveriesFeature = createFeature({
     name: "ListWebhookDeliveries",
     register(container) {
-        container.register(ListWebhookDeliveriesUseCaseImpl);
-        container.register(ListWebhookDeliveriesRepositoryImpl).inSingletonScope();
+        container.register(ListWebhookDeliveriesUseCase);
+        container.register(ListWebhookDeliveriesRepository).inSingletonScope();
     }
 });

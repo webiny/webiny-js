@@ -10,7 +10,7 @@ class OnEntryUpdatedHandlerImpl implements EntryAfterUpdateEventHandler.Interfac
     }
 }
 
-export default EntryAfterUpdateEventHandler.createImplementation({
+export const OnEntryUpdatedHandler = EntryAfterUpdateEventHandler.createImplementation({
     implementation: OnEntryUpdatedHandlerImpl,
     dependencies: [WebhookDispatcher]
 });

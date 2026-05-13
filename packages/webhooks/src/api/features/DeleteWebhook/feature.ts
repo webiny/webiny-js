@@ -1,11 +1,11 @@
 import { createFeature } from "@webiny/feature/api";
-import DeleteWebhookUseCaseImpl from "./DeleteWebhookUseCase.js";
-import DeleteWebhookRepositoryImpl from "./DeleteWebhookRepository.js";
+import { DeleteWebhookUseCase } from "./DeleteWebhookUseCase.js";
+import { DeleteWebhookRepository } from "./DeleteWebhookRepository.js";
 
 export const DeleteWebhookFeature = createFeature({
     name: "DeleteWebhook",
     register(container) {
-        container.register(DeleteWebhookUseCaseImpl);
-        container.register(DeleteWebhookRepositoryImpl).inSingletonScope();
+        container.register(DeleteWebhookUseCase);
+        container.register(DeleteWebhookRepository).inSingletonScope();
     }
 });

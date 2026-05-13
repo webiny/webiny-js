@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import WebhookSignPayloadImpl from "./WebhookSignPayloadImpl.js";
+import { WebhookSignPayloadImpl } from "./WebhookSignPayloadImpl.js";
 
 export const WebhookSignPayloadFeature = createFeature({
     name: "WebhookSignPayload",

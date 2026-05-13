@@ -91,7 +91,7 @@ class GetWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interfac
     }
 }
 
-export default RepositoryAbstraction.createImplementation({
+export const GetWebhookDeliveryRepository = RepositoryAbstraction.createImplementation({
     implementation: GetWebhookDeliveryRepositoryImpl,
     dependencies: [GetModelUseCase, GetLatestRevisionByEntryIdUseCase, CompressionHandler]
 });

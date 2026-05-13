@@ -44,7 +44,7 @@ class WebhookDeliveryModelFactory implements ModelFactory.Interface {
     }
 }
 
-export default ModelFactory.createImplementation({
+export const WebhookDeliveryModel = ModelFactory.createImplementation({
     implementation: WebhookDeliveryModelFactory,
     dependencies: []
 });
