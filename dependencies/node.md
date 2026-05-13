@@ -156,13 +156,13 @@ Status: replace
 
 ## @svgr/webpack
 
-Status: replace
-Use `@rsbuild/plugin-svgr` (already in deps) when migrating off webpack.
+Status: done
+Removed from `build-tools`. Replaced by `@rsbuild/plugin-svgr`.
 
 ## babel-loader
 
-Status: replace
-rspack uses SWC natively. No loader needed.
+Status: done
+Removed. rspack/rslib use SWC natively.
 
 ## css-loader, style-loader, sass-loader, postcss-loader, url-loader, raw-loader, file-loader
 

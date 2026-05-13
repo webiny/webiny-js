@@ -10,8 +10,20 @@ export interface WbGeneratePageContentParams {
     writerPersonaId?: string | null;
 }
 
+export interface GenerationTelemetry {
+    filesRead: string[];
+    cacheHit: boolean;
+    toolCallsMade: number;
+    totalSteps: number;
+}
+
+export interface GeneratePageContentResult {
+    output: string;
+    telemetry: GenerationTelemetry;
+}
+
 export interface IWbGeneratePageContentUseCase {
-    execute(params: WbGeneratePageContentParams): Promise<Result<string, Error>>;
+    execute(params: WbGeneratePageContentParams): Promise<Result<GeneratePageContentResult, Error>>;
 }
 
 export const WbGeneratePageContentUseCase = createAbstraction<IWbGeneratePageContentUseCase>(

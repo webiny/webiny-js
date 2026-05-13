@@ -2,6 +2,7 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js";
 import { compress } from "@webiny/utils/features/compression/legacy/gzip.js";
 import { WbGeneratePageContentUseCase } from "~/api/features/WbGeneratePageContent/index.js";
+import type { GenerationTelemetry } from "~/api/features/WbGeneratePageContent/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 
 export const WB_GENERATE_PAGE_CONTENT_TASK_ID = "aiPowerUpsGeneratePageContent";
@@ -60,23 +61,27 @@ class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGener
             });
         }
 
-        // Send websocket message
-        const compressed = await compress(result.value);
+        const compressed = await compress(result.value.output);
         const payload = compressed.toString("base64");
 
-        await this.sendContentToUser(identity.id, payload);
+        await this.sendContentToUser(identity.id, payload, result.value.telemetry);
 
         return controller.response.done("Page content generated successfully.");
     }
 
-    private async sendContentToUser(identityId: string, payload: string) {
+    private async sendContentToUser(
+        identityId: string,
+        payload: string,
+        telemetry: GenerationTelemetry
+    ) {
         await this.websocketService.send(
             { id: identityId },
             {
                 action: "aiPowerUps.generatePageContent.content",
                 data: {
                     compression: "gzip",
-                    value: payload
+                    value: payload,
+                    telemetry
                 }
             }
         );
