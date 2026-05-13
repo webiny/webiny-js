@@ -33,7 +33,31 @@ const createRebuildGlobalCacheWorkflow = (branchName: string) => ({
             steps: [
                 ...createYarnCacheSteps({ workingDirectory: branchName }),
                 ...createGlobalBuildCacheSteps({ workingDirectory: branchName }),
-                ...createInstallBuildSteps({ workingDirectory: branchName })
+                ...createInstallBuildSteps({ workingDirectory: branchName }),
+                ...(branchName === "next"
+                    ? [
+                          {
+                              name: "Upload build cache artifact",
+                              uses: "actions/upload-artifact@v6",
+                              with: {
+                                  name: "build-cache",
+                                  "retention-days": 1,
+                                  "include-hidden-files": true,
+                                  path: `${branchName}/.webiny/cached-packages`
+                              }
+                          },
+                          {
+                              name: "Upload packages artifact",
+                              uses: "actions/upload-artifact@v6",
+                              with: {
+                                  name: "packages",
+                                  "retention-days": 1,
+                                  "include-hidden-files": true,
+                                  path: `${branchName}/packages`
+                              }
+                          }
+                      ]
+                    : [])
             ]
         })
     }
