@@ -6,8 +6,11 @@ import {
 } from "./abstractions.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { createPublishEntryData } from "~/crud/contentEntry/entryDataFactories/createPublishEntryData.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
+import { STATUS_PUBLISHED } from "../statuses.js";
+import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation.js";
+import { getIdentity } from "~/utils/identity.js";
+import { getDate } from "~/utils/date.js";
 
 class CreatePublishEntryDataFactoryImpl implements ICreatePublishEntryDataFactory {
     public constructor(
@@ -15,18 +18,57 @@ class CreatePublishEntryDataFactoryImpl implements ICreatePublishEntryDataFactor
         private readonly identityContext: IdentityContext.Interface
     ) {}
 
-    public create<TValues extends CmsEntryValues = CmsEntryValues>(
+    public async create<TValues extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         originalEntry: CmsEntry<TValues>,
         latestEntry: CmsEntry<TValues>
     ): Promise<ICreatePublishEntryDataResponse<TValues>> {
-        return createPublishEntryData<TValues>({
-            model,
-            originalEntry,
-            latestEntry,
+        await validateModelEntryDataOrThrow({
             context: this.cmsContext,
-            getIdentity: () => this.identityContext.getIdentity()
+            model,
+            values: originalEntry.values,
+            entry: originalEntry
         });
+
+        const currentDateTime = new Date().toISOString();
+        const currentIdentity = this.identityContext.getIdentity();
+
+        const entry: CmsEntry<TValues> = {
+            ...originalEntry,
+            status: STATUS_PUBLISHED,
+            locked: true,
+            createdOn: getDate(latestEntry.createdOn),
+            modifiedOn: getDate(currentDateTime),
+            savedOn: getDate(currentDateTime),
+            firstPublishedOn: getDate(latestEntry.firstPublishedOn, currentDateTime),
+            lastPublishedOn: getDate(currentDateTime),
+            createdBy: getIdentity(latestEntry.createdBy),
+            modifiedBy: getIdentity(currentIdentity),
+            savedBy: getIdentity(currentIdentity),
+            firstPublishedBy: getIdentity(latestEntry.firstPublishedBy, currentIdentity),
+            lastPublishedBy: getIdentity(currentIdentity),
+            revisionCreatedOn: getDate(originalEntry.revisionCreatedOn),
+            revisionSavedOn: getDate(currentDateTime),
+            revisionModifiedOn: getDate(currentDateTime),
+            revisionFirstPublishedOn: getDate(
+                originalEntry.revisionFirstPublishedOn,
+                currentDateTime
+            ),
+            revisionLastPublishedOn: getDate(currentDateTime),
+            revisionCreatedBy: getIdentity(originalEntry.revisionCreatedBy),
+            revisionSavedBy: getIdentity(currentIdentity),
+            revisionModifiedBy: getIdentity(currentIdentity),
+            revisionFirstPublishedBy: getIdentity(
+                originalEntry.revisionFirstPublishedBy,
+                currentIdentity
+            ),
+            revisionLastPublishedBy: getIdentity(currentIdentity),
+            live: {
+                version: originalEntry.version
+            }
+        };
+
+        return { entry };
     }
 }
 

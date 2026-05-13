@@ -1,12 +1,10 @@
 import { createImplementation, Result } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     CreateEntryRevisionFromRepository,
     CreateEntryRevisionFromUseCase as UseCaseAbstraction
 } from "./abstractions.js";
-import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
+import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import type {
@@ -23,31 +21,16 @@ import {
 } from "./events.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { parseIdentifier } from "@webiny/utils";
-import { createEntryRevisionFromData } from "~/crud/contentEntry/entryDataFactories/index.js";
+import { CreateEntryRevisionFromDataFactory } from "~/features/contentEntry/entryDataFactories/CreateEntryRevisionFromDataFactory/index.js";
 
-/**
- * CreateEntryRevisionFromUseCase - Orchestrates creating a new revision from an existing entry.
- *
- * Responsibilities:
- * - Apply access control
- * - Get the source entry
- * - Get the latest revision for version calculation
- * - Prepare entry data with new version
- * - Validate entry data
- * - Apply additional access control based on status
- * - Publish domain events
- * - Delegate to repository for storage operations
- */
 class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
         private repository: CreateEntryRevisionFromRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
         private getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
-        private identityContext: IdentityContext.Interface,
-        private tenantContext: TenantContext.Interface,
         private eventPublisher: EventPublisher.Interface,
-        private cmsContext: CmsContext.Interface
+        private createEntryRevisionFromDataFactory: CreateEntryRevisionFromDataFactory.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -56,13 +39,11 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
         rawInput: CreateCmsEntryInput<T>,
         options?: CreateCmsEntryOptionsInput
     ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
-        // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        // Get the source entry
         const { id: uniqueId } = parseIdentifier(sourceId);
         const originalResult = await this.getRevisionById.execute<T>(model, sourceId);
 
@@ -72,7 +53,6 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
 
         const originalEntry = originalResult.value;
 
-        // Get the latest revision for version calculation
         const latestResult = await this.getLatestRevision.execute<T>(model, { id: uniqueId });
 
         if (latestResult.isFail()) {
@@ -81,21 +61,15 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
 
         const latestStorageEntry = latestResult.value;
 
-        // Prepare entry data
-        const { entry, input } = await createEntryRevisionFromData<T>({
+        const { entry, input } = await this.createEntryRevisionFromDataFactory.create<T>(
             sourceId,
             model,
             rawInput,
-            options,
-            context: this.cmsContext,
-            getIdentity: () => this.identityContext.getIdentity(),
-            getTenant: () => this.tenantContext.getTenant(),
             originalEntry,
             latestStorageEntry,
-            accessControl: this.accessControl as any
-        });
+            options
+        );
 
-        // Check access control on the prepared entry
         const canAccessEntry = await this.accessControl.canAccessEntry({
             model,
             entry,
@@ -107,7 +81,6 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
         }
 
         try {
-            // Publish before event
             await this.eventPublisher.publish(
                 new EntryRevisionBeforeCreateEvent({
                     entry,
@@ -117,7 +90,6 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
                 })
             );
 
-            // Delegate to repository
             const result = await this.repository.execute<T>(model, entry);
 
             if (result.isFail()) {
@@ -135,7 +107,6 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
 
             const createdEntry = result.value;
 
-            // Publish after event
             await this.eventPublisher.publish(
                 new EntryRevisionAfterCreateEvent({
                     entry: createdEntry,
@@ -169,9 +140,7 @@ export const CreateEntryRevisionFromUseCase = createImplementation({
         AccessControl,
         GetRevisionByIdUseCase,
         GetLatestRevisionByEntryIdUseCase,
-        IdentityContext,
-        TenantContext,
         EventPublisher,
-        CmsContext
+        CreateEntryRevisionFromDataFactory
     ]
 });
