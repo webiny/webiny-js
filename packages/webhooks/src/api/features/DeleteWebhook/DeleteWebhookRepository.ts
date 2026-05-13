@@ -27,7 +27,11 @@ class DeleteWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
             const deliveryModelResult =
                 await this.getModelRepository.execute(WEBHOOK_DELIVERY_MODEL_ID);
             if (!deliveryModelResult.isFail()) {
-                await this.deleteAllDeliveries(deliveryModelResult.value, id);
+                try {
+                    await this.deleteAllDeliveries(deliveryModelResult.value, id);
+                } catch {
+                    /* Delivery cleanup is best-effort; proceed with webhook delete regardless. */
+                }
             }
 
             const entryResult = await this.getLatestRevisionRepository.execute(
@@ -68,10 +72,11 @@ class DeleteWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
             );
 
             if (listResult.isFail()) {
-                break;
+                throw listResult.error;
             }
 
             for (const entry of listResult.value.entries as CmsEntry[]) {
+                /* Individual delivery delete failures are best-effort; continue with the rest. */
                 await this.deleteEntryRepository.execute(deliveryModel, entry);
             }
 
