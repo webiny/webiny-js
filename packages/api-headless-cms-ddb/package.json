@@ -49,7 +49,7 @@
     "@webiny/project-utils": "0.0.0",
     "jest-dynalite": "^3.6.1",
     "typescript": "6.0.3",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.6"
   },
   "publishConfig": {
     "access": "public",
