@@ -48,7 +48,6 @@ const authorWithSearchableJsonFields = `
                 version
             }
         }
-        data
     }
     wbyAco_location {
         folderId
