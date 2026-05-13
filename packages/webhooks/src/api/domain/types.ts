@@ -7,14 +7,13 @@ export interface IWebhookValues {
     description?: string;
     enabled: boolean;
     events: string[];
-    signingSecret: string;
+    signingSecret: string | null;
 }
 
-export interface IWebhook {
+export interface IWebhook extends IWebhookValues {
     id: string;
-    values: IWebhookValues;
-    createdOn?: string;
-    modifiedOn?: string;
+    createdOn: string;
+    savedOn: string;
 }
 
 /** Delivery as read back from CMS (fields decompressed). */

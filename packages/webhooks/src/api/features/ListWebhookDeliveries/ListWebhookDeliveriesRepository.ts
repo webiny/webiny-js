@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import { GetModelUseCase } from "@webiny/api-headless-cms/exports/api/cms/model.js";
-import { ListEntriesUseCase } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
+import { GetModelRepository } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { ListEntriesRepository } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import {
     ListWebhookDeliveriesRepository as RepositoryAbstraction,
     type IListWebhookDeliveriesOutput
@@ -21,20 +21,20 @@ interface IRawDeliveryListValues {
 
 class ListWebhookDeliveriesRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private getModelUseCase: GetModelUseCase.Interface,
-        private listEntriesUseCase: ListEntriesUseCase.Interface
+        private readonly getModelRepository: GetModelRepository.Interface,
+        private readonly listEntriesRepository: ListEntriesRepository.Interface
     ) {}
 
     async execute(
         input: IListWebhookDeliveriesInput
     ): Promise<Result<IListWebhookDeliveriesOutput, RepositoryAbstraction.Error>> {
         try {
-            const modelResult = await this.getModelUseCase.execute(WEBHOOK_DELIVERY_MODEL_ID);
+            const modelResult = await this.getModelRepository.execute(WEBHOOK_DELIVERY_MODEL_ID);
             if (modelResult.isFail()) {
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_DELIVERY_MODEL_ID));
             }
 
-            const listResult = await this.listEntriesUseCase.execute<IRawDeliveryListValues>(
+            const listResult = await this.listEntriesRepository.execute<IRawDeliveryListValues>(
                 modelResult.value,
                 {
                     where: { values: { webhookId: input.webhookId } },
@@ -80,5 +80,5 @@ class ListWebhookDeliveriesRepositoryImpl implements RepositoryAbstraction.Inter
 
 export const ListWebhookDeliveriesRepository = RepositoryAbstraction.createImplementation({
     implementation: ListWebhookDeliveriesRepositoryImpl,
-    dependencies: [GetModelUseCase, ListEntriesUseCase]
+    dependencies: [GetModelRepository, ListEntriesRepository]
 });

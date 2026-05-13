@@ -5,8 +5,7 @@ import {
 } from "./abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookValidationError, WebhookNotAuthorizedError } from "~/api/domain/errors.js";
-import type { IWebhook } from "~/api/domain/types.js";
-import { randomBytes } from "node:crypto";
+import type { IWebhook, IWebhookValues } from "~/api/domain/types.js";
 
 const generateSlug = (name: string): string => {
     return name
@@ -21,8 +20,7 @@ const isValidEndpointUrl = (url: string): boolean => {
         const parsed = new URL(url);
         if (parsed.protocol === "https:") {
             return true;
-        }
-        if (
+        } else if (
             parsed.protocol === "http:" &&
             (parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1")
         ) {
@@ -71,17 +69,14 @@ class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
             candidate = `${slug}-${attempt}`;
         }
 
-        const webhook: IWebhook = {
-            id: randomBytes(8).toString("hex"),
-            values: {
-                name: input.name,
-                slug: candidate,
-                endpointUrl: input.endpointUrl,
-                description: input.description,
-                enabled: input.enabled ?? false,
-                events: input.events,
-                signingSecret: input.signingSecret
-            }
+        const webhook: IWebhookValues = {
+            name: input.name,
+            slug: candidate,
+            endpointUrl: input.endpointUrl,
+            description: input.description,
+            enabled: input.enabled ?? false,
+            events: input.events,
+            signingSecret: input.signingSecret
         };
 
         return this.repository.execute(webhook);

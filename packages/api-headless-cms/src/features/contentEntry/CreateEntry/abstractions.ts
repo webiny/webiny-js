@@ -50,7 +50,10 @@ export namespace CreateEntryUseCase {
  * Takes a domain CmsEntry object and stores it.
  */
 export interface ICreateEntryRepository {
-    execute(model: CmsModel, entry: CmsEntry): Promise<Result<void, RepositoryError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        entry: CmsEntry<T>
+    ): Promise<Result<void, RepositoryError>>;
 }
 
 export interface ICreateEntryRepositoryErrors {

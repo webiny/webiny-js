@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import { GetModelUseCase } from "@webiny/api-headless-cms/exports/api/cms/model.js";
-import { GetLatestRevisionByEntryIdUseCase } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
+import { GetModelRepository } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { GetLatestRevisionByEntryIdRepository } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { GetWebhookDeliveryRepository as RepositoryAbstraction } from "./abstractions.js";
 import {
@@ -26,19 +26,19 @@ interface IRawDeliveryValues {
 
 class GetWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private getModelUseCase: GetModelUseCase.Interface,
-        private getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
-        private compressionHandler: CompressionHandler.Interface
+        private readonly getModelRepository: GetModelRepository.Interface,
+        private readonly getLatestRevisionRepository: GetLatestRevisionByEntryIdRepository.Interface,
+        private readonly compressionHandler: CompressionHandler.Interface
     ) {}
 
     async execute(id: string): Promise<Result<IWebhookDelivery, RepositoryAbstraction.Error>> {
         try {
-            const modelResult = await this.getModelUseCase.execute(WEBHOOK_DELIVERY_MODEL_ID);
+            const modelResult = await this.getModelRepository.execute(WEBHOOK_DELIVERY_MODEL_ID);
             if (modelResult.isFail()) {
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_DELIVERY_MODEL_ID));
             }
 
-            const entryResult = await this.getLatestRevision.execute<IRawDeliveryValues>(
+            const entryResult = await this.getLatestRevisionRepository.execute<IRawDeliveryValues>(
                 modelResult.value,
                 { id }
             );
@@ -56,7 +56,7 @@ class GetWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interfac
                 this.safeDecompress<string>(raw.responseBody)
             ]);
 
-            const delivery: IWebhookDelivery = {
+            return Result.ok({
                 id: entry.entryId,
                 values: {
                     webhookId: raw.webhookId,
@@ -71,9 +71,7 @@ class GetWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interfac
                     expiresAt: raw.expiresAt
                 },
                 createdOn: entry.createdOn
-            };
-
-            return Result.ok(delivery);
+            });
         } catch (error) {
             return Result.fail(new WebhookPersistenceError(error as Error));
         }
@@ -93,5 +91,5 @@ class GetWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interfac
 
 export const GetWebhookDeliveryRepository = RepositoryAbstraction.createImplementation({
     implementation: GetWebhookDeliveryRepositoryImpl,
-    dependencies: [GetModelUseCase, GetLatestRevisionByEntryIdUseCase, CompressionHandler]
+    dependencies: [GetModelRepository, GetLatestRevisionByEntryIdRepository, CompressionHandler]
 });

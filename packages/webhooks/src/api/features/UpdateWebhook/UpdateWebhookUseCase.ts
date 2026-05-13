@@ -62,16 +62,13 @@ class UpdateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const updated: IWebhook = {
             ...existing,
-            values: {
-                ...existing.values,
-                ...(input.name !== undefined ? { name: input.name } : {}),
-                ...(input.slug !== undefined ? { slug: input.slug } : {}),
-                ...(input.endpointUrl !== undefined ? { endpointUrl: input.endpointUrl } : {}),
-                ...(input.description !== undefined ? { description: input.description } : {}),
-                ...(input.enabled !== undefined ? { enabled: input.enabled } : {}),
-                ...(input.events !== undefined ? { events: input.events } : {}),
-                ...(input.signingSecret !== undefined ? { signingSecret: input.signingSecret } : {})
-            }
+            ...(input.name !== undefined ? { name: input.name } : {}),
+            ...(input.slug !== undefined ? { slug: input.slug } : {}),
+            ...(input.endpointUrl !== undefined ? { endpointUrl: input.endpointUrl } : {}),
+            ...(input.description !== undefined ? { description: input.description } : {}),
+            ...(input.enabled !== undefined ? { enabled: input.enabled } : {}),
+            ...(input.events !== undefined ? { events: input.events } : {}),
+            ...(input.signingSecret !== undefined ? { signingSecret: input.signingSecret } : {})
         };
 
         return this.updateRepository.execute(updated);

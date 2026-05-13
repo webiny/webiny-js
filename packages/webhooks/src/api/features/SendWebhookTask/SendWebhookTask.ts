@@ -58,7 +58,7 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
             taskId,
             now,
             rawBody,
-            webhook.values.signingSecret
+            webhook.signingSecret ?? ""
         );
 
         const requestHeaders: Record<string, string> = {
@@ -71,7 +71,7 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
         let responseBody = "";
 
         try {
-            const response = await fetch(webhook.values.endpointUrl, {
+            const response = await fetch(webhook.endpointUrl, {
                 method: "POST",
                 headers: requestHeaders,
                 body: rawBody,

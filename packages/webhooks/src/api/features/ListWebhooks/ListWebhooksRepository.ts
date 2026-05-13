@@ -1,22 +1,23 @@
 import { Result } from "@webiny/feature/api";
-import { GetModelUseCase } from "@webiny/api-headless-cms/exports/api/cms/model.js";
-import { ListEntriesUseCase } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
+import { GetModelRepository } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { ListEntriesRepository } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { ListWebhooksRepository as RepositoryAbstraction } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
 import type { IWebhookValues, IListWebhooksInput } from "~/api/domain/types.js";
+import { CmsEntryToWebhook } from "~/api/domain/CmsEntryToWebhook.js";
 
 class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private getModelUseCase: GetModelUseCase.Interface,
-        private listEntriesUseCase: ListEntriesUseCase.Interface
+        private readonly getModelRepository: GetModelRepository.Interface,
+        private readonly listEntriesRepository: ListEntriesRepository.Interface
     ) {}
 
     async execute(
         input?: IListWebhooksInput
     ): Promise<Result<RepositoryAbstraction.Output, RepositoryAbstraction.Error>> {
         try {
-            const modelResult = await this.getModelUseCase.execute(WEBHOOK_MODEL_ID);
+            const modelResult = await this.getModelRepository.execute(WEBHOOK_MODEL_ID);
             if (modelResult.isFail()) {
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_MODEL_ID));
             }
@@ -29,7 +30,7 @@ class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
                 valuesWhere.events_in = [input.where.events];
             }
 
-            const listResult = await this.listEntriesUseCase.execute<IWebhookValues>(
+            const listResult = await this.listEntriesRepository.execute<IWebhookValues>(
                 modelResult.value,
                 {
                     where: { values: valuesWhere },
@@ -44,12 +45,7 @@ class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
 
             const { entries, meta } = listResult.value;
             return Result.ok({
-                items: entries.map(entry => ({
-                    id: entry.entryId,
-                    values: entry.values,
-                    createdOn: entry.createdOn,
-                    modifiedOn: entry.savedOn
-                })),
+                items: entries.map(entry => CmsEntryToWebhook.map(entry)),
                 meta: {
                     cursor: meta.cursor,
                     hasMoreItems: meta.hasMoreItems,
@@ -64,5 +60,5 @@ class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListWebhooksRepository = RepositoryAbstraction.createImplementation({
     implementation: ListWebhooksRepositoryImpl,
-    dependencies: [GetModelUseCase, ListEntriesUseCase]
+    dependencies: [GetModelRepository, ListEntriesRepository]
 });

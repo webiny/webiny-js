@@ -38,7 +38,7 @@ class WebhookDispatcherImpl_ implements WebhookDispatcher.Interface {
 
             await this.taskService.trigger({
                 definition: SEND_WEBHOOK_TASK,
-                name: `Send webhook: ${webhook.values.slug} — ${eventName}`,
+                name: `Send webhook: ${webhook.slug} — ${eventName}`,
                 input: {
                     webhookId: webhook.id,
                     eventName,

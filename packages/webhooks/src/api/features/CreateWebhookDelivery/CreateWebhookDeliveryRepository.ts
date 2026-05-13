@@ -1,6 +1,7 @@
 import { Result } from "@webiny/feature/api";
-import { GetModelUseCase } from "@webiny/api-headless-cms/exports/api/cms/model.js";
-import { CreateEntryUseCase } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
+import { GetModelRepository } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { CreateEntryDataFactory } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
+import { CreateEntryRepository } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { CreateWebhookDeliveryRepository as RepositoryAbstraction } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
@@ -10,16 +11,17 @@ import { randomBytes } from "node:crypto";
 
 class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private getModelUseCase: GetModelUseCase.Interface,
-        private createEntryUseCase: CreateEntryUseCase.Interface,
-        private compressionHandler: CompressionHandler.Interface
+        private readonly getModelRepository: GetModelRepository.Interface,
+        private readonly createEntryDataFactory: CreateEntryDataFactory.Interface,
+        private readonly createEntryRepository: CreateEntryRepository.Interface,
+        private readonly compressionHandler: CompressionHandler.Interface
     ) {}
 
     async execute(
         input: ICreateDeliveryInput
     ): Promise<Result<IWebhookDelivery, RepositoryAbstraction.Error>> {
         try {
-            const modelResult = await this.getModelUseCase.execute(WEBHOOK_DELIVERY_MODEL_ID);
+            const modelResult = await this.getModelRepository.execute(WEBHOOK_DELIVERY_MODEL_ID);
             if (modelResult.isFail()) {
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_DELIVERY_MODEL_ID));
             }
@@ -34,7 +36,7 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
 
             const id = randomBytes(8).toString("hex");
 
-            const createResult = await this.createEntryUseCase.execute(modelResult.value, {
+            const { entry } = await this.createEntryDataFactory.create(modelResult.value, {
                 id,
                 values: {
                     webhookId: input.webhookId,
@@ -50,11 +52,13 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 }
             });
 
+            const createResult = await this.createEntryRepository.execute(modelResult.value, entry);
+
             if (createResult.isFail()) {
                 return Result.fail(new WebhookPersistenceError(createResult.error as any));
             }
 
-            const delivery: IWebhookDelivery = {
+            return Result.ok({
                 id,
                 values: {
                     webhookId: input.webhookId,
@@ -68,9 +72,7 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                     responseBody: input.responseBody ?? null,
                     expiresAt: input.expiresAt
                 }
-            };
-
-            return Result.ok(delivery);
+            });
         } catch (error) {
             return Result.fail(new WebhookPersistenceError(error as Error));
         }
@@ -79,5 +81,10 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
 
 export const CreateWebhookDeliveryRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateWebhookDeliveryRepositoryImpl,
-    dependencies: [GetModelUseCase, CreateEntryUseCase, CompressionHandler]
+    dependencies: [
+        GetModelRepository,
+        CreateEntryDataFactory,
+        CreateEntryRepository,
+        CompressionHandler
+    ]
 });
