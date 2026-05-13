@@ -1,8 +1,6 @@
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { Response } from "@webiny/handler-graphql";
 import { ErrorResponse } from "@webiny/handler-graphql";
-import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
-import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import { ListAvailableWebhookEventsUseCase } from "~/api/features/ListAvailableWebhookEvents/abstractions.js";
 
 class WebhookEventSchema implements GraphQLSchemaFactory.Interface {
@@ -29,16 +27,9 @@ class WebhookEventSchema implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "WebhookQuery.listAvailableWebhookEvents",
-            dependencies: [IdentityContext, ListAvailableWebhookEventsUseCase],
-            resolver: (
-                identityContext: IdentityContext.Interface,
-                listEvents: ListAvailableWebhookEventsUseCase.Interface
-            ) => {
+            dependencies: [ListAvailableWebhookEventsUseCase],
+            resolver: (listEvents: ListAvailableWebhookEventsUseCase.Interface) => {
                 return async () => {
-                    const permission = await identityContext.getPermission("webhooks");
-                    if (!permission) {
-                        return new NotAuthorizedResponse();
-                    }
                     const result = await listEvents.execute();
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);

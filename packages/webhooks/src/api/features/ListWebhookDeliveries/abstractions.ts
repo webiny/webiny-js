@@ -4,9 +4,13 @@ import type {
     IListWebhookDeliveriesInput,
     IListMeta
 } from "~/api/domain/types.js";
-import type { WebhookPersistenceError, WebhookModelNotFoundError } from "~/api/domain/errors.js";
+import type {
+    WebhookPersistenceError,
+    WebhookModelNotFoundError,
+    WebhookNotAuthorizedError
+} from "~/api/domain/errors.js";
 
-type IError = WebhookPersistenceError | WebhookModelNotFoundError;
+type IError = WebhookPersistenceError | WebhookModelNotFoundError | WebhookNotAuthorizedError;
 
 export interface IListWebhookDeliveriesOutput {
     items: IWebhookDelivery[];

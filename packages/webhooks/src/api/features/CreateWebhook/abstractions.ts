@@ -3,7 +3,8 @@ import type { IWebhook } from "~/api/domain/types.js";
 import type {
     WebhookPersistenceError,
     WebhookValidationError,
-    WebhookModelNotFoundError
+    WebhookModelNotFoundError,
+    WebhookNotAuthorizedError
 } from "~/api/domain/errors.js";
 
 export interface ICreateWebhookInput {
@@ -16,7 +17,11 @@ export interface ICreateWebhookInput {
     signingSecret: string;
 }
 
-type IError = WebhookValidationError | WebhookPersistenceError | WebhookModelNotFoundError;
+type IError =
+    | WebhookValidationError
+    | WebhookPersistenceError
+    | WebhookModelNotFoundError
+    | WebhookNotAuthorizedError;
 
 export interface ICreateWebhookUseCase {
     execute(input: ICreateWebhookInput): Promise<Result<IWebhook, IError>>;

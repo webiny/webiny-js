@@ -2,18 +2,25 @@ import { Result } from "@webiny/feature/api";
 import { ResendWebhookDeliveryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
+import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
+import { WebhookNotAuthorizedError } from "~/api/domain/errors.js";
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
 import type { IWebhookPayload } from "~/api/domain/types.js";
 
 class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: WebhookPermissions.Interface,
         private getDeliveryRepository: GetWebhookDeliveryRepository.Interface,
         private getWebhookRepository: GetWebhookRepository.Interface,
         private taskService: TaskService.Interface
     ) {}
 
     async execute(deliveryId: string): Promise<Result<boolean, UseCaseAbstraction.Error>> {
+        if (!(await this.permissions.canEdit("webhook"))) {
+            return Result.fail(new WebhookNotAuthorizedError());
+        }
+
         const deliveryResult = await this.getDeliveryRepository.execute(deliveryId);
         if (deliveryResult.isFail()) {
             return Result.fail(deliveryResult.error);
@@ -45,5 +52,10 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export default UseCaseAbstraction.createImplementation({
     implementation: ResendWebhookDeliveryUseCaseImpl,
-    dependencies: [GetWebhookDeliveryRepository, GetWebhookRepository, TaskService]
+    dependencies: [
+        WebhookPermissions,
+        GetWebhookDeliveryRepository,
+        GetWebhookRepository,
+        TaskService
+    ]
 });

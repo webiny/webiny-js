@@ -1,8 +1,6 @@
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { Response } from "@webiny/handler-graphql";
 import { ErrorResponse } from "@webiny/handler-graphql";
-import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
-import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import { TriggerWebhookUseCase } from "~/api/features/TriggerWebhook/abstractions.js";
 
 class WebhookTriggerSchema implements GraphQLSchemaFactory.Interface {
@@ -22,16 +20,9 @@ class WebhookTriggerSchema implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<{ id: string; payload: Record<string, unknown> }>({
             path: "WebhookMutation.triggerWebhook",
-            dependencies: [IdentityContext, TriggerWebhookUseCase],
-            resolver: (
-                identityContext: IdentityContext.Interface,
-                triggerWebhook: TriggerWebhookUseCase.Interface
-            ) => {
+            dependencies: [TriggerWebhookUseCase],
+            resolver: (triggerWebhook: TriggerWebhookUseCase.Interface) => {
                 return async ({ args }) => {
-                    const permission = await identityContext.getPermission("webhooks");
-                    if (!permission) {
-                        return new NotAuthorizedResponse();
-                    }
                     const result = await triggerWebhook.execute(args.id, args.payload);
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);

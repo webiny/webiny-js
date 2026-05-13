@@ -16,6 +16,7 @@ import { ListWebhookDeliveriesFeature } from "./features/ListWebhookDeliveries/f
 import { ResendWebhookDeliveryFeature } from "./features/ResendWebhookDelivery/feature.js";
 import { TriggerWebhookFeature } from "./features/TriggerWebhook/feature.js";
 import { ListAvailableWebhookEventsFeature } from "./features/ListAvailableWebhookEvents/feature.js";
+import { WebhookPermissionsFeature } from "./features/WebhookPermissions/feature.js";
 import { WebhookSignPayloadFeature } from "./features/WebhookSignPayload/feature.js";
 import { WebhookDispatcherFeature } from "./features/WebhookDispatcher/feature.js";
 import { SendWebhookTaskFeature } from "./features/SendWebhookTask/feature.js";
@@ -34,6 +35,7 @@ export const Extension = createFeature({
         container.register(WebhookTriggerSchema);
 
         // Core implementations.
+        WebhookPermissionsFeature.register(container);
         WebhookSignPayloadFeature.register(container);
         WebhookDispatcherFeature.register(container);
         SendWebhookTaskFeature.register(container);

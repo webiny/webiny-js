@@ -47,3 +47,11 @@ export class WebhookVerificationFailedError extends BaseError {
         super({ message });
     }
 }
+
+export class WebhookNotAuthorizedError extends BaseError {
+    override readonly code = "WEBHOOK_NOT_AUTHORIZED" as const;
+
+    constructor() {
+        super({ message: "Not authorized!" });
+    }
+}

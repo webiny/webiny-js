@@ -3,14 +3,16 @@ import type {
     WebhookDeliveryNotFoundError,
     WebhookNotFoundError,
     WebhookPersistenceError,
-    WebhookModelNotFoundError
+    WebhookModelNotFoundError,
+    WebhookNotAuthorizedError
 } from "~/api/domain/errors.js";
 
 type IError =
     | WebhookDeliveryNotFoundError
     | WebhookNotFoundError
     | WebhookPersistenceError
-    | WebhookModelNotFoundError;
+    | WebhookModelNotFoundError
+    | WebhookNotAuthorizedError;
 
 export interface IResendWebhookDeliveryUseCase {
     execute(deliveryId: string): Promise<Result<boolean, IError>>;

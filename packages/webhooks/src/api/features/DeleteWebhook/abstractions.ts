@@ -2,10 +2,15 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type {
     WebhookNotFoundError,
     WebhookPersistenceError,
-    WebhookModelNotFoundError
+    WebhookModelNotFoundError,
+    WebhookNotAuthorizedError
 } from "~/api/domain/errors.js";
 
-type IError = WebhookNotFoundError | WebhookPersistenceError | WebhookModelNotFoundError;
+type IError =
+    | WebhookNotFoundError
+    | WebhookPersistenceError
+    | WebhookModelNotFoundError
+    | WebhookNotAuthorizedError;
 
 export interface IDeleteWebhookUseCase {
     execute(id: string): Promise<Result<boolean, IError>>;

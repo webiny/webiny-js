@@ -3,7 +3,8 @@ import {
     CreateWebhookUseCase as UseCaseAbstraction,
     CreateWebhookRepository
 } from "./abstractions.js";
-import { WebhookValidationError } from "~/api/domain/errors.js";
+import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
+import { WebhookValidationError, WebhookNotAuthorizedError } from "~/api/domain/errors.js";
 import type { IWebhook } from "~/api/domain/types.js";
 import { randomBytes } from "node:crypto";
 
@@ -34,11 +35,18 @@ const isValidEndpointUrl = (url: string): boolean => {
 };
 
 class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private repository: CreateWebhookRepository.Interface) {}
+    constructor(
+        private permissions: WebhookPermissions.Interface,
+        private repository: CreateWebhookRepository.Interface
+    ) {}
 
     async execute(
         input: UseCaseAbstraction.Input
     ): Promise<Result<IWebhook, UseCaseAbstraction.Error>> {
+        if (!(await this.permissions.canCreate("webhook"))) {
+            return Result.fail(new WebhookNotAuthorizedError());
+        }
+
         if (!isValidEndpointUrl(input.endpointUrl)) {
             return Result.fail(
                 new WebhookValidationError(
@@ -82,5 +90,5 @@ class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export default UseCaseAbstraction.createImplementation({
     implementation: CreateWebhookUseCaseImpl,
-    dependencies: [CreateWebhookRepository]
+    dependencies: [WebhookPermissions, CreateWebhookRepository]
 });

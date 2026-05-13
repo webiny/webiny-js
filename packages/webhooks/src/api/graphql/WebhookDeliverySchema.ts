@@ -1,8 +1,6 @@
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { Response } from "@webiny/handler-graphql";
 import { ErrorResponse } from "@webiny/handler-graphql";
-import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
-import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import { ListWebhookDeliveriesUseCase } from "~/api/features/ListWebhookDeliveries/abstractions.js";
 import { GetWebhookDeliveryUseCase } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { ResendWebhookDeliveryUseCase } from "~/api/features/ResendWebhookDelivery/abstractions.js";
@@ -53,16 +51,9 @@ class WebhookDeliverySchema implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<{ webhookId: string; limit?: number; after?: string }>({
             path: "WebhookQuery.listWebhookDeliveries",
-            dependencies: [IdentityContext, ListWebhookDeliveriesUseCase],
-            resolver: (
-                identityContext: IdentityContext.Interface,
-                listDeliveries: ListWebhookDeliveriesUseCase.Interface
-            ) => {
+            dependencies: [ListWebhookDeliveriesUseCase],
+            resolver: (listDeliveries: ListWebhookDeliveriesUseCase.Interface) => {
                 return async ({ args }) => {
-                    const permission = await identityContext.getPermission("webhooks");
-                    if (!permission) {
-                        return new NotAuthorizedResponse();
-                    }
                     const result = await listDeliveries.execute({
                         webhookId: args.webhookId,
                         limit: args.limit ?? undefined,
@@ -78,16 +69,9 @@ class WebhookDeliverySchema implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<{ id: string }>({
             path: "WebhookQuery.getWebhookDelivery",
-            dependencies: [IdentityContext, GetWebhookDeliveryUseCase],
-            resolver: (
-                identityContext: IdentityContext.Interface,
-                getDelivery: GetWebhookDeliveryUseCase.Interface
-            ) => {
+            dependencies: [GetWebhookDeliveryUseCase],
+            resolver: (getDelivery: GetWebhookDeliveryUseCase.Interface) => {
                 return async ({ args }) => {
-                    const permission = await identityContext.getPermission("webhooks");
-                    if (!permission) {
-                        return new NotAuthorizedResponse();
-                    }
                     const result = await getDelivery.execute(args.id);
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
@@ -99,16 +83,9 @@ class WebhookDeliverySchema implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<{ id: string }>({
             path: "WebhookMutation.resendWebhookDelivery",
-            dependencies: [IdentityContext, ResendWebhookDeliveryUseCase],
-            resolver: (
-                identityContext: IdentityContext.Interface,
-                resend: ResendWebhookDeliveryUseCase.Interface
-            ) => {
+            dependencies: [ResendWebhookDeliveryUseCase],
+            resolver: (resend: ResendWebhookDeliveryUseCase.Interface) => {
                 return async ({ args }) => {
-                    const permission = await identityContext.getPermission("webhooks");
-                    if (!permission) {
-                        return new NotAuthorizedResponse();
-                    }
                     const result = await resend.execute(args.id);
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);

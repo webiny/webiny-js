@@ -3,10 +3,15 @@ import type { IWebhookDelivery } from "~/api/domain/types.js";
 import type {
     WebhookNotFoundError,
     WebhookPersistenceError,
-    WebhookModelNotFoundError
+    WebhookModelNotFoundError,
+    WebhookNotAuthorizedError
 } from "~/api/domain/errors.js";
 
-type IError = WebhookNotFoundError | WebhookPersistenceError | WebhookModelNotFoundError;
+type IError =
+    | WebhookNotFoundError
+    | WebhookPersistenceError
+    | WebhookModelNotFoundError
+    | WebhookNotAuthorizedError;
 
 export interface ITriggerWebhookUseCase {
     execute(

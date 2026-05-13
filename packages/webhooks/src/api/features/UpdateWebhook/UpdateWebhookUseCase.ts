@@ -4,7 +4,8 @@ import {
     UpdateWebhookRepository
 } from "./abstractions.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
-import { WebhookValidationError } from "~/api/domain/errors.js";
+import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
+import { WebhookValidationError, WebhookNotAuthorizedError } from "~/api/domain/errors.js";
 import type { IWebhook } from "~/api/domain/types.js";
 
 const isValidEndpointUrl = (url: string): boolean => {
@@ -27,6 +28,7 @@ const isValidEndpointUrl = (url: string): boolean => {
 
 class UpdateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: WebhookPermissions.Interface,
         private getWebhookRepository: GetWebhookRepository.Interface,
         private updateRepository: UpdateWebhookRepository.Interface
     ) {}
@@ -35,6 +37,10 @@ class UpdateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
         id: string,
         input: UseCaseAbstraction.Input
     ): Promise<Result<IWebhook, UseCaseAbstraction.Error>> {
+        if (!(await this.permissions.canEdit("webhook"))) {
+            return Result.fail(new WebhookNotAuthorizedError());
+        }
+
         const getResult = await this.getWebhookRepository.execute(id);
         if (getResult.isFail()) {
             return Result.fail(getResult.error);
@@ -74,5 +80,5 @@ class UpdateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export default UseCaseAbstraction.createImplementation({
     implementation: UpdateWebhookUseCaseImpl,
-    dependencies: [GetWebhookRepository, UpdateWebhookRepository]
+    dependencies: [WebhookPermissions, GetWebhookRepository, UpdateWebhookRepository]
 });

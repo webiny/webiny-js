@@ -1,8 +1,12 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { IWebhook, IListMeta, IListWebhooksInput } from "~/api/domain/types.js";
-import type { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
+import type {
+    WebhookModelNotFoundError,
+    WebhookPersistenceError,
+    WebhookNotAuthorizedError
+} from "~/api/domain/errors.js";
 
-type IError = WebhookModelNotFoundError | WebhookPersistenceError;
+type IError = WebhookModelNotFoundError | WebhookPersistenceError | WebhookNotAuthorizedError;
 
 export interface IListWebhooksOutput {
     items: IWebhook[];
