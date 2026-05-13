@@ -149,6 +149,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
                     }
                 }))
             );
+            this.fileUploader.clear();
         },
         setViewMode: (mode: "table" | "grid") => {
             this._viewMode = mode;
@@ -217,28 +218,6 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         }
     };
 
-    // Hide folders when the user is actively filtering or searching.
-    // Uses `appliedQuery` (not `vm.search`) so folders stay visible while typing
-    // and only disappear once the debounced query has actually executed.
-    private shouldShowFolders(): boolean {
-        const { appliedQuery } = this.listPresenter.vm;
-        if (!appliedQuery) {
-            return true;
-        }
-
-        if (appliedQuery.search) {
-            return false;
-        }
-
-        // `folderId` is always present as a default filter; ignore it.
-        const filterKeys = Object.keys(appliedQuery.filters ?? {}).filter(k => k !== "folderId");
-        if (filterKeys.length > 0) {
-            return false;
-        }
-
-        return true;
-    }
-
     init(overlayConfig?: IFileManagerOverlayConfig): void {
         this._overlayConfig = overlayConfig ?? null;
 
@@ -295,6 +274,28 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             this._disposeReaction();
             this._disposeReaction = null;
         }
+    }
+
+    // Hide folders when the user is actively filtering or searching.
+    // Uses `appliedQuery` (not `vm.search`) so folders stay visible while typing
+    // and only disappear once the debounced query has actually executed.
+    private shouldShowFolders(): boolean {
+        const { appliedQuery } = this.listPresenter.vm;
+        if (!appliedQuery) {
+            return true;
+        }
+
+        if (appliedQuery.search) {
+            return false;
+        }
+
+        // `folderId` is always present as a default filter; ignore it.
+        const filterKeys = Object.keys(appliedQuery.filters ?? {}).filter(k => k !== "folderId");
+        if (filterKeys.length > 0) {
+            return false;
+        }
+
+        return true;
     }
 }
 

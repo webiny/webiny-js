@@ -5,14 +5,13 @@ import type { FilesRenderChildren } from "react-butterfiles";
 import Files from "react-butterfiles";
 import debounce from "lodash/debounce.js";
 import type { positionValues } from "react-custom-scrollbars";
-import { Heading, OverlayLoader, Scrollbar, Separator } from "@webiny/admin-ui";
+import { Heading, OverlayLoader, Scrollbar, Separator, useToast } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import {
     LeftPanel,
     OverlayLayout,
     RightPanel,
     SplitView,
-    useSnackbar,
     DialogsProvider
 } from "@webiny/app-admin";
 import { FoldersFeature } from "@webiny/app-aco/features/folders/feature.js";
@@ -70,7 +69,7 @@ const t = i18n.ns("app-admin/file-manager/file-manager-view");
 const FileManagerViewLayout = observer(function FileManagerViewLayout() {
     const { vm, actions } = useFileManagerPresenter();
     const { browser } = useFileManagerConfig();
-    const { showSnackbar } = useSnackbar();
+    const toast = useToast();
 
     const container = useContainer();
     const settingsRepository = useMemo(() => container.resolve(GetSettingsRepository), [container]);
@@ -78,6 +77,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
 
     const uploadFiles = async (files: File[]) => {
         await actions.upload(files);
+        toast.showSuccessToast({ title: `File upload complete.` });
     };
 
     const loadMoreOnScroll = useCallback(
@@ -120,11 +120,16 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
             accept={vm.accept}
             onSuccess={files => {
                 const filesToUpload = files.map(file => file.src.file).filter(Boolean) as File[];
-                uploadFiles(filesToUpload);
+                void uploadFiles(filesToUpload);
             }}
             onError={errors => {
                 const message = outputFileSelectionError(errors);
-                showSnackbar(message);
+                if (message) {
+                    toast.showWarningToast({ title: message });
+                } else {
+                    toast.showWarningToast({ title: "Couldn't process selected files." });
+                    console.error(errors);
+                }
             }}
         >
             {({ getDropZoneProps, browseFiles }) =>
