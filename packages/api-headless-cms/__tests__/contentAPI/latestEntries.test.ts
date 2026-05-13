@@ -285,8 +285,7 @@ describe("latest entries", function () {
                                         version: 1
                                     }
                                 }
-                            ],
-                            data: {}
+                            ]
                         },
                         values: {
                             title: updatedFruitCategory.values.title,

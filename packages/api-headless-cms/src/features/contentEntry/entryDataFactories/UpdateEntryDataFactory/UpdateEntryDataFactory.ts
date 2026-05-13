@@ -1,11 +1,10 @@
 import { createImplementation } from "@webiny/feature/api";
 import {
-    UpdateEntryDataFactory as FactoryAbstraction,
     type IUpdateEntryDataFactory,
-    type IUpdateEntryDataResponse
+    type IUpdateEntryDataResponse,
+    UpdateEntryDataFactory as FactoryAbstraction
 } from "./abstractions.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type {
     CmsEntry,
@@ -20,8 +19,6 @@ import { getIdentity } from "~/utils/identity.js";
 import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation.js";
 import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping.js";
 import { mapAndCleanUpdatedInputData } from "../mapAndCleanUpdatedInputData.js";
-import lodashMerge from "lodash/merge.js";
-import { removeNullValues, removeUndefinedValues } from "@webiny/utils";
 import { getSystem } from "../system.js";
 
 const allowedEntryStatus: string[] = ["draft", "published", "unpublished"];
@@ -30,24 +27,17 @@ const transformEntryStatus = (status: CmsEntryStatus | string): CmsEntryStatus =
     return allowedEntryStatus.includes(status) ? (status as CmsEntryStatus) : "draft";
 };
 
-const createEntryMeta = (input?: Record<string, any>, original?: Record<string, any>) => {
-    const meta = lodashMerge(original || {}, input || {});
-    return removeUndefinedValues(removeNullValues(meta));
-};
-
 class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
     public constructor(
         private readonly cmsContext: CmsContext.Interface,
-        private readonly identityContext: IdentityContext.Interface,
-        private readonly tenantContext: TenantContext.Interface
+        private readonly identityContext: IdentityContext.Interface
     ) {}
 
     public async create<TValues extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         rawInput: UpdateCmsEntryInput<TValues>,
         originalEntry: CmsEntry<TValues>,
-        options?: UpdateCmsEntryOptionsInput,
-        metaInput?: Record<string, any>
+        options?: UpdateCmsEntryOptionsInput
     ): Promise<IUpdateEntryDataResponse<TValues>> {
         const cleanedValues = mapAndCleanUpdatedInputData<TValues>(
             model,
@@ -73,8 +63,6 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
             values: mergedValues,
             validateEntries: false
         });
-
-        const meta = createEntryMeta(metaInput, originalEntry.meta);
 
         const currentIdentity = this.identityContext.getIdentity();
         const currentDateTime = new Date();
@@ -128,7 +116,6 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
             ),
             lastPublishedBy: getIdentity(rawInput.lastPublishedBy, originalEntry.lastPublishedBy),
             values,
-            meta,
             status: transformEntryStatus(originalEntry.status),
             system: getSystem({
                 input: rawInput,
@@ -157,5 +144,5 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
 export const UpdateEntryDataFactory = createImplementation({
     abstraction: FactoryAbstraction,
     implementation: UpdateEntryDataFactoryImpl,
-    dependencies: [CmsContext, IdentityContext, TenantContext]
+    dependencies: [CmsContext, IdentityContext]
 });

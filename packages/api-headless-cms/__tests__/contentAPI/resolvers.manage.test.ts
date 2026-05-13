@@ -143,8 +143,7 @@ describe("MANAGE - Resolvers", () => {
                             slug: "hardware"
                         }
                     }
-                ],
-                data: {}
+                ]
             },
             values: {
                 title: "Hardware",
@@ -253,8 +252,7 @@ describe("MANAGE - Resolvers", () => {
                             slug: "hardware"
                         }
                     }
-                ],
-                data: {}
+                ]
             },
             values: {
                 title: "Hardware",
@@ -327,8 +325,7 @@ describe("MANAGE - Resolvers", () => {
                                 ],
                                 status: "published",
                                 title: "Title 1",
-                                version: 1,
-                                data: {}
+                                version: 1
                             },
                             values: {
                                 title: category.values.title,
@@ -455,8 +452,7 @@ describe("MANAGE - Resolvers", () => {
                             status: "draft"
                         }
                     }
-                ],
-                data: {}
+                ]
             },
             values: {
                 title: "Hardware",
@@ -545,8 +541,7 @@ describe("MANAGE - Resolvers", () => {
                             version: 1
                         }
                     }
-                ],
-                data: {}
+                ]
             },
             values: {
                 title: category.values.title,
@@ -641,8 +636,7 @@ describe("MANAGE - Resolvers", () => {
                             ],
                             status: "draft",
                             title: "Hardware",
-                            version: 2,
-                            data: {}
+                            version: 2
                         },
                         values: {
                             title: "Hardware",
@@ -731,8 +725,7 @@ describe("MANAGE - Resolvers", () => {
                             ],
                             title: "New title",
                             status: "draft",
-                            version: 1,
-                            data: {}
+                            version: 1
                         },
                         values: {
                             title: "New title",
@@ -1612,8 +1605,7 @@ describe("MANAGE - Resolvers", () => {
                             ],
                             status: "published",
                             title,
-                            version: 6,
-                            data: {}
+                            version: 6
                         }
                     },
                     error: null

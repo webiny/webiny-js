@@ -15,7 +15,6 @@ import type {
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
-import type { GenericRecord } from "@webiny/api/types.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "~/features/contentEntry/CreateEntryRevisionFrom/abstractions.js";
 import { UpdateEntryUseCase } from "~/features/contentEntry/UpdateEntry/index.js";
@@ -105,12 +104,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         model: CmsModel,
         id: string,
         rawInput: UpdateCmsEntryInput<T>,
-        metaInput?: GenericRecord,
         options?: UpdateCmsEntryOptionsInput
     ): Promise<CmsEntry<T>> => {
         // Delegate to new UpdateEntry use case
         const useCase = context.container.resolve(UpdateEntryUseCase);
-        const result = await useCase.execute<T>(model, id, rawInput, metaInput, options);
+        const result = await useCase.execute<T>(model, id, rawInput, options);
 
         if (result.isFail()) {
             // Convert Result error to WebinyError for backward compatibility
@@ -584,11 +582,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             model: CmsModel,
             id: string,
             input: UpdateCmsEntryInput<T>,
-            meta?: GenericRecord,
             options?: UpdateCmsEntryOptionsInput
         ) {
             return context.benchmark.measure("headlessCms.crud.entries.updateEntry", async () => {
-                return updateEntry<T>(model, id, input, meta, options);
+                return updateEntry<T>(model, id, input, options);
             });
         },
 
