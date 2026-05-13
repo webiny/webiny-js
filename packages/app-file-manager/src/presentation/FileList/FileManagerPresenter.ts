@@ -1,4 +1,10 @@
-import { makeAutoObservable, reaction, computed } from "mobx";
+import { makeAutoObservable, reaction, runInAction, computed } from "mobx";
+import type { FmFile } from "@webiny/sdk";
+import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
+import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
+import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import { LocalStorage } from "@webiny/app/features/localStorage";
+import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import {
     FileManagerPresenter as Abstraction,
     type IFileManagerPresenter,
@@ -7,17 +13,13 @@ import {
     type IFileManagerOverlayConfig
 } from "./abstractions.js";
 import { FileListDataSource } from "./FileListDataSource.js";
-import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
-import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import { FileDetailsPresenter } from "../FileDetails/abstractions.js";
-import { FileManagerPermissions } from "../../features/permissions/abstractions.js";
-import { ListTagsRepository } from "../../features/tags/abstractions.js";
-import { FileUploader } from "../../features/fileUploader/abstractions.js";
-import { LocalStorage } from "@webiny/app/features/localStorage";
-import { ListFilesUseCase } from "../../features/listFiles/abstractions.js";
-import { FilesListCache } from "../../features/shared/abstractions.js";
-import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
-import type { FmFile } from "../../features/shared/types.js";
+import { FileManagerPermissions } from "~/features/permissions/abstractions.js";
+import { ListTagsRepository } from "~/features/tags/index.js";
+import { FileUploader } from "~/features/fileUploader/index.js";
+import { ListFilesUseCase } from "~/features/listFiles/index.js";
+import { FilesListCache } from "~/features/shared/index.js";
+import { FileModelProvider } from "~/features/fileModel/index.js";
 import type { IFileDetailsPresenter } from "../FileDetails/abstractions.js";
 
 const VIEW_MODE_KEY = "fm:viewMode";
@@ -30,6 +32,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
     private _disposeReaction: (() => void) | null = null;
     private _fileDetails: IFileDetailsPresenter | null = null;
     private _showingFilters = false;
+    private _fileModel: CmsModel | null = null;
 
     constructor(
         private listPresenter: ListPresenter.Interface<FmFile>,
@@ -41,7 +44,8 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         private localStorage: LocalStorage.Interface,
         private listFilesUseCase: ListFilesUseCase.Interface,
         private filesListCache: FilesListCache.Interface,
-        private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface
+        private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface,
+        private fileModelProvider: FileModelProvider.Interface
     ) {
         makeAutoObservable<
             FileManagerPresenterImpl,
@@ -61,9 +65,12 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
 
     get vm(): IFileManagerViewModel {
         return {
+            fileModel: this._fileModel,
             list: this.listPresenter.vm,
             folders: this.folderTreePresenter.vm,
             fileDetails: this._fileDetails,
+            // Flat booleans for UI visibility (e.g., show/hide buttons).
+            // Per-file methods for ownership-aware checks (e.g., "own" scope).
             permissions: {
                 canRead: this.permissions.canRead("file"),
                 canCreate: this.permissions.canCreate("file"),
@@ -109,12 +116,21 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             clearAll: () => this.listPresenter.actions.filter.clearAll()
         },
         selection: {
-            toggle: (id: string, shiftKey?: boolean) =>
-                this.listPresenter.actions.selection.toggle(id, shiftKey),
-            selectAll: () => this.listPresenter.actions.selection.selectAll(),
-            deselectAll: () => this.listPresenter.actions.selection.deselectAll(),
-            selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
-            isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
+            toggle: (id: string, shiftKey?: boolean) => {
+                this.listPresenter.actions.selection.toggle(id, shiftKey);
+            },
+            selectAll: () => {
+                this.listPresenter.actions.selection.selectAll();
+            },
+            deselectAll: () => {
+                this.listPresenter.actions.selection.deselectAll();
+            },
+            selectRows: (ids: string[]) => {
+                this.listPresenter.actions.selection.selectRows(ids);
+            },
+            isSelected: (id: string) => {
+                return this.listPresenter.actions.selection.isSelected(id);
+            }
         },
         loadMore: () => this.listPresenter.actions.loadMore(),
         refresh: () => this.listPresenter.actions.refresh(),
@@ -175,6 +191,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             this._fileDetails = null;
         },
         folders: {
+            // Clear search when navigating to a folder — gives the user a clean slate.
             selectFolder: (folderId: string | null) => {
                 this.listPresenter.actions.search.clear();
                 this.folderTreePresenter.selectFolder(folderId);
@@ -197,6 +214,9 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         }
     };
 
+    // Hide folders when the user is actively filtering or searching.
+    // Uses `appliedQuery` (not `vm.search`) so folders stay visible while typing
+    // and only disappear once the debounced query has actually executed.
     private shouldShowFolders(): boolean {
         const { appliedQuery } = this.listPresenter.vm;
         if (!appliedQuery) {
@@ -207,6 +227,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             return false;
         }
 
+        // `folderId` is always present as a default filter; ignore it.
         const filterKeys = Object.keys(appliedQuery.filters ?? {}).filter(k => k !== "folderId");
         if (filterKeys.length > 0) {
             return false;
@@ -240,6 +261,8 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             this.folderTreePresenter.selectFolder(initialFolderId);
         }
 
+        // Sync folder navigation → file list: when the user selects a folder in the tree,
+        // update the folderId filter so the file list re-queries for that folder's contents.
         this._disposeReaction = reaction(
             () => this.folderTreePresenter.vm.currentFolderId,
             folderId => {
@@ -253,11 +276,22 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         );
 
         void this.tagsRepository.execute({});
+
+        // Load the CMS model in the background. The FileModelModule already kicks off
+        // loading at app startup, so this usually resolves from cache instantly.
+        // The view shows a loading overlay until `_fileModel` is set.
+        void this.fileModelProvider.getModel().then(model => {
+            runInAction(() => {
+                this._fileModel = model;
+            });
+        });
     }
 
     dispose(): void {
-        this._disposeReaction?.();
-        this._disposeReaction = null;
+        if (this._disposeReaction) {
+            this._disposeReaction();
+            this._disposeReaction = null;
+        }
     }
 }
 
@@ -273,6 +307,7 @@ export const FileManagerPresenter = Abstraction.createImplementation({
         LocalStorage,
         ListFilesUseCase,
         FilesListCache,
-        GetDescendantFoldersUseCase
+        GetDescendantFoldersUseCase,
+        FileModelProvider
     ]
 });

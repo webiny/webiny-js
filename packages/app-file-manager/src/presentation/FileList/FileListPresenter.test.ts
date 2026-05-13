@@ -13,6 +13,7 @@ import { LocalStorage } from "@webiny/app/features/localStorage";
 import { ListFilesUseCase } from "../../features/listFiles/abstractions.js";
 import { FilesListCache } from "../../features/shared/abstractions.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
+import { FileModelProvider } from "../../features/fileModel/abstractions.js";
 import { FileDetailsPresenter } from "../FileDetails/abstractions.js";
 import type { IFileDetailsPresenter } from "../FileDetails/abstractions.js";
 import { FileManagerPresenter as Abstraction, type IFileManagerPresenter } from "./abstractions.js";
@@ -220,6 +221,7 @@ interface Mocks {
     listFilesUseCase: ListFilesUseCase.Interface;
     cache: ListCache<FmFile>;
     getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface;
+    fileModelProvider: FileModelProvider.Interface;
 }
 
 function createMocks(): Mocks {
@@ -234,7 +236,10 @@ function createMocks(): Mocks {
         localStorage: createMockLocalStorage(),
         listFilesUseCase: createMockListFilesUseCase(),
         cache: new ListCache<FmFile>(),
-        getDescendantFoldersUseCase: createMockGetDescendantFoldersUseCase()
+        getDescendantFoldersUseCase: createMockGetDescendantFoldersUseCase(),
+        fileModelProvider: {
+            getModel: vi.fn().mockResolvedValue({ fields: [] })
+        }
     };
 }
 
@@ -252,6 +257,7 @@ function createContainer(mocks: Mocks) {
     container.registerInstance(ListFilesUseCase, mocks.listFilesUseCase);
     container.registerInstance(FilesListCache, mocks.cache);
     container.registerInstance(GetDescendantFoldersUseCase, mocks.getDescendantFoldersUseCase);
+    container.registerInstance(FileModelProvider, mocks.fileModelProvider);
 
     // Register the real FileListPresenter implementation.
     container.register(FileManagerPresenter).inSingletonScope();

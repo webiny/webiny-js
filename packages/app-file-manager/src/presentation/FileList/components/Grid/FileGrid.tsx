@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import LazyLoad from "react-lazy-load";
 import { cn, CheckboxPrimitive, Text, TimeAgo, OverlayLoader } from "@webiny/admin-ui";
+import { useShiftKey } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { FolderIcon } from "@webiny/app-aco";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
@@ -160,6 +161,7 @@ export const FileGrid = observer(function FileGrid() {
     const presenter = useFileManagerPresenter();
     const { vm, actions } = presenter;
 
+    const { isPressed: isShiftPressed } = useShiftKey();
     const childFolders = vm.folders.childFolders;
 
     // Handle folder navigation.
@@ -170,10 +172,10 @@ export const FileGrid = observer(function FileGrid() {
         [actions.filter]
     );
 
-    // Handle file selection toggle.
+    // Handle file selection toggle with shift-click range support.
     const handleToggle = useCallback(
         (id: string) => {
-            actions.selection.toggle(id);
+            actions.selection.toggle(id, isShiftPressed());
         },
         [actions.selection]
     );

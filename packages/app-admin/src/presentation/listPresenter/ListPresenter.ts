@@ -9,13 +9,13 @@ import {
     type IDataSource,
     type IDataSourceQuery
 } from "./abstractions.js";
+import { SelectionController } from "./SelectionController.js";
 
 class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     private _sort: { field: string; direction: "ASC" | "DESC" } | null = null;
     private _filters: Record<string, unknown> = {};
     private _search = "";
-    private _selectedIds: Set<string> = new Set();
-    private _lastSelectedIndex = -1;
+    private _selection: SelectionController<TRow>;
     private _error: IListError | null = null;
     private _appliedQuery: IDataSourceQuery | null = null;
     private _dataSource: IDataSource<TRow> | null = null;
@@ -26,6 +26,11 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     private _initialized = false;
 
     constructor() {
+        this._selection = new SelectionController<TRow>(
+            () => this._dataSource?.rows ?? [],
+            row => this.getRowId(row)
+        );
+
         makeAutoObservable<ListPresenterImpl<TRow>, "_debounceTimer">(this, {
             _debounceTimer: false,
             vm: computed
@@ -53,9 +58,9 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
                 currentCount: rows.length
             },
             selection: {
-                selectedIds: this._selectedIds,
-                selectedCount: this._selectedIds.size,
-                allSelected: rows.length > 0 && this._selectedIds.size === rows.length
+                selectedIds: this._selection.selectedIds,
+                selectedCount: this._selection.selectedCount,
+                allSelected: this._selection.allSelected
             },
             empty: rows.length === 0 && !loading,
             emptyWithFilters: rows.length === 0 && !loading && hasFilters,
@@ -113,46 +118,11 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             }
         },
         selection: {
-            toggle: (id: string, shiftKey?: boolean) => {
-                const rows = this._dataSource?.rows ?? [];
-                if (shiftKey && this._lastSelectedIndex >= 0) {
-                    const currentIndex = rows.findIndex(row => this.getRowId(row) === id);
-                    if (currentIndex >= 0) {
-                        const start = Math.min(this._lastSelectedIndex, currentIndex);
-                        const end = Math.max(this._lastSelectedIndex, currentIndex);
-                        const newSelected = new Set(this._selectedIds);
-                        for (let i = start; i <= end; i++) {
-                            newSelected.add(this.getRowId(rows[i]));
-                        }
-                        this._selectedIds = newSelected;
-                        this._lastSelectedIndex = currentIndex;
-                        return;
-                    }
-                }
-
-                const newSelected = new Set(this._selectedIds);
-                if (newSelected.has(id)) {
-                    newSelected.delete(id);
-                } else {
-                    newSelected.add(id);
-                }
-                this._selectedIds = newSelected;
-                this._lastSelectedIndex = rows.findIndex(row => this.getRowId(row) === id);
-            },
-            selectAll: () => {
-                const rows = this._dataSource?.rows ?? [];
-                this._selectedIds = new Set(rows.map(row => this.getRowId(row)));
-            },
-            deselectAll: () => {
-                this._selectedIds = new Set();
-                this._lastSelectedIndex = -1;
-            },
-            selectRows: (ids: string[]) => {
-                this._selectedIds = new Set(ids);
-            },
-            isSelected: (id: string) => {
-                return this._selectedIds.has(id);
-            }
+            toggle: (id: string, shiftKey?: boolean) => this._selection.toggle(id, shiftKey),
+            selectAll: () => this._selection.selectAll(),
+            deselectAll: () => this._selection.deselectAll(),
+            selectRows: (ids: string[]) => this._selection.selectRows(ids),
+            isSelected: (id: string) => this._selection.isSelected(id)
         },
         loadMore: async () => {
             if (!this._dataSource) {
@@ -210,8 +180,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
 
     private requery(): void {
         this.clearDebounce();
-        this._selectedIds = new Set();
-        this._lastSelectedIndex = -1;
+        this._selection.reset();
 
         if (!this._requeryScheduled) {
             this._requeryScheduled = true;
@@ -225,8 +194,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     private debouncedRequery(): void {
         this.clearDebounce();
         this._debounceTimer = setTimeout(() => {
-            this._selectedIds = new Set();
-            this._lastSelectedIndex = -1;
+            this._selection.reset();
             this.executeQuery();
         }, this._debounceMs);
     }

@@ -4,7 +4,7 @@ import { Bind, BindPrefix } from "@webiny/form";
 import { Grid } from "@webiny/admin-ui";
 import type { FieldDTO } from "~/presentation/FileList/components/BulkActions/domain/index.js";
 import { OperatorType } from "~/presentation/FileList/components/BulkActions/domain/index.js";
-import { useFileModel } from "~/presentation/hooks/useFileModel.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 import { useFileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
 
 export interface FieldRendererProps {
@@ -14,10 +14,11 @@ export interface FieldRendererProps {
 }
 
 export const FieldRenderer = (props: FieldRendererProps) => {
-    const fileModel = useFileModel();
+    const { vm } = useFileManagerPresenter();
+    const fileModel = vm.fileModel;
     const { browser } = useFileManagerConfig();
 
-    if (!props.operator || props.operator === OperatorType.REMOVE) {
+    if (!fileModel || !props.operator || props.operator === OperatorType.REMOVE) {
         return null;
     }
 

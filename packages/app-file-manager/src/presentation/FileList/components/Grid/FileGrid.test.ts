@@ -58,6 +58,7 @@ function createMockPresenter(
     vmOverrides: Partial<IFileManagerViewModel> = {}
 ): IFileManagerPresenter {
     const defaultVm: IFileManagerViewModel = observable({
+        fileModel: null,
         list: {
             rows: [],
             sort: null,

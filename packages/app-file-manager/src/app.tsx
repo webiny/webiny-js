@@ -2,7 +2,7 @@ import React from "react";
 import { AdminConfig, RegisterFeature } from "@webiny/app-admin";
 import { FolderTreeFieldRenderer } from "@webiny/app-aco/presentation/folderTree/FolderTreeFieldRenderer.js";
 import { SettingsModule } from "~/modules/Settings/index.js";
-import { FileModelModule } from "~/modules/FileModel/index.js";
+import { FileModelModule } from "~/modules/FileModelModule.js";
 import { DefaultFileManagerConfig } from "~/presentation/config/DefaultFileManagerConfig.js";
 import { HeadlessCmsModule } from "~/modules/HeadlessCms/index.js";
 import { EnterpriseModule } from "~/modules/Enterprise/index.js";
@@ -20,11 +20,13 @@ import { SharedCacheFeature } from "~/features/shared/index.js";
 import { FileManagerPresenterFeature } from "~/presentation/FileList/index.js";
 import { FileManagerRoutes } from "~/modules/FileManagerRoutes.js";
 import { FileManagerRendererDecorator } from "~/presentation/FileManager/FileManagerRenderer.js";
+import { FileModelProviderFeature } from "~/features/fileModel/index.js";
 
 export const FileManager = () => {
     return (
         <>
             {/* Headless features. */}
+            <RegisterFeature feature={FileModelProviderFeature} />
             <RegisterFeature feature={SharedCacheFeature} />
             <RegisterFeature feature={ListFilesFeature} />
             <RegisterFeature feature={GetFileFeature} />
@@ -36,6 +38,7 @@ export const FileManager = () => {
             <RegisterFeature feature={FmPermissionsFeature} />
             <RegisterFeature feature={GetFileFeature} />
             <RegisterFeature feature={ResolveImageToolFeature} />
+            <FileModelModule />
             {/* Presentation features. */}
             <RegisterFeature feature={FileManagerPresenterFeature} />
             {/* Field renderers. */}
@@ -48,7 +51,6 @@ export const FileManager = () => {
             {/* Legacy modules. */}
             <FileManagerRoutes />
             <SettingsModule />
-            <FileModelModule />
             <FileManagerRendererDecorator />
             <DefaultFileManagerConfig />
             <HeadlessCmsModule />

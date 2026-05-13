@@ -1,5 +1,4 @@
 export * from "./presentation/hooks/useFile.js";
-export * from "./presentation/hooks/useFileModel.js";
 export * from "./presentation/hooks/useMoveFileToFolder.js";
 export {
     FileManagerViewConfig,

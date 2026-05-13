@@ -1,13 +1,18 @@
 import { useMemo } from "react";
 import type { Select } from "@webiny/admin-ui";
-import { useFileModel } from "~/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 
 interface AccessControlField {
     options: React.ComponentProps<typeof Select>["options"];
 }
 
 export const useAccessControlField = (): AccessControlField | null => {
-    const model = useFileModel();
+    const { vm } = useFileManagerPresenter();
+    const model = vm.fileModel;
+
+    if (!model) {
+        return null;
+    }
 
     const accessControlField = useMemo(
         () => model.fields.find(field => field.fieldId === "accessControl"),

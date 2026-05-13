@@ -5,7 +5,7 @@ import type { FilesRenderChildren } from "react-butterfiles";
 import Files from "react-butterfiles";
 import debounce from "lodash/debounce.js";
 import type { positionValues } from "react-custom-scrollbars";
-import { Heading, Scrollbar, Separator } from "@webiny/admin-ui";
+import { Heading, OverlayLoader, Scrollbar, Separator } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import {
     LeftPanel,
@@ -88,6 +88,10 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
         }, 200),
         [vm.list.pagination, actions]
     );
+
+    if (!vm.fileModel) {
+        return <OverlayLoader text={t`Preparing File Manager...`} />;
+    }
 
     const renderList = (browseFiles: FilesRenderChildren["browseFiles"]) => {
         if (!vm.list.pagination.loading && vm.list.rows.length === 0) {

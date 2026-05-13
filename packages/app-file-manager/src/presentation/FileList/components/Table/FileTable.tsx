@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-ui";
+import { useShiftKey } from "@webiny/app-admin";
 import { createRecordsData, Table as AcoTable } from "@webiny/app-aco";
 import type { FolderTableRow, RecordTableRow } from "@webiny/app-aco";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
@@ -41,22 +42,17 @@ export const FileTable = observer(function FileTable() {
     const { browser } = useFileManagerConfig();
     const { vm, actions } = presenter;
 
-    const data = useMemo<FileTableItem[]>(() => {
-        const fileRows = createRecordsData(vm.list.rows);
-        if (!vm.showFolders) {
-            return fileRows;
-        }
-        const folderRows = toFolderTableRows(vm.folders.childFolders);
-        return [...folderRows, ...fileRows];
-    }, [vm.showFolders, vm.folders.childFolders, vm.list.rows]);
+    const { isPressed: isShiftPressed } = useShiftKey();
 
-    // Build selected rows for the DataTable.
-    const selected = useMemo<FileTableItem[]>(() => {
-        const selectedFiles = vm.list.rows.filter(file =>
-            vm.list.selection.selectedIds.has(file.id)
-        );
-        return createRecordsData(selectedFiles);
-    }, [vm.list.rows, vm.list.selection.selectedIds]);
+    // No useMemo — MobX observer needs to track these observable accesses during render.
+    const fileRows = createRecordsData(vm.list.rows);
+    const data: FileTableItem[] = vm.showFolders
+        ? [...toFolderTableRows(vm.folders.childFolders), ...fileRows]
+        : fileRows;
+
+    const selected: FileTableItem[] = createRecordsData(
+        vm.list.rows.filter(file => vm.list.selection.selectedIds.has(file.id))
+    );
 
     // Convert presenter sort state to DataTable format.
     const sorting = useMemo(() => toDataTableSorting(vm.list.sort), [vm.list.sort]);
@@ -77,7 +73,7 @@ export const FileTable = observer(function FileTable() {
     const onToggleRow = useCallback(
         (row: FileTableItem) => {
             if (row.$type === "RECORD") {
-                actions.selection.toggle(row.id);
+                actions.selection.toggle(row.id, isShiftPressed());
             }
         },
         [actions.selection]

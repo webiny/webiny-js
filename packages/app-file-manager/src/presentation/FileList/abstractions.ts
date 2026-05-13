@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
+import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import type { IListViewModel } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { IListActions } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { IFolderTreeViewModel } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
@@ -24,6 +25,7 @@ export interface IFileManagerOverlayConfig {
 // ---------------------------------------------------------------------------
 
 export interface IFileManagerViewModel {
+    fileModel: CmsModel | null;
     list: IListViewModel<FmFile>;
     folders: IFolderTreeViewModel;
     fileDetails: IFileDetailsPresenter | null;

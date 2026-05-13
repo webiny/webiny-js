@@ -9,7 +9,6 @@ import type { CmsModelField } from "@webiny/app-headless-cms-common/types/index.
 import { BulkAction, getFilesLabel } from "./useBulkActionWorker.js";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { UpdateFileFeature } from "~/features/updateFile/feature.js";
-import { useFileModel } from "~/presentation/hooks/useFileModel.js";
 import { ActionEditPresenter } from "~/presentation/FileList/components/BulkActions/ActionEditPresenter.js";
 import { BatchEditorDialog } from "~/presentation/FileList/components/BulkActions/BatchEditorDialog/BatchEditorDialog.js";
 import { GraphQLInputMapper } from "~/presentation/FileList/components/BulkActions/GraphQLInputMapper.js";
@@ -19,7 +18,6 @@ import type { FmFile } from "~/features/shared/types.js";
 const { useButtons } = BulkAction;
 
 export const BulkActionEdit = observer(function BulkActionEdit() {
-    const { fields: allModelFields } = useFileModel();
     const { ButtonDefault } = useButtons();
 
     const { vm } = useFileManagerPresenter();
@@ -29,7 +27,7 @@ export const BulkActionEdit = observer(function BulkActionEdit() {
     const worker = useWorker();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
-    const fields = allModelFields;
+    const fields = vm.fileModel?.fields ?? [];
 
     const presenter = useMemo<ActionEditPresenter>(() => {
         return new ActionEditPresenter();
