@@ -2,16 +2,13 @@ import { Result } from "@webiny/feature/api";
 import { TriggerWebhookUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
-import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
-import { WebhookNotAuthorizedError } from "~/api/domain/errors.js";
 import { WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/api/domain/constants.js";
 import type { IWebhookDelivery, IWebhookPayload } from "~/api/domain/types.js";
 
 class TriggerWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private permissions: WebhookPermissions.Interface,
         private getWebhookRepository: GetWebhookRepository.Interface,
         private createDeliveryRepository: CreateWebhookDeliveryRepository.Interface,
         private signPayload: WebhookSignPayload.Interface,
@@ -22,10 +19,6 @@ class TriggerWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
         webhookId: string,
         data: Record<string, unknown>
     ): Promise<Result<IWebhookDelivery, UseCaseAbstraction.Error>> {
-        if (!(await this.permissions.canEdit("webhook"))) {
-            return Result.fail(new WebhookNotAuthorizedError());
-        }
-
         const webhookResult = await this.getWebhookRepository.execute(webhookId);
         if (webhookResult.isFail()) {
             return Result.fail(webhookResult.error);
@@ -95,7 +88,6 @@ class TriggerWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
 export default UseCaseAbstraction.createImplementation({
     implementation: TriggerWebhookUseCaseImpl,
     dependencies: [
-        WebhookPermissions,
         GetWebhookRepository,
         CreateWebhookDeliveryRepository,
         WebhookSignPayload,

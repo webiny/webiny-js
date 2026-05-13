@@ -5,6 +5,7 @@
     { "path": "../api-core" },
     { "path": "../api-headless-cms" },
     { "path": "../feature" },
+    { "path": "../handler-graphql" },
     { "path": "../tasks" },
     { "path": "../utils" },
     { "path": "../api" }
@@ -24,6 +25,8 @@
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/tasks/*": ["../tasks/src/*"],
       "@webiny/tasks": ["../tasks/src"],
       "@webiny/utils/*": ["../utils/src/*"],
