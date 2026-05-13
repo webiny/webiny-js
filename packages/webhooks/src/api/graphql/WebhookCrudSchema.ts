@@ -1,6 +1,8 @@
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { Response } from "@webiny/handler-graphql";
 import { ErrorResponse } from "@webiny/handler-graphql";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import { ListWebhooksUseCase } from "~/api/features/ListWebhooks/abstractions.js";
 import { GetWebhookUseCase } from "~/api/features/GetWebhook/abstractions.js";
 import { CreateWebhookUseCase } from "~/api/features/CreateWebhook/abstractions.js";
@@ -108,9 +110,16 @@ class WebhookCrudSchema implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<{ where?: { enabled?: boolean }; limit?: number; after?: string }>({
             path: "WebhookQuery.listWebhooks",
-            dependencies: [ListWebhooksUseCase],
-            resolver: (listWebhooks: ListWebhooksUseCase.Interface) => {
+            dependencies: [IdentityContext, ListWebhooksUseCase],
+            resolver: (
+                identityContext: IdentityContext.Interface,
+                listWebhooks: ListWebhooksUseCase.Interface
+            ) => {
                 return async ({ args }) => {
+                    const permission = await identityContext.getPermission("webhooks");
+                    if (!permission) {
+                        return new NotAuthorizedResponse();
+                    }
                     const result = await listWebhooks.execute({
                         where: args.where ?? undefined,
                         limit: args.limit ?? undefined,
@@ -126,9 +135,16 @@ class WebhookCrudSchema implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<{ id: string }>({
             path: "WebhookQuery.getWebhook",
-            dependencies: [GetWebhookUseCase],
-            resolver: (getWebhook: GetWebhookUseCase.Interface) => {
+            dependencies: [IdentityContext, GetWebhookUseCase],
+            resolver: (
+                identityContext: IdentityContext.Interface,
+                getWebhook: GetWebhookUseCase.Interface
+            ) => {
                 return async ({ args }) => {
+                    const permission = await identityContext.getPermission("webhooks");
+                    if (!permission) {
+                        return new NotAuthorizedResponse();
+                    }
                     const result = await getWebhook.execute(args.id);
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
@@ -140,9 +156,16 @@ class WebhookCrudSchema implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<{ input: CreateWebhookUseCase.Input }>({
             path: "WebhookMutation.createWebhook",
-            dependencies: [CreateWebhookUseCase],
-            resolver: (createWebhook: CreateWebhookUseCase.Interface) => {
+            dependencies: [IdentityContext, CreateWebhookUseCase],
+            resolver: (
+                identityContext: IdentityContext.Interface,
+                createWebhook: CreateWebhookUseCase.Interface
+            ) => {
                 return async ({ args }) => {
+                    const permission = await identityContext.getPermission("webhooks");
+                    if (!permission) {
+                        return new NotAuthorizedResponse();
+                    }
                     const result = await createWebhook.execute(args.input);
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
@@ -154,9 +177,16 @@ class WebhookCrudSchema implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<{ id: string; input: UpdateWebhookUseCase.Input }>({
             path: "WebhookMutation.updateWebhook",
-            dependencies: [UpdateWebhookUseCase],
-            resolver: (updateWebhook: UpdateWebhookUseCase.Interface) => {
+            dependencies: [IdentityContext, UpdateWebhookUseCase],
+            resolver: (
+                identityContext: IdentityContext.Interface,
+                updateWebhook: UpdateWebhookUseCase.Interface
+            ) => {
                 return async ({ args }) => {
+                    const permission = await identityContext.getPermission("webhooks");
+                    if (!permission) {
+                        return new NotAuthorizedResponse();
+                    }
                     const result = await updateWebhook.execute(args.id, args.input);
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
@@ -168,9 +198,16 @@ class WebhookCrudSchema implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<{ id: string }>({
             path: "WebhookMutation.deleteWebhook",
-            dependencies: [DeleteWebhookUseCase],
-            resolver: (deleteWebhook: DeleteWebhookUseCase.Interface) => {
+            dependencies: [IdentityContext, DeleteWebhookUseCase],
+            resolver: (
+                identityContext: IdentityContext.Interface,
+                deleteWebhook: DeleteWebhookUseCase.Interface
+            ) => {
                 return async ({ args }) => {
+                    const permission = await identityContext.getPermission("webhooks");
+                    if (!permission) {
+                        return new NotAuthorizedResponse();
+                    }
                     const result = await deleteWebhook.execute(args.id);
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
