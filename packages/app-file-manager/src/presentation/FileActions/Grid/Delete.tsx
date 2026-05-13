@@ -1,13 +1,14 @@
 import React from "react";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
-import { FileManagerViewConfig, useFile, useFileManagerApi } from "~/index.js";
+import { FileManagerViewConfig, useFile } from "~/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 import { useDeleteFile } from "~/presentation/hooks/useDeleteFile.js";
 
 const { Browser } = FileManagerViewConfig;
 
 export const Delete = () => {
     const { file } = useFile();
-    const { canEdit } = useFileManagerApi();
+    const { vm } = useFileManagerPresenter();
 
     const { openDialogDeleteFile } = useDeleteFile({
         file,
@@ -19,7 +20,7 @@ export const Delete = () => {
             label={"Delete file"}
             icon={<DeleteIcon />}
             onAction={openDialogDeleteFile}
-            disabled={!canEdit(file)}
+            disabled={!vm.permissions.canEditFile(file)}
         />
     );
 };

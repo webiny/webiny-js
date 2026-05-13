@@ -4,8 +4,6 @@ import type { FolderTableRow, RecordTableRow } from "@webiny/app-aco";
 import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 import type { FmFile } from "@webiny/sdk";
 
-export type { FileInput } from "~/modules/FileManagerApiProvider/graphql.js";
-
 export type PermissionRendererPluginRenderFunctionType = (props: {
     value: Identity.Permission;
     setValue: (newValue: Identity.Permission) => void;

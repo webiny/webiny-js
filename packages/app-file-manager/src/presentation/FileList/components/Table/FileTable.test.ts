@@ -131,7 +131,9 @@ function createMockPresenter(
             canRead: true,
             canCreate: true,
             canEdit: true,
-            canDelete: true
+            canDelete: true,
+            canEditFile: () => true,
+            canDeleteFile: () => true
         },
         upload: {
             jobs: [],

@@ -68,7 +68,9 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
                 canRead: this.permissions.canRead("file"),
                 canCreate: this.permissions.canCreate("file"),
                 canEdit: this.permissions.canEdit("file"),
-                canDelete: this.permissions.canDelete("file")
+                canDelete: this.permissions.canDelete("file"),
+                canEditFile: (file: FmFile) => this.permissions.canEdit("file", file),
+                canDeleteFile: (file: FmFile) => this.permissions.canDelete("file", file)
             },
             upload: {
                 jobs: this.fileUploader.vm.jobs,

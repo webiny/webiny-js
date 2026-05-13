@@ -2,7 +2,7 @@ import React from "react";
 import { AdminConfig, RegisterFeature } from "@webiny/app-admin";
 import { FolderTreeFieldRenderer } from "@webiny/app-aco/presentation/folderTree/FolderTreeFieldRenderer.js";
 import { SettingsModule } from "~/modules/Settings/index.js";
-import { FileManagerApiProviderModule } from "~/modules/FileManagerApiProvider/index.js";
+import { FileModelModule } from "~/modules/FileModel/index.js";
 import { DefaultFileManagerConfig } from "~/presentation/config/DefaultFileManagerConfig.js";
 import { HeadlessCmsModule } from "~/modules/HeadlessCms/index.js";
 import { EnterpriseModule } from "~/modules/Enterprise/index.js";
@@ -48,7 +48,7 @@ export const FileManager = () => {
             {/* Legacy modules. */}
             <FileManagerRoutes />
             <SettingsModule />
-            <FileManagerApiProviderModule />
+            <FileModelModule />
             <FileManagerRendererDecorator />
             <DefaultFileManagerConfig />
             <HeadlessCmsModule />

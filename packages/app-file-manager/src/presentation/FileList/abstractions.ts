@@ -42,6 +42,8 @@ export interface IFileManagerViewModel {
         canCreate: boolean;
         canEdit: boolean;
         canDelete: boolean;
+        canEditFile: (file: FmFile) => boolean;
+        canDeleteFile: (file: FmFile) => boolean;
     };
     isOverlay: boolean;
     accept: string[];

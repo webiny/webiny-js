@@ -1,7 +1,7 @@
 import React from "react";
 import { validation } from "@webiny/validation";
 import { useBind } from "@webiny/form";
-import { useFileManagerApi } from "~/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 import { useAccessControlField } from "./useAccessControlField.js";
 import { useFileOrUndefined } from "~/presentation/config/fields/useFileOrUndefined.js";
 import { Label, Select } from "@webiny/admin-ui";
@@ -13,7 +13,7 @@ interface AccessControlProps {
 
 export const AccessControl = ({ defaultValue, placeholder }: AccessControlProps) => {
     const { file } = useFileOrUndefined();
-    const { canEdit } = useFileManagerApi();
+    const { vm } = useFileManagerPresenter();
     const accessControlField = useAccessControlField();
 
     /**
@@ -40,7 +40,7 @@ export const AccessControl = ({ defaultValue, placeholder }: AccessControlProps)
             value={bind.value || defaultValue}
             label={<Label text={"Access Control"} hint={"Control who can access this file."} />}
             options={options || []}
-            disabled={file ? !canEdit(file) : false}
+            disabled={file ? !vm.permissions.canEditFile(file) : false}
             placeholder={placeholder}
         />
     );

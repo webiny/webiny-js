@@ -1,8 +1,8 @@
 import React from "react";
 import type { FilesRenderChildren } from "react-butterfiles";
 
-import { useFileManagerApi } from "~/index.js";
 import { NoPermissions } from "~/presentation/FileList/components/NoPermissions/index.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { NoResults } from "~/presentation/FileList/components/NoResults/index.js";
 import { FileDropArea } from "~/presentation/FileList/components/FileDropArea/index.js";
 
@@ -12,7 +12,8 @@ interface EmptyViewProps {
 }
 
 export const Empty = ({ browseFiles, isSearchResult }: EmptyViewProps) => {
-    const { canRead } = useFileManagerApi();
+    const { vm } = useFileManagerPresenter();
+    const { canRead } = vm.permissions;
 
     if (!canRead) {
         return <NoPermissions />;

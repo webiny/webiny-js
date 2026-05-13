@@ -1,8 +1,23 @@
 import React, { useState } from "react";
+import gql from "graphql-tag";
 import { OverlayLoader } from "@webiny/admin-ui";
 import type { CmsModel } from "@webiny/app-headless-cms/types.js";
 import { useQuery } from "@apollo/react-hooks";
-import { GET_FILE_MODEL } from "~/modules/FileManagerApiProvider/graphql.js";
+
+const GET_FILE_MODEL = gql`
+    query GetFileModel {
+        fileManager {
+            getFileModel {
+                data
+                error {
+                    code
+                    message
+                    data
+                }
+            }
+        }
+    }
+`;
 
 export const FileModelContext = React.createContext<CmsModel | undefined>(undefined);
 
