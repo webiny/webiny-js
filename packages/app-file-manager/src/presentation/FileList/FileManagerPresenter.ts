@@ -116,8 +116,11 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             clearAll: () => this.listPresenter.actions.filter.clearAll()
         },
         selection: {
-            toggle: (id: string, shiftKey?: boolean) => {
-                this.listPresenter.actions.selection.toggle(id, shiftKey);
+            toggle: (id: string) => {
+                this.listPresenter.actions.selection.toggle(id);
+            },
+            selectRangeTo: (id: string) => {
+                this.listPresenter.actions.selection.selectRangeTo(id);
             },
             selectAll: () => {
                 this.listPresenter.actions.selection.selectAll();

@@ -1,4 +1,4 @@
-import { makeAutoObservable, computed } from "mobx";
+import { makeAutoObservable, runInAction, computed } from "mobx";
 import {
     ListPresenter as Abstraction,
     type IListPresenter,
@@ -118,7 +118,8 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             }
         },
         selection: {
-            toggle: (id: string, shiftKey?: boolean) => this._selection.toggle(id, shiftKey),
+            toggle: (id: string) => this._selection.toggle(id),
+            selectRangeTo: (id: string) => this._selection.selectRangeTo(id),
             selectAll: () => this._selection.selectAll(),
             deselectAll: () => this._selection.deselectAll(),
             selectRows: (ids: string[]) => this._selection.selectRows(ids),
@@ -134,9 +135,13 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             }
             try {
                 await this._dataSource.loadMore(this.buildQuery(meta.cursor));
-                this._error = null;
+                runInAction(() => {
+                    this._error = null;
+                });
             } catch (err) {
-                this._error = this.toListError(err);
+                runInAction(() => {
+                    this._error = this.toListError(err);
+                });
             }
         },
         refresh: async () => {
@@ -172,9 +177,13 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
         const query = this.buildQuery();
         try {
             await this._dataSource.query(query);
-            this._appliedQuery = query;
+            runInAction(() => {
+                this._appliedQuery = query;
+            });
         } catch (err) {
-            this._error = this.toListError(err);
+            runInAction(() => {
+                this._error = this.toListError(err);
+            });
         }
     }
 

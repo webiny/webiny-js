@@ -69,11 +69,14 @@ export const FileTable = observer(function FileTable() {
         [sorting, actions.sort]
     );
 
-    // Handle row toggle (single row checkbox click).
     const onToggleRow = useCallback(
         (row: FileTableItem) => {
             if (row.$type === "RECORD") {
-                actions.selection.toggle(row.id, isShiftPressed());
+                if (isShiftPressed()) {
+                    actions.selection.selectRangeTo(row.id);
+                } else {
+                    actions.selection.toggle(row.id);
+                }
             }
         },
         [actions.selection]

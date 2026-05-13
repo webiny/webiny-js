@@ -99,7 +99,8 @@ export interface IListActions {
         clearAll(): void;
     };
     selection: {
-        toggle(id: string, shiftKey?: boolean): void;
+        toggle(id: string): void;
+        selectRangeTo(id: string): void;
         selectAll(): void;
         deselectAll(): void;
         selectRows(ids: string[]): void;

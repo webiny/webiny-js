@@ -62,6 +62,7 @@ function createMockListPresenter(): ListPresenter.Interface<FmFile> {
             filter: { set: vi.fn(), clear: vi.fn(), clearAll: vi.fn() },
             selection: {
                 toggle: vi.fn(),
+                selectRangeTo: vi.fn(),
                 selectAll: vi.fn(),
                 deselectAll: vi.fn(),
                 selectRows: vi.fn(),

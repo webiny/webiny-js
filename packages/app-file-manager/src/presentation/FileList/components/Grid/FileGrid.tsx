@@ -172,10 +172,13 @@ export const FileGrid = observer(function FileGrid() {
         [actions.filter]
     );
 
-    // Handle file selection toggle with shift-click range support.
     const handleToggle = useCallback(
         (id: string) => {
-            actions.selection.toggle(id, isShiftPressed());
+            if (isShiftPressed()) {
+                actions.selection.selectRangeTo(id);
+            } else {
+                actions.selection.toggle(id);
+            }
         },
         [actions.selection]
     );

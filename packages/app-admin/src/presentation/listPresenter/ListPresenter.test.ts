@@ -680,8 +680,8 @@ describe("ListPresenter", () => {
             presenter.actions.selection.toggle("file-0");
             expect(presenter.vm.selection.selectedCount).toBe(1);
 
-            // Shift-click on row 3 — should select 0, 1, 2, 3.
-            presenter.actions.selection.toggle("file-3", true);
+            // Range select to row 3 — should select 0, 1, 2, 3.
+            presenter.actions.selection.selectRangeTo("file-3");
             expect(presenter.vm.selection.selectedCount).toBe(4);
             expect(presenter.vm.selection.selectedIds.has("file-0")).toBe(true);
             expect(presenter.vm.selection.selectedIds.has("file-1")).toBe(true);
@@ -702,8 +702,8 @@ describe("ListPresenter", () => {
             // Select row 4 first.
             presenter.actions.selection.toggle("file-4");
 
-            // Shift-click on row 1 — should select 1, 2, 3, 4.
-            presenter.actions.selection.toggle("file-1", true);
+            // Range select to row 1 — should select 1, 2, 3, 4.
+            presenter.actions.selection.selectRangeTo("file-1");
             expect(presenter.vm.selection.selectedCount).toBe(4);
             expect(presenter.vm.selection.selectedIds.has("file-1")).toBe(true);
             expect(presenter.vm.selection.selectedIds.has("file-2")).toBe(true);

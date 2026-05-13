@@ -28,40 +28,10 @@ export class SelectionController<TRow> {
         return rows.length > 0 && this._selectedIds.size === rows.length;
     }
 
-    toggle(id: string, shiftKey?: boolean): void {
+    toggle(id: string): void {
         const rows = this.getRows();
         const currentIndex = rows.findIndex(row => this.getRowId(row) === id);
 
-        // Shift-click: select the range from anchor to clicked item,
-        // and deselect items that were in the previous range but are now outside.
-        if (shiftKey && this._anchor >= 0 && currentIndex >= 0) {
-            const prevFocus = this._focus;
-            this._focus = currentIndex;
-
-            const newStart = Math.min(this._anchor, currentIndex);
-            const newEnd = Math.max(this._anchor, currentIndex);
-
-            const newSelected = new Set(this._selectedIds);
-
-            if (prevFocus !== undefined) {
-                const oldStart = Math.min(this._anchor, prevFocus);
-                const oldEnd = Math.max(this._anchor, prevFocus);
-                for (let i = oldStart; i <= oldEnd; i++) {
-                    if (i < newStart || i > newEnd) {
-                        newSelected.delete(this.getRowId(rows[i]));
-                    }
-                }
-            }
-
-            for (let i = newStart; i <= newEnd; i++) {
-                newSelected.add(this.getRowId(rows[i]));
-            }
-
-            this._selectedIds = newSelected;
-            return;
-        }
-
-        // Normal click: toggle a single item.
         const newSelected = new Set(this._selectedIds);
         if (newSelected.has(id)) {
             newSelected.delete(id);
@@ -74,6 +44,42 @@ export class SelectionController<TRow> {
             this._anchor = currentIndex;
         }
         this._focus = undefined;
+        this._selectedIds = newSelected;
+    }
+
+    // Select the range from the current anchor to the given id.
+    // Deselects items that were in the previous range but fall outside the new one.
+    selectRangeTo(id: string): void {
+        const rows = this.getRows();
+        const currentIndex = rows.findIndex(row => this.getRowId(row) === id);
+
+        if (this._anchor < 0 || currentIndex < 0) {
+            this.toggle(id);
+            return;
+        }
+
+        const prevFocus = this._focus;
+        this._focus = currentIndex;
+
+        const newStart = Math.min(this._anchor, currentIndex);
+        const newEnd = Math.max(this._anchor, currentIndex);
+
+        const newSelected = new Set(this._selectedIds);
+
+        if (prevFocus !== undefined) {
+            const oldStart = Math.min(this._anchor, prevFocus);
+            const oldEnd = Math.max(this._anchor, prevFocus);
+            for (let i = oldStart; i <= oldEnd; i++) {
+                if (i < newStart || i > newEnd) {
+                    newSelected.delete(this.getRowId(rows[i]));
+                }
+            }
+        }
+
+        for (let i = newStart; i <= newEnd; i++) {
+            newSelected.add(this.getRowId(rows[i]));
+        }
+
         this._selectedIds = newSelected;
     }
 
