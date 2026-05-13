@@ -288,7 +288,7 @@ const FileManagerViewInner = observer(
         }, [overlay, onChange, onClose, multiple, accept]);
 
         useEffect(() => {
-            presenter.init(overlay ? { initialFolderId: "root", scope } : { scope });
+            presenter.init({ scope });
             return () => presenter.dispose();
         }, [presenter, overlay, scope]);
 
