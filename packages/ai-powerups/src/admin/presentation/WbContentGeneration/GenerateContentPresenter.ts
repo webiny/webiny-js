@@ -7,7 +7,7 @@ import { GeneratePageContentUseCase } from "~/admin/features/generatePageContent
 import { GetSettingsUseCase } from "~/admin/features/settings/getSettings/abstractions.js";
 import type { IAiPowerUpsSettings } from "~/admin/features/settings/shared/abstractions.js";
 
-const SUBMIT_TIMEOUT_MS = 30_000;
+const SUBMIT_TIMEOUT_MS = 300_000;
 
 class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface {
     private _loading = false;

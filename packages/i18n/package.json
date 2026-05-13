@@ -28,7 +28,6 @@
     "react": "18.3.1"
   },
   "devDependencies": {
-    "@babel/register": "^7.29.3",
     "@types/accounting": "^0.4.5",
     "@types/lodash": "^4.17.24",
     "@webiny/build-tools": "0.0.0",
