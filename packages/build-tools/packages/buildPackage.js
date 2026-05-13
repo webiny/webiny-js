@@ -1,7 +1,7 @@
 import * as rimraf from "rimraf";
 import { join } from "path";
 import fs from "node:fs";
-import { babelCompile } from "./buildPackage/babelCompile.js";
+import { rslibCompile } from "./buildPackage/rslibCompile.js";
 import { tsCompile } from "./buildPackage/tsCompile.js";
 import { copyToDist } from "./buildPackage/copyToDist.js";
 import { validateEsmImports } from "./buildPackage/validateEsmImports.js";
@@ -50,7 +50,7 @@ async function buildDirect(options, distDir) {
         }
     }
 
-    await babelCompile(options);
+    await rslibCompile(options);
     await tsCompile(options);
 
     options.logs !== false && console.log("Copying meta files...");

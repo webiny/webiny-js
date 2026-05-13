@@ -50,6 +50,20 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: next
+      - name: Upload build cache artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: build-cache
+          retention-days: 1
+          include-hidden-files: true
+          path: next/.webiny/cached-packages
+      - name: Upload packages artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: packages
+          retention-days: 1
+          include-hidden-files: true
+          path: next/packages
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'

@@ -10,7 +10,7 @@ See `common.md`, `react.md`, `node.md` for full details per package.
 - `crypto-hash` → `crypto.subtle.digest()` (built-in)
 - `ncp` → `fs.cpSync`, `rimraf` → `fs.rmSync`, `os` → `node:os` (all built-in Node 22+)
 - `jsonwebtoken` → `jose` (already in deps)
-- `webpack` + 7 loaders → rspack/rsbuild (already in deps)
+- ~~`webpack` + 7 loaders → rspack/rsbuild~~ ✅ done (rslib migration complete; `babel-loader`, `@svgr/webpack`, `@types/webpack-env`, `@emotion/babel-plugin` removed)
 - `react-dnd` + `dnd-core` → `@dnd-kit/core`
 - `react-virtualized` → `@tanstack/react-virtual`
 - `react-helmet` → `react-helmet-async`
@@ -30,7 +30,7 @@ See `common.md`, `react.md`, `node.md` for full details per package.
 - `deep-equal` → `node:util` `isDeepStrictEqual`
 - `dot-prop-immutable` → `structuredClone()` + `dot-prop` (already in deps)
 - `fast-json-stable-stringify` → `safe-stable-stringify`
-- `raw.macro`, `babel-plugin-dynamic-import-node` → remove (obsolete patterns)
+- ~~`babel-plugin-dynamic-import-node`~~ ✅ done; `raw.macro` → still needs removal (obsolete Babel macro pattern)
 - `react-lazy-load` → native `IntersectionObserver`
 - `react-transition-group` → CSS transitions or `framer-motion`
 

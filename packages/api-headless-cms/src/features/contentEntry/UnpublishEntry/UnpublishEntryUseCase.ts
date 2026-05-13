@@ -1,5 +1,4 @@
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { parseIdentifier } from "@webiny/utils";
@@ -15,42 +14,28 @@ import type { CmsModel } from "~/types/index.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import { EntryValidationError } from "~/domain/contentEntry/errors.js";
-import { createUnpublishEntryData } from "~/crud/contentEntry/entryDataFactories/index.js";
+import { CreateUnpublishEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreateUnpublishEntryDataFactory/index.js";
 
-/**
- * UnpublishEntryUseCase - Orchestrates entry unpublishing.
- *
- * Responsibilities:
- * - Fetch published revision by entry ID
- * - Validate entry is published (matches requested ID)
- * - Transform to unpublish data
- * - Apply access control
- * - Publish domain events
- * - Delegate persistence to repository
- */
 class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
         private eventPublisher: EventPublisher.Interface,
         private repository: UnpublishEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
-        private identityContext: IdentityContext.Interface,
-        private getPublishedRevisionByEntryId: GetPublishedRevisionByEntryIdUseCase.Interface
+        private getPublishedRevisionByEntryId: GetPublishedRevisionByEntryIdUseCase.Interface,
+        private createUnpublishEntryDataFactory: CreateUnpublishEntryDataFactory.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string
     ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
-        // Check initial access control
         const canAccess = await this.accessControl.canAccessEntry({ model, pw: "u" });
         if (!canAccess) {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        // Parse entry ID from revision ID
         const { id: entryId } = parseIdentifier(id);
 
-        // Get published revision
         const publishedResult = await this.getPublishedRevisionByEntryId.execute<T>(model, entryId);
 
         if (publishedResult.isFail()) {
@@ -63,12 +48,10 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new EntryNotFoundError(id));
         }
 
-        // Validate that the entry is actually published (published revision ID must match requested ID)
         if (originalEntry.id !== id) {
             return Result.fail(new EntryValidationError(`Entry is not published!`));
         }
 
-        // Apply access control on the specific entry
         const canAccessEntry = await this.accessControl.canAccessEntry({
             model,
             entry: originalEntry,
@@ -79,17 +62,11 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        // Transform to unpublish data
-        const { entry } = await createUnpublishEntryData<T>({
-            originalEntry,
-            getIdentity: () => this.identityContext.getIdentity()
-        });
+        const { entry } = await this.createUnpublishEntryDataFactory.create<T>(originalEntry);
 
         try {
-            // Publish before event
             await this.eventPublisher.publish(new EntryBeforeUnpublishEvent({ entry, model }));
 
-            // Persist unpublish
             const unpublishResult = await this.repository.execute<T>(model, entry);
             if (unpublishResult.isFail()) {
                 await this.eventPublisher.publish(
@@ -100,7 +77,6 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
             const storageEntry = unpublishResult.value;
 
-            // Publish after event
             await this.eventPublisher.publish(
                 new EntryAfterUnpublishEvent({
                     entry,
@@ -126,7 +102,7 @@ export const UnpublishEntryUseCase = createImplementation({
         EventPublisher,
         UnpublishEntryRepository,
         AccessControl,
-        IdentityContext,
-        GetPublishedRevisionByEntryIdUseCase
+        GetPublishedRevisionByEntryIdUseCase,
+        CreateUnpublishEntryDataFactory
     ]
 });

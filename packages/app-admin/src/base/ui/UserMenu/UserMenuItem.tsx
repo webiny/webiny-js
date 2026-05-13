@@ -1,5 +1,5 @@
 import React from "react";
-import { createVoidComponent, makeDecoratable } from "~/index.js";
+import { createVoidComponent, makeDecoratable } from "@webiny/react-composition";
 import type {
     DropdownMenuItemIconProps,
     DropdownMenuItemButtonProps

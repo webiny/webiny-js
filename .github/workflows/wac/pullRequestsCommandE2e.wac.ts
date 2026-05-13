@@ -312,7 +312,17 @@ export const pullRequestsCommandE2e = createWorkflow({
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
                 ...installBuildSteps,
-                ...runBuildCacheSteps
+                ...runBuildCacheSteps,
+                {
+                    name: "Upload build cache artifact",
+                    uses: "actions/upload-artifact@v6",
+                    with: {
+                        name: "build-cache",
+                        "retention-days": 1,
+                        "include-hidden-files": true,
+                        path: `${DIR_WEBINY_JS}/.webiny/cached-packages`
+                    }
+                }
             ]
         }),
         ...createCypressJobs("ddb"),
