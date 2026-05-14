@@ -14,15 +14,15 @@ export const CurrentTenant = observer(({ children }: { children: React.ReactNode
     const vm = presenter.vm;
 
     if (vm.loading) {
-        return <OverlayLoader title={"Loading tenant..."} />;
+        return <OverlayLoader text={"Loading tenant..."} />;
     }
 
     if (vm.error) {
-        return <OverlayLoader title={vm.error.message} />;
+        return <OverlayLoader text={vm.error.message} />;
     }
 
     if (!vm.tenant) {
-        return <OverlayLoader title={"Unable to load tenant!"} />;
+        return <OverlayLoader text={"Unable to load tenant!"} />;
     }
 
     return <>{children}</>;

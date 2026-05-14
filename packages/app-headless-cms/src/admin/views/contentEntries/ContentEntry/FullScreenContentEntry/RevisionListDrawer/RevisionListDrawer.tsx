@@ -3,9 +3,11 @@ import { useHotkeys } from "@webiny/app-admin";
 import { RevisionsList } from "~/admin/views/contentEntries/ContentEntry/RevisionsList/RevisionsList.js";
 import { useFullScreenContentEntry } from "../useFullScreenContentEntry.js";
 import { Drawer } from "@webiny/admin-ui";
+import { useContentEntry } from "~/admin/views/contentEntries/hooks/index.js";
 
 export const RevisionListDrawer = () => {
     const { isRevisionListOpen, openRevisionList } = useFullScreenContentEntry();
+    const { revisions, loading } = useContentEntry();
 
     useHotkeys({
         zIndex: 55,
@@ -25,7 +27,7 @@ export const RevisionListDrawer = () => {
             headerSeparator={true}
             width={1000}
         >
-            <RevisionsList />
+            <RevisionsList revisions={revisions} loading={loading} />
         </Drawer>
     );
 };

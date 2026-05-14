@@ -3,7 +3,7 @@ import ts from "typescript";
 import merge from "lodash/merge.js";
 import { replaceTscAliases } from "./tsAliasReplacer.js";
 
-export const tsCompile = async ({ cwd = "", overrides, debug }) => {
+export const tsCompile = async ({ cwd = "", overrides, debug, outputDir, checkOnly = false }) => {
     // Normalize path separators to forward slashes for consistent behavior on Windows.
     const normalizedCwd = cwd.replace(/\\/g, "/");
 
@@ -23,11 +23,21 @@ export const tsCompile = async ({ cwd = "", overrides, debug }) => {
             console.log(readTsConfig);
         }
     }
+    if (outputDir) {
+        readTsConfig.compilerOptions = readTsConfig.compilerOptions || {};
+        readTsConfig.compilerOptions.outDir = outputDir;
+        readTsConfig.compilerOptions.declarationDir = outputDir;
+    }
+
     const parsedJsonConfigFile = ts.parseJsonConfigFileContent(readTsConfig, ts.sys, normalizedCwd);
 
     const { projectReferences, options, fileNames, errors } = parsedJsonConfigFile;
 
     const filteredFileNames = fileNames.filter(fileName => !fileName.endsWith(".d.ts"));
+
+    if (checkOnly) {
+        options.noEmit = true;
+    }
 
     const program = ts.createProgram({
         projectReferences,
@@ -35,6 +45,23 @@ export const tsCompile = async ({ cwd = "", overrides, debug }) => {
         rootNames: filteredFileNames,
         configFileParsingDiagnostics: errors
     });
+
+    if (checkOnly) {
+        const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(errors);
+
+        if (allDiagnostics.length) {
+            const formatHost = {
+                getCanonicalFileName: path => path,
+                getCurrentDirectory: () => normalizedCwd,
+                getNewLine: () => ts.sys.newLine
+            };
+            const message = ts.formatDiagnostics(allDiagnostics, formatHost);
+            if (message) {
+                throw { message };
+            }
+        }
+        return;
+    }
 
     const { diagnostics, emitSkipped } = program.emit(
         undefined, // targetSourceFile
@@ -67,7 +94,6 @@ export const tsCompile = async ({ cwd = "", overrides, debug }) => {
         throw { message: "TypeScript compilation failed." };
     }
 
-    // Resolve ~ path aliases in .d.ts files
-    const distDir = options.outDir || join(normalizedCwd, "dist");
+    const distDir = outputDir || options.outDir || join(normalizedCwd, "dist");
     await replaceTscAliases({ distDir, cwd: normalizedCwd, debug });
 };

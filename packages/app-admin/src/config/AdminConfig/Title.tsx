@@ -1,5 +1,5 @@
 import React from "react";
-import { makeDecoratable } from "~/index.js";
+import { makeDecoratable } from "@webiny/react-composition";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 
 export interface TitleProps {

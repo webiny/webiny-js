@@ -40,14 +40,6 @@ export interface ReactAppFactory {
     (params: ReactAppFactoryParams): { commands: ReactAppCommands };
 }
 
-export interface BabelConfig {
-    [key: string]: any;
-}
-
-export interface BabelConfigModifier {
-    (config: BabelConfig): BabelConfig;
-}
-
 export interface EntryModifier {
     (entry: string): string;
 }
@@ -63,8 +55,6 @@ export interface CustomEnvModifier {
 export interface ReactAppConfig {
     seal(): { commands: ReactAppCommands };
 
-    babel(modifier: BabelConfigModifier): void;
-
     entry(modifier: EntryModifier): void;
 
     customEnv(modifier: CustomEnvModifier): void;
@@ -75,7 +65,6 @@ export interface ReactAppConfig {
 const NO_ENV_MESSAGE = `Please specify the environment via the "--env" argument, for example: "--env dev".`;
 
 function createEmptyReactConfig(options: RunCommandOptions): ReactAppConfig {
-    const babelModifiers: BabelConfigModifier[] = [];
     const commandsModifiers: ReactAppCommandsModifier[] = [];
     const customEnvModifiers: CustomEnvModifier[] = [];
     const entryModifiers: EntryModifier[] = [];
@@ -93,10 +82,7 @@ function createEmptyReactConfig(options: RunCommandOptions): ReactAppConfig {
         const defaultEntry = path.join(options.cwd, "src", "index.tsx");
 
         return {
-            entry: entryModifiers.reduce((entry, modifier) => modifier(entry), defaultEntry),
-            babel(config) {
-                return babelModifiers.reduce((config, modifier) => modifier(config), config);
-            }
+            entry: entryModifiers.reduce((entry, modifier) => modifier(entry), defaultEntry)
         };
     };
 
@@ -120,9 +106,6 @@ function createEmptyReactConfig(options: RunCommandOptions): ReactAppConfig {
     return {
         commands(modifier) {
             commandsModifiers.push(modifier);
-        },
-        babel(modifier) {
-            babelModifiers.push(modifier);
         },
         customEnv(modifier: CustomEnvModifier) {
             customEnvModifiers.push(modifier);

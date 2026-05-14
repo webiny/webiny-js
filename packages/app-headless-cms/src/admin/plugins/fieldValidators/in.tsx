@@ -1,6 +1,5 @@
 import React from "react";
-import { Cell } from "@webiny/ui/Grid/index.js";
-import { Tags } from "@webiny/ui/Tags/index.js";
+import { Grid, Tags } from "@webiny/admin-ui";
 import { validation } from "@webiny/validation";
 import type { CmsModelFieldValidatorPlugin } from "~/types.js";
 import { Bind } from "@webiny/form";
@@ -16,11 +15,11 @@ const plugin: CmsModelFieldValidatorPlugin = {
         defaultMessage: "Value is not allowed.",
         renderSettings() {
             return (
-                <Cell span={12}>
+                <Grid.Column span={12}>
                     <Bind name={"settings.values"} validators={validation.create("required")}>
                         <Tags label={"Allowed values"} description={"Hit ENTER to add values"} />
                     </Bind>
-                </Cell>
+                </Grid.Column>
             );
         },
         validate: async (value, { validator }) => {

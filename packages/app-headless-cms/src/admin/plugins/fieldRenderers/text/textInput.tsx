@@ -1,7 +1,7 @@
 import React from "react";
 import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { DelayedOnChange } from "@webiny/ui/DelayedOnChange/index.js";
+import { DelayedOnChange } from "@webiny/admin-ui";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { Input } from "@webiny/admin-ui";
 import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";

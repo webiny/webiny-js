@@ -11,9 +11,13 @@ const PAGE_DATA_FIELD = /* GraphQL */ `
         metadata
         savedOn
         createdOn
+        live {
+            version
+        }
         location {
             folderId
         }
+        revisionDescription
     }
 `;
 
@@ -40,6 +44,17 @@ export const UPDATE_PAGE = /* GraphQL */ `
     mutation UpdatePage($id: ID!, $data: WbPageUpdateInput!) {
         websiteBuilder {
             updatePage(id: $id, data: $data) {
+                data ${PAGE_DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const UPDATE_PAGE_REVISION_DESCRIPTION = /* GraphQL */ `
+    mutation UpdatePageRevisionDescription($id: ID!, $revisionDescription: String!) {
+        websiteBuilder {
+            updatePageRevisionDescription(id: $id, revisionDescription: $revisionDescription) {
                 data ${PAGE_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -174,6 +189,7 @@ export const GET_PAGE_REVISIONS = /* GraphQL */ `
                     status
                     locked
                     savedOn
+                    revisionDescription
                 }
                 error ${ERROR_FIELD}
             }

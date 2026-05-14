@@ -1,5 +1,5 @@
 import React from "react";
-import { makeDecoratable } from "~/index.js";
+import { makeDecoratable } from "@webiny/react-composition";
 import { Sidebar } from "@webiny/admin-ui";
 import { type SidebarMenuItemGroupProps } from "@webiny/admin-ui/Sidebar/components/items/SidebarMenuItem.js";
 

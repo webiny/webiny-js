@@ -2,7 +2,9 @@ import React, { useEffect, useRef } from "react";
 import type { IncomingGenericData } from "@webiny/app-websockets";
 import { useWebsockets } from "@webiny/app-websockets";
 import { useSnackbar } from "@webiny/app-admin";
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
+import { useFeature } from "@webiny/app";
+import { UpdateFileFeature } from "~/features/updateFile/feature.js";
+import { DeleteFileFeature } from "~/features/deleteFile/feature.js";
 
 const THREAT_SCAN_ACTIONS = {
     NO_THREAT_FOUND: "fm.threatScan.noThreatFound",
@@ -37,19 +39,19 @@ interface ThreatScan_UnsupportedFile extends IncomingGenericData {
 export const HandleWebsocketMessages = () => {
     const { showErrorSnackbar } = useSnackbar();
     const websockets = useWebsockets();
-    const fmView = useFileManagerView();
-    const fmViewRef = useRef(fmView);
-    fmViewRef.current = fmView;
+    const { useCase: updateFileUseCase } = useFeature(UpdateFileFeature);
+    const { useCase: deleteFileUseCase } = useFeature(DeleteFileFeature);
+    const updateRef = useRef(updateFileUseCase);
+    const deleteRef = useRef(deleteFileUseCase);
+    updateRef.current = updateFileUseCase;
+    deleteRef.current = deleteFileUseCase;
 
     useEffect(() => {
         const noThreat = websockets.onMessage<ThreatScan_NoThreat>(
             THREAT_SCAN_ACTIONS.NO_THREAT_FOUND,
             async message => {
                 const { id, ...data } = message.data;
-
-                await fmViewRef.current.updateFile(id, data, {
-                    localUpdate: true
-                });
+                await updateRef.current.execute({ id, data });
             }
         );
 
@@ -57,10 +59,7 @@ export const HandleWebsocketMessages = () => {
             THREAT_SCAN_ACTIONS.THREAT_DETECTED,
             async message => {
                 const { id, name } = message.data;
-
-                await fmViewRef.current.deleteFile(id, {
-                    localDelete: true
-                });
+                await deleteRef.current.execute({ id });
 
                 showErrorSnackbar(
                     <span>
@@ -75,10 +74,7 @@ export const HandleWebsocketMessages = () => {
             THREAT_SCAN_ACTIONS.UNSUPPORTED,
             async message => {
                 const { id, name } = message.data;
-
-                await fmViewRef.current.deleteFile(id, {
-                    localDelete: true
-                });
+                await deleteRef.current.execute({ id });
 
                 showErrorSnackbar(
                     <span>

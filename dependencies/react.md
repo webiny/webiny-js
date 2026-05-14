@@ -76,10 +76,11 @@ Status: replace
 Apollo v2 React bindings. Replace with `@apollo/client` v3+ (single package includes all React hooks).
 https://www.apollographql.com/docs/react/migrating/apollo-client-3-migration
 
-## @emotion/react, @emotion/styled, @emotion/css, @emotion/babel-plugin
+## @emotion/react, @emotion/styled, @emotion/css
 
 Status: ok
 Note: Tailwind CSS is also in deps. Long-term, consolidating to one styling approach reduces bundle.
+`@emotion/babel-plugin` has been removed — the SWC equivalent (`@swc/plugin-emotion` in `build-tools`) is used instead.
 
 ## @lexical/react
 

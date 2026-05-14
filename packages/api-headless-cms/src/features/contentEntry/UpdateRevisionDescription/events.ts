@@ -34,7 +34,7 @@ export class EntryBeforeUpdateRevisionDescriptionEvent extends DomainEvent<Entry
 /** Hook into entry lifecycle before an entry is updated. */
 export const EntryBeforeUpdateRevisionDescriptionEventHandler = createAbstraction<
     IEventHandler<EntryBeforeUpdateRevisionDescriptionEvent>
->("Cms/Entry/EntryBeforeUpdateRevisionDescriptionEventHandler");
+>("Cms/Entry/BeforeUpdateRevisionDescriptionEventHandler");
 
 export namespace EntryBeforeUpdateRevisionDescriptionEventHandler {
     export type Interface = IEventHandler<EntryBeforeUpdateRevisionDescriptionEvent>;
@@ -55,7 +55,7 @@ export class EntryAfterUpdateRevisionDescriptionEvent extends DomainEvent<EntryA
 /** Hook into entry lifecycle after an entry is updated. */
 export const EntryAfterUpdateRevisionDescriptionEventHandler = createAbstraction<
     IEventHandler<EntryAfterUpdateRevisionDescriptionEvent>
->("Cms/Entry/EntryAfterUpdateRevisionDescriptionEventHandler");
+>("Cms/Entry/AfterUpdateRevisionDescriptionEventHandler");
 
 export namespace EntryAfterUpdateRevisionDescriptionEventHandler {
     export type Interface = IEventHandler<EntryAfterUpdateRevisionDescriptionEvent>;

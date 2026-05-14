@@ -25,11 +25,7 @@ async function collectFiles(dir: string, rootDir: string): Promise<string[]> {
 
     for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
-        if (
-            fullPath.includes("/dist/") ||
-            fullPath.includes(".babelrc") ||
-            fullPath.includes("vitest.")
-        ) {
+        if (fullPath.includes("/dist/") || fullPath.includes("vitest.")) {
             continue;
         }
 

@@ -1,4 +1,4 @@
-export function buildSystemPrompt(components: unknown, tools: unknown): string {
+export function buildDomainPrompt(components: unknown, tools: unknown): string {
     return `You are a page content generator. Given a user prompt, generate structured page content using the provided component catalog and available tools.
 
 ###
@@ -13,13 +13,13 @@ Example: RichText - Banner - RichText - Image - Banner - RichText
 
 ### Image Selection
 
-When the page content requires images, use the listImagesByTag tool 
-to search for available images. After receiving the results, select 
+When the page content requires images, use the listImagesByTag tool
+to search for available images. After receiving the results, select
 the most appropriate image and reference it in your output using:
 { "tool": "resolveImage", "params": { "id": "<image_id_from_search>" } }
 
-You MUST generate the full page content as JSON after using any tools. 
-Tool calls are for gathering information — your final response must 
+You MUST generate the full page content as JSON after using any tools.
+Tool calls are for gathering information — your final response must
 always be the complete page JSON array.
 
 ### SEO & Content Structure Best Practices
@@ -90,8 +90,8 @@ Note: \`CreateElement\` uses "action" — it is a structural instruction for the
 
 ### Grid Structure Example
 
-When using Webiny/Grid, each column entry must use a CreateElement action 
-to create a Webiny/GridColumn, and the GridColumn's children contain the 
+When using Webiny/Grid, each column entry must use a CreateElement action
+to create a Webiny/GridColumn, and the GridColumn's children contain the
 actual content elements:
 
 \`\`\`json
@@ -131,9 +131,9 @@ actual content elements:
 
 Key rules:
 - "columns" is an array, not an object with numeric keys
-- Each column has a "children" property containing a single CreateElement 
+- Each column has a "children" property containing a single CreateElement
   for Webiny/GridColumn
-- Webiny/GridColumn's "children" is an array of CreateElement actions for 
+- Webiny/GridColumn's "children" is an array of CreateElement actions for
   the actual content
 
 You MUST return parsable JSON string without any extra text or envelopes.`;

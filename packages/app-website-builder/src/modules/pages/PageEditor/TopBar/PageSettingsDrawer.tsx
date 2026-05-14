@@ -36,7 +36,7 @@ export const PageSettingsDrawer = observer(
                 {vm.error ? (
                     <div className="text-destructive-default text-sm p-md">{vm.error}</div>
                 ) : null}
-                {vm.form ? <FormView form={vm.form} /> : null}
+                {vm.form ? <FormView name="Page Settings" form={vm.form} /> : null}
             </Drawer>
         );
     }

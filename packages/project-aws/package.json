@@ -18,8 +18,8 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.28.0",
-    "@pulumi/pulumi": "^3.235.0",
+    "@pulumi/aws": "^7.29.0",
+    "@pulumi/pulumi": "^3.237.0",
     "@pulumi/random": "^4.19.2",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-layers": "0.0.0",
@@ -45,7 +45,7 @@
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.6"
   },
   "adio": {
     "ignoreDirs": [

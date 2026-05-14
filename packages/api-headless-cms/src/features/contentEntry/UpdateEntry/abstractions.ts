@@ -6,7 +6,6 @@ import type {
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
-import type { GenericRecord } from "@webiny/api/types.js";
 import type {
     EntryLockedError,
     EntryNotAuthorizedError,
@@ -23,7 +22,6 @@ export interface IUpdateEntryUseCase {
         model: CmsModel,
         id: string,
         input: UpdateCmsEntryInput<T>,
-        metaInput?: GenericRecord,
         options?: UpdateCmsEntryOptionsInput
     ): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
@@ -44,7 +42,6 @@ export const UpdateEntryUseCase = createAbstraction<IUpdateEntryUseCase>("Update
 export namespace UpdateEntryUseCase {
     export type Interface = IUpdateEntryUseCase;
     export type Input<T extends CmsEntryValues = CmsEntryValues> = UpdateCmsEntryInput<T>;
-    export type Meta = GenericRecord;
     export type Options = UpdateCmsEntryOptionsInput;
 
     export type Error = UseCaseError;

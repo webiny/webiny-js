@@ -1,18 +1,7 @@
 import React from "react";
-import { css } from "@emotion/css";
 import { makeDecoratable } from "@webiny/app-admin";
-import { Menu, MenuItem } from "@webiny/ui/Menu/index.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
-import { ListItemGraphic } from "@webiny/ui/List/index.js";
-import { Icon } from "@webiny/ui/Icon/index.js";
-import { IconButton } from "@webiny/admin-ui";
-
-const menuStyles = css`
-    .disabled {
-        opacity: 0.5;
-        pointer-events: none;
-    }
-`;
+import { DropdownMenu, IconButton } from "@webiny/admin-ui";
 
 export interface OptionsMenuItem {
     label: string;
@@ -35,26 +24,21 @@ export const OptionsMenu = makeDecoratable(
         }
 
         return (
-            <Menu
-                className={menuStyles}
-                handle={<IconButton icon={<MoreVerticalIcon />} size={"sm"} variant={"ghost"} />}
-                anchor={"topLeft"}
+            <DropdownMenu
+                trigger={<IconButton icon={<MoreVerticalIcon />} size={"sm"} variant={"ghost"} />}
                 {...props}
             >
                 {items.map(item => (
-                    <MenuItem
+                    <DropdownMenu.Item
                         key={item.label}
                         disabled={item.disabled ?? false}
                         onClick={item.onClick}
                         data-testid={item["data-testid"]}
-                    >
-                        <ListItemGraphic>
-                            <Icon icon={item.icon} />
-                        </ListItemGraphic>
-                        {item.label}
-                    </MenuItem>
+                        icon={item.icon}
+                        text={item.label}
+                    />
                 ))}
-            </Menu>
+            </DropdownMenu>
         );
     }
 );

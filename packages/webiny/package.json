@@ -21,6 +21,7 @@
     "@webiny/api-scheduler": "0.0.0",
     "@webiny/api-website-builder": "0.0.0",
     "@webiny/api-website-builder-scheduler": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-aco": "0.0.0",
     "@webiny/app-admin": "0.0.0",
@@ -138,5 +139,5 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "84c347c65d1d2f596971dec198c9a8560e2932c4a5e97d6e4ca14314c26e8a8d"
+  "exportGenerationHash": "b2379394292c4c16eb454f88eda4b1f8eaa08f18bb3cbefa0e22b3ff753dba6d"
 }
