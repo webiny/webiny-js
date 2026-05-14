@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { GetModelRepository } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { CreateEntryDataFactory } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 import { CreateEntryRepository } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
-import { CompressionHandler } from "@webiny/utils/exports/api.js";
+import { WebhookDeliveryTransformer } from "~/api/features/Transformers/abstractions/WebhookDeliveryTransformer.js";
 import { CreateWebhookDeliveryRepository as RepositoryAbstraction } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
@@ -14,7 +14,7 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
         private readonly getModelRepository: GetModelRepository.Interface,
         private readonly createEntryDataFactory: CreateEntryDataFactory.Interface,
         private readonly createEntryRepository: CreateEntryRepository.Interface,
-        private readonly compressionHandler: CompressionHandler.Interface
+        private readonly transformer: WebhookDeliveryTransformer.Interface
     ) {}
 
     async execute(
@@ -26,25 +26,25 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_DELIVERY_MODEL_ID));
             }
 
-            const compressedPayload = this.compressionHandler.compress(input.payload);
+            const storageValues = await this.transformer.toStorage({
+                id: "",
+                createdOn: "",
+                savedOn: "",
+                webhookId: input.webhookId,
+                backgroundTaskId: null,
+                eventType: input.eventType,
+                status: input.status,
+                payload: input.payload,
+                requestHeaders: null,
+                responseTime: null,
+                responseStatus: null,
+                responseHeaders: null,
+                responseBody: null
+            });
 
             const { entry } = await this.createEntryDataFactory.create<
                 WebhookDeliveryCmsEntry["values"]
-            >(modelResult.value, {
-                values: {
-                    webhookId: input.webhookId,
-                    backgroundTaskId: null,
-                    eventType: input.eventType,
-                    status: "pending",
-                    payload: JSON.stringify(compressedPayload),
-                    requestHeaders: null,
-                    responseTime: null,
-                    responseStatus: null,
-                    responseHeaders: null,
-                    responseBody: null,
-                    expiresAt: input.expiresAt
-                }
-            });
+            >(modelResult.value, { values: storageValues });
 
             const createResult = await this.createEntryRepository.execute(modelResult.value, entry);
 
@@ -52,21 +52,9 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 return Result.fail(new WebhookPersistenceError(createResult.error as any));
             }
 
-            return Result.ok({
-                id: entry.entryId,
-                webhookId: entry.values.webhookId,
-                backgroundTaskId: entry.values.backgroundTaskId,
-                eventType: entry.values.eventType,
-                status: entry.values.status,
-                payload: input.payload,
-                requestHeaders: null,
-                responseTime: entry.values.responseTime,
-                responseStatus: entry.values.responseStatus,
-                responseHeaders: null,
-                responseBody: null,
-                createdOn: entry.createdOn,
-                savedOn: entry.savedOn
-            });
+            const delivery = await this.transformer.fromStorage(entry);
+
+            return Result.ok(delivery);
         } catch (error) {
             return Result.fail(new WebhookPersistenceError(error as Error));
         }
@@ -79,6 +67,6 @@ export const CreateWebhookDeliveryRepository = RepositoryAbstraction.createImple
         GetModelRepository,
         CreateEntryDataFactory,
         CreateEntryRepository,
-        CompressionHandler
+        WebhookDeliveryTransformer
     ]
 });

@@ -1,11 +1,11 @@
 import { createFeature } from "@webiny/feature/api";
-import { CmsEntryToWebhookTransformer } from "./CmsEntryToWebhookTransformer.js";
-import { CmsEntryToWebhookDeliveryTransformer } from "./CmsEntryToWebhookDeliveryTransformer.js";
+import { WebhookTransformer } from "./WebhookTransformer.js";
+import { WebhookDeliveryTransformer } from "./WebhookDeliveryTransformer.js";
 
 export const WebhooksTransformerFeature = createFeature({
     name: "Webhooks/Transformer",
     register(container) {
-        container.register(CmsEntryToWebhookTransformer).inSingletonScope();
-        container.register(CmsEntryToWebhookDeliveryTransformer).inSingletonScope();
+        container.register(WebhookTransformer).inSingletonScope();
+        container.register(WebhookDeliveryTransformer).inSingletonScope();
     }
 });

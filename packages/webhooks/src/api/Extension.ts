@@ -21,7 +21,7 @@ import { WebhookPermissionsFeature } from "./features/WebhookPermissions/feature
 import { WebhookSignPayloadFeature } from "./features/WebhookSignPayload/feature.js";
 import { WebhookDispatcherFeature } from "./features/WebhookDispatcher/feature.js";
 import { SendWebhookTaskFeature } from "./features/SendWebhookTask/feature.js";
-import { WebhooksTransformerFeature } from "./features/Transformer/feature.js";
+import { WebhooksTransformerFeature } from "./features/Transformers/feature.js";
 
 export const Extension = createFeature({
     name: "WebhookManagement",

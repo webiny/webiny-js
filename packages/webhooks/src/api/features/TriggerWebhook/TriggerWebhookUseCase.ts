@@ -49,9 +49,7 @@ class TriggerWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
             ...signHeaders
         };
 
-        const startTime = Date.now();
         let responseStatus = 0;
-        let responseBody = "";
 
         try {
             const response = await fetch(webhook.endpointUrl, {
@@ -61,27 +59,19 @@ class TriggerWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
                 signal: AbortSignal.timeout(30_000)
             });
             responseStatus = response.status;
-            responseBody = await response.text();
-        } catch (error) {
+        } catch {
             responseStatus = 0;
-            responseBody = (error as Error).message;
         }
 
-        const responseTime = Date.now() - startTime;
         const expiresAt = new Date(
             Date.now() + WEBHOOK_DELIVERY_RETENTION_DAYS * 24 * 60 * 60 * 1000
         ).toISOString();
 
         return this.createDeliveryRepository.execute({
             webhookId,
-            backgroundTaskId: triggerId,
             eventType: "webhook.test",
             status: responseStatus > 0 ? "delivered" : "failed",
             payload: webhookPayload,
-            requestHeaders,
-            responseTime,
-            responseStatus,
-            responseBody,
             expiresAt
         });
     }

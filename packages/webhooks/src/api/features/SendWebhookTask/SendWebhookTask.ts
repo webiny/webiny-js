@@ -3,13 +3,10 @@ import { TaskDefinition } from "@webiny/api-core/exports/api/tasks.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
+import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { UpdateWebhookDeliveryRepository } from "~/api/features/UpdateWebhookDelivery/abstractions.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
-import type { ISendWebhookTaskInput, ISendWebhookTaskOutput } from "./types.js";
-import type { IWebhookPayload } from "./types.js";
-import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
-import { CompressionHandler } from "@webiny/utils/exports/api.js";
-import type { GenericRecord } from "@webiny/api/types.js";
+import type { ISendWebhookTaskInput, ISendWebhookTaskOutput, IWebhookPayload } from "./types.js";
 
 type IRunParams = TaskDefinition.RunParams<ISendWebhookTaskInput, ISendWebhookTaskOutput>;
 
@@ -31,8 +28,7 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
         private readonly getWebhookDeliveryRepository: GetWebhookDeliveryRepository.Interface,
         private readonly updateDeliveryRepository: UpdateWebhookDeliveryRepository.Interface,
         private readonly signPayload: WebhookSignPayload.Interface,
-        private readonly tenantContext: TenantContext.Interface,
-        private readonly compressionHandler: CompressionHandler.Interface
+        private readonly tenantContext: TenantContext.Interface
     ) {}
 
     public async run(params: IRunParams) {
@@ -43,10 +39,6 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
         if (delivery.isFail()) {
             return params.controller.response.error(delivery.error);
         }
-
-        const deliveryPayload = await this.compressionHandler.decompress<GenericRecord>(
-            delivery.value.payload
-        );
 
         await this.updateDeliveryRepository.execute(input.deliveryId, {
             backgroundTaskId: taskId,
@@ -67,7 +59,7 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
             timestamp: now.toISOString(),
             webhookId: input.webhookId,
             tenant: this.tenantContext.getTenant().id,
-            data: deliveryPayload
+            data: delivery.value.payload
         };
         const rawBody = JSON.stringify(payload);
         const signHeaders = await this.signPayload.sign(
@@ -122,7 +114,6 @@ export const SendWebhookTask = TaskDefinition.createImplementation({
         GetWebhookDeliveryRepository,
         UpdateWebhookDeliveryRepository,
         WebhookSignPayload,
-        TenantContext,
-        CompressionHandler
+        TenantContext
     ]
 });

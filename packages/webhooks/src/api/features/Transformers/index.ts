@@ -1,2 +1,2 @@
-export { CmsEntryToWebhookTransformer } from "./abstractions/CmsEntryToWebhookTransformer.js";
-export { CmsEntryToWebhookDeliveryTransformer } from "./abstractions/CmsEntryToWebhookDeliveryTransformer.js";
+export { WebhookTransformer } from "./abstractions/WebhookTransformer.js";
+export { WebhookDeliveryTransformer } from "./abstractions/WebhookDeliveryTransformer.js";

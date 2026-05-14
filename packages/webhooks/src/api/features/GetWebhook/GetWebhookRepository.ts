@@ -1,6 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { GetModelRepository } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { GetLatestRevisionByEntryIdRepository } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
+import { WebhookTransformer } from "~/api/features/Transformers/abstractions/WebhookTransformer.js";
 import { GetWebhookRepository as RepositoryAbstraction } from "./abstractions.js";
 import {
     WebhookNotFoundError,
@@ -13,7 +14,8 @@ import type { Webhook, WebhookCmsEntry } from "~/api/domain/Webhook.js";
 class GetWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private readonly getModelRepository: GetModelRepository.Interface,
-        private readonly getLatestRevisionRepository: GetLatestRevisionByEntryIdRepository.Interface
+        private readonly getLatestRevisionRepository: GetLatestRevisionByEntryIdRepository.Interface,
+        private readonly transformer: WebhookTransformer.Interface
     ) {}
 
     async execute(id: string): Promise<Result<Webhook, RepositoryAbstraction.Error>> {
@@ -31,19 +33,9 @@ class GetWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
                 return Result.fail(new WebhookNotFoundError(id));
             }
 
-            const entry = entryResult.value;
-            return Result.ok({
-                id: entry.entryId,
-                name: entry.values.name,
-                slug: entry.values.slug,
-                endpointUrl: entry.values.endpointUrl,
-                description: entry.values.description,
-                enabled: entry.values.enabled,
-                events: entry.values.events,
-                signingSecret: entry.values.signingSecret,
-                createdOn: entry.createdOn,
-                savedOn: entry.savedOn
-            });
+            const webhook = await this.transformer.fromStorage(entryResult.value);
+
+            return Result.ok(webhook);
         } catch (error) {
             return Result.fail(new WebhookPersistenceError(error as Error));
         }
@@ -52,5 +44,5 @@ class GetWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const GetWebhookRepository = RepositoryAbstraction.createImplementation({
     implementation: GetWebhookRepositoryImpl,
-    dependencies: [GetModelRepository, GetLatestRevisionByEntryIdRepository]
+    dependencies: [GetModelRepository, GetLatestRevisionByEntryIdRepository, WebhookTransformer]
 });

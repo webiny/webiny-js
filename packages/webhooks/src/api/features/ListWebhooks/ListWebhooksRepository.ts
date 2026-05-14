@@ -1,6 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { GetModelRepository } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { ListEntriesRepository } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
+import { WebhookTransformer } from "~/api/features/Transformers/abstractions/WebhookTransformer.js";
 import { ListWebhooksRepository as RepositoryAbstraction } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
@@ -10,7 +11,8 @@ import type { WebhookCmsEntry } from "~/api/domain/Webhook.js";
 class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private readonly getModelRepository: GetModelRepository.Interface,
-        private readonly listEntriesRepository: ListEntriesRepository.Interface
+        private readonly listEntriesRepository: ListEntriesRepository.Interface,
+        private readonly transformer: WebhookTransformer.Interface
     ) {}
 
     async execute(
@@ -44,19 +46,12 @@ class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
             }
 
             const { entries, meta } = listResult.value;
+            const items = await Promise.all(
+                entries.map(entry => this.transformer.fromStorage(entry))
+            );
+
             return Result.ok({
-                items: entries.map(entry => ({
-                    id: entry.entryId,
-                    name: entry.values.name,
-                    slug: entry.values.slug,
-                    endpointUrl: entry.values.endpointUrl,
-                    description: entry.values.description,
-                    enabled: entry.values.enabled,
-                    events: entry.values.events,
-                    signingSecret: entry.values.signingSecret,
-                    createdOn: entry.createdOn,
-                    savedOn: entry.savedOn
-                })),
+                items,
                 meta: {
                     cursor: meta.cursor,
                     hasMoreItems: meta.hasMoreItems,
@@ -71,5 +66,5 @@ class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListWebhooksRepository = RepositoryAbstraction.createImplementation({
     implementation: ListWebhooksRepositoryImpl,
-    dependencies: [GetModelRepository, ListEntriesRepository]
+    dependencies: [GetModelRepository, ListEntriesRepository, WebhookTransformer]
 });

@@ -30,12 +30,12 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const delivery = deliveryResult.value;
 
-        const webhookResult = await this.getWebhookRepository.execute(delivery.values.webhookId);
+        const webhookResult = await this.getWebhookRepository.execute(delivery.webhookId);
         if (webhookResult.isFail()) {
             return Result.fail(webhookResult.error);
         }
 
-        const originalPayload = delivery.values.payload as IWebhookPayload | null;
+        const originalPayload = delivery.payload as IWebhookPayload | null;
         const data = originalPayload?.data ?? {};
 
         const expiresAt = new Date(
@@ -43,9 +43,10 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
         ).toISOString();
 
         const newDeliveryResult = await this.createDeliveryRepository.execute({
-            webhookId: delivery.values.webhookId,
-            eventType: delivery.values.eventType,
+            webhookId: delivery.webhookId,
+            eventType: delivery.eventType,
             status: "pending",
+            payload: data as Record<string, unknown>,
             expiresAt
         });
 
@@ -55,11 +56,10 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
 
         await this.taskService.trigger({
             definition: SEND_WEBHOOK_TASK,
-            name: `Resend webhook: ${delivery.values.eventType}`,
+            name: `Resend webhook: ${delivery.eventType}`,
             input: {
-                webhookId: delivery.values.webhookId,
-                eventName: delivery.values.eventType,
-                data,
+                webhookId: delivery.webhookId,
+                eventName: delivery.eventType,
                 deliveryId: newDeliveryResult.value.id
             }
         });

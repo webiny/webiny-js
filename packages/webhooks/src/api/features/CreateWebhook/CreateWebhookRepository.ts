@@ -3,6 +3,7 @@ import { GetModelRepository } from "@webiny/api-headless-cms/features/contentMod
 import { CreateEntryDataFactory } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 import { CreateEntryRepository } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { ListEntriesRepository } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
+import { WebhookTransformer } from "~/api/features/Transformers/abstractions/WebhookTransformer.js";
 import { CreateWebhookRepository as RepositoryAbstraction } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
@@ -13,7 +14,8 @@ class CreateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
         private readonly getModelRepository: GetModelRepository.Interface,
         private readonly createEntryRepository: CreateEntryRepository.Interface,
         private readonly listEntriesRepository: ListEntriesRepository.Interface,
-        private readonly createEntryDataFactory: CreateEntryDataFactory.Interface
+        private readonly createEntryDataFactory: CreateEntryDataFactory.Interface,
+        private readonly transformer: WebhookTransformer.Interface
     ) {}
 
     async slugExists(slug: string): Promise<boolean> {
@@ -51,18 +53,9 @@ class CreateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
                 return Result.fail(new WebhookPersistenceError(createResult.error as any));
             }
 
-            return Result.ok({
-                id: entry.entryId,
-                name: entry.values.name,
-                slug: entry.values.slug,
-                endpointUrl: entry.values.endpointUrl,
-                description: entry.values.description,
-                enabled: entry.values.enabled,
-                events: entry.values.events,
-                signingSecret: entry.values.signingSecret,
-                createdOn: entry.createdOn,
-                savedOn: entry.savedOn
-            });
+            const webhook = await this.transformer.fromStorage(entry);
+
+            return Result.ok(webhook);
         } catch (error) {
             return Result.fail(new WebhookPersistenceError(error as Error));
         }
@@ -75,6 +68,7 @@ export const CreateWebhookRepository = RepositoryAbstraction.createImplementatio
         GetModelRepository,
         CreateEntryRepository,
         ListEntriesRepository,
-        CreateEntryDataFactory
+        CreateEntryDataFactory,
+        WebhookTransformer
     ]
 });

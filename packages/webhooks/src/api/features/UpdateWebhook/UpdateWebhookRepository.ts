@@ -3,6 +3,7 @@ import { GetModelRepository } from "@webiny/api-headless-cms/features/contentMod
 import { GetLatestRevisionByEntryIdRepository } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { UpdateEntryRepository } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { UpdateEntryDataFactory } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
+import { WebhookTransformer } from "~/api/features/Transformers/abstractions/WebhookTransformer.js";
 import { UpdateWebhookRepository as RepositoryAbstraction } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
@@ -13,7 +14,8 @@ class UpdateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
         private readonly getModelRepository: GetModelRepository.Interface,
         private readonly getLatestRevisionRepository: GetLatestRevisionByEntryIdRepository.Interface,
         private readonly updateEntryDataFactory: UpdateEntryDataFactory.Interface,
-        private readonly updateEntryRepository: UpdateEntryRepository.Interface
+        private readonly updateEntryRepository: UpdateEntryRepository.Interface,
+        private readonly transformer: WebhookTransformer.Interface
     ) {}
 
     async execute(webhook: Webhook): Promise<Result<Webhook, RepositoryAbstraction.Error>> {
@@ -30,15 +32,7 @@ class UpdateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
                 return Result.fail(new WebhookPersistenceError(entryResult.error as any));
             }
 
-            const values: WebhookCmsEntry["values"] = {
-                name: webhook.name,
-                slug: webhook.slug,
-                endpointUrl: webhook.endpointUrl,
-                description: webhook.description,
-                enabled: webhook.enabled,
-                events: webhook.events,
-                signingSecret: webhook.signingSecret
-            };
+            const values = await this.transformer.toStorage(webhook);
 
             const { entry } = await this.updateEntryDataFactory.create<WebhookCmsEntry["values"]>(
                 modelResult.value,
@@ -65,6 +59,7 @@ export const UpdateWebhookRepository = RepositoryAbstraction.createImplementatio
         GetModelRepository,
         GetLatestRevisionByEntryIdRepository,
         UpdateEntryDataFactory,
-        UpdateEntryRepository
+        UpdateEntryRepository,
+        WebhookTransformer
     ]
 });
