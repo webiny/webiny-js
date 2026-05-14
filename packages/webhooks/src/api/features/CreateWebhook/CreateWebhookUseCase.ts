@@ -5,7 +5,7 @@ import {
 } from "./abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookValidationError, WebhookNotAuthorizedError } from "~/api/domain/errors.js";
-import type { IWebhook, IWebhookValues } from "~/api/domain/types.js";
+import type { Webhook, WebhookCmsEntry } from "~/api/domain/Webhook.js";
 
 const generateSlug = (name: string): string => {
     return name
@@ -40,7 +40,7 @@ class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
 
     async execute(
         input: UseCaseAbstraction.Input
-    ): Promise<Result<IWebhook, UseCaseAbstraction.Error>> {
+    ): Promise<Result<Webhook, UseCaseAbstraction.Error>> {
         if (!(await this.permissions.canCreate("webhook"))) {
             return Result.fail(new WebhookNotAuthorizedError());
         }
@@ -69,7 +69,7 @@ class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
             candidate = `${slug}-${attempt}`;
         }
 
-        const webhook: IWebhookValues = {
+        const webhook: WebhookCmsEntry["values"] = {
             name: input.name,
             slug: candidate,
             endpointUrl: input.endpointUrl,

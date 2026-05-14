@@ -5,7 +5,7 @@ import {
 } from "./abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookNotAuthorizedError } from "~/api/domain/errors.js";
-import type { IListWebhooksInput } from "~/api/domain/types.js";
+import type { IListWebhooksInput } from "./abstractions.js";
 
 class ListWebhooksUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

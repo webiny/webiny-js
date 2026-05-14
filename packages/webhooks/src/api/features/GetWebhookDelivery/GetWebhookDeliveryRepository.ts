@@ -9,14 +9,14 @@ import {
     WebhookPersistenceError
 } from "~/api/domain/errors.js";
 import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
-import type { IWebhookDelivery, WebhookDeliveryStatus } from "~/api/domain/types.js";
+import type { WebhookDelivery, WebhookDeliveryStatus } from "~/api/domain/WebhookDelivery.js";
 
 interface IRawDeliveryValues {
     webhookId: string;
     backgroundTaskId: string | null;
     eventType: string;
     status: WebhookDeliveryStatus;
-    payload: string | null;
+    payload: string;
     requestHeaders: string | null;
     responseTime: number | null;
     responseStatus: number | null;
@@ -31,7 +31,7 @@ class GetWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interfac
         private readonly compressionHandler: CompressionHandler.Interface
     ) {}
 
-    async execute(id: string): Promise<Result<IWebhookDelivery, RepositoryAbstraction.Error>> {
+    async execute(id: string): Promise<Result<WebhookDelivery, RepositoryAbstraction.Error>> {
         try {
             const modelResult = await this.getModelRepository.execute(WEBHOOK_DELIVERY_MODEL_ID);
             if (modelResult.isFail()) {
@@ -58,19 +58,18 @@ class GetWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interfac
 
             return Result.ok({
                 id: entry.entryId,
-                values: {
-                    webhookId: raw.webhookId,
-                    backgroundTaskId: raw.backgroundTaskId,
-                    eventType: raw.eventType,
-                    status: raw.status,
-                    payload,
-                    requestHeaders,
-                    responseTime: raw.responseTime,
-                    responseStatus: raw.responseStatus,
-                    responseBody,
-                    expiresAt: raw.expiresAt
-                },
-                createdOn: entry.createdOn
+                webhookId: raw.webhookId,
+                backgroundTaskId: raw.backgroundTaskId,
+                eventType: raw.eventType,
+                status: raw.status,
+                payload: payload ?? {},
+                requestHeaders: requestHeaders ?? null,
+                responseTime: raw.responseTime,
+                responseStatus: raw.responseStatus,
+                responseHeaders: null,
+                responseBody: responseBody ?? null,
+                createdOn: entry.createdOn,
+                savedOn: entry.savedOn
             });
         } catch (error) {
             return Result.fail(new WebhookPersistenceError(error as Error));

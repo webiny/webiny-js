@@ -6,7 +6,7 @@ import {
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookValidationError, WebhookNotAuthorizedError } from "~/api/domain/errors.js";
-import type { IWebhook } from "~/api/domain/types.js";
+import type { Webhook } from "~/api/domain/Webhook.js";
 
 const isValidEndpointUrl = (url: string): boolean => {
     try {
@@ -36,7 +36,7 @@ class UpdateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute(
         id: string,
         input: UseCaseAbstraction.Input
-    ): Promise<Result<IWebhook, UseCaseAbstraction.Error>> {
+    ): Promise<Result<Webhook, UseCaseAbstraction.Error>> {
         if (!(await this.permissions.canEdit("webhook"))) {
             return Result.fail(new WebhookNotAuthorizedError());
         }
@@ -60,7 +60,7 @@ class UpdateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new WebhookValidationError("At least one event must be selected."));
         }
 
-        const updated: IWebhook = {
+        const updated: Webhook = {
             ...existing,
             ...(input.name !== undefined ? { name: input.name } : {}),
             ...(input.slug !== undefined ? { slug: input.slug } : {}),

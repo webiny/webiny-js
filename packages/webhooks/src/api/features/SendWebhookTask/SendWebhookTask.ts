@@ -6,7 +6,10 @@ import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js"
 import { UpdateWebhookDeliveryRepository } from "~/api/features/UpdateWebhookDelivery/abstractions.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
 import type { ISendWebhookTaskInput, ISendWebhookTaskOutput } from "./types.js";
-import type { IWebhookPayload } from "~/api/domain/types.js";
+import type { IWebhookPayload } from "./types.js";
+import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
+import { CompressionHandler } from "@webiny/utils/exports/api.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 type IRunParams = TaskDefinition.RunParams<ISendWebhookTaskInput, ISendWebhookTaskOutput>;
 
@@ -14,23 +17,36 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
     ISendWebhookTaskInput,
     ISendWebhookTaskOutput
 > {
-    id = SEND_WEBHOOK_TASK;
-    title = "Send Webhook";
-    maxIterations = 1;
-    isPrivate = true;
-    databaseLogs = false;
-    description = "POST a signed event payload to a webhook endpoint and log the delivery.";
+    public readonly id = SEND_WEBHOOK_TASK;
+    public readonly title = "Send Webhook";
+    public readonly maxIterations = 1;
+    public readonly isPrivate = true;
+    public readonly databaseLogs = false;
+    public readonly description =
+        "POST a signed event payload to a webhook endpoint and log the delivery.";
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
 
-    constructor(
-        private getWebhookRepository: GetWebhookRepository.Interface,
-        private updateDeliveryRepository: UpdateWebhookDeliveryRepository.Interface,
-        private signPayload: WebhookSignPayload.Interface,
-        private tenantContext: TenantContext.Interface
+    public constructor(
+        private readonly getWebhookRepository: GetWebhookRepository.Interface,
+        private readonly getWebhookDeliveryRepository: GetWebhookDeliveryRepository.Interface,
+        private readonly updateDeliveryRepository: UpdateWebhookDeliveryRepository.Interface,
+        private readonly signPayload: WebhookSignPayload.Interface,
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly compressionHandler: CompressionHandler.Interface
     ) {}
 
-    async run(params: IRunParams) {
+    public async run(params: IRunParams) {
         const { input } = params;
         const taskId = params.controller.state.getTask().id;
+
+        const delivery = await this.getWebhookDeliveryRepository.execute(input.deliveryId);
+        if (delivery.isFail()) {
+            return params.controller.response.error(delivery.error);
+        }
+
+        const deliveryPayload = await this.compressionHandler.decompress<GenericRecord>(
+            delivery.value.payload
+        );
 
         await this.updateDeliveryRepository.execute(input.deliveryId, {
             backgroundTaskId: taskId,
@@ -51,7 +67,7 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
             timestamp: now.toISOString(),
             webhookId: input.webhookId,
             tenant: this.tenantContext.getTenant().id,
-            data: input.data
+            data: deliveryPayload
         };
         const rawBody = JSON.stringify(payload);
         const signHeaders = await this.signPayload.sign(
@@ -97,23 +113,16 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
 
         return params.controller.response.done();
     }
-
-    createInputValidation({ validator }: TaskDefinition.CreateInputValidationParams) {
-        return {
-            webhookId: validator.string(),
-            eventName: validator.string(),
-            deliveryId: validator.string(),
-            data: validator.record(validator.string(), validator.unknown()).optional()
-        };
-    }
 }
 
 export const SendWebhookTask = TaskDefinition.createImplementation({
     implementation: SendWebhookTaskDefinition,
     dependencies: [
         GetWebhookRepository,
+        GetWebhookDeliveryRepository,
         UpdateWebhookDeliveryRepository,
         WebhookSignPayload,
-        TenantContext
+        TenantContext,
+        CompressionHandler
     ]
 });

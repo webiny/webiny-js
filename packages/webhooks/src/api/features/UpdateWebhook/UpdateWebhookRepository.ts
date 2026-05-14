@@ -6,7 +6,7 @@ import { UpdateEntryDataFactory } from "@webiny/api-headless-cms/exports/api/cms
 import { UpdateWebhookRepository as RepositoryAbstraction } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
-import type { IWebhook, IWebhookValues } from "~/api/domain/types.js";
+import type { Webhook, WebhookCmsEntry } from "~/api/domain/Webhook.js";
 
 class UpdateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -16,22 +16,21 @@ class UpdateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
         private readonly updateEntryRepository: UpdateEntryRepository.Interface
     ) {}
 
-    async execute(webhook: IWebhook): Promise<Result<IWebhook, RepositoryAbstraction.Error>> {
+    async execute(webhook: Webhook): Promise<Result<Webhook, RepositoryAbstraction.Error>> {
         try {
             const modelResult = await this.getModelRepository.execute(WEBHOOK_MODEL_ID);
             if (modelResult.isFail()) {
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_MODEL_ID));
             }
 
-            const entryResult = await this.getLatestRevisionRepository.execute<IWebhookValues>(
-                modelResult.value,
-                { id: webhook.id }
-            );
+            const entryResult = await this.getLatestRevisionRepository.execute<
+                WebhookCmsEntry["values"]
+            >(modelResult.value, { id: webhook.id });
             if (entryResult.isFail()) {
                 return Result.fail(new WebhookPersistenceError(entryResult.error as any));
             }
 
-            const values: IWebhookValues = {
+            const values: WebhookCmsEntry["values"] = {
                 name: webhook.name,
                 slug: webhook.slug,
                 endpointUrl: webhook.endpointUrl,
@@ -41,7 +40,7 @@ class UpdateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
                 signingSecret: webhook.signingSecret
             };
 
-            const { entry } = await this.updateEntryDataFactory.create<IWebhookValues>(
+            const { entry } = await this.updateEntryDataFactory.create<WebhookCmsEntry["values"]>(
                 modelResult.value,
                 { values },
                 entryResult.value

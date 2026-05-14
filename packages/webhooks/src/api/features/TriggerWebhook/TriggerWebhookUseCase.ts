@@ -5,7 +5,8 @@ import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDel
 import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/api/domain/constants.js";
-import type { IWebhookDelivery, IWebhookPayload } from "~/api/domain/types.js";
+import type { WebhookDelivery } from "~/api/domain/WebhookDelivery.js";
+import type { IWebhookPayload } from "~/api/features/SendWebhookTask/types.js";
 
 class TriggerWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -18,7 +19,7 @@ class TriggerWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute(
         webhookId: string,
         data: Record<string, unknown>
-    ): Promise<Result<IWebhookDelivery, UseCaseAbstraction.Error>> {
+    ): Promise<Result<WebhookDelivery, UseCaseAbstraction.Error>> {
         const webhookResult = await this.getWebhookRepository.execute(webhookId);
         if (webhookResult.isFail()) {
             return Result.fail(webhookResult.error);

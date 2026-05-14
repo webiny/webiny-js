@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { GetWebhookUseCase as UseCaseAbstraction, GetWebhookRepository } from "./abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookNotAuthorizedError } from "~/api/domain/errors.js";
-import type { IWebhook } from "~/api/domain/types.js";
+import type { Webhook } from "~/api/domain/Webhook.js";
 
 class GetWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -10,7 +10,7 @@ class GetWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: GetWebhookRepository.Interface
     ) {}
 
-    async execute(id: string): Promise<Result<IWebhook, UseCaseAbstraction.Error>> {
+    async execute(id: string): Promise<Result<Webhook, UseCaseAbstraction.Error>> {
         if (!(await this.permissions.canRead("webhook"))) {
             return Result.fail(new WebhookNotAuthorizedError());
         }

@@ -1,5 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { IWebhookDelivery } from "~/api/domain/types.js";
+import type { WebhookDelivery } from "~/api/domain/WebhookDelivery.js";
 import type {
     WebhookNotFoundError,
     WebhookPersistenceError,
@@ -17,7 +17,7 @@ export interface ITriggerWebhookUseCase {
     execute(
         webhookId: string,
         payload: Record<string, unknown>
-    ): Promise<Result<IWebhookDelivery, IError>>;
+    ): Promise<Result<WebhookDelivery, IError>>;
 }
 
 export const TriggerWebhookUseCase = createAbstraction<ITriggerWebhookUseCase>(

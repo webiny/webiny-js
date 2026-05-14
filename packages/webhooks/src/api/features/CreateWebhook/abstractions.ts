@@ -1,5 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { IWebhook, IWebhookValues } from "~/api/domain/types.js";
+import type { Webhook, WebhookCmsEntry } from "~/api/domain/Webhook.js";
 import type {
     WebhookModelNotFoundError,
     WebhookNotAuthorizedError,
@@ -24,7 +24,7 @@ type IError =
     | WebhookNotAuthorizedError;
 
 export interface ICreateWebhookUseCase {
-    execute(input: ICreateWebhookInput): Promise<Result<IWebhook, IError>>;
+    execute(input: ICreateWebhookInput): Promise<Result<Webhook, IError>>;
 }
 
 export const CreateWebhookUseCase = createAbstraction<ICreateWebhookUseCase>(
@@ -38,12 +38,12 @@ export namespace CreateWebhookUseCase {
 }
 
 export type ICreateWebhookRepositoryResponse = Result<
-    IWebhook,
+    Webhook,
     WebhookPersistenceError | WebhookModelNotFoundError
 >;
 
 export interface ICreateWebhookRepository {
-    execute(input: IWebhookValues): Promise<ICreateWebhookRepositoryResponse>;
+    execute(input: WebhookCmsEntry["values"]): Promise<ICreateWebhookRepositoryResponse>;
     slugExists(slug: string): Promise<boolean>;
 }
 

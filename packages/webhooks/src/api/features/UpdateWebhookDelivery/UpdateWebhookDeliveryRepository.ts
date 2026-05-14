@@ -11,11 +11,8 @@ import {
     WebhookPersistenceError
 } from "~/api/domain/errors.js";
 import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
-import type {
-    IUpdateDeliveryInput,
-    IWebhookDelivery,
-    WebhookDeliveryStatus
-} from "~/api/domain/types.js";
+import type { IUpdateDeliveryInput } from "./abstractions.js";
+import type { WebhookDelivery, WebhookDeliveryStatus } from "~/api/domain/WebhookDelivery.js";
 
 interface IRawDeliveryValues {
     webhookId: string;
@@ -42,7 +39,7 @@ class UpdateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
     async execute(
         id: string,
         input: IUpdateDeliveryInput
-    ): Promise<Result<IWebhookDelivery, RepositoryAbstraction.Error>> {
+    ): Promise<Result<WebhookDelivery, RepositoryAbstraction.Error>> {
         try {
             const modelResult = await this.getModelRepository.execute(WEBHOOK_DELIVERY_MODEL_ID);
             if (modelResult.isFail()) {

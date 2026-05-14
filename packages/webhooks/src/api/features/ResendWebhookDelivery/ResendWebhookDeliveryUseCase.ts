@@ -7,7 +7,7 @@ import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractio
 import { WebhookNotAuthorizedError } from "~/api/domain/errors.js";
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
 import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/api/domain/constants.js";
-import type { IWebhookPayload } from "~/api/domain/types.js";
+import type { IWebhookPayload } from "~/api/features/SendWebhookTask/types.js";
 
 class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

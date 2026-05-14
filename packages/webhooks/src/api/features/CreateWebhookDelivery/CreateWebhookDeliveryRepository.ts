@@ -6,8 +6,8 @@ import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { CreateWebhookDeliveryRepository as RepositoryAbstraction } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
-import type { ICreateDeliveryInput, IWebhookDelivery } from "~/api/domain/types.js";
-import { randomBytes } from "node:crypto";
+import type { ICreateDeliveryInput } from "./abstractions.js";
+import type { WebhookDelivery, WebhookDeliveryCmsEntry } from "~/api/domain/WebhookDelivery.js";
 
 class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -19,35 +19,29 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
 
     async execute(
         input: ICreateDeliveryInput
-    ): Promise<Result<IWebhookDelivery, RepositoryAbstraction.Error>> {
+    ): Promise<Result<WebhookDelivery, RepositoryAbstraction.Error>> {
         try {
             const modelResult = await this.getModelRepository.execute(WEBHOOK_DELIVERY_MODEL_ID);
             if (modelResult.isFail()) {
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_DELIVERY_MODEL_ID));
             }
 
-            const [compressedPayload, compressedHeaders, compressedBody] = await Promise.all([
-                input.payload ? this.compressionHandler.compress(input.payload) : null,
-                input.requestHeaders
-                    ? this.compressionHandler.compress(input.requestHeaders)
-                    : null,
-                input.responseBody ? this.compressionHandler.compress(input.responseBody) : null
-            ]);
+            const compressedPayload = this.compressionHandler.compress(input.payload);
 
-            const id = randomBytes(8).toString("hex");
-
-            const { entry } = await this.createEntryDataFactory.create(modelResult.value, {
-                id,
+            const { entry } = await this.createEntryDataFactory.create<
+                WebhookDeliveryCmsEntry["values"]
+            >(modelResult.value, {
                 values: {
                     webhookId: input.webhookId,
-                    backgroundTaskId: input.backgroundTaskId ?? null,
+                    backgroundTaskId: null,
                     eventType: input.eventType,
-                    status: input.status,
-                    payload: compressedPayload ? JSON.stringify(compressedPayload) : null,
-                    requestHeaders: compressedHeaders ? JSON.stringify(compressedHeaders) : null,
-                    responseTime: input.responseTime ?? null,
-                    responseStatus: input.responseStatus ?? null,
-                    responseBody: compressedBody ? JSON.stringify(compressedBody) : null,
+                    status: "pending",
+                    payload: JSON.stringify(compressedPayload),
+                    requestHeaders: null,
+                    responseTime: null,
+                    responseStatus: null,
+                    responseHeaders: null,
+                    responseBody: null,
                     expiresAt: input.expiresAt
                 }
             });
@@ -59,19 +53,19 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
             }
 
             return Result.ok({
-                id,
-                values: {
-                    webhookId: input.webhookId,
-                    backgroundTaskId: input.backgroundTaskId ?? null,
-                    eventType: input.eventType,
-                    status: input.status,
-                    payload: input.payload ?? null,
-                    requestHeaders: input.requestHeaders ?? null,
-                    responseTime: input.responseTime ?? null,
-                    responseStatus: input.responseStatus ?? null,
-                    responseBody: input.responseBody ?? null,
-                    expiresAt: input.expiresAt
-                }
+                id: entry.entryId,
+                webhookId: entry.values.webhookId,
+                backgroundTaskId: entry.values.backgroundTaskId,
+                eventType: entry.values.eventType,
+                status: entry.values.status,
+                payload: input.payload,
+                requestHeaders: null,
+                responseTime: entry.values.responseTime,
+                responseStatus: entry.values.responseStatus,
+                responseHeaders: null,
+                responseBody: null,
+                createdOn: entry.createdOn,
+                savedOn: entry.savedOn
             });
         } catch (error) {
             return Result.fail(new WebhookPersistenceError(error as Error));

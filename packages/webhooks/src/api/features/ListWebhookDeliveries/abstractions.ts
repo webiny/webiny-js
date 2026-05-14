@@ -1,19 +1,27 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type {
-    IWebhookDelivery,
-    IListWebhookDeliveriesInput,
-    IListMeta
-} from "~/api/domain/types.js";
+import type { WebhookDelivery } from "~/api/domain/WebhookDelivery.js";
 import type {
     WebhookPersistenceError,
     WebhookModelNotFoundError,
     WebhookNotAuthorizedError
 } from "~/api/domain/errors.js";
 
+export interface IListWebhookDeliveriesInput {
+    webhookId: string;
+    limit?: number;
+    after?: string;
+}
+
+export interface IListMeta {
+    cursor: string | null;
+    hasMoreItems: boolean;
+    totalCount: number;
+}
+
 type IError = WebhookPersistenceError | WebhookModelNotFoundError | WebhookNotAuthorizedError;
 
 export interface IListWebhookDeliveriesOutput {
-    items: IWebhookDelivery[];
+    items: WebhookDelivery[];
     meta: IListMeta;
 }
 

@@ -6,8 +6,7 @@ import { ListEntriesRepository } from "@webiny/api-headless-cms/features/content
 import { CreateWebhookRepository as RepositoryAbstraction } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
-import type { IWebhookValues } from "~/api/domain/types.js";
-import { CmsEntryToWebhook } from "~/api/domain/CmsEntryToWebhook.js";
+import type { WebhookCmsEntry } from "~/api/domain/Webhook.js";
 
 class CreateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -34,14 +33,14 @@ class CreateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
         return listResult.value.entries.length > 0;
     }
 
-    async execute(input: IWebhookValues): Promise<RepositoryAbstraction.Response> {
+    async execute(input: WebhookCmsEntry["values"]): Promise<RepositoryAbstraction.Response> {
         try {
             const modelResult = await this.getModelRepository.execute(WEBHOOK_MODEL_ID);
             if (modelResult.isFail()) {
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_MODEL_ID));
             }
 
-            const { entry } = await this.createEntryDataFactory.create<IWebhookValues>(
+            const { entry } = await this.createEntryDataFactory.create<WebhookCmsEntry["values"]>(
                 modelResult.value,
                 { values: input }
             );
@@ -52,7 +51,18 @@ class CreateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
                 return Result.fail(new WebhookPersistenceError(createResult.error as any));
             }
 
-            return Result.ok(CmsEntryToWebhook.map(entry));
+            return Result.ok({
+                id: entry.entryId,
+                name: entry.values.name,
+                slug: entry.values.slug,
+                endpointUrl: entry.values.endpointUrl,
+                description: entry.values.description,
+                enabled: entry.values.enabled,
+                events: entry.values.events,
+                signingSecret: entry.values.signingSecret,
+                createdOn: entry.createdOn,
+                savedOn: entry.savedOn
+            });
         } catch (error) {
             return Result.fail(new WebhookPersistenceError(error as Error));
         }

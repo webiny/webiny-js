@@ -1,5 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { IWebhook } from "~/api/domain/types.js";
+import type { Webhook } from "~/api/domain/Webhook.js";
 import type {
     WebhookNotFoundError,
     WebhookModelNotFoundError,
@@ -14,7 +14,7 @@ type IError =
     | WebhookNotAuthorizedError;
 
 export interface IGetWebhookUseCase {
-    execute(id: string): Promise<Result<IWebhook, IError>>;
+    execute(id: string): Promise<Result<Webhook, IError>>;
 }
 
 export const GetWebhookUseCase = createAbstraction<IGetWebhookUseCase>(
@@ -27,7 +27,7 @@ export namespace GetWebhookUseCase {
 }
 
 export interface IGetWebhookRepository {
-    execute(id: string): Promise<Result<IWebhook, IError>>;
+    execute(id: string): Promise<Result<Webhook, IError>>;
 }
 
 export const GetWebhookRepository = createAbstraction<IGetWebhookRepository>(

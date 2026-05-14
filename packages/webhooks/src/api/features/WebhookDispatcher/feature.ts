@@ -1,9 +1,9 @@
 import { createFeature } from "@webiny/feature/api";
-import { WebhookDispatcherImpl } from "./WebhookDispatcherImpl.js";
+import { WebhookDispatcher } from "./WebhookDispatcher.js";
 
 export const WebhookDispatcherFeature = createFeature({
     name: "WebhookDispatcher",
     register(container) {
-        container.register(WebhookDispatcherImpl).inSingletonScope();
+        container.register(WebhookDispatcher).inSingletonScope();
     }
 });

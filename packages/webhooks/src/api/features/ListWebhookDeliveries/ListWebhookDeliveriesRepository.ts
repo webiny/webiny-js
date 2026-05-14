@@ -7,7 +7,8 @@ import {
 } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
-import type { IListWebhookDeliveriesInput, WebhookDeliveryStatus } from "~/api/domain/types.js";
+import type { IListWebhookDeliveriesInput } from "./abstractions.js";
+import type { WebhookDeliveryStatus } from "~/api/domain/WebhookDelivery.js";
 
 interface IRawDeliveryListValues {
     webhookId: string;

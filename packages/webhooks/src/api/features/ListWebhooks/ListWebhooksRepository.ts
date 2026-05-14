@@ -4,8 +4,8 @@ import { ListEntriesRepository } from "@webiny/api-headless-cms/features/content
 import { ListWebhooksRepository as RepositoryAbstraction } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
-import type { IWebhookValues, IListWebhooksInput } from "~/api/domain/types.js";
-import { CmsEntryToWebhook } from "~/api/domain/CmsEntryToWebhook.js";
+import type { IListWebhooksInput } from "./abstractions.js";
+import type { WebhookCmsEntry } from "~/api/domain/Webhook.js";
 
 class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -30,7 +30,7 @@ class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
                 valuesWhere.events_in = [input.where.events];
             }
 
-            const listResult = await this.listEntriesRepository.execute<IWebhookValues>(
+            const listResult = await this.listEntriesRepository.execute<WebhookCmsEntry["values"]>(
                 modelResult.value,
                 {
                     where: { values: valuesWhere },
@@ -45,7 +45,18 @@ class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
 
             const { entries, meta } = listResult.value;
             return Result.ok({
-                items: entries.map(entry => CmsEntryToWebhook.map(entry)),
+                items: entries.map(entry => ({
+                    id: entry.entryId,
+                    name: entry.values.name,
+                    slug: entry.values.slug,
+                    endpointUrl: entry.values.endpointUrl,
+                    description: entry.values.description,
+                    enabled: entry.values.enabled,
+                    events: entry.values.events,
+                    signingSecret: entry.values.signingSecret,
+                    createdOn: entry.createdOn,
+                    savedOn: entry.savedOn
+                })),
                 meta: {
                     cursor: meta.cursor,
                     hasMoreItems: meta.hasMoreItems,

@@ -5,7 +5,7 @@ import {
 } from "./abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookNotAuthorizedError } from "~/api/domain/errors.js";
-import type { IWebhookDelivery } from "~/api/domain/types.js";
+import type { WebhookDelivery } from "~/api/domain/WebhookDelivery.js";
 
 class GetWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -13,7 +13,7 @@ class GetWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: GetWebhookDeliveryRepository.Interface
     ) {}
 
-    async execute(id: string): Promise<ResultType<IWebhookDelivery, UseCaseAbstraction.Error>> {
+    async execute(id: string): Promise<ResultType<WebhookDelivery, UseCaseAbstraction.Error>> {
         if (!(await this.permissions.canRead("webhook"))) {
             return Result.fail(new WebhookNotAuthorizedError());
         }
