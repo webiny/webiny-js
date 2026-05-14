@@ -9,7 +9,10 @@ import {
     WebhookPersistenceError
 } from "~/api/domain/errors.js";
 import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
-import type { WebhookDelivery, WebhookDeliveryCmsEntry } from "~/api/domain/WebhookDelivery.js";
+import type {
+    WebhookDelivery,
+    WebhookDeliveryCmsEntryValues
+} from "~/api/domain/WebhookDelivery.js";
 
 class GetWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -25,9 +28,11 @@ class GetWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interfac
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_DELIVERY_MODEL_ID));
             }
 
-            const entryResult = await this.getLatestRevisionRepository.execute<
-                WebhookDeliveryCmsEntry["values"]
-            >(modelResult.value, { id });
+            const entryResult =
+                await this.getLatestRevisionRepository.execute<WebhookDeliveryCmsEntryValues>(
+                    modelResult.value,
+                    { id }
+                );
 
             if (entryResult.isFail()) {
                 return Result.fail(new WebhookDeliveryNotFoundError(id));

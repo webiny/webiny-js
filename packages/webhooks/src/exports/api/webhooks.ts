@@ -12,6 +12,7 @@ export type { Webhook, WebhookCmsEntry, WebhookCmsEntryValues } from "~/api/doma
 export type {
     WebhookDelivery,
     WebhookDeliveryCmsEntry,
+    WebhookDeliveryCmsEntryValues,
     WebhookDeliveryStatus
 } from "~/api/domain/WebhookDelivery.js";
 export type { IWebhookPayload } from "~/api/features/SendWebhookTask/types.js";

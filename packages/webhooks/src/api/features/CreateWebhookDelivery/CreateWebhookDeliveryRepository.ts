@@ -7,7 +7,10 @@ import { CreateWebhookDeliveryRepository as RepositoryAbstraction } from "./abst
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
 import type { ICreateDeliveryInput } from "./abstractions.js";
-import type { WebhookDelivery, WebhookDeliveryCmsEntry } from "~/api/domain/WebhookDelivery.js";
+import type {
+    WebhookDelivery,
+    WebhookDeliveryCmsEntryValues
+} from "~/api/domain/WebhookDelivery.js";
 
 class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -42,9 +45,11 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 responseBody: null
             });
 
-            const { entry } = await this.createEntryDataFactory.create<
-                WebhookDeliveryCmsEntry["values"]
-            >(modelResult.value, { values: storageValues });
+            const { entry } =
+                await this.createEntryDataFactory.create<WebhookDeliveryCmsEntryValues>(
+                    modelResult.value,
+                    { values: storageValues }
+                );
 
             const createResult = await this.createEntryRepository.execute(modelResult.value, entry);
 

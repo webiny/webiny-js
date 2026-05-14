@@ -9,7 +9,7 @@ import {
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
 import type { IListWebhookDeliveriesInput } from "./abstractions.js";
-import type { WebhookDeliveryCmsEntry } from "~/api/domain/WebhookDelivery.js";
+import type { WebhookDeliveryCmsEntryValues } from "~/api/domain/WebhookDelivery.js";
 
 class ListWebhookDeliveriesRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -27,14 +27,16 @@ class ListWebhookDeliveriesRepositoryImpl implements RepositoryAbstraction.Inter
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_DELIVERY_MODEL_ID));
             }
 
-            const listResult = await this.listEntriesRepository.execute<
-                WebhookDeliveryCmsEntry["values"]
-            >(modelResult.value, {
-                where: { values: { webhookId: input.webhookId } },
-                sort: ["createdOn_DESC"],
-                limit: input.limit ?? 100,
-                after: input.after
-            });
+            const listResult =
+                await this.listEntriesRepository.execute<WebhookDeliveryCmsEntryValues>(
+                    modelResult.value,
+                    {
+                        where: { values: { webhookId: input.webhookId } },
+                        sort: ["createdOn_DESC"],
+                        limit: input.limit ?? 100,
+                        after: input.after
+                    }
+                );
 
             if (listResult.isFail()) {
                 return Result.fail(new WebhookPersistenceError(listResult.error as any));

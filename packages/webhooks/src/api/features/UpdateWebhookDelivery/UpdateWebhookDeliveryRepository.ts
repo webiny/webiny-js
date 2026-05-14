@@ -12,7 +12,10 @@ import {
 } from "~/api/domain/errors.js";
 import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
 import type { IUpdateDeliveryInput } from "./abstractions.js";
-import type { WebhookDelivery, WebhookDeliveryCmsEntry } from "~/api/domain/WebhookDelivery.js";
+import type {
+    WebhookDelivery,
+    WebhookDeliveryCmsEntryValues
+} from "~/api/domain/WebhookDelivery.js";
 
 class UpdateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -33,9 +36,11 @@ class UpdateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_DELIVERY_MODEL_ID));
             }
 
-            const entryResult = await this.getLatestRevisionRepository.execute<
-                WebhookDeliveryCmsEntry["values"]
-            >(modelResult.value, { id });
+            const entryResult =
+                await this.getLatestRevisionRepository.execute<WebhookDeliveryCmsEntryValues>(
+                    modelResult.value,
+                    { id }
+                );
 
             if (entryResult.isFail()) {
                 return Result.fail(new WebhookDeliveryNotFoundError(id));
@@ -57,9 +62,12 @@ class UpdateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
 
             const storageValues = await this.transformer.toStorage(updated);
 
-            const { entry } = await this.updateEntryDataFactory.create<
-                WebhookDeliveryCmsEntry["values"]
-            >(modelResult.value, { values: storageValues }, originalEntry);
+            const { entry } =
+                await this.updateEntryDataFactory.create<WebhookDeliveryCmsEntryValues>(
+                    modelResult.value,
+                    { values: storageValues },
+                    originalEntry
+                );
 
             const updateResult = await this.updateEntryRepository.execute(modelResult.value, entry);
 

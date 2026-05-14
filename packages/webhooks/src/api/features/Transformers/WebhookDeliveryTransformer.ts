@@ -2,14 +2,15 @@ import { WebhookDeliveryTransformer as WebhookDeliveryTransformerAbstraction } f
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { WebhookDelivery, WebhookDeliveryCmsEntry } from "~/api/domain/WebhookDelivery.js";
+import type {
+    WebhookDelivery,
+    WebhookDeliveryCmsEntryValues
+} from "~/api/domain/WebhookDelivery.js";
 
 class WebhookDeliveryTransformerImpl implements WebhookDeliveryTransformerAbstraction.Interface {
     constructor(private readonly compressionHandler: CompressionHandler.Interface) {}
 
-    async fromStorage(
-        entry: CmsEntry<WebhookDeliveryCmsEntry["values"]>
-    ): Promise<WebhookDelivery> {
+    async fromStorage(entry: CmsEntry<WebhookDeliveryCmsEntryValues>): Promise<WebhookDelivery> {
         const [payload, requestHeaders, responseHeaders, responseBody] = await Promise.all([
             this.decompress<GenericRecord>(entry.values.payload),
             this.decompress<GenericRecord>(entry.values.requestHeaders),
@@ -34,7 +35,7 @@ class WebhookDeliveryTransformerImpl implements WebhookDeliveryTransformerAbstra
         };
     }
 
-    async toStorage(delivery: WebhookDelivery): Promise<WebhookDeliveryCmsEntry["values"]> {
+    async toStorage(delivery: WebhookDelivery): Promise<WebhookDeliveryCmsEntryValues> {
         const [payload, requestHeaders, responseHeaders, responseBody] = await Promise.all([
             this.compress(delivery.payload),
             delivery.requestHeaders ? this.compress(delivery.requestHeaders) : null,
