@@ -2,12 +2,15 @@ import React, { useCallback, useEffect, useRef } from "react";
 import { Toast } from "~/Toast/index.js";
 import { Tooltip } from "~/Tooltip/index.js";
 import { type LinkComponent, DefaultLinkComponent } from "~/index.js";
+import { defaultFileUrlFormatter } from "./FileUrlFormatter.js";
+import type { FileUrlFormatter } from "./FileUrlFormatter.js";
 
 export type CompileMarkdown = (markdown: React.ReactNode) => React.ReactNode;
 
 export interface AdminUiContextValue {
     linkComponent: LinkComponent;
     compileMarkdown: CompileMarkdown;
+    fileUrlFormatter: FileUrlFormatter;
 }
 
 const passthrough = (markdown: string) => markdown;
@@ -21,12 +24,14 @@ interface MarkdownCompiler {
 export interface AdminUiProviderProps {
     linkComponent?: LinkComponent;
     markdownCompiler?: MarkdownCompiler;
+    fileUrlFormatter?: FileUrlFormatter;
     children: React.ReactNode;
 }
 
 export const AdminUiProvider = ({ children, ...props }: AdminUiProviderProps) => {
     const linkComponent = props.linkComponent ?? DefaultLinkComponent;
     const markdownCompiler = props.markdownCompiler ?? passthrough;
+    const fileUrlFormatter = props.fileUrlFormatter ?? defaultFileUrlFormatter;
 
     // Cache to store compiled markdown results
     const cacheRef = useRef(new Map<string, React.ReactNode>());
@@ -65,7 +70,7 @@ export const AdminUiProvider = ({ children, ...props }: AdminUiProviderProps) =>
     );
 
     return (
-        <AdminUiContext.Provider value={{ linkComponent, compileMarkdown }}>
+        <AdminUiContext.Provider value={{ linkComponent, compileMarkdown, fileUrlFormatter }}>
             <Tooltip.Provider>{children}</Tooltip.Provider>
             <Toast.Provider />
         </AdminUiContext.Provider>

@@ -22,6 +22,9 @@ import type { LayoutRendererConfig } from "./AdminConfig/LayoutRenderer.js";
 import { createAdminConfig } from "./createAdminConfig.js";
 import type { EditorTheme } from "@webiny/lexical-theme";
 import { createLexicalTokens } from "@webiny/lexical-theme/createLexicalEditorTokens.js";
+import type { FileUrlFormatter } from "@webiny/admin-ui";
+import { defaultFileUrlFormatter } from "@webiny/admin-ui";
+import { FileUrlFormatterConfig } from "./AdminConfig/FileUrlFormatter.js";
 
 const base = createAdminConfig<AdminConfig>();
 
@@ -43,6 +46,7 @@ interface AdminConfig {
     dialogs: DialogConfig[];
     fieldRenderers: FieldRendererConfig[];
     layoutRenderers: LayoutRendererConfig[];
+    fileUrlFormatter: FileUrlFormatter;
 }
 
 /* Once the app fully renders (after the LoginScreen), apply protected configs. */
@@ -84,7 +88,8 @@ export const useAdminConfig = () => {
         lexicalTheme,
         dialogs: baseConfig.dialogs ?? [],
         fieldRenderers: baseConfig.fieldRenderers ?? [],
-        layoutRenderers: baseConfig.layoutRenderers ?? []
+        layoutRenderers: baseConfig.layoutRenderers ?? [],
+        fileUrlFormatter: baseConfig.fileUrlFormatter ?? defaultFileUrlFormatter
     };
 };
 
@@ -117,5 +122,6 @@ export const AdminConfig = Object.assign(Private, {
     LexicalTheme,
     Dialog,
     Form,
+    FileUrlFormatter: FileUrlFormatterConfig,
     useAdminConfig
 });

@@ -2,6 +2,7 @@ import React from "react";
 import { createProvider, SimpleLink } from "@webiny/app";
 import { AdminUiProvider } from "@webiny/admin-ui";
 import { compiler } from "markdown-to-jsx/react";
+import { useAdminConfig } from "~/config/AdminConfig.js";
 
 const options = {
     overrides: {
@@ -26,8 +27,13 @@ interface UiProvidersProps {
 export const createUiProviders = () => {
     return createProvider(Component => {
         return function UiProviders({ children }: UiProvidersProps) {
+            const { fileUrlFormatter } = useAdminConfig();
             return (
-                <AdminUiProvider linkComponent={SimpleLink} markdownCompiler={markdownCompiler}>
+                <AdminUiProvider
+                    linkComponent={SimpleLink}
+                    markdownCompiler={markdownCompiler}
+                    fileUrlFormatter={fileUrlFormatter}
+                >
                     <Component>{children}</Component>
                 </AdminUiProvider>
             );

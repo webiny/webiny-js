@@ -2,7 +2,7 @@ import * as React from "react";
 import { type VariantProps } from "~/utils.js";
 import type { filePickerVariants } from "~/FilePicker/index.js";
 import type { FilePreviewDefaultProps } from "../types.js";
-import { RichItemPreview, TextOnlyPreview } from "../previews/index.js";
+import { RichItemPreview } from "../previews/index.js";
 
 type FilePreviewProps = FilePreviewDefaultProps & {
     type: VariantProps<typeof filePickerVariants>["type"];
@@ -11,11 +11,7 @@ type FilePreviewProps = FilePreviewDefaultProps & {
 
 const FilePreview = ({ type, renderFilePreview, ...props }: FilePreviewProps) => {
     if (typeof renderFilePreview === "function") {
-        return renderFilePreview(props);
-    }
-
-    if (type === "compact") {
-        return <TextOnlyPreview {...props} />;
+        return renderFilePreview({ type, ...props });
     }
 
     return <RichItemPreview {...props} />;

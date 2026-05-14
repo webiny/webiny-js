@@ -23,10 +23,11 @@ export class FileItem {
     }
 
     static create(data: FileItemDto): FileItem {
+        const url = "url" in data ? data.url : data.src;
         return new FileItem({
             id: generateId(data.id),
-            name: data.name ?? data.url,
-            url: data.url,
+            name: data.name ?? url,
+            url,
             mimeType: data.mimeType ?? this.getDefaultMimeType(),
             size: data.size ?? 0
         });
