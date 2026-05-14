@@ -1,10 +1,8 @@
 import React from "react";
 import { ReactComponent as DashboardIcon } from "@webiny/icons/space_dashboard.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
-import { ReactComponent as FileManagerIcon } from "@webiny/icons/folder_open.svg";
 import { ReactComponent as UpgradeIcon } from "@webiny/icons/electric_bolt.svg";
 import { AdminConfig } from "~/config/AdminConfig.js";
-import { HasPermission } from "~/presentation/security/components/HasPermission.js";
 import { Menu } from "~/config/AdminConfig/Menu.js";
 import { useWcp } from "~/presentation/wcp/useWcp.js";
 
@@ -25,24 +23,6 @@ export const Menus = React.memo(() => {
                     />
                 }
             />
-            <HasPermission name={"fm.file"}>
-                <Menu
-                    name={"fileManager"}
-                    pin={"start"}
-                    element={
-                        <Menu.Link
-                            text={"File Manager"}
-                            icon={
-                                <Menu.Item.Icon
-                                    label="File Manager"
-                                    element={<FileManagerIcon />}
-                                />
-                            }
-                            to={"/file-manager"}
-                        />
-                    }
-                />
-            </HasPermission>
             <Menu
                 name={"settings"}
                 hideIfEmpty={true}
