@@ -27,6 +27,8 @@ import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
 import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
 import { DefaultSetApiCustomDomains } from "~/pulumi/features/SetApiCustomDomains/index.js";
+import { ApiCustomDomains as apiCustomDomainsExt } from "~/pulumi/extensions/ApiCustomDomains.js";
+import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -234,6 +236,12 @@ export const createApiPulumiApp = () => {
             const cloudfront = app.addModule(ApiCloudfront);
             const backgroundTask = app.addModule(ApiBackgroundTask);
             const scheduler = app.addModule(ApiScheduler);
+
+            const [apiCustomDomains] = projectConfig.extensionsByType(apiCustomDomainsExt);
+            if (apiCustomDomains) {
+                const { domains, sslMethod, certificateArn } = apiCustomDomains.params;
+                applyCustomDomain(cloudfront, { domains, sslMethod, certificateArn });
+            }
 
             sdk.getContainer().register(DefaultSetApiCustomDomains);
 
