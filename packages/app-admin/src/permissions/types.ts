@@ -37,9 +37,9 @@ export interface EntityDefinition {
     /** Permission name emitted for this entity (e.g. "fm.file") */
     permission: string;
     /** Available access scopes */
-    scopes: ("full" | "own")[];
+    scopes: readonly ("full" | "own")[];
     /** Action definitions for this entity */
-    actions?: ActionDefinition[];
+    actions?: readonly ActionDefinition[];
     /** Dependency on another entity */
     dependsOn?: {
         /** ID of parent entity */
@@ -68,7 +68,7 @@ export interface PermissionSchemaConfig {
      */
     readOnlyAccess?: boolean | Permission[];
     /** Entity definitions (optional — simple apps have none) */
-    entities?: EntityDefinition[];
+    entities?: readonly EntityDefinition[];
 }
 
 /**
@@ -88,7 +88,7 @@ export interface PermissionSchema {
      * - `Permission[]` — emits the array as-is.
      */
     readOnlyAccess?: boolean | Permission[];
-    entities?: EntityDefinition[];
+    entities?: readonly EntityDefinition[];
 }
 
 /**
