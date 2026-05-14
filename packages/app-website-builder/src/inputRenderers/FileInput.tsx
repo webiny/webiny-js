@@ -31,14 +31,13 @@ export const FileInputRenderer = ({
         });
     };
 
-    const useAdmin
-    // const fileUrl = FileUrl.create(value.src).width(128).toString();
+    // const useAdmin
+    // // const fileUrl = FileUrl.create(value.src).width(128).toString();
+    //
+    // // 1. url + src
+    // // 2. FileUrlFormatter
 
-    // 1. url + src
-    // 2. FileUrlFormatter
-
-
-    console.log('vaaa', value)
+    console.log("vaaa", value);
     return (
         <FileManager
             accept={input.allowedFileTypes}
@@ -50,7 +49,7 @@ export const FileInputRenderer = ({
                     type="compact"
                     value={{
                         ...value,
-                        url: value.src + "?width=128px",
+                        url: value.src + "?width=128px"
                     }}
                     onSelectItem={() => showFileManager()}
                     onRemoveItem={onRemove}
