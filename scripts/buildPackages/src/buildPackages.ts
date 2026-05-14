@@ -23,6 +23,7 @@ interface BuildOptions {
     debug?: boolean;
     cache?: boolean;
     buildOverrides?: string;
+    safeReplace?: boolean;
 }
 
 interface BuildContext {
@@ -71,7 +72,7 @@ export const buildPackages = async () => {
 
     if (allPackages.length === 1) {
         const [pkg] = allPackages;
-        await buildPackage(pkg, options.buildOverrides, "inherit");
+        await buildPackage(pkg, options.buildOverrides, "inherit", options.safeReplace);
     } else {
         const start = Date.now();
 
@@ -100,7 +101,12 @@ export const buildPackages = async () => {
                                 title: `${pkg.name}`,
                                 task: async () => {
                                     try {
-                                        await buildPackage(pkg, options.buildOverrides);
+                                        await buildPackage(
+                                            pkg,
+                                            options.buildOverrides,
+                                            undefined,
+                                            options.safeReplace
+                                        );
 
                                         // Store package hash
                                         const sourceHash = await getPackageSourceHash(pkg);

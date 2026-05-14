@@ -6,9 +6,18 @@ import { fork, type StdioOptions } from "child_process";
 import path from "path";
 import { deserializeError } from "serialize-error";
 
-export const buildPackage = async (pkg: Package, buildOverrides = "{}", stdio?: StdioOptions) => {
+export const buildPackage = async (
+    pkg: Package,
+    buildOverrides = "{}",
+    stdio?: StdioOptions,
+    safeReplace?: boolean
+) => {
     const workerPath = path.join(import.meta.dirname, "buildPackageWorker.js");
-    const childProcess = fork(workerPath, [buildOverrides], {
+    const args = [buildOverrides];
+    if (safeReplace) {
+        args.push("--safe-replace");
+    }
+    const childProcess = fork(workerPath, args, {
         env: process.env,
         cwd: pkg.packageFolder,
         stdio: stdio || ["pipe", "pipe", "pipe", "ipc"]
