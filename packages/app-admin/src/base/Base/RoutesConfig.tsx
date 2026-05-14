@@ -4,7 +4,6 @@ import { AdminLayout } from "~/components/AdminLayout.js";
 import { NotFound } from "~/base/ui/NotFound.js";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { Routes } from "~/routes.js";
-import { FileManager } from "~/base/ui/FileManager.js";
 import { Route } from "~/config/AdminConfig/Route.js";
 import { FormModelDemo } from "~/features/formModel/demo/FormModelDemo.js";
 
@@ -16,15 +15,6 @@ export const RoutesConfig = React.memo(() => {
                 element={
                     <AdminLayout title={"Welcome!"}>
                         <Dashboard />
-                    </AdminLayout>
-                }
-            />
-
-            <Route
-                route={Routes.FileManager}
-                element={
-                    <AdminLayout title={"File Manager"}>
-                        <FileManager overlay={false} show={true} />
                     </AdminLayout>
                 }
             />

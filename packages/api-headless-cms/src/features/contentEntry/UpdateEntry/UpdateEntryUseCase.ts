@@ -1,9 +1,7 @@
-import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
-import { UpdateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { UpdateEntryRepository } from "./abstractions.js";
+import { createImplementation, Result } from "@webiny/feature/api";
+import { UpdateEntryRepository, UpdateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import { EntryBeforeUpdateEvent, EntryAfterUpdateEvent } from "./events.js";
+import { EntryAfterUpdateEvent, EntryBeforeUpdateEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/abstractions.js";
 import type {
@@ -13,9 +11,7 @@ import type {
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
-import type { GenericRecord } from "@webiny/api/types.js";
-import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
-import { EntryLockedError } from "~/domain/contentEntry/errors.js";
+import { EntryLockedError, EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { UpdateEntryDataFactory } from "~/features/contentEntry/entryDataFactories/UpdateEntryDataFactory/index.js";
 
 class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -31,7 +27,6 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         model: CmsModel,
         id: string,
         rawInput: UpdateCmsEntryInput<T>,
-        metaInput?: GenericRecord,
         options?: UpdateCmsEntryOptionsInput
     ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
@@ -56,8 +51,7 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 model,
                 rawInput,
                 originalEntry,
-                options,
-                metaInput
+                options
             );
 
             const canAccessEntry = await this.accessControl.canAccessEntry({

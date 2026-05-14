@@ -31,12 +31,13 @@ process.on("unhandledRejection", reason => {
 });
 
 const buildOverrides = JSON.parse(process.argv[2]);
+const safeReplace = process.argv.includes("--safe-replace");
 const webinyConfigPath = pathToFileURL(path.join(process.cwd(), "webiny.config.js")).href;
 
 try {
     const { default: webinyConfigTs } = await import(webinyConfigPath);
 
-    await webinyConfigTs.commands.build({ overrides: buildOverrides });
+    await webinyConfigTs.commands.build({ overrides: buildOverrides, safeReplace });
 
     sendSuccess();
 } catch (ex) {

@@ -6,7 +6,6 @@ import type {
 import { FileManager } from "@webiny/app-admin";
 import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 import { FilePicker } from "@webiny/admin-ui";
-import { EditFileUsingUrl } from "~/components/EditFileUsingUrl/index.js";
 import { getSupportedExtensionsLabelHint } from "~/modules/HeadlessCms/fileRenderer/utils.js";
 
 const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
@@ -24,35 +23,30 @@ const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
 
                 return (
                     <Bind.ValidationContainer>
-                        <EditFileUsingUrl onSetFile={file => bind.onChange(file.src)}>
-                            {({ editFile }) => (
-                                <FileManager
-                                    images={imagesOnly}
-                                    render={({ showFileManager }) => {
-                                        return (
-                                            <FilePicker
-                                                {...bind}
-                                                disabled={disabled}
-                                                label={field.label}
-                                                validation={validation}
-                                                description={field.description}
-                                                hint={field.help}
-                                                note={getSupportedExtensionsLabelHint(imagesOnly)}
-                                                value={value}
-                                                onSelectItem={() => {
-                                                    showFileManager(file => onChange(file.src));
-                                                }}
-                                                onEditItem={() => editFile(value)}
-                                                onRemoveItem={() => onChange(null)}
-                                                placeholder={field.placeholder}
-                                                type={"compact"}
-                                                data-testid={`fr.input.filefield.${field.label}`}
-                                            />
-                                        );
-                                    }}
-                                />
-                            )}
-                        </EditFileUsingUrl>
+                        <FileManager
+                            images={imagesOnly}
+                            render={({ showFileManager }) => {
+                                return (
+                                    <FilePicker
+                                        {...bind}
+                                        disabled={disabled}
+                                        label={field.label}
+                                        validation={validation}
+                                        description={field.description}
+                                        hint={field.help}
+                                        note={getSupportedExtensionsLabelHint(imagesOnly)}
+                                        value={value}
+                                        onSelectItem={() => {
+                                            showFileManager(file => onChange(file.src));
+                                        }}
+                                        onRemoveItem={() => onChange(null)}
+                                        placeholder={field.placeholder}
+                                        type={"compact"}
+                                        data-testid={`fr.input.filefield.${field.label}`}
+                                    />
+                                );
+                            }}
+                        />
                     </Bind.ValidationContainer>
                 );
             }}

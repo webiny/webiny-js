@@ -6,6 +6,7 @@ import { useCreateDialog } from "~/dialogs/index.js";
 
 type ButtonCreateProps = {
     disabled?: boolean;
+    onCreateFolder?: () => void;
 };
 
 const t = i18n.ns("app-aco/components/folder-tree/button-create");
@@ -13,9 +14,17 @@ const t = i18n.ns("app-aco/components/folder-tree/button-create");
 export const ButtonCreate = (props: ButtonCreateProps) => {
     const { showDialog } = useCreateDialog();
 
+    const handleClick = () => {
+        if (props.onCreateFolder) {
+            props.onCreateFolder();
+        } else {
+            showDialog();
+        }
+    };
+
     return (
         <Button
-            onClick={() => showDialog()}
+            onClick={handleClick}
             disabled={props.disabled}
             icon={<Plus />}
             text={t`New folder`}

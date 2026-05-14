@@ -13,7 +13,9 @@ export interface OptionsMenuItemProps {
 export const OptionsMenuItem = (props: OptionsMenuItemProps) => {
     return (
         <DropdownMenu.Item
-            onClick={props.onAction}
+            onClick={() => {
+                props.onAction();
+            }}
             disabled={props.disabled ?? false}
             data-testid={props["data-testid"]}
             icon={<DropdownMenu.Item.Icon label={props.label} element={props.icon} />}

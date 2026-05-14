@@ -433,15 +433,6 @@ export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
      */
     location?: ICmsEntryLocation;
     /**
-     * Settings for the given entry.
-     *
-     * Introduced with Advanced Publishing Workflow. Will always be inserted once this PR is merged.
-     * Be aware that when accessing properties in it on old systems, it will break if not checked first.
-     *
-     * Available only on the Manage API in entry GraphQL type `meta.data` property.
-     */
-    meta?: GenericRecord;
-    /**
      * Is the entry in the bin?
      */
     wbyDeleted?: boolean | null;
