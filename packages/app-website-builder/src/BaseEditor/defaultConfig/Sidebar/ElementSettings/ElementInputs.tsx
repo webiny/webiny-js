@@ -39,7 +39,7 @@ export const ElementInputs = makeDecoratable("ElementInputs", ({ element }: Elem
     }
 
     return (
-        <Grid>
+        <Grid gap={'compact'}>
             {/*<Grid.Column key={"repeat"} span={12}>*/}
             {/*    <Select*/}
             {/*        label={"Repeat for each"}*/}
