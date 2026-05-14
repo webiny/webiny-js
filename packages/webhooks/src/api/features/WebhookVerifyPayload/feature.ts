@@ -1,9 +1,9 @@
 import { createFeature } from "@webiny/feature/api";
-import { WebhookVerifyPayloadImpl } from "./WebhookVerifyPayloadImpl.js";
+import { WebhookVerifyPayload } from "./WebhookVerifyPayload.js";
 
 export const WebhookVerifyPayloadFeature = createFeature({
     name: "WebhookVerifyPayload",
     register(container) {
-        container.register(WebhookVerifyPayloadImpl).inSingletonScope();
+        container.register(WebhookVerifyPayload).inSingletonScope();
     }
 });

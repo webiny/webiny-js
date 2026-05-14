@@ -9,7 +9,7 @@ import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/api/domain
 import type { IWebhookDispatcherData } from "@webiny/api-core/features/webhooks/WebhookDispatcher/abstractions.js";
 import type { ISendWebhookTaskInput } from "~/api/features/SendWebhookTask/types.js";
 
-class WebhookDispatcherImpl_ implements WebhookDispatcherAbstraction.Interface {
+class WebhookDispatcherImpl implements WebhookDispatcherAbstraction.Interface {
     constructor(
         private readonly listWebhooksRepository: ListWebhooksRepository.Interface,
         private readonly createDeliveryRepository: CreateWebhookDeliveryRepository.Interface,
@@ -77,7 +77,7 @@ class WebhookDispatcherImpl_ implements WebhookDispatcherAbstraction.Interface {
 }
 
 export const WebhookDispatcher = WebhookDispatcherAbstraction.createImplementation({
-    implementation: WebhookDispatcherImpl_,
+    implementation: WebhookDispatcherImpl,
     dependencies: [
         ListWebhooksRepository,
         CreateWebhookDeliveryRepository,

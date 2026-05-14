@@ -1,13 +1,13 @@
 import { Webhook } from "standardwebhooks";
-import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
+import { WebhookSignPayload as WebhookSignPayloadAbstraction } from "@webiny/api-core/features/webhooks/index.js";
 
-class WebhookSignPayloadImpl_ implements WebhookSignPayload.Interface {
+class WebhookSignPayloadImpl implements WebhookSignPayloadAbstraction.Interface {
     async sign(
         msgId: string,
         timestamp: Date,
         rawBody: string | Buffer,
         secret: string
-    ): Promise<WebhookSignPayload.Headers> {
+    ): Promise<WebhookSignPayloadAbstraction.Headers> {
         const wh = new Webhook(secret);
         const signature = wh.sign(msgId, timestamp, rawBody);
         return {
@@ -18,7 +18,7 @@ class WebhookSignPayloadImpl_ implements WebhookSignPayload.Interface {
     }
 }
 
-export const WebhookSignPayloadImpl = WebhookSignPayload.createImplementation({
-    implementation: WebhookSignPayloadImpl_,
+export const WebhookSignPayload = WebhookSignPayloadAbstraction.createImplementation({
+    implementation: WebhookSignPayloadImpl,
     dependencies: []
 });

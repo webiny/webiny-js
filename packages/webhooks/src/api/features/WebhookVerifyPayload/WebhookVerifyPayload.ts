@@ -1,12 +1,12 @@
 import { Webhook } from "standardwebhooks";
 import { Result } from "@webiny/feature/api";
-import { WebhookVerifyPayload } from "@webiny/api-core/features/webhooks/index.js";
+import { WebhookVerifyPayload as WebhookVerifyPayloadAbstraction } from "@webiny/api-core/features/webhooks/index.js";
 import { WebhookVerificationFailedError } from "~/api/domain/errors.js";
 
-class WebhookVerifyPayloadImpl_ implements WebhookVerifyPayload.Interface {
+class WebhookVerifyPayloadImpl implements WebhookVerifyPayloadAbstraction.Interface {
     public async verify<T>(
         rawBody: string | Buffer,
-        headers: WebhookVerifyPayload.Headers,
+        headers: WebhookVerifyPayloadAbstraction.Headers,
         secret: string
     ): Promise<Result<T, WebhookVerificationFailedError>> {
         try {
@@ -19,7 +19,7 @@ class WebhookVerifyPayloadImpl_ implements WebhookVerifyPayload.Interface {
     }
 }
 
-export const WebhookVerifyPayloadImpl = WebhookVerifyPayload.createImplementation({
-    implementation: WebhookVerifyPayloadImpl_,
+export const WebhookVerifyPayload = WebhookVerifyPayloadAbstraction.createImplementation({
+    implementation: WebhookVerifyPayloadImpl,
     dependencies: []
 });
