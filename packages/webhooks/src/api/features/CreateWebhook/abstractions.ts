@@ -1,5 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { Webhook, WebhookCmsEntry } from "~/api/domain/Webhook.js";
+import type { Webhook, WebhookCmsEntryValues } from "~/api/domain/Webhook.js";
 import type {
     WebhookModelNotFoundError,
     WebhookNotAuthorizedError,
@@ -43,7 +43,7 @@ export type ICreateWebhookRepositoryResponse = Result<
 >;
 
 export interface ICreateWebhookRepository {
-    execute(input: WebhookCmsEntry["values"]): Promise<ICreateWebhookRepositoryResponse>;
+    execute(input: WebhookCmsEntryValues): Promise<ICreateWebhookRepositoryResponse>;
     slugExists(slug: string): Promise<boolean>;
 }
 

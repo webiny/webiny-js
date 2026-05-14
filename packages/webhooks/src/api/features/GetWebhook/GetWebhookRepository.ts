@@ -9,7 +9,7 @@ import {
     WebhookPersistenceError
 } from "~/api/domain/errors.js";
 import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
-import type { Webhook, WebhookCmsEntry } from "~/api/domain/Webhook.js";
+import type { Webhook, WebhookCmsEntryValues } from "~/api/domain/Webhook.js";
 
 class GetWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -25,9 +25,11 @@ class GetWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_MODEL_ID));
             }
 
-            const entryResult = await this.getLatestRevisionRepository.execute<
-                WebhookCmsEntry["values"]
-            >(modelResult.value, { id });
+            const entryResult =
+                await this.getLatestRevisionRepository.execute<WebhookCmsEntryValues>(
+                    modelResult.value,
+                    { id }
+                );
 
             if (entryResult.isFail()) {
                 return Result.fail(new WebhookNotFoundError(id));

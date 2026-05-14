@@ -1,9 +1,9 @@
 import { WebhookTransformer as WebhookTransformerAbstraction } from "./abstractions/WebhookTransformer.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
-import type { Webhook, WebhookCmsEntry } from "~/api/domain/Webhook.js";
+import type { Webhook, WebhookCmsEntryValues } from "~/api/domain/Webhook.js";
 
 class WebhookTransformerImpl implements WebhookTransformerAbstraction.Interface {
-    async fromStorage(entry: CmsEntry<WebhookCmsEntry["values"]>): Promise<Webhook> {
+    async fromStorage(entry: CmsEntry<WebhookCmsEntryValues>): Promise<Webhook> {
         return {
             id: entry.entryId,
             name: entry.values.name,
@@ -18,7 +18,7 @@ class WebhookTransformerImpl implements WebhookTransformerAbstraction.Interface 
         };
     }
 
-    async toStorage(webhook: Webhook): Promise<WebhookCmsEntry["values"]> {
+    async toStorage(webhook: Webhook): Promise<WebhookCmsEntryValues> {
         return {
             name: webhook.name,
             slug: webhook.slug,

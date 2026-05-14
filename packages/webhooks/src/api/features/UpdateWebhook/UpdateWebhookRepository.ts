@@ -7,7 +7,7 @@ import { WebhookTransformer } from "~/api/features/Transformers/abstractions/Web
 import { UpdateWebhookRepository as RepositoryAbstraction } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
-import type { Webhook, WebhookCmsEntry } from "~/api/domain/Webhook.js";
+import type { Webhook, WebhookCmsEntryValues } from "~/api/domain/Webhook.js";
 
 class UpdateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -25,16 +25,18 @@ class UpdateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_MODEL_ID));
             }
 
-            const entryResult = await this.getLatestRevisionRepository.execute<
-                WebhookCmsEntry["values"]
-            >(modelResult.value, { id: webhook.id });
+            const entryResult =
+                await this.getLatestRevisionRepository.execute<WebhookCmsEntryValues>(
+                    modelResult.value,
+                    { id: webhook.id }
+                );
             if (entryResult.isFail()) {
                 return Result.fail(new WebhookPersistenceError(entryResult.error as any));
             }
 
             const values = await this.transformer.toStorage(webhook);
 
-            const { entry } = await this.updateEntryDataFactory.create<WebhookCmsEntry["values"]>(
+            const { entry } = await this.updateEntryDataFactory.create<WebhookCmsEntryValues>(
                 modelResult.value,
                 { values },
                 entryResult.value

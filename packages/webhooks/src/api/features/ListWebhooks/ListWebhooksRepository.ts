@@ -6,7 +6,7 @@ import { ListWebhooksRepository as RepositoryAbstraction } from "./abstractions.
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
 import type { IListWebhooksInput } from "./abstractions.js";
-import type { WebhookCmsEntry } from "~/api/domain/Webhook.js";
+import type { WebhookCmsEntryValues } from "~/api/domain/Webhook.js";
 
 class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -32,7 +32,7 @@ class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
                 valuesWhere.events_in = [input.where.events];
             }
 
-            const listResult = await this.listEntriesRepository.execute<WebhookCmsEntry["values"]>(
+            const listResult = await this.listEntriesRepository.execute<WebhookCmsEntryValues>(
                 modelResult.value,
                 {
                     where: { values: valuesWhere },

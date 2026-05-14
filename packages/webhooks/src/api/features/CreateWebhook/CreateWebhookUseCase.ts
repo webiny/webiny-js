@@ -5,7 +5,7 @@ import {
 } from "./abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookValidationError, WebhookNotAuthorizedError } from "~/api/domain/errors.js";
-import type { Webhook, WebhookCmsEntry } from "~/api/domain/Webhook.js";
+import type { Webhook, WebhookCmsEntryValues } from "~/api/domain/Webhook.js";
 
 const generateSlug = (name: string): string => {
     return name
@@ -69,7 +69,7 @@ class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
             candidate = `${slug}-${attempt}`;
         }
 
-        const webhook: WebhookCmsEntry["values"] = {
+        const webhook: WebhookCmsEntryValues = {
             name: input.name,
             slug: candidate,
             endpointUrl: input.endpointUrl,

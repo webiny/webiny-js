@@ -8,7 +8,7 @@ export {
 } from "@webiny/api-core/exports/api/webhooks.js";
 
 /* Domain types bridge packages reference. */
-export type { Webhook, WebhookCmsEntry } from "~/api/domain/Webhook.js";
+export type { Webhook, WebhookCmsEntry, WebhookCmsEntryValues } from "~/api/domain/Webhook.js";
 export type {
     WebhookDelivery,
     WebhookDeliveryCmsEntry,
