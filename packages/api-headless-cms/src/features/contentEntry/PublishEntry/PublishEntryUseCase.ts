@@ -1,6 +1,5 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { PublishEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { PublishEntryRepository } from "./abstractions.js";
@@ -15,43 +14,27 @@ import {
 } from "./events.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
-import { createPublishEntryData } from "~/crud/contentEntry/entryDataFactories/index.js";
-import { CmsContext } from "~/features/shared/abstractions.js";
+import { CreatePublishEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreatePublishEntryDataFactory/index.js";
 
-/**
- * PublishEntryUseCase - Orchestrates publishing an entry.
- *
- * Responsibilities:
- * - Apply access control (publish permission)
- * - Get the entry to publish
- * - Get the latest revision for entry-level metadata
- * - Prepare entry data with publish metadata
- * - Validate entry data
- * - Publish domain events
- * - Delegate to repository for storage operations
- */
 class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
         private repository: PublishEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
         private getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
-        private identityContext: IdentityContext.Interface,
         private eventPublisher: EventPublisher.Interface,
-        private cmsContext: CmsContext.Interface
+        private createPublishEntryDataFactory: CreatePublishEntryDataFactory.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string
     ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
-        // Check access control (publish permission)
         const canAccess = await this.accessControl.canAccessEntry({ model, pw: "p" });
         if (!canAccess) {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        // Get the entry to publish
         const result = await this.getRevisionById.execute<T>(model, id);
 
         if (result.isFail()) {
@@ -60,7 +43,6 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const originalEntry = result.value;
 
-        // Check access control on the specific entry
         const canAccessEntry = await this.accessControl.canAccessEntry({
             model,
             entry: originalEntry,
@@ -71,7 +53,6 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        // Get the latest revision for entry-level metadata
         const latestResult = await this.getLatestRevision.execute<T>(model, {
             id: originalEntry.entryId
         });
@@ -82,17 +63,13 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const latestEntry = latestResult.value;
 
-        // Prepare entry data for publishing (includes validation)
-        const { entry } = await createPublishEntryData<T>({
-            context: this.cmsContext,
+        const { entry } = await this.createPublishEntryDataFactory.create<T>(
             model,
             originalEntry,
-            latestEntry,
-            getIdentity: () => this.identityContext.getIdentity()
-        });
+            latestEntry
+        );
 
         try {
-            // Publish before event
             await this.eventPublisher.publish(
                 new EntryBeforePublishEvent({
                     entry,
@@ -101,7 +78,6 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 })
             );
 
-            // Delegate to repository
             const repositoryResult = await this.repository.execute(model, entry);
 
             if (repositoryResult.isFail()) {
@@ -118,7 +94,6 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
             const publishedEntry = repositoryResult.value;
 
-            // Publish after event
             await this.eventPublisher.publish(
                 new EntryAfterPublishEvent({
                     entry: publishedEntry,
@@ -150,8 +125,7 @@ export const PublishEntryUseCase = createImplementation({
         AccessControl,
         GetRevisionByIdUseCase,
         GetLatestRevisionByEntryIdUseCase,
-        IdentityContext,
         EventPublisher,
-        CmsContext
+        CreatePublishEntryDataFactory
     ]
 });
