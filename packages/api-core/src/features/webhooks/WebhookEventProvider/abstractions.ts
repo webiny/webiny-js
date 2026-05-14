@@ -18,4 +18,5 @@ export const WebhookEventProvider = createAbstraction<IWebhookEventProvider>(
 
 export namespace WebhookEventProvider {
     export type Interface = IWebhookEventProvider;
+    export type Definition = IWebhookEventDefinition;
 }
