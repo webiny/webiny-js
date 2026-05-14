@@ -39,17 +39,15 @@ class ModelsFetcherImpl implements FetcherAbstraction.Interface {
                 tenant: tenant.id
             });
 
+            // Fetch plugin models (with caching and access control)
+            const pluginModels = await this.pluginModelsProvider.list(tenant.id);
+
             // Try to get from cache first
             const cached = await this.modelCache.getOrSet(cacheKey, async () => {
-                // Fetch plugin models (with caching and access control)
-                const pluginModels = await this.pluginModelsProvider.list(tenant.id);
-
-                const databaseModels = await this.fetchAndMergeModels(tenant.id);
-
-                return [...pluginModels, ...databaseModels];
+                return this.fetchAndMergeModels(tenant.id);
             });
 
-            return Result.ok(cached);
+            return Result.ok([...cached, ...pluginModels]);
         } catch (error) {
             return Result.fail(new ModelPersistenceError(error as Error));
         }
