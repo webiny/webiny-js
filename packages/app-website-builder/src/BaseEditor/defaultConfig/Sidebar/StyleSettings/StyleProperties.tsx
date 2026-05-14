@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Accordion } from "@webiny/admin-ui";
+import { StyleAccordion } from "./StyleAccordion.js";
 import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
 import type { DocumentElement } from "@webiny/website-builder-sdk";
 import { Background } from "./Groups/Background.js";
@@ -33,7 +33,7 @@ const ElementStyleProperties = ({ element }: { element: DocumentElement }) => {
     );
 
     return (
-        <Accordion>
+        <StyleAccordion>
             {isHidden(StyleSettings.Layout) ? null : <Layout elementId={element.id} />}
             {isHidden(StyleSettings.MarginPadding) ? null : (
                 <MarginPadding elementId={element.id} />
@@ -41,6 +41,6 @@ const ElementStyleProperties = ({ element }: { element: DocumentElement }) => {
             {isHidden(StyleSettings.Border) ? null : <Border elementId={element.id} />}
             {isHidden(StyleSettings.Background) ? null : <Background elementId={element.id} />}
             {isHidden(StyleSettings.Visibility) ? null : <VisibilityGroup elementId={element.id} />}
-        </Accordion>
+        </StyleAccordion>
     );
 };

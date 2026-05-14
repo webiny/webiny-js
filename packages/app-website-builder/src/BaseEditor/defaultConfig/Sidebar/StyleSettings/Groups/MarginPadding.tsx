@@ -1,5 +1,6 @@
 import React from "react";
-import { Accordion } from "@webiny/admin-ui";
+import { ReactComponent as MarginPaddingIcon } from "@webiny/icons/border_inner.svg";
+import { StyleAccordion } from "../StyleAccordion.js";
 import { MarginPaddingControl } from "./MarginPadding/MarginPadding.js";
 
 interface MarginPaddingProps {
@@ -8,13 +9,13 @@ interface MarginPaddingProps {
 
 export const MarginPadding = ({ elementId }: MarginPaddingProps) => {
     return (
-        <Accordion.Item
+        <StyleAccordion.Item
             title={"Margin & Padding"}
-            description={"Set spacing in and around the element"}
+            icon={<MarginPaddingIcon />}
         >
             <div style={{ width: 280, marginLeft: -8 }}>
                 <MarginPaddingControl elementId={elementId} />
             </div>
-        </Accordion.Item>
+        </StyleAccordion.Item>
     );
 };

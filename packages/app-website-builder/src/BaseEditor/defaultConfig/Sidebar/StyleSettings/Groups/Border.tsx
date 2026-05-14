@@ -1,5 +1,6 @@
 import React from "react";
-import { Accordion } from "@webiny/admin-ui";
+import { ReactComponent as BorderIcon } from "@webiny/icons/border_all.svg";
+import { StyleAccordion } from "../StyleAccordion.js";
 import { BorderControl } from "./Border/Border.js";
 
 interface BorderProps {
@@ -8,10 +9,10 @@ interface BorderProps {
 
 export const Border = ({ elementId }: BorderProps) => {
     return (
-        <Accordion.Item title={"Border"} description={"Set border width, radius, style, and color"}>
+        <StyleAccordion.Item title={"Border"} icon={<BorderIcon />}>
             <div style={{ width: 280, marginLeft: -8 }}>
                 <BorderControl elementId={elementId} />
             </div>
-        </Accordion.Item>
+        </StyleAccordion.Item>
     );
 };

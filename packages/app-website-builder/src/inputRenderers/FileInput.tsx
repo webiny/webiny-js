@@ -31,6 +31,14 @@ export const FileInputRenderer = ({
         });
     };
 
+    const useAdmin
+    // const fileUrl = FileUrl.create(value.src).width(128).toString();
+
+    // 1. url + src
+    // 2. FileUrlFormatter
+
+
+    console.log('vaaa', value)
     return (
         <FileManager
             accept={input.allowedFileTypes}
@@ -40,7 +48,10 @@ export const FileInputRenderer = ({
                     label={label}
                     description={input.description}
                     type="compact"
-                    value={value}
+                    value={{
+                        ...value,
+                        url: value.src + "?width=128px",
+                    }}
                     onSelectItem={() => showFileManager()}
                     onRemoveItem={onRemove}
                     onEditItem={() => showFileManager()}

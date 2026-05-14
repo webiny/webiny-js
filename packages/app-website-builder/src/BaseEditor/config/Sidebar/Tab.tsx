@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { SegmentedControl } from "@webiny/admin-ui";
 
 export const TabContainer = styled("div")({
+    padding: '8px', // p-sm
     display: "flex",
     position: "relative",
     flexDirection: "column",
