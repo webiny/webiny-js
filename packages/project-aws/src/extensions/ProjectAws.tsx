@@ -38,6 +38,16 @@ export const ProjectAws = () => {
             <ProjectImplementation src={p("../features/InvokeLambdaFunction.js")} singleton />
             <ProjectImplementation src={p("../features/ApiGqlClient.js")} singleton />
 
+            {/* Default custom domain services */}
+            <ProjectImplementation
+                src={p("../pulumi/features/SetAdminCustomDomains/DefaultSetAdminCustomDomains.js")}
+                singleton
+            />
+            <ProjectImplementation
+                src={p("../pulumi/features/SetApiCustomDomains/DefaultSetApiCustomDomains.js")}
+                singleton
+            />
+
             <AdminAfterDeploy src={p("ProjectAws/UploadAdminAppToS3.js")} />
 
             <ApiAfterDeploy src={p("ProjectAws/AutoInstall/AutoInstallAfterApiDeploy.js")} />

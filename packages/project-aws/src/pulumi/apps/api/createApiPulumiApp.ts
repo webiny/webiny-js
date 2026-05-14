@@ -26,7 +26,6 @@ import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFr
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
 import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
-import { DefaultSetApiCustomDomains } from "~/pulumi/features/SetApiCustomDomains/index.js";
 import { ApiCustomDomains as apiCustomDomainsExt } from "~/pulumi/extensions/ApiCustomDomains.js";
 import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 
@@ -242,8 +241,6 @@ export const createApiPulumiApp = () => {
                 const { domains, sslMethod, certificateArn } = apiCustomDomains.params;
                 applyCustomDomain(cloudfront, { domains, sslMethod, certificateArn });
             }
-
-            sdk.getContainer().register(DefaultSetApiCustomDomains);
 
             // Execute directly so implementations run before the CloudFront resource is created.
             sdk.getContainer().registerComposite(apiPulumi);
