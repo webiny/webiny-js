@@ -24,9 +24,9 @@ import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
-import { ApiPulumi, SetApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
+import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
 import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
-import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
+import { DefaultSetApiCustomDomains } from "~/pulumi/features/SetApiCustomDomains/index.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -235,12 +235,7 @@ export const createApiPulumiApp = () => {
             const backgroundTask = app.addModule(ApiBackgroundTask);
             const scheduler = app.addModule(ApiScheduler);
 
-            // Register SetApiCustomDomains with app captured — no need to pass app in execute().
-            sdk.getContainer().registerInstance(SetApiCustomDomains, {
-                execute(params) {
-                    applyCustomDomain(cloudfront, params);
-                }
-            });
+            sdk.getContainer().register(DefaultSetApiCustomDomains);
 
             // Execute directly so implementations run before the CloudFront resource is created.
             sdk.getContainer().registerComposite(apiPulumi);

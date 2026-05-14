@@ -8,7 +8,7 @@ class MyAdminPulumiHandlerImpl implements AdminPulumi.Interface {
     ) {}
 
     execute(app: any) {
-        this.setAdminCustomDomains.execute({
+        this.setAdminCustomDomains.execute(app.resources.cloudfront, {
             domains: ["webiny.adriaweb.xyz"],
             sslMethod: "sni-only",
             certificateArn:
