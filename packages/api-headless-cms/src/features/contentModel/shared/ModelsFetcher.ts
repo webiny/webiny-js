@@ -16,10 +16,10 @@ import { ModelFieldCompression } from "~/features/contentModel/ModelFieldCompres
  * ModelsFetcherImpl - Implementation with multi-level caching.
  *
  * Caching strategy:
- * 1. Plugin models are cached per tenant (with access control applied by PluginModelsProvider)
- * 2. Database models are cached per tenant (raw from DB)
- * 3. Filtered database models are cached per tenant + identity (with access control applied)
- * 4. Final merged list is cached per tenant + identity
+ * - Plugin models: cached in PluginModelsProvider keyed on (tenant, factoryCount).
+ *   Auto-invalidates when a new ModelFactory is registered (e.g. by a ContextPlugin),
+ *   so late-registered models such as Webiny Task are always visible.
+ * - Database models: cached per tenant (raw from DB, stable within a request).
  */
 class ModelsFetcherImpl implements FetcherAbstraction.Interface {
     public constructor(

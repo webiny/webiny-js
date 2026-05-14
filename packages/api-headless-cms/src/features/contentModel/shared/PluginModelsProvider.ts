@@ -14,6 +14,10 @@ import {
  * 2. New ModelBuilder providers (public and private)
  */
 class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
+    // Cache keyed on "<tenant>:<factoryCount>" so it auto-invalidates whenever a
+    // new ModelFactory is registered into the container (e.g. by a ContextPlugin).
+    private cache: { key: string; models: CmsModel[] } | undefined;
+
     public constructor(
         private cmsContext: CmsContext.Interface,
         private accessControl: AccessControl.Interface,
@@ -21,6 +25,11 @@ class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
     ) {}
 
     async list(tenant: string): Promise<CmsModel[]> {
+        const cacheKey = `${tenant}:${this.modelsProvider.count()}`;
+        if (this.cache?.key === cacheKey) {
+            return this.cache.models;
+        }
+
         // Get models from legacy plugins
         const modelPlugins = this.cmsContext.plugins.byType<CmsModelPlugin>(CmsModelPlugin.type);
 
@@ -50,7 +59,9 @@ class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
         const builderModels = await this.modelsProvider.list(tenant);
 
         // Combine both sources
-        return [...allowedLegacyModels, ...builderModels];
+        const models = [...allowedLegacyModels, ...builderModels];
+        this.cache = { key: cacheKey, models };
+        return models;
     }
 
     private ensureTypeTag(model: Pick<CmsModel, "tags">) {
