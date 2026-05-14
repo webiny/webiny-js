@@ -1,8 +1,8 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { IWebhookEventDefinition } from "~/api/domain/types.js";
+import type { IWebhookFactoryDefinition } from "@webiny/api-core/features/webhooks/Webhook/abstractions/WebhookFactory.js";
 
 export interface IListAvailableWebhookEventsUseCase {
-    execute(): Promise<Result<IWebhookEventDefinition[], Error>>;
+    execute(): Promise<Result<IWebhookFactoryDefinition[], Error>>;
 }
 
 export const ListAvailableWebhookEventsUseCase =

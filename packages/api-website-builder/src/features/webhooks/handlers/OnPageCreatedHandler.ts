@@ -1,11 +1,12 @@
 import { PageAfterCreateEventHandler } from "~/features/pages/CreatePage/abstractions.js";
 import { WebhookDispatcher } from "@webiny/api-core/features/webhooks/index.js";
+import { WebhookEvent } from "~/features/webhooks/constants.js";
 
 class OnPageCreatedHandlerImpl implements PageAfterCreateEventHandler.Interface {
     constructor(private dispatcher: WebhookDispatcher.Interface) {}
 
-    async handle(event: PageAfterCreateEventHandler.Event): Promise<void> {
-        await this.dispatcher.dispatch("wb.page.created", { page: event.payload.page });
+    public async handle(event: PageAfterCreateEventHandler.Event): Promise<void> {
+        await this.dispatcher.dispatch(WebhookEvent.WbPageCreated, { page: event.payload.page });
     }
 }
 

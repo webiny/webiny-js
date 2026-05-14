@@ -1,12 +1,14 @@
 import { RedirectAfterUpdateEventHandler } from "~/features/redirects/UpdateRedirect/abstractions.js";
 import { WebhookDispatcher } from "@webiny/api-core/features/webhooks/index.js";
+import { WebhookEvent } from "~/features/webhooks/constants.js";
 
 class OnRedirectUpdatedHandlerImpl implements RedirectAfterUpdateEventHandler.Interface {
     constructor(private dispatcher: WebhookDispatcher.Interface) {}
 
-    async handle(event: RedirectAfterUpdateEventHandler.Event): Promise<void> {
-        await this.dispatcher.dispatch("wb.redirect.updated", {
-            redirect: event.payload.redirect
+    public async handle(event: RedirectAfterUpdateEventHandler.Event): Promise<void> {
+        await this.dispatcher.dispatch(WebhookEvent.WbRedirectUpdated, {
+            redirect: event.payload.redirect,
+            original: event.payload.original
         });
     }
 }

@@ -2,5 +2,6 @@ export {
     WebhookSignPayload,
     WebhookVerifyPayload,
     WebhookDispatcher,
-    WebhookEventProvider
+    WebhookFactory,
+    WebhookProvider
 } from "~/features/webhooks/index.js";

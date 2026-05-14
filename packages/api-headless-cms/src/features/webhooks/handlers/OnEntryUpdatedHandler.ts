@@ -5,8 +5,8 @@ class OnEntryUpdatedHandlerImpl implements EntryAfterUpdateEventHandler.Interfac
     constructor(private dispatcher: WebhookDispatcher.Interface) {}
 
     async handle(event: EntryAfterUpdateEventHandler.Event): Promise<void> {
-        const { entry, model } = event.payload;
-        await this.dispatcher.dispatch(`cms.entry.${model.modelId}.updated`, { entry });
+        const { entry, model, original } = event.payload;
+        await this.dispatcher.dispatch(`cms.entry.${model.modelId}.updated`, { entry, original });
     }
 }
 

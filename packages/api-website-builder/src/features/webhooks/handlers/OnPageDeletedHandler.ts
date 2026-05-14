@@ -1,11 +1,12 @@
 import { PageAfterDeleteEventHandler } from "~/features/pages/DeletePage/abstractions.js";
 import { WebhookDispatcher } from "@webiny/api-core/features/webhooks/index.js";
+import { WebhookEvent } from "~/features/webhooks/constants.js";
 
 class OnPageDeletedHandlerImpl implements PageAfterDeleteEventHandler.Interface {
     constructor(private dispatcher: WebhookDispatcher.Interface) {}
 
-    async handle(event: PageAfterDeleteEventHandler.Event): Promise<void> {
-        await this.dispatcher.dispatch("wb.page.deleted", { page: event.payload.page });
+    public async handle(event: PageAfterDeleteEventHandler.Event): Promise<void> {
+        await this.dispatcher.dispatch(WebhookEvent.WbPageDeleted, { page: event.payload.page });
     }
 }
 

@@ -1,11 +1,14 @@
 import { PageAfterUnpublishEventHandler } from "~/features/pages/UnpublishPage/abstractions.js";
 import { WebhookDispatcher } from "@webiny/api-core/features/webhooks/index.js";
+import { WebhookEvent } from "~/features/webhooks/constants.js";
 
 class OnPageUnpublishedHandlerImpl implements PageAfterUnpublishEventHandler.Interface {
     constructor(private dispatcher: WebhookDispatcher.Interface) {}
 
-    async handle(event: PageAfterUnpublishEventHandler.Event): Promise<void> {
-        await this.dispatcher.dispatch("wb.page.unpublished", { page: event.payload.page });
+    public async handle(event: PageAfterUnpublishEventHandler.Event): Promise<void> {
+        await this.dispatcher.dispatch(WebhookEvent.WbPageUnpublished, {
+            page: event.payload.page
+        });
     }
 }
 

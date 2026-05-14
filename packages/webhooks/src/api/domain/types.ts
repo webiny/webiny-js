@@ -61,13 +61,6 @@ export interface IUpdateDeliveryInput {
     responseBody?: string;
 }
 
-export interface IWebhookEventDefinition {
-    app: string;
-    modelId: string;
-    eventName: string;
-    label: string;
-}
-
 export interface IListMeta {
     cursor: string | null;
     hasMoreItems: boolean;

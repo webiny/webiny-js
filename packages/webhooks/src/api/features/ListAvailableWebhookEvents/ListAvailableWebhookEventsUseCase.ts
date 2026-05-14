@@ -2,30 +2,29 @@ import { Result } from "@webiny/feature/api";
 import { ListAvailableWebhookEventsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookNotAuthorizedError } from "~/api/domain/errors.js";
-import type { WebhookEventProvider } from "@webiny/api-core/features/webhooks/index.js";
-import type { IWebhookEventDefinition } from "~/api/domain/types.js";
+import { WebhookProvider } from "@webiny/api-core/features/webhooks/index.js";
 
-export class ListAvailableWebhookEventsUseCaseImpl implements UseCaseAbstraction.Interface {
+class ListAvailableWebhookEventsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private getProviders: () => WebhookEventProvider.Interface[],
-        private permissions: WebhookPermissions.Interface
+        private readonly provider: WebhookProvider.Interface,
+        private readonly permissions: WebhookPermissions.Interface
     ) {}
 
-    async execute(): Promise<Result<IWebhookEventDefinition[], Error>> {
+    public async execute(): Promise<Result<WebhookProvider.Response, Error>> {
         if (!(await this.permissions.canRead("webhook"))) {
             return Result.fail(new WebhookNotAuthorizedError());
         }
 
         try {
-            const providers = this.getProviders();
-            const allEvents: IWebhookEventDefinition[] = [];
-            for (const provider of providers) {
-                const events = await provider.getAvailableEvents();
-                allEvents.push(...events);
-            }
-            return Result.ok(allEvents);
-        } catch (error) {
-            return Result.fail(error as Error);
+            const events = await this.provider.execute();
+            return Result.ok(events);
+        } catch (ex) {
+            return Result.fail(ex);
         }
     }
 }
+
+export const ListAvailableWebhookEventsUseCase = UseCaseAbstraction.createImplementation({
+    implementation: ListAvailableWebhookEventsUseCaseImpl,
+    dependencies: [WebhookProvider, WebhookPermissions]
+});

@@ -10,7 +10,7 @@ class WebhookEventSchema_ implements GraphQLSchemaFactory.Interface {
         builder.addTypeDefs(/* GraphQL */ `
             type WebhookEvent {
                 app: String!
-                modelId: String!
+                entity: String!
                 eventName: String!
                 label: String!
             }

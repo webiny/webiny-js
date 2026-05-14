@@ -3,6 +3,7 @@ import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
 import { ListWebhooksRepository } from "~/api/features/ListWebhooks/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
 import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/api/domain/constants.js";
+import type { IWebhookDispatcherData } from "@webiny/api-core/features/webhooks/WebhookDispatcher/abstractions.js";
 
 class WebhookDispatcherImpl_ implements WebhookDispatcher.Interface {
     constructor(
@@ -11,9 +12,15 @@ class WebhookDispatcherImpl_ implements WebhookDispatcher.Interface {
         private taskService: TaskService.Interface
     ) {}
 
-    async dispatch(eventName: string, data: object): Promise<void> {
+    async dispatch<T extends IWebhookDispatcherData = IWebhookDispatcherData>(
+        eventName: string,
+        data: T
+    ): Promise<void> {
         const result = await this.listWebhooksRepository.execute({
-            where: { enabled: true, events: eventName }
+            where: {
+                enabled: true,
+                events: eventName
+            }
         });
 
         if (result.isFail()) {

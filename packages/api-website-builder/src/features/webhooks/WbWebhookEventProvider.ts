@@ -1,54 +1,74 @@
-import { WebhookEventProvider as WebhookEventProviderAbstraction } from "@webiny/api-core/features/webhooks/index.js";
-import type { IWebhookEventDefinition } from "@webiny/api-core/features/webhooks/index.js";
+import { WebhookFactory as WebhookFactoryAbstraction } from "@webiny/api-core/features/webhooks/index.js";
+import { WebhookEvent } from "~/features/webhooks/constants.js";
 
-class WbWebhookEventProviderImpl implements WebhookEventProviderAbstraction.Interface {
-    async getAvailableEvents(): Promise<IWebhookEventDefinition[]> {
+class WbWebhookFactoryImpl implements WebhookFactoryAbstraction.Interface {
+    public async execute(): Promise<WebhookFactoryAbstraction.Definition[]> {
         return [
-            { app: "wb", modelId: "page", eventName: "wb.page.created", label: "Page: Created" },
-            { app: "wb", modelId: "page", eventName: "wb.page.updated", label: "Page: Updated" },
             {
                 app: "wb",
-                modelId: "page",
-                eventName: "wb.page.published",
+                entity: "page",
+                eventName: WebhookEvent.WbPageCreated,
+                label: "Page: Created"
+            },
+            {
+                app: "wb",
+                entity: "page",
+                eventName: WebhookEvent.WbPageUpdated,
+                label: "Page: Updated"
+            },
+            {
+                app: "wb",
+                entity: "page",
+                eventName: WebhookEvent.WbPagePublished,
                 label: "Page: Published"
             },
             {
                 app: "wb",
-                modelId: "page",
-                eventName: "wb.page.unpublished",
+                entity: "page",
+                eventName: WebhookEvent.WbPageUnpublished,
                 label: "Page: Unpublished"
             },
-            { app: "wb", modelId: "page", eventName: "wb.page.deleted", label: "Page: Deleted" },
-            { app: "wb", modelId: "page", eventName: "wb.page.trashed", label: "Page: Trashed" },
             {
                 app: "wb",
-                modelId: "page",
-                eventName: "wb.page.restored",
+                entity: "page",
+                eventName: WebhookEvent.WbPageDeleted,
+                label: "Page: Deleted"
+            },
+            {
+                app: "wb",
+                entity: "page",
+                eventName: WebhookEvent.WbPageTrashed,
+                label: "Page: Trashed"
+            },
+            {
+                app: "wb",
+                entity: "page",
+                eventName: WebhookEvent.WbPageRestored,
                 label: "Page: Restored"
             },
             {
                 app: "wb",
-                modelId: "redirect",
-                eventName: "wb.redirect.created",
+                entity: "redirect",
+                eventName: WebhookEvent.WbRedirectCreated,
                 label: "Redirect: Created"
             },
             {
                 app: "wb",
-                modelId: "redirect",
-                eventName: "wb.redirect.updated",
+                entity: "redirect",
+                eventName: WebhookEvent.WbRedirectUpdated,
                 label: "Redirect: Updated"
             },
             {
                 app: "wb",
-                modelId: "redirect",
-                eventName: "wb.redirect.deleted",
+                entity: "redirect",
+                eventName: WebhookEvent.WbRedirectDeleted,
                 label: "Redirect: Deleted"
             }
         ];
     }
 }
 
-export const WbWebhookEventProvider = WebhookEventProviderAbstraction.createImplementation({
-    implementation: WbWebhookEventProviderImpl,
+export const WbWebhookFactory = WebhookFactoryAbstraction.createImplementation({
+    implementation: WbWebhookFactoryImpl,
     dependencies: []
 });

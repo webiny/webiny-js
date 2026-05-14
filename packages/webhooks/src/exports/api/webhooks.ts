@@ -1,7 +1,11 @@
 // Abstractions bridge packages implement or consume.
-export { WebhookDispatcher } from "@webiny/api-core/features/webhooks/index.js";
-export { WebhookEventProvider } from "@webiny/api-core/features/webhooks/index.js";
-export { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
+export {
+    WebhookFactory,
+    WebhookProvider,
+    WebhookVerifyPayload,
+    WebhookSignPayload,
+    WebhookDispatcher
+} from "@webiny/api-core/exports/api/webhooks.js";
 
 // Domain types bridge packages reference.
 export type {
@@ -9,7 +13,6 @@ export type {
     IWebhookValues,
     IWebhookDelivery,
     IWebhookDeliveryValues,
-    IWebhookEventDefinition,
     IWebhookPayload,
     IListMeta
 } from "~/api/domain/types.js";

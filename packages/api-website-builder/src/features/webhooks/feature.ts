@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { WbWebhookEventProvider } from "./WbWebhookEventProvider.js";
+import { WbWebhookFactory } from "./WbWebhookEventProvider.js";
 import { OnPageCreatedHandler } from "./handlers/OnPageCreatedHandler.js";
 import { OnPageUpdatedHandler } from "./handlers/OnPageUpdatedHandler.js";
 import { OnPagePublishedHandler } from "./handlers/OnPagePublishedHandler.js";
@@ -12,9 +12,9 @@ import { OnRedirectUpdatedHandler } from "./handlers/OnRedirectUpdatedHandler.js
 import { OnRedirectDeletedHandler } from "./handlers/OnRedirectDeletedHandler.js";
 
 export const WbWebhooksFeature = createFeature({
-    name: "WbWebhooks",
+    name: "WebsiteBuilder/Webhooks",
     register(container) {
-        container.register(WbWebhookEventProvider).inSingletonScope();
+        container.register(WbWebhookFactory).inSingletonScope();
         container.register(OnPageCreatedHandler);
         container.register(OnPageUpdatedHandler);
         container.register(OnPagePublishedHandler);
