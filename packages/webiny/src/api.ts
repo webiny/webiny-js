@@ -13,6 +13,7 @@ export {
     GlobalKeyValueStore,
     KeyValueStore
 } from "@webiny/api-core/features/keyValueStore/index.js";
+export { WebsocketService as Websockets } from "@webiny/api-websockets/features/WebsocketService/index.js";
 export { createFeature, createAbstraction, Result, BaseError } from "@webiny/feature/api/index.js";
 export { Route } from "@webiny/handler/abstractions/Route.js";
 export { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";

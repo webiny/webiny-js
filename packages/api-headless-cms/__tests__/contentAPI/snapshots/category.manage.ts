@@ -63,10 +63,6 @@ export default /* GraphQL */ `
         title: String
         description: String
         image: String
-        """
-        Custom meta data stored in the root of the entry object.
-        """
-        data: JSON
     }
 
     input CategoryApiNameWhichIsABitDifferentThanModelIdInputValues {

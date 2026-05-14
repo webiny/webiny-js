@@ -5,10 +5,6 @@ export { RspackConfig };
 // Build commands.
 export type BuildCommand<TOptions = Record<string, any>> = (options: TOptions) => Promise<void>;
 
-export interface BabelConfig {
-    [key: string]: any;
-}
-
 export interface SwcConfig {
     [key: string]: any;
 }
@@ -20,7 +16,6 @@ export interface DefinePluginOptions {
 export interface BuildAppConfigOverrides {
     entry?: string;
     openBrowser?: boolean;
-    babel?: (config: BabelConfig) => BabelConfig;
 }
 // Build commands - apps.
 export interface BuildAppConfig {
@@ -51,7 +46,6 @@ interface BuildFunctionConfig {
         };
         define?: DefinePluginOptions;
         rspack?: (config: RspackConfig) => RspackConfig;
-        babel?: (config: BabelConfig) => BabelConfig;
         swc?: (config: SwcConfig) => SwcConfig;
     };
 }
@@ -71,12 +65,5 @@ interface BuildPackageConfig {
     };
 }
 
-interface BabelConfigParams {
-    path: string;
-    esm?: boolean;
-}
-
 export function createBuildPackage(options: BuildPackageConfig): BuildCommand;
 export function createWatchPackage(options: BuildPackageConfig): BuildCommand;
-export function createBabelConfigForNode(options: BabelConfigParams): BabelConfig;
-export function createBabelConfigForReact(options: BabelConfigParams): BabelConfig;

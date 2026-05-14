@@ -34,12 +34,10 @@ export class FileItem {
     }
 
     static createFromUrl(url: string): FileItem {
-        console.log("createFromUrl", url);
         const documentUrl = new URL(url);
         const pathname = documentUrl.pathname;
         const name = pathname.substring(pathname.lastIndexOf("/") + 1);
         const extension = name.split(".").pop()?.toLowerCase() || "";
-        console.log("extension", extension);
 
         // Map extensions to mimetypes
         const mimeTypes: Record<string, string> = {

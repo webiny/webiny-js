@@ -12,6 +12,7 @@ import { WriterPersonasFeature } from "./features/WriterPersonas/feature.js";
 import { ProjectsFeature } from "./features/Projects/feature.js";
 import { AiPromptContextFeature } from "./features/AiPromptContext/feature.js";
 import { AiImageEnrichmentFeature } from "./features/AiImageEnrichment/feature.js";
+import { ExtractFrontmatterFeature } from "./features/ExtractFrontmatter/feature.js";
 
 export const Extension = createFeature({
     name: "AiPowerUps",
@@ -26,6 +27,7 @@ export const Extension = createFeature({
         ProjectsFeature.register(container);
         AiPromptContextFeature.register(container);
         WbGeneratePageContentFeature.register(container);
+        ExtractFrontmatterFeature.register(container);
 
         const wcp = container.resolve(WcpContext);
         if (wcp.canUseAiImageEnrichment()) {

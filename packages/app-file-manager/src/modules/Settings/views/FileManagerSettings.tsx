@@ -15,7 +15,7 @@ import type { GetSettingsResponse } from "../graphql.js";
 import graphql from "../graphql.js";
 import get from "lodash/get.js";
 import { validation } from "@webiny/validation";
-import type { QueryGetSettingsResult, Settings } from "~/types.js";
+import type { QueryGetSettingsResult, Settings } from "~/domain/types.js";
 import type { MutationFunction, MutationResult } from "@apollo/react-common";
 
 const Code = ({ children }: { children: React.ReactNode }) => {

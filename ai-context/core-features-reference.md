@@ -150,6 +150,40 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/ListEntries/abstractions.ts`
 - **Usage:** Repository for fetching entries from storage
 
+#### Entry Data Factory Features
+
+Injectable factories that transform raw input into domain `CmsEntry` objects. Live in `features/contentEntry/entryDataFactories/`. All are singletons. Token scope: `"Cms/Entry/<FactoryName>"`.
+
+**`CreateEntryDataFactory`**
+
+- **Import:** `import { CreateEntryDataFactory } from "@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreateEntryDataFactory"`
+- **Usage:** `factory.create(model, rawInput, options?)` — new entry from raw input; handles defaults, validation, reference mapping, identity, status
+
+**`UpdateEntryDataFactory`**
+
+- **Import:** `import { UpdateEntryDataFactory } from "@webiny/api-headless-cms/features/contentEntry/entryDataFactories/UpdateEntryDataFactory"`
+- **Usage:** `factory.create(model, rawInput, originalEntry, options?, metaInput?)` — update; merges values, validates, maps references
+
+**`CreateEntryRevisionFromDataFactory`**
+
+- **Import:** `import { CreateEntryRevisionFromDataFactory } from "@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreateEntryRevisionFromDataFactory"`
+- **Usage:** `factory.create(sourceId, model, rawInput, originalEntry, latestStorageEntry, options?)` — new revision; increments version, copies entry-level publishing meta
+
+**`CreatePublishEntryDataFactory`**
+
+- **Import:** `import { CreatePublishEntryDataFactory } from "@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreatePublishEntryDataFactory"`
+- **Usage:** `factory.create(model, originalEntry, latestEntry)` — transition to published; validates, sets status + locked + publishing timestamps
+
+**`CreateUnpublishEntryDataFactory`**
+
+- **Import:** `import { CreateUnpublishEntryDataFactory } from "@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreateUnpublishEntryDataFactory"`
+- **Usage:** `factory.create(originalEntry)` — transition to unpublished; clears live pointer, updates timestamps
+
+**`CreateRepublishEntryDataFactory`**
+
+- **Import:** `import { CreateRepublishEntryDataFactory } from "@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreateRepublishEntryDataFactory"`
+- **Usage:** `factory.create(model, originalEntry)` — re-publish; remaps references, restores published state
+
 ### Content Model Features
 
 #### GetModel

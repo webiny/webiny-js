@@ -1,4 +1,4 @@
-import { Project } from "ts-morph";
+import { Project, SyntaxKind } from "ts-morph";
 import { ParseExportsFileService } from "../../abstractions/index.js";
 
 export class DefaultParseExportsFileService implements ParseExportsFileService.Interface {
@@ -56,6 +56,46 @@ export class DefaultParseExportsFileService implements ParseExportsFileService.I
                     isWildcard: false,
                     isTypeOnly: isExportTypeOnly,
                     jsdoc
+                });
+            }
+        }
+
+        // Handle: import { X } from "source"; export const Y = X
+        // Build a map of local name -> { importedName, source }
+        const importMap = new Map<string, { importedName: string; source: string }>();
+        for (const importDecl of sourceFile.getImportDeclarations()) {
+            const source = importDecl.getModuleSpecifierValue();
+            for (const namedImport of importDecl.getNamedImports()) {
+                const localName = namedImport.getAliasNode()?.getText() ?? namedImport.getName();
+                importMap.set(localName, { importedName: namedImport.getName(), source });
+            }
+        }
+
+        for (const varStatement of sourceFile.getVariableStatements()) {
+            if (!varStatement.hasModifier(SyntaxKind.ExportKeyword)) {
+                continue;
+            }
+            for (const decl of varStatement.getDeclarations()) {
+                const exportedName = decl.getName();
+                const initializer = decl.getInitializer();
+                if (!initializer || initializer.getKind() !== SyntaxKind.Identifier) {
+                    continue;
+                }
+                const entry = importMap.get(initializer.getText());
+                if (!entry) {
+                    continue;
+                }
+                exportStatements.push({
+                    namedExports: [
+                        {
+                            name: entry.importedName,
+                            alias: exportedName !== entry.importedName ? exportedName : undefined,
+                            isTypeOnly: false
+                        }
+                    ],
+                    source: entry.source,
+                    isWildcard: false,
+                    isTypeOnly: false
                 });
             }
         }

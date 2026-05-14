@@ -153,7 +153,6 @@ export const fields = /* GraphQL */ `{
                 version
             }
         }
-        data
     }
     wbyAco_location {
         folderId
