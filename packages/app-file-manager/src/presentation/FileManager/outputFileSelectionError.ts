@@ -1,5 +1,5 @@
 import bytes from "bytes";
-import type { FileError } from "react-butterfiles";
+import type { FileError } from "@webiny/app-admin/presentation/browserFilePicker/index.js";
 
 export const outputFileSelectionError = (errors: FileError[]): string | null => {
     if (errors.length > 1) {
@@ -10,7 +10,7 @@ export const outputFileSelectionError = (errors: FileError[]): string | null => 
 
         error = errors.find(error => error.type === "multipleMaxSizeExceeded");
         if (error) {
-            return `Cannot upload more than ${bytes.format(error.multipleMaxSize)} at once.`;
+            return `Cannot upload more than ${bytes.format(error.multipleMaxSize ?? 0)} at once.`;
         }
 
         return "Multiple invalid files selected.";

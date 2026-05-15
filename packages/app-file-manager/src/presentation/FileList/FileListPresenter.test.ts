@@ -387,8 +387,20 @@ describe("FileListPresenter", () => {
     it("should call fileUploader.uploadMany when actions.upload is called", async () => {
         presenter.init();
 
-        const file1 = new File(["content"], "test.txt", { type: "text/plain" });
-        const file2 = new File(["img"], "photo.png", { type: "image/png" });
+        const file1 = {
+            id: "f1",
+            name: "test.txt",
+            type: "text/plain",
+            size: 7,
+            src: { file: new File(["content"], "test.txt", { type: "text/plain" }), base64: null }
+        };
+        const file2 = {
+            id: "f2",
+            name: "photo.png",
+            type: "image/png",
+            size: 3,
+            src: { file: new File(["img"], "photo.png", { type: "image/png" }), base64: null }
+        };
 
         await presenter.actions.upload([file1, file2]);
 
