@@ -66,27 +66,28 @@ describe("CreateWebhookUseCase", () => {
         expect(result.value.slug).toBe("my-custom-slug");
     });
 
-    it("should deduplicate slug when it already exists", async () => {
+    it("should reject duplicate slug", async () => {
         const context = await handler.handle();
         const useCase = context.container.resolve(CreateWebhookUseCase);
 
         const first = await useCase.execute({
-            name: "Duplicate",
+            name: "Duplicate Slug",
             endpointUrl: "https://example.com/hook",
             events: ["cms.entry.product.published"],
             signingSecret: "whsec_dGVzdHNlY3JldA=="
         });
         expect(first.isOk()).toBe(true);
-        expect(first.value.slug).toBe("duplicate");
+        expect(first.value.slug).toBe("duplicate-slug");
 
         const second = await useCase.execute({
-            name: "Duplicate",
+            name: "Duplicate Slug",
             endpointUrl: "https://example.com/hook2",
             events: ["cms.entry.product.published"],
             signingSecret: "whsec_dGVzdHNlY3JldA=="
         });
-        expect(second.isOk()).toBe(true);
-        expect(second.value.slug).toBe("duplicate-1");
+        expect(second.isFail()).toBe(true);
+        expect(second.error.code).toBe("WEBHOOK_VALIDATION_ERROR");
+        expect(second.error.message).toContain("already taken");
     });
 
     it("should reject non-HTTPS endpoint URLs", async () => {

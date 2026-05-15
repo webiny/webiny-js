@@ -57,21 +57,15 @@ class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new WebhookValidationError("At least one event must be selected."));
         }
 
-        let slug = (input.slug || "").trim();
-        if (!slug) {
-            slug = generateSlug(input.name);
-        }
+        const slug = (input.slug || "").trim() || generateSlug(input.name);
 
-        let candidate = slug;
-        let attempt = 0;
-        while (await this.repository.slugExists(candidate)) {
-            attempt++;
-            candidate = `${slug}-${attempt}`;
+        if (await this.repository.slugExists(slug)) {
+            return Result.fail(new WebhookValidationError(`Slug "${slug}" is already taken.`));
         }
 
         const webhook: WebhookCmsEntryValues = {
             name: input.name,
-            slug: candidate,
+            slug,
             endpointUrl: input.endpointUrl,
             description: input.description,
             enabled: input.enabled ?? false,
