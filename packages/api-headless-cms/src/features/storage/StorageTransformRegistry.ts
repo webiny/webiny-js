@@ -15,16 +15,16 @@ class StorageTransformRegistryImpl implements StorageTransformRegistryAbstractio
             return this.cache.get(fieldType) as StorageTransform.Interface<T, R, F>;
         }
 
-        const baseType = getBaseFieldType({
-            type: fieldType
-        });
         let transform = this.transforms.find(
             (item): item is StorageTransform.Interface<T, R, F> => {
                 return item.fieldType === fieldType;
             }
         );
 
-        if (!transform) {
+        const baseType = getBaseFieldType({
+            type: fieldType
+        });
+        if (!transform && baseType !== fieldType) {
             transform = this.transforms.find(
                 (item): item is StorageTransform.Interface<T, R, F> => {
                     return item.fieldType === baseType;
