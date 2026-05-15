@@ -2,10 +2,24 @@ import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractio
 import { Response } from "@webiny/handler-graphql";
 import { ErrorResponse } from "@webiny/handler-graphql";
 import { ListWebhooksUseCase } from "~/api/features/ListWebhooks/abstractions.js";
+import type { IListWebhooksInput } from "~/api/features/ListWebhooks/abstractions.js";
 import { GetWebhookUseCase } from "~/api/features/GetWebhook/abstractions.js";
 import { CreateWebhookUseCase } from "~/api/features/CreateWebhook/abstractions.js";
 import { UpdateWebhookUseCase } from "~/api/features/UpdateWebhook/abstractions.js";
 import { DeleteWebhookUseCase } from "~/api/features/DeleteWebhook/abstractions.js";
+
+interface IIdArgs {
+    id: string;
+}
+
+interface ICreateWebhookArgs {
+    input: CreateWebhookUseCase.Input;
+}
+
+interface IUpdateWebhookArgs {
+    id: string;
+    input: UpdateWebhookUseCase.Input;
+}
 
 class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
     async execute(
@@ -106,16 +120,12 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
             resolver: () => () => ({})
         });
 
-        builder.addResolver<{ where?: { enabled?: boolean }; limit?: number; after?: string }>({
+        builder.addResolver<IListWebhooksInput>({
             path: "WebhookQuery.listWebhooks",
             dependencies: [ListWebhooksUseCase],
             resolver: (listWebhooks: ListWebhooksUseCase.Interface) => {
                 return async ({ args }) => {
-                    const result = await listWebhooks.execute({
-                        where: args.where ?? undefined,
-                        limit: args.limit ?? undefined,
-                        after: args.after ?? undefined
-                    });
+                    const result = await listWebhooks.execute(args);
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }
@@ -124,7 +134,7 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
             }
         });
 
-        builder.addResolver<{ id: string }>({
+        builder.addResolver<IIdArgs>({
             path: "WebhookQuery.getWebhook",
             dependencies: [GetWebhookUseCase],
             resolver: (getWebhook: GetWebhookUseCase.Interface) => {
@@ -138,7 +148,7 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
             }
         });
 
-        builder.addResolver<{ input: CreateWebhookUseCase.Input }>({
+        builder.addResolver<ICreateWebhookArgs>({
             path: "WebhookMutation.createWebhook",
             dependencies: [CreateWebhookUseCase],
             resolver: (createWebhook: CreateWebhookUseCase.Interface) => {
@@ -152,7 +162,7 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
             }
         });
 
-        builder.addResolver<{ id: string; input: UpdateWebhookUseCase.Input }>({
+        builder.addResolver<IUpdateWebhookArgs>({
             path: "WebhookMutation.updateWebhook",
             dependencies: [UpdateWebhookUseCase],
             resolver: (updateWebhook: UpdateWebhookUseCase.Interface) => {
@@ -166,7 +176,7 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
             }
         });
 
-        builder.addResolver<{ id: string }>({
+        builder.addResolver<IIdArgs>({
             path: "WebhookMutation.deleteWebhook",
             dependencies: [DeleteWebhookUseCase],
             resolver: (deleteWebhook: DeleteWebhookUseCase.Interface) => {

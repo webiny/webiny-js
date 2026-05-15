@@ -3,6 +3,11 @@ import { Response } from "@webiny/handler-graphql";
 import { ErrorResponse } from "@webiny/handler-graphql";
 import { TriggerWebhookUseCase } from "~/api/features/TriggerWebhook/abstractions.js";
 
+interface ITriggerWebhookArgs {
+    id: string;
+    payload: Record<string, unknown>;
+}
+
 class WebhookTriggerSchema_ implements GraphQLSchemaFactory.Interface {
     async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
@@ -18,7 +23,7 @@ class WebhookTriggerSchema_ implements GraphQLSchemaFactory.Interface {
             }
         `);
 
-        builder.addResolver<{ id: string; payload: Record<string, unknown> }>({
+        builder.addResolver<ITriggerWebhookArgs>({
             path: "WebhookMutation.triggerWebhook",
             dependencies: [TriggerWebhookUseCase],
             resolver: (triggerWebhook: TriggerWebhookUseCase.Interface) => {

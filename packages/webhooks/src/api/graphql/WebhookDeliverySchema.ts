@@ -5,6 +5,16 @@ import { ListWebhookDeliveriesUseCase } from "~/api/features/ListWebhookDeliveri
 import { GetWebhookDeliveryUseCase } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { ResendWebhookDeliveryUseCase } from "~/api/features/ResendWebhookDelivery/abstractions.js";
 
+interface IListDeliveriesArgs {
+    webhookId: string;
+    limit?: number;
+    after?: string;
+}
+
+interface IIdArgs {
+    id: string;
+}
+
 class WebhookDeliverySchema_ implements GraphQLSchemaFactory.Interface {
     async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
@@ -50,7 +60,7 @@ class WebhookDeliverySchema_ implements GraphQLSchemaFactory.Interface {
             }
         `);
 
-        builder.addResolver<{ webhookId: string; limit?: number; after?: string }>({
+        builder.addResolver<IListDeliveriesArgs>({
             path: "WebhookQuery.listWebhookDeliveries",
             dependencies: [ListWebhookDeliveriesUseCase],
             resolver: (listDeliveries: ListWebhookDeliveriesUseCase.Interface) => {
@@ -68,7 +78,7 @@ class WebhookDeliverySchema_ implements GraphQLSchemaFactory.Interface {
             }
         });
 
-        builder.addResolver<{ id: string }>({
+        builder.addResolver<IIdArgs>({
             path: "WebhookQuery.getWebhookDelivery",
             dependencies: [GetWebhookDeliveryUseCase],
             resolver: (getDelivery: GetWebhookDeliveryUseCase.Interface) => {
@@ -82,7 +92,7 @@ class WebhookDeliverySchema_ implements GraphQLSchemaFactory.Interface {
             }
         });
 
-        builder.addResolver<{ id: string }>({
+        builder.addResolver<IIdArgs>({
             path: "WebhookMutation.resendWebhookDelivery",
             dependencies: [ResendWebhookDeliveryUseCase],
             resolver: (resend: ResendWebhookDeliveryUseCase.Interface) => {
