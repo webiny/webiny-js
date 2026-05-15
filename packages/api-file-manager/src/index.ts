@@ -14,7 +14,7 @@ export * from "./modelModifier/CmsModelModifier.js";
 export * from "./delivery/index.js";
 
 export const createFileManagerContext = () => {
-    const plugin = new ContextPlugin<ApiCoreContext>(async context => {
+    const fileManagerContextPlugin = new ContextPlugin<ApiCoreContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
         const getModel = context.container.resolve(GetModelUseCase);
 
@@ -31,13 +31,13 @@ export const createFileManagerContext = () => {
         FileManagerFeature.register(context.container);
     });
 
-    plugin.name = "file-manager.createContext";
+    fileManagerContextPlugin.name = "file-manager.createContext";
 
     const modelReg = createRegisterExtensionPlugin(context => {
         context.container.register(FileModel);
     });
 
-    return [plugin, modelReg];
+    return [fileManagerContextPlugin, modelReg];
 };
 
 export const createFileManagerGraphQL = () => {

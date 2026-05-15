@@ -48,7 +48,7 @@ export const createWorkflows = () => {
         context.container.register(WorkflowStatePrivateModel);
     });
 
-    const plugin = new ContextPlugin(async context => {
+    const workflowsContextPlugin = new ContextPlugin(async context => {
         const tenantContext = context.container.resolve(TenantContext);
         const identityContext = context.container.resolve(IdentityContext);
         const wcpContext = context.container.resolve(WcpContext);
@@ -122,7 +122,7 @@ export const createWorkflows = () => {
         );
     });
 
-    plugin.name = "workflows.context";
+    workflowsContextPlugin.name = "workflows.context";
 
-    return [plugin, modelsPlugin];
+    return [workflowsContextPlugin, modelsPlugin];
 };

@@ -20,7 +20,7 @@ export interface ICreateContextPluginParams {
 }
 
 const createContextPlugin = (params?: ICreateContextPluginParams) => {
-    const plugin = new ContextPlugin<ApiCoreContext>(async context => {
+    const recordLockingContextPlugin = new ContextPlugin<ApiCoreContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
         const identityContext = context.container.resolve(IdentityContext);
         const wcp = context.container.resolve(WcpContext);
@@ -63,9 +63,9 @@ const createContextPlugin = (params?: ICreateContextPluginParams) => {
             model
         });
     });
-    plugin.name = "context.recordLocking";
+    recordLockingContextPlugin.name = "context.recordLocking";
 
-    return plugin;
+    return recordLockingContextPlugin;
 };
 
 export const createRecordLocking = (params?: ICreateContextPluginParams) => {

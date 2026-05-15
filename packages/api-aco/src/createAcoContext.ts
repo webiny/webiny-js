@@ -149,7 +149,7 @@ export const createAcoContext = (params: CreateAcoContextParams) => {
         context.container.register(FilterPrivateModel);
     });
 
-    const plugin = new ContextPlugin<AcoContext>(async context => {
+    const acoContextPlugin = new ContextPlugin<AcoContext>(async context => {
         /**
          * We can skip the ACO initialization if the installation is pending.
          */
@@ -162,7 +162,7 @@ export const createAcoContext = (params: CreateAcoContextParams) => {
         });
     });
 
-    plugin.name = "aco.createContext";
+    acoContextPlugin.name = "aco.createContext";
 
-    return [plugin, modelsPlugin];
+    return [acoContextPlugin, modelsPlugin];
 };

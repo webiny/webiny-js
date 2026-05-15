@@ -28,7 +28,7 @@ export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContex
         context.container.register(SchedulePrivateModel);
     });
 
-    const plugin = new ContextPlugin<CmsContext>(async context => {
+    const schedulerContextPlugin = new ContextPlugin<CmsContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
         const getModel = context.container.resolve(GetModelUseCase);
 
@@ -66,5 +66,5 @@ export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContex
         SchedulerFeature.register(context.container);
     });
 
-    return [plugin, modelsPlugin];
+    return [schedulerContextPlugin, modelsPlugin];
 };
