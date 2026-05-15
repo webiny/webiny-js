@@ -3449,7 +3449,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.27.0, @babel/runtime@npm:^7.29.2, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.27.0, @babel/runtime@npm:^7.29.2, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
   version: 7.29.2
   resolution: "@babel/runtime@npm:7.29.2"
   checksum: 10/f55ba4052aa0255055b34371a145fbe69c29b37b49eaea14805b095bfb4153701486416e89392fd27ec8abafa53868be86e960b9f8f959fff91f2c8ac2a14b02
@@ -13268,6 +13268,7 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     apollo-link-context: "npm:^1.0.20"
     apollo-utilities: "npm:^1.3.4"
+    bytes: "npm:^3.1.2"
     classnames: "npm:^2.5.1"
     graphql: "npm:^16.14.0"
     graphql-tag: "npm:^2.12.6"
@@ -13276,6 +13277,7 @@ __metadata:
     lexical: "npm:^0.44.0"
     lodash: "npm:^4.18.1"
     markdown-to-jsx: "npm:^9.8.0"
+    mime: "npm:^4.1.0"
     minimatch: "npm:^10.2.5"
     mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
@@ -13378,8 +13380,6 @@ __metadata:
     mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
-    react-butterfiles: "npm:^1.3.3"
-    react-custom-scrollbars: "npm:^4.2.1"
     react-dom: "npm:18.3.1"
     react-lazy-load: "npm:^4.0.1"
     rimraf: "npm:^6.1.3"
@@ -13536,7 +13536,6 @@ __metadata:
     mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
-    react-butterfiles: "npm:^1.3.3"
     react-dnd: "npm:^16.0.1"
     react-dnd-html5-backend: "npm:^16.0.1"
     react-dom: "npm:18.3.1"
@@ -13932,12 +13931,10 @@ __metadata:
     apollo-link-http-common: "npm:^0.2.16"
     apollo-utilities: "npm:^1.3.4"
     boolean: "npm:^3.2.0"
-    bytes: "npm:^3.1.2"
     graphql: "npm:^16.14.0"
     history: "npm:^5.3.0"
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.18.1"
-    minimatch: "npm:^10.2.5"
     mobx: "npm:^6.15.3"
     nanoid: "npm:^5.1.11"
     react: "npm:18.3.1"
@@ -16550,7 +16547,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bytes@npm:3.1.2, bytes@npm:^3.0.0, bytes@npm:^3.1.2, bytes@npm:~3.1.2":
+"bytes@npm:3.1.2, bytes@npm:^3.1.2, bytes@npm:~3.1.2":
   version: 3.1.2
   resolution: "bytes@npm:3.1.2"
   checksum: 10/a10abf2ba70c784471d6b4f58778c0beeb2b5d405148e66affa91f23a9f13d07603d0a0354667310ae1d6dc141474ffd44e2a074be0f6e2254edb8fc21445388
@@ -27029,18 +27026,6 @@ __metadata:
   version: 1.1.0
   resolution: "reachdown@npm:1.1.0"
   checksum: 10/9b267ced318fca2fe15d6023dc7798137878b7718df362b929692391ba56eb792744463b4b8d9863a170989df1d5170a4477d0631443e1d8bbf6ef2058a54b07
-  languageName: node
-  linkType: hard
-
-"react-butterfiles@npm:^1.3.3":
-  version: 1.3.3
-  resolution: "react-butterfiles@npm:1.3.3"
-  dependencies:
-    "@babel/runtime": "npm:^7.2.0"
-    bytes: "npm:^3.0.0"
-  peerDependencies:
-    react: ">=0.16.0"
-  checksum: 10/ec0aba3fc1246c5629014466a3ec0c3b65f30351303c6adb928ab0682237fb1cd571ba3c06c51d26f2415fdf2aedd3214e04a48ac317885e9061f2cb0d934cf3
   languageName: node
   linkType: hard
 
