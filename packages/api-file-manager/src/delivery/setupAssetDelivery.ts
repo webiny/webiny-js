@@ -4,13 +4,7 @@ import {
     createRoute,
     ResponseHeaders
 } from "@webiny/handler";
-import { PrivateFilesAssetProcessor } from "./AssetDelivery/privateFiles/PrivateFilesAssetProcessor.js";
-import { PrivateAuthenticatedAuthorizer } from "./AssetDelivery/privateFiles/PrivateAuthenticatedAuthorizer.js";
 import type { Asset, AssetRequest } from "./index.js";
-import {
-    AssetDeliveryConfigBuilder,
-    AssetDeliveryConfigModifierPlugin
-} from "./AssetDelivery/AssetDeliveryConfig.js";
 import type { Reply } from "@webiny/handler/types.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import {
@@ -52,24 +46,6 @@ export const setupAssetDelivery = () => {
     return [
         createModifyFastifyPlugin(app => {
             const container = app.webiny.container;
-
-            // Bridge: apply legacy config modifier plugins (used by api-file-manager-s3).
-            // These override the DI registrations from AssetDeliveryFeature.
-            // Will be removed once S3 package migrates to DI features (Phase 3).
-            const configPlugins = app.webiny.plugins.byType<AssetDeliveryConfigModifierPlugin>(
-                AssetDeliveryConfigModifierPlugin.type
-            );
-
-            let legacyConfigBuilder: AssetDeliveryConfigBuilder | undefined;
-
-            if (configPlugins.length > 0) {
-                legacyConfigBuilder = new AssetDeliveryConfigBuilder();
-                configPlugins.forEach(p => p.buildConfig(legacyConfigBuilder!));
-
-                // AssetResolver can be resolved early (only needs container).
-                const resolvedAssetResolver = legacyConfigBuilder.getAssetResolver(container);
-                container.registerInstance(AssetResolver, resolvedAssetResolver);
-            }
 
             let resolvedRequest: AssetRequest | undefined;
             let resolvedAsset: Asset | undefined;
@@ -116,31 +92,10 @@ export const setupAssetDelivery = () => {
                         assertAssetRequestWasResolved(resolvedRequest);
                         assertAssetWasResolved(resolvedAsset);
 
-                        // Resolve output strategy: legacy builder or DI container.
-                        const outputStrategy = legacyConfigBuilder
-                            ? legacyConfigBuilder.getAssetOutputStrategy(
-                                  context,
-                                  resolvedRequest,
-                                  resolvedAsset
-                              )
-                            : context.container.resolve(AssetOutputStrategy);
-
+                        const outputStrategy = context.container.resolve(AssetOutputStrategy);
                         resolvedAsset.setOutputStrategy(outputStrategy);
 
-                        // Resolve processor: legacy builder or DI container.
-                        let assetProcessor = legacyConfigBuilder
-                            ? legacyConfigBuilder.getAssetProcessor(context)
-                            : context.container.resolve(AssetProcessor);
-
-                        if (context.wcp.canUsePrivateFiles()) {
-                            const assetAuthorizer = new PrivateAuthenticatedAuthorizer(context);
-                            assetProcessor = new PrivateFilesAssetProcessor(
-                                context,
-                                assetAuthorizer,
-                                assetProcessor
-                            );
-                        }
-
+                        const assetProcessor = context.container.resolve(AssetProcessor);
                         const processedAsset = await assetProcessor.process(
                             resolvedRequest,
                             resolvedAsset
