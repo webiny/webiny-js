@@ -34,16 +34,14 @@ describe("WebhookDispatcher", () => {
         createDeliveryMock = vi
             .fn()
             .mockResolvedValue(Result.ok({ id: "del-1", webhookId: "wh-1", status: "pending" }));
-        providerMock = vi
-            .fn()
-            .mockResolvedValue([
-                {
-                    app: "cms",
-                    entity: "product",
-                    eventName: "product.entry.published",
-                    label: "Published"
-                }
-            ]);
+        providerMock = vi.fn().mockResolvedValue([
+            {
+                app: "cms",
+                entity: "product",
+                eventName: "product.entry.published",
+                label: "Published"
+            }
+        ]);
 
         container.registerInstance(TaskService, {
             trigger: triggerMock,

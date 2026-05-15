@@ -16,8 +16,7 @@ class WebhookModelFactory implements ModelFactory.Interface {
                 .text()
                 .label("Name")
                 .required()
-                .minLength(8, "Name must be at least 8 characters long.")
-                .renderer("textInput"),
+                .minLength(8, "Name must be at least 8 characters long."),
             slug: fields
                 .text()
                 .label("Slug")
@@ -27,8 +26,7 @@ class WebhookModelFactory implements ModelFactory.Interface {
                 .pattern(
                     "^[a-z0-9]+(?:-[a-z0-9]+)*$",
                     "Slug can only contain lowercase letters, numbers, and hyphens, and must start and end with a letter or number."
-                )
-                .renderer("textInput"),
+                ),
             endpointUrl: fields
                 .text()
                 .label("Endpoint URL")
@@ -39,28 +37,21 @@ class WebhookModelFactory implements ModelFactory.Interface {
                 .pattern(
                     "^(https:\\/\\/.+|http:\\/\\/localhost.*)",
                     "Endpoint URL must start with https://"
-                )
-                .renderer("textInput"),
-            description: fields.longText().label("Description").renderer("textarea"),
-            enabled: fields.boolean().label("Enabled").defaultValue(false).renderer("switch"),
+                ),
+            description: fields.longText().label("Description"),
+            enabled: fields.boolean().label("Enabled").defaultValue(false),
             events: fields
                 .text()
                 .list()
                 .label("Events")
                 .defaultValue([])
-                .minLength(1, "At least one event must be selected.")
-                .renderer("textInputs", {
-                    multiValue: {
-                        addValueButtonLabel: "Add Event"
-                    }
-                }),
+                .minLength(1, "At least one event must be selected."),
             signingSecret: fields
                 .text()
                 .label("Signing Secret")
                 .required()
                 .description("Signing secret - will be encrypted in the database.")
                 .minLength(16, "Signing secret must be at least 16 characters long.")
-                .renderer("textInput")
         }));
 
         return [model];

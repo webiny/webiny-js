@@ -15,29 +15,16 @@ class WebhookDeliveryModelFactory implements ModelFactory.Interface {
             .tags(["$publishing:false", "$hidden:true"]);
 
         model.fields(fields => ({
-            webhookId: fields.text().label("Webhook ID").required().renderer("textInput"),
-            backgroundTaskId: fields.text().label("Background Task ID").renderer("textInput"),
-            eventType: fields.text().label("Event Type").required().renderer("textInput"),
-            status: fields.text().label("Status").required().renderer("textInput"),
-            payload: fields
-                .longText()
-                .label("Payload")
-                .description("JSON.stringify(ICompressedValue) — full event body sent.")
-                .renderer("textarea"),
-            requestHeaders: fields
-                .longText()
-                .label("Request Headers")
-                .description(
-                    "JSON.stringify(ICompressedValue) — headers sent, including Webiny-Signature."
-                )
-                .renderer("textarea"),
-            responseTime: fields.number().label("Response Time (ms)").renderer("numberInput"),
-            responseStatus: fields.number().label("Response Status").renderer("numberInput"),
-            responseBody: fields
-                .longText()
-                .label("Response Body")
-                .description("JSON.stringify(ICompressedValue) — body returned by the endpoint.")
-                .renderer("textarea")
+            webhookId: fields.text().label("Webhook ID").required(),
+            backgroundTaskId: fields.text().label("Background Task ID"),
+            eventType: fields.text().label("Event Type").required(),
+            status: fields.text().label("Status").required(),
+            payload: fields.text().compressed().label("Payload"),
+            requestHeaders: fields.text().compressed().label("Request Headers"),
+            responseTime: fields.number().label("Response Time (ms)"),
+            responseStatus: fields.number().label("Response Status"),
+            responseHeaders: fields.text().compressed().label("Response Headers"),
+            responseBody: fields.text().compressed().label("Response Body")
         }));
 
         return [model];
