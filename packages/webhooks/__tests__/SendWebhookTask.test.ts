@@ -5,21 +5,39 @@ import { TaskDefinition } from "@webiny/api-core/exports/api/tasks.js";
 import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
-import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
+import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
+import { UpdateWebhookDeliveryRepository } from "~/api/features/UpdateWebhookDelivery/abstractions.js";
 import { SendWebhookTaskFeature } from "~/api/features/SendWebhookTask/feature.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
-import type { IWebhook } from "~/api/domain/types.js";
+import type { Webhook } from "~/api/domain/Webhook.js";
+import type { WebhookDelivery } from "~/api/domain/WebhookDelivery.js";
 
-const makeWebhook = (): IWebhook => ({
+const makeWebhook = (): Webhook => ({
     id: "wh-1",
-    values: {
-        name: "Shop Sync",
-        slug: "shop-sync",
-        endpointUrl: "https://example.com/hook",
-        enabled: true,
-        events: ["product.entry.published"],
-        signingSecret: "whsec_dGVzdHNlY3JldA=="
-    }
+    name: "Shop Sync",
+    slug: "shop-sync",
+    endpointUrl: "https://example.com/hook",
+    enabled: true,
+    events: ["product.entry.published"],
+    signingSecret: "whsec_dGVzdHNlY3JldA==",
+    createdOn: "2026-01-01T00:00:00Z",
+    savedOn: "2026-01-01T00:00:00Z"
+});
+
+const makeDelivery = (): WebhookDelivery => ({
+    id: "del-1",
+    createdOn: "2026-01-01T00:00:00Z",
+    savedOn: "2026-01-01T00:00:00Z",
+    webhookId: "wh-1",
+    backgroundTaskId: null,
+    eventType: "product.entry.published",
+    status: "pending",
+    payload: { entryId: "abc" },
+    requestHeaders: null,
+    responseTime: null,
+    responseStatus: null,
+    responseHeaders: null,
+    responseBody: null
 });
 
 const SIGN_HEADERS: WebhookSignPayload.Headers = {
@@ -31,20 +49,23 @@ const SIGN_HEADERS: WebhookSignPayload.Headers = {
 describe("SendWebhookTask", () => {
     let container: Container;
     let fetchMock: ReturnType<typeof vi.fn>;
-    let createDeliveryMock: ReturnType<typeof vi.fn>;
     let getWebhookMock: ReturnType<typeof vi.fn>;
+    let getDeliveryMock: ReturnType<typeof vi.fn>;
+    let updateDeliveryMock: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
         container = new Container();
         fetchMock = vi.fn();
-        createDeliveryMock = vi.fn().mockResolvedValue(Result.ok(undefined));
         getWebhookMock = vi.fn().mockResolvedValue(Result.ok(makeWebhook()));
+        getDeliveryMock = vi.fn().mockResolvedValue(Result.ok(makeDelivery()));
+        updateDeliveryMock = vi.fn().mockResolvedValue(Result.ok(makeDelivery()));
 
         vi.stubGlobal("fetch", fetchMock);
 
         container.registerInstance(GetWebhookRepository, { execute: getWebhookMock });
-        container.registerInstance(CreateWebhookDeliveryRepository, {
-            execute: createDeliveryMock
+        container.registerInstance(GetWebhookDeliveryRepository, { execute: getDeliveryMock });
+        container.registerInstance(UpdateWebhookDeliveryRepository, {
+            execute: updateDeliveryMock
         });
         container.registerInstance(WebhookSignPayload, {
             sign: vi.fn().mockResolvedValue(SIGN_HEADERS)
@@ -78,7 +99,7 @@ describe("SendWebhookTask", () => {
         }
     });
 
-    it("POSTs to endpoint with Standard Webhooks headers and logs a successful delivery", async () => {
+    it("POSTs to endpoint with Standard Webhooks headers and updates delivery", async () => {
         fetchMock.mockResolvedValue({
             status: 200,
             text: vi.fn().mockResolvedValue("OK")
@@ -91,7 +112,7 @@ describe("SendWebhookTask", () => {
         const params = makeRunParams({
             webhookId: "wh-1",
             eventName: "product.entry.published",
-            data: { entryId: "abc" }
+            deliveryId: "del-1"
         });
 
         const result = await task.run(params as any);
@@ -109,18 +130,17 @@ describe("SendWebhookTask", () => {
                 })
             })
         );
-        expect(createDeliveryMock).toHaveBeenCalledWith(
+        expect(updateDeliveryMock).toHaveBeenCalledWith(
+            "del-1",
             expect.objectContaining({
-                webhookId: "wh-1",
-                backgroundTaskId: "task-123",
-                eventType: "product.entry.published",
+                status: "delivered",
                 responseStatus: 200,
                 responseBody: "OK"
             })
         );
     });
 
-    it("logs a failed delivery when endpoint returns non-2xx", async () => {
+    it("updates delivery as failed when endpoint returns non-2xx", async () => {
         fetchMock.mockResolvedValue({
             status: 500,
             text: vi.fn().mockResolvedValue("Internal Server Error")
@@ -132,18 +152,19 @@ describe("SendWebhookTask", () => {
         const params = makeRunParams({
             webhookId: "wh-1",
             eventName: "product.entry.published",
-            data: {}
+            deliveryId: "del-1"
         });
 
         const result = await task.run(params as any);
 
         expect(result).toEqual({ type: "done" });
-        expect(createDeliveryMock).toHaveBeenCalledWith(
-            expect.objectContaining({ responseStatus: 500 })
+        expect(updateDeliveryMock).toHaveBeenCalledWith(
+            "del-1",
+            expect.objectContaining({ status: "delivered", responseStatus: 500 })
         );
     });
 
-    it("logs a failed delivery when fetch throws (timeout / network error)", async () => {
+    it("updates delivery as failed when fetch throws", async () => {
         fetchMock.mockRejectedValue(new Error("Network error"));
 
         const tasks = container.resolveAll(TaskDefinition);
@@ -152,14 +173,19 @@ describe("SendWebhookTask", () => {
         const params = makeRunParams({
             webhookId: "wh-1",
             eventName: "product.entry.published",
-            data: {}
+            deliveryId: "del-1"
         });
 
         const result = await task.run(params as any);
 
         expect(result).toEqual({ type: "done" });
-        expect(createDeliveryMock).toHaveBeenCalledWith(
-            expect.objectContaining({ responseStatus: 0, responseBody: "Network error" })
+        expect(updateDeliveryMock).toHaveBeenCalledWith(
+            "del-1",
+            expect.objectContaining({
+                status: "failed",
+                responseStatus: 0,
+                responseBody: "Network error"
+            })
         );
     });
 });
