@@ -6,8 +6,6 @@ import type { CmsModel } from "~/types/index.js";
  */
 export interface IModelsProvider {
     list(tenant: string): Promise<CmsModel[]>;
-    /** Returns the number of currently registered ModelFactory instances. Cheap — no I/O. */
-    count(): number;
 }
 
 export const ModelsProvider = createAbstraction<IModelsProvider>("ModelsProvider");

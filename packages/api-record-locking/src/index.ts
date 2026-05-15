@@ -1,5 +1,6 @@
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { ContextPlugin } from "@webiny/api";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
@@ -29,9 +30,6 @@ const createContextPlugin = (params?: ICreateContextPluginParams) => {
         if (!wcp.canUseRecordLocking() || !tenantContext.getTenant()) {
             return;
         }
-
-        // Register the private model
-        context.container.register(RecordLockingModel);
 
         // Determine timeout value
         const timeout = getTimeout(params?.timeout);
@@ -71,5 +69,9 @@ const createContextPlugin = (params?: ICreateContextPluginParams) => {
 };
 
 export const createRecordLocking = (params?: ICreateContextPluginParams) => {
-    return [createContextPlugin(params)];
+    const modelsPlugin = createRegisterExtensionPlugin(context => {
+        context.container.register(RecordLockingModel);
+    });
+
+    return [createContextPlugin(params), modelsPlugin];
 };

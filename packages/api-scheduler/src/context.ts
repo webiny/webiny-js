@@ -17,7 +17,7 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { SchedulerGraphQLFactory } from "~/graphql/index.js";
 import { SchedulerPermissionsFeature } from "~/features/permissions/feature.js";
 import { NamespaceHandlerExecutioner } from "~/features/NamespaceHandler/NamespaceHandlerExecutioner.js";
-import { createRegisterExtensionPlugin } from "@webiny/handler/plugins/RegisterExtensionPlugin";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 export interface ICreateHeadlessCmsSchedulerContextParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
@@ -54,7 +54,6 @@ export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContex
         }
 
         SchedulerPermissionsFeature.register(context.container);
-        // context.container.register(SchedulePrivateModel);
         context.container.register(SchedulerGraphQLFactory);
         context.container.register(NamespaceHandlerExecutioner);
 
