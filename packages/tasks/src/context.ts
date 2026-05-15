@@ -51,14 +51,12 @@ const createTasksCrud = () => {
 };
 
 const createTasksContext = (): Plugin[] => {
-    return [
-        ...createServicePlugins(),
-        createTasksCrud(),
-        createRegisterExtensionPlugin(context => {
-            context.container.register(TaskPrivateModel);
-            context.container.register(TaskLogPrivateModel);
-        })
-    ];
+    const modelsPlugin = createRegisterExtensionPlugin(context => {
+        context.container.register(TaskPrivateModel);
+        context.container.register(TaskLogPrivateModel);
+    });
+
+    return [...createServicePlugins(), createTasksCrud(), modelsPlugin];
 };
 
 export const createBackgroundTaskContext = (): Plugin[] => {

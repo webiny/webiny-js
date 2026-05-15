@@ -33,11 +33,11 @@ export const createFileManagerContext = () => {
 
     fileManagerContextPlugin.name = "file-manager.createContext";
 
-    const modelReg = createRegisterExtensionPlugin(context => {
+    const modelsPlugin = createRegisterExtensionPlugin(context => {
         context.container.register(FileModel);
     });
 
-    return [fileManagerContextPlugin, modelReg];
+    return [fileManagerContextPlugin, modelsPlugin];
 };
 
 export const createFileManagerGraphQL = () => {
