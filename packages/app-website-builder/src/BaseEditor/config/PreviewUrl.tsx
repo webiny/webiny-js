@@ -1,1 +1,2 @@
-// TODO: allow devs to customize the iframe URL
+export { PreviewUrlModifier } from "~/features/previewUrl/abstractions.js";
+export type { IPreviewUrlModifier } from "~/features/previewUrl/abstractions.js";

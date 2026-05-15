@@ -2,10 +2,12 @@ import { useMemo } from "react";
 import { useTenantContext } from "@webiny/app-admin";
 import type { PageDto } from "~/domain/Page/index.js";
 import { usePreviewDomain } from "~/BaseEditor/defaultConfig/Content/usePreviewDomain.js";
+import { usePreviewUrlParams } from "~/features/previewUrl/usePreviewUrlParams.js";
 
 export const usePagePreviewLink = (pageDto: PageDto) => {
     const { tenant } = useTenantContext();
     const { previewDomain } = usePreviewDomain();
+    const modifier = usePreviewUrlParams();
 
     return useMemo(() => {
         if (!previewDomain || !pageDto.properties.path) {
@@ -19,6 +21,11 @@ export const usePagePreviewLink = (pageDto: PageDto) => {
             url.searchParams.set("wb.id", pageDto.id);
             url.searchParams.set("wb.tenant", tenant!);
             url.searchParams.set("wb.path", pageDto.properties.path);
+            if (modifier) {
+                for (const [key, value] of Object.entries(modifier.getQueryParams())) {
+                    url.searchParams.set(key, value);
+                }
+            }
             return url.toString();
         } catch {
             console.log(
@@ -27,5 +34,5 @@ export const usePagePreviewLink = (pageDto: PageDto) => {
 
             return null;
         }
-    }, [previewDomain]);
+    }, [previewDomain, modifier]);
 };
