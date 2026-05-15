@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useTenantContext } from "@webiny/app-admin";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { usePreviewDomain } from "../usePreviewDomain.js";
-import { usePreviewUrlParams } from "~/features/previewUrl/usePreviewUrlParams.js";
+import { usePreviewUrlModifier } from "~/features/previewUrl/usePreviewUrlModifier.js";
 
 export const useIframeUrl = () => {
     const { tenant } = useTenantContext();
     const { previewDomain } = usePreviewDomain();
-    const modifier = usePreviewUrlParams();
+    const modifier = usePreviewUrlModifier();
 
     const id = useSelectFromDocument(document => document.id);
     const documentType = useSelectFromDocument(document => document.metadata.documentType);

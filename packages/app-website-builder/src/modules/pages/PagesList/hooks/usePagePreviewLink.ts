@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useTenantContext } from "@webiny/app-admin";
 import type { PageDto } from "~/domain/Page/index.js";
 import { usePreviewDomain } from "~/BaseEditor/defaultConfig/Content/usePreviewDomain.js";
-import { usePreviewUrlParams } from "~/features/previewUrl/usePreviewUrlParams.js";
+import { usePreviewUrlModifier } from "~/features/previewUrl/usePreviewUrlModifier.js";
 
 export const usePagePreviewLink = (pageDto: PageDto) => {
     const { tenant } = useTenantContext();
     const { previewDomain } = usePreviewDomain();
-    const modifier = usePreviewUrlParams();
+    const modifier = usePreviewUrlModifier();
 
     const baseUrl = useMemo(() => {
         if (!previewDomain || !pageDto.properties.path) {
