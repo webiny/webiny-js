@@ -8,4 +8,3 @@ export { EcommerceApiManifest } from "./ecommerce/apis/EcommerceApiManifest.js";
 export { EcommerceApiProviderAbstraction } from "./ecommerce/apis/EcommerceApiProvider.js";
 export type { IEcommerceApiProvider } from "./ecommerce/apis/EcommerceApiProvider.js";
 export { PreviewUrlModifier } from "./previewUrl/abstractions.js";
-export type { IPreviewUrlModifier } from "./previewUrl/abstractions.js";

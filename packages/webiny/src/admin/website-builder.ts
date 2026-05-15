@@ -6,4 +6,3 @@ export { EcommerceIntegration } from "@webiny/app-website-builder/ecommerce/inde
 export { pagePathFromTitle } from "@webiny/app-website-builder";
 export { usePermissions } from "@webiny/app-website-builder/presentation/security/usePermissions.js";
 export { PreviewUrlModifier } from "@webiny/app-website-builder/features/previewUrl/abstractions.js";
-export type { IPreviewUrlModifier } from "@webiny/app-website-builder/features/previewUrl/abstractions.js";
