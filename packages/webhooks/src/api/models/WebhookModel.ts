@@ -47,7 +47,7 @@ class WebhookModelFactory implements ModelFactory.Interface {
                 .list()
                 .label("Events")
                 .defaultValue([])
-                .minLength(1, "At least one event must be selected."),
+                .listMinLength(1, "At least one event must be selected."),
             signingSecret: fields
                 .text()
                 .label("Signing Secret")
