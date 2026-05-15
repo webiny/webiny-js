@@ -3,6 +3,7 @@ type TextOperators<TType extends string> = {
     _not: TType;
     _in: TType[];
     _not_in: TType[];
+    _contains: TType;
 };
 
 export type TextInterfaceGenerator<TName extends string, TType extends string = string> = {
