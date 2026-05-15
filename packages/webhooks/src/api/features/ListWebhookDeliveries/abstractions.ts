@@ -1,14 +1,32 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { GenericRecord } from "@webiny/api/types.js";
-import type { WebhookDelivery } from "~/api/domain/WebhookDelivery.js";
+import type { WebhookDelivery, WebhookDeliveryStatus } from "~/api/domain/WebhookDelivery.js";
 import type {
-    WebhookPersistenceError,
     WebhookModelNotFoundError,
-    WebhookNotAuthorizedError
+    WebhookNotAuthorizedError,
+    WebhookPersistenceError
 } from "~/api/domain/errors.js";
+import type {
+    DateStringInterfaceGenerator,
+    IdInterfaceGenerator,
+    NumericInterfaceGenerator,
+    TextInterfaceGenerator
+} from "@webiny/api";
+
+export interface IListWebhookDeliveriesInputWhere
+    extends
+        IdInterfaceGenerator<"id">,
+        IdInterfaceGenerator<"webhookId">,
+        IdInterfaceGenerator<"backgroundTaskId">,
+        DateStringInterfaceGenerator<"createdOn">,
+        DateStringInterfaceGenerator<"savedOn">,
+        TextInterfaceGenerator<"eventType">,
+        TextInterfaceGenerator<WebhookDeliveryStatus>,
+        NumericInterfaceGenerator<"responseStatus"> {
+    //
+}
 
 export interface IListWebhookDeliveriesInput {
-    where?: GenericRecord;
+    where?: IListWebhookDeliveriesInputWhere;
     limit?: number;
     after?: string;
     sort?: (`${string}_ASC` | `${string}_DESC`)[];

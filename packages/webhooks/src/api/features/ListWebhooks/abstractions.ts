@@ -1,14 +1,32 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { GenericRecord } from "@webiny/api/types.js";
 import type { Webhook } from "~/api/domain/Webhook.js";
 import type {
     WebhookModelNotFoundError,
     WebhookPersistenceError,
     WebhookNotAuthorizedError
 } from "~/api/domain/errors.js";
+import type {
+    DateStringInterfaceGenerator,
+    IdInterfaceGenerator,
+    TextInterfaceGenerator,
+    TruthfulInterfaceGenerator
+} from "@webiny/api";
+
+export interface IListWebhooksInputWhere
+    extends
+        IdInterfaceGenerator<"id">,
+        DateStringInterfaceGenerator<"createdOn">,
+        DateStringInterfaceGenerator<"savedOn">,
+        TextInterfaceGenerator<"name">,
+        TextInterfaceGenerator<"slug">,
+        TextInterfaceGenerator<"endpointUrl">,
+        TextInterfaceGenerator<"events">,
+        TruthfulInterfaceGenerator<"enabled"> {
+    //
+}
 
 export interface IListWebhooksInput {
-    where?: GenericRecord;
+    where?: IListWebhooksInputWhere;
     limit?: number;
     after?: string;
     sort?: (`${string}_ASC` | `${string}_DESC`)[];
