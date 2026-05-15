@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Toast } from "~/Toast/index.js";
 import { Tooltip } from "~/Tooltip/index.js";
 import { type LinkComponent, DefaultLinkComponent } from "~/index.js";
-import { defaultFileUrlFormatter } from "./FileUrlFormatter.js";
-import type { FileUrlFormatter } from "./FileUrlFormatter.js";
+import { FileUrlFormatterContext, type FileUrlFormatter } from "./FileUrlFormatter.js";
 
 export type CompileMarkdown = (markdown: React.ReactNode) => React.ReactNode;
 
@@ -24,14 +23,13 @@ interface MarkdownCompiler {
 export interface AdminUiProviderProps {
     linkComponent?: LinkComponent;
     markdownCompiler?: MarkdownCompiler;
-    fileUrlFormatter?: FileUrlFormatter;
     children: React.ReactNode;
 }
 
 export const AdminUiProvider = ({ children, ...props }: AdminUiProviderProps) => {
     const linkComponent = props.linkComponent ?? DefaultLinkComponent;
     const markdownCompiler = props.markdownCompiler ?? passthrough;
-    const fileUrlFormatter = props.fileUrlFormatter ?? defaultFileUrlFormatter;
+    const fileUrlFormatter = React.useContext(FileUrlFormatterContext);
 
     // Cache to store compiled markdown results
     const cacheRef = useRef(new Map<string, React.ReactNode>());
@@ -69,8 +67,13 @@ export const AdminUiProvider = ({ children, ...props }: AdminUiProviderProps) =>
         [markdownCompiler]
     );
 
+    const contextValue = useMemo(
+        () => ({ linkComponent, compileMarkdown, fileUrlFormatter }),
+        [linkComponent, compileMarkdown, fileUrlFormatter]
+    );
+
     return (
-        <AdminUiContext.Provider value={{ linkComponent, compileMarkdown, fileUrlFormatter }}>
+        <AdminUiContext.Provider value={contextValue}>
             <Tooltip.Provider>{children}</Tooltip.Provider>
             <Toast.Provider />
         </AdminUiContext.Provider>
