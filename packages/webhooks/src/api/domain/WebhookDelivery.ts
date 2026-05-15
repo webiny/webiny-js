@@ -7,19 +7,15 @@ export interface WebhookDeliveryCmsEntryValues {
     backgroundTaskId: string | null;
     eventType: string;
     status: WebhookDeliveryStatus;
-    /* Compressed stringified payload. */
     payload: string;
-    /* Compressed stringified request headers. */
     requestHeaders: string | null;
     responseTime: number | null;
     responseStatus: number | null;
-    /* Compressed stringified response headers. */
     responseHeaders: string | null;
-    /* Compressed stringified response body. */
     responseBody: string | null;
 }
 
-/* Shape of webhook delivery data stored in the CMS (compressed strings). */
+/* Shape of webhook delivery data stored in the CMS. */
 export interface WebhookDeliveryCmsEntry {
     id: string;
     createdOn: string;
@@ -28,7 +24,7 @@ export interface WebhookDeliveryCmsEntry {
     values: WebhookDeliveryCmsEntryValues;
 }
 
-/* Flat runtime shape with decompressed fields. */
+/* Flat runtime shape. */
 export interface WebhookDelivery {
     id: string;
     createdOn: string;
@@ -38,12 +34,9 @@ export interface WebhookDelivery {
     eventType: string;
     status: WebhookDeliveryStatus;
     payload: GenericRecord;
-    /* Decompressed request headers. */
     requestHeaders: GenericRecord | null;
     responseTime: number | null;
     responseStatus: number | null;
-    /* Decompressed response headers. */
     responseHeaders: GenericRecord | null;
-    /* Decompressed response body (raw text). */
     responseBody: string | null;
 }

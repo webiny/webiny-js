@@ -6,8 +6,8 @@ import type {
 import { createAbstraction } from "@webiny/feature/api";
 
 export interface IWebhookDeliveryTransformer {
-    fromStorage(entry: CmsEntry<WebhookDeliveryCmsEntryValues>): Promise<WebhookDelivery>;
-    toStorage(delivery: WebhookDelivery): Promise<WebhookDeliveryCmsEntryValues>;
+    fromStorage(entry: CmsEntry<WebhookDeliveryCmsEntryValues>): WebhookDelivery;
+    toStorage(delivery: WebhookDelivery): WebhookDeliveryCmsEntryValues;
 }
 
 export const WebhookDeliveryTransformer = createAbstraction<IWebhookDeliveryTransformer>(

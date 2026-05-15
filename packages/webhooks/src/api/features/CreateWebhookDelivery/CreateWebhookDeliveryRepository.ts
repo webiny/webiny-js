@@ -29,7 +29,7 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_DELIVERY_MODEL_ID));
             }
 
-            const storageValues = await this.transformer.toStorage({
+            const storageValues = this.transformer.toStorage({
                 id: "",
                 createdOn: "",
                 savedOn: "",
@@ -57,7 +57,7 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 return Result.fail(new WebhookPersistenceError(createResult.error as any));
             }
 
-            const delivery = await this.transformer.fromStorage(entry);
+            const delivery = this.transformer.fromStorage(entry);
 
             return Result.ok(delivery);
         } catch (error) {

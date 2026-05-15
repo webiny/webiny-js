@@ -43,9 +43,7 @@ class ListWebhookDeliveriesRepositoryImpl implements RepositoryAbstraction.Inter
             }
 
             const { entries, meta } = listResult.value;
-            const items = await Promise.all(
-                entries.map(entry => this.transformer.fromStorage(entry))
-            );
+            const items = entries.map(entry => this.transformer.fromStorage(entry));
 
             return Result.ok({
                 items,

@@ -3,8 +3,8 @@ import type { Webhook, WebhookCmsEntryValues } from "~/api/domain/Webhook.js";
 import { createAbstraction } from "@webiny/feature/api";
 
 export interface IWebhookTransformer {
-    fromStorage(entry: CmsEntry<WebhookCmsEntryValues>): Promise<Webhook>;
-    toStorage(webhook: Webhook): Promise<WebhookCmsEntryValues>;
+    fromStorage(entry: CmsEntry<WebhookCmsEntryValues>): Webhook;
+    toStorage(webhook: Webhook): WebhookCmsEntryValues;
 }
 
 export const WebhookTransformer = createAbstraction<IWebhookTransformer>(

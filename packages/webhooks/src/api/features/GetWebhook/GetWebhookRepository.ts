@@ -35,7 +35,7 @@ class GetWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
                 return Result.fail(new WebhookNotFoundError(id));
             }
 
-            const webhook = await this.transformer.fromStorage(entryResult.value);
+            const webhook = this.transformer.fromStorage(entryResult.value);
 
             return Result.ok(webhook);
         } catch (error) {

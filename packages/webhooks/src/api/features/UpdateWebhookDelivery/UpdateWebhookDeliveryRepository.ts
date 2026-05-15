@@ -47,7 +47,7 @@ class UpdateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
             }
 
             const originalEntry = entryResult.value;
-            const existing = await this.transformer.fromStorage(originalEntry);
+            const existing = this.transformer.fromStorage(originalEntry);
 
             const updated: WebhookDelivery = {
                 ...existing,
@@ -60,7 +60,7 @@ class UpdateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 responseBody: input.responseBody ?? existing.responseBody
             };
 
-            const storageValues = await this.transformer.toStorage(updated);
+            const storageValues = this.transformer.toStorage(updated);
 
             const { entry } =
                 await this.updateEntryDataFactory.create<WebhookDeliveryCmsEntryValues>(
