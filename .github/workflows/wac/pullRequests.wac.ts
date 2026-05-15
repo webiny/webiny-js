@@ -192,11 +192,16 @@ export const pullRequests = createWorkflow({
                 {
                     name: "Detect changed packages",
                     id: "detect-changed-packages",
-                    run: runNodeScript(
-                        "listChangedPackages",
-                        "${{ steps.detect-changed-files.outputs.changed_files }}",
-                        { outputAs: "changed-packages" }
-                    )
+                    // Pass attacker-controlled changed files via env var (not direct ${{ }}
+                    // interpolation) to avoid shell command injection via crafted file names
+                    // in PRs. See CWE-78.
+                    env: {
+                        CHANGED_FILES: "${{ steps.detect-changed-files.outputs.changed_files }}"
+                    },
+                    run: runNodeScript("listChangedPackages", '"$CHANGED_FILES"', {
+                        outputAs: "changed-packages",
+                        rawParams: true
+                    })
                 },
                 {
                     name: "Get latest Webiny version on NPM",

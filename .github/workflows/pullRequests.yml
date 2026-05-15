@@ -76,11 +76,12 @@ jobs:
           list-files: json
       - name: Detect changed packages
         id: detect-changed-packages
+        env:
+          CHANGED_FILES: '${{ steps.detect-changed-files.outputs.changed_files }}'
         run: >-
           echo "changed-packages=$(node
-          .github/workflows/wac/utils/runNodeScripts/listChangedPackages.js '${{
-          steps.detect-changed-files.outputs.changed_files }}')" >>
-          "$GITHUB_OUTPUT"
+          .github/workflows/wac/utils/runNodeScripts/listChangedPackages.js
+          "$CHANGED_FILES")" >> "$GITHUB_OUTPUT"
       - name: Get latest Webiny version on NPM
         id: latest-webiny-version
         run: >-
