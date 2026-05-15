@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
+import type { SelectedFile } from "@webiny/app-admin/presentation/browserFilePicker/index.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import type { IListViewModel } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { IListActions } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
@@ -70,7 +71,7 @@ export interface IFolderActions {
 export interface IFileManagerActions extends IListActions {
     showFileDetails(id: string): void;
     hideFileDetails(): void;
-    upload(files: File[]): Promise<void>;
+    upload(files: SelectedFile[]): Promise<void>;
     setViewMode(mode: "table" | "grid"): void;
     setDragging(dragging: boolean): void;
     showFilters(): void;
