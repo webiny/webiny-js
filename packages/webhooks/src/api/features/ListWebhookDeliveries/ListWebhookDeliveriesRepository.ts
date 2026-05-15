@@ -39,7 +39,7 @@ class ListWebhookDeliveriesRepositoryImpl implements RepositoryAbstraction.Inter
                 );
 
             if (listResult.isFail()) {
-                return Result.fail(new WebhookPersistenceError(listResult.error as any));
+                return Result.fail(WebhookPersistenceError.from(listResult.error));
             }
 
             const { entries, meta } = listResult.value;
@@ -54,7 +54,7 @@ class ListWebhookDeliveriesRepositoryImpl implements RepositoryAbstraction.Inter
                 }
             });
         } catch (error) {
-            return Result.fail(new WebhookPersistenceError(error as Error));
+            return Result.fail(WebhookPersistenceError.from(error));
         }
     }
 }

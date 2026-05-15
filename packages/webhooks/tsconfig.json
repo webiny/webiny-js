@@ -10,7 +10,10 @@
     { "path": "../feature" },
     { "path": "../handler-graphql" },
     { "path": "../tasks" },
-    { "path": "../api" }
+    { "path": "../api" },
+    { "path": "../handler" },
+    { "path": "../handler-aws" },
+    { "path": "../plugins" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -38,7 +41,13 @@
       "@webiny/tasks/*": ["../tasks/src/*"],
       "@webiny/tasks": ["../tasks/src"],
       "@webiny/api/*": ["../api/src/*"],
-      "@webiny/api": ["../api/src"]
+      "@webiny/api": ["../api/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
     }
   }
 }

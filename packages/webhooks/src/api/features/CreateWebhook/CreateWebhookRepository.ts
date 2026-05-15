@@ -50,14 +50,14 @@ class CreateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
             const createResult = await this.createEntryRepository.execute(modelResult.value, entry);
 
             if (createResult.isFail()) {
-                return Result.fail(new WebhookPersistenceError(createResult.error as any));
+                return Result.fail(WebhookPersistenceError.from(createResult.error));
             }
 
             const webhook = this.transformer.fromStorage(entry);
 
             return Result.ok(webhook);
         } catch (error) {
-            return Result.fail(new WebhookPersistenceError(error as Error));
+            return Result.fail(WebhookPersistenceError.from(error));
         }
     }
 }

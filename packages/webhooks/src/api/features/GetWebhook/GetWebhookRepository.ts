@@ -39,7 +39,7 @@ class GetWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
 
             return Result.ok(webhook);
         } catch (error) {
-            return Result.fail(new WebhookPersistenceError(error as Error));
+            return Result.fail(WebhookPersistenceError.from(error));
         }
     }
 }

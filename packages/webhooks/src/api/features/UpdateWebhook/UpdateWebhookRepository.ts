@@ -31,7 +31,7 @@ class UpdateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
                     { id: webhook.id }
                 );
             if (entryResult.isFail()) {
-                return Result.fail(new WebhookPersistenceError(entryResult.error as any));
+                return Result.fail(WebhookPersistenceError.from(entryResult.error));
             }
 
             const values = this.transformer.toStorage(webhook);
@@ -45,12 +45,12 @@ class UpdateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
             const updateResult = await this.updateEntryRepository.execute(modelResult.value, entry);
 
             if (updateResult.isFail()) {
-                return Result.fail(new WebhookPersistenceError(updateResult.error as any));
+                return Result.fail(WebhookPersistenceError.from(updateResult.error));
             }
 
             return Result.ok(webhook);
         } catch (error) {
-            return Result.fail(new WebhookPersistenceError(error as Error));
+            return Result.fail(WebhookPersistenceError.from(error));
         }
     }
 }

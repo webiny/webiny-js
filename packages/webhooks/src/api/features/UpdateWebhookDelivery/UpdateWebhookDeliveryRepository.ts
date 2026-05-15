@@ -72,12 +72,12 @@ class UpdateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
             const updateResult = await this.updateEntryRepository.execute(modelResult.value, entry);
 
             if (updateResult.isFail()) {
-                return Result.fail(new WebhookPersistenceError(updateResult.error as any));
+                return Result.fail(WebhookPersistenceError.from(updateResult.error));
             }
 
             return Result.ok(updated);
         } catch (error) {
-            return Result.fail(new WebhookPersistenceError(error as Error));
+            return Result.fail(WebhookPersistenceError.from(error));
         }
     }
 }

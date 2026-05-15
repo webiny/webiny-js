@@ -39,7 +39,7 @@ class DeleteWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
                 { id }
             );
             if (entryResult.isFail()) {
-                return Result.fail(new WebhookPersistenceError(entryResult.error as any));
+                return Result.fail(WebhookPersistenceError.from(entryResult.error));
             }
 
             const deleteResult = await this.deleteEntryRepository.execute(
@@ -48,12 +48,12 @@ class DeleteWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
             );
 
             if (deleteResult.isFail()) {
-                return Result.fail(new WebhookPersistenceError(deleteResult.error as any));
+                return Result.fail(WebhookPersistenceError.from(deleteResult.error));
             }
 
             return Result.ok(true);
         } catch (error) {
-            return Result.fail(new WebhookPersistenceError(error as Error));
+            return Result.fail(WebhookPersistenceError.from(error));
         }
     }
 

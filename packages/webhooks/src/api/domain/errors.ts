@@ -24,11 +24,33 @@ export class WebhookValidationError extends BaseError {
     }
 }
 
-export class WebhookPersistenceError extends BaseError {
+interface WebhookPersistenceErrorData {
+    originalMessage: string;
+    originalCode?: string;
+    originalData?: unknown;
+}
+
+export class WebhookPersistenceError extends BaseError<WebhookPersistenceErrorData> {
     override readonly code = "WEBHOOK_PERSISTENCE_ERROR" as const;
 
     constructor(error: Error) {
-        super({ message: error.message });
+        super({ message: error.message, data: { originalMessage: error.message } });
+    }
+
+    static from(error: unknown): WebhookPersistenceError {
+        if (error instanceof Error) {
+            const instance = new WebhookPersistenceError(error);
+            const data: WebhookPersistenceErrorData = {
+                originalMessage: error.message,
+                originalCode: (error as any).code,
+                originalData: (error as any).data
+            };
+            (instance as any).data = data;
+            instance.stack = error.stack;
+            return instance;
+        }
+
+        return new WebhookPersistenceError(new Error(String(error)));
     }
 }
 

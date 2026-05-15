@@ -25,6 +25,7 @@ class WebhookModelFactory implements ModelFactory.Interface {
                 .minLength(3, "Slug must be at least 3 characters long.")
                 .pattern(
                     "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                    "",
                     "Slug can only contain lowercase letters, numbers, and hyphens, and must start and end with a letter or number."
                 ),
             endpointUrl: fields
@@ -36,6 +37,7 @@ class WebhookModelFactory implements ModelFactory.Interface {
                 .minLength(8, "Endpoint URL must be at least 8 characters long.")
                 .pattern(
                     "^(https:\\/\\/.+|http:\\/\\/localhost.*)",
+                    "",
                     "Endpoint URL must start with https://"
                 ),
             description: fields.longText().label("Description"),

@@ -42,7 +42,7 @@ class GetWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interfac
 
             return Result.ok(delivery);
         } catch (error) {
-            return Result.fail(new WebhookPersistenceError(error as Error));
+            return Result.fail(WebhookPersistenceError.from(error));
         }
     }
 }
