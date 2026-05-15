@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin, createRegisterExtensionPlugin } from "@webiny/handler";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
@@ -43,6 +43,11 @@ import { NotificationTransportFeature } from "./features/notifications/Notificat
 import { createNotificationsGraphQL } from "~/graphql/notifications.js";
 
 export const createWorkflows = () => {
+    const modelsPlugin = createRegisterExtensionPlugin(context => {
+        context.container.register(WorkflowPrivateModel);
+        context.container.register(WorkflowStatePrivateModel);
+    });
+
     const plugin = new ContextPlugin(async context => {
         const tenantContext = context.container.resolve(TenantContext);
         const identityContext = context.container.resolve(IdentityContext);
@@ -119,5 +124,5 @@ export const createWorkflows = () => {
 
     plugin.name = "workflows.context";
 
-    return plugin;
+    return [plugin, modelsPlugin];
 };

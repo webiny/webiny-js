@@ -19,12 +19,13 @@ import {
     CleanupTaskSubtreeUseCaseImpl
 } from "~/features/CleanupTaskSubtree/index.js";
 import { TestingRunTaskDefinition } from "~/tasks/testingRunTask.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 const createTasksCrud = () => {
     const plugin = new ContextPlugin<Context>(async context => {
         // Register the private models
-        context.container.register(TaskPrivateModel);
-        context.container.register(TaskLogPrivateModel);
+        // context.container.register(TaskPrivateModel);
+        // context.container.register(TaskLogPrivateModel);
 
         // Register the RunnableTaskDecorator to wrap all TaskDefinition instances
         context.container.registerDecorator(RunnableTaskDecorator);
@@ -54,7 +55,14 @@ const createTasksCrud = () => {
 };
 
 const createTasksContext = (): Plugin[] => {
-    return [...createServicePlugins(), createTasksCrud()];
+    return [
+        ...createServicePlugins(),
+        createTasksCrud(),
+        createRegisterExtensionPlugin(context => {
+            context.container.register(TaskPrivateModel);
+            context.container.register(TaskLogPrivateModel);
+        })
+    ];
 };
 
 export const createBackgroundTaskContext = (): Plugin[] => {

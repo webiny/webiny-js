@@ -35,6 +35,7 @@ import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolde
 import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpty/feature.js";
 import { FOLDER_MODEL_ID, FolderModel } from "~/domain/folder/folder.model.js";
 import { FilterPrivateModel } from "~/filter/filter.model.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -46,9 +47,6 @@ const setupAcoContext = async (
     setupAcoContextParams: CreateAcoContextParams
 ): Promise<void> => {
     const { tenancy, security } = context;
-
-    context.container.register(FolderModel);
-    context.container.register(FilterPrivateModel);
 
     const getModel = context.container.resolve(GetModelUseCase);
 
@@ -146,6 +144,11 @@ const setupAcoContext = async (
 };
 
 export const createAcoContext = (params: CreateAcoContextParams) => {
+    const modelsPlugin = createRegisterExtensionPlugin(context => {
+        context.container.register(FolderModel);
+        context.container.register(FilterPrivateModel);
+    });
+
     const plugin = new ContextPlugin<AcoContext>(async context => {
         /**
          * We can skip the ACO initialization if the installation is pending.
@@ -161,5 +164,5 @@ export const createAcoContext = (params: CreateAcoContextParams) => {
 
     plugin.name = "aco.createContext";
 
-    return plugin;
+    return [plugin, modelsPlugin];
 };

@@ -8,6 +8,7 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { FileModel as FileModelAbstraction } from "~/domain/file/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { FileModel, FILE_MODEL_ID } from "~/domain/file/file.model.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 export * from "./modelModifier/CmsModelModifier.js";
 export * from "./delivery/index.js";
@@ -21,7 +22,7 @@ export const createFileManagerContext = () => {
             return;
         }
 
-        context.container.register(FileModel);
+        // context.container.register(FileModel);
 
         await context.security.withoutAuthorization(async () => {
             const fileModel = await getModel.execute(FILE_MODEL_ID);
@@ -34,7 +35,11 @@ export const createFileManagerContext = () => {
 
     plugin.name = "file-manager.createContext";
 
-    return plugin;
+    const modelReg = createRegisterExtensionPlugin(context => {
+        context.container.register(FileModel);
+    });
+
+    return [plugin, modelReg];
 };
 
 export const createFileManagerGraphQL = () => {
