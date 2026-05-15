@@ -6,8 +6,8 @@ import { JsonpackCompression } from "./JsonpackCompression.js";
 export const CompressionFeature = createFeature({
     name: "Api/CompressionFeature",
     register: container => {
-        container.register(GzipCompression);
-        container.register(JsonpackCompression);
-        container.register(CompressionHandler);
+        container.register(GzipCompression).inSingletonScope();
+        container.register(JsonpackCompression).inSingletonScope();
+        container.register(CompressionHandler).inSingletonScope();
     }
 });

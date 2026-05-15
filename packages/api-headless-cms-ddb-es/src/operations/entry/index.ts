@@ -173,7 +173,6 @@ export const createEntriesStorageOperations = (
         initialStorageEntry.locked = locked;
 
         const transformer = createTransformer<T>({
-            fieldRegistry,
             fieldIndexRegistry,
             model,
             entry: initialEntry,
@@ -289,7 +288,6 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry,
             fieldIndexRegistry,
             compressionHandler,
             valuesModifiers
@@ -415,7 +413,6 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry,
             fieldIndexRegistry,
             compressionHandler
         });
@@ -741,7 +738,6 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry,
             fieldIndexRegistry,
             compressionHandler
         });
@@ -912,7 +908,6 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry,
             fieldIndexRegistry,
             compressionHandler
         });
@@ -1225,7 +1220,6 @@ export const createEntriesStorageOperations = (
                 model,
                 entry: latestEntry,
                 storageEntry: initialLatestStorageEntry,
-                fieldRegistry,
                 fieldIndexRegistry,
                 compressionHandler
             });
@@ -1476,7 +1470,6 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry,
             fieldIndexRegistry,
             compressionHandler
         });
@@ -1679,7 +1672,6 @@ export const createEntriesStorageOperations = (
                     locked: true,
                     ...updatedMetaFields
                 },
-                fieldRegistry,
                 fieldIndexRegistry,
                 compressionHandler
             });
@@ -1779,7 +1771,6 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry,
             fieldIndexRegistry,
             compressionHandler
         });
