@@ -30,8 +30,8 @@ import { listAvailableWebhookEvents as listAvailableWebhookEventsFn } from "./me
 import { triggerWebhook as triggerWebhookFn } from "./methods/webhooks/triggerWebhook.js";
 
 export class WebhooksSdk {
-    private config: WebinyConfig;
-    private fetchFn: typeof fetch;
+    private readonly config: WebinyConfig;
+    private readonly fetchFn: typeof fetch;
 
     constructor(config: WebinyConfig) {
         this.config = config;
