@@ -8,6 +8,7 @@ import type {
 
 export interface IListWebhooksInput {
     where?: {
+        slug?: string;
         enabled?: boolean;
         events?: string;
     };

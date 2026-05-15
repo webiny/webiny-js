@@ -2,7 +2,6 @@ import { Result } from "@webiny/feature/api";
 import { GetModelRepository } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { CreateEntryDataFactory } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 import { CreateEntryRepository } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
-import { ListEntriesRepository } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { WebhookTransformer } from "~/api/features/Transformers/abstractions/WebhookTransformer.js";
 import { CreateWebhookRepository as RepositoryAbstraction } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
@@ -13,27 +12,9 @@ class CreateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private readonly getModelRepository: GetModelRepository.Interface,
         private readonly createEntryRepository: CreateEntryRepository.Interface,
-        private readonly listEntriesRepository: ListEntriesRepository.Interface,
         private readonly createEntryDataFactory: CreateEntryDataFactory.Interface,
         private readonly transformer: WebhookTransformer.Interface
     ) {}
-
-    async slugExists(slug: string): Promise<boolean> {
-        const modelResult = await this.getModelRepository.execute(WEBHOOK_MODEL_ID);
-        if (modelResult.isFail()) {
-            return false;
-        }
-
-        const listResult = await this.listEntriesRepository.execute(modelResult.value, {
-            where: { values: { slug } },
-            limit: 1
-        });
-        if (listResult.isFail()) {
-            return false;
-        }
-
-        return listResult.value.entries.length > 0;
-    }
 
     async execute(input: WebhookCmsEntryValues): Promise<RepositoryAbstraction.Response> {
         try {
@@ -67,7 +48,6 @@ export const CreateWebhookRepository = RepositoryAbstraction.createImplementatio
     dependencies: [
         GetModelRepository,
         CreateEntryRepository,
-        ListEntriesRepository,
         CreateEntryDataFactory,
         WebhookTransformer
     ]

@@ -44,7 +44,6 @@ export type ICreateWebhookRepositoryResponse = Result<
 
 export interface ICreateWebhookRepository {
     execute(input: WebhookCmsEntryValues): Promise<ICreateWebhookRepositoryResponse>;
-    slugExists(slug: string): Promise<boolean>;
 }
 
 export const CreateWebhookRepository = createAbstraction<ICreateWebhookRepository>(

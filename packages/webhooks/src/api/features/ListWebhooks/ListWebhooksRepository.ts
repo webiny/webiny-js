@@ -25,6 +25,9 @@ class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
             }
 
             const valuesWhere: Record<string, string | boolean | string[]> = {};
+            if (input?.where?.slug) {
+                valuesWhere.slug = input.where.slug;
+            }
             if (input?.where?.enabled !== undefined) {
                 valuesWhere.enabled = input.where.enabled;
             }

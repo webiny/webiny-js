@@ -3,6 +3,7 @@ import {
     CreateWebhookUseCase as UseCaseAbstraction,
     CreateWebhookRepository
 } from "./abstractions.js";
+import { ListWebhooksRepository } from "~/api/features/ListWebhooks/abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookValidationError, WebhookNotAuthorizedError } from "~/api/domain/errors.js";
 import type { Webhook, WebhookCmsEntryValues } from "~/api/domain/Webhook.js";
@@ -35,7 +36,8 @@ const isValidEndpointUrl = (url: string): boolean => {
 class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private permissions: WebhookPermissions.Interface,
-        private repository: CreateWebhookRepository.Interface
+        private repository: CreateWebhookRepository.Interface,
+        private listWebhooksRepository: ListWebhooksRepository.Interface
     ) {}
 
     async execute(
@@ -59,7 +61,11 @@ class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const slug = (input.slug || "").trim() || generateSlug(input.name);
 
-        if (await this.repository.slugExists(slug)) {
+        const listResult = await this.listWebhooksRepository.execute({
+            where: { slug },
+            limit: 1
+        });
+        if (listResult.isOk() && listResult.value.items.length > 0) {
             return Result.fail(new WebhookValidationError(`Slug "${slug}" is already taken.`));
         }
 
@@ -79,5 +85,5 @@ class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const CreateWebhookUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateWebhookUseCaseImpl,
-    dependencies: [WebhookPermissions, CreateWebhookRepository]
+    dependencies: [WebhookPermissions, CreateWebhookRepository, ListWebhooksRepository]
 });
