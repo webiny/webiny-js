@@ -5,26 +5,23 @@ import type {
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import { prepareEntryToIndex } from "~/helpers/index.js";
-import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 import type { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 interface TransformEntryToIndexParams<T extends CmsEntryValues = CmsEntryValues> {
     model: StorageOperationsCmsModel<T>;
     entry: CmsEntry<T>;
     storageEntry: CmsStorageEntry<T>;
-    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
 }
 
 export const transformEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
     params: TransformEntryToIndexParams<T>
 ) => {
-    const { model, entry, storageEntry, fieldRegistry, fieldIndexRegistry } = params;
+    const { model, entry, storageEntry, fieldIndexRegistry } = params;
     const result = prepareEntryToIndex<T>({
         model,
         entry: structuredClone(entry),
         storageEntry: structuredClone(storageEntry),
-        fieldRegistry,
         fieldIndexRegistry
     });
 

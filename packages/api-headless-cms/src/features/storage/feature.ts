@@ -7,17 +7,21 @@ import { DynamicZoneStorageTransform } from "./fields/DynamicZoneStorageTransfor
 import { LongTextStorageTransform } from "./fields/LongTextStorageTransform.js";
 import { ObjectStorageTransform } from "./fields/ObjectStorageTransform.js";
 import { RichTextStorageTransform } from "./fields/RichTextStorageTransform.js";
+import { CompressedTextStorageTransform } from "./fields/CompressedTextStorageTransform.js";
 
 export const StorageFeature = createFeature({
     name: "Cms/StorageFeature",
     register: container => {
-        container.register(DateStorageTransform);
-        container.register(DefaultStorageTransform);
-        container.register(DynamicZoneStorageTransform);
-        container.register(JsonStorageTransform);
-        container.register(LongTextStorageTransform);
-        container.register(ObjectStorageTransform);
-        container.register(RichTextStorageTransform);
-        container.register(StorageTransformRegistry);
+        container.register(DateStorageTransform).inSingletonScope();
+        container.register(DefaultStorageTransform).inSingletonScope();
+        container.register(DynamicZoneStorageTransform).inSingletonScope();
+        container.register(JsonStorageTransform).inSingletonScope();
+        container.register(LongTextStorageTransform).inSingletonScope();
+        container.register(ObjectStorageTransform).inSingletonScope();
+        container.register(RichTextStorageTransform).inSingletonScope();
+        container.register(CompressedTextStorageTransform).inSingletonScope();
+
+        // must be last, as it depends on all other transforms being registered first
+        container.register(StorageTransformRegistry).inSingletonScope();
     }
 });
