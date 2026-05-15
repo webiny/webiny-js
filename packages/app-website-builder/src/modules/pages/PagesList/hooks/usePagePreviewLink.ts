@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTenantContext } from "@webiny/app-admin";
 import type { PageDto } from "~/domain/Page/index.js";
 import { usePreviewDomain } from "~/BaseEditor/defaultConfig/Content/usePreviewDomain.js";
@@ -9,7 +9,7 @@ export const usePagePreviewLink = (pageDto: PageDto) => {
     const { previewDomain } = usePreviewDomain();
     const modifier = usePreviewUrlParams();
 
-    return useMemo(() => {
+    const baseUrl = useMemo(() => {
         if (!previewDomain || !pageDto.properties.path) {
             return null;
         }
@@ -21,11 +21,6 @@ export const usePagePreviewLink = (pageDto: PageDto) => {
             url.searchParams.set("wb.id", pageDto.id);
             url.searchParams.set("wb.tenant", tenant!);
             url.searchParams.set("wb.path", pageDto.properties.path);
-            if (modifier) {
-                for (const [key, value] of Object.entries(modifier.getQueryParams())) {
-                    url.searchParams.set(key, value);
-                }
-            }
             return url.toString();
         } catch {
             console.log(
@@ -34,5 +29,24 @@ export const usePagePreviewLink = (pageDto: PageDto) => {
 
             return null;
         }
-    }, [previewDomain, modifier]);
+    }, [previewDomain]);
+
+    const [url, setUrl] = useState<string | null>(baseUrl);
+
+    useEffect(() => {
+        if (!baseUrl) {
+            setUrl(null);
+            return;
+        }
+
+        if (!modifier) {
+            setUrl(baseUrl);
+            return;
+        }
+
+        const urlObj = new URL(baseUrl);
+        modifier.modify(urlObj).then(() => setUrl(urlObj.toString()));
+    }, [baseUrl, modifier]);
+
+    return url;
 };

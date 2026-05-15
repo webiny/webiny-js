@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 
 export interface IPreviewUrlModifier {
-    getQueryParams(): Record<string, string>;
+    modify(url: URL): Promise<void>;
 }
 
 export const PreviewUrlModifier = createAbstraction<IPreviewUrlModifier>(
