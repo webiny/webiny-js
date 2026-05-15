@@ -1,4 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { GenericRecord } from "@webiny/api/types.js";
 import type { Webhook } from "~/api/domain/Webhook.js";
 import type {
     WebhookModelNotFoundError,
@@ -7,13 +8,10 @@ import type {
 } from "~/api/domain/errors.js";
 
 export interface IListWebhooksInput {
-    where?: {
-        slug?: string;
-        enabled?: boolean;
-        events?: string;
-    };
+    where?: GenericRecord;
     limit?: number;
     after?: string;
+    sort?: (`${string}_ASC` | `${string}_DESC`)[];
 }
 
 export interface IListMeta {

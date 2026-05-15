@@ -7,16 +7,20 @@ import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain
 import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
 import type { IListWebhooksInput } from "./abstractions.js";
 import type { WebhookCmsEntryValues } from "~/api/domain/Webhook.js";
+import { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
+import { CmsSortMapper } from "@webiny/api-headless-cms/features/sortMapper/abstractions.js";
 
 class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private readonly getModelRepository: GetModelRepository.Interface,
         private readonly listEntriesRepository: ListEntriesRepository.Interface,
-        private readonly transformer: WebhookTransformer.Interface
+        private readonly transformer: WebhookTransformer.Interface,
+        private whereMapper: CmsWhereMapper.Interface,
+        private sortMapper: CmsSortMapper.Interface
     ) {}
 
     async execute(
-        input?: IListWebhooksInput
+        params?: IListWebhooksInput
     ): Promise<Result<RepositoryAbstraction.Output, RepositoryAbstraction.Error>> {
         try {
             const modelResult = await this.getModelRepository.execute(WEBHOOK_MODEL_ID);
@@ -24,23 +28,21 @@ class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
                 return Result.fail(new WebhookModelNotFoundError(WEBHOOK_MODEL_ID));
             }
 
-            const valuesWhere: Record<string, string | boolean | string[]> = {};
-            if (input?.where?.slug) {
-                valuesWhere.slug = input.where.slug;
-            }
-            if (input?.where?.enabled !== undefined) {
-                valuesWhere.enabled = input.where.enabled;
-            }
-            if (input?.where?.events) {
-                valuesWhere.events_in = [input.where.events];
-            }
+            const webhookModel = modelResult.value;
 
             const listResult = await this.listEntriesRepository.execute<WebhookCmsEntryValues>(
                 modelResult.value,
                 {
-                    where: { values: valuesWhere },
-                    limit: input?.limit ?? 100,
-                    after: input?.after
+                    where: this.whereMapper.map({
+                        fields: webhookModel.fields,
+                        input: params?.where
+                    }),
+                    sort: this.sortMapper.map({
+                        fields: webhookModel.fields,
+                        input: params?.sort
+                    }),
+                    limit: params?.limit ?? 100,
+                    after: params?.after
                 }
             );
 
@@ -67,5 +69,11 @@ class ListWebhooksRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListWebhooksRepository = RepositoryAbstraction.createImplementation({
     implementation: ListWebhooksRepositoryImpl,
-    dependencies: [GetModelRepository, ListEntriesRepository, WebhookTransformer]
+    dependencies: [
+        GetModelRepository,
+        ListEntriesRepository,
+        WebhookTransformer,
+        CmsWhereMapper,
+        CmsSortMapper
+    ]
 });

@@ -56,7 +56,7 @@ class WebhookDeliverySchema_ implements GraphQLSchemaFactory.Interface {
             resolver: (listDeliveries: ListWebhookDeliveriesUseCase.Interface) => {
                 return async ({ args }) => {
                     const result = await listDeliveries.execute({
-                        webhookId: args.webhookId,
+                        where: { webhookId: args.webhookId },
                         limit: args.limit ?? undefined,
                         after: args.after ?? undefined
                     });

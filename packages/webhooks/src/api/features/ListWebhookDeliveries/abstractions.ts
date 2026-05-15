@@ -1,4 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { GenericRecord } from "@webiny/api/types.js";
 import type { WebhookDelivery } from "~/api/domain/WebhookDelivery.js";
 import type {
     WebhookPersistenceError,
@@ -7,9 +8,10 @@ import type {
 } from "~/api/domain/errors.js";
 
 export interface IListWebhookDeliveriesInput {
-    webhookId: string;
+    where?: GenericRecord;
     limit?: number;
     after?: string;
+    sort?: (`${string}_ASC` | `${string}_DESC`)[];
 }
 
 export interface IListMeta {

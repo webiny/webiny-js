@@ -38,7 +38,7 @@ class WebhookDispatcherImpl implements WebhookDispatcherAbstraction.Interface {
         const result = await this.listWebhooksRepository.execute({
             where: {
                 enabled: true,
-                events: eventName
+                events_contains: eventName
             }
         });
 

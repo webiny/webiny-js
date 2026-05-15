@@ -59,7 +59,7 @@ describe("ResendWebhookDeliveryUseCase", () => {
 
         await resendUseCase.execute(delivery.id);
 
-        const listResult = await listDeliveries.execute({ webhookId: webhook.id });
+        const listResult = await listDeliveries.execute({ where: { webhookId: webhook.id } });
         expect(listResult.isOk()).toBe(true);
         /* Original delivery + resent delivery. */
         expect(listResult.value.items.length).toBe(2);

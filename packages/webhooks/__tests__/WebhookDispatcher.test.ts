@@ -80,7 +80,7 @@ describe("WebhookDispatcher", () => {
         await dispatcher.dispatch("product.entry.published", { entryId: "abc" });
 
         expect(listRepoMock).toHaveBeenCalledWith({
-            where: { enabled: true, events: "product.entry.published" }
+            where: { enabled: true, events_contains: "product.entry.published" }
         });
         expect(createDeliveryMock).toHaveBeenCalledTimes(2);
         expect(triggerMock).toHaveBeenCalledTimes(2);
