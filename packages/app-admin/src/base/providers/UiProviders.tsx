@@ -3,7 +3,6 @@ import { createProvider, SimpleLink } from "@webiny/app";
 import { AdminUiProvider } from "@webiny/admin-ui";
 import { compiler } from "markdown-to-jsx/react";
 
-
 const options = {
     overrides: {
         a: {
