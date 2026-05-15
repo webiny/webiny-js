@@ -2,14 +2,12 @@ import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Toast } from "~/Toast/index.js";
 import { Tooltip } from "~/Tooltip/index.js";
 import { type LinkComponent, DefaultLinkComponent } from "~/index.js";
-import { FileUrlFormatterContext, type FileUrlFormatter } from "./FileUrlFormatter.js";
 
 export type CompileMarkdown = (markdown: React.ReactNode) => React.ReactNode;
 
 export interface AdminUiContextValue {
     linkComponent: LinkComponent;
     compileMarkdown: CompileMarkdown;
-    fileUrlFormatter: FileUrlFormatter;
 }
 
 const passthrough = (markdown: string) => markdown;
@@ -29,8 +27,6 @@ export interface AdminUiProviderProps {
 export const AdminUiProvider = ({ children, ...props }: AdminUiProviderProps) => {
     const linkComponent = props.linkComponent ?? DefaultLinkComponent;
     const markdownCompiler = props.markdownCompiler ?? passthrough;
-    const fileUrlFormatter = React.useContext(FileUrlFormatterContext);
-
     // Cache to store compiled markdown results
     const cacheRef = useRef(new Map<string, React.ReactNode>());
 
@@ -68,8 +64,8 @@ export const AdminUiProvider = ({ children, ...props }: AdminUiProviderProps) =>
     );
 
     const contextValue = useMemo(
-        () => ({ linkComponent, compileMarkdown, fileUrlFormatter }),
-        [linkComponent, compileMarkdown, fileUrlFormatter]
+        () => ({ linkComponent, compileMarkdown }),
+        [linkComponent, compileMarkdown]
     );
 
     return (

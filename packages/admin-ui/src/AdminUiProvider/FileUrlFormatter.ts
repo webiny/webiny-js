@@ -22,8 +22,3 @@ export const defaultFileUrlFormatter: FileUrlFormatter = {
         return new PassthroughUrl(url);
     }
 };
-
-import React from "react";
-
-export const FileUrlFormatterContext =
-    React.createContext<FileUrlFormatter>(defaultFileUrlFormatter);
