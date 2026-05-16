@@ -13,14 +13,8 @@ import {
     Text,
     TimeAgo
 } from "@webiny/admin-ui";
-import type {
-    DataTableSorting,
-    OnDataTableSortingChange
-} from "@webiny/admin-ui";
-import {
-    useConfirmationDialog,
-    useSnackbar
-} from "@webiny/app-admin/hooks/index.js";
+import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-ui";
+import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin/hooks/index.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { WebhookListPresenterFeature } from "../feature.js";
 import { ListWebhooksFeature } from "~/admin/features/ListWebhooks/feature.js";
@@ -118,9 +112,7 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
                             />
                         }
                     >
-                        <DropdownMenu.Item
-                            onSelect={() => goToRoute(Routes.Form, { id: row.id })}
-                        >
+                        <DropdownMenu.Item onSelect={() => goToRoute(Routes.Form, { id: row.id })}>
                             Edit
                         </DropdownMenu.Item>
                         {vm.permissions.canEdit && (
