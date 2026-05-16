@@ -13,7 +13,10 @@ import { UpdateWebhookUseCase } from "~/admin/features/updateWebhook/abstraction
 import { DeleteWebhookUseCase } from "~/admin/features/deleteWebhook/abstractions.js";
 import { ListAvailableEventsUseCase } from "~/admin/features/listAvailableEvents/abstractions.js";
 import { WebhookPermissions } from "~/admin/features/permissions/abstractions.js";
-import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
+import {
+    FormModelFactory,
+    type IFormModel
+} from "@webiny/app-admin/features/formModel/abstractions.js";
 
 class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     private _loading = false;
@@ -23,6 +26,8 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     private _showDeliveries = false;
     private _availableEvents: WebhookEvent[] = [];
     private _webhookId: string | null = null;
+    private _form!: IFormModel;
+    private _selectedEvents: Set<string> = new Set();
 
     constructor(
         private readonly formModelFactory: FormModelFactory.Interface,
@@ -36,6 +41,28 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
         makeAutoObservable(this, { vm: computed });
     }
 
+    private buildForm(): IFormModel {
+        return this.formModelFactory.create({
+            fields: fields => ({
+                name: fields.text().label("Name").required("Name is required"),
+                slug: fields.text().label("Slug").required("Slug is required"),
+                endpointUrl: fields
+                    .text()
+                    .label("Endpoint URL")
+                    .required("Endpoint URL is required")
+                    .placeholder("https://"),
+                description: fields.text().label("Description").renderer("textarea"),
+                enabled: fields.boolean().label("Enabled").defaultValue(false)
+            }),
+            layout: layout => [
+                layout.row("name", "slug"),
+                layout.row("endpointUrl"),
+                layout.row("description"),
+                layout.row("enabled")
+            ]
+        });
+    }
+
     get vm(): IWebhookFormViewModel {
         return {
             loading: this._loading,
@@ -47,17 +74,55 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
             permissions: {
                 canEdit: this.permissions.canEdit("webhook"),
                 canDelete: this.permissions.canDelete("webhook")
-            }
+            },
+            form: this._form.vm,
+            selectedEvents: Array.from(this._selectedEvents)
         };
     }
 
     actions: IWebhookFormActions = {
         save: async () => {
+            const data = await this._form.submit<Record<string, unknown>>();
+            if (data === false) {
+                return;
+            }
+
             this._saving = true;
-            /* FormModel submit + create/update will be wired here. */
-            runInAction(() => {
-                this._saving = false;
-            });
+
+            try {
+                const merged = {
+                    name: data.name as string,
+                    slug: data.slug as string,
+                    endpointUrl: data.endpointUrl as string,
+                    description: (data.description as string) || null,
+                    enabled: data.enabled as boolean,
+                    events: Array.from(this._selectedEvents)
+                };
+
+                if (this._isNew) {
+                    const created = await this.createWebhookUseCase.execute(merged);
+
+                    runInAction(() => {
+                        this._webhook = created;
+                        this._webhookId = created.id;
+                        this._isNew = false;
+                        this._form.field("slug").setDisabled(true);
+                    });
+                } else {
+                    const updated = await this.updateWebhookUseCase.execute(
+                        this._webhookId!,
+                        merged
+                    );
+
+                    runInAction(() => {
+                        this._webhook = updated;
+                    });
+                }
+            } finally {
+                runInAction(() => {
+                    this._saving = false;
+                });
+            }
         },
         deleteWebhook: async () => {
             if (!this._webhookId || this._isNew) {
@@ -70,6 +135,13 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
         },
         closeDeliveries: () => {
             this._showDeliveries = false;
+        },
+        toggleEvent: (eventName: string) => {
+            if (this._selectedEvents.has(eventName)) {
+                this._selectedEvents.delete(eventName);
+            } else {
+                this._selectedEvents.add(eventName);
+            }
         }
     };
 
@@ -89,6 +161,16 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
             runInAction(() => {
                 this._webhook = webhook;
                 this._availableEvents = events;
+                this._form = this.buildForm();
+                this._form.setData({
+                    name: webhook.name,
+                    slug: webhook.slug,
+                    endpointUrl: webhook.endpointUrl,
+                    description: webhook.description ?? "",
+                    enabled: webhook.enabled
+                });
+                this._form.field("slug").setDisabled(true);
+                this._selectedEvents = new Set(webhook.events);
                 this._loading = false;
             });
         } else {
@@ -96,6 +178,7 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
 
             runInAction(() => {
                 this._availableEvents = events;
+                this._form = this.buildForm();
                 this._loading = false;
             });
         }
