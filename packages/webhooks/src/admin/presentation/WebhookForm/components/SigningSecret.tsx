@@ -1,7 +1,4 @@
-import React, {
-    useState,
-    useCallback
-} from "react";
+import React, { useState, useCallback } from "react";
 import { IconButton, Text } from "@webiny/admin-ui";
 import { useSnackbar } from "@webiny/app-admin/hooks/index.js";
 import { ReactComponent as VisibilityIcon } from "@webiny/icons/visibility.svg";
