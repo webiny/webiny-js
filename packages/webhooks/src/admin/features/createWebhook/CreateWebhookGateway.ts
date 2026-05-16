@@ -1,6 +1,9 @@
 import { WebinySdk } from "@webiny/app-admin/features/webinySdk/abstractions.js";
 import type { Webhook } from "~/admin/shared/types.js";
-import { CreateWebhookGateway as GatewayAbstraction, type CreateWebhookInput } from "./abstractions.js";
+import {
+    CreateWebhookGateway as GatewayAbstraction,
+    type CreateWebhookInput
+} from "./abstractions.js";
 
 class CreateWebhookGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private readonly sdk: WebinySdk.Interface) {}

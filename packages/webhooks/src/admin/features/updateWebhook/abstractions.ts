@@ -14,7 +14,8 @@ export interface IUpdateWebhookGateway {
     execute(id: string, input: UpdateWebhookInput): Promise<Webhook>;
 }
 
-export const UpdateWebhookGateway = createAbstraction<IUpdateWebhookGateway>("UpdateWebhookGateway");
+export const UpdateWebhookGateway =
+    createAbstraction<IUpdateWebhookGateway>("UpdateWebhookGateway");
 
 export namespace UpdateWebhookGateway {
     export type Interface = IUpdateWebhookGateway;
@@ -24,7 +25,8 @@ export interface IUpdateWebhookUseCase {
     execute(id: string, input: UpdateWebhookInput): Promise<Webhook>;
 }
 
-export const UpdateWebhookUseCase = createAbstraction<IUpdateWebhookUseCase>("UpdateWebhookUseCase");
+export const UpdateWebhookUseCase =
+    createAbstraction<IUpdateWebhookUseCase>("UpdateWebhookUseCase");
 
 export namespace UpdateWebhookUseCase {
     export type Interface = IUpdateWebhookUseCase;

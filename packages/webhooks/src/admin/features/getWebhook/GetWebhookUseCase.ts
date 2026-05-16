@@ -1,8 +1,5 @@
 import type { Webhook } from "~/admin/shared/types.js";
-import {
-    GetWebhookUseCase as UseCaseAbstraction,
-    GetWebhookGateway
-} from "./abstractions.js";
+import { GetWebhookUseCase as UseCaseAbstraction, GetWebhookGateway } from "./abstractions.js";
 
 class GetWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private readonly gateway: GetWebhookGateway.Interface) {}
