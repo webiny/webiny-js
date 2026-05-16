@@ -1,23 +1,8 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { Webhook } from "~/admin/shared/types.js";
-
-export interface ListWebhooksGatewayParams {
-    where?: { enabled?: boolean };
-    limit?: number;
-    after?: string;
-}
-
-export interface ListWebhooksGatewayResult {
-    data: Webhook[];
-    meta: {
-        cursor: string | null;
-        hasMoreItems: boolean;
-        totalCount: number;
-    };
-}
+import type { IListWebhooksInput, IListWebhooksOutput } from "~/admin/domain/types.js";
 
 export interface IListWebhooksGateway {
-    execute(params: ListWebhooksGatewayParams): Promise<ListWebhooksGatewayResult>;
+    execute(input: IListWebhooksInput): Promise<IListWebhooksOutput>;
 }
 
 export const ListWebhooksGateway = createAbstraction<IListWebhooksGateway>("ListWebhooksGateway");
@@ -26,8 +11,19 @@ export namespace ListWebhooksGateway {
     export type Interface = IListWebhooksGateway;
 }
 
+export interface IListWebhooksRepository {
+    execute(input: IListWebhooksInput): Promise<IListWebhooksOutput>;
+}
+
+export const ListWebhooksRepository =
+    createAbstraction<IListWebhooksRepository>("ListWebhooksRepository");
+
+export namespace ListWebhooksRepository {
+    export type Interface = IListWebhooksRepository;
+}
+
 export interface IListWebhooksUseCase {
-    execute(params: ListWebhooksGatewayParams): Promise<ListWebhooksGatewayResult>;
+    execute(input: IListWebhooksInput): Promise<IListWebhooksOutput>;
 }
 
 export const ListWebhooksUseCase = createAbstraction<IListWebhooksUseCase>("ListWebhooksUseCase");

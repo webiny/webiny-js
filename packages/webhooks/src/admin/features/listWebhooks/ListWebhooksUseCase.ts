@@ -1,19 +1,18 @@
 import {
-    ListWebhooksUseCase as UseCaseAbstraction,
-    ListWebhooksGateway,
-    type ListWebhooksGatewayParams,
-    type ListWebhooksGatewayResult
+    ListWebhooksRepository,
+    ListWebhooksUseCase as UseCaseAbstraction
 } from "./abstractions.js";
+import type { IListWebhooksInput, IListWebhooksOutput } from "~/admin/domain/types.js";
 
 class ListWebhooksUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private readonly gateway: ListWebhooksGateway.Interface) {}
+    constructor(private repository: ListWebhooksRepository.Interface) {}
 
-    async execute(params: ListWebhooksGatewayParams): Promise<ListWebhooksGatewayResult> {
-        return this.gateway.execute(params);
+    async execute(input: IListWebhooksInput): Promise<IListWebhooksOutput> {
+        return this.repository.execute(input);
     }
 }
 
 export const ListWebhooksUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListWebhooksUseCaseImpl,
-    dependencies: [ListWebhooksGateway]
+    dependencies: [ListWebhooksRepository]
 });

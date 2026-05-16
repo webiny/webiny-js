@@ -1,32 +1,80 @@
-import { WebinySdk } from "@webiny/app-admin/features/webinySdk/abstractions.js";
-import {
-    ListWebhooksGateway as GatewayAbstraction,
-    type ListWebhooksGatewayParams,
-    type ListWebhooksGatewayResult
-} from "./abstractions.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
+import { ListWebhooksGateway as GatewayAbstraction } from "./abstractions.js";
+import type { IListWebhooksInput, IListWebhooksOutput, IWebhook } from "~/admin/domain/types.js";
 
-class ListWebhooksGatewayImpl implements GatewayAbstraction.Interface {
-    constructor(private readonly sdk: WebinySdk.Interface) {}
+const LIST_WEBHOOKS = /* GraphQL */ `
+    query ListWebhooks($where: ListWebhooksWhereInput, $limit: Int, $after: String) {
+        webhooks {
+            listWebhooks(where: $where, limit: $limit, after: $after) {
+                data {
+                    id
+                    name
+                    slug
+                    endpointUrl
+                    description
+                    enabled
+                    events
+                    signingSecret
+                    createdOn
+                    modifiedOn
+                }
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+                error {
+                    code
+                    message
+                    data
+                }
+            }
+        }
+    }
+`;
 
-    async execute(params: ListWebhooksGatewayParams): Promise<ListWebhooksGatewayResult> {
-        const result = await this.sdk.webhooks.listWebhooks({
-            where: params.where,
-            limit: params.limit,
-            after: params.after
+type ListWebhooksResponse = {
+    webhooks: {
+        listWebhooks:
+            | {
+                  data: IWebhook[];
+                  meta: { cursor: string | null; hasMoreItems: boolean; totalCount: number };
+                  error: null;
+              }
+            | {
+                  data: null;
+                  meta: null;
+                  error: { code: string; message: string; data: unknown };
+              };
+    };
+};
+
+class ListWebhooksGraphQLGateway implements GatewayAbstraction.Interface {
+    constructor(private client: MainGraphQLClient.Interface) {}
+
+    async execute(input: IListWebhooksInput): Promise<IListWebhooksOutput> {
+        const response = await this.client.execute<ListWebhooksResponse>({
+            query: LIST_WEBHOOKS,
+            variables: {
+                where: input.where,
+                limit: input.limit,
+                after: input.after
+            }
         });
 
-        if (result.isFail()) {
-            throw new Error(result.error.message);
+        const envelope = response.webhooks.listWebhooks;
+        if (envelope.error) {
+            throw new Error(envelope.error.message);
         }
 
         return {
-            data: result.value.data,
-            meta: result.value.meta
+            items: envelope.data,
+            meta: envelope.meta
         };
     }
 }
 
 export const ListWebhooksGateway = GatewayAbstraction.createImplementation({
-    implementation: ListWebhooksGatewayImpl,
-    dependencies: [WebinySdk]
+    implementation: ListWebhooksGraphQLGateway,
+    dependencies: [MainGraphQLClient]
 });
