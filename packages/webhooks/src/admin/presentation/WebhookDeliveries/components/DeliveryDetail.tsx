@@ -59,7 +59,7 @@ export const DeliveryDetail = observer(function DeliveryDetail({
                     variant="ghost"
                     size="sm"
                     onClick={onClose}
-                    label="Close detail"
+                    aria-label="Close detail"
                 />
             </div>
             <Separator />

@@ -1,14 +1,7 @@
 import React, { useMemo, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import {
-    DataTable,
-    Drawer,
-    IconButton,
-    Tag,
-    Text,
-    TimeAgo
-} from "@webiny/admin-ui";
+import { DataTable, Drawer, IconButton, Tag, Text, TimeAgo } from "@webiny/admin-ui";
 import { ReactComponent as ReplayIcon } from "@webiny/icons/replay.svg";
 import { WebhookDeliveriesPresenterFeature } from "../feature.js";
 import { ListWebhookDeliveriesFeature } from "~/admin/features/listWebhookDeliveries/feature.js";
@@ -72,7 +65,8 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
             },
             createdOn: {
                 header: "Created",
-                cell: (row: WebhookDelivery) => <TimeAgo datetime={row.createdOn} />,
+                cell: (row: WebhookDelivery) =>
+                    row.createdOn ? <TimeAgo datetime={row.createdOn} /> : <Text size="sm">—</Text>,
                 enableSorting: true,
                 size: 120
             },
@@ -87,7 +81,7 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
                             e.stopPropagation();
                             void presenter.actions.resend(row.id);
                         }}
-                        label="Resend delivery"
+                        aria-label="Resend delivery"
                     />
                 ),
                 size: 48,

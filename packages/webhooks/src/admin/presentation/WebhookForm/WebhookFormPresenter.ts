@@ -94,7 +94,7 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                     name: data.name as string,
                     slug: data.slug as string,
                     endpointUrl: data.endpointUrl as string,
-                    description: (data.description as string) || null,
+                    description: (data.description as string) || undefined,
                     enabled: data.enabled as boolean,
                     events: Array.from(this._selectedEvents)
                 };

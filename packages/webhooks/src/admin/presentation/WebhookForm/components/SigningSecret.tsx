@@ -32,14 +32,14 @@ export const SigningSecret = ({ secret }: SigningSecretProps) => {
                     variant="secondary"
                     size="sm"
                     onClick={() => setRevealed(prev => !prev)}
-                    label={revealed ? "Hide secret" : "Reveal secret"}
+                    aria-label={revealed ? "Hide secret" : "Reveal secret"}
                 />
                 <IconButton
                     icon={<CopyIcon />}
                     variant="secondary"
                     size="sm"
                     onClick={() => void handleCopy()}
-                    label="Copy secret"
+                    aria-label="Copy secret"
                 />
             </div>
         </div>

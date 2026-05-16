@@ -43,7 +43,7 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
 
     const sorting: DataTableSorting = useMemo(() => {
         const sort = vm.list.sort;
-        if (!sort.field) {
+        if (!sort || !sort.field) {
             return [];
         }
         return [{ id: sort.field, desc: sort.direction === "DESC" }];
@@ -95,7 +95,8 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
             },
             createdOn: {
                 header: "Created",
-                cell: (row: Webhook) => <TimeAgo datetime={row.createdOn} />,
+                cell: (row: Webhook) =>
+                    row.createdOn ? <TimeAgo datetime={row.createdOn} /> : <Text size="sm">—</Text>,
                 enableSorting: true,
                 size: 120
             },
@@ -108,7 +109,7 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
                                 icon={<MoreVerticalIcon />}
                                 variant="ghost"
                                 size="sm"
-                                label="Actions"
+                                aria-label="Actions"
                             />
                         }
                     >
