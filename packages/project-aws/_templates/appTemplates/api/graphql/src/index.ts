@@ -27,7 +27,7 @@ import { createWorkflows } from "@webiny/api-workflows";
 import { createHeadlessCmsWorkflows } from "@webiny/api-headless-cms-workflows";
 import { createWebsiteBuilderWorkflows } from "@webiny/api-website-builder-workflows";
 import { createWebsiteBuilderScheduler } from "@webiny/api-website-builder-scheduler";
-// import {createWebhooks} from "@webiny/webhooks/api"
+import {createWebhooks} from "@webiny/webhooks/api"
 
 import { extensions } from "./extensions";
 
@@ -74,7 +74,7 @@ export const handler = createHandler({
         }),
         createHeadlessCmsScheduler(),
         createWebsiteBuilderScheduler(),
-        // createWebhooks(),
+        createWebhooks(),
         extensions()
     ],
     debug
