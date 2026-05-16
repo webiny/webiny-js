@@ -86,6 +86,8 @@
       "@webiny/lexical-theme": ["../lexical-theme/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/webhooks/api": ["../webhooks/src/api/index.js"],
+      "@webiny/webhooks/admin/*": ["../webhooks/src/admin/*"],
       "@webiny/webhooks/*": ["../webhooks/src/*"],
       "@webiny/webhooks": ["../webhooks/src"]
     }

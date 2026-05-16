@@ -15,7 +15,7 @@ import { WebhookListPresenterFeature } from "./presentation/WebhookList/index.js
 import { WebhookFormPresenterFeature } from "./presentation/WebhookForm/index.js";
 import { WebhookDeliveriesPresenterFeature } from "./presentation/WebhookDeliveries/index.js";
 import { WebhookRoutes } from "./WebhookRoutes.js";
-import { WEBHOOK_PERMISSIONS_SCHEMA } from "~/domain/permissionsSchema.js";
+import { WEBHOOK_PERMISSIONS_SCHEMA } from "~/admin/permissions.js";
 
 const { Security } = AdminConfig;
 

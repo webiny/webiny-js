@@ -1,6 +1,6 @@
 import { createPermissionsAbstraction } from "@webiny/api-core/features/security/permissions/index.js";
 import type { Permissions } from "@webiny/api-core/features/security/permissions/index.js";
-import { WEBHOOK_PERMISSIONS_SCHEMA } from "~/domain/permissionsSchema.js";
+import { WEBHOOK_PERMISSIONS_SCHEMA } from "~/api/permissions.js";
 
 export const WebhookPermissions = createPermissionsAbstraction(WEBHOOK_PERMISSIONS_SCHEMA);
 

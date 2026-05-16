@@ -1,7 +1,7 @@
 import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { ReactComponent as PermissionsIcon } from "@webiny/icons/webhook.svg";
-import { WEBHOOK_PERMISSIONS_SCHEMA } from "~/domain/permissionsSchema.js";
+import { WEBHOOK_PERMISSIONS_SCHEMA } from "~/admin/permissions.js";
 
 const { Security } = AdminConfig;
 
