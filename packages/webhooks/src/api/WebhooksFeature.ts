@@ -23,7 +23,7 @@ import { WebhookDispatcherFeature } from "./features/WebhookDispatcher/feature.j
 import { SendWebhookTaskFeature } from "./features/SendWebhookTask/feature.js";
 import { WebhooksTransformerFeature } from "./features/Transformers/feature.js";
 
-export const Extension = createFeature({
+export const WebhooksFeature = createFeature({
     name: "WebhookManagement",
     register(container) {
         // CMS models.

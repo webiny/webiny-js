@@ -31,6 +31,7 @@
     "@webiny/api-website-builder-workflows": "latest",
     "@webiny/api-websockets": "latest",
     "@webiny/api-workflows": "latest",
+    "@webiny/webhooks": "latest",
     "@webiny/aws-sdk": "latest",
     "@webiny/build-tools": "latest",
     "@webiny/db-dynamodb": "latest",

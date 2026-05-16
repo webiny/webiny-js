@@ -4,6 +4,8 @@
   "type": "module",
   "exports": {
     ".": "./index.js",
+    "./api": "./api/index.js",
+    "./admin/*": "./admin/*",
     "./*": "./*"
   },
   "description": "Webhooks feature for Webiny",

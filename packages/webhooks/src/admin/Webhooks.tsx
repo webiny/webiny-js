@@ -19,7 +19,7 @@ import { WEBHOOK_PERMISSIONS_SCHEMA } from "~/domain/permissionsSchema.js";
 
 const { Security } = AdminConfig;
 
-export const Extension = () => {
+export const Webhooks = () => {
     return (
         <>
             {/* Headless features. */}

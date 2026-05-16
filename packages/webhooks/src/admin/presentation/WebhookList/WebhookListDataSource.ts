@@ -5,7 +5,7 @@ import type {
     IDataSourceMeta
 } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { Webhook } from "~/admin/shared/types.js";
-import type { IListWebhooksUseCase } from "~/admin/features/listWebhooks/abstractions.js";
+import type { IListWebhooksUseCase } from "~/admin/features/ListWebhooks/abstractions.js";
 
 export class WebhookListDataSource implements IDataSource<Webhook> {
     private _rows: Webhook[] = [];

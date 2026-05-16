@@ -19,4 +19,4 @@ export type { IWebhookPayload } from "~/api/features/SendWebhookTask/types.js";
 export type { IListMeta } from "~/api/features/ListWebhooks/abstractions.js";
 
 /* Extension for framework wiring. */
-export { Extension } from "~/api/Extension.js";
+export { createWebhooks } from "~/api/index.js";

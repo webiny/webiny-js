@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { Drawer, Heading } from "@webiny/admin-ui";
+import { Drawer } from "@webiny/admin-ui";
 import { WebhookDeliveriesPresenterFeature } from "../feature.js";
 import { ListWebhookDeliveriesFeature } from "~/admin/features/listWebhookDeliveries/feature.js";
 import { ResendWebhookDeliveryFeature } from "~/admin/features/resendWebhookDelivery/feature.js";
@@ -26,17 +26,8 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
     }, [presenter, webhookId, open]);
 
     return (
-        <Drawer open={open} onOpenChange={isOpen => !isOpen && onClose()}>
-            <Drawer.Content>
-                <Drawer.Header>
-                    <Heading level={5}>Delivery Log</Heading>
-                </Drawer.Header>
-                <Drawer.Body>
-                    {/* Delivery list with status badges, resend buttons. */}
-                    {/* Each row: eventType, status, createdOn, responseStatus. */}
-                    {/* Selected delivery detail: payload, headers, response. */}
-                </Drawer.Body>
-            </Drawer.Content>
+        <Drawer open={open} onOpenChange={isOpen => !isOpen && onClose()} title="Delivery Log">
+            <></>
         </Drawer>
     );
 });

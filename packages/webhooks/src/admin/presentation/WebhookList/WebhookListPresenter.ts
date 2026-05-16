@@ -8,7 +8,7 @@ import {
     type IWebhookListActions
 } from "./abstractions.js";
 import { WebhookListDataSource } from "./WebhookListDataSource.js";
-import { ListWebhooksUseCase } from "~/admin/features/listWebhooks/abstractions.js";
+import { ListWebhooksUseCase } from "~/admin/features/ListWebhooks/abstractions.js";
 import { DeleteWebhookUseCase } from "~/admin/features/deleteWebhook/abstractions.js";
 import { TriggerWebhookUseCase } from "~/admin/features/triggerWebhook/abstractions.js";
 import { WebhookPermissions } from "~/admin/features/permissions/abstractions.js";

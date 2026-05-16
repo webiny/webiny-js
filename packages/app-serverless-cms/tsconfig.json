@@ -26,7 +26,8 @@
     { "path": "../app-workflows" },
     { "path": "../lexical-editor-actions" },
     { "path": "../lexical-theme" },
-    { "path": "../plugins" }
+    { "path": "../plugins" },
+    { "path": "../webhooks" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -84,7 +85,9 @@
       "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],
       "@webiny/lexical-theme": ["../lexical-theme/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/webhooks/*": ["../webhooks/src/*"],
+      "@webiny/webhooks": ["../webhooks/src"]
     }
   }
 }

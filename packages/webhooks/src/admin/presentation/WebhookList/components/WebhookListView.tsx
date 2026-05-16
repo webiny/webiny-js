@@ -4,7 +4,7 @@ import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { useRouter } from "@webiny/app-admin";
 import { Button, Heading, Separator } from "@webiny/admin-ui";
 import { WebhookListPresenterFeature } from "../feature.js";
-import { ListWebhooksFeature } from "~/admin/features/listWebhooks/feature.js";
+import { ListWebhooksFeature } from "~/admin/features/ListWebhooks/feature.js";
 import { DeleteWebhookFeature } from "~/admin/features/deleteWebhook/feature.js";
 import { TriggerWebhookFeature } from "~/admin/features/triggerWebhook/feature.js";
 import { WebhookPermissionsFeature } from "~/admin/features/permissions/feature.js";
@@ -25,7 +25,7 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
             <div className="flex items-center justify-between py-sm px-md">
                 <Heading level={5}>Webhooks</Heading>
                 {vm.permissions.canCreate && (
-                    <Button variant="primary" onPress={() => goToRoute(Routes.Form, { id: "new" })}>
+                    <Button variant="primary" onClick={() => goToRoute(Routes.Form, { id: "new" })}>
                         Create Webhook
                     </Button>
                 )}

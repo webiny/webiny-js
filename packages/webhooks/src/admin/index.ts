@@ -1,2 +1,2 @@
-export { Extension } from "./Extension.js";
+export { Webhooks } from "./Webhooks.js";
 export { Routes } from "./routes.js";

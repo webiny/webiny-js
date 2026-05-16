@@ -2,6 +2,7 @@ import React, { useMemo, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { useRouter } from "@webiny/app-admin";
+import { useRoute } from "@webiny/app";
 import { Button, Heading, OverlayLoader, Separator } from "@webiny/admin-ui";
 import { WebhookFormPresenterFeature } from "../feature.js";
 import { GetWebhookFeature } from "~/admin/features/getWebhook/feature.js";
@@ -14,8 +15,9 @@ import { Routes } from "~/admin/routes.js";
 
 const WebhookFormViewInner = observer(function WebhookFormViewInner() {
     const { presenter } = useFeature(WebhookFormPresenterFeature);
-    const { params, navigate } = useRouter();
-    const id = params.id as string;
+    const { goToRoute } = useRouter();
+    const { route } = useRoute(Routes.Form);
+    const id = route.params.id;
 
     useEffect(() => {
         void presenter.init(id);
@@ -35,17 +37,17 @@ const WebhookFormViewInner = observer(function WebhookFormViewInner() {
                 </Heading>
                 <div className="flex gap-sm">
                     {!vm.isNew && (
-                        <Button variant="secondary" onPress={() => actions.openDeliveries()}>
+                        <Button variant="secondary" onClick={() => actions.openDeliveries()}>
                             Deliveries
                         </Button>
                     )}
-                    <Button variant="secondary" onPress={() => navigate(Routes.List)}>
+                    <Button variant="secondary" onClick={() => goToRoute(Routes.List)}>
                         Cancel
                     </Button>
                     {vm.permissions.canEdit && (
                         <Button
                             variant="primary"
-                            onPress={() => void actions.save()}
+                            onClick={() => void actions.save()}
                             disabled={vm.saving}
                         >
                             {vm.saving ? "Saving..." : "Save"}
