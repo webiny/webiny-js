@@ -43,6 +43,7 @@
     "@webiny/tenant-manager": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
+    "@webiny/webhooks": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0",
     "react": "18.3.1"
   },
@@ -83,6 +84,7 @@
     "./api/system": "./api/system.js",
     "./api/tasks": "./api/tasks.js",
     "./api/tenancy": "./api/tenancy.js",
+    "./api/webhooks": "./api/webhooks.js",
     "./api": "./api.js",
     "./api/file-manager/file": "./api/file-manager/file.js",
     "./api/file-manager/permissions": "./api/file-manager/permissions.js",
@@ -139,5 +141,5 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "b2379394292c4c16eb454f88eda4b1f8eaa08f18bb3cbefa0e22b3ff753dba6d"
+  "exportGenerationHash": "7630229eeababd25242421303ef14b3432e2c6ae6613f1c2baac7982086f4c18"
 }

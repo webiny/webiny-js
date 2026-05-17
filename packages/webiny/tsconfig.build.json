@@ -34,6 +34,7 @@
     { "path": "../tasks/tsconfig.build.json" },
     { "path": "../tenant-manager/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
+    { "path": "../webhooks/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
     { "path": "../website-builder-sdk/tsconfig.build.json" }
   ],
@@ -110,6 +111,10 @@
       "@webiny/tenant-manager": ["../tenant-manager/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
+      "@webiny/webhooks/api": ["../webhooks/src/api/index.js"],
+      "@webiny/webhooks/admin/*": ["../webhooks/src/admin/*"],
+      "@webiny/webhooks/*": ["../webhooks/src/*"],
+      "@webiny/webhooks": ["../webhooks/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],

@@ -31381,6 +31381,7 @@ __metadata:
     "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
+    "@webiny/webhooks": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     react: "npm:18.3.1"
     rimraf: "npm:^6.1.3"

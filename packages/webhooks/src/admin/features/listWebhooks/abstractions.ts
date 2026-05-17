@@ -1,5 +1,22 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { IListWebhooksInput, IListWebhooksOutput } from "~/admin/domain/types.js";
+import type { Webhook } from "~/admin/shared/types.js";
+
+export interface IListWebhooksInput {
+    where?: Record<string, unknown>;
+    limit?: number;
+    after?: string;
+}
+
+export interface IListWebhooksMeta {
+    cursor: string | null;
+    hasMoreItems: boolean;
+    totalCount: number;
+}
+
+export interface IListWebhooksOutput {
+    items: Webhook[];
+    meta: IListWebhooksMeta;
+}
 
 export interface IListWebhooksGateway {
     execute(input: IListWebhooksInput): Promise<IListWebhooksOutput>;

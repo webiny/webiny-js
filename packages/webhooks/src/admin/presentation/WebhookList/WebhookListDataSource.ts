@@ -39,7 +39,7 @@ export class WebhookListDataSource implements IDataSource<Webhook> {
             after: params.cursor
         });
         runInAction(() => {
-            this._rows = result.data;
+            this._rows = result.items;
             this._meta = {
                 cursor: result.meta.cursor,
                 hasMoreItems: result.meta.hasMoreItems,
@@ -60,7 +60,7 @@ export class WebhookListDataSource implements IDataSource<Webhook> {
             after: this._meta.cursor ?? undefined
         });
         runInAction(() => {
-            this._rows = [...this._rows, ...result.data];
+            this._rows = [...this._rows, ...result.items];
             this._meta = {
                 cursor: result.meta.cursor,
                 hasMoreItems: result.meta.hasMoreItems,
