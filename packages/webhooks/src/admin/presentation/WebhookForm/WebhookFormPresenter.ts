@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction, computed } from "mobx";
+import { computed, makeAutoObservable, runInAction } from "mobx";
 import type { Webhook } from "~/admin/shared/types.js";
 import type { WebhookEvent } from "~/admin/shared/types.js";
 import {
@@ -26,10 +26,27 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     private _showDeliveries = false;
     private _availableEvents: WebhookEvent[] = [];
     private _webhookId: string | null = null;
-    private _form!: IFormModel;
+    private _form;
     private _selectedEvents: Set<string> = new Set();
 
-    constructor(
+    public get vm(): IWebhookFormViewModel {
+        return {
+            loading: this._loading,
+            saving: this._saving,
+            isNew: this._isNew,
+            webhook: this._webhook,
+            showDeliveries: this._showDeliveries,
+            availableEvents: this._availableEvents,
+            permissions: {
+                canEdit: this.permissions.canEdit("webhook"),
+                canDelete: this.permissions.canDelete("webhook")
+            },
+            form: this._form.vm,
+            selectedEvents: Array.from(this._selectedEvents)
+        };
+    }
+
+    public constructor(
         private readonly formModelFactory: FormModelFactory.Interface,
         private readonly getWebhookUseCase: GetWebhookUseCase.Interface,
         private readonly createWebhookUseCase: CreateWebhookUseCase.Interface,
@@ -38,6 +55,8 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
         private readonly listAvailableEventsUseCase: ListAvailableEventsUseCase.Interface,
         private readonly permissions: WebhookPermissions.Interface
     ) {
+        this._form = this.buildForm();
+
         makeAutoObservable(this, { vm: computed });
     }
 
@@ -63,24 +82,7 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
         });
     }
 
-    get vm(): IWebhookFormViewModel {
-        return {
-            loading: this._loading,
-            saving: this._saving,
-            isNew: this._isNew,
-            webhook: this._webhook,
-            showDeliveries: this._showDeliveries,
-            availableEvents: this._availableEvents,
-            permissions: {
-                canEdit: this.permissions.canEdit("webhook"),
-                canDelete: this.permissions.canDelete("webhook")
-            },
-            form: this._form.vm,
-            selectedEvents: Array.from(this._selectedEvents)
-        };
-    }
-
-    actions: IWebhookFormActions = {
+    public actions: IWebhookFormActions = {
         save: async () => {
             const data = await this._form.submit<Record<string, unknown>>();
             if (data === false) {
@@ -145,7 +147,7 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
         }
     };
 
-    async init(id: string): Promise<void> {
+    public async init(id: string): Promise<void> {
         this._loading = true;
         this._isNew = id === "new";
         this._webhookId = id === "new" ? null : id;

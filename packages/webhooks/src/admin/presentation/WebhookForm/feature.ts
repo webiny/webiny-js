@@ -8,6 +8,8 @@ export const WebhookFormPresenterFeature = createFeature({
         container.register(WebhookFormPresenter).inSingletonScope();
     },
     resolve(container) {
-        return { presenter: container.resolve(PresenterAbstraction) };
+        return {
+            presenter: container.resolve(PresenterAbstraction)
+        };
     }
 });
