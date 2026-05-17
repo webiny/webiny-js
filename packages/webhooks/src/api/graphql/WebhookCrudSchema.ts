@@ -1,6 +1,8 @@
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { Response } from "@webiny/handler-graphql";
 import { ErrorResponse } from "@webiny/handler-graphql";
+import { ListResponse } from "@webiny/handler-graphql";
+import { ListErrorResponse } from "@webiny/handler-graphql";
 import { ListWebhooksUseCase } from "~/api/features/ListWebhooks/abstractions.js";
 import type { IListWebhooksInput } from "~/api/features/ListWebhooks/abstractions.js";
 import { GetWebhookUseCase } from "~/api/features/GetWebhook/abstractions.js";
@@ -69,6 +71,7 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
                 description: String
                 enabled: Boolean
                 events: [String!]!
+                signingSecret: String
             }
 
             input UpdateWebhookInput {
@@ -127,9 +130,9 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
                 return async ({ args }) => {
                     const result = await listWebhooks.execute(args);
                     if (result.isFail()) {
-                        return new ErrorResponse(result.error);
+                        return new ListErrorResponse(result.error);
                     }
-                    return new Response(result.value);
+                    return new ListResponse(result.value.items, result.value.meta);
                 };
             }
         });
