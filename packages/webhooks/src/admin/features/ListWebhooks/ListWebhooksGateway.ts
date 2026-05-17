@@ -1,6 +1,10 @@
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
-import { ListWebhooksGateway as GatewayAbstraction } from "./abstractions.js";
-import type { IListWebhooksInput, IListWebhooksOutput, IWebhook } from "~/admin/domain/types.js";
+import {
+    ListWebhooksGateway as GatewayAbstraction,
+    type IListWebhooksInput,
+    type IListWebhooksOutput
+} from "./abstractions.js";
+import type { Webhook } from "~/admin/shared/types.js";
 
 const LIST_WEBHOOKS = /* GraphQL */ `
     query ListWebhooks($where: ListWebhooksWhereInput, $limit: Int, $after: String) {
@@ -37,7 +41,7 @@ type ListWebhooksResponse = {
     webhooks: {
         listWebhooks:
             | {
-                  data: IWebhook[];
+                  data: Webhook[];
                   meta: { cursor: string | null; hasMoreItems: boolean; totalCount: number };
                   error: null;
               }

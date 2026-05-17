@@ -1,8 +1,9 @@
 import {
     ListWebhooksRepository,
-    ListWebhooksUseCase as UseCaseAbstraction
+    ListWebhooksUseCase as UseCaseAbstraction,
+    type IListWebhooksInput,
+    type IListWebhooksOutput
 } from "./abstractions.js";
-import type { IListWebhooksInput, IListWebhooksOutput } from "~/admin/domain/types.js";
 
 class ListWebhooksUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private repository: ListWebhooksRepository.Interface) {}
