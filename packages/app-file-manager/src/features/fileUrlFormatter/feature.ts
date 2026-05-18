@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/admin";
-import FileUrlFormatterImpl from "./FileUrlFormatterImpl.js";
+import FileUrlFormatterImpl from "./FileUrlFormatter.js";
 
 export const FileUrlFormatterFeature = createFeature({
     name: "FileManager/FileUrlFormatter",
