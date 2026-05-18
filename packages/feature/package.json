@@ -37,7 +37,7 @@
     }
   },
   "dependencies": {
-    "@webiny/di": "^0.2.3"
+    "@webiny/di": "^1.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
