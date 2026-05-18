@@ -8,9 +8,9 @@ export const ApiMaxBundleSize = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Set the maximum bundle size for the API build.",
     paramsSchema: z.object({
-        sizeInMb: z.number().positive().describe("Maximum bundle size in MB.")
+        size: z.number().int().positive().describe("Maximum bundle size in bytes.")
     }),
-    render({ sizeInMb }) {
-        return <EnvVar varName="WEBINY_API_MAX_BUNDLE_SIZE" value={String(sizeInMb)} />;
+    render({ size }) {
+        return <EnvVar varName="WEBINY_INFRA_API_MAX_BUNDLE_SIZE" value={String(size)} />;
     }
 });
