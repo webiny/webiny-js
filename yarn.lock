@@ -21,15 +21,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ai-sdk/anthropic@npm:^3.0.77":
-  version: 3.0.77
-  resolution: "@ai-sdk/anthropic@npm:3.0.77"
+"@ai-sdk/anthropic@npm:^3.0.78":
+  version: 3.0.78
+  resolution: "@ai-sdk/anthropic@npm:3.0.78"
   dependencies:
     "@ai-sdk/provider": "npm:3.0.10"
     "@ai-sdk/provider-utils": "npm:4.0.27"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10/bde4874d767afada02557baabb194a8a864bd5ef44b199952482b92d70eaf677f5ef8b346e8932f67498ef40de2f63931d1e1b057a2c4b5aec70607bedb1a3a0
+  checksum: 10/c50a1b78034bd2e815d2ac77e2b3ebeb8d51708c1d0f0da2fa233678f5e7a18965b79c75323813d6d7a455b525b5b055d4b21ee79b712f0538f53d5be32d25c1
   languageName: node
   linkType: hard
 
@@ -46,15 +46,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ai-sdk/openai@npm:^3.0.63":
-  version: 3.0.63
-  resolution: "@ai-sdk/openai@npm:3.0.63"
+"@ai-sdk/openai@npm:^3.0.64":
+  version: 3.0.64
+  resolution: "@ai-sdk/openai@npm:3.0.64"
   dependencies:
     "@ai-sdk/provider": "npm:3.0.10"
     "@ai-sdk/provider-utils": "npm:4.0.27"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10/24a464c18c1660889176124485f1b89821262dcf8c3df9963d28b989498c3958622b1889dc9eb637190aade7fe8d450485e24ce23c97ff230f4e81c8a745f45f
+  checksum: 10/2b9b30aabdbb8cafefefc0ac94aa9e68e08e99ddf0160edff3b607fa64f533e56f05ab697aa39875457ec5cd593ee60e6f490c45c1c73e15447c5c635d9da952
   languageName: node
   linkType: hard
 
@@ -12472,8 +12472,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-core@workspace:packages/api-core"
   dependencies:
-    "@ai-sdk/anthropic": "npm:^3.0.77"
-    "@ai-sdk/openai": "npm:^3.0.63"
+    "@ai-sdk/anthropic": "npm:^3.0.78"
+    "@ai-sdk/openai": "npm:^3.0.64"
     "@types/jsonwebtoken": "npm:^9.0.10"
     "@webiny/api": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
