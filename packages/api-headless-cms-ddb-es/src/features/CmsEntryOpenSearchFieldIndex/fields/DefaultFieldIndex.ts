@@ -1,15 +1,16 @@
 import { CmsEntryOpenSearchFieldIndex } from "../abstractions/CmsEntryOpenSearchFieldIndex.js";
 import { FIELD_INDEXING_DEFAULT } from "../constants.js";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 class DefaultFieldIndexImpl implements CmsEntryOpenSearchFieldIndex.Interface {
     public readonly fieldType = FIELD_INDEXING_DEFAULT;
+    public constructor(private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface) {}
 
     public toIndex({
         field,
-        fieldRegistry,
         value
     }: CmsEntryOpenSearchFieldIndex.ToIndex): CmsEntryOpenSearchFieldIndex.ToValue {
-        const fieldType = fieldRegistry.get(field.type);
+        const fieldType = this.fieldRegistry.get(field.type);
 
         if (fieldType?.isSearchable === true) {
             return { value };
@@ -18,13 +19,8 @@ class DefaultFieldIndexImpl implements CmsEntryOpenSearchFieldIndex.Interface {
         return { rawValue: value };
     }
 
-    public fromIndex({
-        field,
-        fieldRegistry,
-        value,
-        rawValue
-    }: CmsEntryOpenSearchFieldIndex.FromIndex): any {
-        const fieldType = fieldRegistry.get(field.type);
+    public fromIndex({ field, value, rawValue }: CmsEntryOpenSearchFieldIndex.FromIndex): any {
+        const fieldType = this.fieldRegistry.get(field.type);
         const isSearchable = fieldType?.isSearchable ?? false;
 
         if (isSearchable) {
@@ -36,5 +32,5 @@ class DefaultFieldIndexImpl implements CmsEntryOpenSearchFieldIndex.Interface {
 
 export const DefaultFieldIndex = CmsEntryOpenSearchFieldIndex.createImplementation({
     implementation: DefaultFieldIndexImpl,
-    dependencies: []
+    dependencies: [CmsModelFieldToGraphQLRegistry]
 });

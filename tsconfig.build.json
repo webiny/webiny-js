@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["node", "static", "vitest", "react-butterfiles"],
+    "types": ["node", "static", "vitest"],
     "target": "esnext",
     "skipLibCheck": true,
     "allowJs": true,

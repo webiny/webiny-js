@@ -1,5 +1,5 @@
 import React from "react";
-import Files from "react-butterfiles";
+import { BrowserFilePicker } from "@webiny/app-admin/presentation/browserFilePicker/index.js";
 import { Text } from "@webiny/admin-ui";
 import { getError } from "./Errors.js";
 import { useImport } from "~/admin/views/contentModels/importing/useImport.js";
@@ -9,7 +9,7 @@ export const FileUpload = () => {
     const fileName = file?.name;
 
     return (
-        <Files
+        <BrowserFilePicker
             accept={["application/json"]}
             maxSize={"5mb"}
             onSuccess={files => {
@@ -49,6 +49,6 @@ export const FileUpload = () => {
                     </>
                 );
             }}
-        </Files>
+        </BrowserFilePicker>
     );
 };

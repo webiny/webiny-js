@@ -21,6 +21,7 @@ import { ListFilesUseCase } from "~/features/listFiles/index.js";
 import { FilesListCache } from "~/features/shared/index.js";
 import { FileModelProvider } from "~/features/fileModel/index.js";
 import type { IFileDetailsPresenter } from "../FileDetails/abstractions.js";
+import type { SelectedFile } from "@webiny/app-admin/presentation/browserFilePicker/index.js";
 
 const VIEW_MODE_KEY = "fm:viewMode";
 const LAST_FOLDER_KEY = "fm:lastFolder";
@@ -121,11 +122,11 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         },
         loadMore: () => this.listPresenter.actions.loadMore(),
         refresh: () => this.listPresenter.actions.refresh(),
-        upload: async (files: File[]) => {
+        upload: async (files: SelectedFile[]) => {
             const folderId = this.folderTreePresenter.vm.currentFolderId ?? "root";
             await this.fileUploader.uploadMany(
                 files.map(file => ({
-                    file,
+                    file: file.src.file,
                     data: {
                         name: file.name,
                         type: file.type,

@@ -14,13 +14,11 @@ import {
     createPublishedRecordType
 } from "~/operations/entry/recordType.js";
 import WebinyError from "@webiny/error";
-import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 import { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
 import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 interface BaseTransformerParams<T extends CmsEntryValues = CmsEntryValues> {
     model: StorageOperationsCmsModel<T>;
-    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
     compressionHandler: Pick<CompressionHandler.Interface, "compress">;
     valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
@@ -64,7 +62,6 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
 ): TransformerResult<T> => {
     const {
         model,
-        fieldRegistry,
         fieldIndexRegistry,
         entry: baseEntry,
         storageEntry: baseStorageEntry,
@@ -158,7 +155,6 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
                 model,
                 entry,
                 storageEntry,
-                fieldRegistry,
                 fieldIndexRegistry
             }));
         },

@@ -12,6 +12,6 @@ export const createScheduler = (params: ICreateSchedulerParams): Plugin[] => {
          * Handler for the Scheduled Action Event.
          */
         createScheduledActionEventHandler(),
-        createSchedulerContext(params)
+        ...createSchedulerContext(params)
     ];
 };

@@ -20,9 +20,10 @@ interface ExtractEntriesFromIndexParams<
     entries: CmsIndexEntry<T>[];
 }
 
-interface PrepareElasticsearchDataParams<
-    T extends CmsEntryValues = CmsEntryValues
-> extends SetupEntriesIndexHelpersParams {
+interface PrepareElasticsearchDataParams<T extends CmsEntryValues = CmsEntryValues> extends Omit<
+    SetupEntriesIndexHelpersParams,
+    "fieldRegistry"
+> {
     model: CmsModel;
     entry: CmsEntry<T>;
     storageEntry: CmsEntry<T>;
@@ -31,7 +32,7 @@ interface PrepareElasticsearchDataParams<
 export const prepareEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
     params: PrepareElasticsearchDataParams<T>
 ): CmsIndexEntry<T> => {
-    const { fieldRegistry, fieldIndexRegistry, storageEntry, entry, model } = params;
+    const { fieldIndexRegistry, storageEntry, entry, model } = params;
 
     function getFieldIndex(type: string): CmsEntryOpenSearchFieldIndex.Interface {
         const fieldIndexing = fieldIndexRegistry.get(type);
@@ -55,7 +56,6 @@ export const prepareEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
         const fieldIndex = getFieldIndex(field.type);
 
         const { value, rawValue } = fieldIndex.toIndex({
-            fieldRegistry,
             model,
             field,
             rawValue: entry.values[identifier],
@@ -119,7 +119,6 @@ export const extractEntriesFromIndex = <T extends CmsEntryValues = CmsEntryValue
                 const key = identifiers.valueIdentifier as keyof T;
                 const rawKey = identifiers.rawValueIdentifier as keyof T;
                 indexValues[key] = fieldIndex.fromIndex({
-                    fieldRegistry,
                     model,
                     field,
                     getFieldIndex,

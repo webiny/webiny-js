@@ -19,7 +19,7 @@
     "@webiny/cli-core": "0.0.0",
     "@webiny/system-requirements": "0.0.0",
     "execa": "^5.1.1",
-    "tsx": "^4.21.0"
+    "tsx": "4.21.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",

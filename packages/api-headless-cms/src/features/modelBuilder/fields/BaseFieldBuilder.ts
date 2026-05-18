@@ -26,7 +26,12 @@ export interface BaseFieldBuilderConfig {
  */
 export abstract class BaseFieldBuilder<TType extends string = string> {
     public readonly type: TType;
+    private _fieldSubType?: string;
     protected config: BaseFieldBuilderConfig;
+
+    public get subType(): string | undefined {
+        return this._fieldSubType;
+    }
 
     public constructor(type: TType, label?: string) {
         this.type = type;
@@ -38,28 +43,33 @@ export abstract class BaseFieldBuilder<TType extends string = string> {
         };
     }
 
-    label(text: string): this {
+    public label(text: string): this {
         this.config.label = text;
         return this;
     }
 
-    help(text: string): this {
+    public help(text: string): this {
         this.config.help = text;
         return this;
     }
 
-    description(text: string): this {
+    public description(text: string): this {
         this.config.description = text;
         return this;
     }
 
-    note(text: string): this {
+    public note(text: string): this {
         this.config.note = text;
         return this;
     }
 
-    fieldId(id: string): this {
+    public fieldId(id: string): this {
         this.config._fieldId = id;
+        return this;
+    }
+
+    protected setSubType(subType: string): this {
+        this._fieldSubType = subType;
         return this;
     }
 
@@ -67,5 +77,5 @@ export abstract class BaseFieldBuilder<TType extends string = string> {
      * Build the final field result.
      * @internal
      */
-    abstract build(): FieldBuildResult;
+    public abstract build(): FieldBuildResult;
 }
