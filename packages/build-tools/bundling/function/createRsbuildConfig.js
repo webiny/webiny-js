@@ -7,14 +7,16 @@ export const createRsbuildConfig = async ({ cwd }) => {
     const { default: rspack } = await import("@rspack/core");
     const paths = getPaths(cwd);
     const mode = getMode();
+    const isDebugEnabled = process.env.DEBUG === "true";
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.fn.entryFile } },
         output: {
             module: true,
             target: "node",
+            minify: true,
             sourceMap: {
-                js: process.env.DEBUG === "true" ? "source-map" : false
+                js: isDebugEnabled ? "source-map" : false
             },
             filename: {
                 js: pathData => {
