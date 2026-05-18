@@ -9,6 +9,9 @@ export const createRsbuildConfig = async ({ cwd }) => {
     const mode = getMode();
     const isDebugEnabled = process.env.DEBUG === "true";
 
+    // Configurable via WEBINY_API_MAX_BUNDLE_SIZE (MB), default 10 MB.
+    const maxBundleSize = (parseFloat(process.env.WEBINY_API_MAX_BUNDLE_SIZE) || 10) * 1024 * 1024;
+
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.fn.entryFile } },
         output: {
@@ -31,8 +34,8 @@ export const createRsbuildConfig = async ({ cwd }) => {
         performance: {
             printFileSize: false,
             hints: "error",
-            maxEntrypointSize: 4.5 * 1024 * 1024, // 4.5 MB
-            maxAssetSize: 4.5 * 1024 * 1024 // 4.5 MB
+            maxEntrypointSize: maxBundleSize,
+            maxAssetSize: maxBundleSize
         },
         tools: {
             rspack: {
