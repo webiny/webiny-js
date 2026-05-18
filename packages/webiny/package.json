@@ -83,6 +83,7 @@
     "./api/system": "./api/system.js",
     "./api/tasks": "./api/tasks.js",
     "./api/tenancy": "./api/tenancy.js",
+    "./api/webhooks": "./api/webhooks.js",
     "./api": "./api.js",
     "./api/file-manager/file": "./api/file-manager/file.js",
     "./api/file-manager/permissions": "./api/file-manager/permissions.js",
@@ -139,5 +140,5 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "9e09830accd5e74add992865321b1e50091e62f9e05b5e1fc5434c60b8c76257"
+  "exportGenerationHash": "6682e8713f8e5be0622e1250c9d35c82418b0a09868d14041d789f426351c7f5"
 }
