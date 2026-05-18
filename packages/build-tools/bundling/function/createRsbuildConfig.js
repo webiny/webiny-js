@@ -29,7 +29,10 @@ export const createRsbuildConfig = async ({ cwd }) => {
             distPath: { root: paths.fn.outputFolder }
         },
         performance: {
-            printFileSize: false
+            printFileSize: false,
+            hints: "error",
+            maxEntrypointSize: 4.5 * 1024 * 1024, // 4.5 MB
+            maxAssetSize: 4.5 * 1024 * 1024 // 4.5 MB
         },
         tools: {
             rspack: {
