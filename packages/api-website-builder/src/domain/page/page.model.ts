@@ -1,38 +1,27 @@
-import { createModelField, createPrivateModelPlugin } from "@webiny/api-headless-cms";
+import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 
 export const PAGE_MODEL_ID = process.env.WEBINY_API_LEGACY_MODELS ? "wbPage" : "wbyWbPage";
 
-export const createPageModel = () => {
-    return createPrivateModelPlugin({
-        name: "Website Builder - Page",
-        modelId: PAGE_MODEL_ID,
-        titleFieldId: "properties.title",
-        authorization: {
-            // Disables base permission checks, but leaves FLP checks enabled.
-            permissions: false
-        },
-        fields: [
-            createModelField({
-                label: "Properties",
-                type: "searchable-json"
-            }),
-            createModelField({
-                label: "Metadata",
-                type: "searchable-json"
-            }),
-            createModelField({
-                label: "Bindings",
-                type: "json"
-            }),
-            createModelField({
-                label: "Elements",
-                type: "json"
-            }),
-            createModelField({
-                label: "Extensions",
-                fieldId: "extensions",
-                type: "searchable-json"
-            })
-        ]
-    });
-};
+class PageModelFactory implements ModelFactory.Interface {
+    async execute(builder: ModelFactory.Builder) {
+        const model = builder.private({
+            modelId: PAGE_MODEL_ID,
+            name: "Website Builder - Page"
+        });
+
+        model.fields(fields => ({
+            properties: fields.searchableJson().label("Properties"),
+            metadata: fields.searchableJson().label("Metadata"),
+            bindings: fields.json().label("Bindings"),
+            elements: fields.json().label("Elements"),
+            extensions: fields.searchableJson().label("Extensions")
+        }));
+
+        return [model];
+    }
+}
+
+export const PageModelPlugin = ModelFactory.createImplementation({
+    implementation: PageModelFactory,
+    dependencies: []
+});
