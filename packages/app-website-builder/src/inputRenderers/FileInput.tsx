@@ -1,7 +1,8 @@
 import React from "react";
 import { FilePicker } from "@webiny/admin-ui";
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
-import { FileManager, type FileManagerFileItem, useAdminConfig } from "@webiny/app-admin";
+import { FileManager, type FileManagerFileItem } from "@webiny/app-admin";
+import { useFileUrlFormatter } from "@webiny/app-file-manager";
 import { useBreakpoint } from "~/BaseEditor/hooks/useBreakpoint.js";
 import type { FileInput } from "@webiny/website-builder-sdk";
 import { fileManagerItemToValue } from "~/shared/fileManagerItemToValue.js";
@@ -14,7 +15,7 @@ export const FileInputRenderer = ({
 }: ElementInputRendererProps) => {
     const input = props.input as FileInput;
     const { isBaseBreakpoint } = useBreakpoint();
-    const { fileUrlFormatter } = useAdminConfig();
+    const fileUrlFormatter = useFileUrlFormatter();
 
     const previewValue =
         value && typeof value === "object" && "src" in value
