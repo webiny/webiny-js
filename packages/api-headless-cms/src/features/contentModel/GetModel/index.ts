@@ -1,1 +1,1 @@
-export { GetModelUseCase } from "./abstractions.js";
+export { GetModelUseCase, GetModelRepository } from "./abstractions.js";
