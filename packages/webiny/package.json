@@ -43,6 +43,7 @@
     "@webiny/tenant-manager": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
+    "@webiny/webhooks": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0",
     "react": "18.3.1"
   },

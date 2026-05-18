@@ -14452,7 +14452,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/webhooks@workspace:packages/webhooks":
+"@webiny/webhooks@npm:0.0.0, @webiny/webhooks@workspace:packages/webhooks":
   version: 0.0.0-use.local
   resolution: "@webiny/webhooks@workspace:packages/webhooks"
   dependencies:
@@ -31074,6 +31074,7 @@ __metadata:
     "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
+    "@webiny/webhooks": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     react: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
