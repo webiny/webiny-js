@@ -9598,6 +9598,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stablelib/base64@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "@stablelib/base64@npm:1.0.1"
+  checksum: 10/93f3edb05d5a828a775d23ebde49884abeb456b8946942acbe6a0815630e769c59c06c7275983031c8707bdcefc1c62917aaa99522ff1ec5f457704c83b686da
+  languageName: node
+  linkType: hard
+
 "@standard-schema/spec@npm:^1.1.0":
   version: 1.1.0
   resolution: "@standard-schema/spec@npm:1.1.0"
@@ -13639,6 +13646,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/di@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "@webiny/di@npm:0.2.3"
+  dependencies:
+    reflect-metadata: "npm:^0.2.2"
+  checksum: 10/44f1c573775b1aa4c77d4234e8678362898b070185b9c0d5ee172ff0fed237302015fe98db9eab309d1a2b448004c05d503eabf6a39f797b113f16906991ea42
+  languageName: node
+  linkType: hard
+
 "@webiny/di@npm:^1.0.0":
   version: 1.0.0
   resolution: "@webiny/di@npm:1.0.0"
@@ -14433,6 +14449,28 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/webhooks@npm:0.0.0, @webiny/webhooks@workspace:packages/webhooks":
+  version: 0.0.0-use.local
+  resolution: "@webiny/webhooks@workspace:packages/webhooks"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^0.2.3"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-aws": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/tasks": "npm:0.0.0"
+    standardwebhooks: "npm:^1.0.0"
+    typescript: "npm:6.0.3"
+    vitest: "npm:^4.1.6"
   languageName: unknown
   linkType: soft
 
@@ -19259,6 +19297,13 @@ __metadata:
   version: 2.1.1
   resolution: "fast-safe-stringify@npm:2.1.1"
   checksum: 10/dc1f063c2c6ac9533aee14d406441f86783a8984b2ca09b19c2fe281f9ff59d315298bc7bc22fd1f83d26fe19ef2f20e2ddb68e96b15040292e555c5ced0c1e4
+  languageName: node
+  linkType: hard
+
+"fast-sha256@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "fast-sha256@npm:1.3.0"
+  checksum: 10/3bef0491f10a254348ec11dcddb26e4d951cfd3b4c0662ea5843ad1be3fe184ed74d640df68565fcc60f6437548cddf49e3ac886f88a69e05b5142e862840bf9
   languageName: node
   linkType: hard
 
@@ -28950,6 +28995,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"standardwebhooks@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "standardwebhooks@npm:1.0.0"
+  dependencies:
+    "@stablelib/base64": "npm:^1.0.0"
+    fast-sha256: "npm:^1.3.0"
+  checksum: 10/02b74a3e4cd131affe8bf18945360747a5a0bf81c1d62a7bbbea3d40976b4fef4bb37de71a35cdc0fdc4d6f0d951a3b6031052e78bd086dc9b09b629b82d3919
+  languageName: node
+  linkType: hard
+
 "state-local@npm:^1.0.6":
   version: 1.0.7
   resolution: "state-local@npm:1.0.7"
@@ -31019,6 +31074,7 @@ __metadata:
     "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
+    "@webiny/webhooks": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     react: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
