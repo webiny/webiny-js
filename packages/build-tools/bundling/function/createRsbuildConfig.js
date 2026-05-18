@@ -2,7 +2,8 @@ import path from "path";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
-const DEFAULT_WEBINY_API_MAX_BUNDLE_SIZE = 4.5;
+// Default: 4.5 MB in bytes.
+const DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE = Math.round(4.5 * 1024 * 1024);
 
 export const createRsbuildConfig = async ({ cwd }) => {
     // Must be a dynamic import — see rslibCompile.js for the reason.
@@ -11,10 +12,8 @@ export const createRsbuildConfig = async ({ cwd }) => {
     const mode = getMode();
     const isDebugEnabled = process.env.DEBUG === "true";
 
-    const maxBundleSize =
-        (parseFloat(process.env.WEBINY_API_MAX_BUNDLE_SIZE) || DEFAULT_WEBINY_API_MAX_BUNDLE_SIZE) *
-        1024 *
-        1024;
+    // Configurable via WEBINY_INFRA_API_MAX_BUNDLE_SIZE (bytes).
+    const maxBundleSize = parseInt(process.env.WEBINY_INFRA_API_MAX_BUNDLE_SIZE) || DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE;
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.fn.entryFile } },
