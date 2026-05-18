@@ -12195,7 +12195,7 @@ __metadata:
     listr2: "npm:^10.2.1"
     load-json-file: "npm:^7.0.1"
     serialize-error: "npm:^13.0.1"
-    tsx: "npm:^4.21.0"
+    tsx: "npm:4.21.0"
     write-json-file: "npm:^7.0.0"
     yargs: "npm:^18.0.0"
   bin:
@@ -12214,7 +12214,7 @@ __metadata:
     load-json-file: "npm:^7.0.1"
     p-limit: "npm:^7.3.0"
     ts-morph: "npm:^28.0.0"
-    tsx: "npm:^4.21.0"
+    tsx: "npm:4.21.0"
   bin:
     cjs-to-esm: ./src/bin.js
   languageName: unknown
@@ -14058,7 +14058,7 @@ __metadata:
     sass-loader: "npm:^16.0.8"
     style-loader: "npm:4.0.0"
     ts-morph: "npm:^28.0.0"
-    tsx: "npm:^4.21.0"
+    tsx: "npm:4.21.0"
     typescript: "npm:6.0.3"
     url-loader: "npm:^4.1.1"
     utf-8-validate: "npm:^6.0.6"
@@ -14108,7 +14108,7 @@ __metadata:
     "@webiny/cli-core": "npm:0.0.0"
     "@webiny/system-requirements": "npm:0.0.0"
     execa: "npm:^5.1.1"
-    tsx: "npm:^4.21.0"
+    tsx: "npm:4.21.0"
   bin:
     webiny: ./bin.js
   languageName: unknown
@@ -14532,7 +14532,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     execa: "npm:^5.1.1"
     front-matter: "npm:^4.0.2"
-    tsx: "npm:^4.21.0"
+    tsx: "npm:4.21.0"
     typescript: "npm:6.0.3"
     zod: "npm:4.4.3"
   bin:
@@ -14728,7 +14728,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     serialize-error: "npm:^13.0.1"
     ts-morph: "npm:^28.0.0"
-    tsx: "npm:^4.21.0"
+    tsx: "npm:4.21.0"
     type-fest: "npm:^5.6.0"
     typescript: "npm:6.0.3"
     write-json-file: "npm:^7.0.0"
@@ -28055,7 +28055,7 @@ __metadata:
     react-dom: "npm:18.3.1"
     semver: "npm:^7.8.0"
     ts-expect: "npm:^1.3.0"
-    tsx: "npm:^4.21.0"
+    tsx: "npm:4.21.0"
     type-fest: "npm:^5.6.0"
     typescript: "npm:6.0.3"
     validator: "npm:^13.15.35"
@@ -30320,7 +30320,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.20.5, tsx@npm:^4.21.0":
+"tsx@npm:4.21.0, tsx@npm:^4.20.5":
   version: 4.21.0
   resolution: "tsx@npm:4.21.0"
   dependencies:

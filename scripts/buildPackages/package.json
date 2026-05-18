@@ -14,7 +14,7 @@
     "listr2": "^10.2.1",
     "load-json-file": "^7.0.1",
     "serialize-error": "^13.0.1",
-    "tsx": "^4.21.0",
+    "tsx": "4.21.0",
     "write-json-file": "^7.0.0",
     "yargs": "^18.0.0"
   },
