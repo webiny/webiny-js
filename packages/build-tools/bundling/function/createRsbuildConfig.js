@@ -11,7 +11,10 @@ export const createRsbuildConfig = async ({ cwd }) => {
     const mode = getMode();
     const isDebugEnabled = process.env.DEBUG === "true";
 
-    const maxBundleSize = (parseFloat(process.env.WEBINY_API_MAX_BUNDLE_SIZE) || DEFAULT_WEBINY_API_MAX_BUNDLE_SIZE) * 1024 * 1024;
+    const maxBundleSize =
+        (parseFloat(process.env.WEBINY_API_MAX_BUNDLE_SIZE) || DEFAULT_WEBINY_API_MAX_BUNDLE_SIZE) *
+        1024 *
+        1024;
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.fn.entryFile } },
@@ -40,7 +43,7 @@ export const createRsbuildConfig = async ({ cwd }) => {
                 performance: {
                     hints: "error",
                     maxEntrypointSize: maxBundleSize,
-                    maxAssetSize: maxBundleSize,
+                    maxAssetSize: maxBundleSize
                 },
                 externals: [/^@aws-sdk/, /^aws-sdk$/, /^sharp$/],
                 plugins: [
