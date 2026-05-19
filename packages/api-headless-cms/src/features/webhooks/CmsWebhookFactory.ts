@@ -22,6 +22,7 @@ class CmsWebhookFactoryImpl implements WebhookFactoryAbstraction.Interface {
             for (const action of ACTIONS) {
                 events.push({
                     app: "cms",
+                    appLabel: "Headless CMS",
                     entity: model.modelId,
                     eventName: `cms.entry.${model.modelId}.${action}`,
                     label: `${model.name}: Entry ${action.charAt(0).toUpperCase() + action.slice(1)}`

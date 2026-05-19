@@ -16,6 +16,7 @@ export async function listAvailableWebhookEvents(
                 listAvailableWebhookEvents {
                     data {
                         app
+                        appLabel
                         entity
                         eventName
                         label

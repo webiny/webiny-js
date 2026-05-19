@@ -6,6 +6,7 @@ class WbWebhookFactoryImpl implements WebhookFactoryAbstraction.Interface {
         return [
             {
                 app: "wb",
+                appLabel: "Website Builder Pages",
                 entity: "page",
                 eventName: WebhookEvent.WbPageCreated,
                 label: "Page: Created"
@@ -13,54 +14,63 @@ class WbWebhookFactoryImpl implements WebhookFactoryAbstraction.Interface {
             {
                 app: "wb",
                 entity: "page",
+                appLabel: "Website Builder Pages",
                 eventName: WebhookEvent.WbPageUpdated,
                 label: "Page: Updated"
             },
             {
                 app: "wb",
                 entity: "page",
+                appLabel: "Website Builder Pages",
                 eventName: WebhookEvent.WbPagePublished,
                 label: "Page: Published"
             },
             {
                 app: "wb",
                 entity: "page",
+                appLabel: "Website Builder Pages",
                 eventName: WebhookEvent.WbPageUnpublished,
                 label: "Page: Unpublished"
             },
             {
                 app: "wb",
                 entity: "page",
+                appLabel: "Website Builder Pages",
                 eventName: WebhookEvent.WbPageDeleted,
                 label: "Page: Deleted"
             },
             {
                 app: "wb",
                 entity: "page",
+                appLabel: "Website Builder Pages",
                 eventName: WebhookEvent.WbPageTrashed,
                 label: "Page: Trashed"
             },
             {
                 app: "wb",
                 entity: "page",
+                appLabel: "Website Builder Pages",
                 eventName: WebhookEvent.WbPageRestored,
                 label: "Page: Restored"
             },
             {
                 app: "wb",
                 entity: "redirect",
+                appLabel: "Website Builder Redirect",
                 eventName: WebhookEvent.WbRedirectCreated,
                 label: "Redirect: Created"
             },
             {
                 app: "wb",
                 entity: "redirect",
+                appLabel: "Website Builder Redirect",
                 eventName: WebhookEvent.WbRedirectUpdated,
                 label: "Redirect: Updated"
             },
             {
                 app: "wb",
                 entity: "redirect",
+                appLabel: "Website Builder Redirect",
                 eventName: WebhookEvent.WbRedirectDeleted,
                 label: "Redirect: Deleted"
             }
