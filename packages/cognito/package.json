@@ -17,7 +17,7 @@
     "@webiny/app": "*",
     "@webiny/app-admin": "*",
     "@webiny/aws-sdk": "*",
-    "@webiny/di": "^1.0.0",
+    "@webiny/di": "^1.0.1",
     "@webiny/feature": "*",
     "@webiny/form": "*",
     "@webiny/handler-graphql": "*",
