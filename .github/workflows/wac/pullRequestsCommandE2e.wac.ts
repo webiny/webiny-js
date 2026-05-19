@@ -214,6 +214,10 @@ const createCypressJobs = (dbSetup: string) => {
                         run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
                     },
                     {
+                        name: "Install Cypress binary",
+                        run: "cd cypress-tests && yarn cypress install"
+                    },
+                    {
                         name: "Cypress - run installation wizard test",
                         run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
                     }

@@ -277,6 +277,9 @@ jobs:
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install Cypress binary
+        run: cd cypress-tests && yarn cypress install
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Cypress - run installation wizard test
         run: >-
           yarn cy:run --browser chrome --spec
@@ -343,6 +346,9 @@ jobs:
         run: >-
           echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config
           }}' > cypress-tests/cypress.config.ts
+      - name: Install Cypress binary
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: cd cypress-tests && yarn cypress install
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         timeout-minutes: 40
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -508,6 +514,9 @@ jobs:
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install Cypress binary
+        run: cd cypress-tests && yarn cypress install
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Cypress - run installation wizard test
         run: >-
           yarn cy:run --browser chrome --spec
@@ -581,6 +590,9 @@ jobs:
           echo '${{
           needs.e2e-wby-cms-ddb-os-project-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
+      - name: Install Cypress binary
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: cd cypress-tests && yarn cypress install
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         timeout-minutes: 40
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}

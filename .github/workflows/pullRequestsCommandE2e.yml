@@ -320,6 +320,9 @@ jobs:
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install Cypress binary
+        run: cd cypress-tests && yarn cypress install
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Cypress - run installation wizard test
         run: >-
           yarn cy:run --browser chrome --spec
@@ -527,6 +530,9 @@ jobs:
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install Cypress binary
+        run: cd cypress-tests && yarn cypress install
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Cypress - run installation wizard test
         run: >-
