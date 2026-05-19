@@ -1,1 +1,1 @@
-export { FileUrlFormatter } from "@webiny/app-admin/features/fileUrlFormatter/abstractions.js";
+export { FileUrlFormatter } from "@webiny/app-file-manager/features/fileUrlFormatter/abstractions.js";
