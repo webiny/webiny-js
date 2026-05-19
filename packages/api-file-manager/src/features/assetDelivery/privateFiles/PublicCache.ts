@@ -1,10 +1,12 @@
 import { parse, stringify } from "cache-control-parser";
-import type { Asset, AssetOutputStrategy, AssetReply } from "~/delivery/index.js";
+import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
+import type { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
+import type { IAssetOutputStrategy } from "../abstractions.js";
 
-export class PrivateCache implements AssetOutputStrategy {
-    private strategy: AssetOutputStrategy;
+export class PublicCache implements IAssetOutputStrategy {
+    private strategy: IAssetOutputStrategy;
 
-    constructor(strategy: AssetOutputStrategy) {
+    constructor(strategy: IAssetOutputStrategy) {
         this.strategy = strategy;
     }
 
@@ -14,8 +16,8 @@ export class PrivateCache implements AssetOutputStrategy {
         reply.setHeaders(headers => {
             headers.set("cache-control", (value = "") => {
                 const cacheControl = parse(value);
-                cacheControl["private"] = true;
-                cacheControl["public"] = false;
+                cacheControl["private"] = false;
+                cacheControl["public"] = true;
                 return stringify(cacheControl);
             });
             return headers;

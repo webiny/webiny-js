@@ -9,6 +9,7 @@ import { FileModel as FileModelAbstraction } from "~/domain/file/abstractions.js
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { FileModel, FILE_MODEL_ID } from "~/domain/file/file.model.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { AssetDeliveryFeature } from "~/features/assetDelivery/feature.js";
 
 export * from "./modelModifier/CmsModelModifier.js";
 export * from "./delivery/index.js";
@@ -45,5 +46,10 @@ export const createFileManagerGraphQL = () => {
 };
 
 export const createAssetDelivery = () => {
-    return setupAssetDelivery();
+    return [
+        createRegisterExtensionPlugin(context => {
+            AssetDeliveryFeature.register(context.container);
+        }),
+        ...setupAssetDelivery()
+    ];
 };
