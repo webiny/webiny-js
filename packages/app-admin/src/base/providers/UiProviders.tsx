@@ -28,8 +28,7 @@ export const createUiProviders = () => {
     return createProvider(Component => {
         return function UiProviders({ children }: UiProvidersProps) {
             const container = useContainer();
-            const all = container.resolveAll(FileUrlFormatter);
-            const fileUrlFormatter = all[all.length - 1] ?? defaultFileUrlFormatter;
+            const fileUrlFormatter = container.resolve(FileUrlFormatter);
 
             return (
                 <AdminUiProvider
