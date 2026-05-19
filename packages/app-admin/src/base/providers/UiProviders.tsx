@@ -1,6 +1,6 @@
 import React from "react";
 import { createProvider, SimpleLink, useContainer } from "@webiny/app";
-import { AdminUiProvider, defaultFileUrlFormatter } from "@webiny/admin-ui";
+import { AdminUiProvider } from "@webiny/admin-ui";
 import { compiler } from "markdown-to-jsx/react";
 import { FileUrlFormatter } from "~/features/fileUrlFormatter/abstractions.js";
 

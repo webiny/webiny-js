@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import type { Decorator } from "@webiny/react-composition";
 import { Compose, makeDecoratable } from "@webiny/react-composition";
 import type { GenericComponent } from "@webiny/react-composition/types.js";
@@ -76,6 +76,7 @@ export function createAdminConfig<TConfig>() {
     const WithConfig = ({ onProperties, children }: WithConfigProps) => {
         const [properties, setProperties] = useState<Property[]>([]);
         useDebugConfig(name, properties);
+        const context = { name, properties };
 
         useEffect(() => {
             if (typeof onProperties === "function") {
@@ -83,11 +84,9 @@ export function createAdminConfig<TConfig>() {
             }
         }, [properties]);
 
-        const context = useMemo(() => ({ name, properties }), [properties]);
-
-        const stateUpdater = useCallback((properties: Property[]) => {
+        const stateUpdater = (properties: Property[]) => {
             setProperties(properties);
-        }, []);
+        };
 
         return (
             <ViewContext.Provider value={context}>
