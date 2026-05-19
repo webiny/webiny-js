@@ -61,19 +61,21 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
             event: input.eventName,
             timestamp: now.toISOString(),
             webhookId: input.webhookId,
+            deliveryId: input.deliveryId,
             tenant: this.tenantContext.getTenant().id,
             data: delivery.value.payload
         };
         const rawBody = JSON.stringify(payload);
         let signHeaders: IWebhookSignPayloadHeaders;
+
+        const settingsResult = await this.getWebhookSettingsRepository.execute();
+        if (settingsResult.isFail()) {
+            await this.updateDeliveryRepository.execute(input.deliveryId, { status: "failed" });
+            return controller.response.error(settingsResult.error);
+        }
+        const signingSecret = webhook.signingSecret || settingsResult.value.signingSecret || "";
+
         try {
-            let signingSecret = webhook.signingSecret || "";
-
-            const settingsResult = await this.getWebhookSettingsRepository.execute();
-            if (settingsResult.isOk() && settingsResult.value.signingSecret) {
-                signingSecret = settingsResult.value.signingSecret;
-            }
-
             signHeaders = await this.signPayload.sign(taskId, now, rawBody, signingSecret);
         } catch (ex) {
             await this.updateDeliveryRepository.execute(input.deliveryId, { status: "failed" });
@@ -113,7 +115,7 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
             responseTime,
             responseStatus,
             responseBody,
-            status: responseStatus > 0 ? "delivered" : "failed"
+            status: responseSittatus > 0 ? "delivered" : "failed"
         });
 
         return controller.response.done();
