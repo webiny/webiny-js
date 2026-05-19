@@ -1,5 +1,3 @@
-import TimeAgo from "timeago-react";
+export type { TimeAgoProps, Opts, TDate } from "./TimeAgo.js";
 
-export type { TimeAgoProps, Opts, TDate } from "timeago-react";
-
-export { TimeAgo };
+export { TimeAgo } from "./TimeAgo.js";

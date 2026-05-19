@@ -11671,7 +11671,6 @@ __metadata:
     storybook: "npm:^10.4.0"
     tailwind-merge: "npm:^2.6.1"
     tailwindcss: "npm:^4.3.0"
-    timeago-react: "npm:^3.0.7"
     tw-animate-css: "npm:^1.4.0"
     type-fest: "npm:^5.6.0"
     typescript: "npm:6.0.3"
@@ -29602,24 +29601,6 @@ __metadata:
   version: 2.3.8
   resolution: "through@npm:2.3.8"
   checksum: 10/5da78346f70139a7d213b65a0106f3c398d6bc5301f9248b5275f420abc2c4b1e77c2abc72d218dedc28c41efb2e7c312cb76a7730d04f9c2d37d247da3f4198
-  languageName: node
-  linkType: hard
-
-"timeago-react@npm:^3.0.7":
-  version: 3.0.7
-  resolution: "timeago-react@npm:3.0.7"
-  dependencies:
-    timeago.js: "npm:^4.0.0"
-  peerDependencies:
-    react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/3dfc156df12e0ad4379092c98fea19b6c0d42e3ce06ba312903b8b5925cf58ec921f985aa1ac60d8734d641e1bd5c5f58e8726f79620be7c8f22af9bc8e12e58
-  languageName: node
-  linkType: hard
-
-"timeago.js@npm:^4.0.0":
-  version: 4.0.2
-  resolution: "timeago.js@npm:4.0.2"
-  checksum: 10/30e38e8a82f885d95162e66bf7d9673a14c5fe7aff3f5b3e3d74fe5c431046da23194f1d4ab6bbd259b8d3504b47a0478429c147dee496036701f8b89e5951f3
   languageName: node
   linkType: hard
 
