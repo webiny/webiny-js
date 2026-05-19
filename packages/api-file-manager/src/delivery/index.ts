@@ -1,16 +1,19 @@
-export * from "./AssetDelivery/AssetDeliveryConfig.js";
 export * from "./AssetDelivery/Asset.js";
 export * from "./AssetDelivery/AssetRequest.js";
-export type * from "./AssetDelivery/abstractions/AssetRequestResolver.js";
-export type * from "./AssetDelivery/abstractions/AssetResolver.js";
-export type * from "./AssetDelivery/abstractions/AssetProcessor.js";
-export type * from "./AssetDelivery/abstractions/AssetContentsReader.js";
-export type * from "./AssetDelivery/abstractions/AssetOutputStrategy.js";
-export type * from "./AssetDelivery/abstractions/AssetTransformationStrategy.js";
 export * from "./AssetDelivery/abstractions/AssetReply.js";
 export * from "./AssetDelivery/createAssetDeliveryPluginLoader.js";
-export * from "./AssetDelivery/FilesAssetRequestResolver.js";
-export * from "./AssetDelivery/SetCacheControlHeaders.js";
-export * from "./AssetDelivery/SetResponseHeaders.js";
-export * from "./AssetDelivery/privateFiles/PublicCache.js";
-export * from "./AssetDelivery/privateFiles/PrivateCache.js";
+
+// Backward-compatible type aliases for the old interface names.
+// External consumers (e.g. api-file-manager-s3) import these as types.
+export type {
+    IAssetRequestResolver as AssetRequestResolver,
+    IAssetResolver as AssetResolver,
+    IAssetProcessor as AssetProcessor,
+    IAssetOutputStrategy as AssetOutputStrategy,
+    IAssetTransformationStrategy as AssetTransformationStrategy,
+    IAssetContentsReader as AssetContentsReader
+} from "~/features/assetDelivery/abstractions.js";
+
+// Re-export cache wrappers from their new locations.
+export { PublicCache } from "~/features/assetDelivery/privateFiles/PublicCache.js";
+export { PrivateCache } from "~/features/assetDelivery/privateFiles/PrivateCache.js";

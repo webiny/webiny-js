@@ -67,7 +67,8 @@ const createCypressJobs = (dbSetup: string) => {
         CYPRESS_MAILOSAUR_API_KEY: "${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}",
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
         PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
-        WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`
+        WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
+        WEBINY_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_API_MAX_BUNDLE_SIZE }}"
     };
 
     if (dbSetup === "ddb-os") {
@@ -158,6 +159,10 @@ const createCypressJobs = (dbSetup: string) => {
                 name: "Enable extension whitelabeling",
                 "working-directory": DIR_TEST_PROJECT,
                 run: "yarn webiny extension whitelabeling"
+            },
+            {
+                name: "API bundle size limit",
+                run: 'echo "API bundle size limit: ${WEBINY_API_MAX_BUNDLE_SIZE:-10} MB"'
             },
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
             ...(dbSetup === "ddb-os"

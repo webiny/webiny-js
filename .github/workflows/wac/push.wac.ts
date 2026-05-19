@@ -65,7 +65,8 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
         PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
         WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
-        YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+        YARN_ENABLE_IMMUTABLE_INSTALLS: "false",
+        WEBINY_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_API_MAX_BUNDLE_SIZE }}"
     };
 
     if (storageOps.id === "ddb-os,ddb") {
@@ -162,6 +163,10 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
                 name: "Enable extension whitelabeling",
                 "working-directory": DIR_TEST_PROJECT,
                 run: "yarn webiny extension whitelabeling"
+            },
+            {
+                name: "API bundle size limit",
+                run: 'echo "API bundle size limit: ${WEBINY_API_MAX_BUNDLE_SIZE:-10} MB"'
             },
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
             ...(storageOps.shortId === "ddb-os"

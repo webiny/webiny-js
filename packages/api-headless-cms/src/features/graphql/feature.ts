@@ -16,18 +16,18 @@ import { RichTextFieldToGraphQL } from "./fields/base/RichTextToGraphQL.js";
 export const GraphQLFeature = createFeature({
     name: "Cms/GraphQLFeature",
     register: container => {
-        container.register(BooleanFieldToGraphQL).inSingletonScope();
-        container.register(DateTimeFieldToGraphQL).inSingletonScope();
-        container.register(DynamicZoneFieldToGraphQL).inSingletonScope();
-        container.register(FileFieldToGraphQL).inSingletonScope();
-        container.register(JsonFieldToGraphQL).inSingletonScope();
-        container.register(LongTextFieldToGraphQL).inSingletonScope();
-        container.register(NumberFieldToGraphQL).inSingletonScope();
-        container.register(ObjectFieldToGraphQL).inSingletonScope();
-        container.register(RefFieldToGraphQL).inSingletonScope();
-        container.register(RichTextFieldToGraphQL).inSingletonScope();
-        container.register(SearchableJsonFieldToGraphQL).inSingletonScope();
-        container.register(TextFieldToGraphQL).inSingletonScope();
+        container.register(BooleanFieldToGraphQL);
+        container.register(DateTimeFieldToGraphQL);
+        container.register(DynamicZoneFieldToGraphQL);
+        container.register(FileFieldToGraphQL);
+        container.register(JsonFieldToGraphQL);
+        container.register(LongTextFieldToGraphQL);
+        container.register(NumberFieldToGraphQL);
+        container.register(ObjectFieldToGraphQL);
+        container.register(RefFieldToGraphQL);
+        container.register(RichTextFieldToGraphQL);
+        container.register(SearchableJsonFieldToGraphQL);
+        container.register(TextFieldToGraphQL);
 
         container.register(CmsModelFieldToGraphQLRegistry).inSingletonScope();
     }

@@ -7,14 +7,19 @@ export const createRsbuildConfig = async ({ cwd }) => {
     const { default: rspack } = await import("@rspack/core");
     const paths = getPaths(cwd);
     const mode = getMode();
+    const isDebugEnabled = process.env.DEBUG === "true";
+
+    // Configurable via WEBINY_API_MAX_BUNDLE_SIZE (MB), default 10 MB.
+    const maxBundleSize = (parseFloat(process.env.WEBINY_API_MAX_BUNDLE_SIZE) || 10) * 1024 * 1024;
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.fn.entryFile } },
         output: {
             module: true,
             target: "node",
+            minify: true,
             sourceMap: {
-                js: process.env.DEBUG === "true" ? "source-map" : false
+                js: isDebugEnabled ? "source-map" : false
             },
             filename: {
                 js: pathData => {
@@ -27,7 +32,10 @@ export const createRsbuildConfig = async ({ cwd }) => {
             distPath: { root: paths.fn.outputFolder }
         },
         performance: {
-            printFileSize: false
+            printFileSize: false,
+            hints: "error",
+            maxEntrypointSize: maxBundleSize,
+            maxAssetSize: maxBundleSize
         },
         tools: {
             rspack: {
