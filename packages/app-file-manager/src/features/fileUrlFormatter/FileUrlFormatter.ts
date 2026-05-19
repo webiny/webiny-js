@@ -8,7 +8,7 @@ class FileUrlFormatterImpl implements FileUrlFormatter.Interface {
     }
 }
 
-export default FileUrlFormatter.createImplementation({
+export const FmFileUrlFormatter = FileUrlFormatter.createImplementation({
     implementation: FileUrlFormatterImpl,
     dependencies: []
 });
