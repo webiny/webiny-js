@@ -1,24 +1,14 @@
-export interface FileUrl {
-    width(n: number): this;
-    toString(): string;
+export interface FileUrlParams {
+    width?: number;
+    [key: string]: unknown;
 }
 
 export interface FileUrlFormatter {
-    create(url: string | undefined): FileUrl;
-}
-
-class PassthroughUrl implements FileUrl {
-    constructor(private readonly url: string | undefined) {}
-    width(_n: number): this {
-        return this;
-    }
-    toString(): string {
-        return this.url ?? "";
-    }
+    format(url: URL | string, params?: FileUrlParams): string;
 }
 
 export const defaultFileUrlFormatter: FileUrlFormatter = {
-    create(url: string | undefined): FileUrl {
-        return new PassthroughUrl(url);
+    format(url: URL | string): string {
+        return url.toString();
     }
 };

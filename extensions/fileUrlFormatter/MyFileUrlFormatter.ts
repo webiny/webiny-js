@@ -1,31 +1,17 @@
 import { FileUrlFormatter } from "webiny/admin/file-manager";
-import type { FileUrl } from "@webiny/admin-ui";
-
-class MyFileUrl implements FileUrl {
-    private _width?: number;
-
-    constructor(private readonly url: string | undefined) {}
-
-    width(n: number): this {
-        this._width = n;
-        return this;
-    }
-
-    toString(): string {
-        if (!this.url) {
-            return "";
-        }
-        const params = new URLSearchParams();
-        if (this._width !== undefined) {
-            params.set("my_width", String(this._width));
-        }
-        return `${this.url}?${params.toString()}`;
-    }
-}
+import type { FileUrlParams } from "@webiny/admin-ui";
 
 class MyFileUrlFormatter implements FileUrlFormatter.Interface {
-    create(url: string | undefined): FileUrl {
-        return new MyFileUrl(url);
+    format(url: URL | string, params?: FileUrlParams): string {
+        try {
+            const result = new URL(url.toString());
+            if (params?.width !== undefined) {
+                result.searchParams.set("my_width", String(params.width));
+            }
+            return result.toString();
+        } catch {
+            return url.toString();
+        }
     }
 }
 

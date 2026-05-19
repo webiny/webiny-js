@@ -1,30 +1,17 @@
-import type { FileUrl } from "@webiny/admin-ui";
+import type { FileUrlParams } from "@webiny/admin-ui";
 import { FileUrlFormatter } from "./abstractions.js";
 
-class FileManagerUrl implements FileUrl {
-    private _width?: number;
-
-    constructor(private readonly url: string | undefined) {}
-
-    width(n: number): this {
-        this._width = n;
-        return this;
-    }
-
-    toString(): string {
-        if (!this.url) {
-            return "";
-        }
-        if (this._width !== undefined) {
-            return `${this.url}?width=${this._width}`;
-        }
-        return this.url;
-    }
-}
-
 class FileUrlFormatterImpl implements FileUrlFormatter.Interface {
-    create(url: string | undefined): FileUrl {
-        return new FileManagerUrl(url);
+    format(url: URL | string, params?: FileUrlParams): string {
+        try {
+            const result = new URL(url.toString());
+            if (params?.width !== undefined) {
+                result.searchParams.set("width", String(params.width));
+            }
+            return result.toString();
+        } catch {
+            return url.toString();
+        }
     }
 }
 

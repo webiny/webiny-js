@@ -4,14 +4,12 @@ import type {
     CmsModelFieldRendererProps
 } from "@webiny/app-headless-cms/types.js";
 import { FileManager } from "@webiny/app-admin";
-import { useFileUrlFormatter } from "~/features/fileUrlFormatter/useFileUrlFormatter.js";
 import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 import { FilePicker } from "@webiny/admin-ui";
 import { getSupportedExtensionsLabelHint } from "~/modules/HeadlessCms/fileRenderer/utils.js";
 
 const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
     const { field } = useModelField();
-    const fileUrlFormatter = useFileUrlFormatter();
     const rules = useFieldEffectiveRules(field);
     const disabled = !rules.canEdit || rules.disabled;
     const Bind = getBind();
@@ -28,10 +26,6 @@ const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
                         <FileManager
                             images={imagesOnly}
                             render={({ showFileManager }) => {
-                                const previewValue =
-                                    typeof value === "string"
-                                        ? fileUrlFormatter.create(value).width(128).toString()
-                                        : value;
                                 return (
                                     <FilePicker
                                         {...bind}
@@ -41,7 +35,7 @@ const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
                                         description={field.description}
                                         hint={field.help}
                                         note={getSupportedExtensionsLabelHint(imagesOnly)}
-                                        value={previewValue}
+                                        value={value}
                                         onSelectItem={() => {
                                             showFileManager(file => onChange(file.src));
                                         }}
