@@ -20,7 +20,7 @@ class WebhookSettingsModelFactory implements ModelFactory.Interface {
             signingSecret: fields
                 .text()
                 .label("Signing Secret")
-                .encrypted()
+                .encrypt()
                 .description("Global signing secret used for all webhook deliveries.")
         }));
 

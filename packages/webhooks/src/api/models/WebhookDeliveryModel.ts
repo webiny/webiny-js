@@ -19,12 +19,12 @@ class WebhookDeliveryModelFactory implements ModelFactory.Interface {
             backgroundTaskId: fields.text().label("Background Task ID"),
             eventType: fields.text().label("Event Type").required(),
             status: fields.text().label("Status").required(),
-            payload: fields.text().compressed().label("Payload"),
-            requestHeaders: fields.text().compressed().label("Request Headers"),
+            payload: fields.text().compress().label("Payload"),
+            requestHeaders: fields.text().compress().label("Request Headers"),
             responseTime: fields.number().label("Response Time (ms)"),
             responseStatus: fields.number().label("Response Status"),
-            responseHeaders: fields.text().compressed().label("Response Headers"),
-            responseBody: fields.text().compressed().label("Response Body")
+            responseHeaders: fields.text().compress().label("Response Headers"),
+            responseBody: fields.text().compress().label("Response Body")
         }));
 
         return [model];

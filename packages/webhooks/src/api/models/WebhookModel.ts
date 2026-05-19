@@ -50,6 +50,7 @@ class WebhookModelFactory implements ModelFactory.Interface {
                 .listMinLength(1, "At least one event must be selected."),
             signingSecret: fields
                 .text()
+                .encrypt()
                 .label("Signing Secret")
                 .description("Signing secret - will be encrypted in the database.")
         }));

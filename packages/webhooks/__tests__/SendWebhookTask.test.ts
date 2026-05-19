@@ -7,6 +7,7 @@ import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
 import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { UpdateWebhookDeliveryRepository } from "~/api/features/UpdateWebhookDelivery/abstractions.js";
+import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
 import { SendWebhookTaskFeature } from "~/api/features/SendWebhookTask/feature.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
 import type { Webhook } from "~/api/domain/Webhook.js";
@@ -76,6 +77,9 @@ describe("SendWebhookTask", () => {
             withRootTenant: vi.fn(),
             withEachTenant: vi.fn(),
             withTenant: vi.fn()
+        });
+        container.registerInstance(GetWebhookSettingsRepository, {
+            execute: vi.fn().mockResolvedValue(Result.ok({ signingSecret: undefined }))
         });
 
         SendWebhookTaskFeature.register(container);
