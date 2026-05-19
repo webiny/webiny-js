@@ -17,6 +17,7 @@ import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createIdentity } from "./identity.js";
 import { createBackgroundTasks } from "~tests/mocks/mockBackgroundTasks.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
@@ -50,6 +51,8 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             createWebsiteBuilder(),
             createContextPlugin(context => {
                 context.container.register(InvalidateCloudfrontCacheTaskDefinition);
+            }),
+            createRegisterExtensionPlugin(context => {
                 LanguagesExtension.register(context.container);
             }),
             createEventHandler<any, ApiCoreContext, ApiCoreContext>(async ({ context }) => {

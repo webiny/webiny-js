@@ -35,6 +35,7 @@
     { "path": "../tenant-manager" },
     { "path": "../utils" },
     { "path": "../validation" },
+    { "path": "../webhooks" },
     { "path": "../website-builder-sdk" }
   ],
   "compilerOptions": {
@@ -112,6 +113,10 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
+      "@webiny/webhooks/api": ["../webhooks/src/api/index.js"],
+      "@webiny/webhooks/admin/*": ["../webhooks/src/admin/*"],
+      "@webiny/webhooks/*": ["../webhooks/src/*"],
+      "@webiny/webhooks": ["../webhooks/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
       "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
     }
