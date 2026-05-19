@@ -1,6 +1,6 @@
 import React from "react";
 import { StaticToolbar } from "@webiny/lexical-editor";
-import { LexicalEditor } from "@webiny/app-admin";
+import { LexicalEditor as BaseLexicalEditor } from "@webiny/app-admin";
 
 const placeholderStyles: React.CSSProperties = { position: "absolute", top: 40, left: 25 };
 
@@ -20,9 +20,11 @@ const styles: React.CSSProperties = {
 
 const toolbar = <StaticToolbar />;
 
-export const LexicalCmsEditor = (props: Omit<LexicalEditor.Props, "theme">) => {
+export type LexicalEditorProps = Omit<BaseLexicalEditor.Props, "theme">;
+
+export const LexicalEditor = (props: LexicalEditorProps) => {
     return (
-        <LexicalEditor
+        <BaseLexicalEditor
             {...props}
             focus={true}
             staticToolbar={toolbar}

@@ -36,7 +36,6 @@ const DropAreaBox = ({ children, empty }: DropAreaBoxProps) => (
                 : {})
         }}
         className={cn([
-            "-translate-y-xl",
             "flex flex-col items-center justify-center gap-lg",
             "p-lg rounded-3xl",
             "bg-neutral-base",

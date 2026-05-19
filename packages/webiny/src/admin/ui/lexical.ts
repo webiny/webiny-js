@@ -1,3 +1,4 @@
+export { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor/LexicalEditor.js";
 export { LexicalHtmlRenderer } from "@webiny/lexical-editor/components/LexicalHtmlRenderer.js";
 export { getNodeFromSelection } from "@webiny/lexical-editor/hooks/index.js";
 export { useCurrentElement } from "@webiny/lexical-editor/hooks/index.js";

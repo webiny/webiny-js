@@ -119,16 +119,31 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
         return <OverlayLoader text={t`Preparing File Manager...`} />;
     }
 
+    const isLoading = vm.list.pagination.loading && vm.list.rows.length === 0;
+    const isEmpty = !vm.list.pagination.loading && vm.list.rows.length === 0;
+
     const renderList = (browseFiles: BrowserFilePickerRenderProps["browseFiles"]) => {
-        if (!vm.list.pagination.loading && vm.list.rows.length === 0) {
+        if (isLoading) {
+            return <OverlayLoader text={t`Loading files...`} size={"lg"} />;
+        }
+
+        if (isEmpty) {
             return <Empty isSearchResult={!vm.showFolders} browseFiles={browseFiles} />;
         }
 
         if (vm.viewMode === "table") {
-            return <FileTable />;
+            return (
+                <ScrollArea onScroll={loadMoreOnScroll}>
+                    <FileTable />
+                </ScrollArea>
+            );
         }
 
-        return <FileGrid />;
+        return (
+            <ScrollArea onScroll={loadMoreOnScroll}>
+                <FileGrid />
+            </ScrollArea>
+        );
     };
 
     const content = (
@@ -210,9 +225,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                                     data-testid={"fm-list-wrapper"}
                                 >
                                     {!overlay && <BulkActionBar />}
-                                    <ScrollArea onScroll={loadMoreOnScroll}>
-                                        {renderList(browseFiles)}
-                                    </ScrollArea>
+                                    {renderList(browseFiles)}
                                     {vm.dragging && <FileDropPlaceholder />}
                                     <UploadProgress />
                                 </div>

@@ -1,0 +1,108 @@
+import React, { useEffect, useState } from "react";
+import { $getNearestNodeOfType } from "@lexical/utils";
+import {
+    DropDown,
+    DropDownItem,
+    useCurrentSelection,
+    useCurrentElement,
+    useTypographyAction
+} from "@webiny/lexical-editor";
+import {
+    $isHeadingNode,
+    $isParagraphNode,
+    $isQuoteNode,
+    $isListNode,
+    ListNode
+} from "@webiny/lexical-nodes";
+import { useAdminConfig } from "~/config/AdminConfig.js";
+
+export type TypographyStyle = {
+    id: string;
+    label: string;
+    tag: string;
+    className: string;
+};
+
+export const TypographyDropDown = () => {
+    const { value, applyTypography } = useTypographyAction();
+    const { lexicalTheme } = useAdminConfig();
+
+    const [styles, setStyles] = useState<TypographyStyle[]>([]);
+    const { element } = useCurrentElement();
+    const { rangeSelection } = useCurrentSelection();
+
+    const getAllTextStyles = (): TypographyStyle[] => {
+        const headingsStyles = lexicalTheme.typography.headings || [];
+        const paragraphStyles = lexicalTheme.typography.paragraphs || [];
+
+        return [...headingsStyles, ...paragraphStyles];
+    };
+
+    const getListStyles = (tag: string): TypographyStyle[] => {
+        const listStyles = lexicalTheme.typography.lists?.filter(x => x.tag === tag) || [];
+        if (listStyles.length > 0) {
+            return listStyles;
+        }
+
+        const fallbackTag = tag === "ul" ? "ol" : "ul";
+        return lexicalTheme.typography.lists?.filter(x => x.tag === fallbackTag) || [];
+    };
+
+    useEffect(() => {
+        if (!element || !rangeSelection) {
+            return;
+        }
+
+        if ($isParagraphNode(element) || $isHeadingNode(element)) {
+            setStyles(getAllTextStyles());
+        } else if ($isListNode(element)) {
+            let type;
+            try {
+                const anchorNode = rangeSelection.anchor.getNode();
+                const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
+                if (parentList) {
+                    type = parentList.getListType();
+                }
+            } catch {
+                type = element.getListType();
+            }
+
+            if (type === "bullet") {
+                setStyles(getListStyles("ul"));
+            } else {
+                setStyles(getListStyles("ol"));
+            }
+        } else if ($isQuoteNode(element)) {
+            setStyles(lexicalTheme.typography.quotes || []);
+        } else {
+            setStyles([]);
+        }
+    }, [element]);
+
+    return (
+        <>
+            {!!styles?.length ? (
+                <DropDown
+                    buttonClassName="toolbar-item typography-dropdown"
+                    buttonAriaLabel={"Typography formatting options"}
+                    buttonLabel={value?.label || "Typography"}
+                    stopCloseOnClickSelf={true}
+                    disabled={false}
+                    showScroll={true}
+                >
+                    {styles?.map(option => (
+                        <DropDownItem
+                            className={`item typography-item ${
+                                value?.id === option.id ? "active dropdown-item-active" : ""
+                            }`}
+                            onClick={() => applyTypography(option)}
+                            key={option.id}
+                        >
+                            <span className="text">{option.label}</span>
+                        </DropDownItem>
+                    ))}
+                </DropDown>
+            ) : null}
+        </>
+    );
+};
