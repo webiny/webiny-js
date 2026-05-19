@@ -91,7 +91,7 @@ function getUpdateDelay(seconds: number, minInterval?: number): number {
     let delay: number;
 
     if (abs < MINUTE) {
-        delay = 10_000;
+        delay = 1_000;
     } else if (abs < HOUR) {
         delay = 30_000;
     } else if (abs < DAY) {
