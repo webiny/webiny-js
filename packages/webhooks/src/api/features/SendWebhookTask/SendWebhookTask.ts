@@ -5,8 +5,10 @@ import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js"
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
 import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { UpdateWebhookDeliveryRepository } from "~/api/features/UpdateWebhookDelivery/abstractions.js";
+import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
 import type { ISendWebhookTaskInput, ISendWebhookTaskOutput, IWebhookPayload } from "./types.js";
+import type { IWebhookSignPayloadHeaders } from "@webiny/api-core/features/webhooks/WebhookSignPayload/abstractions.js";
 
 type IRunParams = TaskDefinition.RunParams<ISendWebhookTaskInput, ISendWebhookTaskOutput>;
 
@@ -28,16 +30,17 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
         private readonly getWebhookDeliveryRepository: GetWebhookDeliveryRepository.Interface,
         private readonly updateDeliveryRepository: UpdateWebhookDeliveryRepository.Interface,
         private readonly signPayload: WebhookSignPayload.Interface,
-        private readonly tenantContext: TenantContext.Interface
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly getWebhookSettingsRepository: GetWebhookSettingsRepository.Interface
     ) {}
 
     public async run(params: IRunParams) {
-        const { input } = params;
-        const taskId = params.controller.state.getTask().id;
+        const { input, controller } = params;
+        const taskId = controller.state.getTask().id;
 
         const delivery = await this.getWebhookDeliveryRepository.execute(input.deliveryId);
         if (delivery.isFail()) {
-            return params.controller.response.error(delivery.error);
+            return controller.response.error(delivery.error);
         }
 
         await this.updateDeliveryRepository.execute(input.deliveryId, {
@@ -48,7 +51,7 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
         const webhookResult = await this.getWebhookRepository.execute(input.webhookId);
         if (webhookResult.isFail()) {
             await this.updateDeliveryRepository.execute(input.deliveryId, { status: "failed" });
-            return params.controller.response.error(webhookResult.error);
+            return controller.response.error(webhookResult.error);
         }
         const webhook = webhookResult.value;
 
@@ -62,12 +65,22 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
             data: delivery.value.payload
         };
         const rawBody = JSON.stringify(payload);
-        const signHeaders = await this.signPayload.sign(
-            taskId,
-            now,
-            rawBody,
-            webhook.signingSecret ?? ""
-        );
+        let signHeaders: IWebhookSignPayloadHeaders;
+        try {
+            let signingSecret = webhook.signingSecret || "";
+
+            const settingsResult = await this.getWebhookSettingsRepository.execute();
+            if (settingsResult.isOk() && settingsResult.value.signingSecret) {
+                signingSecret = settingsResult.value.signingSecret;
+            }
+
+            signHeaders = await this.signPayload.sign(taskId, now, rawBody, signingSecret);
+        } catch (ex) {
+            await this.updateDeliveryRepository.execute(input.deliveryId, { status: "failed" });
+            return controller.response.error(
+                ex instanceof Error ? ex : new Error("Unknown error during payload signing.")
+            );
+        }
 
         const requestHeaders: Record<string, string> = {
             "Content-Type": "application/json",
@@ -103,7 +116,7 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
             status: responseStatus > 0 ? "delivered" : "failed"
         });
 
-        return params.controller.response.done();
+        return controller.response.done();
     }
 }
 
@@ -114,6 +127,7 @@ export const SendWebhookTask = TaskDefinition.createImplementation({
         GetWebhookDeliveryRepository,
         UpdateWebhookDeliveryRepository,
         WebhookSignPayload,
-        TenantContext
+        TenantContext,
+        GetWebhookSettingsRepository
     ]
 });

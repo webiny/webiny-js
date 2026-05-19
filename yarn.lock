@@ -14523,6 +14523,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
     mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"

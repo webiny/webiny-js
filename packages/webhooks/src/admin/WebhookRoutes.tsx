@@ -6,6 +6,7 @@ import { HasPermission } from "./presentation/security/HasPermission.js";
 import { WebhookListView } from "./presentation/WebhookList/components/WebhookListView.js";
 import { WebhookFormView } from "./presentation/WebhookForm/components/WebhookFormView.js";
 import { Routes } from "./routes.js";
+import { ReactComponent as Send } from "@webiny/icons/send.svg";
 
 const { Menu, Route } = AdminConfig;
 
@@ -34,7 +35,13 @@ export const WebhookRoutes = () => {
                 <Menu
                     name="webhooks"
                     after="settings"
-                    element={<Menu.Link text="Webhooks" to={getLink(Routes.List)} />}
+                    element={
+                        <Menu.Link
+                            text="Webhooks"
+                            to={getLink(Routes.List)}
+                            icon={<Menu.Link.Icon label="Webhooks" element={<Send />} />}
+                        />
+                    }
                 />
             </HasPermission>
         </AdminConfig>

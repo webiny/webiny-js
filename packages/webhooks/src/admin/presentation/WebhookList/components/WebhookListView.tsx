@@ -118,13 +118,13 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
                     >
                         <DropdownMenu.Item
                             icon={<Edit />}
-                            onSelect={() => goToRoute(Routes.Form, { id: row.id })}
+                            onClick={() => goToRoute(Routes.Form, { id: row.id })}
                             text={"Edit"}
                         />
                         {vm.permissions.canEdit && (
                             <DropdownMenu.Item
                                 icon={<Trigger />}
-                                onSelect={() => {
+                                onClick={() => {
                                     void presenter.actions.triggerWebhook(row.id).then(() => {
                                         showSnackbar("Test event triggered.");
                                     });
@@ -136,7 +136,7 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
                             <>
                                 <DropdownMenu.Separator />
                                 <DropdownMenu.Item
-                                    onSelect={() => {
+                                    onClick={() => {
                                         showDeleteConfirmation(() =>
                                             presenter.actions.deleteWebhook(row.id)
                                         );

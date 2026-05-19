@@ -18,6 +18,7 @@ export interface ITextFieldBuilder
         FieldTypeValidator.UpperCaseSpace,
         FieldTypeValidator.Unique {
     compressed(): this;
+    encrypted(): this;
 }
 
 // Module augmentation for TypeScript autocomplete
@@ -150,9 +151,20 @@ class TextFieldBuilder extends DataFieldBuilder<"text"> implements ITextFieldBui
 
     public compressed(): this {
         this.setSubType("compressed");
+
         this.settings({
             disableFullTextSearch: true
         });
+
+        return this;
+    }
+    public encrypted(): this {
+        this.setSubType("encrypted");
+
+        this.settings({
+            disableFullTextSearch: true
+        });
+
         return this;
     }
 }
