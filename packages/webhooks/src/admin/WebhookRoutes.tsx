@@ -5,6 +5,7 @@ import { AdminLayout } from "@webiny/app-admin";
 import { HasPermission } from "./presentation/security/HasPermission.js";
 import { WebhookListView } from "./presentation/WebhookList/components/WebhookListView.js";
 import { WebhookFormView } from "./presentation/WebhookForm/components/WebhookFormView.js";
+import { WebhookSettingsView } from "./presentation/WebhookSettings/components/WebhookSettingsView.js";
 import { Routes } from "./routes.js";
 import { ReactComponent as Send } from "@webiny/icons/send.svg";
 
@@ -25,6 +26,14 @@ export const WebhookRoutes = () => {
                     }
                 />
                 <Route
+                    route={Routes.Settings}
+                    element={
+                        <AdminLayout title="Webhook Settings">
+                            <WebhookSettingsView />
+                        </AdminLayout>
+                    }
+                />
+                <Route
                     route={Routes.Form}
                     element={
                         <AdminLayout title="Webhooks">
@@ -36,12 +45,21 @@ export const WebhookRoutes = () => {
                     name="webhooks"
                     after="settings"
                     element={
-                        <Menu.Link
+                        <Menu.Item
                             text="Webhooks"
-                            to={getLink(Routes.List)}
                             icon={<Menu.Link.Icon label="Webhooks" element={<Send />} />}
                         />
                     }
+                />
+                <Menu
+                    name="webhooks.list"
+                    parent="webhooks"
+                    element={<Menu.Link text="Webhooks" to={getLink(Routes.List)} />}
+                />
+                <Menu
+                    name="webhooks.settings"
+                    parent="webhooks"
+                    element={<Menu.Link text="Settings" to={getLink(Routes.Settings)} />}
                 />
             </HasPermission>
         </AdminConfig>
