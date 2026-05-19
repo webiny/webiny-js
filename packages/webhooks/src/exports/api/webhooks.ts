@@ -1,12 +1,3 @@
-/* Abstractions bridge packages implement or consume. */
-export {
-    WebhookFactory,
-    WebhookProvider,
-    WebhookVerifyPayload,
-    WebhookSignPayload,
-    WebhookDispatcher
-} from "@webiny/api-core/exports/api/webhooks.js";
-
 /* Domain types bridge packages reference. */
 export type { Webhook, WebhookCmsEntry, WebhookCmsEntryValues } from "~/api/domain/Webhook.js";
 export type {

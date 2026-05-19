@@ -4,7 +4,7 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsModelField, CmsModelFieldRendererPlugin } from "~/types.js";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import DynamicSection from "../DynamicSection.js";
-import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor.js";
+import { LexicalEditor } from "~/admin/components/LexicalCmsEditor/LexicalEditor.js";
 import { useForm } from "@webiny/form";
 import { MultiValueRendererSettings } from "~/admin/plugins/fieldRenderers/MultiValueRendererSettings.js";
 import { IconButton } from "@webiny/admin-ui";
@@ -46,7 +46,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                 <DynamicSection {...props} disabled={disabled}>
                     {({ bind, index }) => (
                         <div className={"relative"}>
-                            <LexicalCmsEditor
+                            <LexicalEditor
                                 disabled={disabled}
                                 value={bind.index.value}
                                 onChange={bind.index.onChange}

@@ -128,6 +128,18 @@ Default renderer: `fileUrlPicker`. Value: `string | null` (URL only).
 fields.fileUrl().label("Image URL");
 ```
 
+### Lexical
+
+```typescript
+fields.lexical();
+```
+
+Default renderer: `lexical`. Value: `RichTextValueWithHtml | null` (`{ state: string; html: string }`).
+
+```typescript
+fields.lexical().label("Content").required("Content is required");
+```
+
 ### Object
 
 ```typescript
@@ -241,6 +253,7 @@ These are available on **all** field types:
 | `switch`                  | boolean                    | —                                                               | Toggle switch (default for boolean)                       |
 | `dateTimeInput`           | datetime                   | `{ type, displayFormat?, yearRange?, weekStartsOn?, presets? }` | Date/time picker (default for datetime)                   |
 | `dateTimeInputs`          | datetime (list)            | `{ type, displayFormat?, weekStartsOn?, addItemLabel? }`        | List of date/time pickers                                 |
+| `lexical`                 | lexical                    | —                                                               | Lexical rich text editor (default for lexical)            |
 | `filePicker`              | file                       | —                                                               | File picker with full metadata (default for file)         |
 | `fileUrlPicker`           | fileUrl                    | —                                                               | File picker returning URL only (default for fileUrl)      |
 | `objectAccordionSingle`   | object                     | `{ open?: boolean }`                                            | Single object in accordion (default for object)           |

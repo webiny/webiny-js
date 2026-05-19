@@ -1,3 +1,4 @@
+export { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor/LexicalEditor.js";
 export { LexicalHtmlRenderer } from "@webiny/lexical-editor/components/LexicalHtmlRenderer.js";
 export { getNodeFromSelection } from "@webiny/lexical-editor/hooks/index.js";
 export { useCurrentElement } from "@webiny/lexical-editor/hooks/index.js";
@@ -12,7 +13,4 @@ export { Divider } from "@webiny/lexical-editor/ui/Divider.js";
 export { DropDownItem } from "@webiny/lexical-editor/ui/DropDown.js";
 export { DropDown } from "@webiny/lexical-editor/ui/DropDown.js";
 export type { Klass, LexicalNode } from "@webiny/lexical-editor/types.js";
-export {
-    LexicalEditorConfig,
-    useLexicalEditorConfig
-} from "@webiny/lexical-editor/components/LexicalEditorConfig/LexicalEditorConfig.js";
+export { LexicalEditorConfig, useLexicalEditorConfig } from "@webiny/lexical-editor/components/LexicalEditorConfig/LexicalEditorConfig.js";

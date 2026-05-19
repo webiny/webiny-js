@@ -80,6 +80,7 @@ import "./features/formModel/fieldTypes/DateTimeFieldType.js";
 import "./features/formModel/fieldTypes/FileFieldType.js";
 import "./features/formModel/fieldTypes/FileUrlFieldType.js";
 import "./features/formModel/fieldTypes/ObjectFieldType.js";
+import "./features/formModel/fieldTypes/LexicalFieldType.js";
 export { FormModelFactory } from "./features/formModel/abstractions.js";
 export type { FormModel } from "./features/formModel/abstractions.js";
 export type {

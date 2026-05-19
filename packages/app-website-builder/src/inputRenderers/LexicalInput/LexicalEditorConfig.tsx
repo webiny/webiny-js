@@ -37,3 +37,8 @@ export const ExpandedEditorConfig = ({ children }: { children: React.ReactNode }
 ExpandedEditorConfig.ToolbarAction = ToolbarAction;
 ExpandedEditorConfig.Plugin = PluginConfig;
 ExpandedEditorConfig.Node = NodeConfig;
+
+export const LexicalEditorConfig = {
+    Expanded: ExpandedEditorConfig,
+    Compact: CompactEditorConfig
+};

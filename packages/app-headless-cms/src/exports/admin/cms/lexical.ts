@@ -1,18 +1,20 @@
+export { LexicalEditor } from "~/admin/components/LexicalCmsEditor/LexicalEditor.js";
+export type { LexicalEditorProps } from "~/admin/components/LexicalCmsEditor/LexicalEditor.js";
 export { LexicalEditorConfig } from "~/admin/lexicalConfig/LexicalEditorConfig.js";
 
 // Re-export hooks and components from the base lexical package
-export { useLexicalEditorConfig } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export { LexicalHtmlRenderer } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export { getNodeFromSelection } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export { useCurrentElement } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export { useCurrentSelection } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export { useDeriveValueFromSelection } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export { useRichTextEditor } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export { useFontColorPicker } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export { useTextAlignmentAction } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export { useTypographyAction } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export { useIsMounted } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export { Divider } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export { DropDownItem } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export { DropDown } from "@webiny/lexical-editor/exports/admin/lexical.js";
-export type { Klass, LexicalNode } from "@webiny/lexical-editor/exports/admin/lexical.js";
+export { useLexicalEditorConfig } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export { LexicalHtmlRenderer } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export { getNodeFromSelection } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export { useCurrentElement } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export { useCurrentSelection } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export { useDeriveValueFromSelection } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export { useRichTextEditor } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export { useFontColorPicker } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export { useTextAlignmentAction } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export { useTypographyAction } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export { useIsMounted } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export { Divider } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export { DropDownItem } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export { DropDown } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
+export type { Klass, LexicalNode } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";

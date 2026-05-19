@@ -115,6 +115,7 @@
     "./admin/configs": "./admin/configs.js",
     "./admin/form": "./admin/form.js",
     "./admin/tenancy": "./admin/tenancy.js",
+    "./admin/ui/lexical": "./admin/ui/lexical.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
     "./admin/cms/field-renderers/common": "./admin/cms/field-renderers/common.js",
@@ -133,7 +134,6 @@
     "./api/db": "./api/db.js",
     "./admin/languages": "./admin/languages.js",
     "./api/languages": "./api/languages.js",
-    "./admin/lexical": "./admin/lexical.js",
     "./infra/admin": "./infra/admin.js",
     "./infra/api": "./infra/api.js",
     "./infra/core": "./infra/core.js",
@@ -141,5 +141,5 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "6682e8713f8e5be0622e1250c9d35c82418b0a09868d14041d789f426351c7f5"
+  "exportGenerationHash": "c481b9ad13ea252fbf3363914473e2958a1078dd31d2e6086b4a47ba069b1dd3"
 }
