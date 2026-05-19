@@ -224,7 +224,9 @@ export const pullRequests = createWorkflow({
             needs: ["constants", "build"],
             name: "Build project (core, api, admin)",
             if: NOT_RELEASE_PR,
-            env: { WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}" },
+            env: {
+                WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}"
+            },
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
