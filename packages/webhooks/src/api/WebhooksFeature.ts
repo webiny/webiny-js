@@ -20,6 +20,7 @@ import { TriggerWebhookFeature } from "./features/TriggerWebhook/feature.js";
 import { ListAvailableWebhookEventsFeature } from "./features/ListAvailableWebhookEvents/feature.js";
 import { WebhookPermissionsFeature } from "./features/WebhookPermissions/feature.js";
 import { WebhookSignPayloadFeature } from "./features/WebhookSignPayload/feature.js";
+import { WebhookDeliverFeature } from "./features/WebhookDeliver/feature.js";
 import { WebhookDispatcherFeature } from "./features/WebhookDispatcher/feature.js";
 import { SendWebhookTaskFeature } from "./features/SendWebhookTask/feature.js";
 import { WebhooksTransformerFeature } from "./features/Transformers/feature.js";
@@ -48,6 +49,7 @@ export const WebhooksFeature = createFeature({
         // Core implementations.
         WebhookPermissionsFeature.register(container);
         WebhookSignPayloadFeature.register(container);
+        WebhookDeliverFeature.register(container);
         WebhookDispatcherFeature.register(container);
         SendWebhookTaskFeature.register(container);
 

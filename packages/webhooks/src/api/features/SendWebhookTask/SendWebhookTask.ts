@@ -6,6 +6,7 @@ import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js"
 import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { UpdateWebhookDeliveryRepository } from "~/api/features/UpdateWebhookDelivery/abstractions.js";
 import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
+import { WebhookDeliver } from "~/api/features/WebhookDeliver/abstractions.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
 import type { ISendWebhookTaskInput, ISendWebhookTaskOutput, IWebhookPayload } from "./types.js";
 import type { IWebhookSignPayloadHeaders } from "@webiny/api-core/features/webhooks/WebhookSignPayload/abstractions.js";
@@ -31,7 +32,8 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
         private readonly updateDeliveryRepository: UpdateWebhookDeliveryRepository.Interface,
         private readonly signPayload: WebhookSignPayload.Interface,
         private readonly tenantContext: TenantContext.Interface,
-        private readonly getWebhookSettingsRepository: GetWebhookSettingsRepository.Interface
+        private readonly getWebhookSettingsRepository: GetWebhookSettingsRepository.Interface,
+        private readonly deliver: WebhookDeliver.Interface
     ) {}
 
     public async run(params: IRunParams) {
@@ -89,33 +91,23 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
             ...signHeaders
         };
 
-        const startTime = Date.now();
-        let responseStatus = 0;
-        let responseBody = "";
-
-        try {
-            const response = await fetch(webhook.endpointUrl, {
-                method: "POST",
-                headers: requestHeaders,
-                body: rawBody,
-                signal: AbortSignal.timeout(600_000)
-            });
-            responseStatus = response.status;
-            responseBody = await response.text();
-        } catch (error) {
-            responseStatus = 0;
-            responseBody = (error as Error).message;
-        }
-
-        const responseTime = Date.now() - startTime;
+        const result = await this.deliver.execute({
+            url: webhook.endpointUrl,
+            headers: requestHeaders,
+            body: rawBody,
+            timeout: 600_000,
+            maxRetries: 3,
+            initialDelay: 1000,
+            maxDelay: 30_000
+        });
 
         await this.updateDeliveryRepository.execute(input.deliveryId, {
             payload,
             requestHeaders,
-            responseTime,
-            responseStatus,
-            responseBody,
-            status: responseSittatus > 0 ? "delivered" : "failed"
+            responseTime: result.responseTime,
+            responseStatus: result.status,
+            responseBody: result.body,
+            status: result.status > 0 ? "delivered" : "failed"
         });
 
         return controller.response.done();
@@ -130,6 +122,7 @@ export const SendWebhookTask = TaskDefinition.createImplementation({
         UpdateWebhookDeliveryRepository,
         WebhookSignPayload,
         TenantContext,
-        GetWebhookSettingsRepository
+        GetWebhookSettingsRepository,
+        WebhookDeliver
     ]
 });
