@@ -1,3 +1,3 @@
-export type { TimeAgoProps, Opts, TDate } from "./TimeAgo.js";
+export type { TimeAgoProps, Opts, TDate, UpdateIntervals } from "./types.js";
 
 export { TimeAgo } from "./TimeAgo.js";
