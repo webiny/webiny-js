@@ -1,24 +1,23 @@
 import type { Asset, AssetOutputStrategy, AssetReply } from "@webiny/api-file-manager";
+import { AssetOutputStrategy as AssetOutputStrategyAbstraction } from "@webiny/api-file-manager/features/assetDelivery/abstractions.js";
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { GetObjectCommand, getSignedUrl } from "@webiny/aws-sdk/client-s3/index.js";
 import { S3RedirectAssetReply } from "~/assetDelivery/s3/S3RedirectAssetReply.js";
 import { S3StreamAssetReply } from "~/assetDelivery/s3/S3StreamAssetReply.js";
+import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
+import type { IS3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
-/**
- * This strategy outputs an asset taking into account the size of the asset contents.
- * If the asset is larger than 5MB, a presigned URL will be generated, and a redirect will happen.
- */
 export class S3OutputStrategy implements AssetOutputStrategy {
     private readonly s3: S3;
     private readonly bucket: string;
     private readonly presignedUrlTtl: number;
     private readonly assetStreamingMaxSize: number;
 
-    constructor(s3: S3, bucket: string, presignedUrlTtl: number, assetStreamingMaxSize: number) {
-        this.assetStreamingMaxSize = assetStreamingMaxSize;
-        this.presignedUrlTtl = presignedUrlTtl;
+    constructor(s3: S3, bucket: string, config: IS3AssetDeliveryConfig) {
         this.s3 = s3;
         this.bucket = bucket;
+        this.presignedUrlTtl = config.presignedUrlTtl;
+        this.assetStreamingMaxSize = config.assetStreamingMaxSize;
     }
 
     async output(asset: Asset): Promise<AssetReply> {
@@ -50,3 +49,8 @@ export class S3OutputStrategy implements AssetOutputStrategy {
         );
     }
 }
+
+export const S3OutputStrategyImpl = AssetOutputStrategyAbstraction.createImplementation({
+    implementation: S3OutputStrategy,
+    dependencies: [S3Client, S3Bucket, S3AssetDeliveryConfig]
+});

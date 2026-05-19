@@ -1,8 +1,10 @@
-import type { Asset, AssetOutputStrategy, AssetRequest } from "~/delivery/index.js";
-import { AssetReply } from "~/delivery/index.js";
+import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
+import type { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
+import { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
 import { ResponseHeaders } from "@webiny/handler";
+import type { IAssetOutputStrategy } from "../abstractions.js";
 
-export class RedirectToPublicUrlOutputStrategy implements AssetOutputStrategy {
+export class RedirectToPrivateUrlOutputStrategy implements IAssetOutputStrategy {
     private assetRequest: AssetRequest;
 
     constructor(assetRequest: AssetRequest) {
@@ -15,7 +17,7 @@ export class RedirectToPublicUrlOutputStrategy implements AssetOutputStrategy {
         return new AssetReply({
             code: 301,
             headers: ResponseHeaders.create({
-                location: requestUrl.replace("/private/", "/files/"),
+                location: requestUrl.replace("/files/", "/private/"),
                 "content-type": asset.getContentType(),
                 "cache-control": `public, max-age=${86400 * 30}`
             })
