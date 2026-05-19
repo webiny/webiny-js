@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Toast } from "~/Toast/index.js";
 import { Tooltip } from "~/Tooltip/index.js";
 import { type LinkComponent, DefaultLinkComponent } from "~/index.js";
-import { defaultFileUrlFormatter, type FileUrlFormatter } from "./FileUrlFormatter.js";
+import type { FileUrlFormatter } from "./FileUrlFormatter.js";
 
 export type CompileMarkdown = (markdown: React.ReactNode) => React.ReactNode;
 
@@ -13,6 +13,12 @@ export interface AdminUiContextValue {
 }
 
 const passthrough = (markdown: string) => markdown;
+
+const passthroughFileUrlFormatter: FileUrlFormatter = {
+    format(_url: URL): void {
+        // passthrough — no-op
+    }
+};
 
 export const AdminUiContext = React.createContext<AdminUiContextValue | undefined>(undefined);
 
@@ -30,7 +36,7 @@ export interface AdminUiProviderProps {
 export const AdminUiProvider = ({ children, ...props }: AdminUiProviderProps) => {
     const linkComponent = props.linkComponent ?? DefaultLinkComponent;
     const markdownCompiler = props.markdownCompiler ?? passthrough;
-    const fileUrlFormatter = props.fileUrlFormatter ?? defaultFileUrlFormatter;
+    const fileUrlFormatter = props.fileUrlFormatter ?? passthroughFileUrlFormatter;
 
     // Cache to store compiled markdown results
     const cacheRef = useRef(new Map<string, React.ReactNode>());

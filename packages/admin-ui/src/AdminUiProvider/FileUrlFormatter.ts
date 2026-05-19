@@ -6,9 +6,3 @@ export interface FileUrlParams {
 export interface FileUrlFormatter {
     format(url: URL, params?: FileUrlParams): void;
 }
-
-export const defaultFileUrlFormatter: FileUrlFormatter = {
-    format(_url: URL): void {
-        // passthrough — no-op
-    }
-};
