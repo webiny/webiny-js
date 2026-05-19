@@ -62,7 +62,18 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
         return this.formModelFactory.create({
             fields: fields => ({
                 name: fields.text().label("Name").required("Name is required"),
-                slug: fields.text().label("Slug").required("Slug is required"),
+                slug: fields
+                    .text()
+                    .label("Slug")
+                    .required("Slug is required")
+                    .computedUntilDirty(form => {
+                        const name = String(form.field("name").getValue() ?? "");
+                        return name
+                            .trim()
+                            .toLowerCase()
+                            .replace(/[^a-z0-9\s-]/g, "")
+                            .replace(/\s+/g, "-");
+                    }),
                 endpointUrl: fields
                     .text()
                     .label("Endpoint URL")
@@ -91,9 +102,9 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     private addEventFields(events: WebhookEvent[]): void {
         const grouped = new Map<string, WebhookEvent[]>();
         for (const event of events) {
-            const existing = grouped.get(event.app) ?? [];
+            const existing = grouped.get(event.appLabel) ?? [];
             existing.push(event);
-            grouped.set(event.app, existing);
+            grouped.set(event.appLabel, existing);
         }
 
         this._eventGroups = grouped;
