@@ -5,6 +5,13 @@ export {
     WebhookFactory,
     WebhookProvider
 } from "@webiny/api-core/features/webhooks/index.js";
+export {
+    WebhookFactory,
+    WebhookProvider,
+    WebhookVerifyPayload,
+    WebhookSignPayload,
+    WebhookDispatcher
+} from "@webiny/api-core/exports/api/webhooks.js";
 export type {
     Webhook,
     WebhookCmsEntry,
