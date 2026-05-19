@@ -27,6 +27,7 @@ export const Extensions = () => {
             <Infra.OpenSearch enabled={false} />
 
             <Infra.Encryption passphrase={"my-passphrase"} />
+            {/*<Infra.Api.MaxBundleSize size={2359296}  />*/}
 
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />

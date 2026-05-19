@@ -224,7 +224,9 @@ export const pullRequests = createWorkflow({
             needs: ["constants", "build"],
             name: "Build project (core, api, admin)",
             if: NOT_RELEASE_PR,
-            env: { WEBINY_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_API_MAX_BUNDLE_SIZE }}" },
+            env: {
+                WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}"
+            },
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
@@ -237,7 +239,7 @@ export const pullRequests = createWorkflow({
                 },
                 {
                     name: "API bundle size limit",
-                    run: 'echo "API bundle size limit: ${WEBINY_API_MAX_BUNDLE_SIZE:-10} MB"'
+                    run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"'
                 },
                 {
                     name: "Build api",
