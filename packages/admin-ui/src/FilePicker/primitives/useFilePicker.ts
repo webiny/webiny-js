@@ -36,13 +36,13 @@ export const useFilePicker = (props: IFilePickerPrimitiveProps) => {
         if (!vm.file) {
             return vm;
         }
-        return {
-            ...vm,
-            file: {
-                ...vm.file,
-                url: fileUrlFormatter.format(vm.file.url, { width: 128 })
-            }
-        };
+        try {
+            const url = new URL(vm.file.url);
+            fileUrlFormatter.format(url, { width: 128 });
+            return { ...vm, file: { ...vm.file, url: url.toString() } };
+        } catch {
+            return vm;
+        }
     }, [vm, fileUrlFormatter]);
 
     return {

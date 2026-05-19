@@ -4,11 +4,11 @@ export interface FileUrlParams {
 }
 
 export interface FileUrlFormatter {
-    format(url: URL | string, params?: FileUrlParams): string;
+    format(url: URL, params?: FileUrlParams): void;
 }
 
 export const defaultFileUrlFormatter: FileUrlFormatter = {
-    format(url: URL | string): string {
-        return url.toString();
+    format(_url: URL): void {
+        // passthrough — no-op
     }
 };
