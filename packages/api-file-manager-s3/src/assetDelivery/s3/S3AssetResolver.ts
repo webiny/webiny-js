@@ -1,9 +1,11 @@
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import type { AssetRequest, AssetResolver } from "@webiny/api-file-manager";
 import { Asset } from "@webiny/api-file-manager";
+import { AssetResolver as AssetResolverAbstraction } from "@webiny/api-file-manager/features/assetDelivery/abstractions.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { S3ContentsReader } from "~/assetDelivery/index.js";
 import { ObjectKey } from "~/assetDelivery/threatDetection/ObjectKey.js";
+import { S3Client, S3Bucket } from "~/assetDelivery/abstractions.js";
 
 interface AssetMetadata {
     id: string;
@@ -45,3 +47,8 @@ export class S3AssetResolver implements AssetResolver {
         return asset;
     }
 }
+
+export const S3AssetResolverImpl = AssetResolverAbstraction.createImplementation({
+    implementation: S3AssetResolver,
+    dependencies: [GlobalKeyValueStore, S3Client, S3Bucket]
+});

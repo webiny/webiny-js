@@ -4,18 +4,15 @@ import {
     createRoute,
     ResponseHeaders
 } from "@webiny/handler";
-import { PrivateFilesAssetProcessor } from "./AssetDelivery/privateFiles/PrivateFilesAssetProcessor.js";
-import { PrivateAuthenticatedAuthorizer } from "./AssetDelivery/privateFiles/PrivateAuthenticatedAuthorizer.js";
-import { PrivateFileAssetRequestResolver } from "./AssetDelivery/privateFiles/PrivateFileAssetRequestResolver.js";
 import type { Asset, AssetRequest } from "./index.js";
-import {
-    AssetDeliveryConfigBuilder,
-    AssetDeliveryConfigModifierPlugin,
-    FilesAssetRequestResolver,
-    createAssetDeliveryConfig
-} from "./index.js";
 import type { Reply } from "@webiny/handler/types.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import {
+    AssetRequestResolver,
+    AssetResolver,
+    AssetProcessor,
+    AssetOutputStrategy
+} from "~/features/assetDelivery/abstractions.js";
 
 const noCacheHeaders = ResponseHeaders.create({
     "content-type": "application/json",
@@ -39,7 +36,6 @@ export const setupAssetDelivery = () => {
         const assetReply = await asset.output();
         const headers = assetReply.getHeaders();
 
-        // Set default headers.
         headers.set("x-webiny-base64-encoded", "true");
 
         reply.code(assetReply.getCode());
@@ -49,22 +45,13 @@ export const setupAssetDelivery = () => {
 
     return [
         createModifyFastifyPlugin(app => {
-            // Config builder allows config modification via plugins.
-            const configBuilder = new AssetDeliveryConfigBuilder();
-
-            // Apply config modifications.
-            const configPlugins = app.webiny.plugins.byType<AssetDeliveryConfigModifierPlugin>(
-                AssetDeliveryConfigModifierPlugin.type
-            );
-
-            configPlugins.forEach(configPlugin => configPlugin.buildConfig(configBuilder));
+            const container = app.webiny.container;
 
             let resolvedRequest: AssetRequest | undefined;
             let resolvedAsset: Asset | undefined;
 
-            // Create a `HandlerOnRequest` plugin to resolve `tenant`, and allow the system to bootstrap.
             const handlerOnRequest = createHandlerOnRequest(async (request, reply) => {
-                const requestResolver = configBuilder.getAssetRequestResolver();
+                const requestResolver = container.resolve(AssetRequestResolver);
                 resolvedRequest = await requestResolver.resolve(request);
 
                 if (!resolvedRequest) {
@@ -77,9 +64,7 @@ export const setupAssetDelivery = () => {
                     return false;
                 }
 
-                const container = app.webiny.container;
-                const assetResolver = configBuilder.getAssetResolver(container);
-
+                const assetResolver = container.resolve(AssetResolver);
                 resolvedAsset = await assetResolver.resolve(resolvedRequest);
 
                 if (!resolvedAsset) {
@@ -100,7 +85,6 @@ export const setupAssetDelivery = () => {
                 return;
             });
 
-            // Create the `Route` plugin, to handle all GET requests, and output the resolved asset.
             const deliveryRoute = createRoute<ApiCoreContext>(({ onGet, context }) => {
                 onGet(
                     "*",
@@ -108,35 +92,15 @@ export const setupAssetDelivery = () => {
                         assertAssetRequestWasResolved(resolvedRequest);
                         assertAssetWasResolved(resolvedAsset);
 
-                        if (context.wcp.canUsePrivateFiles()) {
-                            configBuilder.decorateAssetProcessor(({ assetProcessor, context }) => {
-                                // Currently, we only have one authorizer.
-                                const assetAuthorizer = new PrivateAuthenticatedAuthorizer(context);
-
-                                return new PrivateFilesAssetProcessor(
-                                    context,
-                                    assetAuthorizer,
-                                    assetProcessor
-                                );
-                            });
-                        }
-
-                        const outputStrategy = configBuilder.getAssetOutputStrategy(
-                            context,
-                            resolvedRequest,
-                            resolvedAsset
-                        );
-
+                        const outputStrategy = context.container.resolve(AssetOutputStrategy);
                         resolvedAsset.setOutputStrategy(outputStrategy);
 
-                        const assetProcessor = configBuilder.getAssetProcessor(context);
-
+                        const assetProcessor = context.container.resolve(AssetProcessor);
                         const processedAsset = await assetProcessor.process(
                             resolvedRequest,
                             resolvedAsset
                         );
 
-                        // Get reply object (runs the output strategy under the hood).
                         console.log(`Output asset (size: ${processedAsset.getSize()} bytes).`);
                         return outputAsset(reply, processedAsset);
                     },
@@ -145,18 +109,6 @@ export const setupAssetDelivery = () => {
             });
 
             app.webiny.plugins.register(handlerOnRequest, deliveryRoute);
-        }),
-        // Create the default configuration
-        createAssetDeliveryConfig(config => {
-            config.decorateAssetRequestResolver(() => {
-                // This resolver works with `/files/*` requests.
-                return new FilesAssetRequestResolver();
-            });
-
-            config.decorateAssetRequestResolver(({ assetRequestResolver }) => {
-                // This resolver works with `/private/*` requests.
-                return new PrivateFileAssetRequestResolver(assetRequestResolver);
-            });
         })
     ];
 };

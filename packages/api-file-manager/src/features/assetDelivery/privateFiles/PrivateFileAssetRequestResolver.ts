@@ -1,16 +1,15 @@
-import type { AssetRequestResolver } from "~/delivery/index.js";
-import { AssetRequest } from "~/delivery/index.js";
 import type { Request } from "@webiny/handler/types.js";
+import { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
+import { AssetRequestResolver, type IAssetRequestResolver } from "../abstractions.js";
 
-export class PrivateFileAssetRequestResolver implements AssetRequestResolver {
-    private readonly resolver: AssetRequestResolver;
+export class PrivateFileAssetRequestResolver implements IAssetRequestResolver {
+    private readonly resolver: IAssetRequestResolver;
 
-    constructor(resolver: AssetRequestResolver) {
+    constructor(resolver: IAssetRequestResolver) {
         this.resolver = resolver;
     }
 
     async resolve(request: Request): Promise<AssetRequest | undefined> {
-        // Example: /private/65722cb5c7824a0008d05963/image-48.jpg?width=300
         if (!request.url.startsWith("/private/")) {
             return this.resolver.resolve(request);
         }
@@ -18,7 +17,6 @@ export class PrivateFileAssetRequestResolver implements AssetRequestResolver {
         const params = (request.params ?? {}) as Record<string, any>;
         const query = (request.query ?? {}) as Record<string, any>;
 
-        // Example: { '*': '/private/65722cb5c7824a0008d05963/image-48.jpg' },
         const path = params["*"];
 
         return new AssetRequest({
@@ -34,3 +32,8 @@ export class PrivateFileAssetRequestResolver implements AssetRequestResolver {
         });
     }
 }
+
+export const PrivateFileAssetRequestResolverDecorator = AssetRequestResolver.createDecorator({
+    decorator: PrivateFileAssetRequestResolver,
+    dependencies: []
+});
