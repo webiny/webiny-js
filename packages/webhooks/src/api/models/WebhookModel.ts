@@ -51,9 +51,7 @@ class WebhookModelFactory implements ModelFactory.Interface {
             signingSecret: fields
                 .text()
                 .label("Signing Secret")
-                .required()
                 .description("Signing secret - will be encrypted in the database.")
-                .minLength(16, "Signing secret must be at least 16 characters long.")
         }));
 
         return [model];
