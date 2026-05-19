@@ -12,7 +12,9 @@ export const createRsbuildConfig = async ({ cwd }) => {
     const isDebugEnabled = process.env.DEBUG === "true";
 
     // Configurable via WEBINY_INFRA_API_MAX_BUNDLE_SIZE (bytes).
-    const maxBundleSize = parseInt(process.env.WEBINY_INFRA_API_MAX_BUNDLE_SIZE) || DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE;
+    const maxBundleSize =
+        parseInt(process.env.WEBINY_INFRA_API_MAX_BUNDLE_SIZE) ||
+        DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE;
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.fn.entryFile } },
