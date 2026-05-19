@@ -110,18 +110,20 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                     .object()
                     .label(app)
                     .renderer("objectAccordionSingle")
-                    .fields(f => ({
-                        selected: f
-                            .text()
-                            .list()
-                            .options(
-                                appEvents.map(e => ({
-                                    label: e.label,
-                                    value: e.eventName
-                                }))
-                            )
-                            .renderer("checkboxes")
-                    }));
+                    .fields(f => {
+                        return {
+                            selected: f
+                                .text()
+                                .list()
+                                .options(
+                                    appEvents.map(e => ({
+                                        label: e.label,
+                                        value: e.eventName
+                                    }))
+                                )
+                                .renderer("checkboxes")
+                        };
+                    });
             }
 
             return result;
@@ -139,6 +141,9 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
         ]);
 
         this._form.addRule(form => {
+            if (this._eventFieldNames.length === 0) {
+                return [];
+            }
             for (const fieldName of this._eventFieldNames) {
                 const objectField = form.field(fieldName).as("object");
                 const selectedField = objectField.children.get("selected");
@@ -151,7 +156,7 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                 }
             }
 
-            return [{ path: "", message: "At least one event must be selected." }];
+            return [{ path: "Events", message: "At least one event must be selected." }];
         });
     }
 

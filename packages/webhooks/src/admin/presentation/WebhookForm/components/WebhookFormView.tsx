@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature, useRoute } from "@webiny/app";
-import { useRouter } from "@webiny/app-admin";
-import { Button, Heading, OverlayLoader, Separator, Text } from "@webiny/admin-ui";
+import { FormErrors, useRouter } from "@webiny/app-admin";
+import { Button, Heading, OverlayLoader, Separator } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { WebhookFormPresenterFeature } from "../feature.js";
 import { GetWebhookFeature } from "~/admin/features/getWebhook/feature.js";
@@ -62,22 +62,8 @@ const WebhookFormViewInner = observer(function WebhookFormViewInner() {
 
                 <div className="p-lg">
                     <>
+                        <FormErrors form={vm.form} />
                         <FormView name="Webhook" form={vm.form} />
-                        {vm.form.errors.length > 0 && (
-                            <div className="flex flex-col gap-xs">
-                                {vm.form.errors
-                                    .filter(e => !e.path)
-                                    .map((e, i) => (
-                                        <Text
-                                            key={i}
-                                            size="sm"
-                                            className="text-destructive-default"
-                                        >
-                                            {e.message}
-                                        </Text>
-                                    ))}
-                            </div>
-                        )}
                         {!vm.isNew && vm.webhook?.signingSecret && (
                             <SigningSecret secret={vm.webhook.signingSecret} />
                         )}
