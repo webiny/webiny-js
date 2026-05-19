@@ -51,11 +51,13 @@ export const AdminUiProvider = ({ children, ...props }: AdminUiProviderProps) =>
             }
 
             if (typeof markdown === "string") {
+                // Check cache first
                 const cached = cacheRef.current.get(markdown);
                 if (cached !== undefined) {
                     return cached;
                 }
 
+                // Compile and cache
                 const compiled = markdownCompiler(markdown);
                 cacheRef.current.set(markdown, compiled);
                 return compiled;
