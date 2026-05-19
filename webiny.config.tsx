@@ -9,6 +9,7 @@ export const Extensions = () => {
         <>
             {/* Admin 👇 */}
             <Admin.Extension src={"@/extensions/previewUrlModifier/index.tsx"} />
+            <Admin.Extension src={"@/extensions/fileUrlFormatter/index.tsx"} />
             <Admin.Extension src={"@/extensions/sampleEcommerce/index.tsx"} />
             <Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />
             <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
