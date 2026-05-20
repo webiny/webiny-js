@@ -1,6 +1,16 @@
 import type { TaskRun } from "@webiny/sdk";
 
-export type Task = TaskRun & {
+export type TaskStatus =
+    | "pending"
+    | "running"
+    | "success"
+    | "completed"
+    | "failed"
+    | "aborted"
+    | "stopped";
+
+export type Task = Omit<TaskRun, "taskStatus"> & {
+    taskStatus: TaskStatus;
     createdOn?: string;
     savedOn?: string;
     createdBy?: {
@@ -13,4 +23,3 @@ export type Task = TaskRun & {
 export type { TaskLog } from "@webiny/sdk";
 export type { TaskLogItem } from "@webiny/sdk";
 export type { TaskDefinition } from "@webiny/sdk";
-export type { TaskStatus } from "@webiny/sdk";

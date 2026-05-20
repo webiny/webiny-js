@@ -137,6 +137,7 @@ const TaskDetailDrawerInner = observer(function TaskDetailDrawerInner({
     const displayTask = vm.task ?? task;
     const isRunning = displayTask.taskStatus === "running";
     const isTerminal =
+        displayTask.taskStatus === "success" ||
         displayTask.taskStatus === "completed" ||
         displayTask.taskStatus === "failed" ||
         displayTask.taskStatus === "aborted";

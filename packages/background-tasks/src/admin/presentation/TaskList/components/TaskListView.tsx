@@ -44,7 +44,7 @@ const STATUS_TAG_VARIANT: Record<
 const STATUS_OPTIONS: { label: string; value: TaskStatus }[] = [
     { label: "Pending", value: "pending" },
     { label: "Running", value: "running" },
-    { label: "Success", value: "completed" },
+    { label: "Success", value: "success" },
     { label: "Failed", value: "failed" },
     { label: "Aborted", value: "aborted" }
 ];
@@ -162,6 +162,7 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                 cell: (row: Task) => {
                     const isRunning = row.taskStatus === "running";
                     const isTerminal =
+                        row.taskStatus === "success" ||
                         row.taskStatus === "completed" ||
                         row.taskStatus === "failed" ||
                         row.taskStatus === "aborted";

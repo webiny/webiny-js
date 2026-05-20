@@ -33,17 +33,17 @@ A complete `@webiny/background-tasks` admin package:
 
 ## Key files
 
-| What | Path |
-|------|------|
-| Design spec | `docs/superpowers/specs/2026-05-20-background-tasks-admin-ui-design.md` |
-| Implementation plan | `docs/superpowers/plans/2026-05-20-background-tasks-admin-ui.md` |
-| Package root | `packages/background-tasks/` |
-| Shared types | `packages/background-tasks/src/admin/shared/types.ts` |
-| List view | `packages/background-tasks/src/admin/presentation/TaskList/components/TaskListView.tsx` |
-| Detail drawer | `packages/background-tasks/src/admin/presentation/TaskDetail/components/TaskDetailDrawer.tsx` |
-| Main component | `packages/background-tasks/src/admin/BackgroundTasks.tsx` |
-| Registration | `packages/background-tasks/src/admin/BackgroundTaskRoutes.tsx` |
-| App integration | `packages/app-serverless-cms/src/Admin.tsx` |
+| What                | Path                                                                                          |
+| ------------------- | --------------------------------------------------------------------------------------------- |
+| Design spec         | `docs/superpowers/specs/2026-05-20-background-tasks-admin-ui-design.md`                       |
+| Implementation plan | `docs/superpowers/plans/2026-05-20-background-tasks-admin-ui.md`                              |
+| Package root        | `packages/background-tasks/`                                                                  |
+| Shared types        | `packages/background-tasks/src/admin/shared/types.ts`                                         |
+| List view           | `packages/background-tasks/src/admin/presentation/TaskList/components/TaskListView.tsx`       |
+| Detail drawer       | `packages/background-tasks/src/admin/presentation/TaskDetail/components/TaskDetailDrawer.tsx` |
+| Main component      | `packages/background-tasks/src/admin/BackgroundTasks.tsx`                                     |
+| Registration        | `packages/background-tasks/src/admin/BackgroundTaskRoutes.tsx`                                |
+| App integration     | `packages/app-serverless-cms/src/Admin.tsx`                                                   |
 
 ## Next steps
 

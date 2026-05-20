@@ -7,6 +7,22 @@ import type {
 import type { Task } from "~/admin/shared/types.js";
 import type { IListTasksUseCase } from "~/admin/features/listTasks/abstractions.js";
 
+const ENTRY_META_SORT_FIELDS = new Set([
+    "id",
+    "createdOn",
+    "modifiedOn",
+    "savedOn",
+    "deletedOn",
+    "restoredOn",
+    "firstPublishedOn",
+    "lastPublishedOn"
+]);
+
+function toSortEnum(field: string, direction: "ASC" | "DESC"): string {
+    const prefix = ENTRY_META_SORT_FIELDS.has(field) ? "" : "values_";
+    return `${prefix}${field}_${direction}`;
+}
+
 export class TaskListDataSource implements IDataSource<Task> {
     private _rows: Task[] = [];
     private _meta: IDataSourceMeta = { cursor: null, hasMoreItems: false, totalCount: 0 };
@@ -33,7 +49,9 @@ export class TaskListDataSource implements IDataSource<Task> {
 
     async query(params: IDataSourceQuery): Promise<void> {
         this._loading = true;
-        const sort = params.sort ? [`${params.sort.field}_${params.sort.direction}`] : undefined;
+        const sort = params.sort
+            ? [toSortEnum(params.sort.field, params.sort.direction)]
+            : undefined;
         const result = await this.listTasksUseCase.execute({
             where: params.filters as Record<string, unknown> | undefined,
             sort,
@@ -57,7 +75,9 @@ export class TaskListDataSource implements IDataSource<Task> {
             return;
         }
         this._loading = true;
-        const sort = params.sort ? [`${params.sort.field}_${params.sort.direction}`] : undefined;
+        const sort = params.sort
+            ? [toSortEnum(params.sort.field, params.sort.direction)]
+            : undefined;
         const result = await this.listTasksUseCase.execute({
             where: params.filters as Record<string, unknown> | undefined,
             sort,
