@@ -4,13 +4,29 @@ import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldTyp
 import { FIELD_INDEXING_DEFAULT } from "./constants.js";
 
 class CmsEntryOpenSearchFieldIndexRegistryImpl implements Abstraction.Interface {
+    private readonly cache: Map<string, CmsEntryOpenSearchFieldIndex.Interface | undefined> =
+        new Map();
+
     public constructor(private readonly fieldIndexing: CmsEntryOpenSearchFieldIndex.Interface[]) {}
 
-    public get(type: string): CmsEntryOpenSearchFieldIndex.Interface | undefined {
-        const fieldType = getBaseFieldType({
-            type
+    public get(fieldType: string): CmsEntryOpenSearchFieldIndex.Interface | undefined {
+        if (this.cache.has(fieldType)) {
+            return this.cache.get(fieldType);
+        }
+
+        let indexing = this.fieldIndexing.find(field => {
+            return field.fieldType === fieldType;
         });
-        return this.fieldIndexing.find(field => field.fieldType === fieldType);
+        const baseType = getBaseFieldType({
+            type: fieldType
+        });
+        if (!indexing && baseType !== fieldType) {
+            indexing = this.fieldIndexing.find(field => {
+                return field.fieldType === baseType;
+            });
+        }
+        this.cache.set(fieldType, indexing);
+        return indexing;
     }
 
     public getDefault(): CmsEntryOpenSearchFieldIndex.Interface {

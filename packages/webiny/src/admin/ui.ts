@@ -1,3 +1,9 @@
+export {
+    FormComponentDescription,
+    FormComponentLabel,
+    FormComponentNote,
+    FormComponentErrorMessage
+} from "@webiny/admin-ui/FormComponent/index.js";
 export { Accordion } from "@webiny/admin-ui/Accordion/index.js";
 export { Alert } from "@webiny/admin-ui/Alert/index.js";
 export { AutoComplete } from "@webiny/admin-ui/AutoComplete/index.js";
@@ -83,4 +89,4 @@ export { useHotkeys } from "@webiny/app-admin/hooks/useHotkeys.js";
 export { useDialogs } from "@webiny/app-admin/components/Dialogs/useDialogs.js";
 export { Logo } from "@webiny/app-admin/base/ui/Logo.js";
 export { TenantSelector } from "@webiny/app-admin/base/ui/TenantSelector.js";
-export { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor/LexicalEditor.js";
+export { AdminLayout } from "@webiny/app-admin/components/AdminLayout.js";

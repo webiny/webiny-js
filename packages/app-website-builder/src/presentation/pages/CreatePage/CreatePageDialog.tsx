@@ -63,7 +63,7 @@ export const CreatePageDialog = observer(() => {
                         displayResetAction={false}
                     />
                 )}
-                <FormView form={vm.form} />
+                <FormView name="Create Page" form={vm.form} />
             </div>
         </Dialog>
     );

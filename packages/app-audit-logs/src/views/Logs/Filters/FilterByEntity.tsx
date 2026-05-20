@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useBind, useForm } from "@webiny/form";
-import { Select } from "@webiny/ui/Select/index.js";
+import { Select } from "@webiny/admin-ui";
 import { apps as auditLogsApps } from "@webiny/common-audit-logs";
 import type { IFilterFormData } from "./types.js";
 
@@ -38,5 +38,5 @@ export const FilterByEntity = () => {
         return null;
     }
 
-    return <Select {...bind} size={"medium"} placeholder={"Filter by Entity"} options={options} />;
+    return <Select {...bind} size={"md"} placeholder={"Filter by Entity"} options={options} />;
 };

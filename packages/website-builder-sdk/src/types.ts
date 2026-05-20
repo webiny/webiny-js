@@ -309,6 +309,9 @@ export type PublicRedirect = {
 
 export type EditorPage = EditorDocument & Pick<Page, "properties" | "status" | "location">;
 
+export interface EditorOptions {
+    isReadOnly?: boolean;
+}
 export type EditorDocument = Document;
 
 export type Page = Document & {
@@ -321,13 +324,15 @@ export type Page = Document & {
     properties: {
         title: string;
         snippet: string;
-        /*image: {
+        image: {
             id: string;
             name: string;
             size: number;
             mimeType: string;
             src: string;
-        };*/
+            width: number;
+            height: number;
+        };
         path: string;
         language?: string;
         sourcePage?: string;
@@ -336,17 +341,23 @@ export type Page = Document & {
             title: string;
             description: string;
             metaTags: Array<{ name: string; content: string }>;
+            canonicalUrl: string;
+            noIndex: boolean;
+            noFollow: boolean;
+            structuredSchema: string;
         };
         social: {
             title: string;
             description: string;
-            /*image: {
+            image: {
                 id: string;
                 name: string;
                 size: number;
                 mimeType: string;
                 src: string;
-            };*/
+                width: number;
+                height: number;
+            };
             metaTags: Array<{ property: string; content: string }>;
         };
     };

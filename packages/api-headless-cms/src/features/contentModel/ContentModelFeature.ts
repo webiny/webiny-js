@@ -1,15 +1,16 @@
 import { createFeature } from "@webiny/feature/api";
 import { createMemoryCache } from "~/utils/index.js";
-import { PluginModelsProvider } from "~/features/contentModel/shared/PluginModelsProvider.js";
-import { ModelCache } from "~/features/contentModel/shared/abstractions.js";
-import { ModelsFetcher } from "~/features/contentModel/shared/ModelsFetcher.js";
-import { CreateModelFeature } from "~/features/contentModel/CreateModel/feature.js";
-import { CreateModelFromFeature } from "~/features/contentModel/CreateModelFrom/feature.js";
-import { UpdateModelFeature } from "~/features/contentModel/UpdateModel/feature.js";
-import { DeleteModelFeature } from "~/features/contentModel/DeleteModel/feature.js";
-import { GetModelFeature } from "~/features/contentModel/GetModel/feature.js";
-import { ListModelsFeature } from "~/features/contentModel/ListModels/feature.js";
-import { ModelToAstConverterFeature } from "~/features/contentModel/ModelToAstConverter/feature.js";
+import { PluginModelsProvider } from "./shared/PluginModelsProvider.js";
+import { ModelCache } from "./shared/abstractions.js";
+import { ModelsFetcher } from "./shared/ModelsFetcher.js";
+import { CreateModelFeature } from "./CreateModel/feature.js";
+import { CreateModelFromFeature } from "./CreateModelFrom/feature.js";
+import { UpdateModelFeature } from "./UpdateModel/feature.js";
+import { DeleteModelFeature } from "./DeleteModel/feature.js";
+import { GetModelFeature } from "./GetModel/feature.js";
+import { ListModelsFeature } from "./ListModels/feature.js";
+import { ModelToAstConverterFeature } from "./ModelToAstConverter/feature.js";
+import { ModelFieldCompressionFeature } from "./ModelFieldCompression/feature.js";
 
 export const ContentModelFeature = createFeature({
     name: "ContentModel",
@@ -19,6 +20,8 @@ export const ContentModelFeature = createFeature({
         container.register(ModelsFetcher).inSingletonScope();
 
         ModelToAstConverterFeature.register(container);
+
+        ModelFieldCompressionFeature.register(container);
 
         // Query features
         GetModelFeature.register(container);

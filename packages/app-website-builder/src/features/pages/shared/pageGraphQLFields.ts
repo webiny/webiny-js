@@ -25,7 +25,8 @@ export const getPageGraphQLBaseFields = (): string[] => {
         `live {
             version
         }
-        `
+        `,
+        `revisionDescription`
     ];
 };
 

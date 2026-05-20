@@ -47,6 +47,7 @@ export default /* GraphQL */ `
         meta: PageModelApiNameMeta
         wbyAco_location: WbyAcoLocation
         live: CmsEntryLive
+        revisionDescription: String
 
         values: PageModelApiNameValues
     }
@@ -66,10 +67,6 @@ export default /* GraphQL */ `
         title: String
         description: String
         image: String
-        """
-        Custom meta data stored in the root of the entry object.
-        """
-        data: JSON
     }
 
     union PageModelApiName_Content =
@@ -796,6 +793,11 @@ export default /* GraphQL */ `
             revision: ID!
             data: PageModelApiNameInput!
             options: UpdateCmsEntryOptionsInput
+        ): PageModelApiNameResponse
+
+        updatePageModelApiNameRevisionDescription(
+            revision: ID!
+            revisionDescription: String
         ): PageModelApiNameResponse
 
         validatePageModelApiName(

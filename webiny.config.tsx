@@ -8,8 +8,13 @@ export const Extensions = () => {
     return (
         <>
             {/* Admin 👇 */}
+            <Admin.Extension src={"@/extensions/previewUrlModifier/index.tsx"} />
+            {/*<Admin.Extension src={"@/extensions/fileUrlFormatter/index.tsx"} />*/}
             <Admin.Extension src={"@/extensions/sampleEcommerce/index.tsx"} />
             <Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />
+            <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
+            <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
+
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
             {/*<Admin.Extension src={"@/extensions/LexicalPlugin.tsx"} />*/}
@@ -22,11 +27,12 @@ export const Extensions = () => {
             <Infra.OpenSearch enabled={false} />
 
             <Infra.Encryption passphrase={"my-passphrase"} />
+            {/*<Infra.Api.MaxBundleSize size={2359296}  />*/}
 
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
-            <Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />
+            {/*<Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />*/}
             {/*<Infra.EnvVar varName="MY_ENV_VAR" value="myValue" />*/}
             {/*<Infra.Api.LambdaFunction*/}
             {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}
@@ -118,6 +124,21 @@ export const Extensions = () => {
             <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
             {/* 🚧 WIP 👇 */}
             {/*<AuditLogs.RetentionPeriod days={90} />*/}
+
+            {/* Tasks */}
+            <Api.Extension src={"/extensions/tasks/SelfCleaningTask.ts"} />
+            {/* Headless CMS */}
+            {/* Set to true to compress model fields before storing them in the database. */}
+            <Api.Cms.ModelFieldCompression enabled={false} />
+            {/* Mailer */}
+            <Api.Mailer.Smtp
+                host={"smtp.webiny.com"}
+                port={587}
+                user={"smtp-user"}
+                password={process.env.SMTP_PASSWORD || "unknown"}
+                from={"Webiny <test@webiny.com>"}
+                replyTo={"No-reply <no-reply@webiny.com>"}
+            />
         </>
     );
 };

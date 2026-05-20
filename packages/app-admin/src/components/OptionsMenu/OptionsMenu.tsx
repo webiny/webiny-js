@@ -33,12 +33,14 @@ export const OptionsMenu = (props: OptionsMenuProps) => {
     );
 
     return (
-        <DropdownMenu trigger={trigger}>
-            {props.actions.map(action => (
-                <Fragment key={action.name}>
-                    <OptionsMenuItemProvider>{action.element}</OptionsMenuItemProvider>
-                </Fragment>
-            ))}
-        </DropdownMenu>
+        <div onClick={e => e.stopPropagation()}>
+            <DropdownMenu trigger={trigger}>
+                {props.actions.map(action => (
+                    <Fragment key={action.name}>
+                        <OptionsMenuItemProvider>{action.element}</OptionsMenuItemProvider>
+                    </Fragment>
+                ))}
+            </DropdownMenu>
+        </div>
     );
 };

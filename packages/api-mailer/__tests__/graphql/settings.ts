@@ -4,9 +4,11 @@ export const GET_SETTINGS_QUERY = `
             getSettings {
                 data {
                     host
+                    port
                     user
                     from
                     replyTo
+                    source
                 }
                 error {
                     message
@@ -24,9 +26,11 @@ export const SAVE_SETTINGS_MUTATION = `
             saveSettings(data: $data) {
                 data {
                     host
+                    port
                     user
                     from
                     replyTo
+                    source
                 }
                 error {
                     message

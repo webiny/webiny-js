@@ -36,7 +36,7 @@ jobs:
         run: >-
           git checkout -b release/${{ github.event.inputs.version }} && git
           commit --allow-empty -m "chore: start release ${{
-          github.event.inputs.version }} [no ci]" -m "Empty commit to allow PR
+          github.event.inputs.version }}" -m "Empty commit to allow PR
           creation." && git push origin release/${{ github.event.inputs.version
           }}
       - name: Open pull request

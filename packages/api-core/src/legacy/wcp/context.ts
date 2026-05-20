@@ -1,8 +1,8 @@
-import { ContextPlugin } from "@webiny/api";
 import { getWcpProjectLicense, getWcpProjectEnvironment, NullLicense } from "@webiny/wcp";
 import type { DecryptedWcpProjectLicense, ILicense } from "@webiny/wcp/types.js";
 import { License } from "@webiny/wcp";
-import type { CachedWcpProjectLicense, WcpContext } from "~/features/wcp/WcpContext/types.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler/plugins/RegisterExtensionPlugin.js";
+import type { CachedWcpProjectLicense } from "~/features/wcp/WcpContext/types.js";
 import { getWcpProjectLicenseCacheKey } from "~/features/wcp/WcpContext/utils.js";
 import { WcpFeature } from "~/features/wcp/WcpFeature.js";
 import { LegacyWcpContext } from "./LegacyWcpContext.js";
@@ -50,11 +50,12 @@ export interface CreateWcpContextParams {
 }
 
 export const createWcpContext = (params: CreateWcpContextParams = {}) => {
-    const plugin = new ContextPlugin<WcpContext>(async context => {
+    const plugin = createRegisterExtensionPlugin(async context => {
         const license = await loadLicense(params.testProjectLicense);
 
         WcpFeature.register(context.container, license);
 
+        // @ts-expect-error This is a legacy property
         context.wcp = new LegacyWcpContext(context.container);
 
         context.plugins.register(createWcpGraphQL());

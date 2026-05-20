@@ -1,3 +1,10 @@
+export {
+    FormComponentDescription,
+    FormComponentLabel,
+    FormComponentNote,
+    FormComponentErrorMessage
+} from "~/FormComponent/index.js";
+
 // Accordion
 export { Accordion } from "~/Accordion/index.js";
 

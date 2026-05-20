@@ -44,12 +44,12 @@
     "@types/dot-object": "^2.1.6",
     "@types/jsonpack": "^1.1.6",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^0.2.3",
+    "@webiny/di": "^1.0.1",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "jest-dynalite": "^3.6.1",
     "typescript": "6.0.3",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.6"
   },
   "publishConfig": {
     "access": "public",

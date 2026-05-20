@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import { css } from "@emotion/css";
 import type { ColorResult, RGBColor } from "react-color";
 import { ChromePicker } from "react-color";
-import { Tooltip } from "@webiny/ui/Tooltip/index.js";
+import { Tooltip } from "@webiny/admin-ui";
 
 // Icons
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
@@ -187,28 +187,36 @@ export const LexicalColorPicker = ({
                         key={color.id}
                         className={color.id === value ? styles.selectedColor : ""}
                     >
-                        <Tooltip content={<span>{color.label}</span>} placement="bottom">
-                            <Color
-                                style={{ backgroundColor: color.value }}
-                                onClick={() => {
-                                    onChangeComplete(color.value, color.id);
-                                }}
-                            />
-                        </Tooltip>
+                        <Tooltip
+                            content={<span>{color.label}</span>}
+                            side="bottom"
+                            trigger={
+                                <Color
+                                    style={{ backgroundColor: color.value }}
+                                    onClick={() => {
+                                        onChangeComplete(color.value, color.id);
+                                    }}
+                                />
+                            }
+                        />
                     </ColorBox>
                 );
             })}
 
             {allowCustomColor ? (
                 <ColorBox className={value && !isThemeColor ? styles.selectedColor : ""}>
-                    <Tooltip content={<span>Color picker</span>} placement="bottom">
-                        <Color
-                            style={{ backgroundColor: isThemeColor ? "#fff" : value }}
-                            onClick={togglePicker}
-                        >
-                            <IconPalette className={iconPaletteStyle} />
-                        </Color>
-                    </Tooltip>
+                    <Tooltip
+                        content={<span>Color picker</span>}
+                        side="bottom"
+                        trigger={
+                            <Color
+                                style={{ backgroundColor: isThemeColor ? "#fff" : value }}
+                                onClick={togglePicker}
+                            >
+                                <IconPalette className={iconPaletteStyle} />
+                            </Color>
+                        }
+                    />
                 </ColorBox>
             ) : null}
 

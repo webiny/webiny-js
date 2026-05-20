@@ -10,6 +10,8 @@ class CreateFlpTaskImpl implements TaskDefinition.Interface<ICreateFlpTaskInput>
         "Synchronizes the FLP catalog by creating the FLP record based on the provided folder.";
     databaseLogs = false;
 
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(private createFlp: CreateFlpUseCase.Interface) {}
 
     async run({ input, controller }: TaskDefinition.RunParams<ICreateFlpTaskInput>) {

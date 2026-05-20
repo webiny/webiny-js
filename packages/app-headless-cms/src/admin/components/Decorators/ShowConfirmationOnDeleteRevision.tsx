@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { useBind } from "@webiny/form";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/index.js";
-import { CircularProgress } from "@webiny/ui/Progress/index.js";
+import { OverlayLoader } from "@webiny/admin-ui";
 import { EntryRevisionDeletedSnackbarMessage } from "./ShowConfirmationOnDeleteRevision/EntryRevisionDeletedSnackbarMessage.js";
 import type {
     DeleteEntryRevisionParams,
@@ -28,7 +28,7 @@ const EntryMessage = ({ id, getEntryRevision }: { id: string; getEntryRevision: 
     }, []);
 
     if (!entryRevisionBind.value) {
-        return <CircularProgress label={"Checking revision..."} />;
+        return <OverlayLoader text={"Checking revision..."} />;
     }
 
     return (

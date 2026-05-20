@@ -1,7 +1,6 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import type { IFieldVM, IObjectFieldVM } from "~/features/formModel/index.js";
-import { useFormViewRenderers } from "~/features/formModel/FormView.js";
+import { createObjectFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
+import { LayoutNodeRenderer } from "~/features/formModel/FormView.js";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -9,32 +8,12 @@ declare module "../../../features/formModel/abstractions.js" {
     }
 }
 
-const isObjectFieldVM = (field: IFieldVM): field is IObjectFieldVM => {
-    return field.type === "object";
-};
-
-export const PassthroughRenderer = observer(({ field }: { field: IFieldVM }) => {
-    const { fieldRenderers } = useFormViewRenderers();
-
-    if (!isObjectFieldVM(field)) {
-        return null;
-    }
-
-    const children = field.isList ? [] : field.fields;
-
+export const PassthroughRenderer = createObjectFieldRenderer(({ field }) => {
     return (
-        <>
-            {children.map(childField => {
-                const Renderer = childField.renderer
-                    ? fieldRenderers[childField.renderer]
-                    : undefined;
-
-                if (!Renderer) {
-                    return null;
-                }
-
-                return <Renderer key={childField.name} field={childField} />;
-            })}
-        </>
+        <div className="flex flex-col gap-4">
+            {field.layout.map((node, index) => (
+                <LayoutNodeRenderer key={index} node={node} />
+            ))}
+        </div>
     );
 });

@@ -7,7 +7,7 @@ import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 import type { CmsEntryValues, CmsModel, UpdateCmsEntryInput } from "~/types/index.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
-import { mapAndCleanUpdatedInputData } from "~/crud/contentEntry/entryDataFactories/index.js";
+import { mapAndCleanUpdatedInputData } from "~/features/contentEntry/entryDataFactories/mapAndCleanUpdatedInputData.js";
 import { validateModelEntryData } from "~/crud/contentEntry/entryDataValidation.js";
 
 /**

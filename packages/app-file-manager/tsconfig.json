@@ -9,14 +9,12 @@
     { "path": "../app-headless-cms" },
     { "path": "../app-headless-cms-common" },
     { "path": "../app-websockets" },
-    { "path": "../error" },
     { "path": "../feature" },
     { "path": "../form" },
     { "path": "../plugins" },
     { "path": "../react-composition" },
     { "path": "../react-properties" },
     { "path": "../sdk" },
-    { "path": "../utils" },
     { "path": "../validation" }
   ],
   "compilerOptions": {
@@ -40,8 +38,6 @@
       "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
       "@webiny/app-websockets/*": ["../app-websockets/src/*"],
       "@webiny/app-websockets": ["../app-websockets/src"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
       "@webiny/feature/api": ["../feature/src/api/index.js"],
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
@@ -56,8 +52,6 @@
       "@webiny/react-properties": ["../react-properties/src"],
       "@webiny/sdk/*": ["../sdk/src/*"],
       "@webiny/sdk": ["../sdk/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     }

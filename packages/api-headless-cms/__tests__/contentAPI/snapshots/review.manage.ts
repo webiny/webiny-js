@@ -44,6 +44,7 @@ export default /* GraphQL */ `
         meta: ReviewApiModelMeta
         wbyAco_location: WbyAcoLocation
         live: CmsEntryLive
+        revisionDescription: String
 
         values: ReviewApiModelValues
     }
@@ -63,10 +64,6 @@ export default /* GraphQL */ `
         title: String
         description: String
         image: String
-        """
-        Custom meta data stored in the root of the entry object.
-        """
-        data: JSON
     }
 
     input ReviewApiModelInputValues {
@@ -434,6 +431,11 @@ export default /* GraphQL */ `
             revision: ID!
             data: ReviewApiModelInput!
             options: UpdateCmsEntryOptionsInput
+        ): ReviewApiModelResponse
+
+        updateReviewApiModelRevisionDescription(
+            revision: ID!
+            revisionDescription: String
         ): ReviewApiModelResponse
 
         validateReviewApiModel(

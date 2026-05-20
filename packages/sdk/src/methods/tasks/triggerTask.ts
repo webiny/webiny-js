@@ -1,7 +1,9 @@
-import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { TaskRun } from "./taskTypes.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { triggerTaskSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface TriggerTaskParams {
     /** The task definition ID to trigger. */
@@ -10,16 +12,10 @@ export interface TriggerTaskParams {
     input?: Record<string, unknown>;
 }
 
-export async function triggerTask(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: TriggerTaskParams
-): Promise<Result<TaskRun, HttpError | GraphQLError | NetworkError>> {
-    const { definition, input } = params;
-
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
-    const query = `
+export const triggerTask = createMethod(
+    triggerTaskSchema,
+    async (config, fetchFn, { definition, input }) => {
+        const query = `
         mutation TriggerTask($definition: WebinyBackgroundTaskDefinitionEnum!, $input: JSON) {
             backgroundTasks {
                 triggerTask(definition: $definition, input: $input) {
@@ -46,23 +42,23 @@ export async function triggerTask(
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, { definition, input });
+        const result = await executeGraphQL(config, fetchFn, query, { definition, input });
 
-    if (result.isFail()) {
-        return Result.fail(result.error);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const responseData = result.value;
+
+        if (responseData.backgroundTasks.triggerTask.error) {
+            return Result.fail(
+                new ApiError(
+                    responseData.backgroundTasks.triggerTask.error.message,
+                    responseData.backgroundTasks.triggerTask.error.code
+                )
+            );
+        }
+
+        return Result.ok(responseData.backgroundTasks.triggerTask.data as TaskRun);
     }
-
-    const responseData = result.value;
-
-    if (responseData.backgroundTasks.triggerTask.error) {
-        const { GraphQLError } = await import("../../errors.js");
-        return Result.fail(
-            new GraphQLError(
-                responseData.backgroundTasks.triggerTask.error.message,
-                responseData.backgroundTasks.triggerTask.error.code
-            )
-        );
-    }
-
-    return Result.ok(responseData.backgroundTasks.triggerTask.data);
-}
+);

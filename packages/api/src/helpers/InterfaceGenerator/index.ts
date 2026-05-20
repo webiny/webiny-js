@@ -3,3 +3,4 @@ export type { DateInterfaceGenerator, DateStringInterfaceGenerator } from "./dat
 export type { IdentityInterfaceGenerator } from "./identity.js";
 export type { NumericInterfaceGenerator } from "./numeric.js";
 export type { TruthfulInterfaceGenerator } from "./truthful.js";
+export type { TextInterfaceGenerator } from "./text.js";

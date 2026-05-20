@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { config as appConfig } from "@webiny/app/config.js";
-import { useWcp } from "~/index.js";
+import { useWcp } from "~/presentation/wcp/useWcp.js";
 import { Tag } from "@webiny/admin-ui";
 
 export const WebinyVersion = () => {

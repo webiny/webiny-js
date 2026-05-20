@@ -4,8 +4,8 @@ import {
     getEntryStatus,
     getItemStatusText
 } from "~/admin/plugins/fieldRenderers/ref/components/helpers.js";
-import type { TooltipProps } from "@webiny/ui/Tooltip/index.js";
-import { Tooltip } from "@webiny/ui/Tooltip/index.js";
+import type { TooltipProps } from "@webiny/admin-ui";
+import { Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as PublishedIcon } from "~/admin/icons/published.svg";
 import { ReactComponent as UnpublishedIcon } from "~/admin/icons/unpublished.svg";
 import { ReactComponent as DraftIcon } from "~/admin/icons/draft.svg";
@@ -27,7 +27,7 @@ const EntryStatusTooltip = styled("div")({
 
 interface EntryStatusProps {
     item: OptionItem | null;
-    placement?: TooltipProps["placement"];
+    placement?: TooltipProps["side"];
     className?: string;
     children?: React.ReactNode;
 }
@@ -44,11 +44,17 @@ export const EntryStatus = (props: EntryStatusProps) => {
     return (
         <EntryStatusWrapper className={className}>
             <EntryStatusTooltip>
-                <Tooltip content={tooltipText} placement={placement}>
-                    {published && <PublishedIcon />}
-                    {unpublished && <UnpublishedIcon />}
-                    {!published && !unpublished && <DraftIcon />}
-                </Tooltip>
+                <Tooltip
+                    content={tooltipText}
+                    side={placement}
+                    trigger={
+                        <>
+                            {published && <PublishedIcon />}
+                            {unpublished && <UnpublishedIcon />}
+                            {!published && !unpublished && <DraftIcon />}
+                        </>
+                    }
+                />
             </EntryStatusTooltip>
             {children && <EntryStatusText>{children}</EntryStatusText>}
         </EntryStatusWrapper>

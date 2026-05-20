@@ -20,7 +20,7 @@ All the packages are located in the `packages` folder. The package name can tell
 - `cli-*` are only used with Webiny CLI
 - `handler-*` are utility packages to create serverless function handlers
 
-Packages written in TS always extend the base `tsconfig.json` (for IDE) and `tsconfig.build.json` (for `tsc`). The base config files are located in the root of the repo. We also provide base `.babel.node.js` (for `node` packages) and `.babel.react.js` (for `react` packages).
+Packages written in TS always extend the base `tsconfig.json` (for IDE) and `tsconfig.build.json` (for `tsc`). The base config files are located in the root of the repo.
 
 ### Tooling
 
@@ -42,7 +42,7 @@ Moreover, the source code of majority of the packages is located in `src` folder
 
 So how do we solve this?
 
-Each package written with TS has a `build` script defined in its `package.json`. The script will transpile the code from `src` using `babel` and run `tsc` compiler to generate type declarations (`*.d.ts` files) and check that your types are in order. The output folder of the build script is `dist`. This folder is important.
+Each package written with TS has a `build` script defined in its `package.json`. The script transpiles the code from `src` using [rslib](https://rslib.rs/) (backed by SWC) and runs `tsc` to generate type declarations (`*.d.ts` files). The output folder of the build script is `dist`. This folder is important.
 
 Remember how `yarn` links workspaces? Can you already see the problem? Let's go step by step to make this very, very clear:
 So, you ran `yarn` in your monorepo, it did its magic and linked your packages. Then you built your TS packages to turn them into usable JS packages, by doing `yarn webiny ws run build` (this runs the `build` command on all your workspaces taking inter-package dependencies into consideration).

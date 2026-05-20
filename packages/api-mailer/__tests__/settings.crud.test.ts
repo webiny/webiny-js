@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { createContextHandler } from "./contextHandler";
 import { GetSettingsUseCase } from "~/features/GetSettings/index.js";
 import { SaveSettingsUseCase } from "~/features/SaveSettings/index.js";
@@ -26,34 +26,6 @@ vi.mock("nodemailer", () => {
 describe("Settings Transporter CRUD", () => {
     const { handle } = createContextHandler();
 
-    beforeEach(() => {
-        delete process.env["WEBINY_API_MAILER_PASSWORD_SECRET"];
-    });
-
-    // TODO: @bruno - the `catch` block is no longer triggered
-    it.skip("should not be possible to get or save settings without secret", async () => {
-        expect.assertions(2);
-        const context = await handle();
-
-        try {
-            const getSettings = context.container.resolve(GetSettingsUseCase);
-            await getSettings.execute();
-        } catch (ex) {
-            expect(ex.message).toEqual("There must be a password secret defined!");
-        }
-
-        try {
-            const saveSettings = context.container.resolve(SaveSettingsUseCase);
-            await saveSettings.execute({
-                host: "test",
-                user: "test",
-                from: "test@test.com"
-            });
-        } catch (ex) {
-            expect(ex.message).toEqual("There must be a password secret defined!");
-        }
-    });
-
     const input = {
         host: "dummy-host.webiny",
         user: "user",
@@ -62,43 +34,45 @@ describe("Settings Transporter CRUD", () => {
         replyTo: "replyTo@dummy-host.webiny"
     };
 
-    it("should not return response with password when saving settings", async () => {
-        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
-
+    it("should return stored settings without the password when saving", async () => {
         const context = await handle();
 
         const saveSettings = context.container.resolve(SaveSettingsUseCase);
         const result = await saveSettings.execute(input);
 
         expect(result.isOk()).toBe(true);
+        // The save path never returns the password — the only sanctioned path
+        // for retrieving the stored password is GetSettingsUseCase / Repository.
         expect(result.value).toEqual({
-            ...input,
+            host: input.host,
             port: 25,
-            password: ""
+            user: input.user,
+            from: input.from,
+            replyTo: input.replyTo
         });
+        expect(result.value).not.toHaveProperty("password");
     });
 
     it("should return response with password when getting settings", async () => {
-        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
-
         const context = await handle();
 
         const saveSettings = context.container.resolve(SaveSettingsUseCase);
         await saveSettings.execute(input);
 
         const getSettings = context.container.resolve(GetSettingsUseCase);
-        const result = await getSettings.execute();
+        const result = await getSettings.execute("Mailer/SmtpTransport");
 
         expect(result.isOk()).toBe(true);
         expect(result.value).toEqual({
-            ...input,
-            port: 25
+            settings: {
+                ...input,
+                port: 25
+            },
+            source: "storage"
         });
     });
 
-    it("should not return response with password when updating settings", async () => {
-        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
-
+    it("should return stored settings without the password when updating", async () => {
         const context = await handle();
 
         const saveSettings = context.container.resolve(SaveSettingsUseCase);
@@ -112,11 +86,13 @@ describe("Settings Transporter CRUD", () => {
 
         expect(updateResult.isOk()).toBe(true);
         expect(updateResult.value).toEqual({
-            ...input,
-            port: 30,
             host: "dummy-host2.webiny",
-            password: ""
+            port: 30,
+            user: input.user,
+            from: input.from,
+            replyTo: input.replyTo
         });
+        expect(updateResult.value).not.toHaveProperty("password");
 
         const updateResult2 = await saveSettings.execute({
             ...input,
@@ -125,16 +101,16 @@ describe("Settings Transporter CRUD", () => {
 
         expect(updateResult2.isOk()).toBe(true);
         expect(updateResult2.value).toEqual({
-            ...input,
-            port: 30,
             host: "dummy-host3.webiny",
-            password: ""
+            port: 30,
+            user: input.user,
+            from: input.from,
+            replyTo: input.replyTo
         });
+        expect(updateResult2.value).not.toHaveProperty("password");
     });
 
     it("should be possible to update settings without password", async () => {
-        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
-
         const context = await handle();
 
         const saveSettings = context.container.resolve(SaveSettingsUseCase);
@@ -154,27 +130,30 @@ describe("Settings Transporter CRUD", () => {
 
         expect(updateResult.isOk()).toBe(true);
         expect(updateResult.value).toEqual({
-            ...input,
-            port: 25,
             host: "dummy-host2.webiny",
-            password: ""
+            port: 25,
+            user: input.user,
+            from: input.from,
+            replyTo: input.replyTo
         });
+        expect(updateResult.value).not.toHaveProperty("password");
 
         const getSettings = context.container.resolve(GetSettingsUseCase);
-        const afterUpdate = await getSettings.execute();
+        const afterUpdate = await getSettings.execute("Mailer/SmtpTransport");
 
         expect(afterUpdate.isOk()).toBe(true);
         expect(afterUpdate.value).toEqual({
-            ...input,
-            password: input.password,
-            port: 25,
-            host: "dummy-host2.webiny"
+            settings: {
+                ...input,
+                password: input.password,
+                port: 25,
+                host: "dummy-host2.webiny"
+            },
+            source: "storage"
         });
     });
 
     it("should be possible to access settings when no permissions", async () => {
-        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
-
         const fullCtx = await handle();
 
         const saveSettings = fullCtx.container.resolve(SaveSettingsUseCase);
@@ -187,18 +166,19 @@ describe("Settings Transporter CRUD", () => {
         const context = await noAccessHandle();
 
         const getSettings = context.container.resolve(GetSettingsUseCase);
-        const result = await getSettings.execute();
+        const result = await getSettings.execute("Mailer/SmtpTransport");
 
         expect(result.isOk()).toBe(true);
         expect(result.value).toEqual({
-            ...input,
-            port: 25
+            settings: {
+                ...input,
+                port: 25
+            },
+            source: "storage"
         });
     });
 
     it("should not be possible to save settings due to no permissions", async () => {
-        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
-
         const { handle: noAccessHandle } = createContextHandler({
             permissions: []
         });

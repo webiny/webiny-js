@@ -1,3 +1,10 @@
+// IMPORTANT — do not import from this file (~/index.js) inside this package.
+// Files exported here are part of the public API, but importing ~/index.js
+// from within the package creates circular ESM dependency chains. In Babel's
+// CJS output these cycles resolved lazily; in ESM the module body executes
+// before the cycle resolves, so exported values are undefined at call time.
+// Always import directly from the source file instead (e.g. "@webiny/react-composition"
+// for makeDecoratable, "~/base/ui/Layout.js" for Layout, etc.).
 export * from "@webiny/app";
 export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/app";
 // UI components
@@ -66,7 +73,16 @@ export * from "@webiny/app/renderApp.js";
 
 // FormModel
 import "./features/formModel/renderers.js";
-export { FormModelFactory, FormModel } from "./features/formModel/abstractions.js";
+import "./features/formModel/fieldTypes/TextFieldType.js";
+import "./features/formModel/fieldTypes/NumberFieldType.js";
+import "./features/formModel/fieldTypes/BooleanFieldType.js";
+import "./features/formModel/fieldTypes/DateTimeFieldType.js";
+import "./features/formModel/fieldTypes/FileFieldType.js";
+import "./features/formModel/fieldTypes/FileUrlFieldType.js";
+import "./features/formModel/fieldTypes/ObjectFieldType.js";
+import "./features/formModel/fieldTypes/LexicalFieldType.js";
+export { FormModelFactory } from "./features/formModel/abstractions.js";
+export type { FormModel } from "./features/formModel/abstractions.js";
 export type {
     IFieldRendererRegistry,
     FieldRendererName,
@@ -74,6 +90,12 @@ export type {
     IFormModelFactory,
     IFormModelConfig,
     ILayoutBuilder,
+    ILayoutNodeBuilder,
+    IRowBuilder,
+    ISeparatorBuilder,
+    ITabsBuilder,
+    IElementBuilder,
+    IObjectBuilder,
     IFieldBuilder,
     IOptionsFieldBuilder,
     IFieldBuilderRegistry,
@@ -104,6 +126,9 @@ export {
     LayoutNodeRenderer,
     useFormViewRenderers
 } from "./features/formModel/FormView.js";
+export { FormErrors } from "./features/formModel/FormErrors.js";
+export { PresenterErrors } from "./features/formModel/PresenterErrors.js";
+
 export { useFieldRenderers } from "./features/formModel/useFieldRenderers.js";
 export { useLayoutRenderers } from "./features/formModel/useLayoutRenderers.js";
 export type {

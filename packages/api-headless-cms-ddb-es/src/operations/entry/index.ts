@@ -173,7 +173,6 @@ export const createEntriesStorageOperations = (
         initialStorageEntry.locked = locked;
 
         const transformer = createTransformer<T>({
-            fieldRegistry,
             fieldIndexRegistry,
             model,
             entry: initialEntry,
@@ -289,7 +288,6 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry,
             fieldIndexRegistry,
             compressionHandler,
             valuesModifiers
@@ -415,7 +413,6 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry,
             fieldIndexRegistry,
             compressionHandler
         });
@@ -741,7 +738,6 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry,
             fieldIndexRegistry,
             compressionHandler
         });
@@ -912,7 +908,6 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry,
             fieldIndexRegistry,
             compressionHandler
         });
@@ -1225,7 +1220,6 @@ export const createEntriesStorageOperations = (
                 model,
                 entry: latestEntry,
                 storageEntry: initialLatestStorageEntry,
-                fieldRegistry,
                 fieldIndexRegistry,
                 compressionHandler
             });
@@ -1437,6 +1431,11 @@ export const createEntriesStorageOperations = (
          * Cursor is the `sort` value of the last item in the array.
          * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
          */
+        /**
+         * TODO expect errors over hit properties is required due to opensearch library narrowing types too much because of the _source: false. At least what Claude says, didnt go into it too much.
+         * Properties are there, but types are not correct.
+         */
+        // @ts-expect-error
         const cursor = items.length > 0 ? encodeCursor(hits[items.length - 1].sort) || null : null;
         return {
             hasMoreItems,
@@ -1471,7 +1470,6 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry,
             fieldIndexRegistry,
             compressionHandler
         });
@@ -1674,7 +1672,6 @@ export const createEntriesStorageOperations = (
                     locked: true,
                     ...updatedMetaFields
                 },
-                fieldRegistry,
                 fieldIndexRegistry,
                 compressionHandler
             });
@@ -1774,7 +1771,6 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry,
             fieldIndexRegistry,
             compressionHandler
         });

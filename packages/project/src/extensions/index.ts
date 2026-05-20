@@ -10,6 +10,7 @@ import { BuildParam } from "./ApiBuildParam.js";
 import { AdminBuildParam } from "./AdminBuildParam.js";
 import { AdminExtension } from "./AdminExtension.js";
 import { ApiExtension } from "./ApiExtension.js";
+import { ApiMaxBundleSize } from "./ApiMaxBundleSize.js";
 
 // Hooks.
 import {
@@ -35,11 +36,8 @@ import {
     CoreBeforeWatch
 } from "./hooks/index.js";
 
-// Pulumi.
+// Pulumi (non-app-specific).
 import {
-    AdminPulumi,
-    ApiPulumi,
-    CorePulumi,
     ProductionEnvironments,
     PulumiResourceNamePrefix,
     CoreStackOutputValue,
@@ -60,6 +58,7 @@ export { BuildParam };
 export { AdminBuildParam };
 export { AdminExtension };
 export { ApiExtension };
+export { ApiMaxBundleSize };
 
 // Hooks.
 export { BeforeBuild };
@@ -83,10 +82,7 @@ export { CoreBeforeWatch };
 export { CoreAfterBuild };
 export { CoreAfterDeploy };
 
-// Pulumi.
-export { CorePulumi };
-export { AdminPulumi };
-export { ApiPulumi };
+// Pulumi (non-app-specific).
 export { PulumiResourceNamePrefix };
 export { ProductionEnvironments };
 export { CoreStackOutputValue };
@@ -125,10 +121,7 @@ export const definitions = [
     CoreBeforeDeploy.def,
     CoreBeforeWatch.def,
 
-    // Pulumi.
-    AdminPulumi.def,
-    ApiPulumi.def,
-    CorePulumi.def,
+    // Pulumi (non-app-specific).
     PulumiResourceNamePrefix.def,
     ProductionEnvironments.def,
     CoreStackOutputValue.def,
@@ -138,7 +131,8 @@ export const definitions = [
     BuildParam.def,
     AdminBuildParam.def,
     AdminExtension.def,
-    ApiExtension.def
+    ApiExtension.def,
+    ApiMaxBundleSize.def
 ];
 
 export { Project } from "./Project.js";

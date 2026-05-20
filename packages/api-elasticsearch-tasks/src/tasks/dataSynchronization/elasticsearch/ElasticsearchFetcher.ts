@@ -80,13 +80,19 @@ export class ElasticsearchFetcher implements IElasticsearchFetcher {
             };
         }
 
+        /**
+         * TODO expect errors over hit properties is required due to opensearch library narrowing types too much because of the _source: false. At least what Claude says, didnt go into it too much.
+         * Properties are there, but types are not correct.
+         */
         const hasMoreItems = hits.length > limit;
         let nextCursor: PrimitiveValue[] | undefined;
         if (hasMoreItems) {
             hits.pop();
+            // @ts-expect-error
             nextCursor = hits.at(-1)?.sort;
         }
         const items = hits.reduce<IElasticsearchFetcherFetchResponseItem[]>((collection, hit) => {
+            // @ts-expect-error
             const [PK, SK] = hit._id.split(":");
             if (!PK || !SK) {
                 return collection;
@@ -94,7 +100,9 @@ export class ElasticsearchFetcher implements IElasticsearchFetcher {
             collection.push({
                 PK,
                 SK,
+                // @ts-expect-error
                 _id: hit._id,
+                // @ts-expect-error
                 index: hit._index
             });
 

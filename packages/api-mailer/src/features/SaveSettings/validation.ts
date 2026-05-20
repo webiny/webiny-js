@@ -1,15 +1,18 @@
 import zod from "zod";
+import { isMailboxAddress } from "~/utils/isMailboxAddress.js";
 
 const password = zod.string().describe("Password");
 
+const mailboxAddress = zod.string().refine(isMailboxAddress, { message: "Invalid email address." });
+
 const common = {
-    from: zod.string().email().describe("Mail from"),
+    from: mailboxAddress.describe("Mail from"),
     port: zod.number().optional().nullish().describe("Port"),
     replyTo: zod
         .preprocess(
-            // We need to set empty strings to `null` before email validation kicks in
+            // We need to set empty strings to `null` before address validation kicks in.
             value => (value === "" ? null : value),
-            zod.string().email().optional().nullish()
+            mailboxAddress.optional().nullish()
         )
         .describe("Mail reply-to"),
     host: zod.string().describe("Hostname"),

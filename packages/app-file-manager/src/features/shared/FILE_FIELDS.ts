@@ -1,6 +1,7 @@
 export const FILE_FIELDS = [
     "id",
     "name",
+    "description",
     "key",
     "src",
     "type",

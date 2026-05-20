@@ -11,6 +11,8 @@ jobs:
   checkComment:
     name: Check comment for /e2e
     if: ${{ github.event.issue.pull_request }}
+    outputs:
+      comment-id: ${{ steps.create-comment.outputs.comment-id }}
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -26,6 +28,7 @@ jobs:
           allow-edits: 'false'
           permission-level: write
       - name: Create comment
+        id: create-comment
         uses: peter-evans/create-or-update-comment@v2
         with:
           issue-number: ${{ github.event.issue.number }}
@@ -33,6 +36,15 @@ jobs:
             Cypress E2E tests have been initiated (for more information, click
             [here](https://github.com/webiny/webiny-js/actions/runs/${{
             github.run_id }})). :sparkles:
+
+
+            | Database | Status | Admin URL |
+
+            | --- | --- | --- |
+
+            | DDB | 🔄 Deploying... | - |
+
+            | DDB+OS | 🔄 Deploying... | - |
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -119,6 +131,13 @@ jobs:
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
+      - name: Upload build cache artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: build-cache
+          retention-days: 1
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -163,6 +182,7 @@ jobs:
       - baseBranch
       - constants
       - e2e-wby-cms-ddb-constants
+      - checkComment
     name: E2E (DDB) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -174,6 +194,7 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-constants.outputs.pulumi-backend-url }}
+      WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -259,6 +280,10 @@ jobs:
       - name: Enable extension whitelabeling
         working-directory: new-webiny-project
         run: yarn webiny extension whitelabeling
+      - name: API bundle size limit
+        run: >-
+          echo "API bundle size limit:
+          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev
@@ -268,6 +293,26 @@ jobs:
       - name: Deploy Admin Area
         working-directory: new-webiny-project
         run: yarn webiny deploy admin --env dev
+      - name: Extract admin app URL
+        id: admin-url
+        working-directory: new-webiny-project
+        run: >-
+          echo "admin-url=$(yarn webiny output admin --env dev --json
+          2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
+      - name: Update PR comment with admin URL
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i "s@| DDB | 🔄 Deploying... | - |@| DDB | ✅ Ready | $ADMIN_URL
+          |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
       - name: Create Cypress config
         run: yarn setup-cypress --projectFolder ../new-webiny-project
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -276,6 +321,9 @@ jobs:
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install Cypress binary
+        run: cd cypress-tests && yarn cypress install
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Cypress - run installation wizard test
         run: >-
@@ -326,6 +374,7 @@ jobs:
       - baseBranch
       - constants
       - e2e-wby-cms-ddb-os-constants
+      - checkComment
     name: E2E (DDB-OS) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -337,6 +386,7 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.pulumi-backend-url }}
+      WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
       AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.OPENSEARCH_DOMAIN_NAME }}
       OPENSEARCH_ENDPOINT: ${{ secrets.OPENSEARCH_ENDPOINT }}
       OPENSEARCH_USERNAME: ${{ secrets.OPENSEARCH_USERNAME }}
@@ -436,6 +486,10 @@ jobs:
       - name: Enable extension whitelabeling
         working-directory: new-webiny-project
         run: yarn webiny extension whitelabeling
+      - name: API bundle size limit
+        run: >-
+          echo "API bundle size limit:
+          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev
@@ -452,6 +506,26 @@ jobs:
           && echo "$OUTPUT" | jq -e '.databaseSetup == "ddb+os"' || (echo
           "ERROR: Expected databaseSetup to be 'ddb+os' but got a different
           value" && exit 1)
+      - name: Extract admin app URL
+        id: admin-url
+        working-directory: new-webiny-project
+        run: >-
+          echo "admin-url=$(yarn webiny output admin --env dev --json
+          2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
+      - name: Update PR comment with admin URL
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i "s@| DDB+OS | 🔄 Deploying... | - |@| DDB+OS | ✅ Ready |
+          $ADMIN_URL |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
       - name: Create Cypress config
         run: yarn setup-cypress --projectFolder ../new-webiny-project
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -460,6 +534,9 @@ jobs:
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install Cypress binary
+        run: cd cypress-tests && yarn cypress install
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Cypress - run installation wizard test
         run: >-

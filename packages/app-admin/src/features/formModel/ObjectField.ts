@@ -1,9 +1,10 @@
 import { makeAutoObservable, runInAction, toJS } from "mobx";
 import { Field } from "./Field.js";
+import { createTemplateBuilder } from "./fieldTypes/ObjectFieldType.js";
 import type {
     IObjectFieldConfig,
     IObjectField,
-    IObjectFieldTemplatesAPI,
+    IObjectFieldTemplates,
     IListItemField,
     IField,
     IObjectFieldVM,
@@ -12,7 +13,7 @@ import type {
     IFieldBuilder,
     IFieldBuilderRegistry,
     IRule,
-    ITemplate,
+    ITemplateBuilder,
     ITemplateConfig,
     ITemplateVM,
     FieldTypeMap,
@@ -24,8 +25,6 @@ import type {
     OnBlurCallback,
     ComputedFieldCallback
 } from "./abstractions.js";
-import { createFieldBuilderRegistry } from "./FieldBuilder.js";
-import type { FormModel } from "./FormModel.js";
 
 /** Reserved key used as the template discriminator in templated object data. */
 export const TEMPLATE_DISCRIMINATOR = "_templateId";
@@ -61,14 +60,19 @@ function createFieldFromConfig(config: any, form: IFormModel | null, parentPath?
 
 function hydrateChildren(
     children: Map<string, IField>,
-    data: Record<string, unknown> | null | undefined
+    data: Record<string, unknown> | null | undefined,
+    options?: { clone?: boolean }
 ): void {
     if (!data) {
         return;
     }
     for (const [name, field] of children) {
         if (name in data) {
-            field.setValueSilent(data[name]);
+            if (options?.clone && field.config.cloneValue) {
+                field.setValueSilent(field.config.cloneValue(data[name]));
+            } else {
+                field.setValueSilent(data[name]);
+            }
         }
     }
 }
@@ -308,7 +312,7 @@ export class ObjectField implements IObjectField {
                     continue;
                 }
             }
-            result.push({ id: template.id, name: template.name, icon: template.icon });
+            result.push({ id: template.id, label: template.label, icon: template.icon });
         }
         return result;
     }
@@ -320,48 +324,37 @@ export class ObjectField implements IObjectField {
         this._rebuildChildrenForTemplate(templateId);
     }
 
-    get templates(): IObjectFieldTemplatesAPI {
+    get templates(): IObjectFieldTemplates {
         return {
-            add: (template: ITemplate) => this._addTemplate(template),
+            add: (id: string, configure: (t: ITemplateBuilder) => void) =>
+                this._addTemplate(id, configure),
             remove: (templateId: string) => this._removeTemplate(templateId)
         };
     }
 
-    private _addTemplate(template: ITemplate): void {
+    private _addTemplate(id: string, configure: (t: ITemplateBuilder) => void): void {
         if (!this.isTemplated) {
             throw new Error(
-                `Object field "${this.config.name}" is not templated; templates.add() requires the field to be defined with .templates([...]).`
+                `Object field "${this.config.name}" is not templated; templates.add() requires the field to be defined with .template().`
             );
         }
-        if (template.id === TEMPLATE_DISCRIMINATOR) {
+        if (id === TEMPLATE_DISCRIMINATOR) {
             throw new Error(
                 `Template id "${TEMPLATE_DISCRIMINATOR}" is reserved. Choose a different id.`
             );
         }
-        if (this._findTemplate(template.id)) {
-            throw new Error(`Duplicate template id "${template.id}".`);
+        if (this._findTemplate(id)) {
+            throw new Error(`Duplicate template id "${id}".`);
         }
-        const registry = createFieldBuilderRegistry();
-        const childBuilders = template.fields(registry);
-        if (TEMPLATE_DISCRIMINATOR in childBuilders) {
-            throw new Error(
-                `Template "${template.id}" defines a reserved field "${TEMPLATE_DISCRIMINATOR}". ` +
-                    `The discriminator is added automatically.`
-            );
-        }
-        this._templates.push({
-            id: template.id,
-            name: template.name,
-            icon: template.icon,
-            childBuilders,
-            visible: template.visible
-        });
+        const tb = createTemplateBuilder();
+        configure(tb);
+        this._templates.push(tb._build(id, this._form!.registry));
     }
 
     private _removeTemplate(templateId: string): void {
         if (!this.isTemplated) {
             throw new Error(
-                `Object field "${this.config.name}" is not templated; templates.remove() requires the field to be defined with .templates([...]).`
+                `Object field "${this.config.name}" is not templated; templates.remove() requires the field to be defined with .template().`
             );
         }
         const index = this._templates.findIndex(t => t.id === templateId);
@@ -457,14 +450,13 @@ export class ObjectField implements IObjectField {
         children: Map<string, IField>,
         templateId: string | null
     ): LayoutNodeVM[] {
-        const formImpl = this._form as FormModel | null;
         const layoutNodes = this.isTemplated
             ? templateId !== null
                 ? this._templateLayouts[templateId]
                 : undefined
             : (this._ownLayout ?? undefined);
-        if (layoutNodes && formImpl?.resolveChildLayout) {
-            return formImpl.resolveChildLayout(layoutNodes, children);
+        if (layoutNodes && this._form?.resolveChildLayout) {
+            return this._form.resolveChildLayout(layoutNodes, children);
         }
         // Default: one row per visible child, in insertion order.
         const fallback: LayoutNodeVM[] = [];
@@ -509,8 +501,7 @@ export class ObjectField implements IObjectField {
                 `Object field "${this.config.name}" is templated; use templates.add()/remove() to manage children. Each template owns its own fields.`
             );
         }
-        const registry = createFieldBuilderRegistry();
-        const builders = factory(registry);
+        const builders = factory(this._form!.registry);
 
         for (const [name, builder] of Object.entries(builders)) {
             if (builder === undefined) {
@@ -682,7 +673,7 @@ export class ObjectField implements IObjectField {
             this._form,
             this.qualifiedName
         );
-        hydrateChildren(children, data);
+        hydrateChildren(children, data, { clone: true });
         const key = `item_${++itemKeyCounter}`;
         this._items.splice(index + 1, 0, { key, children, templateId: source.templateId });
         const inner = this._innerLayoutFor(source.templateId);

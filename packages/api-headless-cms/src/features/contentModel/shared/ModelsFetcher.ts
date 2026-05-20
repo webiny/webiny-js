@@ -10,6 +10,7 @@ import { ModelNotFoundError, ModelPersistenceError } from "~/domain/contentModel
 import { createCacheKey } from "~/utils/index.js";
 import { ensureTypeTag } from "~/domain/contentModel/ensureTypeTag.js";
 import type { CmsModel } from "~/types/index.js";
+import { ModelFieldCompression } from "~/features/contentModel/ModelFieldCompression/index.js";
 
 /**
  * ModelsFetcherImpl - Implementation with multi-level caching.
@@ -22,10 +23,11 @@ import type { CmsModel } from "~/types/index.js";
  */
 class ModelsFetcherImpl implements FetcherAbstraction.Interface {
     public constructor(
-        private modelCache: ModelCache.Interface,
-        private pluginModelsProvider: PluginModelsProvider.Interface,
-        private storageOperations: StorageOperations.Interface,
-        private tenantContext: TenantContext.Interface
+        private readonly modelCache: ModelCache.Interface,
+        private readonly pluginModelsProvider: PluginModelsProvider.Interface,
+        private readonly storageOperations: StorageOperations.Interface,
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly modelFieldCompression: ModelFieldCompression.Interface
     ) {}
 
     async fetchAll(): Promise<Result<CmsModel[], FetcherAbstraction.Error>> {
@@ -37,15 +39,17 @@ class ModelsFetcherImpl implements FetcherAbstraction.Interface {
                 tenant: tenant.id
             });
 
-            // Fetch plugin models (with caching and access control)
-            const pluginModels = await this.pluginModelsProvider.list(tenant.id);
-
             // Try to get from cache first
             const cached = await this.modelCache.getOrSet(cacheKey, async () => {
-                return this.fetchAndMergeModels(tenant.id);
+                // Fetch plugin models (with caching and access control)
+                const pluginModels = await this.pluginModelsProvider.list(tenant.id);
+
+                const databaseModels = await this.fetchAndMergeModels(tenant.id);
+
+                return [...pluginModels, ...databaseModels];
             });
 
-            return Result.ok([...cached, ...pluginModels]);
+            return Result.ok(cached);
         } catch (error) {
             return Result.fail(new ModelPersistenceError(error as Error));
         }
@@ -69,7 +73,18 @@ class ModelsFetcherImpl implements FetcherAbstraction.Interface {
         // 1. Fetch database models (with caching)
         const dbCacheKey = createCacheKey({ tenant, id: "storage" });
         const databaseModels = await this.modelCache.getOrSet(dbCacheKey, async () => {
-            return this.storageOperations.models.list({ where: { tenant } });
+            const models = await this.storageOperations.models.list({ where: { tenant } });
+
+            return Promise.all(
+                models.map(async model => {
+                    const fields = await this.modelFieldCompression.decompress(model.fields);
+
+                    return {
+                        ...model,
+                        fields
+                    };
+                })
+            );
         });
 
         // 2. Ensure type tags on database models
@@ -85,5 +100,11 @@ class ModelsFetcherImpl implements FetcherAbstraction.Interface {
 
 export const ModelsFetcher = FetcherAbstraction.createImplementation({
     implementation: ModelsFetcherImpl,
-    dependencies: [ModelCache, PluginModelsProvider, StorageOperations, TenantContext]
+    dependencies: [
+        ModelCache,
+        PluginModelsProvider,
+        StorageOperations,
+        TenantContext,
+        ModelFieldCompression
+    ]
 });

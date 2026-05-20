@@ -226,7 +226,7 @@ describe("HTML to Lexical State Parser", () => {
                                         indent: 0,
                                         type: "wby-list-item",
                                         version: 1,
-                                        value: 1
+                                        value: 2
                                     }
                                 ],
                                 direction: null,
@@ -292,7 +292,7 @@ describe("HTML to Lexical State Parser", () => {
                                         indent: 0,
                                         type: "wby-list-item",
                                         version: 1,
-                                        value: 1
+                                        value: 2
                                     }
                                 ],
                                 direction: null,

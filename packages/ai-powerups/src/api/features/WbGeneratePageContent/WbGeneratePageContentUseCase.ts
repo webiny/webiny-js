@@ -4,9 +4,15 @@ import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { AiPromptContextBuilder } from "~/api/features/AiPromptContext/index.js";
+import { createReadProjectFileTool } from "~/api/features/AiPromptContext/ReadProjectFileTool.js";
 import { WbGeneratePageContentUseCase } from "./abstractions.js";
-import type { WbGeneratePageContentParams } from "./abstractions.js";
-import { buildSystemPrompt } from "./buildPrompt.js";
+import type {
+    WbGeneratePageContentParams,
+    GeneratePageContentResult,
+    GenerationTelemetry
+} from "./abstractions.js";
+import { buildDomainPrompt } from "./buildPrompt.js";
 
 function stripCodeFence(text: string): string {
     return text
@@ -17,13 +23,16 @@ function stripCodeFence(text: string): string {
 
 class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.Interface {
     constructor(
+        private promptContextBuilder: AiPromptContextBuilder.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private ai: Ai.Interface,
         private aiSdkTools: AiSdkTools.Interface,
         private encryption: Encryption.Interface
     ) {}
 
-    async execute(params: WbGeneratePageContentParams): Promise<Result<string, Error>> {
+    async execute(
+        params: WbGeneratePageContentParams
+    ): Promise<Result<GeneratePageContentResult, Error>> {
         const settingsResult = await this.getSettings.execute();
         if (settingsResult.isFail()) {
             return Result.fail(new Error("Failed to load AI PowerUps settings."));
@@ -38,13 +47,36 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
             );
         }
 
-        // Decrypt at point of use.
         const apiKey = this.encryption.decrypt(firstProvider.apiKeyEncrypted);
 
-        // TODO: configure this in `ai` as default behavior.
         const sdkTools = this.aiSdkTools.getToolSet();
 
-        const system = buildSystemPrompt(params.components, params.tools);
+        const context = await this.promptContextBuilder.execute({
+            projectId: params.projectId,
+            readerPersonaId: params.readerPersonaId,
+            writerPersonaId: params.writerPersonaId,
+            excludedFileIds: params.excludedFileIds
+        });
+
+        if (context.allProjectFiles.length > 0) {
+            const projectFileTool = createReadProjectFileTool(
+                context.allProjectFiles,
+                context.excludedFileIds
+            );
+            Object.assign(sdkTools, projectFileTool);
+        }
+
+        const systemText = buildDomainPrompt(params.components, params.tools) + context.toString();
+
+        const system = {
+            role: "system" as const,
+            content: systemText,
+            providerOptions: {
+                anthropic: {
+                    cacheControl: { type: "ephemeral" }
+                }
+            }
+        };
 
         try {
             const aiResult = await this.ai.generateText({
@@ -57,19 +89,38 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
                 toolChoice: "auto",
                 prompt: params.prompt,
                 ...(Object.keys(sdkTools).length > 0
-                    ? { tools: sdkTools, stopWhen: stepCountIs(10) }
+                    ? { tools: sdkTools, stopWhen: stepCountIs(20) }
                     : {})
             });
 
-            // result.text might be empty if the last step was a tool call.
-            // Find the last step that has text content:
             const text =
                 aiResult.text ||
                 (aiResult.steps.filter(step => step.text.length > 0).pop()?.text ?? "");
 
             const output = stripCodeFence(text);
 
-            return Result.ok(output);
+            const filesRead = new Set<string>();
+            let toolCallsMade = 0;
+            for (const step of aiResult.steps) {
+                for (const call of step.toolCalls) {
+                    toolCallsMade++;
+                    if (call.toolName === "read_project_file") {
+                        const input = call.input as { fileId?: string };
+                        if (input.fileId) {
+                            filesRead.add(input.fileId);
+                        }
+                    }
+                }
+            }
+
+            const telemetry: GenerationTelemetry = {
+                filesRead: [...filesRead],
+                cacheHit: context.cacheHit,
+                toolCallsMade,
+                totalSteps: aiResult.steps.length
+            };
+
+            return Result.ok({ output, telemetry });
         } catch (error) {
             return Result.fail(
                 new Error(
@@ -83,5 +134,5 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
 export const WbGeneratePageContentUseCaseImplementation =
     WbGeneratePageContentUseCase.createImplementation({
         implementation: WbGeneratePageContentUseCaseImpl,
-        dependencies: [GetSettingsUseCase, Ai, AiSdkTools, Encryption]
+        dependencies: [AiPromptContextBuilder, GetSettingsUseCase, Ai, AiSdkTools, Encryption]
     });

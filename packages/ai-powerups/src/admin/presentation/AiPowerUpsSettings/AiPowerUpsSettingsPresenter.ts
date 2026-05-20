@@ -1,17 +1,18 @@
 import { makeAutoObservable, computed, runInAction } from "mobx";
 import { FormModelFactory, FormModel } from "@webiny/app-admin";
-import type { LayoutNode } from "@webiny/app-admin/features/formModel/abstractions.js";
+import type { ILayoutNodeBuilder } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { GetSettingsUseCase } from "../../features/settings/getSettings/abstractions.js";
 import { UpdateSettingsUseCase } from "../../features/settings/updateSettings/abstractions.js";
 import { AiPowerUpsSettingsPresenter as PresenterAbstraction } from "./abstractions.js";
 import { AiPowerUpsSettingsGroup } from "./settingsGroup.js";
+import { SettingsValidationError } from "~/admin/domain/errors.js";
 import type { IAiPowerUpsSettings } from "~/admin/features/settings/shared/abstractions.js";
 
 type FieldsFactory = (
     fields: FormModelFactory.FieldBuilderRegistry
 ) => Record<string, FormModelFactory.FieldBuilder>;
 
-type LayoutFactory = (layout: FormModelFactory.LayoutBuilder) => LayoutNode[];
+type LayoutFactory = (layout: FormModelFactory.LayoutBuilder) => ILayoutNodeBuilder[];
 
 interface CollectedGroup {
     group: AiPowerUpsSettingsGroup.Interface;
@@ -23,7 +24,7 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
     private loading = false;
     private saving = false;
     private form: FormModel.Interface<IAiPowerUpsSettings> | null = null;
-    private error: string | null = null;
+    private errors: string[] = [];
 
     constructor(
         private factory: FormModelFactory.Interface,
@@ -39,13 +40,13 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
             loading: this.loading,
             saving: this.saving,
             form: this.form ? this.form.vm : null,
-            error: this.error
+            errors: this.errors
         };
     }
 
     async init(): Promise<void> {
         this.loading = true;
-        this.error = null;
+        this.errors = [];
 
         try {
             const data = await this.getSettings.execute();
@@ -55,7 +56,7 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
             });
         } catch (err) {
             runInAction(() => {
-                this.error = err instanceof Error ? err.message : "Failed to load settings.";
+                this.errors = [err instanceof Error ? err.message : "Failed to load settings."];
             });
         } finally {
             runInAction(() => {
@@ -74,20 +75,21 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
             return false;
         }
 
-        console.log("form data", data);
-
         runInAction(() => {
             this.saving = true;
-            this.error = null;
+            this.errors = [];
         });
 
         try {
             await this.updateSettings.execute(data);
             return true;
         } catch (err) {
-            console.log(err);
             runInAction(() => {
-                this.error = err instanceof Error ? err.message : "Failed to save settings.";
+                if (err instanceof SettingsValidationError) {
+                    this.errors = Object.values(err.data.invalidFields).map(e => e.message);
+                } else {
+                    this.errors = [err instanceof Error ? err.message : "Failed to save settings."];
+                }
             });
             return false;
         } finally {
@@ -95,6 +97,14 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
                 this.saving = false;
             });
         }
+    }
+
+    importData(data: Record<string, unknown>): void {
+        if (!this.form) {
+            return;
+        }
+        const current = this.form.getData();
+        this.form.setData({ ...current, ...data } as IAiPowerUpsSettings);
     }
 
     private collectGroups(): CollectedGroup[] {
@@ -123,7 +133,7 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
     private buildForm() {
         const collected = this.collectGroups();
 
-        return this.factory.create<IAiPowerUpsSettings>({
+        const form = this.factory.create<IAiPowerUpsSettings>({
             fields: fields => {
                 const result: Record<string, FormModelFactory.FieldBuilder> = {};
                 for (const { group, fieldsFn } of collected) {
@@ -143,21 +153,26 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
                     return [];
                 }
 
-                return [
-                    layout.tabs({
-                        id: "settings-tabs",
-                        renderer: "tabs-vertical",
-                        tabs: collected.map(({ group }) => ({
-                            id: group.name,
-                            label: group.label,
-                            description: group.description,
-                            icon: group.icon,
-                            layout: l => [l.row(group.name)]
-                        }))
-                    })
-                ];
+                const tabsBuilder = layout.tabs("settings-tabs").renderer("tabsVertical");
+
+                for (const { group } of collected) {
+                    tabsBuilder.tab(group.name, tab => {
+                        tab.label(group.label);
+                        if (group.description) {
+                            tab.description(group.description);
+                        }
+                        if (group.icon) {
+                            tab.icon(group.icon);
+                        }
+                        tab.layout(l => [l.row(group.name)]);
+                    });
+                }
+
+                return [tabsBuilder];
             }
         });
+
+        return form;
     }
 }
 

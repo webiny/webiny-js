@@ -4,9 +4,10 @@ export * from "./TenantManagerSdk.js";
 export * from "./FileManagerSdk.js";
 export * from "./LanguagesSdk.js";
 export * from "./TasksSdk.js";
+export * from "./WebhooksSdk.js";
 export * from "./types.js";
 export { Result } from "./Result.js";
-export { HttpError, GraphQLError, NetworkError } from "./errors.js";
+export { HttpError, ApiError, NetworkError, ValidationError } from "./errors.js";
 
 // Export shared CMS types.
 export type {
@@ -109,3 +110,28 @@ export type { ListLogsParams } from "./methods/tasks/listLogs.js";
 export type { TriggerTaskParams } from "./methods/tasks/triggerTask.js";
 
 export type { AbortTaskParams } from "./methods/tasks/abortTask.js";
+
+// Export Webhooks types.
+export type { Webhook, WebhookDelivery, WebhookEvent } from "./methods/webhooks/webhooksTypes.js";
+
+// Export types from webhooks methods.
+export type { GetWebhookParams } from "./methods/webhooks/getWebhook.js";
+
+export type { ListWebhooksParams, ListWebhooksResult } from "./methods/webhooks/listWebhooks.js";
+
+export type { CreateWebhookParams } from "./methods/webhooks/createWebhook.js";
+
+export type { UpdateWebhookParams } from "./methods/webhooks/updateWebhook.js";
+
+export type { DeleteWebhookParams } from "./methods/webhooks/deleteWebhook.js";
+
+export type { GetWebhookDeliveryParams } from "./methods/webhooks/getWebhookDelivery.js";
+
+export type {
+    ListWebhookDeliveriesParams,
+    ListWebhookDeliveriesResult
+} from "./methods/webhooks/listWebhookDeliveries.js";
+
+export type { ResendWebhookDeliveryParams } from "./methods/webhooks/resendWebhookDelivery.js";
+
+export type { TriggerWebhookParams } from "./methods/webhooks/triggerWebhook.js";

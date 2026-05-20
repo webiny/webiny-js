@@ -48,27 +48,23 @@ export class FormModelPhase8c1Presenter {
             }),
             layout: layout => [
                 layout.object("page", l => [
-                    l.tabs({
-                        id: "pageTabs",
-                        tabs: [
-                            {
-                                id: "general",
-                                label: "General",
-                                layout: l => [l.row("title", "slug"), l.row("body")]
-                            },
-                            {
-                                id: "seo",
-                                label: "SEO",
-                                layout: l => [
-                                    l.object("seo", inner => [
-                                        inner.row("metaTitle"),
-                                        inner.row("metaDescription"),
-                                        inner.object("og", og => [og.row("ogTitle", "ogImage")])
-                                    ])
-                                ]
-                            }
-                        ]
-                    })
+                    l
+                        .tabs("pageTabs")
+                        .tab("general", tab => {
+                            tab.label("General").layout(l => [
+                                l.row("title", "slug"),
+                                l.row("body")
+                            ]);
+                        })
+                        .tab("seo", tab => {
+                            tab.label("SEO").layout(l => [
+                                l.object("seo", inner => [
+                                    inner.row("metaTitle"),
+                                    inner.row("metaDescription"),
+                                    inner.object("og", og => [og.row("ogTitle", "ogImage")])
+                                ])
+                            ]);
+                        })
                 ])
             ]
         });

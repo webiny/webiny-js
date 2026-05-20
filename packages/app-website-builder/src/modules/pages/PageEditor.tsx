@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useRoute, useRouter } from "@webiny/app-admin";
+import { useRoute } from "@webiny/app-admin";
 import { DocumentEditor } from "~/DocumentEditor/DocumentEditor.js";
-import { useCreatePageRevisionFrom, useGetPage } from "~/features/pages/index.js";
+import { useGetPage } from "~/features/pages/index.js";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { useGetWebsiteBuilderSettings } from "~/features/index.js";
 import { DefaultPageEditorConfig } from "./PageEditor/DefaultPageEditorConfig.js";
 import { DefaultEditorConfig } from "~/BaseEditor/index.js";
 import { EDITOR_NAME } from "~/modules/pages/constants.js";
-import { WbPageStatus } from "~/constants.js";
 import type { EditorPage } from "@webiny/website-builder-sdk";
 import type { Page } from "~/domain/Page/index.js";
 import { Routes } from "~/routes.js";
+import { WbPageStatus } from "~/constants.js";
+import { RevisionListDrawer } from "./PageEditor/Revisions/RevisionListDrawer.js";
+import { PageEditorDrawerProvider } from "./PageEditor/Revisions/usePageEditorDrawer.js";
 
 const getPageDataFromPage = (page: Page): EditorPage => {
     return {
@@ -32,28 +34,18 @@ export const PageEditor = () => {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState<EditorPage | null>(null);
 
-    const { goToRoute } = useRouter();
+    const [isRevisionListOpen, openRevisionList] = useState(false);
+
     const { route } = useRoute(Routes.Pages.Editor);
 
     const { getPage } = useGetPage();
-    const { createPageRevisionFrom } = useCreatePageRevisionFrom();
 
     useEffect(() => {
         setLoading(true);
         Promise.all([
             getSettings(),
             getPage({ id: route.params.id }).then(page => {
-                if (page.status === WbPageStatus.Draft) {
-                    setPage(getPageDataFromPage(page));
-                    return;
-                }
-
-                return createPageRevisionFrom({ id: page.id }).then(page => {
-                    goToRoute(Routes.Pages.Editor, {
-                        id: page.id,
-                        folderId: page.location.folderId
-                    });
-                });
+                setPage(getPageDataFromPage(page));
             })
         ]).then(() => {
             setLoading(false);
@@ -65,9 +57,21 @@ export const PageEditor = () => {
     }
 
     return (
-        <DocumentEditor<EditorPage> key={page.id} document={page} name={EDITOR_NAME}>
-            <DefaultEditorConfig />
-            <DefaultPageEditorConfig />
-        </DocumentEditor>
+        <PageEditorDrawerProvider
+            openRevisionList={openRevisionList}
+            isRevisionListOpen={isRevisionListOpen}
+        >
+            <DocumentEditor<EditorPage>
+                key={page.id}
+                document={page}
+                name={EDITOR_NAME}
+                readOnly={page.status !== WbPageStatus.Draft}
+            >
+                <DefaultEditorConfig />
+                <DefaultPageEditorConfig />
+
+                <RevisionListDrawer page={page} />
+            </DocumentEditor>
+        </PageEditorDrawerProvider>
     );
 };

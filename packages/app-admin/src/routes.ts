@@ -6,14 +6,9 @@ export const Routes = {
         path: "/"
     }),
 
-    FileManager: new Route({
-        name: "FileManager",
-        path: "/file-manager"
-    }),
-
     FormModelDemo: new Route({
         name: "FormModelDemo",
-        path: "/form-model-demo"
+        path: "/_/form-model-demo"
     }),
 
     CatchAll: new Route({

@@ -7,8 +7,9 @@ import {
     ScanExportsFoldersService,
     UiService
 } from "../../abstractions/index.js";
+import { computeInputsHash, INPUTS_HASH_FIELD } from "./WebinyPkgMeta.js";
 
-const ambientDeclaration = (file: string) => !file.endsWith(".d.ts");
+const ambientDeclaration = (file: string) => !file.includes("/ambient/");
 
 export interface GenerateWebinyPkg {
     execute(): Promise<void>;
@@ -39,15 +40,17 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
         }
 
         // Copy static files from src-static to src (if src-static exists).
-        const webinySrcStaticPath = wbyPkg.paths.packageFolder.join("src-static").toString();
-        if (fs.existsSync(webinySrcStaticPath)) {
-            this.copyDirectoryRecursive(webinySrcStaticPath, webinySrcPath);
-            // Generate exports for static files
-            this.generateExportsForStaticFiles(webinySrcStaticPath, wbyPkg);
+        const srcStaticPath = wbyPkg.paths.packageFolder.join("src-static").toString();
+        if (fs.existsSync(srcStaticPath)) {
+            this.copyDirectoryRecursive(srcStaticPath, webinySrcPath);
+            this.generateExportsForStaticFiles(srcStaticPath, wbyPkg);
         }
 
         // Copy icons from packages/icons/dist to packages/webiny/src/admin/icons
         const iconsPkg = fullPackagesList.find(pkg => pkg.packageJson.name === "@webiny/icons");
+        const iconsSourcePath = iconsPkg
+            ? iconsPkg.paths.packageFolder.join("dist").toString()
+            : null;
         if (iconsPkg) {
             this.copyIconsToWebinyPackage(iconsPkg, wbyPkg);
         }
@@ -91,6 +94,15 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
 
             this.ui.debug(` Generated: %s`, exportKey);
         }
+
+        const iconsSrcPath = iconsPkg ? iconsPkg.paths.packageFolder.join("src").toString() : null;
+
+        // @ts-ignore
+        wbyPkg.packageJson[INPUTS_HASH_FIELD] = computeInputsHash({
+            exportFilesMap,
+            iconsSrcPath,
+            srcStaticPath
+        });
 
         fs.writeFileSync(
             wbyPkg.paths.packageJsonFile.toString(),

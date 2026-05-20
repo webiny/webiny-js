@@ -123,50 +123,49 @@ export const Entry = ({
             ) : null}
             <div
                 className={
-                    "grid grid-cols-[auto_1fr_auto] items-center gap-lg text-sm text-neutral-muted w-full min-w-0"
+                    "grid grid-cols-[auto_1fr] items-start @lg:items-center gap-lg text-sm text-neutral-muted w-full min-w-0"
                 }
             >
                 <Image title={entry.title} src={entry.image} />
-                <div className={"overflow-hidden"}>
-                    <div>{entry.model.name}</div>
+                <div
+                    className={
+                        "flex flex-col @lg:flex-row @lg:items-center @lg:justify-between gap-sm min-w-0"
+                    }
+                >
+                    <div className={"min-w-0"}>
+                        <div className={"truncate"}>{entry.model.name}</div>
 
-                    <div
-                        title={entry.title}
-                        className={
-                            "text-md text-neutral-primary font-semibold mb-sm text-ellipsis overflow-hidden whitespace-nowrap block"
-                        }
-                    >
-                        {entry.title}
+                        <div
+                            title={entry.title}
+                            className={
+                                "text-md text-neutral-primary font-semibold mb-sm text-ellipsis overflow-hidden whitespace-nowrap block"
+                            }
+                        >
+                            {entry.title}
+                        </div>
+
+                        <div>
+                            <span className={"w-[60px] inline-block"}>Created:</span>
+                            <span>
+                                {entry.createdBy.displayName},{" "}
+                                <TimeAgo datetime={entry.createdOn} />
+                            </span>
+                        </div>
                     </div>
+                    <div className={"flex items-center gap-sm shrink-0"}>
+                        <Tag
+                            content={
+                                <>
+                                    {entryStatusLabel}&nbsp;
+                                    <Text size={"sm"} className={"text-neutral-muted"}>
+                                        ({entryRevision})
+                                    </Text>
+                                </>
+                            }
+                            variant={"neutral-base-outline"}
+                        />
 
-                    <div>
-                        <span className={"w-[60px] inline-block"}>Created:</span>
-                        <span>
-                            {entry.createdBy.displayName}, <TimeAgo datetime={entry.createdOn} />
-                        </span>
-                    </div>
-                    {/* <div>
-                        <span className={"w-[60px] inline-block"}>Location:</span>
-                        <span>
-                            Home / Content / Preview / ... / Manage / Retail / Local / Products
-                        </span>
-                    </div>*/}
-                </div>
-                <div className={"flex items-center gap-sm"}>
-                    <Tag
-                        content={
-                            <>
-                                {entryStatusLabel}&nbsp;
-                                <Text size={"sm"} className={"text-neutral-muted"}>
-                                    ({entryRevision})
-                                </Text>
-                            </>
-                        }
-                        variant={"neutral-base-outline"}
-                    />
-
-                    {!disabled && placement == "multiRef" ? (
-                        <>
+                        {!disabled && placement == "multiRef" ? (
                             <div className={"flex gap-xs"}>
                                 <IconButton
                                     disabled={!onMoveUpClick}
@@ -183,31 +182,37 @@ export const Entry = ({
                                     onClick={onMoveDown}
                                 />
                             </div>
-                        </>
-                    ) : null}
+                        ) : null}
 
-                    {!disabled ? (
-                        <DropdownMenu
-                            trigger={
-                                <IconButton variant={"ghost"} size={"sm"} icon={<MoreVertIcon />} />
-                            }
-                        >
-                            <DropdownMenu.Link
-                                icon={<OpenInNewIcon />}
-                                text={"Open in new tab"}
-                                to={link}
-                                target={"_blank"}
-                            />
-
-                            {onRemove && (
-                                <DropdownMenu.Item
-                                    icon={<RemoveIcon />}
-                                    text={placement === "multiRef" ? "Remove from list" : "Remove"}
-                                    onClick={() => onRemove(entry.id)}
+                        {!disabled ? (
+                            <DropdownMenu
+                                trigger={
+                                    <IconButton
+                                        variant={"ghost"}
+                                        size={"sm"}
+                                        icon={<MoreVertIcon />}
+                                    />
+                                }
+                            >
+                                <DropdownMenu.Link
+                                    icon={<OpenInNewIcon />}
+                                    text={"Open in new tab"}
+                                    to={link}
+                                    target={"_blank"}
                                 />
-                            )}
-                        </DropdownMenu>
-                    ) : null}
+
+                                {onRemove && (
+                                    <DropdownMenu.Item
+                                        icon={<RemoveIcon />}
+                                        text={
+                                            placement === "multiRef" ? "Remove from list" : "Remove"
+                                        }
+                                        onClick={() => onRemove(entry.id)}
+                                    />
+                                )}
+                            </DropdownMenu>
+                        ) : null}
+                    </div>
                 </div>
             </div>
         </div>

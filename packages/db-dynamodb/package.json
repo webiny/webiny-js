@@ -21,7 +21,7 @@
     "@webiny/feature": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "date-fns": "^4.1.0",
+    "date-fns": "^4.2.1",
     "dot-prop": "^10.1.0",
     "dynamodb-toolbox": "^0.9.5",
     "fuse.js": "7.3.0",
@@ -30,13 +30,13 @@
   "devDependencies": {
     "@types/is-number": "^7.0.5",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^0.2.3",
+    "@webiny/di": "^1.0.1",
     "@webiny/handler": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "jest-dynalite": "^3.6.1",
     "rimraf": "^6.1.3",
     "typescript": "6.0.3",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.6"
   },
   "publishConfig": {
     "access": "public",

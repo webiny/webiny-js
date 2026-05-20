@@ -1,7 +1,7 @@
 import React from "react";
 import debounce from "lodash/debounce.js";
 import { OverlayLayout } from "@webiny/app-admin";
-import { Scrollbar } from "@webiny/ui/Scrollbar/index.js";
+import { Scrollbar } from "@webiny/admin-ui";
 import { Title } from "~/Presentation/components/Title/index.js";
 import { SearchInput } from "~/Presentation/components/SearchInput/index.js";
 import { Empty } from "~/Presentation/components/Empty/index.js";

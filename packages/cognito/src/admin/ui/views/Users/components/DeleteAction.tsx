@@ -1,8 +1,7 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { useSecurity } from "@webiny/app-admin";
-import { Tooltip } from "@webiny/ui/Tooltip/index.js";
-import { DeleteIcon } from "@webiny/ui/List/DataList/icons/index.js";
+import { Tooltip, DeleteIcon } from "@webiny/admin-ui";
 import type { UserItem } from "~/admin/ui/UserItem.js";
 
 const t = i18n.ns("app-identity/admin/users/data-list");
@@ -18,22 +17,20 @@ export const DeleteAction = ({ item, onClick }: DeleteActionProps) => {
     if (identity.id === item.id) {
         return (
             <Tooltip
-                placement={"bottom"}
+                side={"bottom"}
                 content={<span>{t`You can't delete your own user account.`}</span>}
-            >
-                <DeleteIcon disabled />
-            </Tooltip>
+                trigger={<DeleteIcon disabled />}
+            />
         );
     }
 
     if (item.external) {
         return (
             <Tooltip
-                placement={"bottom"}
+                side={"bottom"}
                 content={<span>{t`You can't delete external users.`}</span>}
-            >
-                <DeleteIcon disabled />
-            </Tooltip>
+                trigger={<DeleteIcon disabled />}
+            />
         );
     }
 

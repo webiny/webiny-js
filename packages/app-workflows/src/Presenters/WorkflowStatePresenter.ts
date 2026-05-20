@@ -19,6 +19,7 @@ export interface IWorkflowStatePresenterParams {
     targetRevisionId: string;
     title: string;
     identity: IIdentity | null;
+    disabled: boolean;
 }
 
 export class WorkflowStatePresenter implements IWorkflowStatePresenter {
@@ -29,6 +30,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     private readonly targetRevisionId;
     private readonly title;
     private readonly identity;
+    private readonly disabled;
     private state: IWorkflowStateModel | null | undefined = undefined;
     private dialog: IWorkflowStatePresenterViewModelDialog | null = null;
     step: IWorkflowStateStepModel | null = null;
@@ -83,6 +85,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         this.title = params.title;
         this.identity = params.identity;
         this.targetRevisionId = params.targetRevisionId;
+        this.disabled = params.disabled;
 
         makeAutoObservable(this);
 
@@ -90,6 +93,9 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     }
 
     private async init(): Promise<void> {
+        if (this.disabled) {
+            return;
+        }
         const workflows = await this.workflowsRepository.listWorkflows({
             where: {
                 app: this.app

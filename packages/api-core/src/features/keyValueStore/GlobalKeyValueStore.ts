@@ -29,7 +29,9 @@ class GlobalKeyValueStoreImpl implements ServiceAbstraction.Interface {
         options?: IGlobalKeyValueStoreOptions
     ): Promise<Result<void, ServiceAbstraction.Error>> {
         const scope = this.getScope(options);
-        return this.repository.set(key, value, scope);
+        return this.repository.set(key, value, scope, {
+            expiresAt: options?.expiresAt
+        });
     }
 
     async delete(

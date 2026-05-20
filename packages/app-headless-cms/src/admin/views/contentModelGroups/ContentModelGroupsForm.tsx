@@ -22,7 +22,7 @@ import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18
 import { useMutation, useQuery } from "../../hooks/index.js";
 import * as GQL from "./graphql.js";
 import { usePermission } from "~/admin/hooks/index.js";
-import { Tooltip } from "@webiny/ui/Tooltip/index.js";
+import { Tooltip } from "@webiny/admin-ui";
 import type {
     CmsGroup,
     CreateCmsGroupMutationResponse,
@@ -225,15 +225,16 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
                                 ) : (
                                     <Tooltip
                                         content={"Content model group is registered via a plugin."}
-                                        placement={"bottom"}
-                                    >
-                                        <Button
-                                            disabled
-                                            variant={"primary"}
-                                            text={t`Save`}
-                                            data-testid={"cms.form.group.submit"}
-                                        />
-                                    </Tooltip>
+                                        side={"bottom"}
+                                        trigger={
+                                            <Button
+                                                disabled
+                                                variant={"primary"}
+                                                text={t`Save`}
+                                                data-testid={"cms.form.group.submit"}
+                                            />
+                                        }
+                                    />
                                 )}
                             </React.Fragment>
                         )}

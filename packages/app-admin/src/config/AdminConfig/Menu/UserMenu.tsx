@@ -1,5 +1,5 @@
 import React from "react";
-import { makeDecoratable } from "~/index.js";
+import { makeDecoratable } from "@webiny/react-composition";
 import { ConnectToProperties, Property, useIdGenerator } from "@webiny/react-properties";
 import { UserMenuItem } from "./UserMenu/UserMenuItem.js";
 import { UserMenuLink } from "./UserMenu/UserMenuLink.js";

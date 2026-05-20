@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Bind } from "@webiny/form";
-import { AutoComplete as BaseAutocomplete } from "@webiny/ui/AutoComplete/index.js";
+import { AutoComplete as AdminAutoComplete } from "@webiny/admin-ui";
 import type { RefPresenterViewModel } from "./RefPresenter.js";
 
 export interface AutoCompleteProps {
@@ -10,34 +10,46 @@ export interface AutoCompleteProps {
 }
 
 export const AutoComplete = (props: AutoCompleteProps) => {
+    const options = useMemo(
+        () =>
+            props.vm.options.map((opt: any) => ({
+                label: opt.name ?? opt.id,
+                value: opt.entryId ?? opt.id,
+                item: opt
+            })),
+        [props.vm.options]
+    );
+
+    const currentValue = useMemo(() => {
+        const sel = props.vm.selected as any;
+        if (!sel) {
+            return undefined;
+        }
+        return sel.entryId ?? sel.id;
+    }, [props.vm.selected]);
+
     return (
         <Bind name={props.name}>
             {({ onChange, validation }) => (
-                <BaseAutocomplete
+                <AdminAutoComplete
                     label={"Value"}
-                    value={props.vm.selected}
+                    value={currentValue}
                     validation={validation}
-                    onChange={(_, selection) => {
-                        if (!selection) {
+                    onValueChange={(value: string) => {
+                        const opt = options.find(o => o.value === value);
+                        if (!opt?.item) {
                             return;
                         }
-
-                        /**
-                         * We currently store the value of the FieldDTO as a string.
-                         * For REF fields, we need to save both modelId and entryId to load this back when showing pre-populated options.
-                         * To achieve this, we'll store them in an object and convert it into a JSON string.
-                         */
                         onChange(
                             JSON.stringify({
-                                entryId: selection.entryId,
-                                modelId: selection.modelId
+                                entryId: opt.item.entryId ?? opt.item.id,
+                                modelId: opt.item.modelId
                             })
                         );
                     }}
-                    onInput={props.onInput}
-                    options={props.vm.options}
+                    onValueSearch={props.onInput}
+                    options={options}
                     loading={props.vm.loading}
-                    valueProp={"entryId"}
                 />
             )}
         </Bind>

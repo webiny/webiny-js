@@ -1,7 +1,12 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
+import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { listEntriesSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface ListEntriesParams {
     modelId: string;
@@ -40,16 +45,14 @@ export interface ListEntriesResult<TValues extends CmsEntryValues = CmsEntryValu
  * @param params.preview - When true, uses preview API to access unpublished/draft content. When false (default), uses read API for published content only.
  * @returns Result containing list of entries with pagination metadata or an error
  */
-export async function listEntries<TValues extends CmsEntryValues = CmsEntryValues>(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: ListEntriesParams
-): Promise<Result<ListEntriesResult<TValues>, HttpError | GraphQLError | NetworkError>> {
-    const { modelId, where, sort, limit = 10, after, search, fields, preview } = params;
-
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
-    const query = `
+const _impl = createMethod(
+    listEntriesSchema,
+    async (
+        config,
+        fetchFn,
+        { modelId, where, sort, limit = 10, after, search, fields, preview }
+    ) => {
+        const query = `
         query ListEntries(
             $modelId: ID!
             $where: JSON
@@ -86,35 +89,47 @@ export async function listEntries<TValues extends CmsEntryValues = CmsEntryValue
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, {
-        modelId,
-        where,
-        sort,
-        limit,
-        after,
-        search,
-        fields,
-        preview
-    });
+        const result = await executeGraphQL(config, fetchFn, query, {
+            modelId,
+            where,
+            sort,
+            limit,
+            after,
+            search,
+            fields,
+            preview
+        });
 
-    if (result.isFail()) {
-        return Result.fail(result.error);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const responseData = result.value;
+
+        if (responseData.cms.listEntries.error) {
+            return Result.fail(
+                new ApiError(
+                    transformFieldErrors(responseData.cms.listEntries.error.message, fields),
+                    responseData.cms.listEntries.error.code
+                )
+            );
+        }
+
+        return Result.ok({
+            data: responseData.cms.listEntries.data,
+            meta: responseData.cms.listEntries.meta
+        });
     }
+);
 
-    const responseData = result.value;
-
-    if (responseData.cms.listEntries.error) {
-        const { GraphQLError } = await import("../../errors.js");
-        return Result.fail(
-            new GraphQLError(
-                responseData.cms.listEntries.error.message,
-                responseData.cms.listEntries.error.code
-            )
-        );
-    }
-
-    return Result.ok({
-        data: responseData.cms.listEntries.data,
-        meta: responseData.cms.listEntries.meta
-    });
+export function listEntries<TValues extends CmsEntryValues = CmsEntryValues>(
+    config: WebinyConfig,
+    fetchFn: typeof fetch,
+    params: ListEntriesParams
+): Promise<
+    Result<ListEntriesResult<TValues>, HttpError | ApiError | NetworkError | ValidationError>
+> {
+    return _impl(config, fetchFn, params) as Promise<
+        Result<ListEntriesResult<TValues>, HttpError | ApiError | NetworkError | ValidationError>
+    >;
 }

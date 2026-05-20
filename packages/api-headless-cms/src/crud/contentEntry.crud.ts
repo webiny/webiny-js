@@ -15,7 +15,6 @@ import type {
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
-import type { GenericRecord } from "@webiny/api/types.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "~/features/contentEntry/CreateEntryRevisionFrom/abstractions.js";
 import { UpdateEntryUseCase } from "~/features/contentEntry/UpdateEntry/index.js";
@@ -41,6 +40,7 @@ import { DeleteMultipleEntriesUseCase } from "~/features/contentEntry/DeleteMult
 import { RestoreEntryFromBinUseCase } from "~/features/contentEntry/RestoreEntryFromBin/abstractions.js";
 import { UnpublishEntryUseCase } from "~/features/contentEntry/UnpublishEntry/index.js";
 import { GetUniqueFieldValuesUseCase } from "~/features/contentEntry/GetUniqueFieldValues/index.js";
+import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/UpdateRevisionDescription/index.js";
 
 interface CreateContentEntryCrudParams {
     context: CmsContext;
@@ -104,12 +104,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         model: CmsModel,
         id: string,
         rawInput: UpdateCmsEntryInput<T>,
-        metaInput?: GenericRecord,
         options?: UpdateCmsEntryOptionsInput
     ): Promise<CmsEntry<T>> => {
         // Delegate to new UpdateEntry use case
         const useCase = context.container.resolve(UpdateEntryUseCase);
-        const result = await useCase.execute<T>(model, id, rawInput, metaInput, options);
+        const result = await useCase.execute<T>(model, id, rawInput, options);
 
         if (result.isFail()) {
             // Convert Result error to WebinyError for backward compatibility
@@ -117,6 +116,28 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             throw new WebinyError(
                 error.message || "Could not update existing entry.",
                 error.code || "UPDATE_ERROR"
+            );
+        }
+
+        return result.value;
+    };
+
+    const updateRevisionDescription: CmsEntryContext["updateRevisionDescription"] = async <
+        T extends CmsEntryValues = CmsEntryValues
+    >(
+        model: CmsModel,
+        id: string,
+        revisionDescription: string | undefined
+    ) => {
+        const useCase = context.container.resolve(UpdateRevisionDescriptionUseCase);
+        const result = await useCase.execute<T>(model, id, revisionDescription);
+
+        if (result.isFail()) {
+            // Convert Result error to WebinyError for backward compatibility
+            const error = result.error;
+            throw new WebinyError(
+                error.message || "Could not update revision description of the revision.",
+                error.code || "UPDATE_REVISION_DESCRIPTION_ERROR"
             );
         }
 
@@ -561,12 +582,20 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             model: CmsModel,
             id: string,
             input: UpdateCmsEntryInput<T>,
-            meta?: GenericRecord,
             options?: UpdateCmsEntryOptionsInput
         ) {
             return context.benchmark.measure("headlessCms.crud.entries.updateEntry", async () => {
-                return updateEntry<T>(model, id, input, meta, options);
+                return updateEntry<T>(model, id, input, options);
             });
+        },
+
+        async updateRevisionDescription(model, id, revisionDescription) {
+            return context.benchmark.measure(
+                "headlessCms.crud.entries.updateRevisionDescription",
+                async () => {
+                    return updateRevisionDescription(model, id, revisionDescription);
+                }
+            );
         },
         async validateEntry<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,

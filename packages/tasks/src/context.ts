@@ -2,6 +2,7 @@ import type { Plugin } from "@webiny/plugins";
 import { ContextPlugin } from "@webiny/api";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { RunnableTaskDecorator } from "./decorators/RunnableTaskDecorator.js";
+import { SelfCleaningTaskDecorator } from "./decorators/SelfCleaningTaskDecorator.js";
 import { TaskController } from "./features/TaskController/index.js";
 import type { Context } from "~/types.js";
 import { TaskPrivateModel } from "./crud/TaskPrivateModel.js";
@@ -13,16 +14,18 @@ import { createServicePlugins } from "~/service/index.js";
 import { TaskExecutionContextFeature } from "~/features/TaskExecutionContext/feature.js";
 import { GetTaskDefinitionFeature } from "~/features/GetTaskDefinition/feature.js";
 import { ListTaskDefinitionsFeature } from "~/features/ListTaskDefinitions/feature.js";
+import {
+    CleanupTaskSubtreeUseCase,
+    CleanupTaskSubtreeUseCaseImpl
+} from "~/features/CleanupTaskSubtree/index.js";
 import { TestingRunTaskDefinition } from "~/tasks/testingRunTask.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 const createTasksCrud = () => {
-    const plugin = new ContextPlugin<Context>(async context => {
-        // Register the private models
-        context.container.register(TaskPrivateModel);
-        context.container.register(TaskLogPrivateModel);
-
+    const tasksCrudPlugin = new ContextPlugin<Context>(async context => {
         // Register the RunnableTaskDecorator to wrap all TaskDefinition instances
         context.container.registerDecorator(RunnableTaskDecorator);
+        context.container.registerDecorator(SelfCleaningTaskDecorator);
 
         // Register task definition use cases
         GetTaskDefinitionFeature.register(context.container);
@@ -33,15 +36,27 @@ const createTasksCrud = () => {
             ...createTaskCrud(context),
             ...createServiceCrud(context)
         };
+
+        // The cleanup use case is a thin wrapper around `context.tasks.cleanupTaskSubtree`,
+        // so it must register AFTER the CRUD is wired onto the context.
+        context.container.registerInstance(
+            CleanupTaskSubtreeUseCase,
+            new CleanupTaskSubtreeUseCaseImpl(context)
+        );
     });
 
-    plugin.name = "tasks.context";
+    tasksCrudPlugin.name = "tasks.context";
 
-    return plugin;
+    return tasksCrudPlugin;
 };
 
 const createTasksContext = (): Plugin[] => {
-    return [...createServicePlugins(), createTasksCrud()];
+    const modelsPlugin = createRegisterExtensionPlugin(context => {
+        context.container.register(TaskPrivateModel);
+        context.container.register(TaskLogPrivateModel);
+    });
+
+    return [...createServicePlugins(), createTasksCrud(), modelsPlugin];
 };
 
 export const createBackgroundTaskContext = (): Plugin[] => {

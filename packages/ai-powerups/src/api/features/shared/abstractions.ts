@@ -30,3 +30,22 @@ export const AiPowerUpsSettingsGroupGraphQLMapper =
 export namespace AiPowerUpsSettingsGroupGraphQLMapper {
     export type Interface = IAiPowerUpsSettingsGroupGraphQLMapper;
 }
+
+import type { IAiPowerUpsSettings } from "~/api/types.js";
+
+export interface SettingsCacheEntry {
+    raw: Record<string, unknown>;
+    mapped: IAiPowerUpsSettings;
+}
+
+export interface IAiPowerUpsSettingsCache {
+    get(): SettingsCacheEntry | null;
+    set(raw: Record<string, unknown>, mapped: IAiPowerUpsSettings): void;
+}
+
+export const AiPowerUpsSettingsCache =
+    createAbstraction<IAiPowerUpsSettingsCache>("AiPowerUpsSettingsCache");
+
+export namespace AiPowerUpsSettingsCache {
+    export type Interface = IAiPowerUpsSettingsCache;
+}

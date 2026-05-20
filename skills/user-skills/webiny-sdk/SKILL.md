@@ -6,10 +6,14 @@ description: >
   Use this skill when the developer is building a Next.js, Vue, Node.js, or any external app
   that needs to fetch or write content to Webiny, set up the SDK, use the Result pattern,
   list/get/create/update/publish entries, filter and sort queries, use TypeScript generics
-  for type safety, work with the File Manager, list languages, trigger or monitor background tasks,
-  or create API keys programmatically.
+  for type safety, work with the File Manager, list languages, trigger or monitor background tasks, or create API keys programmatically.
   Covers read vs preview mode, the `values` wrapper requirement, correct method names,
-  the `fields` required parameter, and background task management via `sdk.tasks`.
+  and the `fields` required parameter, and background task management via `sdk.tasks`. Also covers common SDK errors and troubleshooting
+  — especially "Content model '<modelName>' not found" (which usually means the API key
+  lacks permission, not that the model is missing) and the Website Builder starter
+  pitfall of reusing NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY for Headless CMS reads (that key
+  has no CMS permissions by default and needs either extension or replacement with a
+  CMS-scoped key).
 ---
 
 # Webiny SDK
@@ -497,6 +501,110 @@ values wrapper:       createEntry/updateEntryRevision data must use { values: { 
 Background tasks:     webiny.tasks.triggerTask({ definition, input })
 Abort task:           webiny.tasks.abortTask({ id, message? })
 Filter logs by task:  webiny.tasks.listLogs({ where: { task: "id" } })
+```
+
+## Troubleshooting
+
+The SDK's error messages describe the _server's_ view of the world, which sometimes hides
+the real cause. The patterns below have all bitten real projects — when you hit one of
+these errors, walk through the checklist before assuming the schema or framework is at
+fault.
+
+### `"Content model '<modelName>' not found."`
+
+This error literally means the **currently authenticated principal cannot see** a model
+with that ID — not necessarily that the model is missing. There are three things to
+check, in order:
+
+1. **Does the model actually exist?** Open Webiny Admin → Headless CMS → Models and
+   confirm the `modelId` matches exactly (case-sensitive — `productCategory`, not
+   `ProductCategory` or `product-category`).
+2. **Is the model published / not private?** A model that's only created in code but not
+   yet deployed (or that's defined as `.private(...)` instead of `.public(...)`) will not
+   be visible via the public Read API.
+3. **Does the API key have permission to read this model?** This is by far the most
+   common cause when the model clearly exists. The CMS returns "not found" rather than
+   "forbidden" on purpose, so an attacker can't probe the schema with an unauthorized
+   key. Open Settings → API Keys → _your key_ and verify it has at least:
+   - **Headless CMS** access (`cms.contentEntry`, `cms.contentModel`, etc.)
+   - The relevant model group selected (or "All groups")
+   - For private models: the matching `read` permission scope
+
+   Fix: grant the missing permission to the key, save, and retry. No code change needed.
+
+### Using the wrong API key (Website Builder key for Headless CMS reads)
+
+The Website Builder starter ships with `NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY`. That key
+exists for the WB editor itself and, **by default, only has Website Builder permissions
+— it has no access to any Headless CMS models.** Reusing it to power
+`webiny.cms.listEntries(...)` from a Server Component is the most common cause of
+"Content model not found" in WB projects, because to the CMS the request looks just like
+an unauthorized one.
+
+You have two ways to fix this:
+
+1. **Recommended — use a separate, CMS-scoped API key.** Generate a new key in Webiny
+   Admin (Settings → API Keys) granting only the CMS permissions the public site needs
+   (typically read on the relevant model groups), expose it as a different env var, and
+   pass it into the SDK:
+
+   ```dotenv
+   # .env
+   NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY=...    # for the WB editor only
+   WEBINY_CMS_READ_TOKEN=...                  # for SDK calls from Server Components
+   ```
+
+   ```typescript
+   // lib/webiny.ts
+   import { Webiny } from "@webiny/sdk";
+
+   export const webiny = new Webiny({
+     token: process.env.WEBINY_CMS_READ_TOKEN!, // ← NOT the WB key
+     endpoint: process.env.NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST!,
+     tenant: process.env.NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT || "root"
+   });
+   ```
+
+   Keeping read and editor permissions on separate keys is also better for revocation
+   and the principle of least privilege.
+
+2. **Less recommended — extend the existing WB key with CMS permissions.** Open the WB
+   API key in Settings → API Keys and add the required Headless CMS permissions to it.
+   This works, but the same token now controls both the editor and public reads, which
+   makes scoping and rotation harder later.
+
+> **Heads-up:** `NEXT_PUBLIC_*` env vars are inlined into the client bundle by Next.js.
+> Anything you put behind that prefix is publicly visible. A read-only CMS token that's
+> scoped to public content is fine to expose; an editor or write-capable token is not —
+> for those, use a non-`NEXT_PUBLIC_` env var and only read it from Server Components or
+> Route Handlers.
+
+### Other quick-hit checks
+
+- **`endpoint` has a trailing slash.** The SDK appends `/graphql` itself, so a trailing
+  slash produces a malformed URL and every call fails. Strip it.
+- **`tenant` is wrong.** In multi-tenant setups, the default `"root"` tenant won't see
+  models defined under another tenant. Confirm the tenant ID matches the one that owns
+  the model.
+- **Wrong endpoint host.** WB projects sometimes have separate Admin and Read API
+  hostnames. The SDK should always point at the **Read** API (the public CloudFront
+  URL), not the Admin host.
+- **`fields` parameter omitted.** This throws at request time with a different message,
+  but if you see schema-level errors before any data comes back, double-check that every
+  call passes a non-empty `fields: [...]`.
+
+## Quick Reference
+
+```
+Install:          npm install @webiny/sdk
+Import:           import { Webiny } from "@webiny/sdk";
+Type import:      import type { CmsEntryData } from "@webiny/sdk";
+Initialize:       new Webiny({ token, endpoint, tenant })
+Result check:     result.isOk() -> result.value.data / result.error.message
+API endpoint:     yarn webiny info (in your Webiny project) -- NO trailing slash
+Preview mode:     pass preview: true to listEntries / getEntry
+fields required:  every method needs a fields: string[] array
+values wrapper:   createEntry/updateEntryRevision data must use { values: { ... } }
 ```
 
 ## Related Skills

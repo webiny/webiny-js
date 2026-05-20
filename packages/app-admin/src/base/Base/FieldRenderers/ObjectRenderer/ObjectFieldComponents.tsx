@@ -1,49 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Accordion, Button, IconButton } from "@webiny/admin-ui";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
-import type {
-    IFieldVM,
-    IObjectFieldVM,
-    IObjectFieldItemVM,
-    LayoutNodeVM
-} from "~/features/formModel/index.js";
-import { useFormViewRenderers, LayoutNodeRenderer } from "~/features/formModel/FormView.js";
+import type { IObjectFieldItemVM, LayoutNodeVM } from "~/features/formModel/index.js";
+import { LayoutNodeRenderer } from "~/features/formModel/FormView.js";
 import { resolveItemTitle } from "./resolveItemTitle.js";
-
-export const isObjectFieldVM = (field: IFieldVM): field is IObjectFieldVM => {
-    return field.type === "object";
-};
-
-export const ChildFields = observer(({ fields }: { fields: IFieldVM[] }) => {
-    const { fieldRenderers } = useFormViewRenderers();
-
-    return (
-        <div className={"flex flex-col gap-4 p-sm"}>
-            {fields.map(childField => {
-                const Renderer = childField.renderer
-                    ? fieldRenderers[childField.renderer]
-                    : undefined;
-
-                if (!Renderer) {
-                    return null;
-                }
-
-                return <Renderer key={childField.name} field={childField} />;
-            })}
-        </div>
-    );
-});
-
 /**
  * Walks a resolved layout sub-tree. Used by dynamic-zone renderers to render
  * a templated object's children via per-template layouts (Phase 8c).
  */
 export const NestedLayout = observer(({ layout }: { layout: LayoutNodeVM[] }) => {
     return (
-        <div className={"flex flex-col gap-4 p-sm"}>
+        <div className={"flex flex-col gap-md"}>
             {layout.map((node, index) => (
                 <LayoutNodeRenderer key={index} node={node} />
             ))}
@@ -62,6 +32,15 @@ export interface ListItemRendererProps {
 
 export const ListItemRenderer = observer(
     ({ item, index, total, label, itemTitle, disabled }: ListItemRendererProps) => {
+        const [open, setOpen] = useState(false);
+        const hasFocusRequest = item.fields.some(f => f.focusRequested);
+
+        useEffect(() => {
+            if (hasFocusRequest) {
+                setOpen(true);
+            }
+        }, [hasFocusRequest]);
+
         const actions = (
             <>
                 <IconButton
@@ -103,7 +82,8 @@ export const ListItemRenderer = observer(
                 <Accordion.Item
                     title={resolveItemTitle(item, index, label, itemTitle)}
                     actions={disabled ? null : actions}
-                    defaultOpen={false}
+                    open={open}
+                    onOpenChange={setOpen}
                 >
                     <NestedLayout layout={item.layout} />
                 </Accordion.Item>

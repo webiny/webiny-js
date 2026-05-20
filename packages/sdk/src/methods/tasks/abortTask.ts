@@ -1,7 +1,9 @@
-import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { TaskRun } from "./taskTypes.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { abortTaskSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface AbortTaskParams {
     /** The task run ID to abort. */
@@ -10,15 +12,7 @@ export interface AbortTaskParams {
     message?: string;
 }
 
-export async function abortTask(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: AbortTaskParams
-): Promise<Result<TaskRun, HttpError | GraphQLError | NetworkError>> {
-    const { id, message } = params;
-
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
+export const abortTask = createMethod(abortTaskSchema, async (config, fetchFn, { id, message }) => {
     const query = `
         mutation AbortTask($id: ID!, $message: String) {
             backgroundTasks {
@@ -57,14 +51,13 @@ export async function abortTask(
     const responseData = result.value;
 
     if (responseData.backgroundTasks.abortTask.error) {
-        const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.backgroundTasks.abortTask.error.message,
                 responseData.backgroundTasks.abortTask.error.code
             )
         );
     }
 
-    return Result.ok(responseData.backgroundTasks.abortTask.data);
-}
+    return Result.ok(responseData.backgroundTasks.abortTask.data as TaskRun);
+});

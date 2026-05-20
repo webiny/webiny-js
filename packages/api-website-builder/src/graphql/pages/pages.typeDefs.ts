@@ -22,6 +22,7 @@ export const pagesTypeDefs = /* GraphQL */ `
         lastPublishedBy: WbIdentity
         system: CmsEntrySystem
         live: CmsEntryLive
+        revisionDescription: String
         properties: JSON
         metadata: JSON
         bindings: JSON
@@ -209,6 +210,9 @@ export const pagesTypeDefs = /* GraphQL */ `
         status: String!
         locked: Boolean!
         savedOn: DateTime!
+        createdOn: DateTime!
+        createdBy: WbIdentity
+        revisionDescription: String
     }
 
     type WbPageRevisionsResponse {
@@ -242,6 +246,7 @@ export const pagesTypeDefs = /* GraphQL */ `
     extend type WbMutation {
         createPage(data: WbPageCreateInput!): WbPageResponse
         updatePage(id: ID!, data: WbPageUpdateInput!): WbPageResponse
+        updatePageRevisionDescription(id: ID!, revisionDescription: String): WbPageResponse
         publishPage(id: ID!): WbPageResponse
         unpublishPage(id: ID!): WbPageResponse
         duplicatePage(id: ID!): WbPageResponse

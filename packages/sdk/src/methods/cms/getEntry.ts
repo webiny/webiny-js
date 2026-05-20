@@ -1,7 +1,12 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
+import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { getEntrySchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface GetEntryWhere {
     id?: string;
@@ -25,23 +30,14 @@ export interface GetEntryParams {
  * @param params - Parameters for retrieving the entry
  * @param params.modelId - The model ID of the entry to retrieve
  * @param params.where - Where conditions to filter the entry. Can filter by id, entryId, or values
- * @param params.where.id - The revision ID (e.g., "123#0001")
- * @param params.where.entryId - The entry ID (e.g., "123")
- * @param params.where.values - Filter by entry values
- * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
- * @param params.preview - When true, uses preview API to access unpublished/draft content. When false (default), uses read API for published content only.
+ * @param params.fields - Fields to include in the response
+ * @param params.preview - When true, uses preview API to access unpublished/draft content
  * @returns Result containing the entry data or an error
  */
-export async function getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: GetEntryParams
-): Promise<Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
-    const { modelId, where, fields, preview } = params;
-
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
-    const query = `
+const _impl = createMethod(
+    getEntrySchema,
+    async (config, fetchFn, { modelId, where, fields, preview }) => {
+        const query = `
         query GetEntry($modelId: ID!, $where: JSON!, $fields: [String!]!, $preview: Boolean) {
             cms {
                 getEntry(modelId: $modelId, where: $where, fields: $fields, preview: $preview) {
@@ -55,28 +51,38 @@ export async function getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, {
-        modelId,
-        where,
-        fields,
-        preview
-    });
+        const result = await executeGraphQL(config, fetchFn, query, {
+            modelId,
+            where,
+            fields,
+            preview
+        });
 
-    if (result.isFail()) {
-        return Result.fail(result.error);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const responseData = result.value;
+
+        if (responseData.cms.getEntry.error) {
+            return Result.fail(
+                new ApiError(
+                    transformFieldErrors(responseData.cms.getEntry.error.message, fields),
+                    responseData.cms.getEntry.error.code
+                )
+            );
+        }
+
+        return Result.ok(responseData.cms.getEntry.data);
     }
+);
 
-    const responseData = result.value;
-
-    if (responseData.cms.getEntry.error) {
-        const { GraphQLError } = await import("../../errors.js");
-        return Result.fail(
-            new GraphQLError(
-                responseData.cms.getEntry.error.message,
-                responseData.cms.getEntry.error.code
-            )
-        );
-    }
-
-    return Result.ok(responseData.cms.getEntry.data);
+export function getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
+    config: WebinyConfig,
+    fetchFn: typeof fetch,
+    params: GetEntryParams
+): Promise<Result<CmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>> {
+    return _impl(config, fetchFn, params) as Promise<
+        Result<CmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>
+    >;
 }

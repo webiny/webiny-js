@@ -42,6 +42,16 @@ export const createCreateEntryResolver = () => {
                 variables: { data }
             })) as ExecutionResult;
 
+            if (result.errors && result.errors.length > 0) {
+                return {
+                    data: null,
+                    error: {
+                        message: result.errors.map(e => e.message).join("; "),
+                        code: "CREATE_ENTRY_ERROR"
+                    }
+                };
+            }
+
             const operationName = `create${model.singularApiName}`;
             return result.data?.[operationName] || { data: null, error: null };
         } catch (error) {

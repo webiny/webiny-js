@@ -2,7 +2,7 @@
 name: webiny-api-cms-catalog
 context: webiny-api
 description: >
-  API — Headless CMS — 110 abstractions.
+  API — Headless CMS — 124 abstractions.
   Entry, model, and group event handlers and use cases.
 ---
 
@@ -26,6 +26,78 @@ Entry, model, and group event handlers and use cases.
 **Import:** `import type { CmsEntry } from "webiny/api/cms/entry"`
 **Source:** `@webiny/api-headless-cms/types/types.ts`
 **Description:** A content entry definition for and from the database.
+
+---
+
+**Name:** `CmsEntryOpenSearchBodyModifier`
+**Import:** `import { CmsEntryOpenSearchBodyModifier } from "webiny/api/cms/opensearch"`
+**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchBodyModifier/index.ts`
+
+---
+
+**Name:** `CmsEntryOpenSearchFieldIndex`
+**Import:** `import { CmsEntryOpenSearchFieldIndex } from "webiny/api/cms/opensearch"`
+**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchFieldIndex/index.ts`
+
+---
+
+**Name:** `CmsEntryOpenSearchFieldIndexRegistry`
+**Import:** `import { CmsEntryOpenSearchFieldIndexRegistry } from "webiny/api/cms/opensearch"`
+**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchFieldIndex/index.ts`
+
+---
+
+**Name:** `CmsEntryOpenSearchFilter`
+**Import:** `import { CmsEntryOpenSearchFilter } from "webiny/api/cms/opensearch"`
+**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchFilter/index.ts`
+
+---
+
+**Name:** `CmsEntryOpenSearchFilterRegistry`
+**Import:** `import { CmsEntryOpenSearchFilterRegistry } from "webiny/api/cms/opensearch"`
+**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchFilter/index.ts`
+
+---
+
+**Name:** `CmsEntryOpenSearchFullTextSearch`
+**Import:** `import { CmsEntryOpenSearchFullTextSearch } from "webiny/api/cms/opensearch"`
+**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchFullTextSearch/index.ts`
+
+---
+
+**Name:** `CmsEntryOpenSearchIndex`
+**Import:** `import { CmsEntryOpenSearchIndex } from "webiny/api/cms/opensearch"`
+**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchIndex/index.ts`
+
+---
+
+**Name:** `CmsEntryOpenSearchQueryModifier`
+**Import:** `import { CmsEntryOpenSearchQueryModifier } from "webiny/api/cms/opensearch"`
+**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchQueryModifier/index.ts`
+
+---
+
+**Name:** `CmsEntryOpenSearchSortModifier`
+**Import:** `import { CmsEntryOpenSearchSortModifier } from "webiny/api/cms/opensearch"`
+**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchSortModifier/index.ts`
+
+---
+
+**Name:** `CmsEntryOpenSearchValueSearch`
+**Import:** `import { CmsEntryOpenSearchValueSearch } from "webiny/api/cms/opensearch"`
+**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchValueSearch/index.ts`
+
+---
+
+**Name:** `CmsEntryOpenSearchValueSearchRegistry`
+**Import:** `import { CmsEntryOpenSearchValueSearchRegistry } from "webiny/api/cms/opensearch"`
+**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchValueSearch/index.ts`
+
+---
+
+**Name:** `CmsEntryOpenSearchValuesModifier`
+**Import:** `import { CmsEntryOpenSearchValuesModifier } from "webiny/api/cms/opensearch"`
+**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchValuesModifier/index.ts`
 
 ---
 
@@ -748,8 +820,20 @@ Call .private() or .public() to get the appropriate typed builder.
 ---
 
 **Name:** `StorageOperationsFactory`
-**Import:** `import { StorageOperationsFactory } from "webiny/api/cms/storageOperations"`
+**Import:** `import { StorageOperationsFactory } from "webiny/api/cms/storage"`
 **Source:** `@webiny/api-headless-cms/features/shared/abstractions.ts`
+
+---
+
+**Name:** `StorageTransform`
+**Import:** `import { StorageTransform } from "webiny/api/cms/storage"`
+**Source:** `@webiny/api-headless-cms/features/storage/abstractions/StorageTransform.ts`
+
+---
+
+**Name:** `StorageTransformRegistry`
+**Import:** `import { StorageTransformRegistry } from "webiny/api/cms/storage"`
+**Source:** `@webiny/api-headless-cms/features/storage/abstractions/StorageTransformRegistry.ts`
 
 ---
 

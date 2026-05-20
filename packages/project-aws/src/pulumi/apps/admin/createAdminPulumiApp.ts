@@ -1,6 +1,7 @@
-import { type CorePulumiApp, createReactPulumiApp } from "~/pulumi/apps/index.js";
+import { createReactPulumiApp } from "~/pulumi/apps/index.js";
 import { getProjectSdk } from "@webiny/project";
-import { AdminPulumi } from "@webiny/project/abstractions/index.js";
+import { AdminPulumi } from "~/abstractions/features/pulumi/index.js";
+import { adminPulumi } from "~/pulumi/features/AdminPulumi/index.js";
 import { AdminCustomDomains as adminCustomDomainsExt } from "~/pulumi/extensions/AdminCustomDomains.js";
 import { withServiceManifest } from "~/pulumi/index.js";
 
@@ -29,10 +30,11 @@ export const createAdminPulumiApp = async () => {
         pulumi: async app => {
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied to late.
+            sdk.getContainer().registerComposite(adminPulumi);
             const pulumiHandlers = sdk.getContainer().resolve(AdminPulumi);
 
             app.addHandler(() => {
-                return pulumiHandlers.execute(app as unknown as CorePulumiApp);
+                return pulumiHandlers.execute(app as AdminPulumiApp);
             });
         }
     });

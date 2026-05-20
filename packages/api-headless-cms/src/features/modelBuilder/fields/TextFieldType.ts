@@ -16,7 +16,9 @@ export interface ITextFieldBuilder
         FieldTypeValidator.UpperCase,
         FieldTypeValidator.LowerCaseSpace,
         FieldTypeValidator.UpperCaseSpace,
-        FieldTypeValidator.Unique {}
+        FieldTypeValidator.Unique {
+    compressed(): this;
+}
 
 // Module augmentation for TypeScript autocomplete
 declare module "../abstractions.js" {
@@ -144,6 +146,14 @@ class TextFieldBuilder extends DataFieldBuilder<"text"> implements ITextFieldBui
             message: message || "Value must be unique.",
             settings: {}
         });
+    }
+
+    public compressed(): this {
+        this.setSubType("compressed");
+        this.settings({
+            disableFullTextSearch: true
+        });
+        return this;
     }
 }
 

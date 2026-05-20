@@ -4,25 +4,24 @@ import {
     AdminBeforeBuild,
     AdminBeforeDeploy,
     AdminBeforeWatch,
-    AdminPulumi,
     AdminStackOutputValue,
     ApiAfterBuild,
     ApiAfterDeploy,
     ApiBeforeBuild,
     ApiBeforeDeploy,
     ApiBeforeWatch,
-    ApiPulumi,
     ApiStackOutputValue,
     CoreAfterBuild,
     CoreAfterDeploy,
     CoreBeforeBuild,
     CoreBeforeDeploy,
     CoreBeforeWatch,
-    CorePulumi,
     CoreStackOutputValue,
     ProductionEnvironments,
     PulumiResourceNamePrefix
 } from "@webiny/project/extensions/index.js";
+
+import { CorePulumi, ApiPulumi, AdminPulumi } from "./pulumi/extensions/index.js";
 
 import {
     AdminCustomDomains,
@@ -36,7 +35,7 @@ import { OpenSearch } from "./extensions/OpenSearch.js";
 import { AwsDefaultRegion } from "./extensions/AwsDefaultRegion.js";
 import { Encryption } from "./extensions/Encryption.js";
 import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
-import { EnvVar } from "@webiny/project/extensions/index.js";
+import { EnvVar, ApiMaxBundleSize } from "@webiny/project/extensions/index.js";
 import {
     EnvIs,
     EnvIsNot,
@@ -91,7 +90,8 @@ export const Infra = {
         Pulumi: ApiPulumi,
         CustomDomains: ApiCustomDomains,
         StackOutputValue: ApiStackOutputValue,
-        LambdaFunction: ApiLambdaFunction
+        LambdaFunction: ApiLambdaFunction,
+        MaxBundleSize: ApiMaxBundleSize
     },
     Core: {
         BeforeBuild: CoreBeforeBuild,

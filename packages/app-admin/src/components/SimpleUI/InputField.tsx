@@ -2,8 +2,7 @@ import React from "react";
 import { css } from "@emotion/css";
 import classNames from "classnames";
 import omit from "lodash/omit.js";
-import { Typography } from "@webiny/ui/Typography/index.js";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage/index.js";
+import { Text, FormComponentErrorMessage, FormComponentNote } from "@webiny/admin-ui";
 
 const inputStyle = css({
     boxSizing: "border-box",
@@ -88,7 +87,7 @@ const InputField = ({
         <React.Fragment>
             {label && (
                 <div className={labelStyle}>
-                    <Typography use={"body2"}>{label}</Typography>
+                    <Text size={"sm"}>{label}</Text>
                 </div>
             )}
             <input
@@ -108,10 +107,10 @@ const InputField = ({
                 {...omit(props, "validate")}
             />
             {validation.isValid === false && (
-                <FormElementMessage error>{validation.message}</FormElementMessage>
+                <FormComponentErrorMessage text={validation.message} invalid={true} />
             )}
             {validation.isValid !== false && description && (
-                <FormElementMessage>{description}</FormElementMessage>
+                <FormComponentNote text={description} />
             )}
         </React.Fragment>
     );

@@ -37,7 +37,10 @@ export class ExtensionInstanceModel<TParamsSchema extends z.ZodTypeAny> {
         const validationResult = await paramsSchema.safeParseAsync(this.params);
         if (!validationResult.success) {
             const errorMessages = validationResult.error.issues
-                .map((err: { message: string }) => err.message)
+                .map((err: { message: string; path: PropertyKey[] }) => {
+                    const field = err.path.length > 0 ? `[${err.path.join(".")}] ` : "";
+                    return `${field}${err.message}`;
+                })
                 .join("; ");
 
             throw ProjectError.from(

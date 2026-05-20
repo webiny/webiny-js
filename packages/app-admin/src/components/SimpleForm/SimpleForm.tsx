@@ -6,6 +6,7 @@ const simpleFormInnerVariants = cva("mx-auto", {
         size: {
             md: "max-w-[640px]",
             lg: "max-w-[800px]",
+            xl: "max-w-[1200px]",
             full: "max-w-full"
         }
     },
