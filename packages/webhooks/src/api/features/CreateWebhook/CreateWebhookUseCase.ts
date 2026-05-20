@@ -55,7 +55,7 @@ class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
             description: parsed.data.description,
             enabled: parsed.data.enabled ?? false,
             events: parsed.data.events,
-            signingSecret: parsed.data.signingSecret
+            signingSecret: parsed.data.signingSecret ?? ""
         };
 
         return this.repository.execute(webhook);

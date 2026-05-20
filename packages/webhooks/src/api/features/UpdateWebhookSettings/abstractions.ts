@@ -3,14 +3,19 @@ import type { IWebhookSettings } from "~/api/domain/WebhookSettings.js";
 import type {
     WebhookModelNotFoundError,
     WebhookNotAuthorizedError,
-    WebhookPersistenceError
+    WebhookPersistenceError,
+    WebhookValidationError
 } from "~/api/domain/errors.js";
 
 export interface IUpdateWebhookSettingsInput {
     signingSecret?: string;
 }
 
-type IError = WebhookModelNotFoundError | WebhookPersistenceError | WebhookNotAuthorizedError;
+type IError =
+    | WebhookModelNotFoundError
+    | WebhookPersistenceError
+    | WebhookNotAuthorizedError
+    | WebhookValidationError;
 
 export interface IUpdateWebhookSettingsUseCase {
     execute(input: IUpdateWebhookSettingsInput): Promise<Result<IWebhookSettings, IError>>;

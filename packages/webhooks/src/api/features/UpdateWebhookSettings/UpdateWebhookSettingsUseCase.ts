@@ -3,8 +3,9 @@ import {
     UpdateWebhookSettingsRepository,
     UpdateWebhookSettingsUseCase as UseCaseAbstraction
 } from "./abstractions.js";
+import { UpdateWebhookSettingsInputSchema } from "./schema.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
-import { WebhookNotAuthorizedError } from "~/api/domain/errors.js";
+import { WebhookNotAuthorizedError, WebhookValidationError } from "~/api/domain/errors.js";
 import type { IWebhookSettings } from "~/api/domain/WebhookSettings.js";
 
 class UpdateWebhookSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -20,7 +21,12 @@ class UpdateWebhookSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new WebhookNotAuthorizedError());
         }
 
-        return this.repository.execute(input);
+        const parsed = UpdateWebhookSettingsInputSchema.safeParse(input);
+        if (!parsed.success) {
+            return Result.fail(new WebhookValidationError(parsed.error));
+        }
+
+        return this.repository.execute(parsed.data);
     }
 }
 

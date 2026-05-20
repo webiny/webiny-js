@@ -1,10 +1,11 @@
 import { Result } from "@webiny/feature/api";
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
 import { TriggerWebhookUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { TriggerWebhookInputSchema } from "./schema.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
-import { WebhookNotAuthorizedError } from "~/api/domain/errors.js";
+import { WebhookNotAuthorizedError, WebhookValidationError } from "~/api/domain/errors.js";
 import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/api/domain/constants.js";
 import type { ISendWebhookTaskInput } from "~/api/features/SendWebhookTask/types.js";
 import type { WebhookDelivery } from "~/api/domain/WebhookDelivery.js";
@@ -25,7 +26,12 @@ class TriggerWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new WebhookNotAuthorizedError());
         }
 
-        const webhookResult = await this.getWebhookRepository.execute(webhookId);
+        const parsed = TriggerWebhookInputSchema.safeParse({ webhookId, payload });
+        if (!parsed.success) {
+            return Result.fail(new WebhookValidationError(parsed.error));
+        }
+
+        const webhookResult = await this.getWebhookRepository.execute(parsed.data.webhookId);
         if (webhookResult.isFail()) {
             return Result.fail(webhookResult.error);
         }
