@@ -84,7 +84,7 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
                         aria-label="Resend delivery"
                     />
                 ),
-                size: 48,
+                size: 60,
                 enableSorting: false,
                 enableHiding: false,
                 enableResizing: false
