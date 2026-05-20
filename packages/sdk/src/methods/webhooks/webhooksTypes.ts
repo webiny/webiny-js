@@ -28,6 +28,7 @@ export interface WebhookDelivery {
 
 export interface WebhookEvent {
     app: string;
+    appLabel: string;
     entity: string;
     eventName: string;
     label: string;

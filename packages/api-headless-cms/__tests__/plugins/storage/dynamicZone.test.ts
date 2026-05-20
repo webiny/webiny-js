@@ -5,10 +5,14 @@ import { Container } from "@webiny/di";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import { StorageFeature } from "~/features/storage/feature.js";
 import { StorageTransformRegistry } from "~/features/storage/abstractions/StorageTransformRegistry.js";
+import { BuildParamsFeature } from "@webiny/api-core/features/buildParams/feature.js";
+import { EncryptionFeature } from "@webiny/api-core/features/encryption/feature.js";
 
 const container = new Container();
 CompressionFeature.register(container);
 StorageFeature.register(container);
+BuildParamsFeature.register(container);
+EncryptionFeature.register(container);
 const registry = container.resolve(StorageTransformRegistry);
 const dzTransform = registry.get("dynamicZone")!;
 

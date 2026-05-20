@@ -38,6 +38,7 @@ import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
 import { GraphQLFeature } from "~/features/graphql/index.js";
 import { ValidationFeature } from "~/features/validation/index.js";
 import { StorageFeature } from "~/features/storage/index.js";
+import { CmsWebhooksFeature } from "~/features/webhooks/feature.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -176,6 +177,7 @@ export const createContextPlugin = () => {
         ModelBuilderFeature.register(context.container);
         CmsWhereMapperFeature.register(context.container);
         CmsSortMapperFeature.register(context.container);
+        CmsWebhooksFeature.register(context.container);
 
         if (!storageOperations.init) {
             return;

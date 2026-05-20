@@ -10,7 +10,6 @@ import type {
 
 export interface IUpdateWebhookInput {
     name?: string;
-    slug?: string;
     endpointUrl?: string;
     description?: string;
     enabled?: boolean;

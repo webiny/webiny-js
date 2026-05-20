@@ -6,6 +6,7 @@ import { createFeature } from "@webiny/feature/api";
 export const TEST_EVENTS: IWebhookFactoryDefinition[] = [
     {
         app: "cms",
+        appLabel: "Headless CMS",
         entity: "product",
         eventName: "cms.entry.product.created",
         label: "Created"
@@ -13,12 +14,14 @@ export const TEST_EVENTS: IWebhookFactoryDefinition[] = [
     {
         app: "cms",
         entity: "product",
+        appLabel: "Headless CMS",
         eventName: "cms.entry.product.published",
         label: "Published"
     },
     {
         app: "wb",
         entity: "page",
+        appLabel: "Website Builder Pages",
         eventName: "wb.page.published",
         label: "Published"
     }
