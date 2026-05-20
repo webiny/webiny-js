@@ -7,7 +7,7 @@ import { WebhookListView } from "./presentation/WebhookList/components/WebhookLi
 import { WebhookFormView } from "./presentation/WebhookForm/components/WebhookFormView.js";
 import { WebhookSettingsView } from "./presentation/WebhookSettings/components/WebhookSettingsView.js";
 import { Routes } from "./routes.js";
-import { ReactComponent as Send } from "@webiny/icons/send.svg";
+import { ReactComponent as WebhookIcon } from "@webiny/icons/webhook.svg";
 
 const { Menu, Route } = AdminConfig;
 
@@ -47,7 +47,7 @@ export const WebhookRoutes = () => {
                     element={
                         <Menu.Item
                             text="Webhooks"
-                            icon={<Menu.Link.Icon label="Webhooks" element={<Send />} />}
+                            icon={<Menu.Link.Icon label="Webhooks" element={<WebhookIcon />} />}
                         />
                     }
                 />
