@@ -1,12 +1,9 @@
-import { Result } from "@webiny/feature/api";
-import {
-    UpdateWebhookUseCase as UseCaseAbstraction,
-    UpdateWebhookRepository
-} from "./abstractions.js";
-import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
-import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
-import { WebhookValidationError, WebhookNotAuthorizedError } from "~/api/domain/errors.js";
-import type { Webhook } from "~/api/domain/Webhook.js";
+import {Result} from "@webiny/feature/api";
+import {UpdateWebhookRepository, UpdateWebhookUseCase as UseCaseAbstraction} from "./abstractions.js";
+import {GetWebhookRepository} from "~/api/features/GetWebhook/abstractions.js";
+import {WebhookPermissions} from "~/api/features/WebhookPermissions/abstractions.js";
+import {WebhookNotAuthorizedError, WebhookValidationError} from "~/api/domain/errors.js";
+import type {Webhook} from "~/api/domain/Webhook.js";
 
 const isValidEndpointUrl = (url: string): boolean => {
     try {
@@ -62,13 +59,12 @@ class UpdateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const updated: Webhook = {
             ...existing,
-            ...(input.name !== undefined ? { name: input.name } : {}),
-            ...(input.slug !== undefined ? { slug: input.slug } : {}),
-            ...(input.endpointUrl !== undefined ? { endpointUrl: input.endpointUrl } : {}),
-            ...(input.description !== undefined ? { description: input.description } : {}),
-            ...(input.enabled !== undefined ? { enabled: input.enabled } : {}),
-            ...(input.events !== undefined ? { events: input.events } : {}),
-            ...(input.signingSecret !== undefined ? { signingSecret: input.signingSecret } : {})
+            name: input.name || existing.name,
+            endpointUrl: input.endpointUrl || existing.endpointUrl,
+            description: input.description ? input.description : existing.description,
+            enabled: input.enabled ? input.enabled : existing.enabled,
+            events: input.events || existing.events,
+            signingSecret: input.signingSecret ? input.signingSecret : existing.signingSecret,
         };
 
         return this.updateRepository.execute(updated);

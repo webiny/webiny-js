@@ -24,7 +24,7 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
     public readonly databaseLogs = false;
     public readonly description =
         "POST a signed event payload to a webhook endpoint and log the delivery.";
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+    public readonly selfCleanup = "always";
 
     public constructor(
         private readonly getWebhookRepository: GetWebhookRepository.Interface,

@@ -3,8 +3,8 @@ import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { TextFieldTypes } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 
-class TextCompressedFieldIndexImpl implements CmsEntryOpenSearchFieldIndex.Interface {
-    public readonly fieldType = TextFieldTypes.COMPRESSED;
+class TextEncryptedFieldIndexImpl implements CmsEntryOpenSearchFieldIndex.Interface {
+    public readonly fieldType = TextFieldTypes.ENCRYPTED;
 
     public constructor(private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface) {}
 
@@ -44,7 +44,7 @@ class TextCompressedFieldIndexImpl implements CmsEntryOpenSearchFieldIndex.Inter
     }
 }
 
-export const TextCompressedFieldIndex = CmsEntryOpenSearchFieldIndex.createImplementation({
-    implementation: TextCompressedFieldIndexImpl,
+export const TextEncryptedFieldIndex = CmsEntryOpenSearchFieldIndex.createImplementation({
+    implementation: TextEncryptedFieldIndexImpl,
     dependencies: [CmsModelFieldToGraphQLRegistry]
 });

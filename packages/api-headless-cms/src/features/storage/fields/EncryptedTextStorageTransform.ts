@@ -1,8 +1,9 @@
 import { StorageTransform } from "../abstractions/StorageTransform.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
+import { TextFieldTypes } from "~/features/modelBuilder/index.js";
 
 class EncryptedTextStorageTransformImpl implements StorageTransform.Interface<string, string> {
-    public readonly fieldType = "text:encrypted";
+    public readonly fieldType = TextFieldTypes.ENCRYPTED;
 
     public constructor(private readonly encryption: Encryption.Interface) {}
 

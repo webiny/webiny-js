@@ -3,6 +3,17 @@ import { DataFieldBuilder } from "./FieldBuilder.js";
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import type { FieldTypeValidator } from "./fieldTypeValidator.js";
 
+export enum TextFieldSubTypes {
+    COMPRESSED = "compressed",
+    ENCRYPTED = "encrypted"
+}
+
+export enum TextFieldTypes {
+    TEXT = "text",
+    COMPRESSED = "text:compressed",
+    ENCRYPTED = "text:encrypted"
+}
+
 export interface ITextFieldBuilder
     extends
         DataFieldBuilder<"text">,
@@ -150,7 +161,7 @@ class TextFieldBuilder extends DataFieldBuilder<"text"> implements ITextFieldBui
     }
 
     public compress(): this {
-        this.setSubType("compressed");
+        this.setSubType(TextFieldSubTypes.COMPRESSED);
 
         this.settings({
             disableFullTextSearch: true
@@ -159,7 +170,7 @@ class TextFieldBuilder extends DataFieldBuilder<"text"> implements ITextFieldBui
         return this;
     }
     public encrypt(): this {
-        this.setSubType("encrypted");
+        this.setSubType(TextFieldSubTypes.ENCRYPTED);
 
         this.settings({
             disableFullTextSearch: true
