@@ -38,10 +38,10 @@ export const Extensions = () => {
             {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}
             {/*    pulumiSrc="/extensions/myLambdaFunction/pulumi.ts"*/}
             {/*/>*/}
-            {/*<Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/ProductModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionHook.ts"} />*/}
+            <Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />
+            <Api.Extension src={"/extensions/models/ProductModel.ts"} />
+            <Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />
+            <Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionHook.ts"} />
             {/*<Admin.Extension*/}
             {/*    src={"/extensions/models/contactSubmission/EmailEntryListColumn.tsx"}*/}
             {/*/>*/}
