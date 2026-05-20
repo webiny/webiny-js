@@ -44,7 +44,13 @@ export const StyleAccordionItem = ({
                                 color={isOpen ? "accent" : "neutral-light"}
                             />
                         )}
-                        <span className={"text-md text-neutral-primary " + (isOpen ? "font-semibold" : "")}>{title}</span>
+                        <span
+                            className={
+                                "text-md text-neutral-primary " + (isOpen ? "font-semibold" : "")
+                            }
+                        >
+                            {title}
+                        </span>
                     </div>
                     <Icon
                         icon={<ChevronIcon />}
@@ -55,10 +61,12 @@ export const StyleAccordionItem = ({
                     />
                 </div>
             </Collapsible.Trigger>
-            <Collapsible.Content className={"overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down"}>
-                <div className={"px-sm pb-lg"}>
-                    {children}
-                </div>
+            <Collapsible.Content
+                className={
+                    "overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down"
+                }
+            >
+                <div className={"px-sm pb-lg"}>{children}</div>
             </Collapsible.Content>
         </Collapsible.Root>
     );

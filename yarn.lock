@@ -13353,6 +13353,7 @@ __metadata:
     mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     pluralize: "npm:^8.0.0"
+    radix-ui: "npm:^1.4.3"
     react: "npm:18.3.1"
     react-dnd: "npm:^16.0.1"
     react-dnd-html5-backend: "npm:^16.0.1"
