@@ -8,23 +8,13 @@ import { ListWebhookDeliveriesFeature } from "~/admin/features/listWebhookDelive
 import { ResendWebhookDeliveryFeature } from "~/admin/features/resendWebhookDelivery/feature.js";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
 import { DeliveryDetail } from "./DeliveryDetail.js";
+import { statusVariant } from "./statusVariant.js";
 
 interface WebhookDeliveriesDrawerProps {
     webhookId: string;
     open: boolean;
     onClose: () => void;
 }
-
-const statusVariant = (status: string) => {
-    switch (status) {
-        case "delivered":
-            return "success" as const;
-        case "failed":
-            return "destructive" as const;
-        default:
-            return "warning" as const;
-    }
-};
 
 const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerInner({
     webhookId,
