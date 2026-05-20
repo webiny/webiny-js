@@ -1,14 +1,10 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { MultiSelect, Select } from "@webiny/admin-ui";
-import type {
-    IWebhookDeliveriesPageViewModel,
-    IWebhookDeliveriesPageActions
-} from "../abstractions.js";
+import type { IWebhookDeliveriesPagePresenter } from "../abstractions.js";
 
 interface DeliveryFiltersProps {
-    vm: IWebhookDeliveriesPageViewModel;
-    actions: IWebhookDeliveriesPageActions;
+    presenter: IWebhookDeliveriesPagePresenter;
 }
 
 const STATUS_OPTIONS = [
@@ -19,42 +15,42 @@ const STATUS_OPTIONS = [
 ];
 
 export const DeliveryFilters = observer(function DeliveryFilters({
-    vm,
-    actions
+    presenter
 }: DeliveryFiltersProps) {
+    const { vm } = presenter;
     return (
         <div className="flex items-center gap-sm flex-wrap py-sm">
             <Select
                 placeholder="All apps"
                 value={vm.filters.app ?? ""}
                 options={vm.availableApps}
-                onChange={value => actions.setAppFilter(value || null)}
+                onChange={value => presenter.setAppFilter(value || null)}
                 displayResetAction={true}
-                onValueReset={() => actions.setAppFilter(null)}
+                onValueReset={() => presenter.setAppFilter(null)}
             />
             <Select
                 placeholder="All entities"
                 value={vm.filters.entity ?? ""}
                 options={vm.availableEntities}
-                onChange={value => actions.setEntityFilter(value || null)}
+                onChange={value => presenter.setEntityFilter(value || null)}
                 disabled={!vm.filters.app}
                 displayResetAction={true}
-                onValueReset={() => actions.setEntityFilter(null)}
+                onValueReset={() => presenter.setEntityFilter(null)}
             />
             <Select
                 placeholder="All events"
                 value={vm.filters.eventName ?? ""}
                 options={vm.availableEventNames}
-                onChange={value => actions.setEventFilter(value || null)}
+                onChange={value => presenter.setEventFilter(value || null)}
                 disabled={!vm.filters.app}
                 displayResetAction={true}
-                onValueReset={() => actions.setEventFilter(null)}
+                onValueReset={() => presenter.setEventFilter(null)}
             />
             <MultiSelect
                 placeholder="All statuses"
                 value={vm.filters.status}
                 options={STATUS_OPTIONS}
-                onChange={values => actions.setStatusFilter(values)}
+                onChange={values => presenter.setStatusFilter(values)}
             />
         </div>
     );

@@ -12,7 +12,6 @@ import {
     WebhookDeliveriesPagePresenter as Abstraction,
     type IWebhookDeliveriesPagePresenter,
     type IWebhookDeliveriesPageViewModel,
-    type IWebhookDeliveriesPageActions,
     type IDeliveryFilterOption,
     type IDeliveryPageFilters
 } from "./abstractions.js";
@@ -53,70 +52,75 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
         };
     }
 
-    public readonly actions: IWebhookDeliveriesPageActions = {
-        init: async () => {
+    public async init(): Promise<void> {
+        runInAction(() => {
+            this._loading = true;
+            this._error = null;
+        });
+        try {
+            const events = await this.listAvailableEventsUseCase.execute();
             runInAction(() => {
-                this._loading = true;
-                this._error = null;
+                this._availableEvents = events;
             });
-            try {
-                const events = await this.listAvailableEventsUseCase.execute();
-                runInAction(() => {
-                    this._availableEvents = events;
-                });
-            } catch (err) {
-                runInAction(() => {
-                    this._error = err instanceof Error ? err.message : "Failed to load events.";
-                });
-            } finally {
-                runInAction(() => {
-                    this._loading = false;
-                });
-            }
+        } catch (err) {
             runInAction(() => {
-                this._applyFilters();
+                this._error = err instanceof Error ? err.message : "Failed to load events.";
             });
-        },
-        setAppFilter: (app: string | null) => {
-            this._filters = { app, entity: null, eventName: null, status: this._filters.status };
-            this._expandedDeliveryId = null;
-            this._applyFilters();
-        },
-        setEntityFilter: (entity: string | null) => {
-            this._filters = { ...this._filters, entity, eventName: null };
-            this._expandedDeliveryId = null;
-            this._applyFilters();
-        },
-        setEventFilter: (eventName: string | null) => {
-            this._filters = { ...this._filters, eventName };
-            this._expandedDeliveryId = null;
-            this._applyFilters();
-        },
-        setStatusFilter: (status: string[]) => {
-            this._filters = { ...this._filters, status };
-            this._expandedDeliveryId = null;
-            this._applyFilters();
-        },
-        expandDelivery: (id: string | null) => {
-            this._expandedDeliveryId = this._expandedDeliveryId === id ? null : id;
-        },
-        loadMore: async () => {
-            await this.listPresenter.actions.loadMore();
-        },
-        resend: async (id: string) => {
+        } finally {
             runInAction(() => {
-                this._resendingIds.add(id);
+                this._loading = false;
             });
-            try {
-                await this.resendDeliveryUseCase.execute(id);
-                await this.listPresenter.actions.refresh();
-            } finally {
-                runInAction(() => {
-                    this._resendingIds.delete(id);
-                });
-            }
         }
-    };
+        runInAction(() => {
+            this._applyFilters();
+        });
+    }
+
+    public setAppFilter(app: string | null): void {
+        this._filters = { app, entity: null, eventName: null, status: this._filters.status };
+        this._expandedDeliveryId = null;
+        this._applyFilters();
+    }
+
+    public setEntityFilter(entity: string | null): void {
+        this._filters = { ...this._filters, entity, eventName: null };
+        this._expandedDeliveryId = null;
+        this._applyFilters();
+    }
+
+    public setEventFilter(eventName: string | null): void {
+        this._filters = { ...this._filters, eventName };
+        this._expandedDeliveryId = null;
+        this._applyFilters();
+    }
+
+    public setStatusFilter(status: string[]): void {
+        this._filters = { ...this._filters, status };
+        this._expandedDeliveryId = null;
+        this._applyFilters();
+    }
+
+    public expandDelivery(id: string | null): void {
+        this._expandedDeliveryId = this._expandedDeliveryId === id ? null : id;
+    }
+
+    public async loadMore(): Promise<void> {
+        await this.listPresenter.actions.loadMore();
+    }
+
+    public async resend(id: string): Promise<void> {
+        runInAction(() => {
+            this._resendingIds.add(id);
+        });
+        try {
+            await this.resendDeliveryUseCase.execute(id);
+            await this.listPresenter.actions.refresh();
+        } finally {
+            runInAction(() => {
+                this._resendingIds.delete(id);
+            });
+        }
+    }
 
     private _applyFilters(): void {
         const where = this._buildWhere();

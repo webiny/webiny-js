@@ -26,7 +26,8 @@ export interface IWebhookDeliveriesPageViewModel {
     error: string | null;
 }
 
-export interface IWebhookDeliveriesPageActions {
+export interface IWebhookDeliveriesPagePresenter {
+    vm: IWebhookDeliveriesPageViewModel;
     init(): Promise<void>;
     setAppFilter(app: string | null): void;
     setEntityFilter(entity: string | null): void;
@@ -37,11 +38,6 @@ export interface IWebhookDeliveriesPageActions {
     resend(id: string): Promise<void>;
 }
 
-export interface IWebhookDeliveriesPagePresenter {
-    vm: IWebhookDeliveriesPageViewModel;
-    actions: IWebhookDeliveriesPageActions;
-}
-
 export const WebhookDeliveriesPagePresenter = createAbstraction<IWebhookDeliveriesPagePresenter>(
     "WebhookDeliveriesPagePresenter"
 );
@@ -49,5 +45,4 @@ export const WebhookDeliveriesPagePresenter = createAbstraction<IWebhookDeliveri
 export namespace WebhookDeliveriesPagePresenter {
     export type Interface = IWebhookDeliveriesPagePresenter;
     export type ViewModel = IWebhookDeliveriesPageViewModel;
-    export type Actions = IWebhookDeliveriesPageActions;
 }

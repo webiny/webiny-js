@@ -14,7 +14,7 @@ const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner(
     const { presenter } = useFeature(WebhookDeliveriesPagePresenterFeature);
 
     useEffect(() => {
-        void presenter.actions.init();
+        void presenter.init();
     }, [presenter]);
 
     const { vm } = presenter;
@@ -33,7 +33,7 @@ const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner(
         return (
             <div className="flex flex-col items-center gap-sm p-md">
                 <Text>{vm.error}</Text>
-                <Button variant="secondary" onClick={() => void presenter.actions.init()}>
+                <Button variant="secondary" onClick={() => void presenter.init()}>
                     Retry
                 </Button>
             </div>
@@ -43,7 +43,7 @@ const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner(
     return (
         <div className="flex flex-col p-md gap-md">
             <Heading level={4}>Delivery Log</Heading>
-            <DeliveryFilters vm={vm} actions={presenter.actions} />
+            <DeliveryFilters presenter={presenter} />
             {vm.list.rows.length === 0 ? (
                 <div className="flex justify-center py-xl">
                     <Text className="text-neutral-strong">No deliveries found.</Text>
@@ -58,9 +58,9 @@ const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner(
                                 open={vm.expandedDeliveryId === delivery.id}
                                 resending={vm.resendingIds.has(delivery.id)}
                                 onOpenChange={open =>
-                                    presenter.actions.expandDelivery(open ? delivery.id : null)
+                                    presenter.expandDelivery(open ? delivery.id : null)
                                 }
-                                onResend={id => void presenter.actions.resend(id)}
+                                onResend={id => void presenter.resend(id)}
                             />
                         ))}
                     </Accordion>
@@ -68,7 +68,7 @@ const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner(
                         <div className="flex justify-center pt-sm">
                             <Button
                                 variant="secondary"
-                                onClick={() => void presenter.actions.loadMore()}
+                                onClick={() => void presenter.loadMore()}
                                 disabled={vm.list.pagination.loadingMore}
                             >
                                 {vm.list.pagination.loadingMore ? "Loading…" : "Load more"}
