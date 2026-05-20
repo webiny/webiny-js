@@ -1,30 +1,32 @@
 {
-    "extends": "../../tsconfig.json",
-    "include": ["src"],
-    "references": [
-        { "path": "../admin-ui" },
-        { "path": "../app" },
-        { "path": "../app-admin" },
-        { "path": "../feature" },
-        { "path": "../sdk" }
-    ],
-    "compilerOptions": {
-        "rootDirs": ["./src"],
-        "outDir": "./dist",
-        "declarationDir": "./dist",
-        "paths": {
-            "~/*": ["./src/*"],
-            "@webiny/admin-ui/*": ["../admin-ui/src/*"],
-            "@webiny/admin-ui": ["../admin-ui/src"],
-            "@webiny/app/*": ["../app/src/*"],
-            "@webiny/app": ["../app/src"],
-            "@webiny/app-admin/*": ["../app-admin/src/*"],
-            "@webiny/app-admin": ["../app-admin/src"],
-            "@webiny/feature/admin": ["../feature/src/admin/index.js"],
-            "@webiny/feature/*": ["../feature/src/*"],
-            "@webiny/feature": ["../feature/src"],
-            "@webiny/sdk/*": ["../sdk/src/*"],
-            "@webiny/sdk": ["../sdk/src"]
-        }
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../admin-ui" },
+    { "path": "../app" },
+    { "path": "../app-admin" },
+    { "path": "../feature" },
+    { "path": "../sdk" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/admin-ui/*": ["../admin-ui/src/*"],
+      "@webiny/admin-ui": ["../admin-ui/src"],
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/sdk/*": ["../sdk/src/*"],
+      "@webiny/sdk": ["../sdk/src"]
     }
+  }
 }

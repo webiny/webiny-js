@@ -25,12 +25,7 @@ export const BackgroundTaskRoutes = () => {
                 <Menu
                     name="backgroundTasks.list"
                     parent="dev-tools"
-                    element={
-                        <Menu.Link
-                            text="Background Tasks"
-                            to={getLink(Routes.List)}
-                        />
-                    }
+                    element={<Menu.Link text="Background Tasks" to={getLink(Routes.List)} />}
                 />
             </HasPermission>
         </AdminConfig>

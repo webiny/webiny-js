@@ -1,16 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import {
-    Button,
-    Drawer,
-    Grid,
-    Heading,
-    Separator,
-    Tag,
-    Text,
-    TimeAgo
-} from "@webiny/admin-ui";
+import { Button, Drawer, Grid, Heading, Separator, Tag, Text, TimeAgo } from "@webiny/admin-ui";
 import { CodeEditor } from "@webiny/admin-ui";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import { ReactComponent as StopCircleIcon } from "@webiny/icons/stop_circle.svg";
@@ -210,9 +201,7 @@ const TaskDetailDrawerInner = observer(function TaskDetailDrawerInner({
                             <Text size="sm" className="text-neutral-strong">
                                 Created By
                             </Text>
-                            <Text size="sm">
-                                {(displayTask as Record<string, any>).createdBy?.displayName ?? "—"}
-                            </Text>
+                            <Text size="sm">{displayTask.createdBy?.displayName ?? "—"}</Text>
                         </Grid.Column>
                         <Grid.Column span={6}>
                             <Text size="sm" className="text-neutral-strong">

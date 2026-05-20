@@ -33,9 +33,7 @@ export class TaskListDataSource implements IDataSource<Task> {
 
     async query(params: IDataSourceQuery): Promise<void> {
         this._loading = true;
-        const sort = params.sort
-            ? [`${params.sort.field}_${params.sort.direction}`]
-            : undefined;
+        const sort = params.sort ? [`${params.sort.field}_${params.sort.direction}`] : undefined;
         const result = await this.listTasksUseCase.execute({
             where: params.filters as Record<string, unknown> | undefined,
             sort,
@@ -59,9 +57,7 @@ export class TaskListDataSource implements IDataSource<Task> {
             return;
         }
         this._loading = true;
-        const sort = params.sort
-            ? [`${params.sort.field}_${params.sort.direction}`]
-            : undefined;
+        const sort = params.sort ? [`${params.sort.field}_${params.sort.direction}`] : undefined;
         const result = await this.listTasksUseCase.execute({
             where: params.filters as Record<string, unknown> | undefined,
             sort,

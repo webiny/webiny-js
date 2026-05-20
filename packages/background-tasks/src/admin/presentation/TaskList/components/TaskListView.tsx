@@ -20,7 +20,6 @@ import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin/hooks/inde
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as StopCircleIcon } from "@webiny/icons/stop_circle.svg";
-import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { TaskListPresenterFeature } from "../feature.js";
 import { ListTasksFeature } from "~/admin/features/listTasks/feature.js";
 import { DeleteTaskFeature } from "~/admin/features/deleteTask/feature.js";
@@ -143,11 +142,7 @@ const TaskListViewInner = observer(function TaskListViewInner() {
             startedOn: {
                 header: "Started",
                 cell: (row: Task) =>
-                    row.startedOn ? (
-                        <TimeAgo datetime={row.startedOn} />
-                    ) : (
-                        <Text size="sm">—</Text>
-                    ),
+                    row.startedOn ? <TimeAgo datetime={row.startedOn} /> : <Text size="sm">—</Text>,
                 enableSorting: true,
                 size: 120
             },
@@ -245,8 +240,6 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                     <div className="w-[240px]">
                         <Input
                             placeholder="Search by name..."
-                            icon={<SearchIcon />}
-                            size="sm"
                             value={vm.list.search}
                             onChange={e => presenter.search.set(e.target.value)}
                         />
@@ -254,7 +247,6 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                     <div className="w-[160px]">
                         <Select
                             placeholder="Status"
-                            size="sm"
                             options={STATUS_OPTIONS}
                             value={(vm.list.filters.taskStatus_in as string) ?? ""}
                             onChange={value => {
@@ -270,7 +262,6 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                         <div className="w-[200px]">
                             <Select
                                 placeholder="Definition"
-                                size="sm"
                                 options={definitions}
                                 value={(vm.list.filters.definitionId as string) ?? ""}
                                 onChange={value => {
@@ -285,8 +276,8 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                     )}
                     <div className="w-[160px]">
                         <DatePicker
+                            type="date"
                             placeholder="Created from"
-                            size="sm"
                             value={(vm.list.filters.createdOn_gte as string) ?? ""}
                             onChange={value => {
                                 if (value) {
@@ -299,8 +290,8 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                     </div>
                     <div className="w-[160px]">
                         <DatePicker
+                            type="date"
                             placeholder="Created to"
-                            size="sm"
                             value={(vm.list.filters.createdOn_lte as string) ?? ""}
                             onChange={value => {
                                 if (value) {

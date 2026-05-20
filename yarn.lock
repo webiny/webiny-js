@@ -13532,6 +13532,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/background-tasks@workspace:packages/background-tasks":
+  version: 0.0.0-use.local
+  resolution: "@webiny/background-tasks@workspace:packages/background-tasks"
+  dependencies:
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/icons": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/sdk": "npm:0.0.0"
+    mobx: "npm:^6.15.3"
+    mobx-react-lite: "npm:^4.1.1"
+    react: "npm:18.3.1"
+    react-dom: "npm:18.3.1"
+    typescript: "npm:6.0.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/build-tools@npm:*, @webiny/build-tools@npm:0.0.0, @webiny/build-tools@workspace:packages/build-tools":
   version: 0.0.0-use.local
   resolution: "@webiny/build-tools@workspace:packages/build-tools"
