@@ -21,6 +21,7 @@ export interface IWebhookDeliveriesPageViewModel {
     filters: IDeliveryPageFilters;
     list: IListViewModel<WebhookDelivery>;
     expandedDeliveryId: string | null;
+    resendingIds: Set<string>;
     loading: boolean;
     error: string | null;
 }

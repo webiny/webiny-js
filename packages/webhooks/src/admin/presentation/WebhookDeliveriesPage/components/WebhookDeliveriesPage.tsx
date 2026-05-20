@@ -56,6 +56,7 @@ const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner(
                                 key={delivery.id}
                                 delivery={delivery}
                                 open={vm.expandedDeliveryId === delivery.id}
+                                resending={vm.resendingIds.has(delivery.id)}
                                 onOpenChange={open =>
                                     presenter.actions.expandDelivery(open ? delivery.id : null)
                                 }

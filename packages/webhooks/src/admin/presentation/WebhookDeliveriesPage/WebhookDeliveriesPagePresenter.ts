@@ -26,6 +26,7 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
         status: []
     };
     private _expandedDeliveryId: string | null = null;
+    private _resendingIds: Set<string> = new Set();
     private _loading = false;
     private _error: string | null = null;
 
@@ -46,6 +47,7 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
             filters: { ...this._filters },
             list: this.listPresenter.vm,
             expandedDeliveryId: this._expandedDeliveryId,
+            resendingIds: new Set(this._resendingIds),
             loading: this._loading,
             error: this._error
         };
@@ -102,8 +104,17 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
             await this.listPresenter.actions.loadMore();
         },
         resend: async (id: string) => {
-            await this.resendDeliveryUseCase.execute(id);
-            await this.listPresenter.actions.refresh();
+            runInAction(() => {
+                this._resendingIds.add(id);
+            });
+            try {
+                await this.resendDeliveryUseCase.execute(id);
+                await this.listPresenter.actions.refresh();
+            } finally {
+                runInAction(() => {
+                    this._resendingIds.delete(id);
+                });
+            }
         }
     };
 

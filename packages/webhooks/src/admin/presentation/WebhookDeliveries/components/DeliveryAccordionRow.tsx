@@ -8,6 +8,7 @@ import { statusVariant } from "./statusVariant.js";
 interface DeliveryAccordionRowProps {
     delivery: WebhookDelivery;
     open: boolean;
+    resending: boolean;
     onOpenChange: (open: boolean) => void;
     onResend: (id: string) => void;
 }
@@ -15,6 +16,7 @@ interface DeliveryAccordionRowProps {
 export const DeliveryAccordionRow = ({
     delivery,
     open,
+    resending,
     onOpenChange,
     onResend
 }: DeliveryAccordionRowProps) => {
@@ -39,6 +41,7 @@ export const DeliveryAccordionRow = ({
                     icon={<ReplayIcon />}
                     onClick={() => onResend(delivery.id)}
                     aria-label="Resend delivery"
+                    disabled={resending}
                 />
             }
         >
