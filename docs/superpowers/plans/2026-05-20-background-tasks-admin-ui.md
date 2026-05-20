@@ -1514,16 +1514,12 @@ export interface ITaskListViewModel {
     };
 }
 
-export interface ITaskListActions extends IListActions {
+export interface ITaskListPresenter extends IListActions {
+    vm: ITaskListViewModel;
+    selectedTask: Task | null;
     deleteTask(id: string): Promise<void>;
     abortTask(id: string): Promise<void>;
     selectTask(task: Task | null): void;
-}
-
-export interface ITaskListPresenter {
-    vm: ITaskListViewModel;
-    actions: ITaskListActions;
-    selectedTask: Task | null;
     init(): void;
 }
 
@@ -1532,7 +1528,6 @@ export const TaskListPresenter = createAbstraction<ITaskListPresenter>("TaskList
 export namespace TaskListPresenter {
     export type Interface = ITaskListPresenter;
     export type ViewModel = ITaskListViewModel;
-    export type Actions = ITaskListActions;
 }
 ```
 
@@ -1636,8 +1631,7 @@ import type { Task } from "~/admin/shared/types.js";
 import {
     TaskListPresenter as Abstraction,
     type ITaskListPresenter,
-    type ITaskListViewModel,
-    type ITaskListActions
+    type ITaskListViewModel
 } from "./abstractions.js";
 import { TaskListDataSource } from "./TaskListDataSource.js";
 import { ListTasksUseCase } from "~/admin/features/listTasks/abstractions.js";
@@ -1672,43 +1666,48 @@ class TaskListPresenterImpl implements ITaskListPresenter {
         return this._selectedTask;
     }
 
-    actions: ITaskListActions = {
-        search: {
-            set: (query: string) => this.listPresenter.actions.search.set(query),
-            clear: () => this.listPresenter.actions.search.clear()
-        },
-        sort: {
-            set: (field: string, direction: "ASC" | "DESC") =>
-                this.listPresenter.actions.sort.set(field, direction),
-            toggle: (field: string) => this.listPresenter.actions.sort.toggle(field)
-        },
-        filter: {
-            set: (key: string, value: unknown) => this.listPresenter.actions.filter.set(key, value),
-            clear: (key: string) => this.listPresenter.actions.filter.clear(key),
-            clearAll: () => this.listPresenter.actions.filter.clearAll()
-        },
-        selection: {
-            toggle: (id: string) => this.listPresenter.actions.selection.toggle(id),
-            selectRangeTo: (id: string) => this.listPresenter.actions.selection.selectRangeTo(id),
-            selectAll: () => this.listPresenter.actions.selection.selectAll(),
-            deselectAll: () => this.listPresenter.actions.selection.deselectAll(),
-            selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
-            isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
-        },
-        loadMore: () => this.listPresenter.actions.loadMore(),
-        refresh: () => this.listPresenter.actions.refresh(),
-        deleteTask: async (id: string) => {
-            await this.deleteTaskUseCase.execute(id);
-            this._selectedTask = null;
-            await this.listPresenter.actions.refresh();
-        },
-        abortTask: async (id: string) => {
-            await this.abortTaskUseCase.execute({ id });
-            await this.listPresenter.actions.refresh();
-        },
-        selectTask: (task: Task | null) => {
-            this._selectedTask = task;
-        }
+    search = {
+        set: (query: string) => this.listPresenter.actions.search.set(query),
+        clear: () => this.listPresenter.actions.search.clear()
+    };
+
+    sort = {
+        set: (field: string, direction: "ASC" | "DESC") =>
+            this.listPresenter.actions.sort.set(field, direction),
+        toggle: (field: string) => this.listPresenter.actions.sort.toggle(field)
+    };
+
+    filter = {
+        set: (key: string, value: unknown) => this.listPresenter.actions.filter.set(key, value),
+        clear: (key: string) => this.listPresenter.actions.filter.clear(key),
+        clearAll: () => this.listPresenter.actions.filter.clearAll()
+    };
+
+    selection = {
+        toggle: (id: string) => this.listPresenter.actions.selection.toggle(id),
+        selectRangeTo: (id: string) => this.listPresenter.actions.selection.selectRangeTo(id),
+        selectAll: () => this.listPresenter.actions.selection.selectAll(),
+        deselectAll: () => this.listPresenter.actions.selection.deselectAll(),
+        selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
+        isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
+    };
+
+    loadMore = () => this.listPresenter.actions.loadMore();
+    refresh = () => this.listPresenter.actions.refresh();
+
+    deleteTask = async (id: string) => {
+        await this.deleteTaskUseCase.execute(id);
+        this._selectedTask = null;
+        await this.listPresenter.actions.refresh();
+    };
+
+    abortTask = async (id: string) => {
+        await this.abortTaskUseCase.execute({ id });
+        await this.listPresenter.actions.refresh();
+    };
+
+    selectTask = (task: Task | null) => {
+        this._selectedTask = task;
     };
 
     init(): void {
@@ -1870,10 +1869,10 @@ const TaskListViewInner = observer(function TaskListViewInner() {
             const next = typeof updater === "function" ? updater(sorting) : updater;
             if (next.length > 0) {
                 const { id, desc } = next[0];
-                presenter.actions.sort.set(id, desc ? "DESC" : "ASC");
+                presenter.sort.set(id, desc ? "DESC" : "ASC");
             }
         },
-        [sorting, presenter.actions.sort]
+        [sorting, presenter.sort]
     );
 
     const columns = useMemo(
@@ -1883,7 +1882,7 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                 cell: (row: Task) => (
                     <Text
                         className="cursor-pointer text-primary hover:underline"
-                        onClick={() => presenter.actions.selectTask(row)}
+                        onClick={() => presenter.selectTask(row)}
                     >
                         {row.name || row.definitionId}
                     </Text>
@@ -1969,7 +1968,7 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                                     icon={<StopCircleIcon />}
                                     onClick={() => {
                                         showAbortConfirmation(() =>
-                                            presenter.actions.abortTask(row.id).then(() => {
+                                            presenter.abortTask(row.id).then(() => {
                                                 showSnackbar("Task aborted.");
                                             })
                                         );
@@ -1984,7 +1983,7 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                                         icon={<DeleteIcon />}
                                         onClick={() => {
                                             showDeleteConfirmation(() =>
-                                                presenter.actions.deleteTask(row.id).then(() => {
+                                                presenter.deleteTask(row.id).then(() => {
                                                     showSnackbar("Task deleted.");
                                                 })
                                             );
@@ -2004,7 +2003,7 @@ const TaskListViewInner = observer(function TaskListViewInner() {
         }),
         [
             vm.permissions,
-            presenter.actions,
+            presenter,
             definitions,
             showDeleteConfirmation,
             showAbortConfirmation,
@@ -2026,7 +2025,7 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                             icon={<SearchIcon />}
                             size="sm"
                             value={vm.list.search}
-                            onChange={e => presenter.actions.search.set(e.target.value)}
+                            onChange={e => presenter.search.set(e.target.value)}
                         />
                     </div>
                     <div className="w-[160px]">
@@ -2037,9 +2036,9 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                             value={(vm.list.filters.taskStatus_in as string) ?? ""}
                             onChange={value => {
                                 if (value) {
-                                    presenter.actions.filter.set("taskStatus_in", value);
+                                    presenter.filter.set("taskStatus_in", value);
                                 } else {
-                                    presenter.actions.filter.clear("taskStatus_in");
+                                    presenter.filter.clear("taskStatus_in");
                                 }
                             }}
                         />
@@ -2053,9 +2052,9 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                                 value={(vm.list.filters.definitionId as string) ?? ""}
                                 onChange={value => {
                                     if (value) {
-                                        presenter.actions.filter.set("definitionId", value);
+                                        presenter.filter.set("definitionId", value);
                                     } else {
-                                        presenter.actions.filter.clear("definitionId");
+                                        presenter.filter.clear("definitionId");
                                     }
                                 }}
                             />
@@ -2068,9 +2067,9 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                             value={(vm.list.filters.createdOn_gte as string) ?? ""}
                             onChange={value => {
                                 if (value) {
-                                    presenter.actions.filter.set("createdOn_gte", value);
+                                    presenter.filter.set("createdOn_gte", value);
                                 } else {
-                                    presenter.actions.filter.clear("createdOn_gte");
+                                    presenter.filter.clear("createdOn_gte");
                                 }
                             }}
                         />
@@ -2082,9 +2081,9 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                             value={(vm.list.filters.createdOn_lte as string) ?? ""}
                             onChange={value => {
                                 if (value) {
-                                    presenter.actions.filter.set("createdOn_lte", value);
+                                    presenter.filter.set("createdOn_lte", value);
                                 } else {
-                                    presenter.actions.filter.clear("createdOn_lte");
+                                    presenter.filter.clear("createdOn_lte");
                                 }
                             }}
                         />
@@ -2093,7 +2092,7 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                         <Button
                             variant="tertiary"
                             size="sm"
-                            onClick={() => presenter.actions.filter.clearAll()}
+                            onClick={() => presenter.filter.clearAll()}
                         >
                             Clear filters
                         </Button>
@@ -2121,13 +2120,13 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                 <TaskDetailDrawer
                     task={presenter.selectedTask}
                     open={!!presenter.selectedTask}
-                    onClose={() => presenter.actions.selectTask(null)}
+                    onClose={() => presenter.selectTask(null)}
                     onAbort={async (id: string) => {
-                        await presenter.actions.abortTask(id);
+                        await presenter.abortTask(id);
                         showSnackbar("Task aborted.");
                     }}
                     onDelete={async (id: string) => {
-                        await presenter.actions.deleteTask(id);
+                        await presenter.deleteTask(id);
                         showSnackbar("Task deleted.");
                     }}
                 />
@@ -2193,13 +2192,8 @@ export interface ITaskDetailViewModel {
     logs: IListViewModel<TaskLog>;
 }
 
-export interface ITaskDetailActions extends IListActions {
-    _noop?: never;
-}
-
-export interface ITaskDetailPresenter {
+export interface ITaskDetailPresenter extends IListActions {
     vm: ITaskDetailViewModel;
-    actions: ITaskDetailActions;
     init(taskId: string): void;
 }
 
@@ -2208,7 +2202,6 @@ export const TaskDetailPresenter = createAbstraction<ITaskDetailPresenter>("Task
 export namespace TaskDetailPresenter {
     export type Interface = ITaskDetailPresenter;
     export type ViewModel = ITaskDetailViewModel;
-    export type Actions = ITaskDetailActions;
 }
 ```
 
@@ -2307,8 +2300,7 @@ import type { Task, TaskLog } from "~/admin/shared/types.js";
 import {
     TaskDetailPresenter as Abstraction,
     type ITaskDetailPresenter,
-    type ITaskDetailViewModel,
-    type ITaskDetailActions
+    type ITaskDetailViewModel
 } from "./abstractions.js";
 import { TaskDetailDataSource } from "./TaskDetailDataSource.js";
 import { GetTaskUseCase } from "~/admin/features/getTask/abstractions.js";
@@ -2334,32 +2326,34 @@ class TaskDetailPresenterImpl implements ITaskDetailPresenter {
         };
     }
 
-    actions: ITaskDetailActions = {
-        search: {
-            set: (query: string) => this.listPresenter.actions.search.set(query),
-            clear: () => this.listPresenter.actions.search.clear()
-        },
-        sort: {
-            set: (field: string, direction: "ASC" | "DESC") =>
-                this.listPresenter.actions.sort.set(field, direction),
-            toggle: (field: string) => this.listPresenter.actions.sort.toggle(field)
-        },
-        filter: {
-            set: (key: string, value: unknown) => this.listPresenter.actions.filter.set(key, value),
-            clear: (key: string) => this.listPresenter.actions.filter.clear(key),
-            clearAll: () => this.listPresenter.actions.filter.clearAll()
-        },
-        selection: {
-            toggle: (id: string) => this.listPresenter.actions.selection.toggle(id),
-            selectRangeTo: (id: string) => this.listPresenter.actions.selection.selectRangeTo(id),
-            selectAll: () => this.listPresenter.actions.selection.selectAll(),
-            deselectAll: () => this.listPresenter.actions.selection.deselectAll(),
-            selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
-            isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
-        },
-        loadMore: () => this.listPresenter.actions.loadMore(),
-        refresh: () => this.listPresenter.actions.refresh()
+    search = {
+        set: (query: string) => this.listPresenter.actions.search.set(query),
+        clear: () => this.listPresenter.actions.search.clear()
     };
+
+    sort = {
+        set: (field: string, direction: "ASC" | "DESC") =>
+            this.listPresenter.actions.sort.set(field, direction),
+        toggle: (field: string) => this.listPresenter.actions.sort.toggle(field)
+    };
+
+    filter = {
+        set: (key: string, value: unknown) => this.listPresenter.actions.filter.set(key, value),
+        clear: (key: string) => this.listPresenter.actions.filter.clear(key),
+        clearAll: () => this.listPresenter.actions.filter.clearAll()
+    };
+
+    selection = {
+        toggle: (id: string) => this.listPresenter.actions.selection.toggle(id),
+        selectRangeTo: (id: string) => this.listPresenter.actions.selection.selectRangeTo(id),
+        selectAll: () => this.listPresenter.actions.selection.selectAll(),
+        deselectAll: () => this.listPresenter.actions.selection.deselectAll(),
+        selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
+        isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
+    };
+
+    loadMore = () => this.listPresenter.actions.loadMore();
+    refresh = () => this.listPresenter.actions.refresh();
 
     async init(taskId: string): Promise<void> {
         this._loading = true;
@@ -2731,7 +2725,7 @@ const TaskDetailDrawerInner = observer(function TaskDetailDrawerInner({
                             <Button
                                 variant="tertiary"
                                 size="sm"
-                                onClick={() => presenter.actions.loadMore()}
+                                onClick={() => presenter.loadMore()}
                                 disabled={vm.logs.pagination.loading}
                             >
                                 {vm.logs.pagination.loading ? "Loading..." : "Load more logs"}
