@@ -13202,6 +13202,7 @@ __metadata:
     "@webiny/app-website-builder-workflows": "npm:0.0.0"
     "@webiny/app-websockets": "npm:0.0.0"
     "@webiny/app-workflows": "npm:0.0.0"
+    "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
     "@webiny/lexical-editor-actions": "npm:0.0.0"
@@ -13532,7 +13533,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/background-tasks@workspace:packages/background-tasks":
+"@webiny/background-tasks@npm:0.0.0, @webiny/background-tasks@workspace:packages/background-tasks":
   version: 0.0.0-use.local
   resolution: "@webiny/background-tasks@workspace:packages/background-tasks"
   dependencies:
