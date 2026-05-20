@@ -8,7 +8,11 @@ import { GetWebhookDeliveryUseCase } from "~/api/features/GetWebhookDelivery/abs
 import { ResendWebhookDeliveryUseCase } from "~/api/features/ResendWebhookDelivery/abstractions.js";
 
 interface IListDeliveriesArgs {
-    webhookId: string;
+    where?: {
+        webhookId_eq?: string;
+        eventType_in?: string[];
+        status_in?: string[];
+    };
     limit?: number;
     after?: string;
 }
@@ -30,11 +34,18 @@ class WebhookDeliverySchema_ implements GraphQLSchemaFactory.Interface {
                 status: String!
                 payload: JSON
                 requestHeaders: JSON
+                responseHeaders: JSON
                 responseTime: Int
                 responseStatus: Int
                 responseBody: String
                 expiresAt: DateTime
                 createdOn: DateTime
+            }
+
+            input WebhookDeliveryListWhereInput {
+                webhookId_eq: ID
+                eventType_in: [String!]
+                status_in: [String!]
             }
 
             type WebhookDeliveryResponse {
@@ -50,7 +61,7 @@ class WebhookDeliverySchema_ implements GraphQLSchemaFactory.Interface {
 
             extend type WebhookQuery {
                 listWebhookDeliveries(
-                    webhookId: ID!
+                    where: WebhookDeliveryListWhereInput
                     limit: Int
                     after: String
                 ): WebhookDeliveryListResponse!
@@ -68,9 +79,9 @@ class WebhookDeliverySchema_ implements GraphQLSchemaFactory.Interface {
             resolver: (listDeliveries: ListWebhookDeliveriesUseCase.Interface) => {
                 return async ({ args }) => {
                     const result = await listDeliveries.execute({
-                        where: { webhookId: args.webhookId },
-                        limit: args.limit ?? undefined,
-                        after: args.after ?? undefined
+                        where: args.where,
+                        limit: args.limit,
+                        after: args.after
                     });
                     if (result.isFail()) {
                         return new ListErrorResponse(result.error);
