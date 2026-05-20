@@ -5,7 +5,10 @@ import type {
     IDataSourceMeta
 } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
-import type { IListWebhookDeliveriesUseCase } from "~/admin/features/listWebhookDeliveries/abstractions.js";
+import type {
+    IListWebhookDeliveriesUseCase,
+    ListWebhookDeliveriesWhere
+} from "~/admin/features/listWebhookDeliveries/abstractions.js";
 
 export class WebhookDeliveriesDataSource implements IDataSource<WebhookDelivery> {
     private _rows: WebhookDelivery[] = [];
@@ -14,7 +17,7 @@ export class WebhookDeliveriesDataSource implements IDataSource<WebhookDelivery>
 
     constructor(
         private readonly listDeliveriesUseCase: IListWebhookDeliveriesUseCase,
-        private readonly webhookId: string
+        private readonly where: ListWebhookDeliveriesWhere
     ) {
         makeAutoObservable<WebhookDeliveriesDataSource, "listDeliveriesUseCase">(this, {
             listDeliveriesUseCase: false,
@@ -37,7 +40,7 @@ export class WebhookDeliveriesDataSource implements IDataSource<WebhookDelivery>
     async query(params: IDataSourceQuery): Promise<void> {
         this._loading = true;
         const result = await this.listDeliveriesUseCase.execute({
-            webhookId: this.webhookId,
+            where: this.where,
             limit: params.limit,
             after: params.cursor
         });
@@ -58,7 +61,7 @@ export class WebhookDeliveriesDataSource implements IDataSource<WebhookDelivery>
         }
         this._loading = true;
         const result = await this.listDeliveriesUseCase.execute({
-            webhookId: this.webhookId,
+            where: this.where,
             limit: params.limit,
             after: this._meta.cursor ?? undefined
         });

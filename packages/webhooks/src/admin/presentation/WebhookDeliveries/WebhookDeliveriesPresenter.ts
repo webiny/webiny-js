@@ -64,7 +64,9 @@ class WebhookDeliveriesPresenterImpl implements IWebhookDeliveriesPresenter {
     };
 
     init(webhookId: string): void {
-        const dataSource = new WebhookDeliveriesDataSource(this.listDeliveriesUseCase, webhookId);
+        const dataSource = new WebhookDeliveriesDataSource(this.listDeliveriesUseCase, {
+            webhookId_eq: webhookId
+        });
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
