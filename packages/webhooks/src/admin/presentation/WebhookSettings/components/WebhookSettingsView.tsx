@@ -1,46 +1,52 @@
 import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { FormErrors } from "@webiny/app-admin";
-import { Button, Heading, OverlayLoader, Separator } from "@webiny/admin-ui";
+import { CenteredView, FormErrors } from "@webiny/app-admin";
+import { Button, OverlayLoader } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
+import { SimpleFormHeader } from "@webiny/app-admin";
+import { SimpleFormFooter } from "@webiny/app-admin";
+import { SimpleFormContent } from "@webiny/app-admin";
+import { SimpleForm } from "@webiny/app-admin";
+import { useToast } from "@webiny/admin-ui";
 import { WebhookSettingsPresenterFeature } from "../feature.js";
 import { GetWebhookSettingsFeature } from "~/admin/features/getWebhookSettings/feature.js";
 import { UpdateWebhookSettingsFeature } from "~/admin/features/updateWebhookSettings/feature.js";
 
 const WebhookSettingsViewInner = observer(function WebhookSettingsViewInner() {
     const { presenter } = useFeature(WebhookSettingsPresenterFeature);
+    const toast = useToast();
 
     useEffect(() => {
         void presenter.init();
     }, [presenter]);
 
-    const { vm, actions } = presenter;
+    const { vm } = presenter;
 
-    if (vm.loading) {
-        return <OverlayLoader />;
-    }
+    const handleSave = async () => {
+        const success = await presenter.save();
+        if (success) {
+            toast.showSuccessToast({
+                title: "Webhooks settings saved successfully!"
+            });
+        }
+    };
 
     return (
-        <div className="flex flex-col h-main-content">
-            <div className="flex items-center justify-between py-sm px-md">
-                <Heading level={5}>Webhook Settings</Heading>
-                <div className="flex gap-sm">
-                    <Button
-                        variant="primary"
-                        onClick={() => void actions.save()}
-                        disabled={vm.saving}
-                    >
-                        {vm.saving ? "Saving..." : "Save"}
-                    </Button>
-                </div>
-            </div>
-            <Separator />
-            <div className="p-lg">
-                <FormErrors form={vm.form} />
-                <FormView name="WebhookSettings" form={vm.form} />
-            </div>
-        </div>
+        <CenteredView>
+            <FormErrors form={vm.form} />
+            <SimpleForm>
+                {vm.loading ? <OverlayLoader text={"Loading settings..."} /> : null}
+                {vm.saving ? <OverlayLoader text={"Saving settings..."} /> : null}
+                <SimpleFormHeader title="Webhooks Settings" />
+                <SimpleFormContent>
+                    <FormView name="WebhooksSettings" form={vm.form} />
+                </SimpleFormContent>
+                <SimpleFormFooter>
+                    <Button text={"Save settings"} onClick={handleSave} />
+                </SimpleFormFooter>
+            </SimpleForm>
+        </CenteredView>
     );
 });
 

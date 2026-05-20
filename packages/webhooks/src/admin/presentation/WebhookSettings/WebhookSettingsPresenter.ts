@@ -2,8 +2,7 @@ import { computed, makeAutoObservable, runInAction } from "mobx";
 import {
     WebhookSettingsPresenter as Abstraction,
     type IWebhookSettingsPresenter,
-    type IWebhookSettingsViewModel,
-    type IWebhookSettingsActions
+    type IWebhookSettingsViewModel
 } from "./abstractions.js";
 import { GetWebhookSettingsUseCase } from "~/admin/features/getWebhookSettings/abstractions.js";
 import { UpdateWebhookSettingsUseCase } from "~/admin/features/updateWebhookSettings/abstractions.js";
@@ -50,32 +49,32 @@ class WebhookSettingsPresenterImpl implements IWebhookSettingsPresenter {
         });
     }
 
-    public actions: IWebhookSettingsActions = {
-        save: async () => {
-            const data = await this._form.submit<Record<string, unknown>>();
-            if (data === false) {
-                return;
-            }
-
-            this._saving = true;
-
-            try {
-                const settings = await this.updateWebhookSettingsUseCase.execute({
-                    signingSecret: (data.signingSecret as string) || undefined
-                });
-
-                runInAction(() => {
-                    this._form.setData({
-                        signingSecret: settings.signingSecret ?? ""
-                    });
-                });
-            } finally {
-                runInAction(() => {
-                    this._saving = false;
-                });
-            }
+    public async save() {
+        const data = await this._form.submit<Record<string, unknown>>();
+        if (data === false) {
+            return false;
         }
-    };
+
+        this._saving = true;
+
+        try {
+            const settings = await this.updateWebhookSettingsUseCase.execute({
+                signingSecret: (data.signingSecret as string) || undefined
+            });
+
+            runInAction(() => {
+                this._form.setData({
+                    signingSecret: settings.signingSecret ?? ""
+                });
+            });
+        } finally {
+            runInAction(() => {
+                this._saving = false;
+            });
+        }
+
+        return true;
+    }
 
     public async init(): Promise<void> {
         this._loading = true;

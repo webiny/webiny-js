@@ -16,6 +16,7 @@ import {
 } from "@webiny/admin-ui";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin/hooks/index.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { WebhookListPresenterFeature } from "../feature.js";
 import { ListWebhooksFeature } from "~/admin/features/ListWebhooks/feature.js";
 import { DeleteWebhookFeature } from "~/admin/features/deleteWebhook/feature.js";
@@ -157,29 +158,28 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
         [vm.permissions, presenter.actions, goToRoute, showDeleteConfirmation, showSnackbar]
     );
 
+    const createButton = (
+        <Button
+            variant="primary"
+            onClick={() => goToRoute(Routes.Form, { id: "new" })}
+            icon={<AddIcon />}
+        >
+            Create Webhook
+        </Button>
+    );
+
     return (
         <div className="flex flex-col h-main-content">
             <div className="flex items-center justify-between py-sm px-md">
                 <Heading level={5}>Webhooks</Heading>
-                {vm.permissions.canCreate && (
-                    <Button variant="primary" onClick={() => goToRoute(Routes.Form, { id: "new" })}>
-                        Create Webhook
-                    </Button>
-                )}
+                {vm.permissions.canCreate && createButton}
             </div>
             <Separator />
             <div className="flex-1 overflow-auto">
                 {!vm.list.pagination.loading && vm.list.rows.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full gap-md">
                         <Text className="text-neutral-strong">No webhooks found.</Text>
-                        {vm.permissions.canCreate && (
-                            <Button
-                                variant="primary"
-                                onClick={() => goToRoute(Routes.Form, { id: "new" })}
-                            >
-                                Create Webhook
-                            </Button>
-                        )}
+                        {vm.permissions.canCreate && createButton}
                     </div>
                 ) : (
                     <DataTable<Webhook>
