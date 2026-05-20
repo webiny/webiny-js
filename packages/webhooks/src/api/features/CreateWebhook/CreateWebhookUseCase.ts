@@ -3,6 +3,7 @@ import {
     CreateWebhookRepository,
     CreateWebhookUseCase as UseCaseAbstraction
 } from "./abstractions.js";
+import { CreateWebhookInputSchema } from "./schema.js";
 import { ListWebhooksRepository } from "~/api/features/ListWebhooks/abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookNotAuthorizedError, WebhookValidationError } from "~/api/domain/errors.js";
@@ -16,28 +17,11 @@ const generateSlug = (name: string): string => {
         .slice(0, 64);
 };
 
-const isValidEndpointUrl = (url: string): boolean => {
-    try {
-        const parsed = new URL(url);
-        if (parsed.protocol === "https:") {
-            return true;
-        } else if (
-            parsed.protocol === "http:" &&
-            (parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1")
-        ) {
-            return true;
-        }
-        return false;
-    } catch {
-        return false;
-    }
-};
-
 class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private permissions: WebhookPermissions.Interface,
-        private repository: CreateWebhookRepository.Interface,
-        private listWebhooksRepository: ListWebhooksRepository.Interface
+        private readonly permissions: WebhookPermissions.Interface,
+        private readonly repository: CreateWebhookRepository.Interface,
+        private readonly listWebhooksRepository: ListWebhooksRepository.Interface
     ) {}
 
     async execute(
@@ -47,19 +31,12 @@ class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new WebhookNotAuthorizedError());
         }
 
-        if (!isValidEndpointUrl(input.endpointUrl)) {
-            return Result.fail(
-                new WebhookValidationError(
-                    "Endpoint URL must use HTTPS. HTTP is only allowed for localhost."
-                )
-            );
+        const parsed = CreateWebhookInputSchema.safeParse(input);
+        if (!parsed.success) {
+            return Result.fail(new WebhookValidationError(parsed.error));
         }
 
-        if (!input.events || input.events.length === 0) {
-            return Result.fail(new WebhookValidationError("At least one event must be selected."));
-        }
-
-        const slug = (input.slug || "").trim() || generateSlug(input.name);
+        const slug = (parsed.data.slug || "").trim() || generateSlug(parsed.data.name);
 
         const listResult = await this.listWebhooksRepository.execute({
             where: {
@@ -72,13 +49,13 @@ class CreateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const webhook: WebhookCmsEntryValues = {
-            name: input.name,
+            name: parsed.data.name,
             slug,
-            endpointUrl: input.endpointUrl,
-            description: input.description,
-            enabled: input.enabled ?? false,
-            events: input.events,
-            signingSecret: input.signingSecret
+            endpointUrl: parsed.data.endpointUrl,
+            description: parsed.data.description,
+            enabled: parsed.data.enabled ?? false,
+            events: parsed.data.events,
+            signingSecret: parsed.data.signingSecret
         };
 
         return this.repository.execute(webhook);

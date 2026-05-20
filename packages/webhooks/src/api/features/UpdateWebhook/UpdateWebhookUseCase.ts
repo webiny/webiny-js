@@ -1,33 +1,19 @@
-import {Result} from "@webiny/feature/api";
-import {UpdateWebhookRepository, UpdateWebhookUseCase as UseCaseAbstraction} from "./abstractions.js";
-import {GetWebhookRepository} from "~/api/features/GetWebhook/abstractions.js";
-import {WebhookPermissions} from "~/api/features/WebhookPermissions/abstractions.js";
-import {WebhookNotAuthorizedError, WebhookValidationError} from "~/api/domain/errors.js";
-import type {Webhook} from "~/api/domain/Webhook.js";
-
-const isValidEndpointUrl = (url: string): boolean => {
-    try {
-        const parsed = new URL(url);
-        if (parsed.protocol === "https:") {
-            return true;
-        }
-        if (
-            parsed.protocol === "http:" &&
-            (parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1")
-        ) {
-            return true;
-        }
-        return false;
-    } catch {
-        return false;
-    }
-};
+import { Result } from "@webiny/feature/api";
+import {
+    UpdateWebhookRepository,
+    UpdateWebhookUseCase as UseCaseAbstraction
+} from "./abstractions.js";
+import { UpdateWebhookInputSchema } from "./schema.js";
+import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
+import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
+import { WebhookNotAuthorizedError, WebhookValidationError } from "~/api/domain/errors.js";
+import type { Webhook } from "~/api/domain/Webhook.js";
 
 class UpdateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private permissions: WebhookPermissions.Interface,
-        private getWebhookRepository: GetWebhookRepository.Interface,
-        private updateRepository: UpdateWebhookRepository.Interface
+        private readonly permissions: WebhookPermissions.Interface,
+        private readonly getWebhookRepository: GetWebhookRepository.Interface,
+        private readonly updateRepository: UpdateWebhookRepository.Interface
     ) {}
 
     async execute(
@@ -38,6 +24,11 @@ class UpdateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new WebhookNotAuthorizedError());
         }
 
+        const parsed = UpdateWebhookInputSchema.safeParse(input);
+        if (!parsed.success) {
+            return Result.fail(new WebhookValidationError(parsed.error));
+        }
+
         const getResult = await this.getWebhookRepository.execute(id);
         if (getResult.isFail()) {
             return Result.fail(getResult.error);
@@ -45,26 +36,14 @@ class UpdateWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const existing = getResult.value;
 
-        if (input.endpointUrl && !isValidEndpointUrl(input.endpointUrl)) {
-            return Result.fail(
-                new WebhookValidationError(
-                    "Endpoint URL must use HTTPS. HTTP is only allowed for localhost."
-                )
-            );
-        }
-
-        if (input.events !== undefined && input.events.length === 0) {
-            return Result.fail(new WebhookValidationError("At least one event must be selected."));
-        }
-
         const updated: Webhook = {
             ...existing,
-            name: input.name || existing.name,
-            endpointUrl: input.endpointUrl || existing.endpointUrl,
-            description: input.description ? input.description : existing.description,
-            enabled: input.enabled ? input.enabled : existing.enabled,
-            events: input.events || existing.events,
-            signingSecret: input.signingSecret ? input.signingSecret : existing.signingSecret,
+            name: parsed.data.name ?? existing.name,
+            endpointUrl: parsed.data.endpointUrl ?? existing.endpointUrl,
+            description: parsed.data.description ?? existing.description,
+            enabled: parsed.data.enabled ?? existing.enabled,
+            events: parsed.data.events ?? existing.events,
+            signingSecret: parsed.data.signingSecret ?? existing.signingSecret
         };
 
         return this.updateRepository.execute(updated);

@@ -14531,6 +14531,7 @@ __metadata:
     standardwebhooks: "npm:^1.0.0"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.6"
+    zod: "npm:4.4.3"
   languageName: unknown
   linkType: soft
 

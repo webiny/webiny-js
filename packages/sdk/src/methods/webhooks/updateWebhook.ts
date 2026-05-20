@@ -8,7 +8,6 @@ import { ApiError } from "../../errors.js";
 export interface UpdateWebhookParams {
     id: string;
     name?: string;
-    slug?: string;
     endpointUrl?: string;
     description?: string;
     enabled?: boolean;

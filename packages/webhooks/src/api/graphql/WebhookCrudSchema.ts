@@ -76,7 +76,6 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
 
             input UpdateWebhookInput {
                 name: String
-                slug: String
                 endpointUrl: String
                 description: String
                 enabled: Boolean
