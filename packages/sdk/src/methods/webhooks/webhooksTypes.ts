@@ -19,6 +19,7 @@ export interface WebhookDelivery {
     status: string;
     payload: unknown;
     requestHeaders: unknown;
+    responseHeaders: unknown | null;
     responseTime: number | null;
     responseStatus: number | null;
     responseBody: string | null;

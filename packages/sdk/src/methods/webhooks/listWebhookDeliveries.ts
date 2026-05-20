@@ -5,8 +5,14 @@ import { listWebhookDeliveriesSchema } from "./schemas.js";
 import { executeGraphQL } from "../executeGraphQL.js";
 import { ApiError } from "../../errors.js";
 
+export interface ListWebhookDeliveriesWhere {
+    webhookId_eq?: string;
+    eventType_in?: string[];
+    status_in?: string[];
+}
+
 export interface ListWebhookDeliveriesParams {
-    webhookId: string;
+    where?: ListWebhookDeliveriesWhere;
     limit?: number;
     after?: string;
 }
@@ -22,11 +28,11 @@ export interface ListWebhookDeliveriesResult {
 
 export const listWebhookDeliveries = createMethod(
     listWebhookDeliveriesSchema,
-    async (config, fetchFn, { webhookId, limit, after }) => {
+    async (config, fetchFn, { where, limit, after }) => {
         const query = `
-        query ListWebhookDeliveries($webhookId: ID!, $limit: Int, $after: String) {
+        query ListWebhookDeliveries($where: WebhookDeliveryListWhereInput, $limit: Int, $after: String) {
             webhooks {
-                listWebhookDeliveries(webhookId: $webhookId, limit: $limit, after: $after) {
+                listWebhookDeliveries(where: $where, limit: $limit, after: $after) {
                     data {
                         id
                         webhookId
@@ -35,6 +41,7 @@ export const listWebhookDeliveries = createMethod(
                         status
                         payload
                         requestHeaders
+                        responseHeaders
                         responseTime
                         responseStatus
                         responseBody
@@ -56,7 +63,7 @@ export const listWebhookDeliveries = createMethod(
     `;
 
         const result = await executeGraphQL(config, fetchFn, query, {
-            webhookId,
+            where,
             limit,
             after
         });

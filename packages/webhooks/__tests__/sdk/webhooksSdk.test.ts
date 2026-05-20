@@ -297,7 +297,7 @@ describe("WebhooksSdk", () => {
             expect(trigger.isOk()).toBe(true);
 
             const result = await sdk.webhooks.listWebhookDeliveries({
-                webhookId
+                where: { webhookId_eq: webhookId }
             });
 
             expect(result.isOk()).toBe(true);
@@ -315,7 +315,7 @@ describe("WebhooksSdk", () => {
             expect(created.isOk()).toBe(true);
 
             const result = await sdk.webhooks.listWebhookDeliveries({
-                webhookId: created.value.id
+                where: { webhookId_eq: created.value.id }
             });
 
             expect(result.isOk()).toBe(true);

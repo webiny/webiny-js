@@ -43,7 +43,13 @@ export const getWebhookDeliverySchema = z.object({
 });
 
 export const listWebhookDeliveriesSchema = z.object({
-    webhookId: z.string().min(1, "webhookId is required"),
+    where: z
+        .object({
+            webhookId_eq: z.string().optional(),
+            eventType_in: z.array(z.string()).optional(),
+            status_in: z.array(z.string()).optional()
+        })
+        .optional(),
     limit: z.number().int().positive().optional(),
     after: z.string().optional()
 });
