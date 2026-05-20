@@ -3,7 +3,7 @@ import { Collapsible } from "radix-ui";
 import { ReactComponent as ChevronIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 import { Icon } from "@webiny/admin-ui";
 
-interface StyleAccordionItemProps {
+export interface StyleAccordionItemProps {
     title: string;
     icon?: React.ReactElement;
     defaultOpen?: boolean;
