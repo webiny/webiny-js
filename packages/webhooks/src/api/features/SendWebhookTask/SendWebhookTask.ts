@@ -81,9 +81,7 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
             signHeaders = await this.signPayload.sign(taskId, now, rawBody, signingSecret);
         } catch (ex) {
             await this.updateDeliveryRepository.execute(input.deliveryId, { status: "failed" });
-            return controller.response.error(
-                ex instanceof Error ? ex : new Error("Unknown error during payload signing.")
-            );
+            return controller.response.error(ex);
         }
 
         const requestHeaders: Record<string, string> = {
