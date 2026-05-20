@@ -30,6 +30,7 @@ export interface WebhookEvent {
     app: string;
     appLabel: string;
     entity: string;
+    entityLabel: string;
     eventName: string;
     label: string;
 }

@@ -17,7 +17,11 @@ declare module "../../../../features/formModel/abstractions.js" {
 export const ObjectRenderer = createObjectFieldRenderer<"objectAccordionSingle">(({ field }) => {
     return (
         <Accordion background={"base"} variant={"container"}>
-            <Accordion.Item title={field.label} defaultOpen={true} className={"pl-sm"}>
+            <Accordion.Item
+                title={field.label}
+                defaultOpen={field.rendererSettings?.open ?? true}
+                className={"pl-sm"}
+            >
                 <NestedLayout layout={field.layout} />
             </Accordion.Item>
         </Accordion>

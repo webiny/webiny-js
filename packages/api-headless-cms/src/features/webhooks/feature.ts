@@ -5,6 +5,8 @@ import { OnEntryUpdatedHandler } from "./handlers/OnEntryUpdatedHandler.js";
 import { OnEntryDeletedHandler } from "./handlers/OnEntryDeletedHandler.js";
 import { OnEntryPublishedHandler } from "./handlers/OnEntryPublishedHandler.js";
 import { OnEntryUnpublishedHandler } from "./handlers/OnEntryUnpublishedHandler.js";
+import { OnEntryTrashedHandler } from "./handlers/OnEntryTrashedHandler.js";
+import { OnEntryRestoredHandler } from "./handlers/OnEntryRestoredHandler.js";
 
 export const CmsWebhooksFeature = createFeature({
     name: "CmsWebhooks",
@@ -15,5 +17,7 @@ export const CmsWebhooksFeature = createFeature({
         container.register(OnEntryDeletedHandler);
         container.register(OnEntryPublishedHandler);
         container.register(OnEntryUnpublishedHandler);
+        container.register(OnEntryTrashedHandler);
+        container.register(OnEntryRestoredHandler);
     }
 });

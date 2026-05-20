@@ -8,12 +8,14 @@ export const TEST_EVENTS: IWebhookFactoryDefinition[] = [
         app: "cms",
         appLabel: "Headless CMS",
         entity: "product",
+        entityLabel: "Product",
         eventName: "cms.entry.product.created",
         label: "Created"
     },
     {
         app: "cms",
         entity: "product",
+        entityLabel: "Product",
         appLabel: "Headless CMS",
         eventName: "cms.entry.product.published",
         label: "Published"
@@ -21,7 +23,8 @@ export const TEST_EVENTS: IWebhookFactoryDefinition[] = [
     {
         app: "wb",
         entity: "page",
-        appLabel: "Website Builder Pages",
+        entityLabel: "Pages",
+        appLabel: "Website Builder",
         eventName: "wb.page.published",
         label: "Published"
     }
