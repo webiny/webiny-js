@@ -1,11 +1,5 @@
 import React from "react";
-import {
-    Accordion,
-    Separator,
-    Tag,
-    Text,
-    TimeAgo
-} from "@webiny/admin-ui";
+import { Accordion, Separator, Tag, Text, TimeAgo } from "@webiny/admin-ui";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
 import { statusVariant } from "./statusVariant.js";
 
@@ -35,9 +29,7 @@ export const DeliveryDetailContent = ({ delivery }: DeliveryDetailContentProps) 
                 {delivery.responseStatus !== null && (
                     <Text size="sm">HTTP {delivery.responseStatus}</Text>
                 )}
-                {delivery.responseTime !== null && (
-                    <Text size="sm">{delivery.responseTime}ms</Text>
-                )}
+                {delivery.responseTime !== null && <Text size="sm">{delivery.responseTime}ms</Text>}
                 {delivery.createdOn && (
                     <Text size="sm" className="text-neutral-strong">
                         <TimeAgo datetime={delivery.createdOn} />

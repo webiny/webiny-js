@@ -41,8 +41,9 @@ export interface IWebhookDeliveriesPagePresenter {
     actions: IWebhookDeliveriesPageActions;
 }
 
-export const WebhookDeliveriesPagePresenter =
-    createAbstraction<IWebhookDeliveriesPagePresenter>("WebhookDeliveriesPagePresenter");
+export const WebhookDeliveriesPagePresenter = createAbstraction<IWebhookDeliveriesPagePresenter>(
+    "WebhookDeliveriesPagePresenter"
+);
 
 export namespace WebhookDeliveriesPagePresenter {
     export type Interface = IWebhookDeliveriesPagePresenter;
