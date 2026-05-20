@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/website-builder-react": "0.0.0",
-    "postcss": "^8.5.14",
+    "postcss": "^8.5.15",
     "postcss-import": "^16.1.1"
   },
   "devDependencies": {
