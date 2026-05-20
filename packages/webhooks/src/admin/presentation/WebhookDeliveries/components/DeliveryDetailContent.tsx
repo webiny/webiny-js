@@ -1,9 +1,11 @@
 import React from "react";
-import { Accordion } from "@webiny/admin-ui";
-import { Separator } from "@webiny/admin-ui";
-import { Tag } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
-import { TimeAgo } from "@webiny/admin-ui";
+import {
+    Accordion,
+    Separator,
+    Tag,
+    Text,
+    TimeAgo
+} from "@webiny/admin-ui";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
 import { statusVariant } from "./statusVariant.js";
 
