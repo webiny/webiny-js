@@ -5,8 +5,11 @@ import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js"
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
 import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { UpdateWebhookDeliveryRepository } from "~/api/features/UpdateWebhookDelivery/abstractions.js";
+import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
+import { WebhookDeliver } from "~/api/features/WebhookDeliver/abstractions.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
 import type { ISendWebhookTaskInput, ISendWebhookTaskOutput, IWebhookPayload } from "./types.js";
+import type { IWebhookSignPayloadHeaders } from "@webiny/api-core/features/webhooks/WebhookSignPayload/abstractions.js";
 
 type IRunParams = TaskDefinition.RunParams<ISendWebhookTaskInput, ISendWebhookTaskOutput>;
 
@@ -21,23 +24,25 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
     public readonly databaseLogs = false;
     public readonly description =
         "POST a signed event payload to a webhook endpoint and log the delivery.";
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+    public readonly selfCleanup = "always";
 
     public constructor(
         private readonly getWebhookRepository: GetWebhookRepository.Interface,
         private readonly getWebhookDeliveryRepository: GetWebhookDeliveryRepository.Interface,
         private readonly updateDeliveryRepository: UpdateWebhookDeliveryRepository.Interface,
         private readonly signPayload: WebhookSignPayload.Interface,
-        private readonly tenantContext: TenantContext.Interface
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly getWebhookSettingsRepository: GetWebhookSettingsRepository.Interface,
+        private readonly deliver: WebhookDeliver.Interface
     ) {}
 
     public async run(params: IRunParams) {
-        const { input } = params;
-        const taskId = params.controller.state.getTask().id;
+        const { input, controller } = params;
+        const taskId = controller.state.getTask().id;
 
         const delivery = await this.getWebhookDeliveryRepository.execute(input.deliveryId);
         if (delivery.isFail()) {
-            return params.controller.response.error(delivery.error);
+            return controller.response.error(delivery.error);
         }
 
         await this.updateDeliveryRepository.execute(input.deliveryId, {
@@ -48,7 +53,7 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
         const webhookResult = await this.getWebhookRepository.execute(input.webhookId);
         if (webhookResult.isFail()) {
             await this.updateDeliveryRepository.execute(input.deliveryId, { status: "failed" });
-            return params.controller.response.error(webhookResult.error);
+            return controller.response.error(webhookResult.error);
         }
         const webhook = webhookResult.value;
 
@@ -58,52 +63,52 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
             event: input.eventName,
             timestamp: now.toISOString(),
             webhookId: input.webhookId,
+            deliveryId: input.deliveryId,
             tenant: this.tenantContext.getTenant().id,
             data: delivery.value.payload
         };
         const rawBody = JSON.stringify(payload);
-        const signHeaders = await this.signPayload.sign(
-            taskId,
-            now,
-            rawBody,
-            webhook.signingSecret ?? ""
-        );
+        let signHeaders: IWebhookSignPayloadHeaders;
+
+        const settingsResult = await this.getWebhookSettingsRepository.execute();
+        if (settingsResult.isFail()) {
+            await this.updateDeliveryRepository.execute(input.deliveryId, { status: "failed" });
+            return controller.response.error(settingsResult.error);
+        }
+        const signingSecret = webhook.signingSecret || settingsResult.value.signingSecret || "";
+
+        try {
+            signHeaders = await this.signPayload.sign(taskId, now, rawBody, signingSecret);
+        } catch (ex) {
+            await this.updateDeliveryRepository.execute(input.deliveryId, { status: "failed" });
+            return controller.response.error(ex);
+        }
 
         const requestHeaders: Record<string, string> = {
             "Content-Type": "application/json",
             ...signHeaders
         };
 
-        const startTime = Date.now();
-        let responseStatus = 0;
-        let responseBody = "";
-
-        try {
-            const response = await fetch(webhook.endpointUrl, {
-                method: "POST",
-                headers: requestHeaders,
-                body: rawBody,
-                signal: AbortSignal.timeout(600_000)
-            });
-            responseStatus = response.status;
-            responseBody = await response.text();
-        } catch (error) {
-            responseStatus = 0;
-            responseBody = (error as Error).message;
-        }
-
-        const responseTime = Date.now() - startTime;
+        const result = await this.deliver.execute({
+            url: webhook.endpointUrl,
+            headers: requestHeaders,
+            body: rawBody,
+            timeout: 600_000,
+            maxRetries: 3,
+            initialDelay: 1000,
+            maxDelay: 30_000
+        });
 
         await this.updateDeliveryRepository.execute(input.deliveryId, {
             payload,
             requestHeaders,
-            responseTime,
-            responseStatus,
-            responseBody,
-            status: responseStatus > 0 ? "delivered" : "failed"
+            responseTime: result.responseTime,
+            responseStatus: result.status,
+            responseBody: result.body,
+            status: result.status > 0 ? "delivered" : "failed"
         });
 
-        return params.controller.response.done();
+        return controller.response.done();
     }
 }
 
@@ -114,6 +119,8 @@ export const SendWebhookTask = TaskDefinition.createImplementation({
         GetWebhookDeliveryRepository,
         UpdateWebhookDeliveryRepository,
         WebhookSignPayload,
-        TenantContext
+        TenantContext,
+        GetWebhookSettingsRepository,
+        WebhookDeliver
     ]
 });

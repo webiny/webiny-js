@@ -10,10 +10,13 @@ import { ListWebhookDeliveriesFeature } from "./features/listWebhookDeliveries/i
 import { TriggerWebhookFeature } from "./features/triggerWebhook/index.js";
 import { ResendWebhookDeliveryFeature } from "./features/resendWebhookDelivery/index.js";
 import { ListAvailableEventsFeature } from "./features/listAvailableEvents/index.js";
+import { GetWebhookSettingsFeature } from "./features/getWebhookSettings/index.js";
+import { UpdateWebhookSettingsFeature } from "./features/updateWebhookSettings/index.js";
 import { WebhookPermissionsFeature } from "./features/permissions/index.js";
 import { WebhookListPresenterFeature } from "./presentation/WebhookList/index.js";
 import { WebhookFormPresenterFeature } from "./presentation/WebhookForm/index.js";
 import { WebhookDeliveriesPresenterFeature } from "./presentation/WebhookDeliveries/index.js";
+import { WebhookSettingsPresenterFeature } from "./presentation/WebhookSettings/index.js";
 import { WebhookRoutes } from "./WebhookRoutes.js";
 import { WEBHOOK_PERMISSIONS_SCHEMA } from "~/admin/permissions.js";
 
@@ -32,11 +35,14 @@ export const Webhooks = () => {
             <RegisterFeature feature={TriggerWebhookFeature} />
             <RegisterFeature feature={ResendWebhookDeliveryFeature} />
             <RegisterFeature feature={ListAvailableEventsFeature} />
+            <RegisterFeature feature={GetWebhookSettingsFeature} />
+            <RegisterFeature feature={UpdateWebhookSettingsFeature} />
             <RegisterFeature feature={WebhookPermissionsFeature} />
             {/* Presentation features. */}
             <RegisterFeature feature={WebhookListPresenterFeature} />
             <RegisterFeature feature={WebhookFormPresenterFeature} />
             <RegisterFeature feature={WebhookDeliveriesPresenterFeature} />
+            <RegisterFeature feature={WebhookSettingsPresenterFeature} />
             {/* Routes + menu. */}
             <WebhookRoutes />
             {/* Security permissions UI. */}

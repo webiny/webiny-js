@@ -7,7 +7,8 @@ import { NumberFieldIndex } from "./fields/NumberFieldIndex.js";
 import { DefaultFieldIndex } from "./fields/DefaultFieldIndex.js";
 import { DateTimeFieldIndex } from "./fields/DateTimeFieldIndex.js";
 import { ObjectFieldIndex } from "./fields/ObjectFieldIndex.js";
-import { TextCompressedFieldIndex } from "~/features/CmsEntryOpenSearchFieldIndex/fields/TextCompressedFieldIndex.js";
+import { TextCompressedFieldIndex } from "./fields/TextCompressedFieldIndex.js";
+import { TextEncryptedFieldIndex } from "./fields/TextEncryptedFieldIndex.js";
 
 export const CmsEntryOpenSearchFieldIndexFeature = createFeature({
     name: "Cms/Entry/OpenSearch/FieldIndexFeature",
@@ -20,6 +21,7 @@ export const CmsEntryOpenSearchFieldIndexFeature = createFeature({
         container.register(DateTimeFieldIndex).inSingletonScope();
         container.register(ObjectFieldIndex).inSingletonScope();
         container.register(TextCompressedFieldIndex).inSingletonScope();
+        container.register(TextEncryptedFieldIndex).inSingletonScope();
 
         // must be registered last
         container.register(CmsEntryOpenSearchFieldIndexRegistry).inSingletonScope();

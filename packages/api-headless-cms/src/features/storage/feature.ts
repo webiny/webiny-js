@@ -8,6 +8,7 @@ import { LongTextStorageTransform } from "./fields/LongTextStorageTransform.js";
 import { ObjectStorageTransform } from "./fields/ObjectStorageTransform.js";
 import { RichTextStorageTransform } from "./fields/RichTextStorageTransform.js";
 import { CompressedTextStorageTransform } from "./fields/CompressedTextStorageTransform.js";
+import { EncryptedTextStorageTransform } from "~/features/storage/fields/EncryptedTextStorageTransform.js";
 
 export const StorageFeature = createFeature({
     name: "Cms/StorageFeature",
@@ -20,6 +21,7 @@ export const StorageFeature = createFeature({
         container.register(ObjectStorageTransform).inSingletonScope();
         container.register(RichTextStorageTransform).inSingletonScope();
         container.register(CompressedTextStorageTransform).inSingletonScope();
+        container.register(EncryptedTextStorageTransform).inSingletonScope();
 
         // must be last, as it depends on all other transforms being registered first
         container.register(StorageTransformRegistry).inSingletonScope();

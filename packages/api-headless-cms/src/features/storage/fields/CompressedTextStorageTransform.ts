@@ -1,8 +1,9 @@
 import { StorageTransform } from "../abstractions/StorageTransform.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
+import { TextFieldTypes } from "~/features/modelBuilder/index.js";
 
 class CompressedTextStorageTransformImpl implements StorageTransform.Interface<string, string> {
-    public readonly fieldType = "text:compressed";
+    public readonly fieldType = TextFieldTypes.COMPRESSED;
 
     public constructor(private readonly compressionHandler: CompressionHandler.Interface) {}
 

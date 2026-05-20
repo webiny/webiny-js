@@ -11,6 +11,7 @@ export interface IWebhookPayload {
     event: string;
     timestamp: string;
     webhookId: string;
+    deliveryId: string;
     tenant: string;
     data: unknown;
 }

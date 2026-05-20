@@ -26,7 +26,8 @@
     { "path": "../app-workflows/tsconfig.build.json" },
     { "path": "../lexical-editor-actions/tsconfig.build.json" },
     { "path": "../lexical-theme/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" }
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../webhooks/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -84,7 +85,11 @@
       "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],
       "@webiny/lexical-theme": ["../lexical-theme/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/webhooks/api": ["../webhooks/src/api/index.js"],
+      "@webiny/webhooks/admin/*": ["../webhooks/src/admin/*"],
+      "@webiny/webhooks/*": ["../webhooks/src/*"],
+      "@webiny/webhooks": ["../webhooks/src"]
     }
   }
 }

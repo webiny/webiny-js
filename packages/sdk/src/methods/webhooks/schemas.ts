@@ -28,7 +28,6 @@ export const createWebhookSchema = z.object({
 export const updateWebhookSchema = z.object({
     id,
     name: z.string().min(1).optional(),
-    slug: z.string().optional(),
     endpointUrl: z.string().url("endpointUrl must be a valid URL").optional(),
     description: z.string().optional(),
     enabled: z.boolean().optional(),

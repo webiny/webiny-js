@@ -1,8 +1,7 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { useRouter } from "@webiny/app-admin";
-import { useRoute } from "@webiny/app";
+import { DiContainerProvider, useContainer, useFeature, useRoute } from "@webiny/app";
+import { FormErrors, useRouter } from "@webiny/app-admin";
 import { Button, Heading, OverlayLoader, Separator } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { WebhookFormPresenterFeature } from "../feature.js";
@@ -13,7 +12,6 @@ import { DeleteWebhookFeature } from "~/admin/features/deleteWebhook/feature.js"
 import { ListAvailableEventsFeature } from "~/admin/features/listAvailableEvents/feature.js";
 import { WebhookPermissionsFeature } from "~/admin/features/permissions/feature.js";
 import { Routes } from "~/admin/routes.js";
-import { EventsSelector } from "./EventsSelector.js";
 import { SigningSecret } from "./SigningSecret.js";
 import { WebhookDeliveriesDrawer } from "~/admin/presentation/WebhookDeliveries/components/WebhookDeliveriesDrawer.js";
 
@@ -61,19 +59,15 @@ const WebhookFormViewInner = observer(function WebhookFormViewInner() {
                     </div>
                 </div>
                 <Separator />
-                <div className="flex-1 overflow-auto p-md">
-                    <div className="flex flex-col gap-lg max-w-[720px]">
+
+                <div className="p-lg">
+                    <>
+                        <FormErrors form={vm.form} />
                         <FormView name="Webhook" form={vm.form} />
-                        <EventsSelector
-                            availableEvents={vm.availableEvents}
-                            selectedEvents={vm.selectedEvents}
-                            onToggle={actions.toggleEvent}
-                            disabled={!vm.permissions.canEdit}
-                        />
                         {!vm.isNew && vm.webhook?.signingSecret && (
                             <SigningSecret secret={vm.webhook.signingSecret} />
                         )}
-                    </div>
+                    </>
                 </div>
             </div>
             {vm.showDeliveries && vm.webhook && (
