@@ -20,7 +20,7 @@ export const DeliveryFilters = observer(function DeliveryFilters({
     const { vm } = presenter;
     return (
         <Grid className="py-sm">
-            <Grid.Column span={3}>
+            <Grid.Column span={2}>
                 <Select
                     placeholder="All apps"
                     value={vm.filters.app ?? ""}
@@ -30,7 +30,7 @@ export const DeliveryFilters = observer(function DeliveryFilters({
                     onValueReset={() => presenter.setAppFilter(null)}
                 />
             </Grid.Column>
-            <Grid.Column span={3}>
+            <Grid.Column span={2}>
                 <Select
                     placeholder="All entities"
                     value={vm.filters.entity ?? ""}
@@ -41,7 +41,7 @@ export const DeliveryFilters = observer(function DeliveryFilters({
                     onValueReset={() => presenter.setEntityFilter(null)}
                 />
             </Grid.Column>
-            <Grid.Column span={3}>
+            <Grid.Column span={2}>
                 <Select
                     placeholder="All events"
                     value={vm.filters.eventName ?? ""}
@@ -52,7 +52,7 @@ export const DeliveryFilters = observer(function DeliveryFilters({
                     onValueReset={() => presenter.setEventFilter(null)}
                 />
             </Grid.Column>
-            <Grid.Column span={3}>
+            <Grid.Column span={2}>
                 <MultiSelect
                     placeholder="All statuses"
                     value={vm.filters.status}
