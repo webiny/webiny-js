@@ -370,7 +370,13 @@ export class FieldRenderersDemoPresenter {
                 fileUrl: fields
                     .fileUrl()
                     .label("Image URL")
-                    .description("Stores only the file URL as a string")
+                    .description("Stores only the file URL as a string"),
+
+                // --- Lexical ---
+                richText: fields
+                    .lexical()
+                    .label("Rich Text")
+                    .description("Lexical rich text editor")
             }),
             layout: layout => [
                 layout
@@ -440,6 +446,9 @@ export class FieldRenderersDemoPresenter {
                     })
                     .tab("files", tab => {
                         tab.label("Files").layout(l => [l.row("fileImage", "fileUrl")]);
+                    })
+                    .tab("lexical", tab => {
+                        tab.label("Lexical").layout(l => [l.row("richText")]);
                     })
             ]
         });

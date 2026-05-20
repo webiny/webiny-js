@@ -386,7 +386,7 @@ export class DataFieldBuilder<TType extends string = string> extends BaseFieldBu
                 id: fieldId,
                 fieldId,
                 storageId,
-                type: this.type,
+                type: this.getFieldType(),
                 label: this.config.label,
                 validation: this.config.validation || [],
                 listValidation: this.config.listValidation || [],
@@ -404,5 +404,12 @@ export class DataFieldBuilder<TType extends string = string> extends BaseFieldBu
                 tags: this.config.tags || []
             }
         };
+    }
+
+    private getFieldType(): string {
+        if (!this.subType?.length) {
+            return this.type;
+        }
+        return `${this.type}:${this.subType}`;
     }
 }

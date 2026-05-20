@@ -25,6 +25,7 @@
     "@webiny/app": "0.0.0",
     "@webiny/app-aco": "0.0.0",
     "@webiny/app-admin": "0.0.0",
+    "@webiny/app-file-manager": "0.0.0",
     "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-headless-cms-common": "0.0.0",
     "@webiny/app-website-builder": "0.0.0",
@@ -43,6 +44,7 @@
     "@webiny/tenant-manager": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
+    "@webiny/webhooks": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0",
     "react": "18.3.1"
   },
@@ -83,6 +85,7 @@
     "./api/system": "./api/system.js",
     "./api/tasks": "./api/tasks.js",
     "./api/tenancy": "./api/tenancy.js",
+    "./api/webhooks": "./api/webhooks.js",
     "./api": "./api.js",
     "./api/file-manager/file": "./api/file-manager/file.js",
     "./api/file-manager/permissions": "./api/file-manager/permissions.js",
@@ -113,6 +116,7 @@
     "./admin/configs": "./admin/configs.js",
     "./admin/form": "./admin/form.js",
     "./admin/tenancy": "./admin/tenancy.js",
+    "./admin/ui/lexical": "./admin/ui/lexical.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
     "./admin/cms/field-renderers/common": "./admin/cms/field-renderers/common.js",
@@ -125,13 +129,13 @@
     "./admin/website-builder/page/editor": "./admin/website-builder/page/editor.js",
     "./admin/website-builder/page/list": "./admin/website-builder/page/list.js",
     "./admin/website-builder/redirect/list": "./admin/website-builder/redirect/list.js",
+    "./admin/file-manager": "./admin/file-manager.js",
     "./admin/website-builder": "./admin/website-builder.js",
     "./cli/command": "./cli/command.js",
     "./cli": "./cli.js",
     "./api/db": "./api/db.js",
     "./admin/languages": "./admin/languages.js",
     "./api/languages": "./api/languages.js",
-    "./admin/lexical": "./admin/lexical.js",
     "./infra/admin": "./infra/admin.js",
     "./infra/api": "./infra/api.js",
     "./infra/core": "./infra/core.js",
@@ -139,5 +143,5 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "b2379394292c4c16eb454f88eda4b1f8eaa08f18bb3cbefa0e22b3ff753dba6d"
+  "exportGenerationHash": "c481b9ad13ea252fbf3363914473e2958a1078dd31d2e6086b4a47ba069b1dd3"
 }

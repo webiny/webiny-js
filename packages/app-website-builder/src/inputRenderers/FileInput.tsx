@@ -14,6 +14,7 @@ export const FileInputRenderer = ({
 }: ElementInputRendererProps) => {
     const input = props.input as FileInput;
     const { isBaseBreakpoint } = useBreakpoint();
+
     const onFileChange = (file: FileManagerFileItem) => {
         onChange(({ value }) => {
             const newValue = fileManagerItemToValue(file);

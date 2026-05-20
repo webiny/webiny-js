@@ -1,11 +1,12 @@
 import React, { useMemo, useEffect, useCallback } from "react";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { observer } from "mobx-react-lite";
-import type { FilesRenderChildren } from "react-butterfiles";
-import Files from "react-butterfiles";
+import {
+    BrowserFilePicker,
+    type BrowserFilePickerRenderProps
+} from "@webiny/app-admin/presentation/browserFilePicker/index.js";
 import debounce from "lodash/debounce.js";
-import type { positionValues } from "react-custom-scrollbars";
-import { Heading, OverlayLoader, Scrollbar, Separator, useToast } from "@webiny/admin-ui";
+import { Heading, OverlayLoader, ScrollArea, Separator, useToast } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import {
     LeftPanel,
@@ -35,7 +36,6 @@ import {
     FileManagerViewWithConfig,
     useFileManagerConfig
 } from "~/presentation/config/FileManagerViewConfig.js";
-import { outputFileSelectionError } from "~/presentation/config/outputFileSelectionError.js";
 import { FolderTree } from "@webiny/app-aco/presentation/folderTree/FolderTree.js";
 import { BottomInfoBar } from "~/presentation/FileList/components/BottomInfoBar/index.js";
 import { BulkActionBar } from "~/presentation/FileList/components/BulkActions/index.js";
@@ -51,6 +51,12 @@ import { GetSettingsRepository } from "~/features/settings/abstractions.js";
 import { OverlayProvider, useOverlay } from "./OverlayContext.js";
 
 import type { FmFile } from "~/features/shared/types.js";
+import type {
+    FileError,
+    SelectedFile
+} from "@webiny/app-admin/presentation/browserFilePicker/index.js";
+import { outputFileSelectionError } from "~/presentation/FileManager/outputFileSelectionError.js";
+import type { ScrollPosition } from "@webiny/admin-ui";
 
 export interface FileManagerViewProps {
     overlay?: boolean;
@@ -85,13 +91,23 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
     const settingsRepository = useMemo(() => container.resolve(GetSettingsRepository), [container]);
     const settings = settingsRepository.settings;
 
-    const uploadFiles = async (files: File[]) => {
+    const uploadFiles = async (files: SelectedFile[]) => {
         await actions.upload(files);
         toast.showSuccessToast({ title: "File upload complete." });
     };
 
+    const onError = useCallback((errors: FileError[]) => {
+        const message = outputFileSelectionError(errors);
+        if (message) {
+            toast.showWarningToast({ title: message });
+        } else {
+            toast.showWarningToast({ title: "Couldn't process selected files." });
+            console.error(errors);
+        }
+    }, []);
+
     const loadMoreOnScroll = useCallback(
-        debounce(async ({ scrollFrame }: { scrollFrame: positionValues }) => {
+        debounce(async (scrollFrame: ScrollPosition) => {
             if (scrollFrame.top > 0.8) {
                 void actions.loadMore();
             }
@@ -103,37 +119,41 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
         return <OverlayLoader text={t`Preparing File Manager...`} />;
     }
 
-    const renderList = (browseFiles: FilesRenderChildren["browseFiles"]) => {
-        if (!vm.list.pagination.loading && vm.list.rows.length === 0) {
+    const isLoading = vm.list.pagination.loading && vm.list.rows.length === 0;
+    const isEmpty = !vm.list.pagination.loading && vm.list.rows.length === 0;
+
+    const renderList = (browseFiles: BrowserFilePickerRenderProps["browseFiles"]) => {
+        if (isLoading) {
+            return <OverlayLoader text={t`Loading files...`} size={"lg"} />;
+        }
+
+        if (isEmpty) {
             return <Empty isSearchResult={!vm.showFolders} browseFiles={browseFiles} />;
         }
 
         if (vm.viewMode === "table") {
-            return <FileTable />;
+            return (
+                <ScrollArea onScroll={loadMoreOnScroll}>
+                    <FileTable />
+                </ScrollArea>
+            );
         }
 
-        return <FileGrid />;
+        return (
+            <ScrollArea onScroll={loadMoreOnScroll}>
+                <FileGrid />
+            </ScrollArea>
+        );
     };
 
     const content = (
-        <Files
+        <BrowserFilePicker
             multiple
             maxSize={settings ? settings.uploadMaxFileSize + "b" : "1TB"}
             multipleMaxSize={"1TB"}
             accept={overlay?.accept ?? []}
-            onSuccess={files => {
-                const filesToUpload = files.map(file => file.src.file).filter(Boolean) as File[];
-                void uploadFiles(filesToUpload);
-            }}
-            onError={errors => {
-                const message = outputFileSelectionError(errors);
-                if (message) {
-                    toast.showWarningToast({ title: message });
-                } else {
-                    toast.showWarningToast({ title: "Couldn't process selected files." });
-                    console.error(errors);
-                }
-            }}
+            onSuccess={uploadFiles}
+            onError={onError}
         >
             {({ getDropZoneProps, browseFiles }) => (
                 <>
@@ -205,13 +225,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                                     data-testid={"fm-list-wrapper"}
                                 >
                                     {!overlay && <BulkActionBar />}
-                                    <Scrollbar
-                                        onScrollFrame={scrollFrame =>
-                                            loadMoreOnScroll({ scrollFrame })
-                                        }
-                                    >
-                                        {renderList(browseFiles)}
-                                    </Scrollbar>
+                                    {renderList(browseFiles)}
                                     {vm.dragging && <FileDropPlaceholder />}
                                     <UploadProgress />
                                 </div>
@@ -227,7 +241,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                     </SplitView>
                 </>
             )}
-        </Files>
+        </BrowserFilePicker>
     );
 
     if (overlay) {

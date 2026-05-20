@@ -14,6 +14,8 @@ import { EncryptionFeature } from "~/features/encryption/feature.js";
 import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
 import { MaskerFeature } from "~/features/masker/feature.js";
 import { AiFeature } from "~/features/ai/feature.js";
+import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/NullWebhookDispatcher.js";
+import { WebhookProviderFeature } from "~/features/webhooks/index.js";
 
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
@@ -32,5 +34,7 @@ export const ApiCoreFeature = createFeature({
         KeyValueStoreFeature.register(container, config.keyValueStorageOperations);
         SystemFeature.register(container);
         IdpAuthenticatorFeature.register(container);
+        container.register(NullWebhookDispatcher).inSingletonScope();
+        WebhookProviderFeature.register(container);
     }
 });

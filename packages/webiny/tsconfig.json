@@ -18,6 +18,7 @@
     { "path": "../app" },
     { "path": "../app-aco" },
     { "path": "../app-admin" },
+    { "path": "../app-file-manager" },
     { "path": "../app-headless-cms" },
     { "path": "../app-headless-cms-common" },
     { "path": "../app-website-builder" },
@@ -35,6 +36,7 @@
     { "path": "../tenant-manager" },
     { "path": "../utils" },
     { "path": "../validation" },
+    { "path": "../webhooks" },
     { "path": "../website-builder-sdk" }
   ],
   "compilerOptions": {
@@ -76,6 +78,8 @@
       "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-file-manager/*": ["../app-file-manager/src/*"],
+      "@webiny/app-file-manager": ["../app-file-manager/src"],
       "@webiny/app-headless-cms/*": ["../app-headless-cms/src/*"],
       "@webiny/app-headless-cms": ["../app-headless-cms/src"],
       "@webiny/app-headless-cms-common/*": ["../app-headless-cms-common/src/*"],
@@ -112,6 +116,10 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
+      "@webiny/webhooks/api": ["../webhooks/src/api/index.js"],
+      "@webiny/webhooks/admin/*": ["../webhooks/src/admin/*"],
+      "@webiny/webhooks/*": ["../webhooks/src/*"],
+      "@webiny/webhooks": ["../webhooks/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
       "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
     }

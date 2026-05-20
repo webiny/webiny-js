@@ -30,7 +30,7 @@
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
     "execa": "^5.1.1",
-    "tsx": "^4.21.0",
+    "tsx": "4.21.0",
     "typescript": "6.0.3"
   },
   "scripts": {
