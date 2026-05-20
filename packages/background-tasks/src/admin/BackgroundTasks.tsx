@@ -1,0 +1,47 @@
+import React from "react";
+import { AdminConfig } from "@webiny/app-admin";
+import { RegisterFeature } from "@webiny/app-admin";
+import { ReactComponent as TaskIcon } from "@webiny/icons/task.svg";
+import { ListTasksFeature } from "./features/listTasks/index.js";
+import { GetTaskFeature } from "./features/getTask/index.js";
+import { DeleteTaskFeature } from "./features/deleteTask/index.js";
+import { AbortTaskFeature } from "./features/abortTask/index.js";
+import { ListLogsFeature } from "./features/listLogs/index.js";
+import { ListDefinitionsFeature } from "./features/listDefinitions/index.js";
+import { TaskPermissionsFeature } from "./features/permissions/index.js";
+import { TaskListPresenterFeature } from "./presentation/TaskList/index.js";
+import { TaskDetailPresenterFeature } from "./presentation/TaskDetail/index.js";
+import { BackgroundTaskRoutes } from "./BackgroundTaskRoutes.js";
+import { BACKGROUND_TASK_PERMISSIONS_SCHEMA } from "~/admin/permissions.js";
+
+const { Security } = AdminConfig;
+
+export const BackgroundTasks = () => {
+    return (
+        <>
+            {/* Headless features. */}
+            <RegisterFeature feature={ListTasksFeature} />
+            <RegisterFeature feature={GetTaskFeature} />
+            <RegisterFeature feature={DeleteTaskFeature} />
+            <RegisterFeature feature={AbortTaskFeature} />
+            <RegisterFeature feature={ListLogsFeature} />
+            <RegisterFeature feature={ListDefinitionsFeature} />
+            <RegisterFeature feature={TaskPermissionsFeature} />
+            {/* Presentation features. */}
+            <RegisterFeature feature={TaskListPresenterFeature} />
+            <RegisterFeature feature={TaskDetailPresenterFeature} />
+            {/* Routes + menu. */}
+            <BackgroundTaskRoutes />
+            {/* Security permissions UI. */}
+            <AdminConfig>
+                <Security.Permissions
+                    name="backgroundTasks"
+                    title="Background Tasks"
+                    description="Manage background task permissions."
+                    icon={<TaskIcon />}
+                    schema={BACKGROUND_TASK_PERMISSIONS_SCHEMA}
+                />
+            </AdminConfig>
+        </>
+    );
+};
