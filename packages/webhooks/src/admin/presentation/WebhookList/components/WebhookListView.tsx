@@ -25,7 +25,7 @@ import { Routes } from "~/admin/routes.js";
 import type { Webhook } from "~/admin/shared/types.js";
 import { ReactComponent as Edit } from "@webiny/icons/edit.svg";
 import { ReactComponent as Delete } from "@webiny/icons/delete.svg";
-import { ReactComponent as Trigger } from "@webiny/icons/send.svg";
+import { ReactComponent as WebhookIcon } from "@webiny/icons/webhook.svg";
 
 const WebhookListViewInner = observer(function WebhookListViewInner() {
     const { presenter } = useFeature(WebhookListPresenterFeature);
@@ -123,7 +123,7 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
                         />
                         {vm.permissions.canEdit && (
                             <DropdownMenu.Item
-                                icon={<Trigger />}
+                                icon={<WebhookIcon />}
                                 onClick={() => {
                                     void presenter.actions.triggerWebhook(row.id).then(() => {
                                         showSnackbar("Test event triggered.");
