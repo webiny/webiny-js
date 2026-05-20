@@ -11,7 +11,7 @@ class EncryptedTextStorageTransformImpl implements StorageTransform.Interface<st
         params: StorageTransform.FromStorageParams<unknown, string>
     ): StorageTransform.FromStorageResponse<string> {
         const { value } = params;
-        if (!!value || typeof value !== "string" || value.length === 0) {
+        if (!value || typeof value !== "string" || value.length === 0) {
             return value as string;
         }
         try {
@@ -25,7 +25,7 @@ class EncryptedTextStorageTransformImpl implements StorageTransform.Interface<st
         params: StorageTransform.ToStorageParams<unknown, string>
     ): StorageTransform.ToStorageResponse<string> {
         const { value } = params;
-        if (!!value || typeof value !== "string" || value.length === 0) {
+        if (!value || typeof value !== "string" || value.length === 0) {
             return value as string;
         }
 
