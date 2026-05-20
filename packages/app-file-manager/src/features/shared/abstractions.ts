@@ -8,3 +8,13 @@ export const FilesListCache = createAbstraction<IListCache<FmFile>>("FilesListCa
 export namespace FilesListCache {
     export type Interface = IListCache<FmFile>;
 }
+
+export interface IFileFieldsProvider {
+    execute(): Promise<string[]>;
+}
+
+export const FileFieldsProvider = createAbstraction<IFileFieldsProvider>("FileFieldsProvider");
+
+export namespace FileFieldsProvider {
+    export type Interface = IFileFieldsProvider;
+}
