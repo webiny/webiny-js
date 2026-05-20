@@ -1,7 +1,9 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
-import type { IListViewModel } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
-import type { IListActions } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
+import type {
+    IListViewModel,
+    IListActions
+} from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 
 export interface IWebhookDeliveriesViewModel {
     list: IListViewModel<WebhookDelivery>;
