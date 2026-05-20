@@ -1,6 +1,7 @@
 import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { RegisterFeature } from "@webiny/app-admin";
+import { ReactComponent as WebhookIcon } from "@webiny/icons/webhook.svg";
 import { ListWebhooksFeature } from "./features/ListWebhooks/index.js";
 import { GetWebhookFeature } from "./features/getWebhook/index.js";
 import { CreateWebhookFeature } from "./features/createWebhook/index.js";
@@ -51,6 +52,7 @@ export const Webhooks = () => {
                     name="webhooks"
                     title="Webhooks"
                     description="Manage webhook permissions."
+                    icon={<WebhookIcon />}
                     schema={WEBHOOK_PERMISSIONS_SCHEMA}
                 />
             </AdminConfig>
