@@ -1,20 +1,24 @@
+import { FileFieldsProvider } from "../shared/abstractions.js";
 import {
     UpdateFileUseCase as UseCaseAbstraction,
     UpdateFileRepository,
     type UpdateFileUseCaseParams,
     type UpdateFileUseCaseResult
 } from "./abstractions.js";
-import { FILE_FIELDS } from "~/features/shared/FILE_FIELDS.js";
 
 class UpdateFileUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private repository: UpdateFileRepository.Interface) {}
+    constructor(
+        private repository: UpdateFileRepository.Interface,
+        private fileFieldsProvider: FileFieldsProvider.Interface
+    ) {}
 
     async execute(params: UpdateFileUseCaseParams): Promise<UpdateFileUseCaseResult> {
         try {
+            const fileFields = await this.fileFieldsProvider.execute();
             const file = await this.repository.execute({
                 id: params.id,
                 data: params.data,
-                fields: FILE_FIELDS
+                fields: fileFields
             });
             return { success: true, file };
         } catch (error) {
@@ -26,5 +30,5 @@ class UpdateFileUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdateFileUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateFileUseCaseImpl,
-    dependencies: [UpdateFileRepository]
+    dependencies: [UpdateFileRepository, FileFieldsProvider]
 });

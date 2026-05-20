@@ -11,5 +11,9 @@ export const Routes = {
         params: zod => ({
             id: zod.string()
         })
+    }),
+    Settings: new Route({
+        name: "Webhooks/Settings",
+        path: "/webhooks/settings"
     })
 };

@@ -1,10 +1,3 @@
-export {
-    WebhookSignPayload,
-    WebhookVerifyPayload,
-    WebhookDispatcher,
-    WebhookFactory,
-    WebhookProvider
-} from "@webiny/api-core/features/webhooks/index.js";
 export type {
     Webhook,
     WebhookCmsEntry,

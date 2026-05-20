@@ -1,7 +1,8 @@
-import React, { useMemo, useEffect, useCallback } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { useRouter } from "@webiny/app-admin";
+import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-ui";
 import {
     Button,
     DataTable,
@@ -13,9 +14,9 @@ import {
     Text,
     TimeAgo
 } from "@webiny/admin-ui";
-import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-ui";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin/hooks/index.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { WebhookListPresenterFeature } from "../feature.js";
 import { ListWebhooksFeature } from "~/admin/features/ListWebhooks/feature.js";
 import { DeleteWebhookFeature } from "~/admin/features/deleteWebhook/feature.js";
@@ -23,6 +24,9 @@ import { TriggerWebhookFeature } from "~/admin/features/triggerWebhook/feature.j
 import { WebhookPermissionsFeature } from "~/admin/features/permissions/feature.js";
 import { Routes } from "~/admin/routes.js";
 import type { Webhook } from "~/admin/shared/types.js";
+import { ReactComponent as Edit } from "@webiny/icons/edit.svg";
+import { ReactComponent as Delete } from "@webiny/icons/delete.svg";
+import { ReactComponent as WebhookIcon } from "@webiny/icons/webhook.svg";
 
 const WebhookListViewInner = observer(function WebhookListViewInner() {
     const { presenter } = useFeature(WebhookListPresenterFeature);
@@ -113,32 +117,34 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
                             />
                         }
                     >
-                        <DropdownMenu.Item onSelect={() => goToRoute(Routes.Form, { id: row.id })}>
-                            Edit
-                        </DropdownMenu.Item>
+                        <DropdownMenu.Item
+                            icon={<Edit />}
+                            onClick={() => goToRoute(Routes.Form, { id: row.id })}
+                            text={"Edit"}
+                        />
                         {vm.permissions.canEdit && (
                             <DropdownMenu.Item
-                                onSelect={() => {
+                                icon={<WebhookIcon />}
+                                onClick={() => {
                                     void presenter.actions.triggerWebhook(row.id).then(() => {
                                         showSnackbar("Test event triggered.");
                                     });
                                 }}
-                            >
-                                Trigger Test
-                            </DropdownMenu.Item>
+                                text={"Trigger Test"}
+                            />
                         )}
                         {vm.permissions.canDelete && (
                             <>
                                 <DropdownMenu.Separator />
                                 <DropdownMenu.Item
-                                    onSelect={() => {
+                                    onClick={() => {
                                         showDeleteConfirmation(() =>
                                             presenter.actions.deleteWebhook(row.id)
                                         );
                                     }}
-                                >
-                                    Delete
-                                </DropdownMenu.Item>
+                                    icon={<Delete />}
+                                    text={"Delete"}
+                                />
                             </>
                         )}
                     </DropdownMenu>
@@ -152,29 +158,28 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
         [vm.permissions, presenter.actions, goToRoute, showDeleteConfirmation, showSnackbar]
     );
 
+    const createButton = (
+        <Button
+            variant="primary"
+            onClick={() => goToRoute(Routes.Form, { id: "new" })}
+            icon={<AddIcon />}
+        >
+            Create Webhook
+        </Button>
+    );
+
     return (
         <div className="flex flex-col h-main-content">
             <div className="flex items-center justify-between py-sm px-md">
                 <Heading level={5}>Webhooks</Heading>
-                {vm.permissions.canCreate && (
-                    <Button variant="primary" onClick={() => goToRoute(Routes.Form, { id: "new" })}>
-                        Create Webhook
-                    </Button>
-                )}
+                {vm.permissions.canCreate && createButton}
             </div>
             <Separator />
             <div className="flex-1 overflow-auto">
                 {!vm.list.pagination.loading && vm.list.rows.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full gap-md">
                         <Text className="text-neutral-strong">No webhooks found.</Text>
-                        {vm.permissions.canCreate && (
-                            <Button
-                                variant="primary"
-                                onClick={() => goToRoute(Routes.Form, { id: "new" })}
-                            >
-                                Create Webhook
-                            </Button>
-                        )}
+                        {vm.permissions.canCreate && createButton}
                     </div>
                 ) : (
                     <DataTable<Webhook>

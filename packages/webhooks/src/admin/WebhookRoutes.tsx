@@ -2,9 +2,11 @@ import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { AdminLayout } from "@webiny/app-admin";
+import { ReactComponent as WebhookIcon } from "@webiny/icons/webhook.svg";
 import { HasPermission } from "./presentation/security/HasPermission.js";
 import { WebhookListView } from "./presentation/WebhookList/components/WebhookListView.js";
 import { WebhookFormView } from "./presentation/WebhookForm/components/WebhookFormView.js";
+import { WebhookSettingsView } from "./presentation/WebhookSettings/components/WebhookSettingsView.js";
 import { Routes } from "./routes.js";
 
 const { Menu, Route } = AdminConfig;
@@ -24,6 +26,14 @@ export const WebhookRoutes = () => {
                     }
                 />
                 <Route
+                    route={Routes.Settings}
+                    element={
+                        <AdminLayout title="Webhook Settings">
+                            <WebhookSettingsView />
+                        </AdminLayout>
+                    }
+                />
+                <Route
                     route={Routes.Form}
                     element={
                         <AdminLayout title="Webhooks">
@@ -32,9 +42,20 @@ export const WebhookRoutes = () => {
                     }
                 />
                 <Menu
-                    name="webhooks"
-                    after="settings"
-                    element={<Menu.Link text="Webhooks" to={getLink(Routes.List)} />}
+                    name="webhooks.list"
+                    parent={"dev-tools"}
+                    element={
+                        <Menu.Link
+                            text="Webhooks"
+                            to={getLink(Routes.List)}
+                            icon={<Menu.Link.Icon label="Webhooks" element={<WebhookIcon />} />}
+                        />
+                    }
+                />
+                <Menu
+                    name="webhooks.settings"
+                    parent="settings.system"
+                    element={<Menu.Link text="Webhooks" to={getLink(Routes.Settings)} />}
                 />
             </HasPermission>
         </AdminConfig>

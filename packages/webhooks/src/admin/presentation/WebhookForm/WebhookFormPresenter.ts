@@ -24,10 +24,10 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     private _isNew = false;
     private _webhook: Webhook | null = null;
     private _showDeliveries = false;
-    private _availableEvents: WebhookEvent[] = [];
     private _webhookId: string | null = null;
-    private _form;
-    private _selectedEvents: Set<string> = new Set();
+    private _form: IFormModel;
+    private _eventFieldNames: string[] = [];
+    private _eventGroups: Map<string, WebhookEvent[]> = new Map();
 
     public get vm(): IWebhookFormViewModel {
         return {
@@ -36,13 +36,11 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
             isNew: this._isNew,
             webhook: this._webhook,
             showDeliveries: this._showDeliveries,
-            availableEvents: this._availableEvents,
             permissions: {
                 canEdit: this.permissions.canEdit("webhook"),
                 canDelete: this.permissions.canDelete("webhook")
             },
-            form: this._form.vm,
-            selectedEvents: Array.from(this._selectedEvents)
+            form: this._form.vm
         };
     }
 
@@ -64,7 +62,18 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
         return this.formModelFactory.create({
             fields: fields => ({
                 name: fields.text().label("Name").required("Name is required"),
-                slug: fields.text().label("Slug").required("Slug is required"),
+                slug: fields
+                    .text()
+                    .label("Slug")
+                    .required("Slug is required")
+                    .computedUntilDirty(form => {
+                        const name = String(form.field("name").getValue() ?? "");
+                        return name
+                            .trim()
+                            .toLowerCase()
+                            .replace(/[^a-z0-9\s-]/g, "")
+                            .replace(/\s+/g, "-");
+                    }),
                 endpointUrl: fields
                     .text()
                     .label("Endpoint URL")
@@ -80,6 +89,120 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                 layout.row("enabled")
             ]
         });
+    }
+
+    private eventFieldName(app: string): string {
+        const slug = app
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "_")
+            .replace(/^_|_$/g, "");
+        return `events_${slug}`;
+    }
+
+    private addEventFields(events: WebhookEvent[]): void {
+        const grouped = new Map<string, WebhookEvent[]>();
+        for (const event of events) {
+            const existing = grouped.get(event.appLabel) ?? [];
+            existing.push(event);
+            grouped.set(event.appLabel, existing);
+        }
+
+        this._eventGroups = grouped;
+        this._eventFieldNames = [];
+
+        this._form.fields(fields => {
+            const result: Record<string, ReturnType<typeof fields.object>> = {};
+
+            for (const [app, appEvents] of grouped) {
+                const fieldName = this.eventFieldName(app);
+                this._eventFieldNames.push(fieldName);
+
+                result[fieldName] = fields
+                    .object()
+                    .label(app)
+                    .renderer("objectAccordionSingle")
+                    .fields(f => {
+                        return {
+                            selected: f
+                                .text()
+                                .list()
+                                .options(
+                                    appEvents.map(e => ({
+                                        label: e.label,
+                                        value: e.eventName
+                                    }))
+                                )
+                                .renderer("checkboxes")
+                        };
+                    });
+            }
+
+            return result;
+        });
+
+        this._form.setLayout(layout => [
+            layout.row("name", "slug"),
+            layout.row("endpointUrl"),
+            layout.row("description"),
+            layout.row("enabled"),
+            layout.separator(),
+            ...this._eventFieldNames.map(name =>
+                layout.object(name, inner => [inner.row("selected")])
+            )
+        ]);
+
+        this._form.addRule(form => {
+            if (this._eventFieldNames.length === 0) {
+                return [];
+            }
+            for (const fieldName of this._eventFieldNames) {
+                const objectField = form.field(fieldName).as("object");
+                const selectedField = objectField.children.get("selected");
+                if (!selectedField) {
+                    continue;
+                }
+                const values = selectedField.getValue<string[]>();
+                if (values && values.length > 0) {
+                    return [];
+                }
+            }
+
+            return [{ path: "Events", message: "At least one event must be selected." }];
+        });
+    }
+
+    private collectEvents(): string[] {
+        const allEvents: string[] = [];
+
+        for (const fieldName of this._eventFieldNames) {
+            const objectField = this._form.field(fieldName).as("object");
+            const selectedField = objectField.children.get("selected");
+            if (!selectedField) {
+                continue;
+            }
+            const values = selectedField.getValue<string[]>();
+            if (values && values.length > 0) {
+                allEvents.push(...values);
+            }
+        }
+
+        return allEvents;
+    }
+
+    private distributeEvents(webhookEvents: string[]): void {
+        const eventSet = new Set(webhookEvents);
+
+        for (const [app, appEvents] of this._eventGroups) {
+            const fieldName = this.eventFieldName(app);
+            const objectField = this._form.field(fieldName).as("object");
+            const selectedField = objectField.children.get("selected");
+            if (!selectedField) {
+                continue;
+            }
+
+            const selected = appEvents.filter(e => eventSet.has(e.eventName)).map(e => e.eventName);
+            selectedField.setValue(selected);
+        }
     }
 
     public actions: IWebhookFormActions = {
@@ -98,7 +221,7 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                     endpointUrl: data.endpointUrl as string,
                     description: (data.description as string) || undefined,
                     enabled: data.enabled as boolean,
-                    events: Array.from(this._selectedEvents)
+                    events: this.collectEvents()
                 };
 
                 if (this._isNew) {
@@ -137,13 +260,6 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
         },
         closeDeliveries: () => {
             this._showDeliveries = false;
-        },
-        toggleEvent: (eventName: string) => {
-            if (this._selectedEvents.has(eventName)) {
-                this._selectedEvents.delete(eventName);
-            } else {
-                this._selectedEvents.add(eventName);
-            }
         }
     };
 
@@ -162,8 +278,8 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
 
             runInAction(() => {
                 this._webhook = webhook;
-                this._availableEvents = events;
                 this._form = this.buildForm();
+                this.addEventFields(events);
                 this._form.setData({
                     name: webhook.name,
                     slug: webhook.slug,
@@ -172,15 +288,15 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                     enabled: webhook.enabled
                 });
                 this._form.field("slug").setDisabled(true);
-                this._selectedEvents = new Set(webhook.events);
+                this.distributeEvents(webhook.events);
                 this._loading = false;
             });
         } else {
             const events = await eventsPromise;
 
             runInAction(() => {
-                this._availableEvents = events;
                 this._form = this.buildForm();
+                this.addEventFields(events);
                 this._loading = false;
             });
         }

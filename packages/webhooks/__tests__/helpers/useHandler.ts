@@ -15,11 +15,25 @@ import { Extension } from "~/api/Extension.js";
 import { NoopTaskServiceFeature, noopTaskService } from "./NoopTaskService.js";
 import { TestWebhookProviderFeature } from "./TestWebhookProvider.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { BuildParam } from "@webiny/api-core/features/buildParams/index.js";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
     permissions?: PermissionsArg[];
     identity?: IdentityData;
+    encryptionPassphrase?: string;
+}
+
+function createEncryptionBuildParam(passphrase: string) {
+    class EncryptionPassphraseBuildParam implements BuildParam.Interface {
+        public readonly key = "EncryptionPassphrase";
+        public readonly value = passphrase;
+    }
+
+    return BuildParam.createImplementation({
+        implementation: EncryptionPassphraseBuildParam,
+        dependencies: []
+    });
 }
 
 export const useHandler = (params?: UseHandlerParams) => {
@@ -41,6 +55,12 @@ export const useHandler = (params?: UseHandlerParams) => {
             createHeadlessCmsGraphQL(),
             graphQLHandlerPlugins(),
             createRegisterExtensionPlugin(context => {
+                if (params?.encryptionPassphrase) {
+                    context.container.register(
+                        createEncryptionBuildParam(params.encryptionPassphrase)
+                    );
+                }
+
                 /* Register noop external services before the webhooks Extension. */
                 NoopTaskServiceFeature.register(context.container);
                 TestWebhookProviderFeature.register(context.container);

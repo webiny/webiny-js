@@ -4,6 +4,7 @@ export const LIST_AVAILABLE_WEBHOOK_EVENTS = /* GraphQL */ `
             listAvailableWebhookEvents {
                 data {
                     app
+                    appLabel
                     entity
                     eventName
                     label

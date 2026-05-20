@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { TaskDefinition } from "@webiny/api-core/exports/api/tasks.js";
@@ -7,6 +7,8 @@ import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
 import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { UpdateWebhookDeliveryRepository } from "~/api/features/UpdateWebhookDelivery/abstractions.js";
+import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
+import { WebhookDeliver } from "~/api/features/WebhookDeliver/abstractions.js";
 import { SendWebhookTaskFeature } from "~/api/features/SendWebhookTask/feature.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
 import type { Webhook } from "~/api/domain/Webhook.js";
@@ -48,19 +50,17 @@ const SIGN_HEADERS: WebhookSignPayload.Headers = {
 
 describe("SendWebhookTask", () => {
     let container: Container;
-    let fetchMock: ReturnType<typeof vi.fn>;
+    let deliverMock: ReturnType<typeof vi.fn>;
     let getWebhookMock: ReturnType<typeof vi.fn>;
     let getDeliveryMock: ReturnType<typeof vi.fn>;
     let updateDeliveryMock: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
         container = new Container();
-        fetchMock = vi.fn();
+        deliverMock = vi.fn();
         getWebhookMock = vi.fn().mockResolvedValue(Result.ok(makeWebhook()));
         getDeliveryMock = vi.fn().mockResolvedValue(Result.ok(makeDelivery()));
         updateDeliveryMock = vi.fn().mockResolvedValue(Result.ok(makeDelivery()));
-
-        vi.stubGlobal("fetch", fetchMock);
 
         container.registerInstance(GetWebhookRepository, { execute: getWebhookMock });
         container.registerInstance(GetWebhookDeliveryRepository, { execute: getDeliveryMock });
@@ -77,12 +77,12 @@ describe("SendWebhookTask", () => {
             withEachTenant: vi.fn(),
             withTenant: vi.fn()
         });
+        container.registerInstance(GetWebhookSettingsRepository, {
+            execute: vi.fn().mockResolvedValue(Result.ok({ signingSecret: undefined }))
+        });
+        container.registerInstance(WebhookDeliver, { execute: deliverMock });
 
         SendWebhookTaskFeature.register(container);
-    });
-
-    afterEach(() => {
-        vi.unstubAllGlobals();
     });
 
     const makeRunParams = (input: object, taskId = "task-123") => ({
@@ -100,9 +100,11 @@ describe("SendWebhookTask", () => {
     });
 
     it("POSTs to endpoint with Standard Webhooks headers and updates delivery", async () => {
-        fetchMock.mockResolvedValue({
+        deliverMock.mockResolvedValue({
             status: 200,
-            text: vi.fn().mockResolvedValue("OK")
+            body: "OK",
+            responseTime: 42,
+            attempts: 1
         });
 
         const tasks = container.resolveAll(TaskDefinition);
@@ -118,16 +120,14 @@ describe("SendWebhookTask", () => {
         const result = await task.run(params as any);
 
         expect(result).toEqual({ type: "done" });
-        expect(fetchMock).toHaveBeenCalledWith(
-            "https://example.com/hook",
+        expect(deliverMock).toHaveBeenCalledWith(
             expect.objectContaining({
-                method: "POST",
+                url: "https://example.com/hook",
                 headers: expect.objectContaining({
                     "Content-Type": "application/json",
-                    "webhook-id": "task-123",
-                    "webhook-timestamp": "1000",
-                    "webhook-signature": "v1,abc123"
-                })
+                    "webhook-id": "task-123"
+                }),
+                maxRetries: 3
             })
         );
         expect(updateDeliveryMock).toHaveBeenCalledWith(
@@ -140,10 +140,12 @@ describe("SendWebhookTask", () => {
         );
     });
 
-    it("updates delivery as failed when endpoint returns non-2xx", async () => {
-        fetchMock.mockResolvedValue({
+    it("updates delivery as delivered when endpoint returns 500 (fetch succeeded)", async () => {
+        deliverMock.mockResolvedValue({
             status: 500,
-            text: vi.fn().mockResolvedValue("Internal Server Error")
+            body: "Internal Server Error",
+            responseTime: 3500,
+            attempts: 4
         });
 
         const tasks = container.resolveAll(TaskDefinition);
@@ -164,8 +166,13 @@ describe("SendWebhookTask", () => {
         );
     });
 
-    it("updates delivery as failed when fetch throws", async () => {
-        fetchMock.mockRejectedValue(new Error("Network error"));
+    it("updates delivery as failed when all retries exhaust with network errors", async () => {
+        deliverMock.mockResolvedValue({
+            status: 0,
+            body: "Network error",
+            responseTime: 7000,
+            attempts: 4
+        });
 
         const tasks = container.resolveAll(TaskDefinition);
         const task = tasks.find(t => t.id === SEND_WEBHOOK_TASK)!;

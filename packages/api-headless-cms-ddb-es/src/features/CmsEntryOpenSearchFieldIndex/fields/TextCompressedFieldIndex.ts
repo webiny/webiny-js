@@ -1,9 +1,10 @@
 import { CmsEntryOpenSearchFieldIndex } from "../abstractions/CmsEntryOpenSearchFieldIndex.js";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import { TextFieldTypes } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 
 class TextCompressedFieldIndexImpl implements CmsEntryOpenSearchFieldIndex.Interface {
-    public readonly fieldType = "text:compressed";
+    public readonly fieldType = TextFieldTypes.COMPRESSED;
 
     public constructor(private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface) {}
 
