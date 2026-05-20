@@ -2,6 +2,8 @@ import path from "path";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
+const DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE = 4_718_592; // 4.5 MB
+
 export const createRsbuildConfig = async ({ cwd }) => {
     // Must be a dynamic import — see rslibCompile.js for the reason.
     const { default: rspack } = await import("@rspack/core");
@@ -9,8 +11,10 @@ export const createRsbuildConfig = async ({ cwd }) => {
     const mode = getMode();
     const isDebugEnabled = process.env.DEBUG === "true";
 
-    // Configurable via WEBINY_API_MAX_BUNDLE_SIZE (MB), default 10 MB.
-    const maxBundleSize = (parseFloat(process.env.WEBINY_API_MAX_BUNDLE_SIZE) || 10) * 1024 * 1024;
+    // Configurable via WEBINY_INFRA_API_MAX_BUNDLE_SIZE (bytes).
+    const maxBundleSize =
+        parseInt(process.env.WEBINY_INFRA_API_MAX_BUNDLE_SIZE) ||
+        DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE;
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.fn.entryFile } },
@@ -32,13 +36,15 @@ export const createRsbuildConfig = async ({ cwd }) => {
             distPath: { root: paths.fn.outputFolder }
         },
         performance: {
-            printFileSize: false,
-            hints: "error",
-            maxEntrypointSize: maxBundleSize,
-            maxAssetSize: maxBundleSize
+            printFileSize: false
         },
         tools: {
             rspack: {
+                performance: {
+                    hints: "error",
+                    maxEntrypointSize: maxBundleSize,
+                    maxAssetSize: maxBundleSize
+                },
                 externals: [/^@aws-sdk/, /^aws-sdk$/, /^sharp$/],
                 plugins: [
                     // This is necessary to enable JSDOM usage in Lambda.

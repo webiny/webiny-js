@@ -6,22 +6,23 @@ import type {
     AssetRequestOptions,
     AssetTransformationStrategy
 } from "@webiny/api-file-manager";
+import { AssetTransformationStrategy as AssetTransformationStrategyAbstraction } from "@webiny/api-file-manager/features/assetDelivery/abstractions.js";
 import { WidthCollection } from "./transformation/WidthCollection.js";
 import * as utils from "./transformation/utils.js";
 import { CallableContentsReader } from "./transformation/CallableContentsReader.js";
 import { AssetKeyGenerator } from "./transformation/AssetKeyGenerator.js";
-
-interface SharpTransformationParams {
-    s3: S3;
-    bucket: string;
-    imageResizeWidths: number[];
-}
+import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
+import type { IS3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
 export class SharpTransform implements AssetTransformationStrategy {
-    private readonly params: SharpTransformationParams;
+    private readonly s3: S3;
+    private readonly bucket: string;
+    private readonly imageResizeWidths: number[];
 
-    constructor(params: SharpTransformationParams) {
-        this.params = params;
+    constructor(s3: S3, bucket: string, config: IS3AssetDeliveryConfig) {
+        this.s3 = s3;
+        this.bucket = bucket;
+        this.imageResizeWidths = config.imageResizeWidths;
     }
 
     async transform(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
@@ -32,31 +33,26 @@ export class SharpTransform implements AssetTransformationStrategy {
             return asset;
         }
 
-        // `original` is part of the request, but it won't even get to this point in the execution.
         // oxlint-disable-next-line typescript/no-unused-vars
         const { original, ...options } = assetRequest.getOptions();
 
         const transformedAsset = asset.clone();
 
         if (Object.keys(options).length > 0) {
-            // Transformations were requested.
             return this.transformAsset(transformedAsset, options);
         }
 
-        // Return an optimized asset.
         return this.optimizeAsset(transformedAsset);
     }
 
     private async transformAsset(asset: Asset, options: Omit<AssetRequestOptions, "original">) {
         if (options.width) {
-            const { s3, bucket } = this.params;
-
             const assetKey = new AssetKeyGenerator(asset);
             const transformedAssetKey = assetKey.getTransformedImageKey(options);
 
             try {
-                const { Body } = await s3.getObject({
-                    Bucket: bucket,
+                const { Body } = await this.s3.getObject({
+                    Bucket: this.bucket,
                     Key: transformedAssetKey
                 });
 
@@ -78,12 +74,9 @@ export class SharpTransform implements AssetTransformationStrategy {
             } catch {
                 const optimizedImage = await this.optimizeAsset(asset);
 
-                const widths = new WidthCollection(this.params.imageResizeWidths);
+                const widths = new WidthCollection(this.imageResizeWidths);
                 const width = widths.getClosestOrMax(options.width);
 
-                /**
-                 * `width` is the only transformation we currently support.
-                 */
                 console.log(`Resize the asset (width: ${width})`);
                 const buffer = await optimizedImage.getContents();
                 const transformedBuffer = await sharp(buffer, {
@@ -93,14 +86,11 @@ export class SharpTransform implements AssetTransformationStrategy {
                     .resize({ width, withoutEnlargement: true })
                     .toBuffer();
 
-                /**
-                 * Transformations are applied to the optimized image.
-                 */
                 const newAsset = asset.withProps({ size: transformedBuffer.length });
                 newAsset.setContentsReader(new CallableContentsReader(() => transformedBuffer));
 
-                await s3.putObject({
-                    Bucket: bucket,
+                await this.s3.putObject({
+                    Bucket: this.bucket,
                     Key: transformedAssetKey,
                     ContentType: newAsset.getContentType(),
                     Body: await newAsset.getContents()
@@ -119,8 +109,6 @@ export class SharpTransform implements AssetTransformationStrategy {
     }
 
     private async optimizeAsset(asset: Asset) {
-        const { s3, bucket } = this.params;
-
         console.log("Optimize asset", {
             id: asset.getId(),
             key: asset.getKey(),
@@ -132,8 +120,8 @@ export class SharpTransform implements AssetTransformationStrategy {
         const optimizedAssetKey = assetKey.getOptimizedImageKey();
 
         try {
-            const { Body } = await s3.getObject({
-                Bucket: bucket,
+            const { Body } = await this.s3.getObject({
+                Bucket: this.bucket,
                 Key: optimizedAssetKey
             });
 
@@ -151,7 +139,6 @@ export class SharpTransform implements AssetTransformationStrategy {
             return newAsset;
         } catch {
             console.log("Create an optimized version of the original asset", asset.getKey());
-            // If not found, create an optimized version of the original asset.
             const buffer = await asset.getContents();
 
             const optimizationMap: Record<string, ((buffer: Buffer) => sharp.Sharp) | undefined> = {
@@ -174,8 +161,8 @@ export class SharpTransform implements AssetTransformationStrategy {
             const newAsset = asset.withProps({ size: optimizedBuffer.length });
             newAsset.setContentsReader(new CallableContentsReader(() => optimizedBuffer));
 
-            await s3.putObject({
-                Bucket: bucket,
+            await this.s3.putObject({
+                Bucket: this.bucket,
                 Key: optimizedAssetKey,
                 ContentType: newAsset.getContentType(),
                 Body: await newAsset.getContents()
@@ -203,3 +190,8 @@ export class SharpTransform implements AssetTransformationStrategy {
             .toFormat("jpeg", { quality: 90 });
     }
 }
+
+export const SharpTransformImpl = AssetTransformationStrategyAbstraction.createImplementation({
+    implementation: SharpTransform,
+    dependencies: [S3Client, S3Bucket, S3AssetDeliveryConfig]
+});

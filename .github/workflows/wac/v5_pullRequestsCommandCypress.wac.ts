@@ -180,6 +180,10 @@ const createCypressJobs = (dbSetup: string) => {
                         run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
                     },
                     {
+                        name: "Install Cypress binary",
+                        run: "cd cypress-tests && yarn cypress install"
+                    },
+                    {
                         name: "Cypress - run installation wizard test",
                         run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
                     }
@@ -214,6 +218,11 @@ const createCypressJobs = (dbSetup: string) => {
                 name: "Set up Cypress config",
                 "working-directory": DIR_WEBINY_JS,
                 run: `echo '\${{ needs.${jobNames.projectSetup}.outputs.cypress-config }}' > cypress-tests/cypress.config.ts`
+            },
+            {
+                name: "Install Cypress binary",
+                "working-directory": DIR_WEBINY_JS,
+                run: "cd cypress-tests && yarn cypress install"
             },
             {
                 name: 'Cypress - run "${{ matrix.cypress-folder }}" tests',

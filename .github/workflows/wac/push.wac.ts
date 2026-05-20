@@ -66,7 +66,7 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
         PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
         WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
         YARN_ENABLE_IMMUTABLE_INSTALLS: "false",
-        WEBINY_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_API_MAX_BUNDLE_SIZE }}"
+        WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}"
     };
 
     if (storageOps.id === "ddb-os,ddb") {
@@ -166,7 +166,7 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
             },
             {
                 name: "API bundle size limit",
-                run: 'echo "API bundle size limit: ${WEBINY_API_MAX_BUNDLE_SIZE:-10} MB"'
+                run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"'
             },
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
             ...(storageOps.shortId === "ddb-os"
@@ -197,6 +197,10 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
                         name: "Save Cypress config",
                         id: "save-cypress-config",
                         run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
+                    },
+                    {
+                        name: "Install Cypress binary",
+                        run: "cd cypress-tests && yarn cypress install"
                     },
                     {
                         name: "Cypress - run installation wizard test",

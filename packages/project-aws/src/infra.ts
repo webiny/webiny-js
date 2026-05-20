@@ -35,7 +35,7 @@ import { OpenSearch } from "./extensions/OpenSearch.js";
 import { AwsDefaultRegion } from "./extensions/AwsDefaultRegion.js";
 import { Encryption } from "./extensions/Encryption.js";
 import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
-import { EnvVar } from "@webiny/project/extensions/index.js";
+import { EnvVar, ApiMaxBundleSize } from "@webiny/project/extensions/index.js";
 import {
     EnvIs,
     EnvIsNot,
@@ -90,7 +90,8 @@ export const Infra = {
         Pulumi: ApiPulumi,
         CustomDomains: ApiCustomDomains,
         StackOutputValue: ApiStackOutputValue,
-        LambdaFunction: ApiLambdaFunction
+        LambdaFunction: ApiLambdaFunction,
+        MaxBundleSize: ApiMaxBundleSize
     },
     Core: {
         BeforeBuild: CoreBeforeBuild,

@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import LazyLoad from "react-lazy-load";
-import { cn, CheckboxPrimitive, Text, TimeAgo, OverlayLoader } from "@webiny/admin-ui";
+import { cn, CheckboxPrimitive, Text, TimeAgo } from "@webiny/admin-ui";
 import { useOverlay } from "~/presentation/FileManager/OverlayContext.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { FolderIcon } from "@webiny/app-aco";
@@ -196,14 +196,6 @@ export const FileGrid = observer(function FileGrid() {
     const handleBackgroundClick = useCallback(() => {
         actions.selection.deselectAll();
     }, [actions.selection]);
-
-    if (vm.list.pagination.loading && vm.list.rows.length === 0) {
-        return (
-            <div className={"relative size-full"}>
-                <OverlayLoader text={t`Loading files...`} size={"lg"} />
-            </div>
-        );
-    }
 
     return (
         <div
