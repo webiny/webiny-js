@@ -129,7 +129,6 @@
     "./admin/website-builder/page/editor": "./admin/website-builder/page/editor.js",
     "./admin/website-builder/page/list": "./admin/website-builder/page/list.js",
     "./admin/website-builder/redirect/list": "./admin/website-builder/redirect/list.js",
-    "./admin/file-manager": "./admin/file-manager.js",
     "./admin/website-builder": "./admin/website-builder.js",
     "./cli/command": "./cli/command.js",
     "./cli": "./cli.js",
