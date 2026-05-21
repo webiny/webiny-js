@@ -78,8 +78,13 @@ class ListLogsGraphQLGateway implements GatewayAbstraction.Interface {
             throw new Error(envelope.error.message);
         }
 
+        const items = envelope.data.map(log => ({
+            ...log,
+            items: log.items ?? []
+        }));
+
         return {
-            items: envelope.data,
+            items,
             meta: envelope.meta
         };
     }

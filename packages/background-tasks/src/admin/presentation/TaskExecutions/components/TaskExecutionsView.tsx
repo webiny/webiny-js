@@ -26,8 +26,7 @@ import { DeleteTaskFeature } from "~/admin/features/deleteTask/feature.js";
 import { AbortTaskFeature } from "~/admin/features/abortTask/feature.js";
 import { ListDefinitionsFeature } from "~/admin/features/listDefinitions/feature.js";
 import { TaskPermissionsFeature } from "~/admin/features/permissions/feature.js";
-import type { Task } from "~/admin/shared/types.js";
-import type { TaskStatus } from "~/admin/shared/types.js";
+import type { Task, TaskStatus } from "~/admin/shared/types.js";
 import { TaskDetailDrawer } from "~/admin/presentation/TaskDetail/components/TaskDetailDrawer.js";
 
 const STATUS_TAG_VARIANT: Record<
@@ -254,7 +253,7 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                             <Select
                                 placeholder="Definition"
                                 options={vm.definitionOptions}
-                                value={(vm.list.filters.definitionId as string) ?? ""}
+                                value={vm.list.filters.definitionId as string}
                                 onChange={value => {
                                     if (value) {
                                         presenter.filter.set("definitionId", value);
@@ -267,9 +266,9 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                     )}
                     <div className="w-[160px]">
                         <DatePicker
-                            type="date"
+                            type="dateTimeTz"
                             placeholder="Created from"
-                            value={(vm.list.filters.createdOn_gte as string) ?? ""}
+                            value={vm.list.filters.createdOn_gte as string}
                             onChange={value => {
                                 if (value) {
                                     presenter.filter.set("createdOn_gte", value);
@@ -281,9 +280,9 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                     </div>
                     <div className="w-[160px]">
                         <DatePicker
-                            type="date"
+                            type="dateTimeTz"
                             placeholder="Created to"
-                            value={(vm.list.filters.createdOn_lte as string) ?? ""}
+                            value={vm.list.filters.createdOn_lte as string}
                             onChange={value => {
                                 if (value) {
                                     presenter.filter.set("createdOn_lte", value);
