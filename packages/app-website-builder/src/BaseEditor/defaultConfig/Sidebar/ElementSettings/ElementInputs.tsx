@@ -7,7 +7,7 @@ import { InputRenderer } from "./InputRenderer.js";
 import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { InfoMessage } from "~/BaseEditor/defaultConfig/Sidebar/InfoMessage.js";
-import { ElementPreview } from "./ElementPreview.js";
+import { ElementPreview } from "../ElementPreview.js";
 
 interface ElementInputsProps {
     element: DocumentElement;
@@ -36,7 +36,7 @@ export const ElementInputs = makeDecoratable("ElementInputs", ({ element }: Elem
     }
 
     return (
-        <Grid gap={"compact"} className={"pt-sm"}>
+        <Grid gap={"compact"} className={"pt-md px-sm"}>
             <Grid.Column span={12}>
                 <ElementPreview element={element} />
             </Grid.Column>

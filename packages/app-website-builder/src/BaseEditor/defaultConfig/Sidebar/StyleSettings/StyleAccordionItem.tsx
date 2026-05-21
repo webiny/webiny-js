@@ -25,7 +25,7 @@ export const StyleAccordionItem = ({
                     role="button"
                     tabIndex={0}
                     className={
-                        "w-full flex items-center justify-between py-sm cursor-pointer select-none rounded-lg " +
+                        "w-full flex items-center justify-between py-sm px-sm cursor-pointer select-none rounded-lg " +
                         (isOpen ? "" : "bg-neutral-subtle")
                     }
                     onKeyDown={e => {
