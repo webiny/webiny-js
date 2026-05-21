@@ -8,6 +8,7 @@ const GET_WEBHOOK_SETTINGS = /* GraphQL */ `
             getSettings {
                 data {
                     signingSecret
+                    deliveryRetentionDays
                 }
                 error {
                     code

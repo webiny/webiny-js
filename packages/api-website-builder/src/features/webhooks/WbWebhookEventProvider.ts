@@ -6,73 +6,83 @@ class WbWebhookFactoryImpl implements WebhookFactoryAbstraction.Interface {
         return [
             {
                 app: "wb",
-                appLabel: "Website Builder Pages",
+                appLabel: "Website Builder",
                 entity: "page",
+                entityLabel: "Pages",
                 eventName: WebhookEvent.WbPageCreated,
-                label: "Page: Created"
+                label: "Created"
             },
             {
                 app: "wb",
+                appLabel: "Website Builder",
                 entity: "page",
-                appLabel: "Website Builder Pages",
+                entityLabel: "Pages",
                 eventName: WebhookEvent.WbPageUpdated,
-                label: "Page: Updated"
+                label: "Updated"
             },
             {
                 app: "wb",
+                appLabel: "Website Builder",
                 entity: "page",
-                appLabel: "Website Builder Pages",
+                entityLabel: "Pages",
                 eventName: WebhookEvent.WbPagePublished,
-                label: "Page: Published"
+                label: "Published"
             },
             {
                 app: "wb",
+                appLabel: "Website Builder",
                 entity: "page",
-                appLabel: "Website Builder Pages",
+                entityLabel: "Pages",
                 eventName: WebhookEvent.WbPageUnpublished,
-                label: "Page: Unpublished"
+                label: "Unpublished"
             },
             {
                 app: "wb",
+                appLabel: "Website Builder",
                 entity: "page",
-                appLabel: "Website Builder Pages",
+                entityLabel: "Pages",
                 eventName: WebhookEvent.WbPageDeleted,
-                label: "Page: Deleted"
+                label: "Deleted"
             },
             {
                 app: "wb",
+                appLabel: "Website Builder",
                 entity: "page",
-                appLabel: "Website Builder Pages",
+                entityLabel: "Pages",
                 eventName: WebhookEvent.WbPageTrashed,
-                label: "Page: Trashed"
+                label: "Trashed"
             },
             {
                 app: "wb",
+                appLabel: "Website Builder",
                 entity: "page",
-                appLabel: "Website Builder Pages",
+                entityLabel: "Pages",
                 eventName: WebhookEvent.WbPageRestored,
-                label: "Page: Restored"
+                label: "Restored"
             },
             {
                 app: "wb",
+                appLabel: "Website Builder",
                 entity: "redirect",
-                appLabel: "Website Builder Redirect",
+                entityLabel: "Redirects",
                 eventName: WebhookEvent.WbRedirectCreated,
-                label: "Redirect: Created"
+                label: "Created"
             },
             {
                 app: "wb",
+                appLabel: "Website Builder",
                 entity: "redirect",
-                appLabel: "Website Builder Redirect",
+                entityLabel: "Redirects",
                 eventName: WebhookEvent.WbRedirectUpdated,
-                label: "Redirect: Updated"
+                label: "Updated"
             },
             {
                 app: "wb",
+                appLabel: "Website Builder",
                 entity: "redirect",
-                appLabel: "Website Builder Redirect",
+                entityLabel: "Redirects",
                 eventName: WebhookEvent.WbRedirectDeleted,
-                label: "Redirect: Deleted"
+                label: "Deleted"
             }
         ];
     }

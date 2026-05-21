@@ -13426,6 +13426,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
+    "@webiny/stdlib": "npm:^0.0.2"
     apollo-cache: "npm:^1.3.5"
     apollo-cache-inmemory: "npm:^1.6.6"
     apollo-client: "npm:^2.6.10"
@@ -13434,7 +13435,6 @@ __metadata:
     apollo-link-error: "npm:^1.1.13"
     apollo-link-http-common: "npm:^0.2.16"
     apollo-utilities: "npm:^1.3.4"
-    boolean: "npm:^3.2.0"
     graphql: "npm:^16.14.0"
     history: "npm:^5.3.0"
     invariant: "npm:^2.2.4"
@@ -13825,8 +13825,8 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
+    "@webiny/stdlib": "npm:^0.0.2"
     "@webiny/utils": "npm:0.0.0"
-    boolean: "npm:^3.2.0"
     graphql: "npm:^16.14.0"
     graphql-scalars: "npm:^1.25.0"
     graphql-tag: "npm:^2.12.6"
@@ -14344,6 +14344,21 @@ __metadata:
     typescript: "npm:6.0.3"
   languageName: unknown
   linkType: soft
+
+"@webiny/stdlib@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "@webiny/stdlib@npm:0.0.2"
+  dependencies:
+    "@webiny/di": "npm:^1.0.1"
+    dot-prop: "npm:^10.1.0"
+    fast-glob: "npm:^3.3.3"
+    pino: "npm:^10.3.1"
+    pino-pretty: "npm:^13.1.3"
+    type-fest: "npm:^5.6.0"
+    zod: "npm:^4.4.3"
+  checksum: 10/fffd76c28933c9bbcd4aa36e5d9fc9637d6c4a681f6fe18899148fea3a81467320d84de971a5d6b4eeca18ba63eda3cf54685f495cba8a182a0abb13ebf362c2
+  languageName: node
+  linkType: hard
 
 "@webiny/system-requirements@npm:0.0.0, @webiny/system-requirements@workspace:packages/system-requirements":
   version: 0.0.0-use.local
@@ -15822,13 +15837,6 @@ __metadata:
   version: 1.0.0
   resolution: "boolbase@npm:1.0.0"
   checksum: 10/3e25c80ef626c3a3487c73dbfc70ac322ec830666c9ad915d11b701142fab25ec1e63eff2c450c74347acfd2de854ccde865cd79ef4db1683f7c7b046ea43bb0
-  languageName: node
-  linkType: hard
-
-"boolean@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "boolean@npm:3.2.0"
-  checksum: 10/d28a49dcaeef7fe10cf9fdf488214d3859f07350be8f5caa0c73ec621baf20650e5da6523262e5ce9221909519d4261c16d8430a5bf307fee9ef0e170cdb29f3
   languageName: node
   linkType: hard
 
@@ -31755,7 +31763,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:4.4.3, zod@npm:^3.25 || ^4.0":
+"zod@npm:4.4.3, zod@npm:^3.25 || ^4.0, zod@npm:^4.4.3":
   version: 4.4.3
   resolution: "zod@npm:4.4.3"
   checksum: 10/804b9a42aa8f35f2b3c5a8dff906291cb749115f83ee2afe3576d70b5b5c53c965365c7f4967690647a9c54af9838ff232a85ff9577a0a36c44b68bc6cdefe36

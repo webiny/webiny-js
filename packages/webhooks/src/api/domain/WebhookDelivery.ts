@@ -20,7 +20,6 @@ export interface WebhookDeliveryCmsEntry {
     id: string;
     createdOn: string;
     savedOn: string;
-    expiresAt: string;
     values: WebhookDeliveryCmsEntryValues;
 }
 

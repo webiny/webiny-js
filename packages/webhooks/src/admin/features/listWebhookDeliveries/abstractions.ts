@@ -1,8 +1,14 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
 
+export interface ListWebhookDeliveriesWhere {
+    webhookId_eq?: string;
+    eventType_in?: string[];
+    status_in?: string[];
+}
+
 export interface ListWebhookDeliveriesParams {
-    webhookId: string;
+    where?: ListWebhookDeliveriesWhere;
     limit?: number;
     after?: string;
 }

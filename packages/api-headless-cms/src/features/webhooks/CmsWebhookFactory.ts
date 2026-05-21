@@ -1,14 +1,23 @@
 import { WebhookFactory as WebhookFactoryAbstraction } from "@webiny/api-core/features/webhooks/index.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/abstractions.js";
 
-const ACTIONS = ["created", "updated", "deleted", "published", "unpublished"] as const;
+const ACTIONS = [
+    "created",
+    "updated",
+    "deleted",
+    "published",
+    "unpublished",
+    "trashed",
+    "restored"
+] as const;
 
 class CmsWebhookFactoryImpl implements WebhookFactoryAbstraction.Interface {
     constructor(private listModels: ListModelsUseCase.Interface) {}
 
     public async execute(): Promise<WebhookFactoryAbstraction.Definition[]> {
         const result = await this.listModels.execute({
-            includePrivate: false
+            includePrivate: false,
+            includePlugins: true
         });
         if (result.isFail()) {
             return [];
@@ -24,8 +33,9 @@ class CmsWebhookFactoryImpl implements WebhookFactoryAbstraction.Interface {
                     app: "cms",
                     appLabel: "Headless CMS",
                     entity: model.modelId,
+                    entityLabel: model.name,
                     eventName: `cms.entry.${model.modelId}.${action}`,
-                    label: `${model.name}: Entry ${action.charAt(0).toUpperCase() + action.slice(1)}`
+                    label: `Entry ${action.charAt(0).toUpperCase() + action.slice(1)}`
                 });
             }
             return events;

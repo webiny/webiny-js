@@ -10,7 +10,7 @@ class ListWebhookDeliveriesGatewayImpl implements GatewayAbstraction.Interface {
 
     async execute(params: ListWebhookDeliveriesParams): Promise<ListWebhookDeliveriesResult> {
         const result = await this.sdk.webhooks.listWebhookDeliveries({
-            webhookId: params.webhookId,
+            where: params.where,
             limit: params.limit,
             after: params.after
         });

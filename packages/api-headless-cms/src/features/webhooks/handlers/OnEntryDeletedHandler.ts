@@ -2,10 +2,13 @@ import { EntryAfterDeleteEventHandler } from "~/features/contentEntry/DeleteEntr
 import { WebhookDispatcher } from "@webiny/api-core/features/webhooks/index.js";
 
 class OnEntryDeletedHandlerImpl implements EntryAfterDeleteEventHandler.Interface {
-    constructor(private dispatcher: WebhookDispatcher.Interface) {}
+    constructor(private readonly dispatcher: WebhookDispatcher.Interface) {}
 
     async handle(event: EntryAfterDeleteEventHandler.Event): Promise<void> {
-        const { entry, model } = event.payload;
+        const { entry, model, permanent } = event.payload;
+        if (!permanent) {
+            return;
+        }
         await this.dispatcher.dispatch(`cms.entry.${model.modelId}.deleted`, { entry });
     }
 }
