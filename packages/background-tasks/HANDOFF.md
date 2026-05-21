@@ -10,9 +10,10 @@ A complete `@webiny/background-tasks` admin package:
 
 - **6 features:** listTasks, getTask, deleteTask, abortTask, listLogs, listDefinitions
 - **Permissions:** TaskPermissions feature, HasPermission component, usePermissions hook
-- **TaskList:** DataTable with search, status/definition/date-range filters, sortable columns (name, definition, status, created, started, finished), abort/delete row actions with confirmation dialogs
+- **TaskDefinitions:** Read-only DataTable of registered task definitions (title, id, description)
+- **TaskExecutions:** DataTable with search, status/definition/date-range filters, sortable columns (name, definition, status, created, started, finished), abort/delete row actions with confirmation dialogs
 - **TaskDetail:** 900px modal Drawer showing general info grid, input/output JSON (CodeEditor), paginated log entries with expandable data/error payloads
-- **Registered** in `packages/app-serverless-cms/src/Admin.tsx`, menu under "Dev Tools"
+- **Registered** in `packages/app-serverless-cms/src/Admin.tsx`, two menu items under "Dev Tools"
 - **Builds cleanly** — `yarn build -p @webiny/background-tasks` passes
 
 ## What's NOT done
@@ -33,21 +34,22 @@ A complete `@webiny/background-tasks` admin package:
 
 ## Key files
 
-| What                | Path                                                                                          |
-| ------------------- | --------------------------------------------------------------------------------------------- |
-| Design spec         | `docs/superpowers/specs/2026-05-20-background-tasks-admin-ui-design.md`                       |
-| Implementation plan | `docs/superpowers/plans/2026-05-20-background-tasks-admin-ui.md`                              |
-| Package root        | `packages/background-tasks/`                                                                  |
-| Shared types        | `packages/background-tasks/src/admin/shared/types.ts`                                         |
-| List view           | `packages/background-tasks/src/admin/presentation/TaskList/components/TaskListView.tsx`       |
-| Detail drawer       | `packages/background-tasks/src/admin/presentation/TaskDetail/components/TaskDetailDrawer.tsx` |
-| Main component      | `packages/background-tasks/src/admin/BackgroundTasks.tsx`                                     |
-| Registration        | `packages/background-tasks/src/admin/BackgroundTaskRoutes.tsx`                                |
-| App integration     | `packages/app-serverless-cms/src/Admin.tsx`                                                   |
+| What                | Path                                                                                                  |
+| ------------------- | ----------------------------------------------------------------------------------------------------- |
+| Design spec         | `docs/superpowers/specs/2026-05-20-background-tasks-admin-ui-design.md`                               |
+| Implementation plan | `docs/superpowers/plans/2026-05-20-background-tasks-admin-ui.md`                                      |
+| Package root        | `packages/background-tasks/`                                                                          |
+| Shared types        | `packages/background-tasks/src/admin/shared/types.ts`                                                 |
+| Definitions view    | `packages/background-tasks/src/admin/presentation/TaskDefinitions/components/TaskDefinitionsView.tsx` |
+| Executions view     | `packages/background-tasks/src/admin/presentation/TaskExecutions/components/TaskExecutionsView.tsx`   |
+| Detail drawer       | `packages/background-tasks/src/admin/presentation/TaskDetail/components/TaskDetailDrawer.tsx`         |
+| Main component      | `packages/background-tasks/src/admin/BackgroundTasks.tsx`                                             |
+| Registration        | `packages/background-tasks/src/admin/BackgroundTaskRoutes.tsx`                                        |
+| App integration     | `packages/app-serverless-cms/src/Admin.tsx`                                                           |
 
 ## Next steps
 
-1. Run the admin app and navigate to `/background-tasks` — verify the list loads
+1. Run the admin app and navigate to `/background-tasks/definitions` and `/background-tasks/executions` — verify both views load
 2. Test filters (status, definition, date range) work against the live GraphQL schema
 3. Click a task row — verify the drawer opens with correct info, JSON, and logs
 4. Test abort on a running task, delete on a completed/failed task

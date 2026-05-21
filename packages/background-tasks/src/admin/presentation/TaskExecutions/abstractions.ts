@@ -20,7 +20,8 @@ export interface ITaskExecutionsPresenter extends IListActions {
     init(): void;
 }
 
-export const TaskExecutionsPresenter = createAbstraction<ITaskExecutionsPresenter>("TaskExecutionsPresenter");
+export const TaskExecutionsPresenter =
+    createAbstraction<ITaskExecutionsPresenter>("TaskExecutionsPresenter");
 
 export namespace TaskExecutionsPresenter {
     export type Interface = ITaskExecutionsPresenter;

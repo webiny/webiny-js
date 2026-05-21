@@ -36,24 +36,26 @@ export const BackgroundTaskRoutes = () => {
                 <Menu
                     name="backgroundTasks.definitions"
                     parent="dev-tools"
-                    element={<Menu.Link
-                        text="Task Definitions"
-                        to={getLink(Routes.Definitions)}
-                        icon={
-                            <Menu.Link.Icon label="Task Definitions" element={<ListIcon />} />
-                        }
-                    />}
+                    element={
+                        <Menu.Link
+                            text="Task Definitions"
+                            to={getLink(Routes.Definitions)}
+                            icon={
+                                <Menu.Link.Icon label="Task Definitions" element={<ListIcon />} />
+                            }
+                        />
+                    }
                 />
                 <Menu
                     name="backgroundTasks.executions"
                     parent="dev-tools"
-                    element={<Menu.Link
-                        text="Task Executions"
-                        to={getLink(Routes.Executions)}
-                        icon={
-                            <Menu.Link.Icon label="Task Executions" element={<TaskIcon />} />
-                        }
-                    />}
+                    element={
+                        <Menu.Link
+                            text="Task Executions"
+                            to={getLink(Routes.Executions)}
+                            icon={<Menu.Link.Icon label="Task Executions" element={<TaskIcon />} />}
+                        />
+                    }
                 />
             </HasPermission>
         </AdminConfig>

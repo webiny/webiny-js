@@ -1,8 +1,4 @@
-import {
-    makeAutoObservable,
-    runInAction,
-    computed
-} from "mobx";
+import { makeAutoObservable, runInAction, computed } from "mobx";
 import {
     TaskDefinitionsPresenter as Abstraction,
     type ITaskDefinitionsPresenter,
@@ -15,9 +11,7 @@ class TaskDefinitionsPresenterImpl implements ITaskDefinitionsPresenter {
     private _definitions: TaskDefinition[] = [];
     private _loading = false;
 
-    constructor(
-        private readonly listDefinitionsUseCase: ListDefinitionsUseCase.Interface
-    ) {
+    constructor(private readonly listDefinitionsUseCase: ListDefinitionsUseCase.Interface) {
         makeAutoObservable(this, { vm: computed });
     }
 
@@ -30,16 +24,19 @@ class TaskDefinitionsPresenterImpl implements ITaskDefinitionsPresenter {
 
     init(): void {
         this._loading = true;
-        void this.listDefinitionsUseCase.execute().then(definitions => {
-            runInAction(() => {
-                this._definitions = definitions;
-                this._loading = false;
+        void this.listDefinitionsUseCase
+            .execute()
+            .then(definitions => {
+                runInAction(() => {
+                    this._definitions = definitions;
+                    this._loading = false;
+                });
+            })
+            .catch(() => {
+                runInAction(() => {
+                    this._loading = false;
+                });
             });
-        }).catch(() => {
-            runInAction(() => {
-                this._loading = false;
-            });
-        });
     }
 }
 

@@ -19,9 +19,7 @@ const TaskDefinitionsViewInner = observer(function TaskDefinitionsViewInner() {
         () => ({
             title: {
                 header: "Title",
-                cell: (row: TaskDefinition) => (
-                    <Text size="sm">{row.title || row.id}</Text>
-                ),
+                cell: (row: TaskDefinition) => <Text size="sm">{row.title || row.id}</Text>,
                 enableSorting: false,
                 size: 250
             },

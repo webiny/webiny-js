@@ -11,8 +11,9 @@ export interface ITaskDefinitionsPresenter {
     init(): void;
 }
 
-export const TaskDefinitionsPresenter =
-    createAbstraction<ITaskDefinitionsPresenter>("TaskDefinitionsPresenter");
+export const TaskDefinitionsPresenter = createAbstraction<ITaskDefinitionsPresenter>(
+    "TaskDefinitionsPresenter"
+);
 
 export namespace TaskDefinitionsPresenter {
     export type Interface = ITaskDefinitionsPresenter;
