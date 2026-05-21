@@ -1,6 +1,7 @@
-import { makeAutoObservable, computed } from "mobx";
+import { makeAutoObservable, runInAction, computed } from "mobx";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { Task } from "~/admin/shared/types.js";
+import type { IDefinitionOption } from "./abstractions.js";
 import {
     TaskExecutionsPresenter as Abstraction,
     type ITaskExecutionsPresenter,
@@ -10,16 +11,19 @@ import { TaskExecutionsDataSource } from "./TaskExecutionsDataSource.js";
 import { ListTasksUseCase } from "~/admin/features/listTasks/abstractions.js";
 import { DeleteTaskUseCase } from "~/admin/features/deleteTask/abstractions.js";
 import { AbortTaskUseCase } from "~/admin/features/abortTask/abstractions.js";
+import { ListDefinitionsUseCase } from "~/admin/features/listDefinitions/abstractions.js";
 import { TaskPermissions } from "~/admin/features/permissions/abstractions.js";
 
 class TaskExecutionsPresenterImpl implements ITaskExecutionsPresenter {
     private _selectedTask: Task | null = null;
+    private _definitionOptions: IDefinitionOption[] = [];
 
     constructor(
         private readonly listPresenter: ListPresenter.Interface<Task>,
         private readonly listTasksUseCase: ListTasksUseCase.Interface,
         private readonly deleteTaskUseCase: DeleteTaskUseCase.Interface,
         private readonly abortTaskUseCase: AbortTaskUseCase.Interface,
+        private readonly listDefinitionsUseCase: ListDefinitionsUseCase.Interface,
         private readonly permissions: TaskPermissions.Interface
     ) {
         makeAutoObservable(this, { vm: computed });
@@ -28,6 +32,7 @@ class TaskExecutionsPresenterImpl implements ITaskExecutionsPresenter {
     get vm(): ITaskExecutionsViewModel {
         return {
             list: this.listPresenter.vm,
+            definitionOptions: this._definitionOptions,
             permissions: {
                 canRead: this.permissions.canRead("task"),
                 canDelete: this.permissions.canDelete("task")
@@ -90,6 +95,20 @@ class TaskExecutionsPresenterImpl implements ITaskExecutionsPresenter {
             initialSort: { field: "createdOn", direction: "DESC" },
             limit: 20
         });
+
+        void this.listDefinitionsUseCase
+            .execute()
+            .then(definitions => {
+                runInAction(() => {
+                    this._definitionOptions = definitions.map(d => ({
+                        label: d.title,
+                        value: d.id
+                    }));
+                });
+            })
+            .catch(() => {
+                /* Definitions are used for filter labels only; safe to ignore. */
+            });
     }
 }
 
@@ -100,6 +119,7 @@ export const TaskExecutionsPresenter = Abstraction.createImplementation({
         ListTasksUseCase,
         DeleteTaskUseCase,
         AbortTaskUseCase,
+        ListDefinitionsUseCase,
         TaskPermissions
     ]
 });

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-ui";
@@ -51,20 +51,11 @@ const STATUS_OPTIONS: { label: string; value: TaskStatus }[] = [
 
 const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
     const { presenter } = useFeature(TaskExecutionsPresenterFeature);
-    const [definitions, setDefinitions] = useState<{ label: string; value: string }[]>([]);
     const { showSnackbar } = useSnackbar();
 
     useEffect(() => {
         presenter.init();
     }, [presenter]);
-
-    const listDefinitionsFeature = useFeature(ListDefinitionsFeature);
-
-    useEffect(() => {
-        void listDefinitionsFeature.useCase.execute().then(defs => {
-            setDefinitions(defs.map(d => ({ label: d.title, value: d.id })));
-        });
-    }, [listDefinitionsFeature]);
 
     const { vm } = presenter;
 
@@ -115,7 +106,7 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
             definitionId: {
                 header: "Definition",
                 cell: (row: Task) => {
-                    const def = definitions.find(d => d.value === row.definitionId);
+                    const def = vm.definitionOptions.find(d => d.value === row.definitionId);
                     return <Text size="sm">{def ? def.label : row.definitionId}</Text>;
                 },
                 enableSorting: true,
@@ -221,8 +212,8 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
         }),
         [
             vm.permissions,
+            vm.definitionOptions,
             presenter,
-            definitions,
             showDeleteConfirmation,
             showAbortConfirmation,
             showSnackbar
@@ -258,11 +249,11 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                             }}
                         />
                     </div>
-                    {definitions.length > 0 && (
+                    {vm.definitionOptions.length > 0 && (
                         <div className="w-[200px]">
                             <Select
                                 placeholder="Definition"
-                                options={definitions}
+                                options={vm.definitionOptions}
                                 value={(vm.list.filters.definitionId as string) ?? ""}
                                 onChange={value => {
                                     if (value) {

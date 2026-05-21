@@ -3,8 +3,14 @@ import type { Task } from "~/admin/shared/types.js";
 import type { IListViewModel } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { IListActions } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 
+export interface IDefinitionOption {
+    label: string;
+    value: string;
+}
+
 export interface ITaskExecutionsViewModel {
     list: IListViewModel<Task>;
+    definitionOptions: IDefinitionOption[];
     permissions: {
         canRead: boolean;
         canDelete: boolean;
