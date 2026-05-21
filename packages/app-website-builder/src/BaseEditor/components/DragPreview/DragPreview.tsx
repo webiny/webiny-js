@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import type { DragLayerMonitor } from "react-dnd";
 import { useDragLayer } from "react-dnd";
-import { dropZoneState } from "~/BaseEditor/defaultConfig/Content/Preview/dropZoneState.js";
+import { useDropZoneManager } from "~/BaseEditor/defaultConfig/Content/Preview/DropZoneManagerProvider.js";
 import { setupDragPosition, setDragPreviewRef, resetDragPosition } from "./useDragPosition.js";
 import { DragCursorWrapper } from "./DragCursorWrapper.js";
 
 const DragPreview = () => {
-    const [opacity, setOpacity] = useState(0);
     const [isOverSlot, setIsOverSlot] = useState(false);
+    const dropZoneManager = useDropZoneManager();
 
     const { isDragging, item } = useDragLayer((monitor: DragLayerMonitor) => {
         setupDragPosition(monitor);
@@ -19,25 +19,14 @@ const DragPreview = () => {
     });
 
     useEffect(() => {
-        return dropZoneState.subscribe(setIsOverSlot);
-    }, []);
+        return dropZoneManager.subscribeToMatchChange(setIsOverSlot);
+    }, [dropZoneManager]);
 
     useEffect(() => {
         return () => {
             resetDragPosition();
         };
     }, []);
-
-    useEffect((): void => {
-        if (isDragging) {
-            setTimeout(() => {
-                setOpacity(isDragging ? 1 : 0);
-            }, 100);
-            return;
-        }
-
-        setOpacity(0);
-    }, [isDragging]);
 
     if (!isDragging) {
         return null;
@@ -49,11 +38,7 @@ const DragPreview = () => {
 
     return (
         <div className="fixed pointer-events-none left-0 top-0 w-full h-full z-[1001]">
-            <div
-                ref={setDragPreviewRef}
-                className="transition-opacity duration-250 ease-in-out absolute"
-                style={{ opacity }}
-            >
+            <div ref={setDragPreviewRef} className="absolute">
                 <DragCursorWrapper componentName={item?.componentName} isOverSlot={isOverSlot} />
             </div>
         </div>

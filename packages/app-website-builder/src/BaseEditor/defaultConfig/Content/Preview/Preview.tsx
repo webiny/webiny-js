@@ -12,6 +12,7 @@ import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 import { AwaitIframeUrl } from "~/BaseEditor/defaultConfig/Content/Preview/AwaitIframeUrl.js";
 import { PreviewEvents } from "~/BaseEditor/defaultConfig/Content/Preview/PreviewEvents.js";
 import { ApplyTheme } from "./ApplyTheme.js";
+import DragPreview from "~/BaseEditor/components/DragPreview/index.js";
 
 export const Preview = () => {
     const editor = useDocumentEditor();
@@ -100,6 +101,7 @@ export const Preview = () => {
                         />
                     )}
                 </AwaitIframeUrl>
+                <DragPreview />
             </DropZoneManagerProvider>
             <KeyboardShortcuts />
         </>

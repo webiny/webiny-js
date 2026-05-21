@@ -1,6 +1,7 @@
 import type { Box } from "./Box.js";
 
 type DropPosition = number | null;
+type MatchChangeCallback = (hasMatch: boolean) => void;
 
 export interface DropZoneProximity {
     box: Box;
@@ -20,6 +21,7 @@ export class DropZoneManager {
     private currentPosition: DropPosition = null;
     private animationFrame: number | null = null;
     private currentBox: Box | null = null;
+    private matchCallbacks = new Set<MatchChangeCallback>();
 
     constructor(private mouse: { x: number; y: number }) {}
 
@@ -33,6 +35,11 @@ export class DropZoneManager {
 
     unregister(id: string) {
         this.zones.delete(id);
+    }
+
+    subscribeToMatchChange(cb: MatchChangeCallback): () => void {
+        this.matchCallbacks.add(cb);
+        return () => this.matchCallbacks.delete(cb);
     }
 
     start() {
@@ -141,6 +148,8 @@ export class DropZoneManager {
             this.currentTargetId = matchedId;
             this.currentPosition = matchedPosition;
             this.currentBox = matchedBox;
+
+            this.matchCallbacks.forEach(cb => cb(matchedId !== null));
 
             for (const [id, entry] of this.zones) {
                 const isTarget = id === matchedId;
