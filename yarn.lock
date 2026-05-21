@@ -13546,6 +13546,7 @@ __metadata:
     "@rspack/core": "npm:^2.0.3"
     "@swc/plugin-emotion": "npm:^14.9.0"
     "@tailwindcss/postcss": "npm:^4.3.0"
+    "@webiny/stdlib": "npm:^0.0.3"
     chalk: "npm:^5.6.2"
     css-loader: "npm:^7.1.4"
     fast-glob: "npm:^3.3.3"

@@ -6,11 +6,11 @@
  */
 
 import "tsx";
-
 import path from "path";
 import fs from "fs-extra";
 import * as rimraf from "rimraf";
 import { loadJsonFileSync } from "load-json-file";
+import { immutableGet } from "@webiny/stdlib";
 
 async function symlink(src, dest) {
     if (process.platform !== "win32") {
@@ -82,9 +82,9 @@ export const linkWorkspaces = async ({ whitelist, blacklist } = defaults) => {
         const pkgJson = await PackageJson.fromFile(packageJson);
         const pkg = pkgJson.getJson();
 
-        let targetDirectory = get(pkg, "publishConfig.directory");
+        let targetDirectory = immutableGet(pkg, "publishConfig.directory");
         if (!targetDirectory && lerna) {
-            targetDirectory = get(lerna, "command.publish.contents");
+            targetDirectory = immutableGet(lerna, "command.publish.contents");
         }
 
         const link = path.resolve("node_modules", pkg.name);

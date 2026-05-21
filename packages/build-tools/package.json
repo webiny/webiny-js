@@ -26,6 +26,7 @@
     "@rspack/core": "^2.0.3",
     "@swc/plugin-emotion": "^14.9.0",
     "@tailwindcss/postcss": "^4.3.0",
+    "@webiny/stdlib": "^0.0.3",
     "chalk": "^5.6.2",
     "css-loader": "^7.1.4",
     "fast-glob": "^3.3.3",
