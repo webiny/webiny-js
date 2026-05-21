@@ -2,17 +2,17 @@ import { makeAutoObservable, computed } from "mobx";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { Task } from "~/admin/shared/types.js";
 import {
-    TaskListPresenter as Abstraction,
-    type ITaskListPresenter,
-    type ITaskListViewModel
+    TaskExecutionsPresenter as Abstraction,
+    type ITaskExecutionsPresenter,
+    type ITaskExecutionsViewModel
 } from "./abstractions.js";
-import { TaskListDataSource } from "./TaskListDataSource.js";
+import { TaskExecutionsDataSource } from "./TaskExecutionsDataSource.js";
 import { ListTasksUseCase } from "~/admin/features/listTasks/abstractions.js";
 import { DeleteTaskUseCase } from "~/admin/features/deleteTask/abstractions.js";
 import { AbortTaskUseCase } from "~/admin/features/abortTask/abstractions.js";
 import { TaskPermissions } from "~/admin/features/permissions/abstractions.js";
 
-class TaskListPresenterImpl implements ITaskListPresenter {
+class TaskExecutionsPresenterImpl implements ITaskExecutionsPresenter {
     private _selectedTask: Task | null = null;
 
     constructor(
@@ -25,7 +25,7 @@ class TaskListPresenterImpl implements ITaskListPresenter {
         makeAutoObservable(this, { vm: computed });
     }
 
-    get vm(): ITaskListViewModel {
+    get vm(): ITaskExecutionsViewModel {
         return {
             list: this.listPresenter.vm,
             permissions: {
@@ -84,7 +84,7 @@ class TaskListPresenterImpl implements ITaskListPresenter {
     };
 
     init(): void {
-        const dataSource = new TaskListDataSource(this.listTasksUseCase);
+        const dataSource = new TaskExecutionsDataSource(this.listTasksUseCase);
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
@@ -93,8 +93,8 @@ class TaskListPresenterImpl implements ITaskListPresenter {
     }
 }
 
-export const TaskListPresenter = Abstraction.createImplementation({
-    implementation: TaskListPresenterImpl,
+export const TaskExecutionsPresenter = Abstraction.createImplementation({
+    implementation: TaskExecutionsPresenterImpl,
     dependencies: [
         ListPresenter,
         ListTasksUseCase,

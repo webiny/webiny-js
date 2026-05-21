@@ -3,7 +3,7 @@ import type { Task } from "~/admin/shared/types.js";
 import type { IListViewModel } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { IListActions } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 
-export interface ITaskListViewModel {
+export interface ITaskExecutionsViewModel {
     list: IListViewModel<Task>;
     permissions: {
         canRead: boolean;
@@ -11,8 +11,8 @@ export interface ITaskListViewModel {
     };
 }
 
-export interface ITaskListPresenter extends IListActions {
-    vm: ITaskListViewModel;
+export interface ITaskExecutionsPresenter extends IListActions {
+    vm: ITaskExecutionsViewModel;
     selectedTask: Task | null;
     deleteTask(id: string): Promise<void>;
     abortTask(id: string): Promise<void>;
@@ -20,9 +20,9 @@ export interface ITaskListPresenter extends IListActions {
     init(): void;
 }
 
-export const TaskListPresenter = createAbstraction<ITaskListPresenter>("TaskListPresenter");
+export const TaskExecutionsPresenter = createAbstraction<ITaskExecutionsPresenter>("TaskExecutionsPresenter");
 
-export namespace TaskListPresenter {
-    export type Interface = ITaskListPresenter;
-    export type ViewModel = ITaskListViewModel;
+export namespace TaskExecutionsPresenter {
+    export type Interface = ITaskExecutionsPresenter;
+    export type ViewModel = ITaskExecutionsViewModel;
 }

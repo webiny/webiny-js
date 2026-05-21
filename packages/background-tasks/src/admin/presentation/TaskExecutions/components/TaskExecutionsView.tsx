@@ -20,7 +20,7 @@ import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin/hooks/inde
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as StopCircleIcon } from "@webiny/icons/stop_circle.svg";
-import { TaskListPresenterFeature } from "../feature.js";
+import { TaskExecutionsPresenterFeature } from "../feature.js";
 import { ListTasksFeature } from "~/admin/features/listTasks/feature.js";
 import { DeleteTaskFeature } from "~/admin/features/deleteTask/feature.js";
 import { AbortTaskFeature } from "~/admin/features/abortTask/feature.js";
@@ -49,8 +49,8 @@ const STATUS_OPTIONS: { label: string; value: TaskStatus }[] = [
     { label: "Aborted", value: "aborted" }
 ];
 
-const TaskListViewInner = observer(function TaskListViewInner() {
-    const { presenter } = useFeature(TaskListPresenterFeature);
+const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
+    const { presenter } = useFeature(TaskExecutionsPresenterFeature);
     const [definitions, setDefinitions] = useState<{ label: string; value: string }[]>([]);
     const { showSnackbar } = useSnackbar();
 
@@ -233,7 +233,7 @@ const TaskListViewInner = observer(function TaskListViewInner() {
         <>
             <div className="flex flex-col h-main-content">
                 <div className="flex items-center justify-between py-sm px-md">
-                    <Heading level={5}>Background Tasks</Heading>
+                    <Heading level={5}>Task Executions</Heading>
                 </div>
                 <Separator />
                 <div className="flex items-center gap-sm px-md py-xs flex-wrap">
@@ -349,7 +349,7 @@ const TaskListViewInner = observer(function TaskListViewInner() {
     );
 });
 
-export const TaskListView = () => {
+export const TaskExecutionsView = () => {
     const container = useContainer();
 
     const scopedContainer = useMemo(() => {
@@ -359,13 +359,13 @@ export const TaskListView = () => {
         AbortTaskFeature.register(child);
         ListDefinitionsFeature.register(child);
         TaskPermissionsFeature.register(child);
-        TaskListPresenterFeature.register(child);
+        TaskExecutionsPresenterFeature.register(child);
         return child;
     }, []);
 
     return (
         <DiContainerProvider container={scopedContainer}>
-            <TaskListViewInner />
+            <TaskExecutionsViewInner />
         </DiContainerProvider>
     );
 };

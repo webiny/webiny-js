@@ -23,13 +23,13 @@ function toSortEnum(field: string, direction: "ASC" | "DESC"): string {
     return `${prefix}${field}_${direction}`;
 }
 
-export class TaskListDataSource implements IDataSource<Task> {
+export class TaskExecutionsDataSource implements IDataSource<Task> {
     private _rows: Task[] = [];
     private _meta: IDataSourceMeta = { cursor: null, hasMoreItems: false, totalCount: 0 };
     private _loading = false;
 
     constructor(private readonly listTasksUseCase: IListTasksUseCase) {
-        makeAutoObservable<TaskListDataSource, "listTasksUseCase">(this, {
+        makeAutoObservable<TaskExecutionsDataSource, "listTasksUseCase">(this, {
             listTasksUseCase: false,
             rows: computed
         });
