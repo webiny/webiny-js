@@ -9,6 +9,7 @@ import type {
 
 export interface IUpdateWebhookSettingsInput {
     signingSecret?: string;
+    deliveryRetentionDays?: number;
 }
 
 type IError =
