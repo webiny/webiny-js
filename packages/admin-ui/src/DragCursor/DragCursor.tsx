@@ -15,7 +15,9 @@ export const DragCursor = ({ label, icon, isOverSlot = false }: DragCursorProps)
     return (
         <div className={containerClass} style={{ height: 28 }}>
             {icon && <Icon icon={icon} label={label} color={"neutral-strong"} size={"sm"} />}
-            <span className={"text-sm font-medium whitespace-nowrap text-neutral-primary"}>{label}</span>
+            <span className={"text-sm font-medium whitespace-nowrap text-neutral-primary"}>
+                {label}
+            </span>
         </div>
     );
 };
