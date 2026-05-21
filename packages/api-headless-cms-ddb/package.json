@@ -34,7 +34,7 @@
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-db": "0.0.0",
-    "@webiny/stdlib": "^0.0.2",
+    "@webiny/stdlib": "^0.0.3",
     "@webiny/utils": "0.0.0",
     "dataloader": "^2.2.3",
     "dot-object": "^2.1.5",

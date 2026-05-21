@@ -61,7 +61,6 @@ const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
                                         onSelectItem={() => selectFiles()}
                                         onReplaceItem={(_, index) => selectFiles(index)}
                                         onRemoveItem={(_, index) => {
-                                            // @ts-expect-error
                                             return onChange(immutableDelete(values, index));
                                         }}
                                         placeholder={field.placeholder}

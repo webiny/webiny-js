@@ -36,7 +36,7 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project": "0.0.0",
-    "@webiny/stdlib": "^0.0.2",
+    "@webiny/stdlib": "^0.0.3",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "graphql": "^16.14.0",

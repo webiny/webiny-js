@@ -28,7 +28,7 @@
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/plugins": "0.0.0",
-    "@webiny/stdlib": "^0.0.2",
+    "@webiny/stdlib": "^0.0.3",
     "@webiny/utils": "0.0.0",
     "graphql": "^16.14.0",
     "graphql-scalars": "^1.25.0",

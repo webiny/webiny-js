@@ -12235,7 +12235,7 @@ __metadata:
     "@webiny/handler-db": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     "@webiny/utils": "npm:0.0.0"
     dataloader: "npm:^2.2.3"
     dot-object: "npm:^2.1.5"
@@ -12376,7 +12376,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
@@ -12684,7 +12684,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
     "@webiny/shared-aco": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
@@ -12867,7 +12867,7 @@ __metadata:
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     "@webiny/validation": "npm:0.0.0"
     apollo-cache: "npm:^1.3.5"
     apollo-client: "npm:^2.6.10"
@@ -13024,7 +13024,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     apollo-cache: "npm:^1.3.5"
@@ -13335,7 +13335,7 @@ __metadata:
     "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
@@ -13427,7 +13427,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     apollo-cache: "npm:^1.3.5"
     apollo-cache-inmemory: "npm:^1.6.6"
     apollo-client: "npm:^2.6.10"
@@ -13681,7 +13681,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     "@webiny/utils": "npm:0.0.0"
     date-fns: "npm:^4.2.1"
     dynamodb-toolbox: "npm:^0.9.5"
@@ -13756,7 +13756,7 @@ __metadata:
     "@types/lodash": "npm:^4.17.24"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     "@webiny/validation": "npm:0.0.0"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.15.3"
@@ -13827,7 +13827,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     "@webiny/utils": "npm:0.0.0"
     graphql: "npm:^16.14.0"
     graphql-scalars: "npm:^1.25.0"
@@ -13879,7 +13879,7 @@ __metadata:
     "@types/accounting": "npm:^0.4.5"
     "@types/lodash": "npm:^4.17.24"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     accounting: "npm:^0.4.1"
     fast-glob: "npm:^3.3.3"
     fecha: "npm:^4.2.3"
@@ -14203,7 +14203,7 @@ __metadata:
     "@webiny/global-config": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     "@webiny/system-requirements": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -14252,7 +14252,7 @@ __metadata:
     "@pulumi/pulumi": "npm:^3.241.0"
     "@types/lodash": "npm:^4.17.24"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     decompress: "npm:^4.2.1"
     execa: "npm:^5.1.1"
     find-up: "npm:^8.0.0"
@@ -14350,9 +14350,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/stdlib@npm:^0.0.2":
-  version: 0.0.2
-  resolution: "@webiny/stdlib@npm:0.0.2"
+"@webiny/stdlib@npm:^0.0.3":
+  version: 0.0.3
+  resolution: "@webiny/stdlib@npm:0.0.3"
   dependencies:
     "@webiny/di": "npm:^1.0.1"
     dot-prop: "npm:^10.1.0"
@@ -14361,7 +14361,7 @@ __metadata:
     pino-pretty: "npm:^13.1.3"
     type-fest: "npm:^5.6.0"
     zod: "npm:^4.4.3"
-  checksum: 10/fffd76c28933c9bbcd4aa36e5d9fc9637d6c4a681f6fe18899148fea3a81467320d84de971a5d6b4eeca18ba63eda3cf54685f495cba8a182a0abb13ebf362c2
+  checksum: 10/92d09061ebb3f20e36e09a868de9ba8ecca013b434b71bda3c0acfd449fcfb0a54b45646c947fabcca5e8ffadce7477b722381bed2cbd1268ab7c0057321e1a7
   languageName: node
   linkType: hard
 
@@ -14596,7 +14596,7 @@ __metadata:
     "@types/deep-equal": "npm:^1.0.4"
     "@types/is-hotkey": "npm:^0.1.10"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.2"
+    "@webiny/stdlib": "npm:^0.0.3"
     csstype: "npm:^3.2.3"
     deep-equal: "npm:^2.2.3"
     deepmerge: "npm:^4.3.1"

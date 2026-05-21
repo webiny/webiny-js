@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/react-composition": "0.0.0",
-    "@webiny/stdlib": "^0.0.2",
+    "@webiny/stdlib": "^0.0.3",
     "@webiny/validation": "0.0.0",
     "lodash": "^4.18.1",
     "slugify": "^1.6.9"
