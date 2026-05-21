@@ -12,7 +12,7 @@ export const PreviewContainer = ({ children }: PreviewContainerProps) => {
         <div
             id={"preview-container"}
             style={{ height: `calc(100vh - ${uiHeight}px)` }}
-            className={"bg-neutral-subtle relative flex flex-col items-center w-full overflow-auto"}
+            className={"bg-neutral-subtle relative flex flex-col items-center w-full overflow-auto p-[24px]"}
         >
             {children}
         </div>

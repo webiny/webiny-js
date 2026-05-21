@@ -259,7 +259,7 @@ export class PreviewEvents {
         const bodyRect = previewBody.getBoundingClientRect();
 
         return {
-            top: containerRect.top,
+            top: bodyRect.top + previewContainer.scrollTop,
             left: bodyRect.left,
             width: bodyRect.width,
             height: bodyRect.height
