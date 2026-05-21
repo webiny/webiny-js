@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, Tag, Text } from "@webiny/admin-ui";
+import { Accordion, Tag, Text, TimeAgo } from "@webiny/admin-ui";
 import { ReactComponent as ReplayIcon } from "@webiny/icons/replay.svg";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
 import { DeliveryDetailContent } from "./DeliveryDetailContent.js";
@@ -34,6 +34,10 @@ export const DeliveryAccordionRow = ({
                     {delivery.responseTime !== null && (
                         <Text size="sm">{delivery.responseTime}ms</Text>
                     )}
+
+                    <Text size="sm" className="text-neutral-strong">
+                        <TimeAgo datetime={delivery.createdOn} />
+                    </Text>
                 </div>
             }
             actions={

@@ -55,8 +55,7 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
             },
             createdOn: {
                 header: "Created",
-                cell: (row: WebhookDelivery) =>
-                    row.createdOn ? <TimeAgo datetime={row.createdOn} /> : <Text size="sm">—</Text>,
+                cell: (row: WebhookDelivery) => <TimeAgo datetime={row.createdOn} />,
                 enableSorting: true,
                 size: 120
             },
@@ -69,7 +68,7 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
                         size="sm"
                         onClick={e => {
                             e.stopPropagation();
-                            void presenter.actions.resend(row.id);
+                            void presenter.resend(row.id);
                         }}
                         aria-label="Resend delivery"
                     />
@@ -80,7 +79,7 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
                 enableResizing: false
             }
         }),
-        [presenter.actions]
+        [presenter]
     );
 
     return (
@@ -104,17 +103,15 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
                         columns={columns}
                         data={vm.list.rows}
                         loading={vm.list.pagination.loading}
-                        onToggleRow={(row: WebhookDelivery) =>
-                            presenter.actions.selectDelivery(row)
-                        }
+                        onToggleRow={(row: WebhookDelivery) => presenter.selectDelivery(row)}
                     />
                 </div>
                 {vm.selectedDelivery && (
                     <div className="flex-1 overflow-auto">
                         <DeliveryDetail
                             delivery={vm.selectedDelivery}
-                            onClose={() => presenter.actions.selectDelivery(null)}
-                            onResend={id => void presenter.actions.resend(id)}
+                            onClose={() => presenter.selectDelivery(null)}
+                            onResend={id => void presenter.resend(id)}
                         />
                     </div>
                 )}

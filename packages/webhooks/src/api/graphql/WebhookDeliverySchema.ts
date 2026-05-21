@@ -38,8 +38,7 @@ class WebhookDeliverySchema_ implements GraphQLSchemaFactory.Interface {
                 responseTime: Int
                 responseStatus: Int
                 responseBody: String
-                expiresAt: DateTime
-                createdOn: DateTime
+                createdOn: DateTime!
             }
 
             input WebhookDeliveryListWhereInput {

@@ -45,7 +45,6 @@ export const listWebhookDeliveries = createMethod(
                         responseTime
                         responseStatus
                         responseBody
-                        expiresAt
                         createdOn
                     }
                     meta {

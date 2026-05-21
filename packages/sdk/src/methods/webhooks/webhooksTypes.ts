@@ -23,8 +23,7 @@ export interface WebhookDelivery {
     responseTime: number | null;
     responseStatus: number | null;
     responseBody: string | null;
-    expiresAt: string | null;
-    createdOn: string | null;
+    createdOn: string;
 }
 
 export interface WebhookEvent {

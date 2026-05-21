@@ -28,7 +28,6 @@ export const getWebhookDelivery = createMethod(
                         responseTime
                         responseStatus
                         responseBody
-                        expiresAt
                         createdOn
                     }
                     error {

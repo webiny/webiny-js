@@ -1,7 +1,6 @@
 import React from "react";
-import { Separator, Tag, Tabs, Text, TimeAgo } from "@webiny/admin-ui";
+import { Separator, Tabs } from "@webiny/admin-ui";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
-import { statusVariant } from "./statusVariant.js";
 
 interface DeliveryDetailContentProps {
     delivery: WebhookDelivery;
@@ -68,18 +67,6 @@ export const DeliveryDetailContent = ({ delivery }: DeliveryDetailContentProps) 
 
     return (
         <div className="flex flex-col gap-md">
-            <div className="flex items-center gap-sm flex-wrap">
-                <Tag variant={statusVariant(delivery.status)} content={delivery.status} />
-                {delivery.responseStatus !== null && (
-                    <Text size="sm">HTTP {delivery.responseStatus}</Text>
-                )}
-                {delivery.responseTime !== null && <Text size="sm">{delivery.responseTime}ms</Text>}
-                {delivery.createdOn && (
-                    <Text size="sm" className="text-neutral-strong">
-                        <TimeAgo datetime={delivery.createdOn} />
-                    </Text>
-                )}
-            </div>
             <Separator />
             <Tabs
                 tabs={[
