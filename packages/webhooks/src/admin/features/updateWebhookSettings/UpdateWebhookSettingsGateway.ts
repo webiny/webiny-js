@@ -11,6 +11,7 @@ const UPDATE_WEBHOOK_SETTINGS = /* GraphQL */ `
             updateSettings(input: $input) {
                 data {
                     signingSecret
+                    deliveryRetentionDays
                 }
                 error {
                     code

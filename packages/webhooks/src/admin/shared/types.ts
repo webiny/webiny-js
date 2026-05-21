@@ -10,4 +10,5 @@ export type { UpdateWebhookParams } from "@webiny/sdk";
 
 export interface WebhookSettings {
     signingSecret: string | undefined;
+    deliveryRetentionDays: number | undefined;
 }
