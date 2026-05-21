@@ -11,7 +11,6 @@ class WebhookDeliveryTransformerImpl implements WebhookDeliveryTransformerAbstra
             id: entry.entryId,
             createdOn: entry.createdOn,
             savedOn: entry.savedOn,
-            expiresAt: entry.values.expiresAt,
             webhookId: entry.values.webhookId,
             backgroundTaskId: entry.values.backgroundTaskId,
             eventType: entry.values.eventType,
@@ -36,8 +35,7 @@ class WebhookDeliveryTransformerImpl implements WebhookDeliveryTransformerAbstra
             responseTime: delivery.responseTime,
             responseStatus: delivery.responseStatus,
             responseHeaders: this.compress(delivery.responseHeaders),
-            responseBody: this.compress(delivery.responseBody),
-            expiresAt: delivery.expiresAt
+            responseBody: this.compress(delivery.responseBody)
         };
     }
 

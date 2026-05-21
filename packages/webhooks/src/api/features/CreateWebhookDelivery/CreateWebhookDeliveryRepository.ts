@@ -33,7 +33,6 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 id: "",
                 createdOn: "",
                 savedOn: "",
-                expiresAt: input.expiresAt,
                 webhookId: input.webhookId,
                 backgroundTaskId: null,
                 eventType: input.eventType,
@@ -46,10 +45,13 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 responseBody: null
             });
 
+            const expiresAt = Math.floor(new Date(input.expiresAt).getTime() / 1000);
+
             const { entry } =
                 await this.createEntryDataFactory.create<WebhookDeliveryCmsEntryValues>(
                     modelResult.value,
-                    { values: storageValues }
+                    // @ts-expect-error expiresAt is a top-level DynamoDB attribute, not a CMS values field
+                    { values: storageValues, expiresAt }
                 );
 
             const createResult = await this.createEntryRepository.execute(modelResult.value, entry);
