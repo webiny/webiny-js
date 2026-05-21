@@ -58,7 +58,7 @@ class WebhookSettingsPresenterImpl implements IWebhookSettingsPresenter {
     }
 
     public async save(): Promise<boolean> {
-        const data = await this._form.submit<Record<string, unknown>>();
+        const data = await this._form.submit<Record<string, string>>();
         if (data === false) {
             return false;
         }

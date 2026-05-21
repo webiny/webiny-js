@@ -3,6 +3,7 @@ import { AdminConfig } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { AdminLayout } from "@webiny/app-admin";
 import { ReactComponent as WebhookIcon } from "@webiny/icons/webhook.svg";
+import { ReactComponent as WebhookDeliveryIcon } from "@webiny/icons/webhook.svg";
 import { HasPermission } from "./presentation/security/HasPermission.js";
 import { WebhookListView } from "./presentation/WebhookList/components/WebhookListView.js";
 import { WebhookFormView } from "./presentation/WebhookForm/components/WebhookFormView.js";
@@ -62,14 +63,20 @@ export const WebhookRoutes = () => {
                     }
                 />
                 <Menu
-                    name="webhooks.list"
-                    parent="webhooks"
-                    element={<Menu.Link text="Webhooks" to={getLink(Routes.List)} />}
-                />
-                <Menu
                     name="webhooks.deliveries"
-                    parent="webhooks"
-                    element={<Menu.Link text="Delivery Log" to={getLink(Routes.Deliveries)} />}
+                    parent="dev-tools"
+                    element={
+                        <Menu.Link
+                            text="Webhooks Delivery Log"
+                            to={getLink(Routes.Deliveries)}
+                            icon={
+                                <Menu.Link.Icon
+                                    label="Webhooks Delivery Log"
+                                    element={<WebhookDeliveryIcon />}
+                                />
+                            }
+                        />
+                    }
                 />
                 <Menu
                     name="webhooks.settings"
