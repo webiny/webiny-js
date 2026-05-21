@@ -5,7 +5,7 @@ import {
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
 import { ListWebhooksRepository } from "~/api/features/ListWebhooks/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
-import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/api/domain/constants.js";
+import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";
 import type { IWebhookDispatcherData } from "@webiny/api-core/features/webhooks/WebhookDispatcher/abstractions.js";
 import type { ISendWebhookTaskInput } from "~/api/features/SendWebhookTask/types.js";
 
@@ -47,7 +47,7 @@ class WebhookDispatcherImpl implements WebhookDispatcherAbstraction.Interface {
         }
 
         const expiresAt = new Date(
-            Date.now() + WEBHOOK_DELIVERY_RETENTION_DAYS * 24 * 60 * 60 * 1000
+            Date.now() + WEBHOOK_DELIVERY_MAX_RETENTION_DAYS * 24 * 60 * 60 * 1000
         ).toISOString();
 
         for (const webhook of result.value.items) {

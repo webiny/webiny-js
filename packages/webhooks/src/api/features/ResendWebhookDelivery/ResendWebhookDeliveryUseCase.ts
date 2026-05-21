@@ -7,7 +7,7 @@ import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDel
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookNotAuthorizedError, WebhookValidationError } from "~/api/domain/errors.js";
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
-import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/api/domain/constants.js";
+import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";
 import type { IWebhookPayload } from "~/api/features/SendWebhookTask/types.js";
 
 class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -45,7 +45,7 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
         const data = originalPayload?.data ?? {};
 
         const expiresAt = new Date(
-            Date.now() + WEBHOOK_DELIVERY_RETENTION_DAYS * 24 * 60 * 60 * 1000
+            Date.now() + WEBHOOK_DELIVERY_MAX_RETENTION_DAYS * 24 * 60 * 60 * 1000
         ).toISOString();
 
         const newDeliveryResult = await this.createDeliveryRepository.execute({
