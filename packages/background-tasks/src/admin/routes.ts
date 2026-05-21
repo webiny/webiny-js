@@ -1,8 +1,12 @@
 import { Route } from "@webiny/app-admin";
 
 export const Routes = {
-    List: new Route({
-        name: "BackgroundTasks/List",
-        path: "/background-tasks"
+    Definitions: new Route({
+        name: "BackgroundTasks/Definitions",
+        path: "/background-tasks/definitions"
+    }),
+    Executions: new Route({
+        name: "BackgroundTasks/Executions",
+        path: "/background-tasks/executions"
     })
 };

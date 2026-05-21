@@ -9,7 +9,8 @@ import { AbortTaskFeature } from "./features/abortTask/index.js";
 import { ListLogsFeature } from "./features/listLogs/index.js";
 import { ListDefinitionsFeature } from "./features/listDefinitions/index.js";
 import { TaskPermissionsFeature } from "./features/permissions/index.js";
-import { TaskListPresenterFeature } from "./presentation/TaskList/index.js";
+import { TaskExecutionsPresenterFeature } from "./presentation/TaskExecutions/index.js";
+import { TaskDefinitionsPresenterFeature } from "./presentation/TaskDefinitions/index.js";
 import { TaskDetailPresenterFeature } from "./presentation/TaskDetail/index.js";
 import { BackgroundTaskRoutes } from "./BackgroundTaskRoutes.js";
 import { BACKGROUND_TASK_PERMISSIONS_SCHEMA } from "~/admin/permissions.js";
@@ -28,7 +29,8 @@ export const BackgroundTasks = () => {
             <RegisterFeature feature={ListDefinitionsFeature} />
             <RegisterFeature feature={TaskPermissionsFeature} />
             {/* Presentation features. */}
-            <RegisterFeature feature={TaskListPresenterFeature} />
+            <RegisterFeature feature={TaskExecutionsPresenterFeature} />
+            <RegisterFeature feature={TaskDefinitionsPresenterFeature} />
             <RegisterFeature feature={TaskDetailPresenterFeature} />
             {/* Routes + menu. */}
             <BackgroundTaskRoutes />

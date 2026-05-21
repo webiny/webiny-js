@@ -3,9 +3,11 @@ import { AdminConfig } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { AdminLayout } from "@webiny/app-admin";
 import { HasPermission } from "./presentation/security/HasPermission.js";
-import { TaskListView } from "./presentation/TaskList/components/TaskListView.js";
+import { TaskDefinitionsView } from "./presentation/TaskDefinitions/components/TaskDefinitionsView.js";
+import { TaskExecutionsView } from "./presentation/TaskExecutions/components/TaskExecutionsView.js";
 import { Routes } from "./routes.js";
 import { ReactComponent as TaskIcon } from "@webiny/icons/task.svg";
+import { ReactComponent as ListIcon } from "@webiny/icons/list.svg";
 
 const { Menu, Route } = AdminConfig;
 
@@ -16,21 +18,40 @@ export const BackgroundTaskRoutes = () => {
         <AdminConfig>
             <HasPermission entity="task">
                 <Route
-                    route={Routes.List}
+                    route={Routes.Definitions}
                     element={
-                        <AdminLayout title="Background Tasks">
-                            <TaskListView />
+                        <AdminLayout title="Task Definitions">
+                            <TaskDefinitionsView />
+                        </AdminLayout>
+                    }
+                />
+                <Route
+                    route={Routes.Executions}
+                    element={
+                        <AdminLayout title="Task Executions">
+                            <TaskExecutionsView />
                         </AdminLayout>
                     }
                 />
                 <Menu
-                    name="backgroundTasks.list"
+                    name="backgroundTasks.definitions"
                     parent="dev-tools"
                     element={<Menu.Link
-                        text="Background Tasks"
-                        to={getLink(Routes.List)}
+                        text="Task Definitions"
+                        to={getLink(Routes.Definitions)}
                         icon={
-                            <Menu.Link.Icon label="Background Tasks" element={<TaskIcon />} />
+                            <Menu.Link.Icon label="Task Definitions" element={<ListIcon />} />
+                        }
+                    />}
+                />
+                <Menu
+                    name="backgroundTasks.executions"
+                    parent="dev-tools"
+                    element={<Menu.Link
+                        text="Task Executions"
+                        to={getLink(Routes.Executions)}
+                        icon={
+                            <Menu.Link.Icon label="Task Executions" element={<TaskIcon />} />
                         }
                     />}
                 />
