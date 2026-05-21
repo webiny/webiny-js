@@ -845,7 +845,7 @@ export interface UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
 
     values?: Partial<TValues>;
 
-    expiresAt?: Date | undefined;
+    expiresAt?: Date | number | null | undefined;
 }
 
 export interface UpdateCmsEntryOptionsInput {

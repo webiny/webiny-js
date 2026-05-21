@@ -20,6 +20,7 @@ import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataVali
 import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping.js";
 import { mapAndCleanUpdatedInputData } from "../mapAndCleanUpdatedInputData.js";
 import { getSystem } from "../system.js";
+import { getExpiresAt } from "../expiresAt.js";
 
 const allowedEntryStatus: string[] = ["draft", "published", "unpublished"];
 
@@ -66,10 +67,6 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
 
         const currentIdentity = this.identityContext.getIdentity();
         const currentDateTime = new Date();
-
-        const expiresAt = rawInput.expiresAt
-            ? rawInput.expiresAt.getTime() / 1000
-            : originalEntry.expiresAt;
 
         const entry: CmsEntry<TValues> = {
             ...originalEntry,
@@ -126,7 +123,7 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
                 original: originalEntry
             }),
             live: originalEntry.live,
-            expiresAt
+            expiresAt: getExpiresAt({ expiresAt: rawInput.expiresAt }, originalEntry)
         };
 
         const folderId = rawInput.wbyAco_location?.folderId;
