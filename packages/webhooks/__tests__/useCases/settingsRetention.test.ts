@@ -69,4 +69,17 @@ describe("Webhook settings deliveryRetentionDays", () => {
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("WEBHOOK_VALIDATION_ERROR");
     });
+
+    it("should preserve deliveryRetentionDays when updating only signingSecret", async () => {
+        const context = await handler.handle();
+        const updateSettings = context.container.resolve(UpdateWebhookSettingsUseCase);
+        const getSettings = context.container.resolve(GetWebhookSettingsRepository);
+
+        await updateSettings.execute({ deliveryRetentionDays: 30 });
+        await updateSettings.execute({ signingSecret: "new-secret" });
+
+        const readResult = await getSettings.execute();
+        expect(readResult.isOk()).toBe(true);
+        expect(readResult.value.deliveryRetentionDays).toBe(30);
+    });
 });
