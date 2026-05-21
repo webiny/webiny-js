@@ -451,6 +451,10 @@ export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
      * A revision description.
      */
     revisionDescription: string | undefined;
+    /**
+     * A timestamp of when the entry should be automatically deleted from the database.
+     */
+    expiresAt: number | null;
 }
 
 export interface CmsStorageEntry<T extends CmsEntryValues = CmsEntryValues> extends CmsEntry<T> {
@@ -738,6 +742,8 @@ export interface CreateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
     system?: Partial<ICmsEntrySystem>;
 
     values: TValues | undefined;
+
+    expiresAt?: Date | undefined;
 }
 
 export interface CreateCmsEntryOptionsInput {
@@ -838,6 +844,8 @@ export interface UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
     system?: Partial<ICmsEntrySystem>;
 
     values?: Partial<TValues>;
+
+    expiresAt?: Date | undefined;
 }
 
 export interface UpdateCmsEntryOptionsInput {

@@ -67,6 +67,10 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
         const currentIdentity = this.identityContext.getIdentity();
         const currentDateTime = new Date();
 
+        const expiresAt = rawInput.expiresAt
+            ? rawInput.expiresAt.getTime() / 1000
+            : originalEntry.expiresAt;
+
         const entry: CmsEntry<TValues> = {
             ...originalEntry,
             revisionCreatedOn: getDate(rawInput.revisionCreatedOn, originalEntry.revisionCreatedOn),
@@ -121,7 +125,8 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
                 input: rawInput,
                 original: originalEntry
             }),
-            live: originalEntry.live
+            live: originalEntry.live,
+            expiresAt
         };
 
         const folderId = rawInput.wbyAco_location?.folderId;

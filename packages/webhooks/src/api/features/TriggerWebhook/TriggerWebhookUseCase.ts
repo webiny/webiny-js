@@ -45,7 +45,7 @@ class TriggerWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
             ? (settingsResult.value.deliveryRetentionDays ?? WEBHOOK_DELIVERY_MAX_RETENTION_DAYS)
             : WEBHOOK_DELIVERY_MAX_RETENTION_DAYS;
 
-        const expiresAt = new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000).toISOString();
+        const expiresAt = new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000);
 
         const deliveryResult = await this.createDeliveryRepository.execute({
             webhookId: webhook.id,

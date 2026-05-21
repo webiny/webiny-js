@@ -257,7 +257,8 @@ class CreateEntryDataFactoryImpl implements ICreateEntryDataFactory {
                           version
                       }
                     : null,
-            revisionDescription: ""
+            revisionDescription: "",
+            expiresAt: rawInput.expiresAt ? rawInput.expiresAt.getTime() / 1000 : null
         };
 
         if (status !== STATUS_DRAFT) {
