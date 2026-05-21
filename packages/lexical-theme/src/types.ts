@@ -6,6 +6,8 @@ export type ColorValue = {
     value: string;
 };
 
+export type FontSizes = string[];
+
 export type TypographyValue = {
     id: string;
     tag: string;
@@ -17,6 +19,7 @@ export type EditorTheme = {
     colors: ColorValue[];
     typography: Record<string, TypographyValue[]>;
     tokens: EditorThemeClasses;
+    fontSizes: FontSizes;
 };
 
 export type TypographyMap = Record<string, TypographyValue>;

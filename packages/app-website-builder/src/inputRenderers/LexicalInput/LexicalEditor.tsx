@@ -34,6 +34,7 @@ const LexicalEditorComponent = (props: LexicalEditorProps) => {
     const editorTheme: EditorTheme = {
         colors: theme?.colors ?? [],
         typography: theme?.typography ?? {},
+        fontSizes: theme?.fontSizes ?? [],
         tokens: lexicalTokens
     };
 

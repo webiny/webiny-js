@@ -67,6 +67,7 @@ export const useAdminConfig = () => {
     const lexicalTheme: EditorTheme = {
         colors: baseConfig.lexicalTheme?.colors,
         typography: baseConfig.lexicalTheme?.typography || {},
+        fontSizes: null,
         tokens: lexicalTokens
     };
 
