@@ -1,8 +1,8 @@
-import dot from "dot-prop-immutable";
+import { immutableDelete, immutableSet } from "@webiny/stdlib";
 import type {
-    CmsModelField,
     CmsEditorFieldId,
     CmsModel as BaseCmsModel,
+    CmsModelField,
     FieldLayoutPosition
 } from "~/types.js";
 import getFieldPosition from "./getFieldPosition.js";
@@ -28,25 +28,28 @@ const moveField = <T extends CmsModel>(params: MoveFieldParams<T>) => {
     const existingPosition = getFieldPosition({ field: fieldId, data: prev });
 
     if (existingPosition) {
-        next = dot.delete(prev, `layout.${existingPosition.row}.${existingPosition.index}`) as T;
+        next = immutableDelete(
+            prev,
+            `layout.${existingPosition.row}.${existingPosition.index}`
+        ) as T;
     }
 
     // Setting a form field into a new non-existing row.
     if (!next.layout[row]) {
-        return dot.set(next, `layout.${row}`, [fieldId]);
+        return immutableSet(next, `layout.${row}`, [fieldId]);
     }
 
     // Drop the field at the specified index.
     if (index === null) {
         // Create a new row with the new field at the given row index,
-        return dot.set(next, "layout", (layout: string[][]) => {
+        return immutableSet(next, "layout", (layout: string[][]) => {
             const newLayout = [...layout];
             newLayout.splice(row, 0, [fieldId]);
             return newLayout;
         });
     }
 
-    return dot.set(next, `layout.${row}`, (layout: string[]) => {
+    return immutableSet(next, `layout.${row}`, (layout: string[]) => {
         const newLayout = [...layout];
         newLayout.splice(index, 0, fieldId);
         return newLayout;
@@ -54,7 +57,7 @@ const moveField = <T extends CmsModel>(params: MoveFieldParams<T>) => {
 };
 
 export default <T extends CmsModel>(params: MoveFieldParams<T>): T => {
-    return dot.set(moveField<T>(params), "layout", (layout: string[][]) => {
+    return immutableSet(moveField<T>(params), "layout", (layout: string[][]) => {
         return [...layout].filter(row => row.length > 0);
     });
 };

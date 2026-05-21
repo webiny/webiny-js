@@ -1,28 +1,23 @@
 import React, { useCallback } from "react";
 import isEmpty from "lodash/isEmpty.js";
-import get from "lodash/get.js";
-import { Bind, type FormRenderPropParams, useForm, useGenerateSlug } from "@webiny/form";
+import { Bind, Form, type FormRenderPropParams, useForm, useGenerateSlug } from "@webiny/form";
 import { ReactComponent as DevicesIcon } from "@webiny/icons/devices_other.svg";
-import { Form } from "@webiny/form";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { validation } from "@webiny/validation";
 
 import {
+    EmptyView,
+    SimpleForm,
+    SimpleFormContent,
+    SimpleFormFooter,
+    SimpleFormHeader,
     useRoute,
     useRouter,
-    useSnackbar,
-    EmptyView,
-    SimpleFormHeader,
-    SimpleForm,
-    SimpleFormFooter,
-    SimpleFormContent
+    useSnackbar
 } from "@webiny/app-admin";
 import { IconPicker } from "~/admin/components/IconPicker.js";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { useMutation, useQuery } from "../../hooks/index.js";
-import * as GQL from "./graphql.js";
-import { usePermission } from "~/admin/hooks/index.js";
-import { Tooltip } from "@webiny/admin-ui";
 import type {
     CmsGroup,
     CreateCmsGroupMutationResponse,
@@ -33,7 +28,9 @@ import type {
     UpdateCmsGroupMutationResponse,
     UpdateCmsGroupMutationVariables
 } from "./graphql.js";
-import { Button, Grid, Input, OverlayLoader, Textarea } from "@webiny/admin-ui";
+import * as GQL from "./graphql.js";
+import { usePermission } from "~/admin/hooks/index.js";
+import { Button, Grid, Input, OverlayLoader, Textarea, Tooltip } from "@webiny/admin-ui";
 import { Routes } from "~/routes.js";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-groups/form");
@@ -94,7 +91,7 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
                 data: {
                     listContentModelGroups: {
                         ...listContentModelGroups,
-                        data: [data.contentModelGroup.data, ...listContentModelGroups.data]
+                        data: [data.contentModelGroup.data, ...(listContentModelGroups.data || [])]
                     }
                 }
             });
@@ -164,9 +161,7 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
         [id]
     );
 
-    const data: CmsGroup | null = getQuery.loading
-        ? null
-        : get(getQuery, "data.contentModelGroup.data", null);
+    const data = getQuery.loading ? null : getQuery.data?.contentModelGroup?.data;
 
     const showEmptyView = !newEntry && !loading && isEmpty(data);
     // Render "No content selected" view.

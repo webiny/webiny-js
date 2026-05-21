@@ -1,7 +1,6 @@
 import accounting from "accounting";
 import * as fecha from "fecha";
-import lodashAssign from "lodash/assign.js";
-import lodashGet from "lodash/get.js";
+import { immutableGet } from "@webiny/stdlib";
 
 import type {
     Formats,
@@ -71,7 +70,7 @@ export default class I18N {
             throw Error("I18N text namespace not defined.");
         }
 
-        base = lodashGet(base, "raw.0", base);
+        base = immutableGet(typeof base === "string" ? {} : base, "raw.0", base);
 
         let translation: string | null = this.getTranslation(namespace + "." + hash(base));
 
@@ -204,7 +203,11 @@ export default class I18N {
         if (!outputFormat) {
             outputFormat = this.getPriceFormat();
         } else {
-            outputFormat = lodashAssign({}, this.defaultFormats.price, outputFormat);
+            outputFormat = Object.assign(
+                {},
+                structuredClone(this.defaultFormats.price),
+                structuredClone(outputFormat)
+            );
         }
 
         // Convert placeholders to accounting's placeholders.
@@ -229,7 +232,11 @@ export default class I18N {
         if (!outputFormat) {
             outputFormat = this.getNumberFormat();
         } else {
-            outputFormat = lodashAssign({}, this.defaultFormats.number, outputFormat);
+            outputFormat = Object.assign(
+                {},
+                structuredClone(this.defaultFormats.number),
+                structuredClone(outputFormat)
+            );
         }
         return accounting.formatNumber(
             /**
@@ -295,7 +302,7 @@ export default class I18N {
      */
 
     public mergeTranslations(translations: Translations): Translations {
-        return lodashAssign(this.translations, translations);
+        return Object.assign(this.translations, translations);
     }
 
     /**
@@ -388,31 +395,44 @@ export default class I18N {
      * Returns current format to be used when outputting dates.
      */
     public getDateFormat(): string {
-        return lodashGet(this.locale, "formats.date", this.defaultFormats.date);
+        if (!this.locale || typeof this.locale === "string") {
+            return this.defaultFormats.date;
+        }
+        return immutableGet(this.locale, "formats.date", this.defaultFormats.date);
     }
 
     /**
      * Returns current format to be used when outputting time.
      */
     public getTimeFormat(): string {
-        return lodashGet(this.locale, "formats.time", this.defaultFormats.time);
+        if (!this.locale || typeof this.locale === "string") {
+            return this.defaultFormats.time;
+        }
+        return immutableGet(this.locale, "formats.time", this.defaultFormats.time);
     }
 
     /**
      * Returns current format to be used when outputting date/time.
      */
     public getDateTimeFormat(): string {
-        return lodashGet(this.locale, "formats.datetime", this.defaultFormats.datetime);
+        if (!this.locale || typeof this.locale === "string") {
+            return this.defaultFormats.datetime;
+        }
+        return immutableGet(this.locale, "formats.datetime", this.defaultFormats.datetime);
     }
 
     /**
      * Returns current format to be used when outputting prices.
      */
     public getPriceFormat(): PriceFormat {
-        return lodashAssign(
+        if (!this.locale || typeof this.locale === "string") {
+            return this.defaultFormats.price;
+        }
+
+        return Object.assign(
             {},
-            this.defaultFormats.price,
-            lodashGet(this.locale, "formats.price", {})
+            structuredClone(this.defaultFormats.price),
+            immutableGet(this.locale, "formats.price", {})
         );
     }
 
@@ -420,10 +440,13 @@ export default class I18N {
      * Returns current format to be used when outputting numbers.
      */
     public getNumberFormat(): NumberFormat {
-        return lodashAssign(
+        if (!this.locale || typeof this.locale === "string") {
+            return this.defaultFormats.number;
+        }
+        return Object.assign(
             {},
-            this.defaultFormats.number,
-            lodashGet(this.locale, "formats.number", {})
+            structuredClone(this.defaultFormats.number),
+            immutableGet(this.locale, "formats.number", {})
         );
     }
 }

@@ -1,15 +1,21 @@
 import React, { useCallback, useMemo, useState } from "react";
-import get from "lodash/get.js";
 import orderBy from "lodash/orderBy.js";
-import dotProp from "dot-prop-immutable";
+import { immutableDelete } from "@webiny/stdlib";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
-import { DataList, DataListModal, List, DeleteIcon } from "@webiny/admin-ui";
-import { useSnackbar, useRouter, useConfirmationDialog, SearchUI } from "@webiny/app-admin";
-import { Button, Select, Tooltip } from "@webiny/admin-ui";
+import {
+    Button,
+    DataList,
+    DataListModal,
+    DeleteIcon,
+    List,
+    Select,
+    Tooltip
+} from "@webiny/admin-ui";
+import { SearchUI, useConfirmationDialog, useRouter, useSnackbar } from "@webiny/app-admin";
 import { useApolloClient, useQuery } from "../../hooks/index.js";
-import * as GQL from "./graphql.js";
 import type { CmsGroupWithModels, ListCmsGroupsQueryResponse } from "./graphql.js";
+import * as GQL from "./graphql.js";
 import { deserializeSorters } from "../utils.js";
 import { usePermission } from "~/admin/hooks/index.js";
 import type { CmsGroup } from "~/types.js";
@@ -49,7 +55,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
     const { goToRoute } = useRouter();
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
-    const listQuery = useQuery(GQL.LIST_CONTENT_MODEL_GROUPS);
+    const listQuery = useQuery<ListCmsGroupsQueryResponse>(GQL.LIST_CONTENT_MODEL_GROUPS);
 
     const { showConfirmation } = useConfirmationDialog({
         dataTestId: "cms.contentModelGroup.list-item.delete-dialog"
@@ -74,9 +80,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
         [sort]
     );
 
-    const data: CmsGroupWithModels[] = listQuery.loading
-        ? []
-        : get(listQuery, "data.listContentModelGroups.data", []);
+    const data = listQuery.loading ? [] : listQuery.data?.listContentModelGroups?.data || [];
     const groupId = new URLSearchParams(location.search).get("id");
 
     const deleteItem = useCallback(
@@ -95,10 +99,11 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                         // Delete the item from list cache
                         const gqlParams = { query: GQL.LIST_CONTENT_MODEL_GROUPS };
                         const result = cache.readQuery<ListCmsGroupsQueryResponse>(gqlParams);
-                        if (!result || !result.listContentModelGroups) {
+
+                        const { listContentModelGroups } = result || {};
+                        if (!listContentModelGroups?.data) {
                             return;
                         }
-                        const { listContentModelGroups } = result;
                         const index = listContentModelGroups.data.findIndex(
                             item => item.id === group.id
                         );
@@ -106,7 +111,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                         cache.writeQuery({
                             ...gqlParams,
                             data: {
-                                listContentModelGroups: dotProp.delete(
+                                listContentModelGroups: immutableDelete(
                                     listContentModelGroups,
                                     `data.${index}`
                                 )

@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useReducer } from "react";
-import get from "lodash/get.js";
 import pick from "lodash/pick.js";
 import type { ApolloClient } from "apollo-client";
-import { useSnackbar, useRouter } from "@webiny/app-admin";
+import { useRouter, useSnackbar } from "@webiny/app-admin";
 import type {
     GetCmsModelQueryResponse,
     GetCmsModelQueryVariables,
@@ -19,8 +18,8 @@ import { createHashing } from "@webiny/app/utils/index.js";
 import { Routes } from "~/routes.js";
 import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
 import {
-    buildFieldOptions,
-    buildFieldLabelPrefixes
+    buildFieldLabelPrefixes,
+    buildFieldOptions
 } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
 import { plugins } from "@webiny/plugins";
 
@@ -217,7 +216,7 @@ export const ContentModelEditorProvider = ({
             }
         });
 
-        const { data, error } = get(response, "data.getContentModel");
+        const { data, error } = response.data.getContentModel;
         if (error) {
             throw new Error(error.message);
         }

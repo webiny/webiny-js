@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { Select } from "@webiny/admin-ui";
@@ -15,7 +14,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Select Box`,
         description: t`Renders a select box, allowing selection of a single value.`,
         canUse({ field }) {
-            return !field.list && !!get(field, "predefinedValues.enabled");
+            return !field.list && !!field.predefinedValues?.enabled;
         },
         render({ getBind }) {
             const { field } = useModelField();

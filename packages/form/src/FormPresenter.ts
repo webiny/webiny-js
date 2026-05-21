@@ -1,6 +1,5 @@
 import { makeAutoObservable, runInAction, toJS } from "mobx";
-import lodashGet from "lodash/get.js";
-import lodashSet from "lodash/set.js";
+import { immutableGet, mutableSet } from "@webiny/stdlib";
 import lodashNoop from "lodash/noop.js";
 import lodashIsEqual from "lodash/isEqual.js";
 import type { BindComponentProps, FormValidationOptions, GenericFormData } from "~/types.js";
@@ -79,7 +78,7 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
     }
 
     getFieldValue(name: string) {
-        return toJS(lodashGet(this.data, name)) as unknown;
+        return toJS(immutableGet(this.data, name)) as unknown;
     }
 
     getFieldValidation(name: string): FieldValidationResult {
@@ -127,7 +126,7 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
             return undefined;
         }
 
-        const fieldValue = lodashGet(this.data, name, field.getDefaultValue());
+        const fieldValue = immutableGet(this.data, name, field.getDefaultValue());
         const validation = await field.validate(fieldValue, options);
 
         runInAction(() => {
@@ -168,7 +167,7 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
 
         // We only want to handle default field value for new fields.
         const fieldName = field.getName();
-        const currentFieldValue = lodashGet(this.data, fieldName);
+        const currentFieldValue = immutableGet<undefined | null>(this.data, fieldName);
         const defaultValue = field.getDefaultValue();
 
         this.formFields.set(props.name, field);
@@ -176,7 +175,7 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
         requestAnimationFrame(() => {
             runInAction(() => {
                 if (emptyValues.includes(currentFieldValue) && defaultValue !== undefined) {
-                    lodashSet(this.data, fieldName, defaultValue);
+                    mutableSet(this.data, fieldName, defaultValue);
                 }
             });
         });
@@ -202,7 +201,7 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
     }
 
     private commitValueToData = (name: string, value: unknown) => {
-        lodashSet(this.data, name, value);
+        mutableSet(this.data, name, value);
         this.isFormPristine = false;
         this.onFormChange(toJS(this.data));
     };

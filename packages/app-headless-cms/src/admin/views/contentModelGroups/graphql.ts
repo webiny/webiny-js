@@ -30,8 +30,8 @@ export interface CmsGroupWithModels extends CmsGroup {
  */
 export interface ListCmsGroupsQueryResponse {
     listContentModelGroups: {
-        data: CmsGroupWithModels[];
-        error?: CmsErrorResponse;
+        data: CmsGroupWithModels[] | null;
+        error?: CmsErrorResponse | null;
     };
 }
 export const LIST_CONTENT_MODEL_GROUPS = gql`

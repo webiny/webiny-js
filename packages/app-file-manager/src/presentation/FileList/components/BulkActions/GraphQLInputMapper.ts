@@ -1,5 +1,4 @@
-import set from "lodash/set.js";
-import get from "lodash/get.js";
+import { immutableGet, mutableSet } from "@webiny/stdlib";
 import type { FileItem } from "~/domain/types.js";
 import type { BatchDTO } from "~/presentation/FileList/components/BulkActions/domain/index.js";
 import { OperatorType } from "~/presentation/FileList/components/BulkActions/domain/index.js";
@@ -10,7 +9,7 @@ export class GraphQLInputMapper {
 
         batch.operations.forEach(operation => {
             const { field, operator, value } = operation;
-            const fieldValue = get(value, field);
+            const fieldValue = immutableGet(value, field);
 
             switch (operator) {
                 case OperatorType.OVERRIDE:
@@ -18,18 +17,18 @@ export class GraphQLInputMapper {
                         return;
                     }
 
-                    set(update, field, fieldValue);
+                    mutableSet(update, field, fieldValue);
                     break;
                 case OperatorType.REMOVE:
-                    set(update, field, null);
+                    mutableSet(update, field, null);
                     break;
                 case OperatorType.APPEND:
                     if (!value || !fieldValue || !Array.isArray(fieldValue)) {
                         return;
                     }
 
-                    const oldData = (data && get(data, field)) ?? [];
-                    set(update, field, [...oldData, ...fieldValue]);
+                    const oldData = immutableGet(data, field, []);
+                    mutableSet(update, field, [...oldData, ...fieldValue]);
 
                     break;
                 default:

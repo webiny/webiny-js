@@ -1,5 +1,6 @@
-import get from "lodash/get.js";
+import { immutableGet } from "@webiny/stdlib";
 import chalk from "chalk";
+import type { GenericRecord } from "@webiny/utils/GenericRecord.js";
 
 const { yellow } = chalk;
 
@@ -15,7 +16,7 @@ export const mapStackOutput = <T extends Record<string, any> = Record<string, an
         const match = regex.exec(valuePattern);
         if (match) {
             const [replace, valuePath] = match;
-            const value = get(output, valuePath);
+            const value = immutableGet<string | GenericRecord>(output, valuePath);
             if (!value) {
                 console.log(yellow(`Could not map "${valuePath}" to "${key}" - value missing.`));
                 return;

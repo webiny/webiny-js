@@ -1,4 +1,4 @@
-import get from "lodash/get.js";
+import { immutableGet } from "@webiny/stdlib";
 import type { BindComponentRenderProp } from "@webiny/form";
 
 interface Params {
@@ -12,7 +12,7 @@ export const getValue = (params: Params): string[] | undefined => {
     const value = bind.value || [];
 
     if (index >= 0) {
-        return get(value, `${index}.${name}`);
+        return immutableGet(value, `${index}.${name}`);
     }
 
     return value;

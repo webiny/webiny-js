@@ -1,4 +1,4 @@
-import lodashGet from "lodash/get.js";
+import { immutableGet } from "@webiny/stdlib";
 import type { FormField } from "./FormField.js";
 import type { FormValidationOptions, GenericFormData } from "~/types.js";
 import type { FieldValidationResult } from "~/FormFieldValidator.js";
@@ -27,7 +27,7 @@ export class FormValidator {
         await Promise.all(
             this.fields.map(async field => {
                 const fieldName = field.getName();
-                const fieldValue = lodashGet(data, fieldName);
+                const fieldValue = immutableGet(data, fieldName);
 
                 const validationResult = await this.validateField(
                     field,

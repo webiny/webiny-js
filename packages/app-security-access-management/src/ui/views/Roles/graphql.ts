@@ -32,6 +32,18 @@ export const LIST_ROLES = gql`
     }
 `;
 
+export interface IReadRoleResponse {
+    security: {
+        role: {
+            data: Role | null;
+            error: {
+                code: string;
+                message: string;
+            } | null;
+        };
+    };
+}
+
 export const READ_ROLE = gql`
     query getRole($id: ID!) {
         security {

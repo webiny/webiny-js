@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { DateOnly } from "./DateOnly.js";
@@ -18,9 +17,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Date/Time Input`,
         description: t`Renders input for various formats of date and time.`,
         canUse({ field }) {
-            return (
-                field.type === "datetime" && !field.list && !get(field, "predefinedValues.enabled")
-            );
+            return field.type === "datetime" && !field.list && !field.predefinedValues?.enabled;
         },
         render({ field, getBind }) {
             const Bind = getBind();

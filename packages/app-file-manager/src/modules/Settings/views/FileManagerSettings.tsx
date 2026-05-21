@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, Grid, Input, Link, OverlayLoader, Text, Heading } from "@webiny/admin-ui";
+import { Button, Grid, Heading, Input, Link, OverlayLoader, Text } from "@webiny/admin-ui";
 import { Form, useBind } from "@webiny/form";
 import { Mutation, Query } from "@apollo/react-components";
 import {
@@ -13,7 +13,6 @@ import {
 } from "@webiny/app-admin";
 import type { GetSettingsResponse } from "../graphql.js";
 import graphql from "../graphql.js";
-import get from "lodash/get.js";
 import { validation } from "@webiny/validation";
 import type { QueryGetSettingsResult, Settings } from "~/domain/types.js";
 import type { MutationFunction, MutationResult } from "@apollo/react-common";
@@ -76,8 +75,7 @@ export const FileManagerSettings = () => {
             {({ data, loading: queryInProgress }: MutationResult<QueryGetSettingsResult>) => (
                 <Mutation mutation={graphql.UPDATE_SETTINGS}>
                     {(update: MutationFunction, result: MutationResult) => {
-                        const settings = (get(data, "fileManager.getSettings.data") ||
-                            {}) as Settings;
+                        const settings = data?.fileManager?.getSettings?.data;
                         const { loading: mutationInProgress } = result;
 
                         const onSubmit = async (data: Settings): Promise<void> => {

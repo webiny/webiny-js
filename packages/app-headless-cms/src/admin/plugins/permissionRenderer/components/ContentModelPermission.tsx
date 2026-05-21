@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from "react";
-import get from "lodash/get.js";
+import { immutableGet } from "@webiny/stdlib";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsDataCmsGroup, CmsDataCmsModel } from "./useCmsData.js";
 import { useCmsData } from "./useCmsData.js";
@@ -32,8 +32,8 @@ export const ContentModelPermission = ({
     // Set "cms.contentModel" access scope to "own" if "cms.contentModelGroup" === "own".
     useEffect(() => {
         if (
-            get(data, `contentModelGroupAccessScope`) === "own" &&
-            get(data, `${entity}AccessScope`) !== "own"
+            immutableGet(data, `contentModelGroupAccessScope`) === "own" &&
+            immutableGet(data, `${entity}AccessScope`) !== "own"
         ) {
             setValue(`${entity}AccessScope`, "own");
         }

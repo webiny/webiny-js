@@ -1,10 +1,7 @@
 import React from "react";
-import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { FormComponentLabel } from "@webiny/admin-ui";
-import { FormComponentNote } from "@webiny/admin-ui";
-import { FormComponentDescription } from "@webiny/admin-ui";
-import type { CmsModelFieldRendererPlugin, CmsModelField } from "~/types.js";
+import { FormComponentDescription, FormComponentLabel, FormComponentNote } from "@webiny/admin-ui";
+import type { CmsModelField, CmsModelFieldRendererPlugin } from "~/types.js";
 import { useForm } from "@webiny/form";
 import { LexicalEditor } from "~/admin/components/LexicalCmsEditor/LexicalEditor.js";
 import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
@@ -27,7 +24,7 @@ const plugin: CmsModelFieldRendererPlugin = {
             return [
                 field.type === "rich-text",
                 !field.list,
-                !get(field, "predefinedValues.enabled")
+                !field.predefinedValues?.enabled
             ].every(Boolean);
         },
         render({ getBind }) {

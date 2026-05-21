@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import get from "lodash/get.js";
+import { immutableGet } from "@webiny/stdlib";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { ReactComponent as DragIcon } from "@webiny/icons/drag_indicator.svg";
 import { Center, Horizontal, Vertical } from "../DropZone/index.js";
@@ -267,7 +267,7 @@ const Editor = () => {
                                                                                 item.type
                                                                             ) &&
                                                                             (row.length < 4 ||
-                                                                                get(
+                                                                                immutableGet(
                                                                                     item,
                                                                                     "pos.row"
                                                                                 ) === index)
@@ -300,7 +300,7 @@ const Editor = () => {
                                                                                     item.type
                                                                                 ) &&
                                                                                 (row.length < 4 ||
-                                                                                    get(
+                                                                                    immutableGet(
                                                                                         item,
                                                                                         "pos.row"
                                                                                     ) === index)

@@ -1,4 +1,4 @@
-import dot from "dot-prop-immutable";
+import { immutableSet } from "@webiny/stdlib";
 import type { CmsModel } from "~/types.js";
 
 interface Params {
@@ -7,7 +7,7 @@ interface Params {
     data: Pick<CmsModel, "layout">;
 }
 export default ({ data, source, destination }: Params) => {
-    return dot.set(data, "layout", (layout: string[][]) => {
+    return immutableSet(data, "layout", (layout: string[][]) => {
         return source < destination
             ? [
                   ...layout.slice(0, source),

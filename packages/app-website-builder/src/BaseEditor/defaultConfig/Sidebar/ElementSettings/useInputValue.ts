@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import set from "lodash/set.js";
+import { immutableSet } from "@webiny/stdlib";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils/generateId.js";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import type { ValueBinding, CreateElementParams } from "@webiny/website-builder-sdk";
@@ -126,11 +126,7 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
             cb(updaterInput);
 
             const valuePath = convertBracketPathToDotPath(node.path);
-            const devFriendlyInputs = set(
-                structuredClone(deepInputs),
-                valuePath,
-                valueObject.get()
-            );
+            const devFriendlyInputs = immutableSet(deepInputs, valuePath, valueObject.get());
 
             const devFriendlyStyles = stylesProcessor.toDeepStyles(rawBindings.styles ?? {});
 
@@ -210,11 +206,7 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
             cb(updaterInput);
 
             const valuePath = convertBracketPathToDotPath(node.path);
-            const devFriendlyInputs = set(
-                structuredClone(deepInputs),
-                valuePath,
-                valueObject.get()
-            );
+            const devFriendlyInputs = immutableSet(deepInputs, valuePath, valueObject.get());
 
             setLocalValue({ static: valueObject.get() });
 

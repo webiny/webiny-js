@@ -1,5 +1,5 @@
 import React from "react";
-import dotProp from "dot-prop-immutable";
+import { immutableDelete } from "@webiny/stdlib";
 import type {
     CmsModelFieldRendererPlugin,
     CmsModelFieldRendererProps
@@ -60,9 +60,10 @@ const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
                                         values={values}
                                         onSelectItem={() => selectFiles()}
                                         onReplaceItem={(_, index) => selectFiles(index)}
-                                        onRemoveItem={(_, index) =>
-                                            onChange(dotProp.delete(values, index))
-                                        }
+                                        onRemoveItem={(_, index) => {
+                                            // @ts-expect-error
+                                            return onChange(immutableDelete(values, index));
+                                        }}
                                         placeholder={field.placeholder}
                                         type={"compact"}
                                         data-testid={`fr.input.filefields.${field.label}`}

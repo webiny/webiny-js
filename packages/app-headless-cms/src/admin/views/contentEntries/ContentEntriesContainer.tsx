@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import get from "lodash/get.js";
 import { useRoute, useRouter, useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type {
@@ -34,7 +33,7 @@ export const ContentEntriesContainer = ({ children }: ContentEntriesContainerPro
                 modelId: modelId as string
             },
             onCompleted: data => {
-                const contentModel = get(data, "getContentModel.data", null);
+                const contentModel = data.getContentModel.data;
                 if (contentModel) {
                     return setContentModel(contentModel);
                 }

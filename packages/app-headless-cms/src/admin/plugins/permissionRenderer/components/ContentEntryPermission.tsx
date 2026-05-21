@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import get from "lodash/get.js";
+import { immutableGet } from "@webiny/stdlib";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { BindComponent } from "@webiny/form/types.js";
 import { CheckboxGroup, FormComponentNote, Grid, Select } from "@webiny/admin-ui";
@@ -35,8 +35,8 @@ export const ContentEntryPermission = ({
     // Set "cms.contentEntry" access scope to "own" if "cms.contentModel" === "own".
     useEffect(() => {
         if (
-            get(data, `contentModelAccessScope`) === "own" &&
-            get(data, `${entity}AccessScope`) !== "own"
+            immutableGet(data, `contentModelAccessScope`) === "own" &&
+            immutableGet(data, `${entity}AccessScope`) !== "own"
         ) {
             setValue(`${entity}AccessScope`, "own");
         }

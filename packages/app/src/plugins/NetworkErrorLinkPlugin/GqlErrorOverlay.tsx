@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import { Typography } from "./Typography.js";
 import { i18n } from "../../i18n/index.js";
 import { Pre } from "./StyledComponents.js";
@@ -21,7 +20,7 @@ interface ErrorOverlayProps {
 
 export const GqlErrorOverlay = (props: ErrorOverlayProps) => {
     const { query, networkError } = props;
-    const stackTrace = get(networkError, "result.error.stack");
+    const stackTrace = networkError.result?.error?.stack;
 
     const title = networkError.message;
 

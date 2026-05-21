@@ -1,5 +1,4 @@
-import set from "lodash/set.js";
-import unset from "lodash/unset.js";
+import { mutableDelete, mutableSet } from "@webiny/stdlib";
 import type { DocumentElementBindings, DocumentElementStyleBindings } from "~/types.js";
 import { InheritedValueResolver } from "~/InheritedValueResolver.js";
 import { StylesUpdater } from "./StylesUpdater.js";
@@ -67,23 +66,27 @@ export class StylesBindingsProcessor {
         for (const key of originalKeys) {
             if (!newKeys.has(key)) {
                 if (this.isBaseBreakpoint(currentBreakpoint)) {
-                    unset(rebuilt, `styles.${key}`);
+                    mutableDelete(rebuilt, `styles.${key}`);
                 } else {
-                    unset(rebuilt, `overrides.${currentBreakpoint}.styles.${key}`);
+                    mutableDelete(rebuilt, `overrides.${currentBreakpoint}.styles.${key}`);
                 }
             }
         }
 
         for (const [key, value] of Object.entries(styles)) {
             if (this.isBaseBreakpoint(currentBreakpoint)) {
-                set(rebuilt, `styles.${key}.static`, value);
+                mutableSet(rebuilt, `styles.${key}.static`, value);
             } else {
                 const inheritedValue = valueResolver.getInheritedValue(key, currentBreakpoint);
 
                 if (value !== inheritedValue) {
-                    set(rebuilt, `overrides.${currentBreakpoint}.styles.${key}.static`, value);
+                    mutableSet(
+                        rebuilt,
+                        `overrides.${currentBreakpoint}.styles.${key}.static`,
+                        value
+                    );
                 } else {
-                    unset(rebuilt, `overrides.${currentBreakpoint}.styles.${key}`);
+                    mutableDelete(rebuilt, `overrides.${currentBreakpoint}.styles.${key}`);
                 }
             }
         }
@@ -101,7 +104,7 @@ export class StylesBindingsProcessor {
         if (this.rawBindings.overrides) {
             for (const [bp, overrides] of Object.entries(this.rawBindings.overrides)) {
                 if (overrides.styles) {
-                    set(
+                    mutableSet(
                         baseStyles,
                         `overrides.${bp}.styles`,
                         structuredClone(this.rawBindings.overrides[bp].styles)

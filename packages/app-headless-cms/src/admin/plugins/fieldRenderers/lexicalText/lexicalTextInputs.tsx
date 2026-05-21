@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsModelField, CmsModelFieldRendererPlugin } from "~/types.js";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
@@ -32,7 +31,7 @@ const plugin: CmsModelFieldRendererPlugin = {
             return [
                 field.type === "rich-text",
                 !!field.list,
-                !get(field, "predefinedValues.enabled")
+                !field.predefinedValues?.enabled
             ].every(Boolean);
         },
         render(props) {

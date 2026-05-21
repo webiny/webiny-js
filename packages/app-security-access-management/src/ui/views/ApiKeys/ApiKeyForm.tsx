@@ -1,7 +1,5 @@
 import React, { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import get from "lodash/get.js";
-import isEmpty from "lodash/isEmpty.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Bind, Form, useForm, useGenerateSlug } from "@webiny/form";
 import {
@@ -37,6 +35,7 @@ import {
 } from "@webiny/admin-ui";
 import { Routes } from "~/routes.js";
 import type { GenericRecord } from "@webiny/app/types.js";
+import type { IGetApiKeyResponse } from "./graphql.js";
 
 const t = i18n.ns("app-security-admin-users/admin/api-keys/form");
 
@@ -49,7 +48,7 @@ export const ApiKeyForm = ({ id, newEntry }: ApiKeyFormProps) => {
     const { goToRoute } = useRouter();
     const toast = useToast();
 
-    const getQuery = useQuery(GQL.READ_API_KEY, {
+    const getQuery = useQuery<IGetApiKeyResponse>(GQL.READ_API_KEY, {
         variables: { id },
         skip: !id,
         onCompleted: data => {
@@ -109,9 +108,9 @@ export const ApiKeyForm = ({ id, newEntry }: ApiKeyFormProps) => {
         [id]
     );
 
-    const data: ApiKey = get(getQuery, "data.security.apiKey.data", {});
+    const data: Partial<ApiKey> = getQuery.data?.security?.apiKey?.data || {};
 
-    const showEmptyView = !newEntry && !loading && isEmpty(data);
+    const showEmptyView = !newEntry && !loading && Object.keys(data).length === 0;
 
     if (showEmptyView) {
         return (

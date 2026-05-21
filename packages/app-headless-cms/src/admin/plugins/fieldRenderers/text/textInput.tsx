@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { DelayedOnChange } from "@webiny/admin-ui";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
@@ -16,7 +15,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Text Input`,
         description: t`Renders a simple input with its type set to "text".`,
         canUse({ field }) {
-            return field.type === "text" && !field.list && !get(field, "predefinedValues.enabled");
+            return field.type === "text" && !field.list && !field.predefinedValues?.enabled;
         },
         render({ getBind }) {
             const { field } = useModelField();

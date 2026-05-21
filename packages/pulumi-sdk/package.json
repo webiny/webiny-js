@@ -20,6 +20,7 @@
   "dependencies": {
     "@pulumi/aws": "^7.30.0",
     "@pulumi/pulumi": "^3.241.0",
+    "@webiny/stdlib": "^0.0.2",
     "decompress": "^4.2.1",
     "execa": "^5.1.1",
     "find-up": "^8.0.0",

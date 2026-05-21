@@ -31,6 +31,18 @@ export const LIST_API_KEYS = gql`
     }
 `;
 
+export interface IGetApiKeyResponse {
+    security: {
+        apiKey: {
+            data: ApiKey | null;
+            error: {
+                code: string;
+                message: string;
+            } | null;
+        };
+    };
+}
+
 export const READ_API_KEY = gql`
     query GetApiKey($id: ID!) {
         security {

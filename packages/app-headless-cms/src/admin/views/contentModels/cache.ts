@@ -1,4 +1,4 @@
-import dotProp from "dot-prop-immutable";
+import { immutableSet, immutableDelete } from "@webiny/stdlib";
 import type { DataProxy } from "apollo-cache";
 import type ApolloClient from "apollo-client";
 import type {
@@ -21,7 +21,7 @@ export const addModelToListCache = (cache: DataProxy, model: CmsEditorContentMod
     cache.writeQuery({
         query: LIST_CONTENT_MODELS,
         data: {
-            listContentModels: dotProp.set(listContentModels, `data.${newModelIndex}`, model)
+            listContentModels: immutableSet(listContentModels, `data.${newModelIndex}`, model)
         }
     });
 };
@@ -41,7 +41,7 @@ export const updateModelInCache = (cache: DataProxy, model: CmsModel): void => {
     cache.writeQuery({
         query: LIST_CONTENT_MODELS,
         data: {
-            listContentModels: dotProp.set(response.listContentModels, `data.${index}`, model)
+            listContentModels: immutableSet(response.listContentModels, `data.${index}`, model)
         }
     });
 
@@ -64,7 +64,7 @@ export const addModelToGroupCache = (cache: DataProxy, model: CmsEditorContentMo
     cache.writeQuery({
         query: LIST_MENU_CONTENT_GROUPS_MODELS,
         data: {
-            listContentModelGroups: dotProp.set(
+            listContentModelGroups: immutableSet(
                 groupsList,
                 `data.${groupIndex}.contentModels.${newGroupModelIndex}`,
                 model
@@ -97,7 +97,7 @@ export const updateModelInGroupCache = (cache: DataProxy, model: CmsModel): void
     cache.writeQuery({
         query: LIST_MENU_CONTENT_GROUPS_MODELS,
         data: {
-            listContentModelGroups: dotProp.set(
+            listContentModelGroups: immutableSet(
                 groupsList,
                 `data.${groupIndex}.contentModels.${modelIndex}`,
                 model
@@ -147,7 +147,7 @@ export const removeModelFromListCache = (cache: DataProxy, model: CmsEditorConte
     cache.writeQuery({
         query: LIST_CONTENT_MODELS,
         data: {
-            listContentModels: dotProp.delete(listContentModels, `data.${modelIndex}`)
+            listContentModels: immutableDelete(listContentModels, `data.${modelIndex}`)
         }
     });
 };
@@ -178,7 +178,7 @@ export const removeModelFromGroupCache = (cache: DataProxy, model: CmsEditorCont
     cache.writeQuery({
         query: LIST_MENU_CONTENT_GROUPS_MODELS,
         data: {
-            listContentModelGroups: dotProp.delete(
+            listContentModelGroups: immutableDelete(
                 groupsList,
                 `data.${groupIndex}.contentModels.${modelIndex}`
             )

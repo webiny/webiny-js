@@ -8,6 +8,7 @@ import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues.js";
 import type { AcoFilterStorageOperations, Filter } from "./filter.types.js";
 import { ENTRY_META_FIELDS } from "@webiny/api-headless-cms/constants.js";
 import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
+import type { UpdateCmsEntryInput } from "@webiny/api-headless-cms/types/index.js";
 
 export const createFilterOperations = (
     params: CreateAcoStorageOperationsParams
@@ -72,12 +73,13 @@ export const createFilterOperations = (
             return withModel(async model => {
                 const original = await cms.getEntryById(model, id);
 
-                const input = {
+                const input: UpdateCmsEntryInput = {
                     /**
                      *  We are omitting the standard entry meta fields:
                      *  we don't want to override them with the ones coming from the `original` entry.
                      */
                     ...omit(original, ENTRY_META_FIELDS),
+                    expiresAt: null,
                     values: {
                         ...original.values,
                         ...data

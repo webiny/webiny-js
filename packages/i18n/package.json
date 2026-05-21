@@ -17,6 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@webiny/stdlib": "^0.0.2",
     "accounting": "^0.4.1",
     "fast-glob": "^3.3.3",
     "fecha": "^4.2.3",

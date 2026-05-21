@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Bind, Form, useForm, useGenerateSlug } from "@webiny/form";
 import { validation } from "@webiny/validation";
@@ -14,7 +13,13 @@ import {
     useRouter,
     useSnackbar
 } from "@webiny/app-admin";
-import { CREATE_ROLE, LIST_ROLES, READ_ROLE, UPDATE_ROLE } from "./graphql.js";
+import {
+    CREATE_ROLE,
+    type IReadRoleResponse,
+    LIST_ROLES,
+    READ_ROLE,
+    UPDATE_ROLE
+} from "./graphql.js";
 import isEmpty from "lodash/isEmpty.js";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
@@ -43,7 +48,7 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
     const { goToRoute } = useRouter();
     const { showSnackbar } = useSnackbar();
 
-    const getQuery = useQuery(READ_ROLE, {
+    const getQuery = useQuery<IReadRoleResponse>(READ_ROLE, {
         variables: { id },
         skip: !id,
         onCompleted: data => {
@@ -123,7 +128,7 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
         [id]
     );
 
-    const data: Role = loading ? {} : get(getQuery, "data.security.role.data", {});
+    const data: Partial<Role> = loading ? {} : getQuery.data?.security?.role?.data || {};
 
     const systemRole = data.slug === "full-access" || data.system;
     const pluginRole = data.plugin ?? false;

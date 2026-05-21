@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
@@ -22,11 +21,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Text Areas`,
         description: t`Renders a simple list of text areas.`,
         canUse({ field }) {
-            return (
-                field.type === "long-text" &&
-                !!field.list &&
-                !get(field, "predefinedValues.enabled")
-            );
+            return field.type === "long-text" && !!field.list && !field.predefinedValues?.enabled;
         },
         render(props) {
             const { field } = useModelField();

@@ -1,5 +1,5 @@
-import dot from "dot-prop-immutable";
-import type { CmsModelField, CmsModel } from "~/types.js";
+import { immutableDelete, immutableSet } from "@webiny/stdlib";
+import type { CmsModel, CmsModelField } from "~/types.js";
 import type { CmsEditorLayoutCell } from "@webiny/app-headless-cms-common/types/model.js";
 
 type DeleteFieldParamsData = Pick<CmsModel, "fields" | "layout">;
@@ -11,10 +11,10 @@ export default (params: DeleteFieldParams) => {
     const { field, data: prev } = params;
     // Remove the field from fields list...
     const fieldIndex = prev.fields.findIndex(item => item.id === field.id);
-    const data = dot.delete(prev, `fields.${fieldIndex}`) as DeleteFieldParamsData;
+    const data = immutableDelete(prev, `fields.${fieldIndex}`) as DeleteFieldParamsData;
 
     // ...and rebuild the layout object, preserving layout descriptors.
-    return dot.set(data, "layout", (layout: DeleteFieldParamsData["layout"]) => {
+    return immutableSet(data, "layout", (layout: DeleteFieldParamsData["layout"]) => {
         if (!layout) {
             return [];
         }

@@ -36,6 +36,18 @@ export const LIST_TEAMS = gql`
     }
 `;
 
+export interface IReadTeamResponse {
+    security: {
+        team: {
+            data: Team | null;
+            error: {
+                code: string;
+                message: string;
+            } | null;
+        };
+    };
+}
+
 export const READ_TEAM = gql`
     query getTeam($id: ID!) {
         security {

@@ -8,7 +8,6 @@
 import "tsx";
 
 import path from "path";
-import get from "lodash/get.js";
 import fs from "fs-extra";
 import * as rimraf from "rimraf";
 import { loadJsonFileSync } from "load-json-file";

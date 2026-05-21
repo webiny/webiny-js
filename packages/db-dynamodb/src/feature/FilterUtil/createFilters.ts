@@ -1,9 +1,10 @@
-import * as dotProp from "dot-prop";
+import { immutableGet } from "@webiny/stdlib";
 import { WebinyError } from "@webiny/error";
 import type { FieldPlugin } from "~/plugins/definitions/FieldPlugin.js";
 import type { DynamoDbContainsFilter } from "~/types.js";
 import type { ValueFilter, ValueFilterRegistry } from "~/feature/ValueFilter/index.js";
 import { extractWhereArgs } from "./extractWhereArgs.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 type TransformValue = (value: any) => any;
 
@@ -112,7 +113,10 @@ export const createFilters = (params: CreateFiltersParams): Filter[] => {
 /**
  * Transforms the value with given transformer callable.
  */
-const transform = (value: any, transformValue?: TransformValue): any => {
+const transform = (
+    value: unknown | unknown[],
+    transformValue?: TransformValue
+): unknown | unknown[] => {
     if (!transformValue) {
         return value;
     }
@@ -140,7 +144,10 @@ export const createFilterCallable = (
     return (item: any) => {
         for (const filter of filters) {
             const result = filter.paths.some(path => {
-                const value = transform(dotProp.getProperty(item, path), filter.transformValue);
+                const immutableValue = immutableGet<
+                    GenericRecord | string | number | null | undefined
+                >(item, path);
+                const value = transform(immutableValue, filter.transformValue);
                 const compareValue = transform(filter.compareValue, filter.transformValue);
                 const matched = filter.filter.matches({
                     value,

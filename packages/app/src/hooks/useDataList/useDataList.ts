@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import get from "lodash/get.js";
 import isEqual from "lodash/isEqual.js";
 import { prepareLoadListParams } from "./utils/index.js";
 import { getData, getError, getMeta } from "./functions/index.js";
@@ -62,10 +61,13 @@ const useDataList = (params: UseDataListParams) => {
     const queryData = useQuery(params.query, getQueryOptions());
     const prevLoadParamsRef = useRef({});
 
+    /**
+     * TODO really bad way of doing this. refactor at some point.
+     */
     const dataListProps: DataListProps = {
-        data: get(params, "getData", getData)(queryData.data),
-        meta: get(params, "getMeta", getMeta)(queryData.data),
-        error: get(params, "getError", getError)(queryData.data),
+        data: (params.getData ? params.getData : getData)(queryData.data),
+        meta: (params.getMeta ? params.getMeta : getMeta)(queryData.data),
+        error: (params.getError ? params.getError : getError)(queryData.data),
 
         loading: queryData.loading,
         init() {

@@ -1,5 +1,5 @@
 import type { CmsContext } from "~/types/index.js";
-import dotPropImmutable from "dot-prop-immutable";
+import { immutableGet } from "@webiny/stdlib";
 import { WebinyError } from "@webiny/error";
 
 interface ReferenceObject {
@@ -33,7 +33,7 @@ export const validateReferencedEntries = async ({
      * Group references by modelId.
      */
     for (const path of referenceFieldPaths) {
-        const ref = dotPropImmutable.get(output, path) as ReferenceObject | any;
+        const ref = immutableGet<ReferenceObject>(output, path);
 
         const result = getReferenceFieldValue(ref);
 

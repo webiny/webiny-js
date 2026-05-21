@@ -1,4 +1,4 @@
-import set from "lodash/set.js";
+import { mutableSet } from "@webiny/stdlib";
 import type { Resolvers } from "@webiny/handler-graphql/types.js";
 import WebinyError from "@webiny/error";
 import type { ApiEndpoint, CmsContext, CmsModel, CmsModelField } from "~/types/index.js";
@@ -117,7 +117,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                     value
                 });
 
-                set(
+                mutableSet(
                     valueIsRoot && parent.values ? parent.values : parent,
                     fieldId,
                     transformedValue

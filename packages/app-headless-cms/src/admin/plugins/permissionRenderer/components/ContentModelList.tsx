@@ -1,6 +1,5 @@
 import React from "react";
 import groupBy from "lodash/groupBy.js";
-import get from "lodash/get.js";
 import type { PermissionSelectorCmsGroup } from "./types.js";
 import { CheckboxGroup } from "@webiny/admin-ui";
 
@@ -20,7 +19,7 @@ const ContentModelList = ({ items, disabled, value, onChange }: ContentModelList
             items.map((item): GroupItem => {
                 return {
                     ...item,
-                    groupName: get(item, "group.label")
+                    groupName: item.group.label
                 };
             }),
             "groupName"

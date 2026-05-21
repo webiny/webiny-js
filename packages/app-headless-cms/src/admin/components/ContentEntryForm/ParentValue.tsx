@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef } from "react";
-import get from "lodash/get.js";
+import { immutableGet } from "@webiny/stdlib";
 import type { CmsModelField } from "@webiny/app-headless-cms-common/types/index.js";
 import { useModelField } from "~/admin/components/ModelFieldProvider/index.js";
 import type { FormAPI } from "@webiny/form";
@@ -66,7 +66,7 @@ export const ParentFieldProvider = ({ path, value, children }: ParentFieldProvid
             return;
         }
 
-        formRef.current.setValue(fieldPath, cb(get(formRef.current.data, fieldPath)));
+        formRef.current.setValue(fieldPath, cb(immutableGet(formRef.current.data, fieldPath)));
     }, []);
 
     const context: ParentField | undefined = field

@@ -1,19 +1,19 @@
 import React, { useCallback, useState } from "react";
-import dot from "dot-prop-immutable";
+import { immutableSet } from "@webiny/stdlib";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import type {
     CmsEditorFieldId,
-    CmsModelFieldRendererPlugin,
     CmsEditorFieldsLayout,
+    CmsModelField,
+    CmsModelFieldRendererPlugin,
     CmsModelFieldTypePlugin,
     CmsModelLayoutFieldTypePlugin,
-    CmsModelField,
     DragSource,
     FieldLayoutPosition
 } from "~/types.js";
 import type {
-    CmsLayoutField,
-    CmsEditorLayoutCell
+    CmsEditorLayoutCell,
+    CmsLayoutField
 } from "@webiny/app-headless-cms-common/types/model.js";
 import { isLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
 import { plugins } from "@webiny/plugins";
@@ -425,7 +425,11 @@ export const FieldEditorProvider = ({
      */
     const moveRow: MoveRowCallable = (source, destination) => {
         setState(data => {
-            return utils.moveRow({ data, source, destination });
+            const result = utils.moveRow({ data, source, destination });
+            return {
+                ...data,
+                ...result
+            };
         });
     };
 
@@ -436,7 +440,7 @@ export const FieldEditorProvider = ({
         setState(data => {
             for (let i = 0; i < data.fields.length; i++) {
                 if (data.fields[i].id === field.id) {
-                    return dot.set(data, `fields.${i}`, field);
+                    return immutableSet(data, `fields.${i}`, field);
                 }
             }
             return data;
@@ -448,7 +452,12 @@ export const FieldEditorProvider = ({
      */
     const deleteField: DeleteFieldCallable = field => {
         setState(data => {
-            return utils.deleteField({ field, data });
+            const result = utils.deleteField({ field, data });
+
+            return {
+                ...data,
+                ...result
+            };
         });
     };
 
