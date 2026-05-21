@@ -20,7 +20,6 @@ const STATUS_TAG_VARIANT: Record<
     pending: "neutral-light",
     running: "accent",
     success: "success",
-    completed: "success",
     failed: "destructive",
     aborted: "warning"
 };
@@ -138,7 +137,6 @@ const TaskDetailDrawerInner = observer(function TaskDetailDrawerInner({
     const isRunning = displayTask.taskStatus === "running";
     const isTerminal =
         displayTask.taskStatus === "success" ||
-        displayTask.taskStatus === "completed" ||
         displayTask.taskStatus === "failed" ||
         displayTask.taskStatus === "aborted";
 

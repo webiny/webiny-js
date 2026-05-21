@@ -163,7 +163,6 @@ const TaskListViewInner = observer(function TaskListViewInner() {
                     const isRunning = row.taskStatus === "running";
                     const isTerminal =
                         row.taskStatus === "success" ||
-                        row.taskStatus === "completed" ||
                         row.taskStatus === "failed" ||
                         row.taskStatus === "aborted";
 

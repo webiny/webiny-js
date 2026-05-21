@@ -1,13 +1,6 @@
 import type { TaskRun } from "@webiny/sdk";
 
-export type TaskStatus =
-    | "pending"
-    | "running"
-    | "success"
-    | "completed"
-    | "failed"
-    | "aborted"
-    | "stopped";
+export type TaskStatus = "pending" | "running" | "success" | "failed" | "aborted";
 
 export type Task = Omit<TaskRun, "taskStatus"> & {
     taskStatus: TaskStatus;
