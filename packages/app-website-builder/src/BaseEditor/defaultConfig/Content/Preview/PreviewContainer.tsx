@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
+import { useIsDragging } from "./useIsDragging.js";
 
 interface PreviewContainerProps {
     children: React.ReactNode;
@@ -7,6 +8,7 @@ interface PreviewContainerProps {
 
 export const PreviewContainer = ({ children }: PreviewContainerProps) => {
     const uiHeight = useSelectFromEditor(state => state.uiReservedSpace.height);
+    const isDragging = useIsDragging();
 
     return (
         <div
@@ -14,6 +16,14 @@ export const PreviewContainer = ({ children }: PreviewContainerProps) => {
             style={{ height: `calc(100vh - ${uiHeight}px)` }}
             className={"bg-neutral-subtle relative flex flex-col items-center w-full overflow-auto p-[24px]"}
         >
+            {isDragging && (
+                <>
+                    <div className={"absolute z-50 pointer-events-none animate-fade-in top-0 left-0 right-0 h-2 bg-[#f9d8ce]"} />
+                    <div className={"absolute z-50 pointer-events-none animate-fade-in bottom-0 left-0 right-0 h-2 bg-[#f9d8ce]"} />
+                    <div className={"absolute z-50 pointer-events-none animate-fade-in top-0 left-0 bottom-0 w-2 bg-[#f9d8ce]"} />
+                    <div className={"absolute z-50 pointer-events-none animate-fade-in top-0 right-0 bottom-0 w-2 bg-[#f9d8ce]"} />
+                </>
+            )}
             {children}
         </div>
     );
