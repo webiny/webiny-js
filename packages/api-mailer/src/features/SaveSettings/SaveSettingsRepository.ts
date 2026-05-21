@@ -24,11 +24,11 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
         // If updating and no password provided, keep the existing password
         let passwordToStore = input.password || "";
         if (!input.password && existingSettings) {
-            passwordToStore = this.encryption.decrypt(transportSettings.password || "");
+            passwordToStore = await this.encryption.decrypt(transportSettings.password || "");
         }
 
         // Encrypt password
-        const encryptedPassword = this.encryption.encrypt(passwordToStore);
+        const encryptedPassword = await this.encryption.encrypt(passwordToStore);
 
         // Prepare data
         const data = {
