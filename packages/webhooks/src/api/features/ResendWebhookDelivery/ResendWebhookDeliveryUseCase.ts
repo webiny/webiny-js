@@ -4,6 +4,7 @@ import { ResendWebhookDeliveryInputSchema } from "./schema.js";
 import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
+import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookNotAuthorizedError, WebhookValidationError } from "~/api/domain/errors.js";
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
@@ -16,7 +17,8 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
         private readonly getDeliveryRepository: GetWebhookDeliveryRepository.Interface,
         private readonly getWebhookRepository: GetWebhookRepository.Interface,
         private readonly createDeliveryRepository: CreateWebhookDeliveryRepository.Interface,
-        private readonly taskService: TaskService.Interface
+        private readonly taskService: TaskService.Interface,
+        private readonly getSettingsRepository: GetWebhookSettingsRepository.Interface
     ) {}
 
     async execute(deliveryId: string): Promise<Result<boolean, UseCaseAbstraction.Error>> {
@@ -44,8 +46,13 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
         const originalPayload = delivery.payload as IWebhookPayload | null;
         const data = originalPayload?.data ?? {};
 
+        const settingsResult = await this.getSettingsRepository.execute();
+        const retentionDays = settingsResult.isOk()
+            ? (settingsResult.value.deliveryRetentionDays ?? WEBHOOK_DELIVERY_MAX_RETENTION_DAYS)
+            : WEBHOOK_DELIVERY_MAX_RETENTION_DAYS;
+
         const expiresAt = new Date(
-            Date.now() + WEBHOOK_DELIVERY_MAX_RETENTION_DAYS * 24 * 60 * 60 * 1000
+            Date.now() + retentionDays * 24 * 60 * 60 * 1000
         ).toISOString();
 
         const newDeliveryResult = await this.createDeliveryRepository.execute({
@@ -81,6 +88,7 @@ export const ResendWebhookDeliveryUseCase = UseCaseAbstraction.createImplementat
         GetWebhookDeliveryRepository,
         GetWebhookRepository,
         CreateWebhookDeliveryRepository,
-        TaskService
+        TaskService,
+        GetWebhookSettingsRepository
     ]
 });
