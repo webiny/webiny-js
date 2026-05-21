@@ -21,11 +21,18 @@ export function setFloatingElemPosition(
             top: 0
         };
 
-        const left = rangeRect.left - containerRect.left;
+        const elWidth = elementToPosition.offsetWidth;
+        const elHeight = elementToPosition.offsetHeight;
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        let left = rangeRect.left - containerRect.left;
         let top = rangeRect.bottom + GAP - containerRect.top;
 
-        const elHeight = elementToPosition.offsetHeight;
-        const viewportHeight = window.innerHeight;
+        if (rangeRect.left + elWidth > viewportWidth - GAP) {
+            left = viewportWidth - elWidth - GAP - containerRect.left;
+        }
+
         if (rangeRect.bottom + GAP + elHeight > viewportHeight - GAP) {
             top = rangeRect.top - elHeight - GAP - containerRect.top;
         }

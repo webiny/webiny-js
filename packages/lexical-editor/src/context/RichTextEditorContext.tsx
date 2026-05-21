@@ -47,7 +47,13 @@ export const RichTextEditorProvider = ({
     }, [editor]);
 
     const internalTheme = useMemo(
-        () => new Theme({ colors: theme.colors, typography: theme.typography, fontSizes: theme.fontSizes, tokens: theme.tokens }),
+        () =>
+            new Theme({
+                colors: theme.colors,
+                typography: theme.typography,
+                fontSizes: theme.fontSizes,
+                tokens: theme.tokens
+            }),
         [theme]
     );
 
