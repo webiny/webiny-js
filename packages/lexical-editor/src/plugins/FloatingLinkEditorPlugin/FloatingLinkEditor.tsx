@@ -16,7 +16,7 @@ export function FloatingLinkEditor({ editor, isVisible, LinkForm }: FloatingLink
         <div
             ref={editorRef}
             className="z-dialog absolute link-editor"
-            style={{ opacity: isVisible ? 1 : 0, pointerEvents: isVisible ? "auto" : "none" }}
+            style={{ opacity: isVisible ? 1 : 0, pointerEvents: isVisible ? "all" : "none" }}
         >
             {isVisible ? (
                 <LinkForm linkData={linkData} onSave={applyChanges} removeLink={removeLink} />

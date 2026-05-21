@@ -13965,7 +13965,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-editor@workspace:packages/lexical-editor"
   dependencies:
-    "@floating-ui/dom": "npm:^1.7.6"
     "@lexical/code": "npm:^0.44.0"
     "@lexical/history": "npm:^0.44.0"
     "@lexical/react": "npm:^0.44.0"
@@ -13980,6 +13979,7 @@ __metadata:
     "@webiny/react-properties": "npm:0.0.0"
     lexical: "npm:^0.44.0"
     lodash: "npm:^4.18.1"
+    radix-ui: "npm:^1.4.3"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
   languageName: unknown

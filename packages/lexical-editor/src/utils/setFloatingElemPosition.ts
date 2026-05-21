@@ -1,31 +1,40 @@
-import { computePosition, flip, offset, shift } from "@floating-ui/dom";
-
 const GAP = 10;
 
 export function setFloatingElemPosition(
     basePosition: Range | null,
     elementToPosition: HTMLElement
 ): void {
-    // A small timeout gives enough time for DOM to update and provides us with correct bounding rect values.
     setTimeout(() => {
         if (basePosition === null) {
-            elementToPosition.style.transform = "translate(-10000px, -10000px)";
+            Object.assign(elementToPosition.style, {
+                position: "fixed",
+                left: "-10000px",
+                top: "-10000px",
+                transform: "none"
+            });
             return;
         }
 
-        const virtualElement = {
-            getBoundingClientRect: () => basePosition.getBoundingClientRect()
+        const rangeRect = basePosition.getBoundingClientRect();
+        const containerRect = elementToPosition.offsetParent?.getBoundingClientRect() ?? {
+            left: 0,
+            top: 0
         };
 
-        computePosition(virtualElement, elementToPosition, {
-            placement: "bottom",
-            middleware: [
-                offset(GAP), // adds gap between anchor and popup
-                flip(), // switches to the opposite side if no room (bottom → top)
-                shift({ padding: GAP }) // slides along the axis to stay within viewport
-            ]
-        }).then(({ x, y }) => {
-            elementToPosition.style.transform = `translate(${x}px, ${y}px)`;
+        const left = rangeRect.left - containerRect.left;
+        let top = rangeRect.bottom + GAP - containerRect.top;
+
+        const elHeight = elementToPosition.offsetHeight;
+        const viewportHeight = window.innerHeight;
+        if (rangeRect.bottom + GAP + elHeight > viewportHeight - GAP) {
+            top = rangeRect.top - elHeight - GAP - containerRect.top;
+        }
+
+        Object.assign(elementToPosition.style, {
+            position: "absolute",
+            left: `${left}px`,
+            top: `${top}px`,
+            transform: "none"
         });
     }, 10);
 }

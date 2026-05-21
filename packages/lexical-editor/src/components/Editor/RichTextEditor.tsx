@@ -130,7 +130,7 @@ const BaseRichTextEditor = ({
                     toolbarActionPlugins={props.toolbarActionPlugins}
                 >
                     {staticToolbar && !disabled ? staticToolbar : null}
-                    <div data-role={"overlays"} className={"relative"}></div>
+                    <div data-role={"overlays"} className={"relative"} style={{ zIndex: 1 }}></div>
                     <div
                         /* This className is necessary for targeting of editor container from CSS files. */
                         className={"editor-shell"}

@@ -32,6 +32,11 @@ export const RichTextEditorProvider = ({
             return document.body;
         }
 
+        const dialogContent = rootElement.closest("[role='dialog']");
+        if (dialogContent) {
+            return dialogContent as HTMLElement;
+        }
+
         const shell = rootElement.closest(".editor-shell");
         if (!shell) {
             return document.body;
