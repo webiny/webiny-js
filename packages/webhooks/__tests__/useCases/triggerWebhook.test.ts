@@ -3,6 +3,7 @@ import { useHandler } from "~tests/helpers/useHandler.js";
 import { CreateWebhookUseCase } from "~/api/features/CreateWebhook/abstractions.js";
 import { TriggerWebhookUseCase } from "~/api/features/TriggerWebhook/abstractions.js";
 import { GetWebhookDeliveryUseCase } from "~/api/features/GetWebhookDelivery/abstractions.js";
+import { UpdateWebhookSettingsUseCase } from "~/api/features/UpdateWebhookSettings/abstractions.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
 
 describe("TriggerWebhookUseCase", () => {
@@ -89,5 +90,40 @@ describe("TriggerWebhookUseCase", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("WEBHOOK_NOT_AUTHORIZED");
+    });
+
+    it("uses deliveryRetentionDays from settings to compute expiresAt", async () => {
+        const context = await handler.handle();
+        const createUseCase = context.container.resolve(CreateWebhookUseCase);
+        const updateSettings = context.container.resolve(UpdateWebhookSettingsUseCase);
+        const triggerUseCase = context.container.resolve(TriggerWebhookUseCase);
+        const getDeliveryUseCase = context.container.resolve(GetWebhookDeliveryUseCase);
+
+        await updateSettings.execute({ deliveryRetentionDays: 1 });
+
+        const webhookResult = await createUseCase.execute({
+            name: "Retention Test",
+            endpointUrl: "https://example.com/hook",
+            events: ["cms.entry.product.published"],
+            signingSecret: "whsec_dGVzdHNlY3JldA=="
+        });
+        const webhook = webhookResult.value;
+
+        const beforeTime = Date.now();
+        const result = await triggerUseCase.execute(webhook.id, { foo: "bar" });
+
+        expect(result.isOk()).toBe(true);
+        const delivery = result.value;
+        expect(delivery.webhookId).toBe(webhook.id);
+        expect(delivery.status).toBe("pending");
+
+        /* Verify expiresAt is 1 day from now */
+        const getResult = await getDeliveryUseCase.execute(delivery.id);
+        expect(getResult.isOk()).toBe(true);
+        const storedDelivery = getResult.value;
+        const expiresAtTime = new Date(storedDelivery.expiresAt).getTime();
+        const expectedExpiresAt = beforeTime + 1 * 24 * 60 * 60 * 1000;
+        /* Allow 1 second tolerance */
+        expect(Math.abs(expiresAtTime - expectedExpiresAt)).toBeLessThan(1000);
     });
 });

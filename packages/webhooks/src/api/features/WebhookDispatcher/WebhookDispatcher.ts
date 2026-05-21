@@ -47,9 +47,7 @@ class WebhookDispatcherImpl implements WebhookDispatcherAbstraction.Interface {
             ? (settingsResult.value.deliveryRetentionDays ?? WEBHOOK_DELIVERY_MAX_RETENTION_DAYS)
             : WEBHOOK_DELIVERY_MAX_RETENTION_DAYS;
 
-        const expiresAt = new Date(
-            Date.now() + retentionDays * 24 * 60 * 60 * 1000
-        ).toISOString();
+        const expiresAt = new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000).toISOString();
 
         for (const webhook of result.value.items) {
             const deliveryResult = await this.createDeliveryRepository.execute({

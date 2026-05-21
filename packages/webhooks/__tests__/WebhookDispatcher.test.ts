@@ -64,9 +64,11 @@ describe("WebhookDispatcher", () => {
         });
 
         container.registerInstance(GetWebhookSettingsRepository, {
-            execute: vi.fn().mockResolvedValue(
-                Result.ok({ signingSecret: undefined, deliveryRetentionDays: undefined })
-            )
+            execute: vi
+                .fn()
+                .mockResolvedValue(
+                    Result.ok({ signingSecret: undefined, deliveryRetentionDays: undefined })
+                )
         });
 
         WebhookDispatcherFeature.register(container);
@@ -140,9 +142,11 @@ describe("WebhookDispatcher", () => {
 
     it("uses deliveryRetentionDays from settings to compute expiresAt", async () => {
         const retentionDays = 7;
-        const settingsMock = vi.fn().mockResolvedValue(
-            Result.ok({ signingSecret: undefined, deliveryRetentionDays: retentionDays })
-        );
+        const settingsMock = vi
+            .fn()
+            .mockResolvedValue(
+                Result.ok({ signingSecret: undefined, deliveryRetentionDays: retentionDays })
+            );
         container.registerInstance(GetWebhookSettingsRepository, { execute: settingsMock });
 
         listRepoMock.mockResolvedValue(
@@ -169,9 +173,11 @@ describe("WebhookDispatcher", () => {
 
     it("falls back to WEBHOOK_DELIVERY_MAX_RETENTION_DAYS when deliveryRetentionDays is undefined", async () => {
         container.registerInstance(GetWebhookSettingsRepository, {
-            execute: vi.fn().mockResolvedValue(
-                Result.ok({ signingSecret: undefined, deliveryRetentionDays: undefined })
-            )
+            execute: vi
+                .fn()
+                .mockResolvedValue(
+                    Result.ok({ signingSecret: undefined, deliveryRetentionDays: undefined })
+                )
         });
 
         listRepoMock.mockResolvedValue(

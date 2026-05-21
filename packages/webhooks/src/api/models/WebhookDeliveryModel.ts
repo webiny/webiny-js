@@ -24,7 +24,8 @@ class WebhookDeliveryModelFactory implements ModelFactory.Interface {
             responseTime: fields.number().label("Response Time (ms)"),
             responseStatus: fields.number().label("Response Status"),
             responseHeaders: fields.text().compress().label("Response Headers"),
-            responseBody: fields.text().compress().label("Response Body")
+            responseBody: fields.text().compress().label("Response Body"),
+            expiresAt: fields.text().label("Expires At").required()
         }));
 
         return [model];

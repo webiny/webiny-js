@@ -13,6 +13,7 @@ export interface WebhookDeliveryCmsEntryValues {
     responseStatus: number | null;
     responseHeaders: string | null;
     responseBody: string | null;
+    expiresAt: string;
 }
 
 /* Shape of webhook delivery data stored in the CMS. */
@@ -29,6 +30,7 @@ export interface WebhookDelivery {
     id: string;
     createdOn: string;
     savedOn: string;
+    expiresAt: string;
     webhookId: string;
     backgroundTaskId: string | null;
     eventType: string;

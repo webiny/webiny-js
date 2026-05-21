@@ -33,6 +33,7 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 id: "",
                 createdOn: "",
                 savedOn: "",
+                expiresAt: input.expiresAt,
                 webhookId: input.webhookId,
                 backgroundTaskId: null,
                 eventType: input.eventType,
