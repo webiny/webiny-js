@@ -39,7 +39,7 @@ export type { RichTextValueWithHtml } from "./components/index.js";
 export { HasPermission } from "./presentation/security/components/HasPermission.js";
 export { SecureRoute } from "./presentation/security/components/SecureRoute.js";
 
-export { FileManager, FileManagerRenderer } from "./base/ui/FileManager.js";
+export { FileManager } from "./base/ui/FileManager.js";
 export type {
     FileManagerProps,
     FileManagerRendererProps,
