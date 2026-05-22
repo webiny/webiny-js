@@ -28,6 +28,10 @@ class WebhookDeliveriesPresenterImpl implements IWebhookDeliveriesPresenter {
         };
     }
 
+    public async loadMore(): Promise<void> {
+        await this.listPresenter.actions.loadMore();
+    }
+
     public async resend(id: string): Promise<void> {
         await this.resendDeliveryUseCase.execute(id);
         await this.listPresenter.actions.refresh();
