@@ -36,7 +36,7 @@ class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
 
         // Decrypt password if present.
         const password = settings.password
-            ? this.encryption.decrypt(String(settings.password))
+            ? await this.encryption.decrypt(String(settings.password))
             : "";
 
         const transportSettings: TransportSettings = {
