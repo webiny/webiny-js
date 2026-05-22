@@ -77,7 +77,7 @@ export const Padding = observer(({ elementId }: PaddingProps) => {
     const rowClassname = "flex flex-row w-full justify-center items-center py-xs";
 
     return (
-        <div className="flex flex-col items-center bg-neutral-muted border-sm border-neutral-muted relative rounded-md">
+        <div className="flex flex-col items-center bg-neutral-disabled relative rounded-md">
             <span className="absolute text-sm" style={{ top: 3, left: 5 }}>
                 Padding
             </span>
