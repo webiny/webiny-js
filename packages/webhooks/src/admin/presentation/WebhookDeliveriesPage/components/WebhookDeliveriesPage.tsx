@@ -40,9 +40,11 @@ const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner(
     }
 
     return (
-        <div className="flex flex-col p-md gap-md">
-            <Heading level={4}>Delivery Log</Heading>
-            <DeliveryFilters presenter={presenter} />
+        <div className="flex flex-col h-main-content">
+            <div className="p-md pb-0 flex flex-col gap-md">
+                <Heading level={4}>Delivery Log</Heading>
+                <DeliveryFilters presenter={presenter} />
+            </div>
             <DeliveryList presenter={presenter} />
         </div>
     );
