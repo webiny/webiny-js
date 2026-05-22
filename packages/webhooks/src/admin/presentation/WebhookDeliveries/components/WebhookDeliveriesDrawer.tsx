@@ -120,7 +120,7 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
                         <DataTable<WebhookDelivery>
                             columns={columns}
                             data={vm.list.rows}
-                            loading={vm.list.pagination.loading}
+                            loading={vm.list.pagination.loading && vm.list.rows.length === 0}
                             onToggleRow={(row: WebhookDelivery) => presenter.selectDelivery(row)}
                         />
                     </Scrollbar>

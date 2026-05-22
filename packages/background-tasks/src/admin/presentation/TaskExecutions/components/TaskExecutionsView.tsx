@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import debounce from "lodash/debounce.js";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
@@ -31,34 +31,6 @@ import { TaskPermissionsFeature } from "~/admin/features/permissions/feature.js"
 import type { Task, TaskStatus } from "~/admin/shared/types.js";
 import { TaskDetailDrawer } from "~/admin/presentation/TaskDetail/components/TaskDetailDrawer.js";
 
-interface LoadMoreButtonProps {
-    show: boolean;
-    disabled: boolean;
-    windowHeight: number;
-    tableHeight: number;
-    onClick: () => void;
-}
-
-const LoadMoreButton = ({
-    show,
-    disabled,
-    windowHeight,
-    tableHeight,
-    onClick
-}: LoadMoreButtonProps) => {
-    if (!show || windowHeight <= tableHeight) {
-        return null;
-    }
-
-    return (
-        <div className="flex justify-center py-sm">
-            <Button variant="tertiary" size="sm" onClick={onClick} disabled={disabled}>
-                {disabled ? "Loading..." : "Load more"}
-            </Button>
-        </div>
-    );
-};
-
 const STATUS_TAG_VARIANT: Record<
     string,
     "neutral-light" | "accent" | "success" | "destructive" | "warning"
@@ -87,15 +59,6 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
     }, [presenter]);
 
     const { vm } = presenter;
-
-    const { innerHeight: windowHeight } = window;
-    const [tableHeight, setTableHeight] = useState(0);
-    const tableRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        setTableHeight(tableRef?.current?.clientHeight || 0);
-        return () => setTableHeight(0);
-    });
 
     const loadMoreOnScroll = useMemo(
         () =>
@@ -280,7 +243,9 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                         <Input
                             placeholder="Search by name..."
                             value={vm.list.search}
-                            onChange={e => presenter.search.set(e.target.value)}
+                            onChange={value => {
+                                presenter.search.set(value);
+                            }}
                         />
                     </div>
                     <div className="w-[160px]">
@@ -313,7 +278,7 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                             />
                         </div>
                     )}
-                    <div className="w-[160px]">
+                    <div className="w-[240px]">
                         <DatePicker
                             type="dateTimeTz"
                             placeholder="Created from"
@@ -327,7 +292,7 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                             }}
                         />
                     </div>
-                    <div className="w-[160px]">
+                    <div className="w-[240px]">
                         <DatePicker
                             type="dateTimeTz"
                             placeholder="Created to"
@@ -359,22 +324,13 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                         </div>
                     ) : (
                         <Scrollbar onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}>
-                            <div ref={tableRef}>
-                                <DataTable<Task>
-                                    columns={columns}
-                                    data={vm.list.rows}
-                                    loading={vm.list.pagination.loading}
-                                    sorting={sorting}
-                                    onSortingChange={onSortingChange}
-                                    stickyHeader
-                                />
-                            </div>
-                            <LoadMoreButton
-                                show={vm.list.pagination.hasMore}
-                                disabled={vm.list.pagination.loading}
-                                windowHeight={windowHeight}
-                                tableHeight={tableHeight}
-                                onClick={() => presenter.loadMore()}
+                            <DataTable<Task>
+                                columns={columns}
+                                data={vm.list.rows}
+                                loading={vm.list.pagination.loading && vm.list.rows.length === 0}
+                                sorting={sorting}
+                                onSortingChange={onSortingChange}
+                                stickyHeader
                             />
                         </Scrollbar>
                     )}
