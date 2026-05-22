@@ -28,13 +28,12 @@ export const DeliveryAccordionRow = ({
             description={
                 <div className="flex items-center gap-sm">
                     <Tag variant={statusVariant(delivery.status)} content={delivery.status} />
-                    {delivery.responseStatus !== null && (
+                    {delivery.responseStatus !== null ? (
                         <Text size="sm">HTTP {delivery.responseStatus}</Text>
-                    )}
-                    {delivery.responseTime !== null && (
+                    ) : null}
+                    {delivery.responseTime ? (
                         <Text size="sm">{delivery.responseTime}ms</Text>
-                    )}
-
+                    ) : null}
                     <Text size="sm" className="text-neutral-strong">
                         <TimeAgo datetime={delivery.createdOn} />
                     </Text>

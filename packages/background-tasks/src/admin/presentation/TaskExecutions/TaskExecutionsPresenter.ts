@@ -93,7 +93,7 @@ class TaskExecutionsPresenterImpl implements ITaskExecutionsPresenter {
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
-            limit: 20
+            limit: 25
         });
 
         void this.listDefinitionsUseCase

@@ -1,17 +1,26 @@
 import React, { useState, useCallback } from "react";
+import { observer } from "mobx-react-lite";
 import { IconButton, Text } from "@webiny/admin-ui";
 import { useSnackbar } from "@webiny/app-admin/hooks/index.js";
 import { ReactComponent as VisibilityIcon } from "@webiny/icons/visibility.svg";
 import { ReactComponent as VisibilityOffIcon } from "@webiny/icons/visibility_off.svg";
 import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
+import type { IWebhookFormPresenter } from "../abstractions.js";
 
 interface SigningSecretProps {
-    secret: string;
+    presenter: IWebhookFormPresenter;
 }
 
-export const SigningSecret = ({ secret }: SigningSecretProps) => {
+export const SigningSecret = observer(function SigningSecret({ presenter }: SigningSecretProps) {
+    const { vm } = presenter;
     const [revealed, setRevealed] = useState(false);
     const { showSnackbar } = useSnackbar();
+
+    if (vm.isNew || !vm.webhook?.signingSecret) {
+        return null;
+    }
+
+    const secret = vm.webhook.signingSecret;
 
     const handleCopy = useCallback(async () => {
         await navigator.clipboard.writeText(secret);
@@ -44,4 +53,4 @@ export const SigningSecret = ({ secret }: SigningSecretProps) => {
             </div>
         </div>
     );
-};
+});

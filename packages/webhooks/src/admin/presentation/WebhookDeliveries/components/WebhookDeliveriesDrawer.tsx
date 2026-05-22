@@ -3,12 +3,13 @@ import debounce from "lodash/debounce.js";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { DataTable, Drawer, IconButton, Scrollbar, Tag, Text, TimeAgo } from "@webiny/admin-ui";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import { ReactComponent as ReplayIcon } from "@webiny/icons/replay.svg";
 import { WebhookDeliveriesPresenterFeature } from "../feature.js";
 import { ListWebhookDeliveriesFeature } from "~/admin/features/listWebhookDeliveries/feature.js";
 import { ResendWebhookDeliveryFeature } from "~/admin/features/resendWebhookDelivery/feature.js";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
-import { DeliveryDetail } from "./DeliveryDetail.js";
+import { DeliveryDetailPanel } from "./DeliveryDetailPanel.js";
 import { statusVariant } from "./statusVariant.js";
 
 interface WebhookDeliveriesDrawerProps {
@@ -31,6 +32,11 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
     }, [presenter, webhookId, open]);
 
     const { vm } = presenter;
+
+    const { showConfirmation: showResendConfirmation } = useConfirmationDialog({
+        title: "Resend Delivery",
+        message: "Are you sure you want to resend this delivery?"
+    });
 
     const loadMoreOnScroll = useMemo(
         () =>
@@ -79,7 +85,7 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
                         size="sm"
                         onClick={e => {
                             e.stopPropagation();
-                            void presenter.resend(row.id);
+                            showResendConfirmation(() => presenter.resend(row.id));
                         }}
                         aria-label="Resend delivery"
                     />
@@ -114,20 +120,12 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
                         <DataTable<WebhookDelivery>
                             columns={columns}
                             data={vm.list.rows}
-                            loading={vm.list.pagination.loading}
+                            loading={vm.list.pagination.loading && vm.list.rows.length === 0}
                             onToggleRow={(row: WebhookDelivery) => presenter.selectDelivery(row)}
                         />
                     </Scrollbar>
                 </div>
-                {vm.selectedDelivery && (
-                    <div className="flex-1 overflow-auto">
-                        <DeliveryDetail
-                            delivery={vm.selectedDelivery}
-                            onClose={() => presenter.selectDelivery(null)}
-                            onResend={id => void presenter.resend(id)}
-                        />
-                    </div>
-                )}
+                <DeliveryDetailPanel presenter={presenter} />
             </div>
         </Drawer>
     );
