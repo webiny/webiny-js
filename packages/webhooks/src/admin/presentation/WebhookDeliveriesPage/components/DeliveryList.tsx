@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import debounce from "lodash/debounce.js";
 import { observer } from "mobx-react-lite";
 import { Accordion, Scrollbar, Text } from "@webiny/admin-ui";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import { DeliveryAccordionRow } from "~/admin/presentation/WebhookDeliveries/components/DeliveryAccordionRow.js";
 import { DeliveryBottomInfoBar } from "./DeliveryBottomInfoBar.js";
 import type { IWebhookDeliveriesPagePresenter } from "../abstractions.js";
@@ -13,6 +14,11 @@ interface DeliveryListProps {
 
 export const DeliveryList = observer(function DeliveryList({ presenter }: DeliveryListProps) {
     const { vm } = presenter;
+
+    const { showConfirmation: showResendConfirmation } = useConfirmationDialog({
+        title: "Resend Delivery",
+        message: "Are you sure you want to resend this delivery?"
+    });
 
     const loadMoreOnScroll = useMemo(
         () =>
@@ -45,7 +51,7 @@ export const DeliveryList = observer(function DeliveryList({ presenter }: Delive
                             onOpenChange={open =>
                                 presenter.expandDelivery(open ? delivery.id : null)
                             }
-                            onResend={id => void presenter.resend(id)}
+                            onResend={id => showResendConfirmation(() => presenter.resend(id))}
                         />
                     ))}
                 </Accordion>

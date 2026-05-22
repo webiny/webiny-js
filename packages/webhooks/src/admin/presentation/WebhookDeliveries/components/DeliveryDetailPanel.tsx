@@ -1,5 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import type { IWebhookDeliveriesPresenter } from "../abstractions.js";
 import { DeliveryDetail } from "./DeliveryDetail.js";
 
@@ -12,6 +13,11 @@ export const DeliveryDetailPanel = observer(function DeliveryDetailPanel({
 }: DeliveryDetailPanelProps) {
     const { vm } = presenter;
 
+    const { showConfirmation: showResendConfirmation } = useConfirmationDialog({
+        title: "Resend Delivery",
+        message: "Are you sure you want to resend this delivery?"
+    });
+
     if (!vm.selectedDelivery) {
         return null;
     }
@@ -21,7 +27,7 @@ export const DeliveryDetailPanel = observer(function DeliveryDetailPanel({
             <DeliveryDetail
                 delivery={vm.selectedDelivery}
                 onClose={() => presenter.selectDelivery(null)}
-                onResend={id => void presenter.resend(id)}
+                onResend={id => showResendConfirmation(() => presenter.resend(id))}
             />
         </div>
     );

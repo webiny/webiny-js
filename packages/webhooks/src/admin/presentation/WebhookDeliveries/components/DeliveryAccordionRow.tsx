@@ -34,7 +34,6 @@ export const DeliveryAccordionRow = ({
                     {delivery.responseTime ? (
                         <Text size="sm">{delivery.responseTime}ms</Text>
                     ) : null}
-                    a
                     <Text size="sm" className="text-neutral-strong">
                         <TimeAgo datetime={delivery.createdOn} />
                     </Text>

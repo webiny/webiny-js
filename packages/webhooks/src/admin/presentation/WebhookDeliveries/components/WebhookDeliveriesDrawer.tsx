@@ -3,6 +3,7 @@ import debounce from "lodash/debounce.js";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { DataTable, Drawer, IconButton, Scrollbar, Tag, Text, TimeAgo } from "@webiny/admin-ui";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import { ReactComponent as ReplayIcon } from "@webiny/icons/replay.svg";
 import { WebhookDeliveriesPresenterFeature } from "../feature.js";
 import { ListWebhookDeliveriesFeature } from "~/admin/features/listWebhookDeliveries/feature.js";
@@ -31,6 +32,11 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
     }, [presenter, webhookId, open]);
 
     const { vm } = presenter;
+
+    const { showConfirmation: showResendConfirmation } = useConfirmationDialog({
+        title: "Resend Delivery",
+        message: "Are you sure you want to resend this delivery?"
+    });
 
     const loadMoreOnScroll = useMemo(
         () =>
@@ -79,7 +85,7 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
                         size="sm"
                         onClick={e => {
                             e.stopPropagation();
-                            void presenter.resend(row.id);
+                            showResendConfirmation(() => presenter.resend(row.id));
                         }}
                         aria-label="Resend delivery"
                     />
