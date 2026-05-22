@@ -133,6 +133,10 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
                 this.isInstalled = true;
                 this.installing = false;
             });
+
+            // ToS acceptance in the basic-info step covers consent. Fire-and-forget
+            // so a slow/failed newsletter call never blocks the wizard.
+            void this.subscribeToNewsletter(installerData.Cognito);
         } catch (error) {
             runInAction(() => {
                 this.error = error;
@@ -141,6 +145,28 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
             });
         }
     };
+
+    private async subscribeToNewsletter(cognito: any): Promise<void> {
+        if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") return;
+        if (!cognito?.email || !cognito?.firstName || !cognito?.lastName) return;
+
+        try {
+            await fetch("https://t.webiny.com/newsletter", {
+                method: "POST",
+                // text/plain keeps the request CORS-simple (no preflight), matching
+                // the /event convention. The server parses the body as JSON regardless.
+                headers: { "Content-Type": "text/plain;charset=UTF-8" },
+                body: JSON.stringify({
+                    firstName: cognito.firstName,
+                    lastName: cognito.lastName,
+                    email: cognito.email,
+		    source: 'install-wizard'
+                })
+            });
+        } catch {
+            // Best-effort: never surface to the user.
+        }
+    }
 
     finishInstallation = () => {
         this.startUsing = true;
