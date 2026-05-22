@@ -1,17 +1,25 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { Task, TaskLog } from "~/admin/shared/types.js";
-import type { IListViewModel } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
-import type { IListActions } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
+
+export interface ILogsViewModel {
+    rows: TaskLog[];
+    pagination: {
+        totalCount: number;
+        loading: boolean;
+        hasMore: boolean;
+    };
+}
 
 export interface ITaskDetailViewModel {
     task: Task | null;
     loading: boolean;
-    logs: IListViewModel<TaskLog>;
+    logs: ILogsViewModel;
 }
 
-export interface ITaskDetailPresenter extends IListActions {
+export interface ITaskDetailPresenter {
     vm: ITaskDetailViewModel;
     init(taskId: string): void;
+    loadMore(): void;
 }
 
 export const TaskDetailPresenter = createAbstraction<ITaskDetailPresenter>("TaskDetailPresenter");

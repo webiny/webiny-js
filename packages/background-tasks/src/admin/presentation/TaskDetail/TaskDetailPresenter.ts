@@ -1,21 +1,24 @@
 import { makeAutoObservable, runInAction, computed } from "mobx";
-import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { Task, TaskLog } from "~/admin/shared/types.js";
 import {
     TaskDetailPresenter as Abstraction,
     type ITaskDetailPresenter,
     type ITaskDetailViewModel
 } from "./abstractions.js";
-import { TaskDetailDataSource } from "./TaskDetailDataSource.js";
 import { GetTaskUseCase } from "~/admin/features/getTask/abstractions.js";
 import { ListLogsUseCase } from "~/admin/features/listLogs/abstractions.js";
 
 class TaskDetailPresenterImpl implements ITaskDetailPresenter {
     private _task: Task | null = null;
     private _loading = false;
+    private _logs: TaskLog[] = [];
+    private _logsLoading = false;
+    private _logsCursor: string | null = null;
+    private _logsHasMore = false;
+    private _logsTotalCount = 0;
+    private _taskId: string | null = null;
 
     constructor(
-        private readonly listPresenter: ListPresenter.Interface<TaskLog>,
         private readonly getTaskUseCase: GetTaskUseCase.Interface,
         private readonly listLogsUseCase: ListLogsUseCase.Interface
     ) {
@@ -26,41 +29,24 @@ class TaskDetailPresenterImpl implements ITaskDetailPresenter {
         return {
             task: this._task,
             loading: this._loading,
-            logs: this.listPresenter.vm
+            logs: {
+                rows: this._logs,
+                pagination: {
+                    totalCount: this._logsTotalCount,
+                    loading: this._logsLoading,
+                    hasMore: this._logsHasMore
+                }
+            }
         };
     }
 
-    search = {
-        set: (query: string) => this.listPresenter.actions.search.set(query),
-        clear: () => this.listPresenter.actions.search.clear()
-    };
-
-    sort = {
-        set: (field: string, direction: "ASC" | "DESC") =>
-            this.listPresenter.actions.sort.set(field, direction),
-        toggle: (field: string) => this.listPresenter.actions.sort.toggle(field)
-    };
-
-    filter = {
-        set: (key: string, value: unknown) => this.listPresenter.actions.filter.set(key, value),
-        clear: (key: string) => this.listPresenter.actions.filter.clear(key),
-        clearAll: () => this.listPresenter.actions.filter.clearAll()
-    };
-
-    selection = {
-        toggle: (id: string) => this.listPresenter.actions.selection.toggle(id),
-        selectRangeTo: (id: string) => this.listPresenter.actions.selection.selectRangeTo(id),
-        selectAll: () => this.listPresenter.actions.selection.selectAll(),
-        deselectAll: () => this.listPresenter.actions.selection.deselectAll(),
-        selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
-        isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
-    };
-
-    loadMore = () => this.listPresenter.actions.loadMore();
-    refresh = () => this.listPresenter.actions.refresh();
-
     async init(taskId: string): Promise<void> {
+        this._taskId = taskId;
         this._loading = true;
+        this._logs = [];
+        this._logsCursor = null;
+        this._logsHasMore = false;
+        this._logsTotalCount = 0;
 
         const task = await this.getTaskUseCase.execute(taskId);
 
@@ -69,16 +55,42 @@ class TaskDetailPresenterImpl implements ITaskDetailPresenter {
             this._loading = false;
         });
 
-        const dataSource = new TaskDetailDataSource(this.listLogsUseCase, taskId);
-        this.listPresenter.init({
-            dataSource,
-            initialSort: { field: "createdOn", direction: "DESC" },
-            limit: 50
+        await this.fetchLogs();
+    }
+
+    async loadMore(): Promise<void> {
+        if (!this._logsHasMore || this._logsLoading) {
+            return;
+        }
+
+        await this.fetchLogs(this._logsCursor);
+    }
+
+    private async fetchLogs(after?: string | null): Promise<void> {
+        this._logsLoading = true;
+
+        const result = await this.listLogsUseCase.execute({
+            where: { task: this._taskId! },
+            sort: ["createdOn_DESC"],
+            limit: 50,
+            after: after ?? undefined
+        });
+
+        runInAction(() => {
+            if (after) {
+                this._logs = [...this._logs, ...result.items];
+            } else {
+                this._logs = result.items;
+            }
+            this._logsCursor = result.meta.cursor;
+            this._logsHasMore = result.meta.hasMoreItems;
+            this._logsTotalCount = result.meta.totalCount;
+            this._logsLoading = false;
         });
     }
 }
 
 export const TaskDetailPresenter = Abstraction.createImplementation({
     implementation: TaskDetailPresenterImpl,
-    dependencies: [ListPresenter, GetTaskUseCase, ListLogsUseCase]
+    dependencies: [GetTaskUseCase, ListLogsUseCase]
 });

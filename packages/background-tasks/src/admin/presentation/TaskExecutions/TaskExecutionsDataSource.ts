@@ -53,7 +53,7 @@ export class TaskExecutionsDataSource implements IDataSource<Task> {
             ? [toSortEnum(params.sort.field, params.sort.direction)]
             : undefined;
         const result = await this.listTasksUseCase.execute({
-            where: params.filters as Record<string, unknown> | undefined,
+            where: params.filters,
             sort,
             limit: params.limit,
             after: params.cursor,
@@ -79,7 +79,7 @@ export class TaskExecutionsDataSource implements IDataSource<Task> {
             ? [toSortEnum(params.sort.field, params.sort.direction)]
             : undefined;
         const result = await this.listTasksUseCase.execute({
-            where: params.filters as Record<string, unknown> | undefined,
+            where: params.filters,
             sort,
             limit: params.limit,
             after: this._meta.cursor ?? undefined,
