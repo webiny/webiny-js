@@ -38,6 +38,127 @@ const formatJson = (value: unknown): string => {
     return JSON.stringify(value, null, 2);
 };
 
+interface ExpandButtonProps {
+    show: boolean;
+    expanded: boolean;
+    onClick: () => void;
+}
+
+const ExpandButton = ({ show, expanded, onClick }: ExpandButtonProps) => {
+    if (!show) {
+        return null;
+    }
+
+    return (
+        <Button
+            variant="tertiary"
+            size="sm"
+            icon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            onClick={onClick}
+        />
+    );
+};
+
+interface ExpandedPayloadProps {
+    show: boolean;
+    label: string;
+    value: unknown;
+    variant?: "default" | "destructive";
+}
+
+const ExpandedPayload = ({ show, label, value, variant = "default" }: ExpandedPayloadProps) => {
+    if (!show) {
+        return null;
+    }
+
+    const textClass = variant === "destructive" ? " text-destructive" : "";
+
+    return (
+        <div className="mt-xs">
+            <Text size="sm" className="text-neutral-strong mb-xs">
+                {label}
+            </Text>
+            <pre
+                className={`bg-neutral-light rounded-sm p-sm text-xs overflow-auto max-h-[200px]${textClass}`}
+            >
+                {formatJson(value)}
+            </pre>
+        </div>
+    );
+};
+
+interface JsonSectionProps {
+    show: boolean;
+    title: string;
+    value: string;
+}
+
+const JsonSection = ({ show, title, value }: JsonSectionProps) => {
+    if (!show) {
+        return null;
+    }
+
+    return (
+        <>
+            <Separator />
+            <div>
+                <Heading level={6} className="mb-sm">
+                    {title}
+                </Heading>
+                <CodeEditor value={value} language="json" disabled={true} />
+            </div>
+        </>
+    );
+};
+
+interface LoadMoreLogsButtonProps {
+    show: boolean;
+    loading: boolean;
+    onClick: () => void;
+}
+
+const LoadMoreLogsButton = ({ show, loading, onClick }: LoadMoreLogsButtonProps) => {
+    if (!show) {
+        return null;
+    }
+
+    return (
+        <div className="mt-sm">
+            <Button variant="tertiary" size="sm" onClick={onClick} disabled={loading}>
+                {loading ? "Loading..." : "Load more logs"}
+            </Button>
+        </div>
+    );
+};
+
+interface DrawerActionsProps {
+    isRunning: boolean;
+    isTerminal: boolean;
+    onAbort: () => void;
+    onDelete: () => void;
+}
+
+const DrawerActions = ({ isRunning, isTerminal, onAbort, onDelete }: DrawerActionsProps) => {
+    if (!isRunning && !isTerminal) {
+        return null;
+    }
+
+    return (
+        <div className="flex gap-sm">
+            {isRunning ? (
+                <Button variant="secondary" size="sm" icon={<StopCircleIcon />} onClick={onAbort}>
+                    Abort
+                </Button>
+            ) : null}
+            {isTerminal ? (
+                <Button variant="secondary" size="sm" icon={<DeleteIcon />} onClick={onDelete}>
+                    Delete
+                </Button>
+            ) : null}
+        </div>
+    );
+};
+
 interface LogItemViewProps {
     item: TaskLogItem;
 }
@@ -64,36 +185,20 @@ const LogItemView = ({ item }: LogItemViewProps) => {
                     <Text size="sm" className="text-neutral-strong">
                         <TimeAgo datetime={item.createdOn} />
                     </Text>
-                    {expandable && (
-                        <Button
-                            variant="tertiary"
-                            size="sm"
-                            icon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                            onClick={() => setExpanded(!expanded)}
-                        />
-                    )}
+                    <ExpandButton
+                        show={expandable}
+                        expanded={expanded}
+                        onClick={() => setExpanded(!expanded)}
+                    />
                 </div>
             </div>
-            {expanded && hasData && (
-                <div className="mt-xs">
-                    <Text size="sm" className="text-neutral-strong mb-xs">
-                        Data
-                    </Text>
-                    <pre className="bg-neutral-light rounded-sm p-sm text-xs overflow-auto max-h-[200px]">
-                        {formatJson(item.data)}
-                    </pre>
-                </div>
-            )}
-            {expanded && hasError && (
-                <div className="mt-xs">
-                    <Text size="sm" className="text-neutral-strong mb-xs">
-                        Error
-                    </Text>
-                    <pre className="bg-neutral-light rounded-sm p-sm text-xs overflow-auto max-h-[200px] text-destructive">
-                        {formatJson(item.error)}
-                    </pre>
-                </div>
-            )}
+            <ExpandedPayload show={expanded && hasData} label="Data" value={item.data} />
+            <ExpandedPayload
+                show={expanded && hasError}
+                label="Error"
+                value={item.error}
+                variant="destructive"
+            />
         </div>
     );
 };
@@ -160,28 +265,12 @@ const TaskDetailDrawerInner = observer(function TaskDetailDrawerInner({
             width="900px"
             bodyPadding={false}
             actions={
-                <div className="flex gap-sm">
-                    {isRunning && (
-                        <Button
-                            variant="secondary"
-                            size="sm"
-                            icon={<StopCircleIcon />}
-                            onClick={() => showAbortConfirmation(() => onAbort(displayTask.id))}
-                        >
-                            Abort
-                        </Button>
-                    )}
-                    {isTerminal && (
-                        <Button
-                            variant="secondary"
-                            size="sm"
-                            icon={<DeleteIcon />}
-                            onClick={() => showDeleteConfirmation(() => onDelete(displayTask.id))}
-                        >
-                            Delete
-                        </Button>
-                    )}
-                </div>
+                <DrawerActions
+                    isRunning={isRunning}
+                    isTerminal={isTerminal}
+                    onAbort={() => showAbortConfirmation(() => onAbort(displayTask.id))}
+                    onDelete={() => showDeleteConfirmation(() => onDelete(displayTask.id))}
+                />
             }
         >
             <div className="flex flex-col gap-md p-md overflow-auto">
@@ -247,29 +336,8 @@ const TaskDetailDrawerInner = observer(function TaskDetailDrawerInner({
                     </Grid>
                 </div>
 
-                {inputJson && (
-                    <>
-                        <Separator />
-                        <div>
-                            <Heading level={6} className="mb-sm">
-                                Input
-                            </Heading>
-                            <CodeEditor value={inputJson} language="json" disabled={true} />
-                        </div>
-                    </>
-                )}
-
-                {outputJson && (
-                    <>
-                        <Separator />
-                        <div>
-                            <Heading level={6} className="mb-sm">
-                                Output
-                            </Heading>
-                            <CodeEditor value={outputJson} language="json" disabled={true} />
-                        </div>
-                    </>
-                )}
+                <JsonSection show={!!inputJson} title="Input" value={inputJson} />
+                <JsonSection show={!!outputJson} title="Output" value={outputJson} />
 
                 <Separator />
                 <div>
@@ -289,18 +357,11 @@ const TaskDetailDrawerInner = observer(function TaskDetailDrawerInner({
                             )}
                         </div>
                     )}
-                    {vm.logs.pagination.hasMore && (
-                        <div className="mt-sm">
-                            <Button
-                                variant="tertiary"
-                                size="sm"
-                                onClick={() => presenter.loadMore()}
-                                disabled={vm.logs.pagination.loading}
-                            >
-                                {vm.logs.pagination.loading ? "Loading..." : "Load more logs"}
-                            </Button>
-                        </div>
-                    )}
+                    <LoadMoreLogsButton
+                        show={vm.logs.pagination.hasMore}
+                        loading={vm.logs.pagination.loading}
+                        onClick={() => presenter.loadMore()}
+                    />
                 </div>
             </div>
         </Drawer>
