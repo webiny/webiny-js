@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.12.4",
-    "@types/react": "18.3.28",
+    "@types/react": "18.3.29",
     "@types/react-dom": "18.3.7",
     "typescript": "6.0.3"
   },
