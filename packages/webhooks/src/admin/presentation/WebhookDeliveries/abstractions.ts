@@ -10,6 +10,7 @@ export interface IWebhookDeliveriesViewModel {
 export interface IWebhookDeliveriesPresenter {
     vm: IWebhookDeliveriesViewModel;
     init(webhookId: string): void;
+    loadMore(): Promise<void>;
     resend(id: string): Promise<void>;
     selectDelivery(delivery: WebhookDelivery | null): void;
 }

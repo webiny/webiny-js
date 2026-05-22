@@ -36,11 +36,11 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@types/react": "18.3.28",
+    "@types/react": "18.3.29",
     "@webiny/build-tools": "*",
     "@webiny/project-utils": "*",
     "@webiny/wcp": "*",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.7"
   },
   "publishConfig": {
     "access": "public",

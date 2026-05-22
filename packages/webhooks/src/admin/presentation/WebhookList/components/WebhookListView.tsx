@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from "react";
+import debounce from "lodash/debounce.js";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { useRouter } from "@webiny/app-admin";
@@ -9,6 +10,7 @@ import {
     DropdownMenu,
     Heading,
     IconButton,
+    Scrollbar,
     Separator,
     Tag,
     Text,
@@ -37,6 +39,16 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
     }, [presenter]);
 
     const { vm } = presenter;
+
+    const loadMoreOnScroll = useMemo(
+        () =>
+            debounce(async ({ scrollFrame }: { scrollFrame: { top: number } }) => {
+                if (scrollFrame.top > 0.8) {
+                    await presenter.loadMore();
+                }
+            }, 200),
+        [presenter]
+    );
 
     const { showSnackbar } = useSnackbar();
 
@@ -175,21 +187,23 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
                 {vm.permissions.canCreate && createButton}
             </div>
             <Separator />
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 overflow-hidden">
                 {!vm.list.pagination.loading && vm.list.rows.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full gap-md">
                         <Text className="text-neutral-strong">No webhooks found.</Text>
                         {vm.permissions.canCreate && createButton}
                     </div>
                 ) : (
-                    <DataTable<Webhook>
-                        columns={columns}
-                        data={vm.list.rows}
-                        loading={vm.list.pagination.loading}
-                        sorting={sorting}
-                        onSortingChange={onSortingChange}
-                        stickyHeader
-                    />
+                    <Scrollbar onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}>
+                        <DataTable<Webhook>
+                            columns={columns}
+                            data={vm.list.rows}
+                            loading={vm.list.pagination.loading}
+                            sorting={sorting}
+                            onSortingChange={onSortingChange}
+                            stickyHeader
+                        />
+                    </Scrollbar>
                 )}
             </div>
         </div>
