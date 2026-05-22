@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import debounce from "lodash/debounce.js";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-ui";
@@ -10,6 +11,7 @@ import {
     Heading,
     IconButton,
     Input,
+    Scrollbar,
     Select,
     Separator,
     Tag,
@@ -57,6 +59,25 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
     }, [presenter]);
 
     const { vm } = presenter;
+
+    const { innerHeight: windowHeight } = window;
+    const [tableHeight, setTableHeight] = useState(0);
+    const tableRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setTableHeight(tableRef?.current?.clientHeight || 0);
+        return () => setTableHeight(0);
+    });
+
+    const loadMoreOnScroll = useMemo(
+        () =>
+            debounce(({ scrollFrame }: { scrollFrame: { top: number } }) => {
+                if (scrollFrame.top > 0.8) {
+                    presenter.loadMore();
+                }
+            }, 200),
+        [presenter]
+    );
 
     const { showConfirmation: showDeleteConfirmation } = useConfirmationDialog({
         title: "Delete Task",
@@ -303,22 +324,24 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                     )}
                 </div>
                 <Separator />
-                <div className="flex-1 overflow-auto">
+                <div className="flex-1 overflow-hidden">
                     {!vm.list.pagination.loading && vm.list.rows.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full gap-md">
                             <Text className="text-neutral-strong">No tasks found.</Text>
                         </div>
                     ) : (
-                        <>
-                            <DataTable<Task>
-                                columns={columns}
-                                data={vm.list.rows}
-                                loading={vm.list.pagination.loading}
-                                sorting={sorting}
-                                onSortingChange={onSortingChange}
-                                stickyHeader
-                            />
-                            {vm.list.pagination.hasMore && (
+                        <Scrollbar onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}>
+                            <div ref={tableRef}>
+                                <DataTable<Task>
+                                    columns={columns}
+                                    data={vm.list.rows}
+                                    loading={vm.list.pagination.loading}
+                                    sorting={sorting}
+                                    onSortingChange={onSortingChange}
+                                    stickyHeader
+                                />
+                            </div>
+                            {vm.list.pagination.hasMore && windowHeight > tableHeight && (
                                 <div className="flex justify-center py-sm">
                                     <Button
                                         variant="tertiary"
@@ -330,7 +353,7 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                                     </Button>
                                 </div>
                             )}
-                        </>
+                        </Scrollbar>
                     )}
                 </div>
             </div>
