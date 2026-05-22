@@ -1,15 +1,13 @@
 import React, { useMemo, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { Accordion, Button, Heading, Skeleton, Text } from "@webiny/admin-ui";
+import { Button, Heading, Skeleton, Text } from "@webiny/admin-ui";
 import { ListWebhookDeliveriesFeature } from "~/admin/features/listWebhookDeliveries/feature.js";
 import { ListAvailableEventsFeature } from "~/admin/features/listAvailableEvents/feature.js";
 import { ResendWebhookDeliveryFeature } from "~/admin/features/resendWebhookDelivery/feature.js";
 import { WebhookDeliveriesPagePresenterFeature } from "../feature.js";
-import { DeliveryAccordionRow } from "~/admin/presentation/WebhookDeliveries/components/DeliveryAccordionRow.js";
 import { DeliveryFilters } from "./DeliveryFilters.js";
-import { LoadMoreButton } from "./LoadMoreButton.js";
-import type { WebhookDelivery } from "~/admin/shared/types.js";
+import { DeliveryList } from "./DeliveryList.js";
 
 const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner() {
     const { presenter } = useFeature(WebhookDeliveriesPagePresenterFeature);
@@ -45,29 +43,7 @@ const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner(
         <div className="flex flex-col p-md gap-md">
             <Heading level={4}>Delivery Log</Heading>
             <DeliveryFilters presenter={presenter} />
-            {vm.list.rows.length === 0 ? (
-                <div className="flex justify-center py-xl">
-                    <Text className="text-neutral-strong">No deliveries found.</Text>
-                </div>
-            ) : (
-                <>
-                    <Accordion variant="underline">
-                        {vm.list.rows.map((delivery: WebhookDelivery) => (
-                            <DeliveryAccordionRow
-                                key={delivery.id}
-                                delivery={delivery}
-                                open={vm.expandedDeliveryId === delivery.id}
-                                resending={vm.resendingIds.has(delivery.id)}
-                                onOpenChange={open =>
-                                    presenter.expandDelivery(open ? delivery.id : null)
-                                }
-                                onResend={id => void presenter.resend(id)}
-                            />
-                        ))}
-                    </Accordion>
-                    <LoadMoreButton presenter={presenter} />
-                </>
-            )}
+            <DeliveryList presenter={presenter} />
         </div>
     );
 });
