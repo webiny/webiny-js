@@ -5,7 +5,6 @@ import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { useRouter } from "@webiny/app-admin";
 import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-ui";
 import {
-    Button,
     DataTable,
     DropdownMenu,
     Heading,
@@ -19,7 +18,7 @@ import {
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin/hooks/index.js";
 import { HasPermission } from "~/admin/presentation/security/HasPermission.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
-import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+import { CreateWebhookButton } from "./CreateWebhookButton.js";
 import { WebhookListPresenterFeature } from "../feature.js";
 import { ListWebhooksFeature } from "~/admin/features/ListWebhooks/feature.js";
 import { DeleteWebhookFeature } from "~/admin/features/deleteWebhook/feature.js";
@@ -164,31 +163,21 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
                 enableResizing: false
             }
         }),
-        [vm.permissions, presenter, goToRoute, showDeleteConfirmation, showSnackbar]
-    );
-
-    const createButton = (
-        <Button
-            variant="primary"
-            onClick={() => goToRoute(Routes.Form, { id: "new" })}
-            icon={<AddIcon />}
-        >
-            Create Webhook
-        </Button>
+        [presenter, goToRoute, showDeleteConfirmation, showSnackbar]
     );
 
     return (
         <div className="flex flex-col h-main-content">
             <div className="flex items-center justify-between py-sm px-md">
                 <Heading level={5}>Webhooks</Heading>
-                {vm.permissions.canCreate && createButton}
+                <CreateWebhookButton />
             </div>
             <Separator />
             <div className="flex-1 overflow-hidden">
                 {!vm.list.pagination.loading && vm.list.rows.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full gap-md">
                         <Text className="text-neutral-strong">No webhooks found.</Text>
-                        {vm.permissions.canCreate && createButton}
+                        <CreateWebhookButton />
                     </div>
                 ) : (
                     <Scrollbar onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}>
