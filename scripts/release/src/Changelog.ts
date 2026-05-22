@@ -1,3 +1,4 @@
+// @ts-expect-error No types available.
 import conventionalChangelogCore from "conventional-changelog-core";
 // @ts-expect-error No types available.
 import angularPreset from "conventional-changelog-angular";
