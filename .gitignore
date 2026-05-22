@@ -63,3 +63,5 @@ packages/tasks/tpl/*
 /.local
 CLAUDE.local.md
 .claude/*.local.*
+.claude/worktrees/
+.claire/**
