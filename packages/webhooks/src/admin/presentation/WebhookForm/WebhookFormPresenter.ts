@@ -15,7 +15,8 @@ import { ListAvailableEventsUseCase } from "~/admin/features/listAvailableEvents
 import { WebhookPermissions } from "~/admin/features/permissions/abstractions.js";
 import {
     FormModelFactory,
-    type IFormModel
+    type IFormModel,
+    type ILayoutNodeBuilder
 } from "@webiny/app-admin/features/formModel/abstractions.js";
 
 class WebhookFormPresenterImpl implements IWebhookFormPresenter {
@@ -26,8 +27,8 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     private _showDeliveries = false;
     private _webhookId: string | null = null;
     private _form: IFormModel;
-    private _eventFieldNames: string[] = [];
-    private _eventGroups: Map<string, WebhookEvent[]> = new Map();
+    private _entityFieldNames: string[] = [];
+    private _entityGroups: Map<string, Map<string, WebhookEvent[]>> = new Map();
 
     public get vm(): IWebhookFormViewModel {
         return {
@@ -91,8 +92,8 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
         });
     }
 
-    private eventFieldName(app: string): string {
-        const slug = app
+    private entityFieldName(appLabel: string, entityLabel: string): string {
+        const slug = `${appLabel}_${entityLabel}`
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, "_")
             .replace(/^_|_$/g, "");
@@ -100,62 +101,79 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     }
 
     private addEventFields(events: WebhookEvent[]): void {
-        const grouped = new Map<string, WebhookEvent[]>();
+        const grouped = new Map<string, Map<string, WebhookEvent[]>>();
         for (const event of events) {
-            const existing = grouped.get(event.appLabel) ?? [];
+            let appMap = grouped.get(event.appLabel);
+            if (!appMap) {
+                appMap = new Map();
+                grouped.set(event.appLabel, appMap);
+            }
+            const existing = appMap.get(event.entityLabel) ?? [];
             existing.push(event);
-            grouped.set(event.appLabel, existing);
+            appMap.set(event.entityLabel, existing);
         }
 
-        this._eventGroups = grouped;
-        this._eventFieldNames = [];
+        this._entityGroups = grouped;
+        this._entityFieldNames = [];
 
         this._form.fields(fields => {
             const result: Record<string, ReturnType<typeof fields.object>> = {};
 
-            for (const [app, appEvents] of grouped) {
-                const fieldName = this.eventFieldName(app);
-                this._eventFieldNames.push(fieldName);
+            for (const [appLabel, entities] of grouped) {
+                for (const [entityLabel, entityEvents] of entities) {
+                    const fieldName = this.entityFieldName(appLabel, entityLabel);
+                    this._entityFieldNames.push(fieldName);
 
-                result[fieldName] = fields
-                    .object()
-                    .label(app)
-                    .renderer("objectAccordionSingle")
-                    .fields(f => {
-                        return {
-                            selected: f
-                                .text()
-                                .list()
-                                .options(
-                                    appEvents.map(e => ({
-                                        label: e.label,
-                                        value: e.eventName
-                                    }))
-                                )
-                                .renderer("checkboxes")
-                        };
-                    });
+                    result[fieldName] = fields
+                        .object()
+                        .label(entityLabel)
+                        .renderer("objectAccordionSingle", { open: false })
+                        .fields(f => {
+                            return {
+                                selected: f
+                                    .text()
+                                    .list()
+                                    .options(
+                                        entityEvents.map(e => ({
+                                            label: e.label,
+                                            value: e.eventName
+                                        }))
+                                    )
+                                    .renderer("checkboxes")
+                            };
+                        });
+                }
             }
 
             return result;
         });
 
-        this._form.setLayout(layout => [
-            layout.row("name", "slug"),
-            layout.row("endpointUrl"),
-            layout.row("description"),
-            layout.row("enabled"),
-            layout.separator(),
-            ...this._eventFieldNames.map(name =>
-                layout.object(name, inner => [inner.row("selected")])
-            )
-        ]);
+        this._form.setLayout(layout => {
+            const rows: ILayoutNodeBuilder[] = [
+                layout.row("name", "slug"),
+                layout.row("endpointUrl"),
+                layout.row("description"),
+                layout.row("enabled")
+            ];
+
+            for (const [appLabel, entities] of grouped) {
+                rows.push(layout.separator());
+                rows.push(layout.element("sectionHeading", { label: appLabel }));
+
+                for (const [entityLabel] of entities) {
+                    const fieldName = this.entityFieldName(appLabel, entityLabel);
+                    rows.push(layout.object(fieldName, inner => [inner.row("selected")]));
+                }
+            }
+
+            return rows;
+        });
 
         this._form.addRule(form => {
-            if (this._eventFieldNames.length === 0) {
+            if (this._entityFieldNames.length === 0) {
                 return [];
             }
-            for (const fieldName of this._eventFieldNames) {
+            for (const fieldName of this._entityFieldNames) {
                 const objectField = form.field(fieldName).as("object");
                 const selectedField = objectField.children.get("selected");
                 if (!selectedField) {
@@ -174,7 +192,7 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     private collectEvents(): string[] {
         const allEvents: string[] = [];
 
-        for (const fieldName of this._eventFieldNames) {
+        for (const fieldName of this._entityFieldNames) {
             const objectField = this._form.field(fieldName).as("object");
             const selectedField = objectField.children.get("selected");
             if (!selectedField) {
@@ -192,16 +210,20 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     private distributeEvents(webhookEvents: string[]): void {
         const eventSet = new Set(webhookEvents);
 
-        for (const [app, appEvents] of this._eventGroups) {
-            const fieldName = this.eventFieldName(app);
-            const objectField = this._form.field(fieldName).as("object");
-            const selectedField = objectField.children.get("selected");
-            if (!selectedField) {
-                continue;
-            }
+        for (const [appLabel, entities] of this._entityGroups) {
+            for (const [entityLabel, entityEvents] of entities) {
+                const fieldName = this.entityFieldName(appLabel, entityLabel);
+                const objectField = this._form.field(fieldName).as("object");
+                const selectedField = objectField.children.get("selected");
+                if (!selectedField) {
+                    continue;
+                }
 
-            const selected = appEvents.filter(e => eventSet.has(e.eventName)).map(e => e.eventName);
-            selectedField.setValue(selected);
+                const selected = entityEvents
+                    .filter(e => eventSet.has(e.eventName))
+                    .map(e => e.eventName);
+                selectedField.setValue(selected);
+            }
         }
     }
 

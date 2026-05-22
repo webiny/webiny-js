@@ -47,7 +47,7 @@ describe("Webhook settings signingSecret is encrypted in storage", () => {
         expect(rawSigningSecret).not.toBe(SECRET);
 
         /* Decrypting the raw value must recover the original secret. */
-        const decrypted = encryption.decrypt(rawSigningSecret);
+        const decrypted = await encryption.decrypt(rawSigningSecret);
         expect(decrypted).toBe(SECRET);
     });
 

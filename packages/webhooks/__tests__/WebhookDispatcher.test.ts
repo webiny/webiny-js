@@ -6,6 +6,8 @@ import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
 import { WebhookDispatcherFeature } from "~/api/features/WebhookDispatcher/feature.js";
 import { ListWebhooksRepository } from "~/api/features/ListWebhooks/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
+import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
+import { WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";
 import type { Webhook } from "~/api/domain/Webhook.js";
 
 const makeWebhook = (id: string, slug: string, events: string[]): Webhook => ({
@@ -59,6 +61,14 @@ describe("WebhookDispatcher", () => {
 
         container.registerInstance(WebhookProvider, {
             execute: providerMock
+        });
+
+        container.registerInstance(GetWebhookSettingsRepository, {
+            execute: vi
+                .fn()
+                .mockResolvedValue(
+                    Result.ok({ signingSecret: undefined, deliveryRetentionDays: undefined })
+                )
         });
 
         WebhookDispatcherFeature.register(container);
@@ -128,5 +138,66 @@ describe("WebhookDispatcher", () => {
         await expect(dispatcher.dispatch("product.entry.published", {})).resolves.toBeUndefined();
 
         expect(triggerMock).not.toHaveBeenCalled();
+    });
+
+    it("uses deliveryRetentionDays from settings to compute expiresAt", async () => {
+        const retentionDays = 7;
+        const settingsMock = vi
+            .fn()
+            .mockResolvedValue(
+                Result.ok({ signingSecret: undefined, deliveryRetentionDays: retentionDays })
+            );
+        container.registerInstance(GetWebhookSettingsRepository, { execute: settingsMock });
+
+        listRepoMock.mockResolvedValue(
+            Result.ok({
+                items: [makeWebhook("wh-1", "shop-sync", ["product.entry.published"])],
+                meta: { cursor: null, hasMoreItems: false, totalCount: 1 }
+            })
+        );
+
+        const before = Date.now();
+        const dispatcher = container.resolve(WebhookDispatcher);
+        await dispatcher.dispatch("product.entry.published", { entryId: "abc" });
+        const after = Date.now();
+
+        const [callArgs] = createDeliveryMock.mock.calls;
+        const expiresAt = new Date(callArgs[0].expiresAt).getTime();
+        const expectedMin = before + retentionDays * 24 * 60 * 60 * 1000;
+        const expectedMax = after + retentionDays * 24 * 60 * 60 * 1000;
+
+        expect(expiresAt).toBeGreaterThanOrEqual(expectedMin);
+        expect(expiresAt).toBeLessThanOrEqual(expectedMax);
+        expect(settingsMock).toHaveBeenCalledOnce();
+    });
+
+    it("falls back to WEBHOOK_DELIVERY_MAX_RETENTION_DAYS when deliveryRetentionDays is undefined", async () => {
+        container.registerInstance(GetWebhookSettingsRepository, {
+            execute: vi
+                .fn()
+                .mockResolvedValue(
+                    Result.ok({ signingSecret: undefined, deliveryRetentionDays: undefined })
+                )
+        });
+
+        listRepoMock.mockResolvedValue(
+            Result.ok({
+                items: [makeWebhook("wh-1", "shop-sync", ["product.entry.published"])],
+                meta: { cursor: null, hasMoreItems: false, totalCount: 1 }
+            })
+        );
+
+        const before = Date.now();
+        const dispatcher = container.resolve(WebhookDispatcher);
+        await dispatcher.dispatch("product.entry.published", {});
+        const after = Date.now();
+
+        const [callArgs] = createDeliveryMock.mock.calls;
+        const expiresAt = new Date(callArgs[0].expiresAt).getTime();
+        const expectedMin = before + WEBHOOK_DELIVERY_MAX_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+        const expectedMax = after + WEBHOOK_DELIVERY_MAX_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+
+        expect(expiresAt).toBeGreaterThanOrEqual(expectedMin);
+        expect(expiresAt).toBeLessThanOrEqual(expectedMax);
     });
 });

@@ -10,6 +10,7 @@ import {
     FormModelFactory,
     type IFormModel
 } from "@webiny/app-admin/features/formModel/abstractions.js";
+import { WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";
 
 class WebhookSettingsPresenterImpl implements IWebhookSettingsPresenter {
     private _loading = false;
@@ -43,14 +44,21 @@ class WebhookSettingsPresenterImpl implements IWebhookSettingsPresenter {
                     .placeholder("Enter a signing secret for webhook payloads")
                     .description(
                         "Used to sign webhook payloads so receivers can verify authenticity."
+                    ),
+                deliveryRetentionDays: fields
+                    .number()
+                    .label("Delivery Retention (days)")
+                    .placeholder(String(WEBHOOK_DELIVERY_MAX_RETENTION_DAYS))
+                    .description(
+                        `How long to keep delivery logs. 0 = delete immediately. Max ${WEBHOOK_DELIVERY_MAX_RETENTION_DAYS} days.`
                     )
             }),
-            layout: layout => [layout.row("signingSecret")]
+            layout: layout => [layout.row("signingSecret"), layout.row("deliveryRetentionDays")]
         });
     }
 
-    public async save() {
-        const data = await this._form.submit<Record<string, unknown>>();
+    public async save(): Promise<boolean> {
+        const data = await this._form.submit<Record<string, string>>();
         if (data === false) {
             return false;
         }
@@ -59,12 +67,17 @@ class WebhookSettingsPresenterImpl implements IWebhookSettingsPresenter {
 
         try {
             const settings = await this.updateWebhookSettingsUseCase.execute({
-                signingSecret: (data.signingSecret as string) || undefined
+                signingSecret: data.signingSecret || undefined,
+                deliveryRetentionDays:
+                    data.deliveryRetentionDays != null
+                        ? Number(data.deliveryRetentionDays)
+                        : undefined
             });
 
             runInAction(() => {
                 this._form.setData({
-                    signingSecret: settings.signingSecret ?? ""
+                    signingSecret: settings.signingSecret ?? "",
+                    deliveryRetentionDays: settings.deliveryRetentionDays ?? ""
                 });
             });
         } finally {
@@ -72,7 +85,6 @@ class WebhookSettingsPresenterImpl implements IWebhookSettingsPresenter {
                 this._saving = false;
             });
         }
-
         return true;
     }
 
@@ -85,7 +97,8 @@ class WebhookSettingsPresenterImpl implements IWebhookSettingsPresenter {
             runInAction(() => {
                 this._form = this.buildForm();
                 this._form.setData({
-                    signingSecret: settings.signingSecret ?? ""
+                    signingSecret: settings.signingSecret ?? "",
+                    deliveryRetentionDays: settings.deliveryRetentionDays ?? ""
                 });
                 this._loading = false;
             });

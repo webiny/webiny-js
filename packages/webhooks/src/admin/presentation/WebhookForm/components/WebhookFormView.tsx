@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature, useRoute } from "@webiny/app";
-import { FormErrors, useRouter } from "@webiny/app-admin";
+import { FormErrors, useRouter, useFieldRenderers } from "@webiny/app-admin";
 import { Button, Heading, OverlayLoader, Separator } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { WebhookFormPresenterFeature } from "../feature.js";
@@ -15,11 +15,23 @@ import { Routes } from "~/admin/routes.js";
 import { SigningSecret } from "./SigningSecret.js";
 import { WebhookDeliveriesDrawer } from "~/admin/presentation/WebhookDeliveries/components/WebhookDeliveriesDrawer.js";
 
+const SectionHeading = ({ field }: { field: any }) => {
+    return <Heading level={6}>{String(field.label ?? "")}</Heading>;
+};
+
 const WebhookFormViewInner = observer(function WebhookFormViewInner() {
     const { presenter } = useFeature(WebhookFormPresenterFeature);
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.Form);
     const id = route.params.id;
+    const defaultRenderers = useFieldRenderers();
+
+    const renderers = useMemo(() => {
+        return {
+            ...defaultRenderers,
+            "element:sectionHeading": SectionHeading
+        };
+    }, [defaultRenderers]);
 
     useEffect(() => {
         void presenter.init(id);
@@ -63,7 +75,7 @@ const WebhookFormViewInner = observer(function WebhookFormViewInner() {
                 <div className="p-lg">
                     <>
                         <FormErrors form={vm.form} />
-                        <FormView name="Webhook" form={vm.form} />
+                        <FormView name="Webhook" form={vm.form} renderers={renderers} />
                         {!vm.isNew && vm.webhook?.signingSecret && (
                             <SigningSecret secret={vm.webhook.signingSecret} />
                         )}

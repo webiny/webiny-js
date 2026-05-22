@@ -4,9 +4,10 @@ import { TriggerWebhookUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { TriggerWebhookInputSchema } from "./schema.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
+import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookNotAuthorizedError, WebhookValidationError } from "~/api/domain/errors.js";
-import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/api/domain/constants.js";
+import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";
 import type { ISendWebhookTaskInput } from "~/api/features/SendWebhookTask/types.js";
 import type { WebhookDelivery } from "~/api/domain/WebhookDelivery.js";
 
@@ -15,7 +16,8 @@ class TriggerWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
         private readonly permissions: WebhookPermissions.Interface,
         private readonly getWebhookRepository: GetWebhookRepository.Interface,
         private readonly createDeliveryRepository: CreateWebhookDeliveryRepository.Interface,
-        private readonly taskService: TaskService.Interface
+        private readonly taskService: TaskService.Interface,
+        private readonly getSettingsRepository: GetWebhookSettingsRepository.Interface
     ) {}
 
     async execute(
@@ -38,9 +40,12 @@ class TriggerWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const webhook = webhookResult.value;
 
-        const expiresAt = new Date(
-            Date.now() + WEBHOOK_DELIVERY_RETENTION_DAYS * 24 * 60 * 60 * 1000
-        ).toISOString();
+        const settingsResult = await this.getSettingsRepository.execute();
+        const retentionDays = settingsResult.isOk()
+            ? (settingsResult.value.deliveryRetentionDays ?? WEBHOOK_DELIVERY_MAX_RETENTION_DAYS)
+            : WEBHOOK_DELIVERY_MAX_RETENTION_DAYS;
+
+        const expiresAt = new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000);
 
         const deliveryResult = await this.createDeliveryRepository.execute({
             webhookId: webhook.id,
@@ -76,6 +81,7 @@ export const TriggerWebhookUseCase = UseCaseAbstraction.createImplementation({
         WebhookPermissions,
         GetWebhookRepository,
         CreateWebhookDeliveryRepository,
-        TaskService
+        TaskService,
+        GetWebhookSettingsRepository
     ]
 });

@@ -24,10 +24,10 @@ export const getWebhookDelivery = createMethod(
                         status
                         payload
                         requestHeaders
+                        responseHeaders
                         responseTime
                         responseStatus
                         responseBody
-                        expiresAt
                         createdOn
                     }
                     error {

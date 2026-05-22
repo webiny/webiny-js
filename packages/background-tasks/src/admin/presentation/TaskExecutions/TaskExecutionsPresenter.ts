@@ -1,0 +1,125 @@
+import { makeAutoObservable, runInAction, computed } from "mobx";
+import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
+import type { Task } from "~/admin/shared/types.js";
+import type { IDefinitionOption } from "./abstractions.js";
+import {
+    TaskExecutionsPresenter as Abstraction,
+    type ITaskExecutionsPresenter,
+    type ITaskExecutionsViewModel
+} from "./abstractions.js";
+import { TaskExecutionsDataSource } from "./TaskExecutionsDataSource.js";
+import { ListTasksUseCase } from "~/admin/features/listTasks/abstractions.js";
+import { DeleteTaskUseCase } from "~/admin/features/deleteTask/abstractions.js";
+import { AbortTaskUseCase } from "~/admin/features/abortTask/abstractions.js";
+import { ListDefinitionsUseCase } from "~/admin/features/listDefinitions/abstractions.js";
+import { TaskPermissions } from "~/admin/features/permissions/abstractions.js";
+
+class TaskExecutionsPresenterImpl implements ITaskExecutionsPresenter {
+    private _selectedTask: Task | null = null;
+    private _definitionOptions: IDefinitionOption[] = [];
+
+    constructor(
+        private readonly listPresenter: ListPresenter.Interface<Task>,
+        private readonly listTasksUseCase: ListTasksUseCase.Interface,
+        private readonly deleteTaskUseCase: DeleteTaskUseCase.Interface,
+        private readonly abortTaskUseCase: AbortTaskUseCase.Interface,
+        private readonly listDefinitionsUseCase: ListDefinitionsUseCase.Interface,
+        private readonly permissions: TaskPermissions.Interface
+    ) {
+        makeAutoObservable(this, { vm: computed });
+    }
+
+    get vm(): ITaskExecutionsViewModel {
+        return {
+            list: this.listPresenter.vm,
+            definitionOptions: this._definitionOptions,
+            permissions: {
+                canRead: this.permissions.canRead("task"),
+                canDelete: this.permissions.canDelete("task")
+            }
+        };
+    }
+
+    get selectedTask(): Task | null {
+        return this._selectedTask;
+    }
+
+    search = {
+        set: (query: string) => this.listPresenter.actions.search.set(query),
+        clear: () => this.listPresenter.actions.search.clear()
+    };
+
+    sort = {
+        set: (field: string, direction: "ASC" | "DESC") =>
+            this.listPresenter.actions.sort.set(field, direction),
+        toggle: (field: string) => this.listPresenter.actions.sort.toggle(field)
+    };
+
+    filter = {
+        set: (key: string, value: unknown) => this.listPresenter.actions.filter.set(key, value),
+        clear: (key: string) => this.listPresenter.actions.filter.clear(key),
+        clearAll: () => this.listPresenter.actions.filter.clearAll()
+    };
+
+    selection = {
+        toggle: (id: string) => this.listPresenter.actions.selection.toggle(id),
+        selectRangeTo: (id: string) => this.listPresenter.actions.selection.selectRangeTo(id),
+        selectAll: () => this.listPresenter.actions.selection.selectAll(),
+        deselectAll: () => this.listPresenter.actions.selection.deselectAll(),
+        selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
+        isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
+    };
+
+    loadMore = () => this.listPresenter.actions.loadMore();
+    refresh = () => this.listPresenter.actions.refresh();
+
+    deleteTask = async (id: string) => {
+        await this.deleteTaskUseCase.execute(id);
+        this._selectedTask = null;
+        await this.listPresenter.actions.refresh();
+    };
+
+    abortTask = async (id: string) => {
+        await this.abortTaskUseCase.execute({ id });
+        await this.listPresenter.actions.refresh();
+    };
+
+    selectTask = (task: Task | null) => {
+        this._selectedTask = task;
+    };
+
+    init(): void {
+        const dataSource = new TaskExecutionsDataSource(this.listTasksUseCase);
+        this.listPresenter.init({
+            dataSource,
+            initialSort: { field: "createdOn", direction: "DESC" },
+            limit: 20
+        });
+
+        void this.listDefinitionsUseCase
+            .execute()
+            .then(definitions => {
+                runInAction(() => {
+                    this._definitionOptions = definitions.map(d => ({
+                        label: d.title,
+                        value: d.id
+                    }));
+                });
+            })
+            .catch(() => {
+                /* Definitions are used for filter labels only; safe to ignore. */
+            });
+    }
+}
+
+export const TaskExecutionsPresenter = Abstraction.createImplementation({
+    implementation: TaskExecutionsPresenterImpl,
+    dependencies: [
+        ListPresenter,
+        ListTasksUseCase,
+        DeleteTaskUseCase,
+        AbortTaskUseCase,
+        ListDefinitionsUseCase,
+        TaskPermissions
+    ]
+});

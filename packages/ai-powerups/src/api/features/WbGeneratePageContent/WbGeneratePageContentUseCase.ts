@@ -47,7 +47,7 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
             );
         }
 
-        const apiKey = this.encryption.decrypt(firstProvider.apiKeyEncrypted);
+        const apiKey = await this.encryption.decrypt(firstProvider.apiKeyEncrypted);
 
         const sdkTools = this.aiSdkTools.getToolSet();
 

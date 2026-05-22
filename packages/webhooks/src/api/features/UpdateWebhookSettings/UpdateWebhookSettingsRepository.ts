@@ -15,6 +15,7 @@ import type { IWebhookSettings } from "~/api/domain/WebhookSettings.js";
 
 interface WebhookSettingsValues {
     signingSecret?: string;
+    deliveryRetentionDays?: number;
 }
 
 class UpdateWebhookSettingsRepositoryImpl implements RepositoryAbstraction.Interface {
@@ -56,7 +57,12 @@ class UpdateWebhookSettingsRepositoryImpl implements RepositoryAbstraction.Inter
 
             const { entry } = await this.updateEntryDataFactory.create<WebhookSettingsValues>(
                 model,
-                { values: { signingSecret: input.signingSecret } },
+                {
+                    values: {
+                        signingSecret: input.signingSecret,
+                        deliveryRetentionDays: input.deliveryRetentionDays
+                    }
+                },
                 entryResult.value
             );
 
@@ -66,7 +72,8 @@ class UpdateWebhookSettingsRepositoryImpl implements RepositoryAbstraction.Inter
             }
 
             const settings: IWebhookSettings = {
-                signingSecret: entry.values.signingSecret
+                signingSecret: entry.values.signingSecret,
+                deliveryRetentionDays: entry.values.deliveryRetentionDays
             };
 
             return Result.ok(settings);

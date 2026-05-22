@@ -25,6 +25,7 @@ import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "../statuses.
 import { getIdentity } from "~/utils/identity.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
 import { getSystem } from "../system.js";
+import { getExpiresAt } from "../expiresAt.js";
 
 type DefaultValue = boolean | number | string | null;
 
@@ -257,7 +258,8 @@ class CreateEntryDataFactoryImpl implements ICreateEntryDataFactory {
                           version
                       }
                     : null,
-            revisionDescription: ""
+            revisionDescription: "",
+            expiresAt: getExpiresAt({ expiresAt: rawInput.expiresAt })
         };
 
         if (status !== STATUS_DRAFT) {

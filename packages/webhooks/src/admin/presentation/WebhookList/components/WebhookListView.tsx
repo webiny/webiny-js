@@ -58,10 +58,10 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
             const next = typeof updater === "function" ? updater(sorting) : updater;
             if (next.length > 0) {
                 const { id, desc } = next[0];
-                presenter.actions.sort.set(id, desc ? "DESC" : "ASC");
+                presenter.sort.set(id, desc ? "DESC" : "ASC");
             }
         },
-        [sorting, presenter.actions.sort]
+        [sorting, presenter.sort]
     );
 
     const columns = useMemo(
@@ -126,7 +126,7 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
                             <DropdownMenu.Item
                                 icon={<WebhookIcon />}
                                 onClick={() => {
-                                    void presenter.actions.triggerWebhook(row.id).then(() => {
+                                    void presenter.triggerWebhook(row.id).then(() => {
                                         showSnackbar("Test event triggered.");
                                     });
                                 }}
@@ -139,7 +139,7 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
                                 <DropdownMenu.Item
                                     onClick={() => {
                                         showDeleteConfirmation(() =>
-                                            presenter.actions.deleteWebhook(row.id)
+                                            presenter.deleteWebhook(row.id)
                                         );
                                     }}
                                     icon={<Delete />}
@@ -155,7 +155,7 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
                 enableResizing: false
             }
         }),
-        [vm.permissions, presenter.actions, goToRoute, showDeleteConfirmation, showSnackbar]
+        [vm.permissions, presenter, goToRoute, showDeleteConfirmation, showSnackbar]
     );
 
     const createButton = (
