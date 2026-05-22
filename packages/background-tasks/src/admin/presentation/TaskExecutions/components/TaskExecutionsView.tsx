@@ -309,14 +309,28 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                             <Text className="text-neutral-strong">No tasks found.</Text>
                         </div>
                     ) : (
-                        <DataTable<Task>
-                            columns={columns}
-                            data={vm.list.rows}
-                            loading={vm.list.pagination.loading}
-                            sorting={sorting}
-                            onSortingChange={onSortingChange}
-                            stickyHeader
-                        />
+                        <>
+                            <DataTable<Task>
+                                columns={columns}
+                                data={vm.list.rows}
+                                loading={vm.list.pagination.loading}
+                                sorting={sorting}
+                                onSortingChange={onSortingChange}
+                                stickyHeader
+                            />
+                            {vm.list.pagination.hasMore && (
+                                <div className="flex justify-center py-sm">
+                                    <Button
+                                        variant="tertiary"
+                                        size="sm"
+                                        onClick={() => presenter.loadMore()}
+                                        disabled={vm.list.pagination.loading}
+                                    >
+                                        {vm.list.pagination.loading ? "Loading..." : "Load more"}
+                                    </Button>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
