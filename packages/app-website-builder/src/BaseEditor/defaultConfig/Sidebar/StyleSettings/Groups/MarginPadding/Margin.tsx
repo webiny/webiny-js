@@ -5,7 +5,6 @@ import { LinkedEditing } from "./LinkedEditing.js";
 import { ValueSelector } from "../../ValueSelector.js";
 import { UnitsOptions } from "../../UnitsOptions.js";
 import { useStyleValue } from "../../useStyleValue.js";
-import { cn } from "@webiny/admin-ui";
 
 const additionalUnits = ["auto", "unset"];
 
@@ -90,7 +89,7 @@ export const Margin = observer(({ elementId, children }: MarginProps) => {
 
     return (
         <>
-                {/* Top Margin */}
+            {/* Top Margin */}
             <div className={"grid grid-cols-3 items-center"}>
                 <span className="text-sm text-neutral-strong">Margin</span>
 
