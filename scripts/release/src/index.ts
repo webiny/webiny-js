@@ -55,7 +55,7 @@ async function runRelease() {
 
     release.setResetAllChanges(Boolean(gitReset));
 
-    if (createGithubRelease) {
+    if (createGithubRelease !== undefined) {
         release.setCreateGithubRelease(createGithubRelease);
     }
 

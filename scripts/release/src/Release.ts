@@ -5,6 +5,7 @@ import { loadJsonFileSync } from "load-json-file";
 import { writeJsonFileSync } from "write-json-file";
 import { Octokit } from "@octokit/rest";
 import { Changelog } from "./Changelog";
+import { GithubRelease } from "./GithubRelease";
 
 export type MostRecentVersionFunction = (mostRecentVersion: string) => string | string[];
 
@@ -21,7 +22,7 @@ export class Release {
     version: string | string[] | MostRecentVersionFunction | null | undefined = undefined;
     resetAllChanges = true;
     mostRecentVersion: undefined | string = undefined;
-    createGithubRelease: string | boolean = false;
+    createGithubRelease: GithubRelease = GithubRelease.from(false);
     npmTags: Record<string, any> = [];
     logger: any;
 
@@ -61,11 +62,8 @@ export class Release {
         this.version = version;
     }
 
-    /**
-     * @param {boolean|string} flag Boolean or "latest" to mark release as "latest" on Github
-     */
-    setCreateGithubRelease(flag: boolean | string) {
-        this.createGithubRelease = flag;
+    setCreateGithubRelease(flag: unknown) {
+        this.createGithubRelease = GithubRelease.from(flag);
     }
 
     setResetAllChanges(reset: boolean) {
@@ -162,7 +160,7 @@ export class Release {
 
         this.logger.info(`Packages were published to NPM under %s dist-tag`, this.distTag);
 
-        if (this.createGithubRelease !== false) {
+        if (this.createGithubRelease.isEnabled()) {
             // Generate changelog, tag commit, and create Github release.
             const lernaJSON = this.__loadLernaJson("lerna.json");
             const versionTag = `v${lernaJSON.version}`;
@@ -194,8 +192,8 @@ export class Release {
     }
 
     __validateConfig() {
-        if (this.createGithubRelease && !process.env.GH_TOKEN) {
-            // throw Error("GH_TOKEN environment variable is not set.");
+        if (this.createGithubRelease.isEnabled() && !process.env.GH_TOKEN) {
+            throw Error("GH_TOKEN environment variable is not set.");
         }
 
         if (!this.version) {
@@ -242,8 +240,7 @@ export class Release {
             name: tag,
             body: changelog,
             prerelease: false,
-            // `make_latest` is of type `string`
-            make_latest: this.createGithubRelease === "latest" ? "true" : "false"
+            make_latest: this.createGithubRelease.isLatest() ? "true" : "false"
         });
     }
 
