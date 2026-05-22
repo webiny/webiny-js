@@ -31,6 +31,34 @@ import { TaskPermissionsFeature } from "~/admin/features/permissions/feature.js"
 import type { Task, TaskStatus } from "~/admin/shared/types.js";
 import { TaskDetailDrawer } from "~/admin/presentation/TaskDetail/components/TaskDetailDrawer.js";
 
+interface LoadMoreButtonProps {
+    show: boolean;
+    disabled: boolean;
+    windowHeight: number;
+    tableHeight: number;
+    onClick: () => void;
+}
+
+const LoadMoreButton = ({
+    show,
+    disabled,
+    windowHeight,
+    tableHeight,
+    onClick
+}: LoadMoreButtonProps) => {
+    if (!show || windowHeight <= tableHeight) {
+        return null;
+    }
+
+    return (
+        <div className="flex justify-center py-sm">
+            <Button variant="tertiary" size="sm" onClick={onClick} disabled={disabled}>
+                {disabled ? "Loading..." : "Load more"}
+            </Button>
+        </div>
+    );
+};
+
 const STATUS_TAG_VARIANT: Record<
     string,
     "neutral-light" | "accent" | "success" | "destructive" | "warning"
@@ -341,18 +369,13 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                                     stickyHeader
                                 />
                             </div>
-                            {vm.list.pagination.hasMore && windowHeight > tableHeight && (
-                                <div className="flex justify-center py-sm">
-                                    <Button
-                                        variant="tertiary"
-                                        size="sm"
-                                        onClick={() => presenter.loadMore()}
-                                        disabled={vm.list.pagination.loading}
-                                    >
-                                        {vm.list.pagination.loading ? "Loading..." : "Load more"}
-                                    </Button>
-                                </div>
-                            )}
+                            <LoadMoreButton
+                                show={vm.list.pagination.hasMore}
+                                disabled={vm.list.pagination.loading}
+                                windowHeight={windowHeight}
+                                tableHeight={tableHeight}
+                                onClick={() => presenter.loadMore()}
+                            />
                         </Scrollbar>
                     )}
                 </div>
