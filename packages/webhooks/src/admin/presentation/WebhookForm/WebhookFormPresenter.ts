@@ -4,8 +4,7 @@ import type { WebhookEvent } from "~/admin/shared/types.js";
 import {
     WebhookFormPresenter as Abstraction,
     type IWebhookFormPresenter,
-    type IWebhookFormViewModel,
-    type IWebhookFormActions
+    type IWebhookFormViewModel
 } from "./abstractions.js";
 import { GetWebhookUseCase } from "~/admin/features/getWebhook/abstractions.js";
 import { CreateWebhookUseCase } from "~/admin/features/createWebhook/abstractions.js";
@@ -227,63 +226,61 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
         }
     }
 
-    public actions: IWebhookFormActions = {
-        save: async () => {
-            const data = await this._form.submit<Record<string, unknown>>();
-            if (data === false) {
-                return;
-            }
+    public async save(): Promise<void> {
+        const data = await this._form.submit<Record<string, unknown>>();
+        if (data === false) {
+            return;
+        }
 
-            this._saving = true;
+        this._saving = true;
 
-            try {
-                const merged = {
-                    name: data.name as string,
-                    slug: data.slug as string,
-                    endpointUrl: data.endpointUrl as string,
-                    description: (data.description as string) || undefined,
-                    enabled: data.enabled as boolean,
-                    events: this.collectEvents()
-                };
+        try {
+            const merged = {
+                name: data.name as string,
+                slug: data.slug as string,
+                endpointUrl: data.endpointUrl as string,
+                description: (data.description as string) || undefined,
+                enabled: data.enabled as boolean,
+                events: this.collectEvents()
+            };
 
-                if (this._isNew) {
-                    const created = await this.createWebhookUseCase.execute(merged);
+            if (this._isNew) {
+                const created = await this.createWebhookUseCase.execute(merged);
 
-                    runInAction(() => {
-                        this._webhook = created;
-                        this._webhookId = created.id;
-                        this._isNew = false;
-                        this._form.field("slug").setDisabled(true);
-                    });
-                } else {
-                    const updated = await this.updateWebhookUseCase.execute(
-                        this._webhookId!,
-                        merged
-                    );
-
-                    runInAction(() => {
-                        this._webhook = updated;
-                    });
-                }
-            } finally {
                 runInAction(() => {
-                    this._saving = false;
+                    this._webhook = created;
+                    this._webhookId = created.id;
+                    this._isNew = false;
+                    this._form.field("slug").setDisabled(true);
+                });
+            } else {
+                const updated = await this.updateWebhookUseCase.execute(this._webhookId!, merged);
+
+                runInAction(() => {
+                    this._webhook = updated;
                 });
             }
-        },
-        deleteWebhook: async () => {
-            if (!this._webhookId || this._isNew) {
-                return;
-            }
-            await this.deleteWebhookUseCase.execute(this._webhookId);
-        },
-        openDeliveries: () => {
-            this._showDeliveries = true;
-        },
-        closeDeliveries: () => {
-            this._showDeliveries = false;
+        } finally {
+            runInAction(() => {
+                this._saving = false;
+            });
         }
-    };
+    }
+
+    public async deleteWebhook(): Promise<void> {
+        if (!this._webhookId || this._isNew) {
+            return;
+        }
+        await this.deleteWebhookUseCase.execute(this._webhookId);
+    }
+
+    public openDeliveries(): void {
+        this._showDeliveries = true;
+    }
+
+    public closeDeliveries(): void {
+        this._showDeliveries = false;
+    }
 
     public async init(id: string): Promise<void> {
         this._loading = true;

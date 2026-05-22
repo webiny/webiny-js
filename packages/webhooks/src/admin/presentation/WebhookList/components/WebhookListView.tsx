@@ -17,6 +17,7 @@ import {
     TimeAgo
 } from "@webiny/admin-ui";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin/hooks/index.js";
+import { HasPermission } from "~/admin/presentation/security/HasPermission.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { WebhookListPresenterFeature } from "../feature.js";
@@ -134,7 +135,7 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
                             onClick={() => goToRoute(Routes.Form, { id: row.id })}
                             text={"Edit"}
                         />
-                        {vm.permissions.canEdit && (
+                        <HasPermission entity="webhook" action="edit">
                             <DropdownMenu.Item
                                 icon={<WebhookIcon />}
                                 onClick={() => {
@@ -144,21 +145,17 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
                                 }}
                                 text={"Trigger Test"}
                             />
-                        )}
-                        {vm.permissions.canDelete && (
-                            <>
-                                <DropdownMenu.Separator />
-                                <DropdownMenu.Item
-                                    onClick={() => {
-                                        showDeleteConfirmation(() =>
-                                            presenter.deleteWebhook(row.id)
-                                        );
-                                    }}
-                                    icon={<Delete />}
-                                    text={"Delete"}
-                                />
-                            </>
-                        )}
+                        </HasPermission>
+                        <HasPermission entity="webhook" action="delete">
+                            <DropdownMenu.Separator />
+                            <DropdownMenu.Item
+                                onClick={() => {
+                                    showDeleteConfirmation(() => presenter.deleteWebhook(row.id));
+                                }}
+                                icon={<Delete />}
+                                text={"Delete"}
+                            />
+                        </HasPermission>
                     </DropdownMenu>
                 ),
                 size: 56,

@@ -8,7 +8,7 @@ import { WebhookDeliveriesPresenterFeature } from "../feature.js";
 import { ListWebhookDeliveriesFeature } from "~/admin/features/listWebhookDeliveries/feature.js";
 import { ResendWebhookDeliveryFeature } from "~/admin/features/resendWebhookDelivery/feature.js";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
-import { DeliveryDetail } from "./DeliveryDetail.js";
+import { DeliveryDetailPanel } from "./DeliveryDetailPanel.js";
 import { statusVariant } from "./statusVariant.js";
 
 interface WebhookDeliveriesDrawerProps {
@@ -119,15 +119,7 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
                         />
                     </Scrollbar>
                 </div>
-                {vm.selectedDelivery && (
-                    <div className="flex-1 overflow-auto">
-                        <DeliveryDetail
-                            delivery={vm.selectedDelivery}
-                            onClose={() => presenter.selectDelivery(null)}
-                            onResend={id => void presenter.resend(id)}
-                        />
-                    </div>
-                )}
+                <DeliveryDetailPanel presenter={presenter} />
             </div>
         </Drawer>
     );

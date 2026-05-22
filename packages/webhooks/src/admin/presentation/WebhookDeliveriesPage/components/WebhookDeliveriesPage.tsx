@@ -8,6 +8,7 @@ import { ResendWebhookDeliveryFeature } from "~/admin/features/resendWebhookDeli
 import { WebhookDeliveriesPagePresenterFeature } from "../feature.js";
 import { DeliveryAccordionRow } from "~/admin/presentation/WebhookDeliveries/components/DeliveryAccordionRow.js";
 import { DeliveryFilters } from "./DeliveryFilters.js";
+import { LoadMoreButton } from "./LoadMoreButton.js";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
 
 const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner() {
@@ -64,17 +65,7 @@ const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner(
                             />
                         ))}
                     </Accordion>
-                    {vm.list.pagination.hasMore && (
-                        <div className="flex justify-center pt-sm">
-                            <Button
-                                variant="secondary"
-                                onClick={() => void presenter.loadMore()}
-                                disabled={vm.list.pagination.loadingMore}
-                            >
-                                {vm.list.pagination.loadingMore ? "Loading…" : "Load more"}
-                            </Button>
-                        </div>
-                    )}
+                    <LoadMoreButton presenter={presenter} />
                 </>
             )}
         </div>
