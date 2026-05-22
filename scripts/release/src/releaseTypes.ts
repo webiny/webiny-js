@@ -10,8 +10,7 @@ const releaseTypes: Record<string, ReleaseClass> = {
     latest: LatestRelease,
     beta: BetaRelease,
     unstable: UnstableRelease,
-    verdaccio: VerdaccioRelease,
-    release: Release
+    verdaccio: VerdaccioRelease
 };
 
 export const checkReleaseType = (type: string): void => {

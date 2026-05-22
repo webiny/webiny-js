@@ -7,10 +7,6 @@ export class UnstableRelease extends Release {
     constructor(logger: any) {
         super(logger);
         this.setTag("unstable");
-        this.setVersion(() => {
-            const { stdout: commitHash } = execa.sync("git", ["rev-parse", "--short", "HEAD"]);
-            return `0.0.0-${this.distTag}.${commitHash}`;
-        });
         this.setCreateGithubRelease(false);
     }
 
@@ -20,5 +16,14 @@ export class UnstableRelease extends Release {
         }
 
         super.setTag(tag);
+    }
+
+    override setVersion(version: string) {
+        throw Error(`"--version" is not allowed for unstable releases.`);
+    }
+
+    override async computeVersion(): Promise<string> {
+        const { stdout: commitHash } = await execa("git", ["rev-parse", "--short", "HEAD"]);
+        return `0.0.0-${this.distTag}.${commitHash}`;
     }
 }

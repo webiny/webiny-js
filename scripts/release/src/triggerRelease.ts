@@ -55,7 +55,7 @@ interface ReleaseArgs {
             logger.info("Create Github Release: %s", createGithubRelease);
         }
 
-        const octokit = new Octokit({ auth: `token ${token}` });
+        const octokit = new Octokit({ auth: token });
 
         await octokit.repos.createDispatchEvent({
             owner: "webiny",
