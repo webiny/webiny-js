@@ -147,8 +147,12 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
     };
 
     private async subscribeToNewsletter(cognito: any): Promise<void> {
-        if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") return;
-        if (!cognito?.email || !cognito?.firstName || !cognito?.lastName) return;
+        if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") {
+            return;
+        }
+        if (!cognito?.email || !cognito?.firstName || !cognito?.lastName) {
+            return;
+        }
 
         try {
             await fetch("https://t.webiny.com/newsletter", {
@@ -160,7 +164,7 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
                     firstName: cognito.firstName,
                     lastName: cognito.lastName,
                     email: cognito.email,
-		    source: 'install-wizard'
+                    source: "install-wizard"
                 })
             });
         } catch {
