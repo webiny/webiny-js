@@ -44,6 +44,11 @@ export function versionPackages(version: string): VersionResult[] {
         }
 
         const targetJson = loadJsonFileSync<PackageJson>(targetFile);
+
+        if (targetJson.version !== "0.0.0") {
+            continue;
+        }
+
         targetJson.version = version;
 
         for (const depKey of ["dependencies", "devDependencies", "peerDependencies"] as const) {
@@ -53,7 +58,7 @@ export function versionPackages(version: string): VersionResult[] {
             }
 
             for (const name of Object.keys(deps)) {
-                if (name.startsWith("@webiny/")) {
+                if (name.startsWith("@webiny/") && deps[name] === "0.0.0") {
                     deps[name] = version;
                 }
             }
