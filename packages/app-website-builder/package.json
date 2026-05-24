@@ -20,7 +20,7 @@
     "@lexical/utils": "^0.44.0",
     "@monaco-editor/react": "^4.7.0",
     "@svgr/webpack": "^8.1.0",
-    "@types/react": "18.3.28",
+    "@types/react": "18.3.29",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-aco": "0.0.0",
@@ -72,11 +72,10 @@
     "execa": "^5.1.1",
     "rimraf": "^6.1.3",
     "typescript": "6.0.3",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.7"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "scripts": {
     "build": "yarn webiny run build",
@@ -89,5 +88,8 @@
         "@webiny/lexical-converter"
       ]
     }
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

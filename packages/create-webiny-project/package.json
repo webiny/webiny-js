@@ -40,13 +40,15 @@
     "@types/validate-npm-package-name": "^4.0.2"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
   "adio": {
     "ignoreDirs": [
       "_templates"
     ]
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

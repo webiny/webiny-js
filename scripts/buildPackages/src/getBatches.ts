@@ -1,8 +1,8 @@
 import fs from "fs-extra";
-import execa from "execa";
 import path from "path";
 import chalk from "chalk";
 import { getPackages } from "../../utils/getPackages";
+import { WorkspaceGraph } from "../../utils/WorkspaceGraph.js";
 import { Package } from "./types";
 import { CACHE_FOLDER_PATH } from "./constants";
 import { getBuildOutputFolder } from "./getBuildOutputFolder";
@@ -96,16 +96,9 @@ export async function getBatches(options: GetBatchesOptions = {}) {
         return { batches: [], packagesNoCache, allPackages: workspacesPackages };
     }
 
-    // Building all packages - we're respecting the dependency graph.
-    // Note: lists only packages in "packages" folder (check `lerna.json` config).
-    const rawPackagesList: Record<string, string[]> = await execa("lerna", [
-        "list",
-        "--toposort",
-        "--graph",
-        "--all",
-        // We must ignore `project-utils`, because it's a dev dependency for all our packages.
-        "--ignore=@webiny/project-utils"
-    ]).then(({ stdout }) => JSON.parse(stdout));
+    const rawPackagesList = new WorkspaceGraph({
+        ignore: ["@webiny/project-utils"]
+    }).toposort();
 
     const packagesList: Record<string, string[]> = {};
 

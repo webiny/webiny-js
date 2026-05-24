@@ -32,6 +32,11 @@ export const RichTextEditorProvider = ({
             return document.body;
         }
 
+        const dialogContent = rootElement.closest("[role='dialog']");
+        if (dialogContent) {
+            return dialogContent as HTMLElement;
+        }
+
         const shell = rootElement.closest(".editor-shell");
         if (!shell) {
             return document.body;
@@ -42,7 +47,13 @@ export const RichTextEditorProvider = ({
     }, [editor]);
 
     const internalTheme = useMemo(
-        () => new Theme(theme.colors, theme.typography, theme.tokens),
+        () =>
+            new Theme({
+                colors: theme.colors,
+                typography: theme.typography,
+                fontSizes: theme.fontSizes,
+                tokens: theme.tokens
+            }),
         [theme]
     );
 

@@ -17,8 +17,7 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
@@ -35,5 +34,8 @@
   },
   "scripts": {
     "prepublishOnly": "bash ./prepublishOnly.sh"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

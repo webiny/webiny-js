@@ -104,7 +104,6 @@ regenerator-runtime                        0.14.1    2023-12-15  2y 4mo
 classnames                                 2.5.1     2023-12-29  2y 4mo
 humanize-duration                          3.33.2    2025-12-07  5mo
   @types/humanize-duration                 3.27.4    2024-01-04  2y 4mo
-lerna                                      8.1.2     2024-02-05  2y 3mo
 style-loader                               4.0.0     2024-04-08  2y 1mo
 clsx                                       2.1.1     2024-04-23  2y
 react                                      18.3.1    2024-04-26  2y

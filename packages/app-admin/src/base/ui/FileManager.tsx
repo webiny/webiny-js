@@ -69,7 +69,7 @@ type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : n
 
 export type FileManagerRendererProps = DistributiveOmit<FileManagerProps, "render">;
 
-export const FileManagerRenderer = makeDecoratable(
+const FileManagerRenderer = makeDecoratable(
     "FileManagerRenderer",
     createVoidComponent<FileManagerRendererProps>()
 );
@@ -79,7 +79,7 @@ type ShowFileManagerProps =
     | FileManagerOnChange<FileManagerFileItem[]>
     | undefined;
 
-export const FileManager = ({ render, onChange, ...rest }: FileManagerProps) => {
+const BaseFileManager = ({ render, onChange, ...rest }: FileManagerProps) => {
     const [isFileManagerVisible, setFileManagerVisible] = useState(rest.show);
     const onChangeRef = useRef(onChange);
 
@@ -145,3 +145,5 @@ export const FileManager = ({ render, onChange, ...rest }: FileManagerProps) => 
         </>
     );
 };
+
+export const FileManager = Object.assign(BaseFileManager, { Renderer: FileManagerRenderer });

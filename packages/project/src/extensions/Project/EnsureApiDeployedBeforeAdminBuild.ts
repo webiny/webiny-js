@@ -3,7 +3,7 @@ import {
     GetAppStackOutput,
     ProjectSdkParamsService
 } from "~/abstractions/index.js";
-import { GracefulError } from "@webiny/project";
+import { GracefulError } from "~/index.js";
 
 const NO_DEPLOYMENT_CHECKS_FLAG_NAME = "--no-deployment-checks";
 

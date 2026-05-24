@@ -14,12 +14,11 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "dependencies": {
     "@pulumi/aws": "^7.30.0",
-    "@pulumi/pulumi": "^3.241.0",
+    "@pulumi/pulumi": "^3.242.0",
     "decompress": "^4.2.1",
     "execa": "^5.1.1",
     "find-up": "^8.0.0",
@@ -44,5 +43,8 @@
       ]
     }
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
+  "webiny": {
+    "publishFrom": "dist"
+  }
 }

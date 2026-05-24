@@ -30,6 +30,7 @@
     "@webiny/sdk": "0.0.0",
     "@webiny/tasks": "0.0.0",
     "@webiny/utils": "0.0.0",
+    "lodash": "^4.18.1",
     "mobx": "^6.15.3",
     "mobx-react-lite": "^4.1.1",
     "react": "18.3.1",
@@ -46,10 +47,12 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "typescript": "6.0.3",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.7"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }
