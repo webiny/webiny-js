@@ -16,6 +16,7 @@ class WebhookSettingsSchema_ implements GraphQLSchemaFactory.Interface {
         builder.addTypeDefs(/* GraphQL */ `
             type WebhookSettings {
                 signingSecret: String
+                deliveryRetentionDays: Int
             }
 
             type WebhookSettingsResponse {
@@ -25,6 +26,7 @@ class WebhookSettingsSchema_ implements GraphQLSchemaFactory.Interface {
 
             input UpdateWebhookSettingsInput {
                 signingSecret: String
+                deliveryRetentionDays: Int
             }
 
             extend type WebhookQuery {

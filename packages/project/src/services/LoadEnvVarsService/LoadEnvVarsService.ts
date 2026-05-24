@@ -1,24 +1,39 @@
 import { createImplementation } from "@webiny/di";
-import { GetProjectService, LoadEnvVarsService, LoggerService } from "~/abstractions/index.js";
+import {
+    GetProjectService,
+    LoadEnvVarsService,
+    LoggerService,
+    ProjectSdkParamsService
+} from "~/abstractions/index.js";
 import dotenv from "dotenv";
 
 export class DefaultLoadEnvVarsService implements LoadEnvVarsService.Interface {
     constructor(
         private getProjectService: GetProjectService.Interface,
-        private loggerService: LoggerService.Interface
+        private loggerService: LoggerService.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
     async execute() {
         const project = this.getProjectService.execute();
-
         const logger = this.loggerService;
 
-        const dotEnvFilePath = project.paths.rootFolder.join(".env").toString();
-        const { error } = dotenv.config({ path: dotEnvFilePath, quiet: true });
-        if (error) {
-            logger.warn({ err: error, dotEnvFilePath }, `No environment variables file found.`);
-        } else {
-            logger.trace({ dotEnvFilePath }, `Successfully loaded environment variables.`);
+        const loadEnvFile = (filePath: string, override = false) => {
+            const { error } = dotenv.config({ path: filePath, quiet: true, override });
+            if (error) {
+                logger.trace({ err: error, filePath }, `No environment variables file found.`);
+            } else {
+                logger.trace({ filePath }, `Successfully loaded environment variables.`);
+            }
+        };
+
+        const rootFolder = project.paths.rootFolder;
+
+        loadEnvFile(rootFolder.join(".env").toString());
+
+        const { env } = this.projectSdkParamsService.get();
+        if (env) {
+            loadEnvFile(rootFolder.join(`.env.${env}`).toString(), true);
         }
     }
 }
@@ -26,5 +41,5 @@ export class DefaultLoadEnvVarsService implements LoadEnvVarsService.Interface {
 export const loadEnvVarsService = createImplementation({
     abstraction: LoadEnvVarsService,
     implementation: DefaultLoadEnvVarsService,
-    dependencies: [GetProjectService, LoggerService]
+    dependencies: [GetProjectService, LoggerService, ProjectSdkParamsService]
 });

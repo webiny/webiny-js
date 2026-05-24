@@ -116,6 +116,7 @@
     "./admin/configs": "./admin/configs.js",
     "./admin/form": "./admin/form.js",
     "./admin/tenancy": "./admin/tenancy.js",
+    "./admin/ui/file-manager": "./admin/ui/file-manager.js",
     "./admin/ui/lexical": "./admin/ui/lexical.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
@@ -142,5 +143,5 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "c481b9ad13ea252fbf3363914473e2958a1078dd31d2e6086b4a47ba069b1dd3"
+  "exportGenerationHash": "63e742db25f5d9e1a57de0d066e473bbb34dcf3d20f25f0e57d707a39ba1551e"
 }

@@ -241,12 +241,6 @@
   margin: 0 4px;
 }
 
-.lexical-dropdown-container {
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-}
-
 .static-toolbar button.item i {
   opacity: 0.6;
 }
@@ -357,16 +351,8 @@ i.font-color,
   margin: 0 4px;
 }
 
-.lexical-dropdown-container {
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-}
-
 .lexical-dropdown {
-  z-index: 10;
   display: block;
-  position: fixed;
   box-shadow:
     0 12px 28px 0 rgba(0, 0, 0, 0.2),
     0 2px 4px 0 rgba(0, 0, 0, 0.1),

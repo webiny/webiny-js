@@ -2,8 +2,7 @@ import { computed, makeAutoObservable, runInAction } from "mobx";
 import {
     WebhookSettingsPresenter as Abstraction,
     type IWebhookSettingsPresenter,
-    type IWebhookSettingsViewModel,
-    type IWebhookSettingsActions
+    type IWebhookSettingsViewModel
 } from "./abstractions.js";
 import { GetWebhookSettingsUseCase } from "~/admin/features/getWebhookSettings/abstractions.js";
 import { UpdateWebhookSettingsUseCase } from "~/admin/features/updateWebhookSettings/abstractions.js";
@@ -11,6 +10,7 @@ import {
     FormModelFactory,
     type IFormModel
 } from "@webiny/app-admin/features/formModel/abstractions.js";
+import { WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";
 
 class WebhookSettingsPresenterImpl implements IWebhookSettingsPresenter {
     private _loading = false;
@@ -44,38 +44,49 @@ class WebhookSettingsPresenterImpl implements IWebhookSettingsPresenter {
                     .placeholder("Enter a signing secret for webhook payloads")
                     .description(
                         "Used to sign webhook payloads so receivers can verify authenticity."
+                    ),
+                deliveryRetentionDays: fields
+                    .number()
+                    .label("Delivery Retention (days)")
+                    .placeholder(String(WEBHOOK_DELIVERY_MAX_RETENTION_DAYS))
+                    .description(
+                        `How long to keep delivery logs. 0 = delete immediately. Max ${WEBHOOK_DELIVERY_MAX_RETENTION_DAYS} days.`
                     )
             }),
-            layout: layout => [layout.row("signingSecret")]
+            layout: layout => [layout.row("signingSecret"), layout.row("deliveryRetentionDays")]
         });
     }
 
-    public actions: IWebhookSettingsActions = {
-        save: async () => {
-            const data = await this._form.submit<Record<string, unknown>>();
-            if (data === false) {
-                return;
-            }
-
-            this._saving = true;
-
-            try {
-                const settings = await this.updateWebhookSettingsUseCase.execute({
-                    signingSecret: (data.signingSecret as string) || undefined
-                });
-
-                runInAction(() => {
-                    this._form.setData({
-                        signingSecret: settings.signingSecret ?? ""
-                    });
-                });
-            } finally {
-                runInAction(() => {
-                    this._saving = false;
-                });
-            }
+    public async save(): Promise<boolean> {
+        const data = await this._form.submit<Record<string, string>>();
+        if (data === false) {
+            return false;
         }
-    };
+
+        this._saving = true;
+
+        try {
+            const settings = await this.updateWebhookSettingsUseCase.execute({
+                signingSecret: data.signingSecret || undefined,
+                deliveryRetentionDays:
+                    data.deliveryRetentionDays != null
+                        ? Number(data.deliveryRetentionDays)
+                        : undefined
+            });
+
+            runInAction(() => {
+                this._form.setData({
+                    signingSecret: settings.signingSecret ?? "",
+                    deliveryRetentionDays: settings.deliveryRetentionDays ?? ""
+                });
+            });
+        } finally {
+            runInAction(() => {
+                this._saving = false;
+            });
+        }
+        return true;
+    }
 
     public async init(): Promise<void> {
         this._loading = true;
@@ -86,7 +97,8 @@ class WebhookSettingsPresenterImpl implements IWebhookSettingsPresenter {
             runInAction(() => {
                 this._form = this.buildForm();
                 this._form.setData({
-                    signingSecret: settings.signingSecret ?? ""
+                    signingSecret: settings.signingSecret ?? "",
+                    deliveryRetentionDays: settings.deliveryRetentionDays ?? ""
                 });
                 this._loading = false;
             });

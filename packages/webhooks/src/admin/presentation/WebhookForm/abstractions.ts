@@ -15,17 +15,13 @@ export interface IWebhookFormViewModel {
     form: IFormVM;
 }
 
-export interface IWebhookFormActions {
+export interface IWebhookFormPresenter {
+    vm: IWebhookFormViewModel;
+    init(id: string): void;
     save(): Promise<void>;
     deleteWebhook(): Promise<void>;
     openDeliveries(): void;
     closeDeliveries(): void;
-}
-
-export interface IWebhookFormPresenter {
-    vm: IWebhookFormViewModel;
-    actions: IWebhookFormActions;
-    init(id: string): void;
 }
 
 export const WebhookFormPresenter =
@@ -34,5 +30,4 @@ export const WebhookFormPresenter =
 export namespace WebhookFormPresenter {
     export type Interface = IWebhookFormPresenter;
     export type ViewModel = IWebhookFormViewModel;
-    export type Actions = IWebhookFormActions;
 }

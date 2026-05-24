@@ -1,5 +1,8 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
-import { WEBHOOK_SETTINGS_MODEL_ID } from "~/api/domain/constants.js";
+import {
+    WEBHOOK_SETTINGS_MODEL_ID,
+    WEBHOOK_DELIVERY_MAX_RETENTION_DAYS
+} from "~/api/domain/constants.js";
 
 class WebhookSettingsModelFactory implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
@@ -21,7 +24,18 @@ class WebhookSettingsModelFactory implements ModelFactory.Interface {
                 .text()
                 .label("Signing Secret")
                 .encrypt()
-                .description("Global signing secret used for all webhook deliveries.")
+                .description("Global signing secret used for all webhook deliveries."),
+            deliveryRetentionDays: fields
+                .number()
+                .label("Delivery Retention (days)")
+                .gte(0, "Must be 0 or greater.")
+                .lte(
+                    WEBHOOK_DELIVERY_MAX_RETENTION_DAYS,
+                    `Must be at most ${WEBHOOK_DELIVERY_MAX_RETENTION_DAYS}.`
+                )
+                .description(
+                    `How long to keep delivery logs. 0 = delete immediately. Max ${WEBHOOK_DELIVERY_MAX_RETENTION_DAYS} days.`
+                )
         }));
 
         return [model];

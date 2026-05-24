@@ -7,13 +7,9 @@ export interface IWebhookSettingsViewModel {
     form: IFormVM;
 }
 
-export interface IWebhookSettingsActions {
-    save(): Promise<void>;
-}
-
 export interface IWebhookSettingsPresenter {
     vm: IWebhookSettingsViewModel;
-    actions: IWebhookSettingsActions;
+    save(): Promise<boolean>;
     init(): void;
 }
 
@@ -24,5 +20,4 @@ export const WebhookSettingsPresenter = createAbstraction<IWebhookSettingsPresen
 export namespace WebhookSettingsPresenter {
     export type Interface = IWebhookSettingsPresenter;
     export type ViewModel = IWebhookSettingsViewModel;
-    export type Actions = IWebhookSettingsActions;
 }

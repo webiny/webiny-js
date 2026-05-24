@@ -1,30 +1,22 @@
 import React, { useMemo, useEffect } from "react";
+import debounce from "lodash/debounce.js";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { DataTable, Drawer, IconButton, Tag, Text, TimeAgo } from "@webiny/admin-ui";
+import { DataTable, Drawer, IconButton, Scrollbar, Tag, Text, TimeAgo } from "@webiny/admin-ui";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import { ReactComponent as ReplayIcon } from "@webiny/icons/replay.svg";
 import { WebhookDeliveriesPresenterFeature } from "../feature.js";
 import { ListWebhookDeliveriesFeature } from "~/admin/features/listWebhookDeliveries/feature.js";
 import { ResendWebhookDeliveryFeature } from "~/admin/features/resendWebhookDelivery/feature.js";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
-import { DeliveryDetail } from "./DeliveryDetail.js";
+import { DeliveryDetailPanel } from "./DeliveryDetailPanel.js";
+import { statusVariant } from "./statusVariant.js";
 
 interface WebhookDeliveriesDrawerProps {
     webhookId: string;
     open: boolean;
     onClose: () => void;
 }
-
-const statusVariant = (status: string) => {
-    switch (status) {
-        case "delivered":
-            return "success" as const;
-        case "failed":
-            return "destructive" as const;
-        default:
-            return "warning" as const;
-    }
-};
 
 const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerInner({
     webhookId,
@@ -40,6 +32,21 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
     }, [presenter, webhookId, open]);
 
     const { vm } = presenter;
+
+    const { showConfirmation: showResendConfirmation } = useConfirmationDialog({
+        title: "Resend Delivery",
+        message: "Are you sure you want to resend this delivery?"
+    });
+
+    const loadMoreOnScroll = useMemo(
+        () =>
+            debounce(async ({ scrollFrame }: { scrollFrame: { top: number } }) => {
+                if (scrollFrame.top > 0.8) {
+                    await presenter.loadMore();
+                }
+            }, 200),
+        [presenter]
+    );
 
     const columns = useMemo(
         () => ({
@@ -65,8 +72,7 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
             },
             createdOn: {
                 header: "Created",
-                cell: (row: WebhookDelivery) =>
-                    row.createdOn ? <TimeAgo datetime={row.createdOn} /> : <Text size="sm">—</Text>,
+                cell: (row: WebhookDelivery) => <TimeAgo datetime={row.createdOn} />,
                 enableSorting: true,
                 size: 120
             },
@@ -79,18 +85,18 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
                         size="sm"
                         onClick={e => {
                             e.stopPropagation();
-                            void presenter.actions.resend(row.id);
+                            showResendConfirmation(() => presenter.resend(row.id));
                         }}
                         aria-label="Resend delivery"
                     />
                 ),
-                size: 48,
+                size: 60,
                 enableSorting: false,
                 enableHiding: false,
                 enableResizing: false
             }
         }),
-        [presenter.actions]
+        [presenter]
     );
 
     return (
@@ -106,28 +112,20 @@ const WebhookDeliveriesDrawerInner = observer(function WebhookDeliveriesDrawerIn
                 <div
                     className={
                         vm.selectedDelivery
-                            ? "flex-[1.5] border-r-sm border-neutral-muted overflow-auto"
-                            : "flex-1 overflow-auto"
+                            ? "flex-[1.5] border-r-sm border-neutral-muted overflow-hidden"
+                            : "flex-1 overflow-hidden"
                     }
                 >
-                    <DataTable<WebhookDelivery>
-                        columns={columns}
-                        data={vm.list.rows}
-                        loading={vm.list.pagination.loading}
-                        onToggleRow={(row: WebhookDelivery) =>
-                            presenter.actions.selectDelivery(row)
-                        }
-                    />
-                </div>
-                {vm.selectedDelivery && (
-                    <div className="flex-1 overflow-auto">
-                        <DeliveryDetail
-                            delivery={vm.selectedDelivery}
-                            onClose={() => presenter.actions.selectDelivery(null)}
-                            onResend={id => void presenter.actions.resend(id)}
+                    <Scrollbar onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}>
+                        <DataTable<WebhookDelivery>
+                            columns={columns}
+                            data={vm.list.rows}
+                            loading={vm.list.pagination.loading && vm.list.rows.length === 0}
+                            onToggleRow={(row: WebhookDelivery) => presenter.selectDelivery(row)}
                         />
-                    </div>
-                )}
+                    </Scrollbar>
+                </div>
+                <DeliveryDetailPanel presenter={presenter} />
             </div>
         </Drawer>
     );

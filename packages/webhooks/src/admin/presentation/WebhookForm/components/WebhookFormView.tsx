@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature, useRoute } from "@webiny/app";
-import { FormErrors, useRouter } from "@webiny/app-admin";
+import { FormErrors, useRouter, useFieldRenderers } from "@webiny/app-admin";
 import { Button, Heading, OverlayLoader, Separator } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { WebhookFormPresenterFeature } from "../feature.js";
@@ -13,19 +13,32 @@ import { ListAvailableEventsFeature } from "~/admin/features/listAvailableEvents
 import { WebhookPermissionsFeature } from "~/admin/features/permissions/feature.js";
 import { Routes } from "~/admin/routes.js";
 import { SigningSecret } from "./SigningSecret.js";
+import { HasPermission } from "~/admin/presentation/security/HasPermission.js";
 import { WebhookDeliveriesDrawer } from "~/admin/presentation/WebhookDeliveries/components/WebhookDeliveriesDrawer.js";
+
+const SectionHeading = ({ field }: { field: any }) => {
+    return <Heading level={6}>{String(field.label ?? "")}</Heading>;
+};
 
 const WebhookFormViewInner = observer(function WebhookFormViewInner() {
     const { presenter } = useFeature(WebhookFormPresenterFeature);
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.Form);
     const id = route.params.id;
+    const defaultRenderers = useFieldRenderers();
+
+    const renderers = useMemo(() => {
+        return {
+            ...defaultRenderers,
+            "element:sectionHeading": SectionHeading
+        };
+    }, [defaultRenderers]);
 
     useEffect(() => {
         void presenter.init(id);
     }, [presenter, id]);
 
-    const { vm, actions } = presenter;
+    const { vm } = presenter;
 
     if (vm.loading) {
         return <OverlayLoader />;
@@ -39,23 +52,23 @@ const WebhookFormViewInner = observer(function WebhookFormViewInner() {
                         {vm.isNew ? "Create Webhook" : (vm.webhook?.name ?? "Edit Webhook")}
                     </Heading>
                     <div className="flex gap-sm">
-                        {!vm.isNew && (
-                            <Button variant="secondary" onClick={() => actions.openDeliveries()}>
+                        {!vm.isNew ? (
+                            <Button variant="secondary" onClick={() => presenter.openDeliveries()}>
                                 Deliveries
                             </Button>
-                        )}
+                        ) : null}
                         <Button variant="secondary" onClick={() => goToRoute(Routes.List)}>
                             Cancel
                         </Button>
-                        {vm.permissions.canEdit && (
+                        <HasPermission entity="webhook" action="edit">
                             <Button
                                 variant="primary"
-                                onClick={() => void actions.save()}
+                                onClick={() => void presenter.save()}
                                 disabled={vm.saving}
                             >
                                 {vm.saving ? "Saving..." : "Save"}
                             </Button>
-                        )}
+                        </HasPermission>
                     </div>
                 </div>
                 <Separator />
@@ -63,20 +76,18 @@ const WebhookFormViewInner = observer(function WebhookFormViewInner() {
                 <div className="p-lg">
                     <>
                         <FormErrors form={vm.form} />
-                        <FormView name="Webhook" form={vm.form} />
-                        {!vm.isNew && vm.webhook?.signingSecret && (
-                            <SigningSecret secret={vm.webhook.signingSecret} />
-                        )}
+                        <FormView name="Webhook" form={vm.form} renderers={renderers} />
+                        <SigningSecret presenter={presenter} />
                     </>
                 </div>
             </div>
-            {vm.showDeliveries && vm.webhook && (
+            {vm.showDeliveries && vm.webhook ? (
                 <WebhookDeliveriesDrawer
                     webhookId={vm.webhook.id}
                     open={vm.showDeliveries}
-                    onClose={() => actions.closeDeliveries()}
+                    onClose={() => presenter.closeDeliveries()}
                 />
-            )}
+            ) : null}
         </>
     );
 });

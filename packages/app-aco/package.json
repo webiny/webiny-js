@@ -41,7 +41,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@types/react": "18.3.28",
+    "@types/react": "18.3.29",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^1.0.1",
     "@webiny/wcp": "0.0.0",
@@ -49,7 +49,7 @@
     "apollo-link": "^1.2.14",
     "rimraf": "^6.1.3",
     "typescript": "6.0.3",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.7"
   },
   "publishConfig": {
     "access": "public",

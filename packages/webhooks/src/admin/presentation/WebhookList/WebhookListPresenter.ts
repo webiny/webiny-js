@@ -4,8 +4,7 @@ import type { Webhook } from "~/admin/shared/types.js";
 import {
     WebhookListPresenter as Abstraction,
     type IWebhookListPresenter,
-    type IWebhookListViewModel,
-    type IWebhookListActions
+    type IWebhookListViewModel
 } from "./abstractions.js";
 import { WebhookListDataSource } from "./WebhookListDataSource.js";
 import { ListWebhooksUseCase } from "~/admin/features/ListWebhooks/abstractions.js";
@@ -36,40 +35,49 @@ class WebhookListPresenterImpl implements IWebhookListPresenter {
         };
     }
 
-    actions: IWebhookListActions = {
-        search: {
-            set: (query: string) => this.listPresenter.actions.search.set(query),
-            clear: () => this.listPresenter.actions.search.clear()
-        },
-        sort: {
-            set: (field: string, direction: "ASC" | "DESC") =>
-                this.listPresenter.actions.sort.set(field, direction),
-            toggle: (field: string) => this.listPresenter.actions.sort.toggle(field)
-        },
-        filter: {
-            set: (key: string, value: unknown) => this.listPresenter.actions.filter.set(key, value),
-            clear: (key: string) => this.listPresenter.actions.filter.clear(key),
-            clearAll: () => this.listPresenter.actions.filter.clearAll()
-        },
-        selection: {
-            toggle: (id: string) => this.listPresenter.actions.selection.toggle(id),
-            selectRangeTo: (id: string) => this.listPresenter.actions.selection.selectRangeTo(id),
-            selectAll: () => this.listPresenter.actions.selection.selectAll(),
-            deselectAll: () => this.listPresenter.actions.selection.deselectAll(),
-            selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
-            isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
-        },
-        loadMore: () => this.listPresenter.actions.loadMore(),
-        refresh: () => this.listPresenter.actions.refresh(),
-        deleteWebhook: async (id: string) => {
-            await this.deleteWebhookUseCase.execute(id);
-            await this.listPresenter.actions.refresh();
-        },
-        triggerWebhook: async (id: string) => {
-            await this.triggerWebhookUseCase.execute(id, { test: true });
-            await this.listPresenter.actions.refresh();
-        }
+    public readonly search = {
+        set: (query: string) => this.listPresenter.actions.search.set(query),
+        clear: () => this.listPresenter.actions.search.clear()
     };
+
+    public readonly sort = {
+        set: (field: string, direction: "ASC" | "DESC") =>
+            this.listPresenter.actions.sort.set(field, direction),
+        toggle: (field: string) => this.listPresenter.actions.sort.toggle(field)
+    };
+
+    public readonly filter = {
+        set: (key: string, value: unknown) => this.listPresenter.actions.filter.set(key, value),
+        clear: (key: string) => this.listPresenter.actions.filter.clear(key),
+        clearAll: () => this.listPresenter.actions.filter.clearAll()
+    };
+
+    public readonly selection = {
+        toggle: (id: string) => this.listPresenter.actions.selection.toggle(id),
+        selectRangeTo: (id: string) => this.listPresenter.actions.selection.selectRangeTo(id),
+        selectAll: () => this.listPresenter.actions.selection.selectAll(),
+        deselectAll: () => this.listPresenter.actions.selection.deselectAll(),
+        selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
+        isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
+    };
+
+    public async loadMore(): Promise<void> {
+        await this.listPresenter.actions.loadMore();
+    }
+
+    public async refresh(): Promise<void> {
+        await this.listPresenter.actions.refresh();
+    }
+
+    public async deleteWebhook(id: string): Promise<void> {
+        await this.deleteWebhookUseCase.execute(id);
+        await this.listPresenter.actions.refresh();
+    }
+
+    public async triggerWebhook(id: string): Promise<void> {
+        await this.triggerWebhookUseCase.execute(id, { test: true });
+        await this.listPresenter.actions.refresh();
+    }
 
     init(): void {
         const dataSource = new WebhookListDataSource(this.listWebhooksUseCase);

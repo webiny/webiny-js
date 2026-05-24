@@ -3,10 +3,10 @@ import { GetModelRepository } from "@webiny/api-headless-cms/features/contentMod
 import { CreateEntryDataFactory } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 import { CreateEntryRepository } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { WebhookDeliveryTransformer } from "~/api/features/Transformers/abstractions/WebhookDeliveryTransformer.js";
+import type { ICreateDeliveryInput } from "./abstractions.js";
 import { CreateWebhookDeliveryRepository as RepositoryAbstraction } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
-import type { ICreateDeliveryInput } from "./abstractions.js";
 import type {
     WebhookDelivery,
     WebhookDeliveryCmsEntryValues
@@ -45,10 +45,15 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 responseBody: null
             });
 
+            const expiresAt = new Date(input.expiresAt);
+
             const { entry } =
                 await this.createEntryDataFactory.create<WebhookDeliveryCmsEntryValues>(
                     modelResult.value,
-                    { values: storageValues }
+                    {
+                        values: storageValues,
+                        expiresAt
+                    }
                 );
 
             const createResult = await this.createEntryRepository.execute(modelResult.value, entry);

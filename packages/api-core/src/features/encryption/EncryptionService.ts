@@ -34,7 +34,7 @@ export class EncryptionImpl implements EncryptionAbstraction.Interface {
         }
     }
 
-    encrypt(value: string): string {
+    async encrypt(value: string): Promise<string> {
         if (!this.key) {
             return value;
         }
@@ -45,7 +45,7 @@ export class EncryptionImpl implements EncryptionAbstraction.Interface {
         return Buffer.concat([iv, authTag, encrypted]).toString("base64");
     }
 
-    decrypt(value: string): string {
+    async decrypt(value: string): Promise<string> {
         if (!this.key) {
             return value;
         }

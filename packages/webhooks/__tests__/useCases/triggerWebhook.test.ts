@@ -3,6 +3,7 @@ import { useHandler } from "~tests/helpers/useHandler.js";
 import { CreateWebhookUseCase } from "~/api/features/CreateWebhook/abstractions.js";
 import { TriggerWebhookUseCase } from "~/api/features/TriggerWebhook/abstractions.js";
 import { GetWebhookDeliveryUseCase } from "~/api/features/GetWebhookDelivery/abstractions.js";
+import { UpdateWebhookSettingsUseCase } from "~/api/features/UpdateWebhookSettings/abstractions.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
 
 describe("TriggerWebhookUseCase", () => {
@@ -89,5 +90,28 @@ describe("TriggerWebhookUseCase", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("WEBHOOK_NOT_AUTHORIZED");
+    });
+
+    it("uses deliveryRetentionDays from settings to compute expiresAt", async () => {
+        const context = await handler.handle();
+        const createUseCase = context.container.resolve(CreateWebhookUseCase);
+        const updateSettings = context.container.resolve(UpdateWebhookSettingsUseCase);
+        const triggerUseCase = context.container.resolve(TriggerWebhookUseCase);
+
+        await updateSettings.execute({ deliveryRetentionDays: 1 });
+
+        const webhookResult = await createUseCase.execute({
+            name: "Retention Test",
+            endpointUrl: "https://example.com/hook",
+            events: ["cms.entry.product.published"],
+            signingSecret: "whsec_dGVzdHNlY3JldA=="
+        });
+        const webhook = webhookResult.value;
+
+        const result = await triggerUseCase.execute(webhook.id, { foo: "bar" });
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.webhookId).toBe(webhook.id);
+        expect(result.value.status).toBe("pending");
     });
 });
