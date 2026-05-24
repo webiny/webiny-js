@@ -11094,7 +11094,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yargs@npm:^17.0.35":
+"@types/yargs@npm:^17.0.35, @types/yargs@npm:^17.0.8":
   version: 17.0.35
   resolution: "@types/yargs@npm:17.0.35"
   dependencies:
@@ -11756,6 +11756,17 @@ __metadata:
     write-json-file: "npm:^7.0.0"
   bin:
     prepublish-only: ./src/index.js
+  languageName: unknown
+  linkType: soft
+
+"@webiny-scripts/release@workspace:scripts/release":
+  version: 0.0.0-use.local
+  resolution: "@webiny-scripts/release@workspace:scripts/release"
+  dependencies:
+    "@types/folder-hash": "npm:^4.0.4"
+    "@types/yargs": "npm:^17.0.8"
+  bin:
+    release: ./src/index.js
   languageName: unknown
   linkType: soft
 

@@ -11,7 +11,8 @@
       "scripts/prepublishOnly",
       "scripts/cli",
       "scripts/cjsToEsm",
-      "scripts/generateSkills"
+      "scripts/generateSkills",
+      "scripts/release"
     ]
   },
   "author": "Webiny Ltd.",
