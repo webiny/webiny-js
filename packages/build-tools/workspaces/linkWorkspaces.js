@@ -10,7 +10,6 @@ import path from "path";
 import get from "lodash/get.js";
 import fs from "fs-extra";
 import * as rimraf from "rimraf";
-import { loadJsonFileSync } from "load-json-file";
 
 async function symlink(src, dest) {
     if (process.platform !== "win32") {
