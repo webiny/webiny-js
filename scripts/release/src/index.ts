@@ -1,10 +1,10 @@
 #!/usr/bin/env node
+import semver from "semver";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { ConsoleLogger } from "./ConsoleLogger";
 import { getReleaseType } from "./releaseTypes";
 
-// create the CLI parser
 const cli = yargs(hideBin(process.argv));
 
 // Disable default handling of `--version` parameter.
@@ -13,27 +13,39 @@ cli.version(false);
 interface ReleaseArgs {
     type?: string;
     tag?: string;
-    sourceTag?: string;
+    preid?: string;
     gitReset?: boolean;
     version?: string;
     createGithubRelease?: boolean | string;
     printVersion?: boolean;
+    dryRun?: boolean;
 }
 
 async function runRelease() {
     const {
         type,
         tag,
-        sourceTag,
+        preid,
         gitReset = true,
         version,
         createGithubRelease,
-        printVersion
+        printVersion,
+        dryRun
     } = cli.argv as ReleaseArgs;
 
-    console.log({ type, tag, gitReset, version });
     if (!type) {
         throw Error(`Missing required "--type" option.`);
+    }
+
+    if (version) {
+        if (!semver.valid(version)) {
+            throw Error(`"--version" must be a valid semver string.`);
+        }
+
+        const parsed = semver.parse(version)!;
+        if (parsed.prerelease.length > 0) {
+            throw Error(`"--version" must be a clean semver (e.g., 6.4.0), not a prerelease.`);
+        }
     }
 
     const Release = getReleaseType(type);
@@ -45,8 +57,8 @@ async function runRelease() {
         release.setTag(tag);
     }
 
-    if (typeof sourceTag === "string" && sourceTag !== "") {
-        release.setSourceTag(sourceTag);
+    if (preid) {
+        release.setPreid(preid);
     }
 
     if (version) {
@@ -59,12 +71,13 @@ async function runRelease() {
         release.setCreateGithubRelease(createGithubRelease);
     }
 
-    if (printVersion) {
-        const { version } = await release.versionPackages();
+    if (dryRun) {
+        release.setDryRun(true);
+    }
 
-        console.log(version);
+    if (printVersion) {
+        await release.printVersion();
     } else {
-        console.log(release);
         await release.execute();
     }
 }

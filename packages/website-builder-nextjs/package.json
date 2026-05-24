@@ -33,8 +33,7 @@
     "next": ">=15"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "adio": {
     "ignore": {
@@ -44,5 +43,8 @@
         "@webiny/website-builder-react"
       ]
     }
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

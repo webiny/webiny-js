@@ -26,8 +26,7 @@
     "@webiny/build-tools": "0.0.0"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "."
+    "access": "public"
   },
   "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }
