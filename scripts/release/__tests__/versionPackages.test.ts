@@ -99,6 +99,36 @@ describe("versionPackages", () => {
         expect(pkg.version).toBe("6.4.0");
     });
 
+    it("should skip packages whose version is not 0.0.0", () => {
+        createPackage("di");
+        // Overwrite dist/package.json with a pinned version
+        const distPkgPath = path.join(tmpDir, "packages", "di", "dist", "package.json");
+        const pkg = JSON.parse(fs.readFileSync(distPkgPath, "utf8"));
+        pkg.version = "1.2.3";
+        fs.writeFileSync(distPkgPath, JSON.stringify(pkg, null, 2));
+
+        const results = versionPackages("6.4.0");
+        expect(results).toHaveLength(0);
+
+        const after = JSON.parse(fs.readFileSync(distPkgPath, "utf8"));
+        expect(after.version).toBe("1.2.3");
+    });
+
+    it("should preserve @webiny/* dependency versions that are not 0.0.0", () => {
+        createPackage("api-core", {
+            deps: {
+                "@webiny/utils": "0.0.0",
+                "@webiny/di": "^1.2.0"
+            }
+        });
+
+        versionPackages("6.4.0");
+
+        const pkg = readPublishedPkgJson("api-core");
+        expect(pkg.dependencies["@webiny/utils"]).toBe("6.4.0");
+        expect(pkg.dependencies["@webiny/di"]).toBe("^1.2.0");
+    });
+
     it("should handle multiple packages", () => {
         createPackage("api-core");
         createPackage("api-headless-cms", {
