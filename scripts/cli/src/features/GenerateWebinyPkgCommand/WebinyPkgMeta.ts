@@ -56,7 +56,7 @@ export function computeInputsHash(params: ComputeInputsHashParams): string {
     return hasher.digest("hex");
 }
 
-function getAllFiles(dirPath: string, files: string[] = []): string[] {
+export function getAllFiles(dirPath: string, files: string[] = []): string[] {
     for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
         const fullPath = path.join(dirPath, entry.name);
         if (entry.isDirectory()) {
