@@ -28,7 +28,7 @@ export async function publishPackages(opts: PublishOptions): Promise<PublishResu
     const packagesDir = path.resolve(process.cwd(), "packages");
     const entries = fs.readdirSync(packagesDir, { withFileTypes: true });
 
-    const toPublish: { name: string; publishDir: string }[] = [];
+    const toPublish: { name: string; pkgRoot: string; publishDir: string }[] = [];
 
     for (const entry of entries) {
         if (!entry.isDirectory()) {
@@ -51,7 +51,7 @@ export async function publishPackages(opts: PublishOptions): Promise<PublishResu
         const webiny = (pkgJson as any).webiny as { publishFrom?: string } | undefined;
         const publishDir = webiny?.publishFrom ? path.join(pkgRoot, webiny.publishFrom) : pkgRoot;
 
-        toPublish.push({ name: pkgJson.name!, publishDir });
+        toPublish.push({ name: pkgJson.name!, pkgRoot, publishDir });
     }
 
     logger.info("Publishing %s packages with dist-tag %s", toPublish.length, distTag);
@@ -66,8 +66,8 @@ export async function publishPackages(opts: PublishOptions): Promise<PublishResu
                     await pRetry(
                         async () => {
                             try {
-                                await execa("npm", ["publish", "--tag", distTag], {
-                                    cwd: pkg.publishDir,
+                                await execa("npm", ["publish", pkg.publishDir, "--tag", distTag], {
+                                    cwd: pkg.pkgRoot,
                                     stdio: "pipe"
                                 });
                             } catch (err: any) {
