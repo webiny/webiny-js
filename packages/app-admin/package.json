@@ -87,8 +87,7 @@
     "vitest": "^4.1.7"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "adio": {
     "ignore": {
@@ -107,5 +106,8 @@
       ]
     }
   },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
+  "webiny": {
+    "publishFrom": "dist"
+  }
 }

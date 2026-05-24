@@ -18,8 +18,7 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "dependencies": {
     "@webiny/api-aco": "0.0.0",
@@ -42,5 +41,8 @@
     "graphql": "^16.14.0",
     "typescript": "6.0.3",
     "vitest": "^4.1.7"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

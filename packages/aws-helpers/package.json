@@ -23,8 +23,7 @@
   "description": "An utility package for developing AWS based services",
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
   "dependencies": {
@@ -45,5 +44,8 @@
         "@types/aws-lambda"
       ]
     }
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

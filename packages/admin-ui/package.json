@@ -70,8 +70,7 @@
     "vitest": "^4.1.7"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "scripts": {
     "storybook": "storybook dev -p 6006",
@@ -86,5 +85,8 @@
         "tw-animate-css"
       ]
     }
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

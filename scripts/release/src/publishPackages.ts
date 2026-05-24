@@ -48,10 +48,8 @@ export async function publishPackages(opts: PublishOptions): Promise<PublishResu
             continue;
         }
 
-        const publishConfig = pkgJson.publishConfig as Record<string, string> | undefined;
-        const publishDir = publishConfig?.directory
-            ? path.join(pkgRoot, publishConfig.directory)
-            : pkgRoot;
+        const webiny = (pkgJson as any).webiny as { publishFrom?: string } | undefined;
+        const publishDir = webiny?.publishFrom ? path.join(pkgRoot, webiny.publishFrom) : pkgRoot;
 
         toPublish.push({ name: pkgJson.name!, publishDir });
     }
@@ -66,11 +64,20 @@ export async function publishPackages(opts: PublishOptions): Promise<PublishResu
             batch.map(async (pkg): Promise<PublishResult> => {
                 try {
                     await pRetry(
-                        () =>
-                            execa("npm", ["publish", "--tag", distTag], {
-                                cwd: pkg.publishDir,
-                                stdio: "pipe"
-                            }),
+                        async () => {
+                            try {
+                                await execa("npm", ["publish", "--tag", distTag], {
+                                    cwd: pkg.publishDir,
+                                    stdio: "pipe"
+                                });
+                            } catch (err: any) {
+                                if (err.stderr && err.stderr.includes("E409")) {
+                                    logger.info("Already published %s, skipping", pkg.name);
+                                    return;
+                                }
+                                throw err;
+                            }
+                        },
                         { retries }
                     );
                     logger.info("Published %s", pkg.name);

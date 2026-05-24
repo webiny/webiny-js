@@ -32,8 +32,12 @@ export function versionPackages(version: string): VersionResult[] {
             continue;
         }
 
-        const hasSrc = fs.existsSync(path.join(pkgRoot, "src"));
-        const targetFile = hasSrc ? path.join(pkgRoot, "dist", "package.json") : pkgJsonPath;
+        const webiny = (pkgJson as any).webiny as { publishFrom?: string } | undefined;
+        const publishFrom = webiny?.publishFrom;
+        const targetFile =
+            publishFrom && publishFrom !== "."
+                ? path.join(pkgRoot, publishFrom, "package.json")
+                : pkgJsonPath;
 
         if (!fs.existsSync(targetFile)) {
             continue;

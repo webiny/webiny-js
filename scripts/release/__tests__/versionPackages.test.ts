@@ -9,9 +9,9 @@ let originalCwd: string;
 
 function createPackage(
     name: string,
-    opts: { private?: boolean; hasSrc?: boolean; deps?: Record<string, string> } = {}
+    opts: { private?: boolean; publishFrom?: string; deps?: Record<string, string> } = {}
 ) {
-    const { private: isPrivate = false, hasSrc = true, deps = {} } = opts;
+    const { private: isPrivate = false, publishFrom = "dist", deps = {} } = opts;
     const pkgDir = path.join(tmpDir, "packages", name);
     fs.mkdirSync(pkgDir, { recursive: true });
 
@@ -19,14 +19,14 @@ function createPackage(
         name: `@webiny/${name}`,
         version: "0.0.0",
         ...(isPrivate && { private: true }),
-        ...(Object.keys(deps).length > 0 && { dependencies: deps })
+        ...(Object.keys(deps).length > 0 && { dependencies: deps }),
+        ...(publishFrom !== "." && { webiny: { publishFrom } })
     };
 
     fs.writeFileSync(path.join(pkgDir, "package.json"), JSON.stringify(pkgJson, null, 2));
 
-    if (hasSrc) {
-        fs.mkdirSync(path.join(pkgDir, "src"), { recursive: true });
-        const distDir = path.join(pkgDir, "dist");
+    if (publishFrom && publishFrom !== ".") {
+        const distDir = path.join(pkgDir, publishFrom);
         fs.mkdirSync(distDir, { recursive: true });
 
         const distPkgJson = { ...pkgJson };
@@ -34,10 +34,14 @@ function createPackage(
     }
 }
 
-function readDistPkgJson(name: string) {
-    const distPath = path.join(tmpDir, "packages", name, "dist", "package.json");
-    if (fs.existsSync(distPath)) {
-        return JSON.parse(fs.readFileSync(distPath, "utf8"));
+function readPublishedPkgJson(name: string, publishFrom = "dist") {
+    if (publishFrom && publishFrom !== ".") {
+        return JSON.parse(
+            fs.readFileSync(
+                path.join(tmpDir, "packages", name, publishFrom, "package.json"),
+                "utf8"
+            )
+        );
     }
     return JSON.parse(fs.readFileSync(path.join(tmpDir, "packages", name, "package.json"), "utf8"));
 }
@@ -60,7 +64,7 @@ describe("versionPackages", () => {
         const results = versionPackages("6.4.0");
 
         expect(results).toHaveLength(1);
-        const pkg = readDistPkgJson("api-core");
+        const pkg = readPublishedPkgJson("api-core");
         expect(pkg.version).toBe("6.4.0");
     });
 
@@ -75,7 +79,7 @@ describe("versionPackages", () => {
 
         versionPackages("6.4.0");
 
-        const pkg = readDistPkgJson("api-core");
+        const pkg = readPublishedPkgJson("api-core");
         expect(pkg.dependencies["@webiny/utils"]).toBe("6.4.0");
         expect(pkg.dependencies["@webiny/plugins"]).toBe("6.4.0");
         expect(pkg.dependencies["lodash"]).toBe("^4.18.0");
@@ -87,13 +91,11 @@ describe("versionPackages", () => {
         expect(results).toHaveLength(0);
     });
 
-    it("should write to root package.json for packages without src/", () => {
-        createPackage("no-build", { hasSrc: false });
+    it("should write to root package.json for packages without webiny.publishFrom", () => {
+        createPackage("no-build", { publishFrom: "." });
         versionPackages("6.4.0");
 
-        const pkg = JSON.parse(
-            fs.readFileSync(path.join(tmpDir, "packages", "no-build", "package.json"), "utf8")
-        );
+        const pkg = readPublishedPkgJson("no-build", ".");
         expect(pkg.version).toBe("6.4.0");
     });
 
@@ -107,10 +109,10 @@ describe("versionPackages", () => {
         const results = versionPackages("6.5.0");
         expect(results).toHaveLength(2);
 
-        const core = readDistPkgJson("api-core");
+        const core = readPublishedPkgJson("api-core");
         expect(core.version).toBe("6.5.0");
 
-        const cms = readDistPkgJson("api-headless-cms");
+        const cms = readPublishedPkgJson("api-headless-cms");
         expect(cms.version).toBe("6.5.0");
         expect(cms.dependencies["@webiny/api-core"]).toBe("6.5.0");
     });

@@ -75,8 +75,7 @@
     "vitest": "^4.1.7"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "scripts": {
     "build": "yarn webiny run build",
@@ -89,5 +88,8 @@
         "@webiny/lexical-converter"
       ]
     }
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

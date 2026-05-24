@@ -54,8 +54,7 @@
     "typescript": "6.0.3"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "adio": {
     "ignore": {
@@ -143,5 +142,8 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "63e742db25f5d9e1a57de0d066e473bbb34dcf3d20f25f0e57d707a39ba1551e"
+  "exportGenerationHash": "63e742db25f5d9e1a57de0d066e473bbb34dcf3d20f25f0e57d707a39ba1551e",
+  "webiny": {
+    "publishFrom": "dist"
+  }
 }
