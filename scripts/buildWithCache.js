@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const { getPackages } = require("./utils/getPackages");
+const { WorkspaceGraph } = require("./utils/WorkspaceGraph.js");
 const { hashElement } = require("folder-hash");
 const fs = require("fs-extra");
 const execa = require("execa");
@@ -126,11 +127,7 @@ async function build() {
         }
     }
 
-    // Building all packages - we're respecting the dependency graph.
-    // Note: lists only packages in "packages" folder (check `lerna.json` config).
-    const rawPackagesList = await execa("lerna", ["list", "--toposort", "--graph", "--all"]).then(
-        ({ stdout }) => JSON.parse(stdout)
-    );
+    const rawPackagesList = new WorkspaceGraph().toposort();
 
     const packagesList = {};
     for (const packageName in rawPackagesList) {
