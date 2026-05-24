@@ -12,7 +12,7 @@
     "execa": "^5.1.1",
     "load-json-file": "^7.0.1",
     "p-retry": "^8.0.0",
-    "semver": "^7.8.0",
+    "semver": "^7.8.1",
     "write-json-file": "^7.0.0",
     "yargs": "^18.0.0"
   },
