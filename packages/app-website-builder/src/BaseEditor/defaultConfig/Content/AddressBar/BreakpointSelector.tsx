@@ -9,7 +9,8 @@ export const BreakpointSelector = () => {
     const items = useMemo(() => {
         return breakpoints.map(bp => ({
             value: bp.name,
-            icon: <InlineSvg src={bp.icon} className={"size-md"} />
+            icon: <InlineSvg src={bp.icon} className={"size-md"} />,
+            tooltip: bp.title
         }));
     }, [breakpoints]);
 

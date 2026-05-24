@@ -14,7 +14,7 @@ interface BackgroundProps {
 export const Background = ({ elementId }: BackgroundProps) => {
     return (
         <StyleAccordion.Item title={"Background"} icon={<BackgroundIcon />}>
-            <Grid>
+            <Grid gap={"small"}>
                 <Grid.Column span={12}>
                     <BackgroundColor elementId={elementId} />
                 </Grid.Column>

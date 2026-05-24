@@ -9,7 +9,7 @@ interface MarginPaddingProps {
 
 export const MarginPadding = ({ elementId }: MarginPaddingProps) => {
     return (
-        <StyleAccordion.Item title={"Margin & Padding"} icon={<MarginPaddingIcon />}>
+        <StyleAccordion.Item title={"Margin & Padding"} icon={<MarginPaddingIcon />} noPadding>
             <MarginPaddingControl elementId={elementId} />
         </StyleAccordion.Item>
     );

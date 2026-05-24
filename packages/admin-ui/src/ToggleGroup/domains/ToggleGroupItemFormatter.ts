@@ -9,7 +9,8 @@ export class ToggleGroupItemFormatter {
             value: item.value,
             disabled: item.disabled,
             icon: item.icon,
-            iconPosition: item.iconPosition
+            iconPosition: item.iconPosition,
+            tooltip: item.tooltip
         };
     }
 }

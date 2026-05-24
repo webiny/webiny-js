@@ -7,6 +7,7 @@ export interface StyleAccordionItemProps {
     title: string;
     icon?: React.ReactElement;
     defaultOpen?: boolean;
+    noPadding?: boolean;
     children: React.ReactNode;
 }
 
@@ -14,6 +15,7 @@ export const StyleAccordionItem = ({
     title,
     icon,
     defaultOpen = false,
+    noPadding = false,
     children
 }: StyleAccordionItemProps) => {
     const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -66,7 +68,9 @@ export const StyleAccordionItem = ({
                     "overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down"
                 }
             >
-                <div className={"px-sm pb-lg"}>{children}</div>
+                <div className={noPadding ? "px-sm pt-sm pb-lg" : "px-md pt-sm pb-lg"}>
+                    {children}
+                </div>
             </Collapsible.Content>
         </Collapsible.Root>
     );

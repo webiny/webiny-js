@@ -1,6 +1,7 @@
 import React from "react";
 import type { DocumentElement } from "@webiny/website-builder-sdk";
 import { useComponent } from "~/BaseEditor/hooks/useComponent.js";
+import { Icon } from "@webiny/admin-ui";
 import { InlineSvg } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/InlineSvg.js";
 
 interface ElementPreviewProps {
@@ -13,7 +14,7 @@ export const ElementPreview = ({ element }: ElementPreviewProps) => {
     return (
         <div className={"flex items-center gap-sm"}>
             <div className={"fill-accent-default"}>
-                {component.image && <InlineSvg src={component.image} />}
+                {component.image && <Icon icon={<InlineSvg src={component.image} />} size={"md"} />}
             </div>
             <span className={"text-md font-semibold text-neutral-primary"}>
                 {component.label ?? element.component.name}

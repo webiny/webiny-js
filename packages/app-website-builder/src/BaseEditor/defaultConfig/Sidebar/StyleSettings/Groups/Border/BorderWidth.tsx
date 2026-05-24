@@ -77,9 +77,9 @@ export const BorderWidth = observer(({ elementId }: BorderWidthProps) => {
     const rowClassname = "flex flex-row w-full justify-center items-center py-xs";
 
     return (
-        <div className="flex flex-col items-center bg-neutral-light text-neutral-strong rounded-lg p-sm">
+        <div className="flex flex-col items-center bg-neutral-light text-neutral-strong rounded-xl p-sm">
             {/* Top border width */}
-            <div className={"grid grid-cols-3 items-center w-full"}>
+            <div className={"grid grid-cols-3 items-center w-full relative"}>
                 <span className="text-sm">Border width</span>
                 <div className={"flex justify-center"}>
                     <ValueSelector

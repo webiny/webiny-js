@@ -2,6 +2,7 @@ import * as React from "react";
 import { useMemo } from "react";
 import { ToggleGroup as ToggleGroupPrimitives } from "radix-ui";
 import { cn, cva, makeDecoratable, type VariantProps } from "~/utils.js";
+import { Tooltip } from "~/Tooltip/index.js";
 import { useToggleGroup } from "./useToggleGroup.js";
 import type { ToggleGroupItemFormatted, ToggleGroupItemParams } from "../domains/index.js";
 
@@ -168,9 +169,8 @@ const ToggleGroupRenderer = ({
         <ToggleGroupPrimitives.Root {...radixProps} disabled={disabled} className={containerClass}>
             {items.map(item => {
                 const contentLayout = !item.label && item.icon ? "icon" : "text";
-                return (
+                const trigger = (
                     <ToggleGroupPrimitives.Item
-                        key={item.id}
                         value={item.value}
                         disabled={item.disabled}
                         className={cn(toggleGroupItemVariants({ variant, size, contentLayout }))}
@@ -180,6 +180,17 @@ const ToggleGroupRenderer = ({
                         {item.iconPosition === "end" && item.icon}
                     </ToggleGroupPrimitives.Item>
                 );
+                if (item.tooltip) {
+                    return (
+                        <Tooltip
+                            key={item.id}
+                            content={item.tooltip}
+                            side="bottom"
+                            trigger={trigger}
+                        />
+                    );
+                }
+                return <React.Fragment key={item.id}>{trigger}</React.Fragment>;
             })}
         </ToggleGroupPrimitives.Root>
     );

@@ -45,6 +45,7 @@ export const Visibility = observer(({ elementId }: VisibilityProps) => {
             }
         >
             <SegmentedControl
+                fullWidth
                 items={ITEMS}
                 value={isVisible ? "show" : "hide"}
                 onChange={value => toggleVisibility(value === "hide")}

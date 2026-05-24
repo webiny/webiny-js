@@ -5,6 +5,7 @@ import { useStyles } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/useS
 import { BackgroundImageParser } from "./BackgroundImageParser.js";
 import { toTitleCaseLabel } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/Groups/Background/toTitleCaseLabel.js";
 import { InheritanceLabel } from "~/BaseEditor/defaultConfig/Sidebar/InheritanceLabel.js";
+import { SidebarRow } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/SidebarRow.js";
 
 const POSITIONS = [
     "top left",
@@ -49,9 +50,7 @@ export const BackgroundPosition = observer(({ elementId }: { elementId: string }
     const inheritance = inheritanceMap?.backgroundPosition ?? {};
 
     return (
-        <Select
-            size={"md"}
-            variant={"secondary"}
+        <SidebarRow
             label={
                 <InheritanceLabel
                     onReset={onReset}
@@ -60,12 +59,16 @@ export const BackgroundPosition = observer(({ elementId }: { elementId: string }
                     text={"Position"}
                 />
             }
-            description={"Select background position"}
-            disabled={!hasBackgroundImage}
-            value={localValue ?? "center"}
-            displayResetAction={false}
-            onChange={onPositionChange}
-            options={options}
-        />
+        >
+            <Select
+                size={"md"}
+                variant={"secondary"}
+                disabled={!hasBackgroundImage}
+                value={localValue ?? "center"}
+                displayResetAction={false}
+                onChange={onPositionChange}
+                options={options}
+            />
+        </SidebarRow>
     );
 });

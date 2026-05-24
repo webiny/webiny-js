@@ -44,6 +44,8 @@ export const BorderColor = observer(({ elementId }: BorderColorProps) => {
             }
         >
             <ColorPicker
+                size={"md"}
+                variant={"secondary"}
                 value={styles.borderColor ?? "transparent"}
                 onChange={handleDrag}
                 onChangeComplete={handleCommit}

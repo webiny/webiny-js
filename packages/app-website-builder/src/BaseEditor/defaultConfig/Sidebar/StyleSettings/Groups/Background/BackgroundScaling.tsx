@@ -5,6 +5,7 @@ import { useStyles } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/useS
 import { BackgroundImageParser } from "./BackgroundImageParser.js";
 import { toTitleCaseLabel } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/Groups/Background/toTitleCaseLabel.js";
 import { InheritanceLabel } from "~/BaseEditor/defaultConfig/Sidebar/InheritanceLabel.js";
+import { SidebarRow } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/SidebarRow.js";
 
 interface Scaling {
     name: string;
@@ -82,9 +83,7 @@ export const BackgroundScaling = observer(({ elementId }: { elementId: string })
     const inheritance = inheritanceMap?.backgroundSize ?? {};
 
     return (
-        <Select
-            size={"md"}
-            variant={"secondary"}
+        <SidebarRow
             label={
                 <InheritanceLabel
                     onReset={onReset}
@@ -93,12 +92,16 @@ export const BackgroundScaling = observer(({ elementId }: { elementId: string })
                     text={"Scaling"}
                 />
             }
-            description={"Select image scaling"}
-            disabled={!hasBackgroundImage}
-            value={scaling ? scaling.name : ""}
-            displayResetAction={false}
-            onChange={onValueChange}
-            options={options}
-        />
+        >
+            <Select
+                size={"md"}
+                variant={"secondary"}
+                disabled={!hasBackgroundImage}
+                value={scaling ? scaling.name : ""}
+                displayResetAction={false}
+                onChange={onValueChange}
+                options={options}
+            />
+        </SidebarRow>
     );
 });
