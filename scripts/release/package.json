@@ -8,6 +8,6 @@
   "main": "./src/index.js",
   "devDependencies": {
     "@types/folder-hash": "^4.0.4",
-    "@types/yargs": "^17.0.8"
+    "@types/yargs": "^17.0.35"
   }
 }
