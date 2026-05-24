@@ -56,6 +56,18 @@ export async function publishPackages(opts: PublishOptions): Promise<PublishResu
 
     logger.info("Publishing %s packages with dist-tag %s", toPublish.length, distTag);
 
+    // Run per-package prepublishOnly scripts from the package root.
+    for (const pkg of toPublish) {
+        const pkgJson = loadJsonFileSync<PackageJson>(path.join(pkg.pkgRoot, "package.json"));
+        const script = pkgJson.scripts?.prepublishOnly;
+        if (!script) {
+            continue;
+        }
+        logger.info("Running prepublishOnly for %s", pkg.name);
+        await execa("sh", ["-c", script], { cwd: pkg.pkgRoot, stdio: "inherit" });
+    }
+
+    // Pack and publish each package.
     const results: PublishResult[] = [];
 
     for (let i = 0; i < toPublish.length; i += concurrency) {
@@ -65,9 +77,16 @@ export async function publishPackages(opts: PublishOptions): Promise<PublishResu
                 try {
                     await pRetry(
                         async () => {
+                            const { stdout: tarball } = await execa(
+                                "npm",
+                                ["pack", "--pack-destination", pkg.pkgRoot],
+                                { cwd: pkg.publishDir, stdio: "pipe" }
+                            );
+
+                            const tarballPath = path.join(pkg.pkgRoot, tarball.trim());
+
                             try {
-                                await execa("npm", ["publish", pkg.publishDir, "--tag", distTag], {
-                                    cwd: pkg.pkgRoot,
+                                await execa("npm", ["publish", tarballPath, "--tag", distTag], {
                                     stdio: "pipe"
                                 });
                             } catch (err: any) {
@@ -76,6 +95,10 @@ export async function publishPackages(opts: PublishOptions): Promise<PublishResu
                                     return;
                                 }
                                 throw err;
+                            } finally {
+                                if (fs.existsSync(tarballPath)) {
+                                    fs.unlinkSync(tarballPath);
+                                }
                             }
                         },
                         { retries }
