@@ -77,23 +77,23 @@ export const BorderWidth = observer(({ elementId }: BorderWidthProps) => {
     const rowClassname = "flex flex-row w-full justify-center items-center py-xs";
 
     return (
-        <div className="flex flex-col items-center bg-neutral-light border-sm border-neutral-muted relative rounded-md">
-            <span className="absolute text-sm" style={{ top: 3, left: 5 }}>
-                Border width
-            </span>
-
-            <LinkedEditing linked={linked} onToggle={onToggleLinkedEditing} />
-
+        <div className="flex flex-col items-center bg-neutral-light text-neutral-strong rounded-lg p-sm">
             {/* Top border width */}
-            <div className={rowClassname} style={{ paddingTop: "8px" }}>
-                <ValueSelector
-                    label={linked ? "Border width" : "Top border width"}
-                    {...borderTopWidth}
-                    onReset={onReset}
-                    units={heightOptions}
-                    onChange={onBorderTopWidthChange}
-                    onChangePreview={onBorderTopWidthPreviewChange}
-                />
+            <div className={"grid grid-cols-3 items-center w-full"}>
+                <span className="text-sm">Border width</span>
+                <div className={"flex justify-center"}>
+                    <ValueSelector
+                        label={linked ? "Border width" : "Top border width"}
+                        {...borderTopWidth}
+                        onReset={onReset}
+                        units={heightOptions}
+                        onChange={onBorderTopWidthChange}
+                        onChangePreview={onBorderTopWidthPreviewChange}
+                    />
+                </div>
+                <div className={"flex justify-end"}>
+                    <LinkedEditing linked={linked} onToggle={onToggleLinkedEditing} />
+                </div>
             </div>
 
             {/* Center Row (Left + placeholder + Right) */}

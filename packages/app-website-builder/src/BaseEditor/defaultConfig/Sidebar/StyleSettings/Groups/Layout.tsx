@@ -16,7 +16,7 @@ const heightOptions = UnitsOptions.heightUnits().add("auto").getOptions();
 export const Layout = ({ elementId }: LayoutProps) => {
     return (
         <StyleAccordion.Item title={"Layout"} icon={<LayoutIcon />}>
-            <Grid>
+            <Grid gap={"small"}>
                 <Grid.Column span={12}>
                     <Alignment elementId={elementId} />
                 </Grid.Column>

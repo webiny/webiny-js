@@ -8,6 +8,7 @@ import { ReactComponent as AlignRight } from "@webiny/icons/align_horizontal_rig
 import { ReactComponent as CenterHorizontally } from "@webiny/icons/align_horizontal_center.svg";
 import { useStyles } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/useStyles.js";
 import { InheritanceLabel } from "../../../InheritanceLabel.js";
+import { SidebarRow } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/SidebarRow.js";
 import { IconButton } from "./IconButton.js";
 
 const activeVariant = "secondary";
@@ -111,8 +112,11 @@ export const Alignment = observer(({ elementId }: { elementId: string }) => {
         .some(item => item.overridden);
 
     return (
-        <div>
-            <InheritanceLabel text={"Align"} onReset={onReset} isOverridden={isOverridden} />
+        <SidebarRow
+            label={
+                <InheritanceLabel text={"Align"} onReset={onReset} isOverridden={isOverridden} />
+            }
+        >
             <div className={"flex flex-row w-full justify-between"}>
                 {/* Horizontal Alignment */}
                 <IconButton
@@ -153,6 +157,6 @@ export const Alignment = observer(({ elementId }: { elementId: string }) => {
                     tooltip={"Align to the bottom side"}
                 />
             </div>
-        </div>
+        </SidebarRow>
     );
 });

@@ -50,6 +50,8 @@ export const BackgroundPosition = observer(({ elementId }: { elementId: string }
 
     return (
         <Select
+            size={"md"}
+            variant={"secondary"}
             label={
                 <InheritanceLabel
                     onReset={onReset}

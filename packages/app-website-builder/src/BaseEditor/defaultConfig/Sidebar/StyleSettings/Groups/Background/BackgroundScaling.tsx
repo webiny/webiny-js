@@ -83,6 +83,8 @@ export const BackgroundScaling = observer(({ elementId }: { elementId: string })
 
     return (
         <Select
+            size={"md"}
+            variant={"secondary"}
             label={
                 <InheritanceLabel
                     onReset={onReset}

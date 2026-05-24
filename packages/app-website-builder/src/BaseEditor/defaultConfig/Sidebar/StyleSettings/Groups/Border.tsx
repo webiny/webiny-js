@@ -10,9 +10,7 @@ interface BorderProps {
 export const Border = ({ elementId }: BorderProps) => {
     return (
         <StyleAccordion.Item title={"Border"} icon={<BorderIcon />}>
-            <div style={{ width: 280, marginLeft: -8 }}>
-                <BorderControl elementId={elementId} />
-            </div>
+            <BorderControl elementId={elementId} />
         </StyleAccordion.Item>
     );
 };

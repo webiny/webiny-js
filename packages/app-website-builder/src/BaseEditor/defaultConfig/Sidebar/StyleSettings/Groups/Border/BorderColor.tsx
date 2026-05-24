@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { ColorPicker } from "@webiny/admin-ui";
 import { useStyles } from "../../useStyles.js";
 import { InheritanceLabel } from "~/BaseEditor/defaultConfig/Sidebar/InheritanceLabel.js";
+import { SidebarRow } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/SidebarRow.js";
 
 interface BorderColorProps {
     elementId: string;
@@ -32,7 +33,7 @@ export const BorderColor = observer(({ elementId }: BorderColorProps) => {
     const inheritance = inheritanceMap?.borderColor ?? {};
 
     return (
-        <ColorPicker
+        <SidebarRow
             label={
                 <InheritanceLabel
                     onReset={onReset}
@@ -41,10 +42,12 @@ export const BorderColor = observer(({ elementId }: BorderColorProps) => {
                     text={"Border color"}
                 />
             }
-            description={"Select border color"}
-            value={styles.borderColor ?? "transparent"}
-            onChange={handleDrag}
-            onChangeComplete={handleCommit}
-        />
+        >
+            <ColorPicker
+                value={styles.borderColor ?? "transparent"}
+                onChange={handleDrag}
+                onChangeComplete={handleCommit}
+            />
+        </SidebarRow>
     );
 });
