@@ -1,7 +1,6 @@
 /**
  * This tool will re-link monorepo packages to one of the following directories (by priority):
- * - {package}/package.json -> publishConfig.directory
- * - lerna.json -> command.publish.contents
+ * - {package}/package.json -> webiny.publishFrom
  * - package root directory
  */
 
@@ -71,9 +70,6 @@ export const linkWorkspaces = async ({ whitelist, blacklist } = defaults) => {
             return whitelist.some(w => pkg.startsWith(w));
         });
 
-    const lernaJson = path.resolve("lerna.json");
-    const lerna = fs.existsSync(lernaJson) ? loadJsonFileSync(lernaJson) : null;
-
     for (let i = 0; i < packages.length; i++) {
         const packageJson = path.resolve(packages[i], "package.json");
         if (!fs.existsSync(packageJson)) {
@@ -83,11 +79,7 @@ export const linkWorkspaces = async ({ whitelist, blacklist } = defaults) => {
         const pkgJson = await PackageJson.fromFile(packageJson);
         const pkg = pkgJson.getJson();
 
-        let targetDirectory = get(pkg, "publishConfig.directory");
-        if (!targetDirectory && lerna) {
-            targetDirectory = get(lerna, "command.publish.contents");
-        }
-
+        const targetDirectory = get(pkg, "webiny.publishFrom");
         const link = path.resolve("node_modules", pkg.name);
         const target = path.resolve(packages[i], targetDirectory || ".");
 
