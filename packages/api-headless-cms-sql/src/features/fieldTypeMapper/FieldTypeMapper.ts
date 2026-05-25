@@ -1,7 +1,7 @@
-import type { SqlColumnType } from "./abstractions/index.js";
-import { FieldTypeMapper } from "./abstractions/index.js";
+import type { SqlColumnType } from "./abstractions.js";
+import { FieldTypeMapperAbstraction } from "./abstractions.js";
 
-class FieldTypeMapperImpl implements FieldTypeMapper.Interface {
+class FieldTypeMapperImpl implements FieldTypeMapperAbstraction.Interface {
     private readonly mapping: Record<string, SqlColumnType> = {
         text: "text",
         "long-text": "text",
@@ -27,7 +27,7 @@ class FieldTypeMapperImpl implements FieldTypeMapper.Interface {
     }
 }
 
-export const FieldTypeMapperImplementation = FieldTypeMapper.createImplementation({
+export const FieldTypeMapper = FieldTypeMapperAbstraction.createImplementation({
     implementation: FieldTypeMapperImpl,
     dependencies: []
 });

@@ -24,8 +24,9 @@ export interface IFieldTypeMapper {
     mapFieldType(fieldType: string, settings?: Record<string, unknown>): SqlColumnType;
 }
 
-export const FieldTypeMapper = createAbstraction<IFieldTypeMapper>("Cms/Sql/FieldTypeMapper");
+export const FieldTypeMapperAbstraction =
+    createAbstraction<IFieldTypeMapper>("Cms/Sql/FieldTypeMapper");
 
-export namespace FieldTypeMapper {
+export namespace FieldTypeMapperAbstraction {
     export type Interface = IFieldTypeMapper;
 }

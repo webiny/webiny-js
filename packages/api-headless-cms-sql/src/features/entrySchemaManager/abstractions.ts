@@ -15,10 +15,10 @@ export interface IEntrySchemaManager {
     drop(tableName: string): Promise<void>;
 }
 
-export const EntrySchemaManager = createAbstraction<IEntrySchemaManager>(
+export const EntrySchemaManagerAbstraction = createAbstraction<IEntrySchemaManager>(
     "Cms/Sql/EntrySchemaManager"
 );
 
-export namespace EntrySchemaManager {
+export namespace EntrySchemaManagerAbstraction {
     export type Interface = IEntrySchemaManager;
 }

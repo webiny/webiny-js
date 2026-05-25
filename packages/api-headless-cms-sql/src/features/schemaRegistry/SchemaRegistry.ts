@@ -1,6 +1,6 @@
-import { SchemaRegistry } from "./abstractions/index.js";
+import { SchemaRegistryAbstraction } from "./abstractions.js";
 
-class SchemaRegistryImpl implements SchemaRegistry.Interface {
+class SchemaRegistryImpl implements SchemaRegistryAbstraction.Interface {
     private readonly verified: Set<string> = new Set();
 
     public isVerified(tableName: string): boolean {
@@ -16,7 +16,7 @@ class SchemaRegistryImpl implements SchemaRegistry.Interface {
     }
 }
 
-export const SchemaRegistryImplementation = SchemaRegistry.createImplementation({
+export const SchemaRegistry = SchemaRegistryAbstraction.createImplementation({
     implementation: SchemaRegistryImpl,
     dependencies: []
 });

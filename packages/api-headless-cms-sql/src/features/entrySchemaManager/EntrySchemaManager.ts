@@ -1,24 +1,24 @@
 import type { Knex } from "knex";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import type { IStoredTableSchema } from "./abstractions/index.js";
-import { EntrySchemaManager } from "./abstractions/index.js";
-import { FieldTypeMapper } from "./abstractions/index.js";
-import { SchemaRegistry } from "./abstractions/index.js";
-import { KnexInstance } from "./abstractions/index.js";
+import type { IStoredTableSchema } from "./abstractions.js";
+import { EntrySchemaManagerAbstraction } from "./abstractions.js";
+import { FieldTypeMapperAbstraction } from "~/features/fieldTypeMapper/abstractions.js";
+import { SchemaRegistryAbstraction } from "~/features/schemaRegistry/abstractions.js";
+import { KnexInstanceAbstraction } from "~/features/knexInstance/abstractions.js";
 import { addColumn } from "./columnBuilder.js";
 
 const SCHEMAS_TABLE = "cms_table_schemas";
 
-class EntrySchemaManagerImpl implements EntrySchemaManager.Interface {
-    private readonly knex: KnexInstance.Interface;
-    private readonly fieldTypeMapper: FieldTypeMapper.Interface;
-    private readonly registry: SchemaRegistry.Interface;
+class EntrySchemaManagerImpl implements EntrySchemaManagerAbstraction.Interface {
+    private readonly knex: KnexInstanceAbstraction.Interface;
+    private readonly fieldTypeMapper: FieldTypeMapperAbstraction.Interface;
+    private readonly registry: SchemaRegistryAbstraction.Interface;
     private schemasTableReady: boolean = false;
 
     constructor(
-        knex: KnexInstance.Interface,
-        fieldTypeMapper: FieldTypeMapper.Interface,
-        registry: SchemaRegistry.Interface
+        knex: KnexInstanceAbstraction.Interface,
+        fieldTypeMapper: FieldTypeMapperAbstraction.Interface,
+        registry: SchemaRegistryAbstraction.Interface
     ) {
         this.knex = knex;
         this.fieldTypeMapper = fieldTypeMapper;
@@ -194,7 +194,7 @@ class EntrySchemaManagerImpl implements EntrySchemaManager.Interface {
     }
 }
 
-export const EntrySchemaManagerImplementation = EntrySchemaManager.createImplementation({
+export const EntrySchemaManager = EntrySchemaManagerAbstraction.createImplementation({
     implementation: EntrySchemaManagerImpl,
-    dependencies: [KnexInstance, FieldTypeMapper, SchemaRegistry]
+    dependencies: [KnexInstanceAbstraction, FieldTypeMapperAbstraction, SchemaRegistryAbstraction]
 });

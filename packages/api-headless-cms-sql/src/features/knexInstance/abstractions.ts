@@ -3,8 +3,8 @@ import { createAbstraction } from "@webiny/feature/api/index.js";
 
 export type IKnexInstance = Knex;
 
-export const KnexInstance = createAbstraction<IKnexInstance>("Cms/Sql/KnexInstance");
+export const KnexInstanceAbstraction = createAbstraction<IKnexInstance>("Cms/Sql/KnexInstance");
 
-export namespace KnexInstance {
+export namespace KnexInstanceAbstraction {
     export type Interface = IKnexInstance;
 }

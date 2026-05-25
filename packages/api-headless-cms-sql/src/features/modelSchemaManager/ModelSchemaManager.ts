@@ -1,8 +1,8 @@
-import type { IColumnDefinition } from "./abstractions/index.js";
-import { ModelSchemaManager } from "./abstractions/index.js";
-import { SchemaRegistry } from "./abstractions/index.js";
-import { KnexInstance } from "./abstractions/index.js";
-import { applyColumnDefinitions } from "./columnBuilder.js";
+import type { IColumnDefinition } from "~/features/fieldTypeMapper/abstractions.js";
+import { ModelSchemaManagerAbstraction } from "./abstractions.js";
+import { SchemaRegistryAbstraction } from "~/features/schemaRegistry/abstractions.js";
+import { KnexInstanceAbstraction } from "~/features/knexInstance/abstractions.js";
+import { applyColumnDefinitions } from "~/features/entrySchemaManager/columnBuilder.js";
 
 const MODEL_TABLE_COLUMNS: IColumnDefinition[] = [
     { name: "modelId", type: "varchar", nullable: false, primaryKey: true },
@@ -30,11 +30,14 @@ const MODEL_TABLE_COLUMNS: IColumnDefinition[] = [
     { name: "savedOn", type: "varchar", nullable: true }
 ];
 
-class ModelSchemaManagerImpl implements ModelSchemaManager.Interface {
-    private readonly knex: KnexInstance.Interface;
-    private readonly registry: SchemaRegistry.Interface;
+class ModelSchemaManagerImpl implements ModelSchemaManagerAbstraction.Interface {
+    private readonly knex: KnexInstanceAbstraction.Interface;
+    private readonly registry: SchemaRegistryAbstraction.Interface;
 
-    constructor(knex: KnexInstance.Interface, registry: SchemaRegistry.Interface) {
+    constructor(
+        knex: KnexInstanceAbstraction.Interface,
+        registry: SchemaRegistryAbstraction.Interface
+    ) {
         this.knex = knex;
         this.registry = registry;
     }
@@ -56,7 +59,7 @@ class ModelSchemaManagerImpl implements ModelSchemaManager.Interface {
     }
 }
 
-export const ModelSchemaManagerImplementation = ModelSchemaManager.createImplementation({
+export const ModelSchemaManager = ModelSchemaManagerAbstraction.createImplementation({
     implementation: ModelSchemaManagerImpl,
-    dependencies: [KnexInstance, SchemaRegistry]
+    dependencies: [KnexInstanceAbstraction, SchemaRegistryAbstraction]
 });
