@@ -18,11 +18,11 @@ import type { Knex } from "knex";
 const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
     const { plugins, container } = params;
 
-    const knex = container.resolve<KnexInstance.Interface>(KnexInstance);
-    const tableNameResolver = container.resolve<TableNameResolver.Interface>(TableNameResolver);
-    const groupSchemaManager = container.resolve<GroupSchemaManager.Interface>(GroupSchemaManager);
-    const modelSchemaManager = container.resolve<ModelSchemaManager.Interface>(ModelSchemaManager);
-    const entrySchemaManager = container.resolve<EntrySchemaManager.Interface>(EntrySchemaManager);
+    const knex = container.resolve(KnexInstance);
+    const tableNameResolver = container.resolve(TableNameResolver);
+    const groupSchemaManager = container.resolve(GroupSchemaManager);
+    const modelSchemaManager = container.resolve(ModelSchemaManager);
+    const entrySchemaManager = container.resolve(EntrySchemaManager);
 
     const groups = createGroupsStorageOperations(knex, tableNameResolver, groupSchemaManager);
 
@@ -58,7 +58,7 @@ interface ISqlStorageOperationsConfig {
 class SqlStorageOperationsFactoryImpl implements StorageOperationsFactoryAbstraction.Interface {
     public async create(context: CmsContext) {
         return createSqlStorageOperations({
-            knex: context.container.resolve<KnexInstance.Interface>(KnexInstance),
+            knex: context.container.resolve(KnexInstance),
             plugins: context.plugins,
             container: context.container
         });
