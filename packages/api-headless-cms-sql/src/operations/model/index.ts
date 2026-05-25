@@ -1,5 +1,5 @@
-import type { Knex } from "knex";
 import type {
+    CmsModelField,
     CmsModelStorageOperations,
     CmsModelStorageOperationsCreateParams,
     CmsModelStorageOperationsDeleteParams,
@@ -8,33 +8,49 @@ import type {
     CmsModelStorageOperationsUpdateParams,
     StorageCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import type { TableNameResolver } from "~/utils/TableNameResolver.js";
 import type { IModelRow } from "./types.js";
+import { KnexInstance } from "~/schema/KnexInstance.js";
+import { TableNameResolver } from "~/schema/TableNameResolver.js";
+import { ModelSchemaManager } from "~/schema/abstractions.js";
+import { EntrySchemaManager } from "~/schema/abstractions.js";
 import { modelToRow } from "./mappers.js";
 import { rowToModel } from "./mappers.js";
 
-interface CreateModelsStorageOperationsParams {
-    knex: Knex;
-    tableNameResolver: TableNameResolver;
-}
-
 const MODELS_ENTITY = "models";
 
+/* Extract CmsModelField[] from StorageCmsModel.fields, which may be compressed. */
+const extractFields = (model: StorageCmsModel): CmsModelField[] => {
+    if (Array.isArray(model.fields)) {
+        return model.fields;
+    }
+
+    return [];
+};
+
 export const createModelsStorageOperations = (
-    params: CreateModelsStorageOperationsParams
+    knex: KnexInstance.Interface,
+    tableNameResolver: TableNameResolver.Interface,
+    modelSchemaManager: ModelSchemaManager.Interface,
+    entrySchemaManager: EntrySchemaManager.Interface
 ): CmsModelStorageOperations => {
-    const { knex, tableNameResolver } = params;
+    const tableName = (tenant: string) => {
+        return tableNameResolver.resolve(tenant, MODELS_ENTITY);
+    };
 
-    const table = (tenant: string) => {
-        const tableName = tableNameResolver.resolve(tenant, MODELS_ENTITY);
+    const ensureSchema = async (tenant: string) => {
+        await modelSchemaManager.ensure(tableName(tenant));
+    };
 
-        return knex<IModelRow>(tableName);
+    const query = (tenant: string) => {
+        return knex<IModelRow>(tableName(tenant));
     };
 
     const get = async (
         getParams: CmsModelStorageOperationsGetParams
     ): Promise<StorageCmsModel | null> => {
-        const row = await table(getParams.tenant).where("modelId", getParams.modelId).first();
+        await ensureSchema(getParams.tenant);
+
+        const row = await query(getParams.tenant).where("modelId", getParams.modelId).first();
 
         if (!row) {
             return null;
@@ -48,7 +64,9 @@ export const createModelsStorageOperations = (
     ): Promise<StorageCmsModel[]> => {
         const { where } = listParams;
 
-        const rows = await table(where.tenant).select<IModelRow[]>();
+        await ensureSchema(where.tenant);
+
+        const rows = await query(where.tenant).select<IModelRow[]>();
 
         return rows.map(rowToModel);
     };
@@ -56,29 +74,46 @@ export const createModelsStorageOperations = (
     const create = async (
         createParams: CmsModelStorageOperationsCreateParams
     ): Promise<StorageCmsModel> => {
-        const row = modelToRow(createParams.model);
+        const model = createParams.model;
+        const row = modelToRow(model);
 
-        await table(createParams.model.tenant).insert(row);
+        await ensureSchema(model.tenant);
+        await query(model.tenant).insert(row);
 
-        return createParams.model;
+        const fields = extractFields(model);
+        const entryTable = tableNameResolver.resolve(model.tenant, model.modelId);
+
+        await entrySchemaManager.sync(entryTable, model.modelId, fields);
+
+        return model;
     };
 
     const update = async (
         updateParams: CmsModelStorageOperationsUpdateParams
     ): Promise<StorageCmsModel> => {
-        const row = modelToRow(updateParams.model);
+        const model = updateParams.model;
+        const row = modelToRow(model);
 
-        await table(updateParams.model.tenant)
-            .where("modelId", updateParams.model.modelId)
-            .update(row);
+        await ensureSchema(model.tenant);
+        await query(model.tenant).where("modelId", model.modelId).update(row);
 
-        return updateParams.model;
+        const fields = extractFields(model);
+        const entryTable = tableNameResolver.resolve(model.tenant, model.modelId);
+
+        await entrySchemaManager.sync(entryTable, model.modelId, fields);
+
+        return model;
     };
 
     const del = async (deleteParams: CmsModelStorageOperationsDeleteParams): Promise<void> => {
-        await table(deleteParams.model.tenant)
-            .where("modelId", deleteParams.model.modelId)
-            .delete();
+        const model = deleteParams.model;
+
+        await ensureSchema(model.tenant);
+        await query(model.tenant).where("modelId", model.modelId).delete();
+
+        const entryTable = tableNameResolver.resolve(model.tenant, model.modelId);
+
+        await entrySchemaManager.drop(entryTable);
     };
 
     return {

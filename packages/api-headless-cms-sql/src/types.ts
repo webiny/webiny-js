@@ -11,7 +11,6 @@ export interface SqlStorageOperationsFactoryParams {
     knex: Knex;
     plugins: PluginsContainer;
     container: CmsContext["container"];
-    tableNamePrefix?: string;
 }
 
 export interface SqlStorageOperationsFactory {

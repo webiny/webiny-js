@@ -1,4 +1,3 @@
-import type { Knex } from "knex";
 import type {
     CmsGroup,
     CmsGroupStorageOperations,
@@ -8,33 +7,38 @@ import type {
     CmsGroupStorageOperationsListParams,
     CmsGroupStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
-import type { TableNameResolver } from "~/utils/TableNameResolver.js";
 import type { IGroupRow } from "./types.js";
 import { GROUP_COLUMNS } from "./types.js";
+import { KnexInstance } from "~/schema/KnexInstance.js";
+import { TableNameResolver } from "~/schema/TableNameResolver.js";
+import { GroupSchemaManager } from "~/schema/abstractions.js";
 import { groupToRow } from "./mappers.js";
 import { rowToGroup } from "./mappers.js";
 import { parseSortField } from "~/utils/parseSortField.js";
 
-interface CreateGroupsStorageOperationsParams {
-    knex: Knex;
-    tableNameResolver: TableNameResolver;
-}
-
 const GROUPS_ENTITY = "groups";
 
 export const createGroupsStorageOperations = (
-    params: CreateGroupsStorageOperationsParams
+    knex: KnexInstance.Interface,
+    tableNameResolver: TableNameResolver.Interface,
+    groupSchemaManager: GroupSchemaManager.Interface
 ): CmsGroupStorageOperations => {
-    const { knex, tableNameResolver } = params;
+    const ensureSchema = async (tenant: string) => {
+        const name = tableNameResolver.resolve(tenant, GROUPS_ENTITY);
 
-    const table = (tenant: string) => {
-        const tableName = tableNameResolver.resolve(tenant, GROUPS_ENTITY);
+        await groupSchemaManager.ensure(name);
+    };
 
-        return knex<IGroupRow>(tableName);
+    const query = (tenant: string) => {
+        const name = tableNameResolver.resolve(tenant, GROUPS_ENTITY);
+
+        return knex<IGroupRow>(name);
     };
 
     const get = async (getParams: CmsGroupStorageOperationsGetParams): Promise<CmsGroup | null> => {
-        const row = await table(getParams.tenant).where("id", getParams.id).first();
+        await ensureSchema(getParams.tenant);
+
+        const row = await query(getParams.tenant).where("id", getParams.id).first();
 
         if (!row) {
             return null;
@@ -46,16 +50,18 @@ export const createGroupsStorageOperations = (
     const list = async (listParams: CmsGroupStorageOperationsListParams): Promise<CmsGroup[]> => {
         const { where, sort } = listParams;
 
-        const query = table(where.tenant);
+        await ensureSchema(where.tenant);
+
+        const qb = query(where.tenant);
 
         if (sort && sort.length > 0) {
             for (const sortField of sort) {
                 const [field, direction] = parseSortField(sortField);
-                query.orderBy(field, direction);
+                qb.orderBy(field, direction);
             }
         }
 
-        const rows = await query.select<IGroupRow[]>([...GROUP_COLUMNS]);
+        const rows = await qb.select<IGroupRow[]>([...GROUP_COLUMNS]);
 
         return rows.map(rowToGroup);
     };
@@ -63,17 +69,20 @@ export const createGroupsStorageOperations = (
     const create = async (createParams: CmsGroupStorageOperationsCreateParams): Promise<void> => {
         const row = groupToRow(createParams.group);
 
-        await table(createParams.group.tenant).insert(row);
+        await ensureSchema(createParams.group.tenant);
+        await query(createParams.group.tenant).insert(row);
     };
 
     const update = async (updateParams: CmsGroupStorageOperationsUpdateParams): Promise<void> => {
         const row = groupToRow(updateParams.group);
 
-        await table(updateParams.group.tenant).where("id", updateParams.group.id).update(row);
+        await ensureSchema(updateParams.group.tenant);
+        await query(updateParams.group.tenant).where("id", updateParams.group.id).update(row);
     };
 
     const del = async (deleteParams: CmsGroupStorageOperationsDeleteParams): Promise<void> => {
-        await table(deleteParams.group.tenant).where("id", deleteParams.group.id).delete();
+        await ensureSchema(deleteParams.group.tenant);
+        await query(deleteParams.group.tenant).where("id", deleteParams.group.id).delete();
     };
 
     return {

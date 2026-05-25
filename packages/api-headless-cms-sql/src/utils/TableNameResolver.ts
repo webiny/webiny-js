@@ -1,9 +1,11 @@
+import type { ITableNameResolver } from "~/schema/TableNameResolver.js";
+
 interface ITableNameResolverParams {
     sharedTables: boolean;
     tableNamePrefix?: string;
 }
 
-export class TableNameResolver {
+export class TableNameResolverImpl implements ITableNameResolver {
     private readonly sharedTables: boolean;
     private readonly prefix: string | null;
 
