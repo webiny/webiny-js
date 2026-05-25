@@ -42,20 +42,17 @@ interface TemplateListItemProps {
     onTemplate: (template: CmsDynamicZoneTemplate) => void;
 }
 
+// Used #f1f2f4 b/c in Figma, the color was result of multiple colors combined.
 const TemplateListItem = ({ template, onTemplate }: TemplateListItemProps) => {
     return (
         <Dialog.Close asChild>
             <div
                 onClick={() => onTemplate(template)}
                 className={
-                    "group flex items-center gap-md py-sm px-md rounded-lg bg-neutral-dimmed cursor-pointer"
+                    "group flex items-center gap-y-md py-sm-extra px-md rounded-lg bg-neutral-light hover:bg-[#f1f2f4] cursor-pointer"
                 }
             >
-                <div
-                    className={
-                        "flex items-center justify-center p-md bg-neutral-dimmed rounded shrink-0"
-                    }
-                >
+                <div className={"flex items-center justify-center shrink-0 pr-md"}>
                     <TemplateIcon icon={template.icon} style={{ width: 24, height: 24 }} />
                 </div>
                 <div className={"flex-1 min-w-0"}>
@@ -130,7 +127,7 @@ const Gallery = makeDecoratable("TemplateGallery", (props: TemplateGalleryProps)
                     ))}
                 </GalleryList>
             ) : (
-                <div className={"flex flex-col mb-xs gap-y-sm"}>
+                <div className={"flex flex-col gap-y-sm"}>
                     {filteredTemplates.map(template => (
                         <TemplateListItem
                             key={template.id}
