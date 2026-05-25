@@ -6,6 +6,7 @@ import { FieldTypeMapper } from "~/features/fieldTypeMapper/abstractions.js";
 import { SchemaRegistry } from "~/features/schemaRegistry/abstractions.js";
 import { KnexInstance } from "~/features/knexInstance/abstractions.js";
 import { addColumn } from "./columnBuilder.js";
+import { buildFieldColumnMap } from "~/utils/columnName.js";
 
 const SCHEMAS_TABLE = "cms_table_schemas";
 
@@ -47,19 +48,19 @@ class EntrySchemaManagerImpl implements EntrySchemaManagerAbstraction.Interface 
             ? (JSON.parse(storedSchema.fields) as CmsModelField[])
             : [];
 
-        const storedStorageIds = new Set(storedFields.map(f => f.storageId));
+        const storedColumns = new Set(
+            buildFieldColumnMap(storedFields).map(e => e.columnName)
+        );
 
-        const newFields = fields.filter(f => !storedStorageIds.has(f.storageId));
+        const currentColumns = buildFieldColumnMap(fields);
+        const newColumns = currentColumns.filter(e => !storedColumns.has(e.columnName));
 
-        if (newFields.length > 0) {
+        if (newColumns.length > 0) {
             await this.knex.schema.alterTable(tableName, table => {
-                for (const field of newFields) {
-                    const columnType = this.fieldTypeMapper.mapFieldType(
-                        field.type,
-                        field.settings
-                    );
+                for (const entry of newColumns) {
+                    const columnType = this.fieldTypeMapper.mapFieldType(entry.type);
 
-                    addColumn(table, field.storageId, columnType, true);
+                    addColumn(table, entry.columnName, columnType, true);
                 }
             });
         }
@@ -79,13 +80,15 @@ class EntrySchemaManagerImpl implements EntrySchemaManagerAbstraction.Interface 
     }
 
     private async createEntryTable(tableName: string, fields: CmsModelField[]): Promise<void> {
+        const fieldColumns = buildFieldColumnMap(fields);
+
         await this.knex.schema.createTable(tableName, table => {
             this.applyEntryMetaColumns(table);
 
-            for (const field of fields) {
-                const columnType = this.fieldTypeMapper.mapFieldType(field.type, field.settings);
+            for (const entry of fieldColumns) {
+                const columnType = this.fieldTypeMapper.mapFieldType(entry.type);
 
-                addColumn(table, field.storageId, columnType, true);
+                addColumn(table, entry.columnName, columnType, true);
             }
         });
     }
@@ -191,6 +194,29 @@ class EntrySchemaManagerImpl implements EntrySchemaManagerAbstraction.Interface 
         table.text("live");
         table.string("revisionDescription");
         table.bigInteger("expiresAt");
+
+        table.string("tenant").index();
+        table.boolean("isLatest").defaultTo(false).index();
+        table.boolean("isPublished").defaultTo(false).index();
+        table.string("location_folderId");
+
+        table.string("revisionDeletedBy_id");
+        table.text("revisionDeletedBy");
+        table.string("revisionRestoredBy_id");
+        table.text("revisionRestoredBy");
+        table.string("revisionFirstPublishedBy_id");
+        table.text("revisionFirstPublishedBy");
+        table.string("revisionLastPublishedBy_id");
+        table.text("revisionLastPublishedBy");
+
+        table.string("deletedBy_id");
+        table.text("deletedBy");
+        table.string("restoredBy_id");
+        table.text("restoredBy");
+        table.string("firstPublishedBy_id");
+        table.text("firstPublishedBy");
+        table.string("lastPublishedBy_id");
+        table.text("lastPublishedBy");
     }
 }
 
