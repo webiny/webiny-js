@@ -7,7 +7,10 @@ export const Routes = {
     }),
     Deliveries: new Route({
         name: "Webhooks/Deliveries",
-        path: "/webhooks/deliveries"
+        path: "/webhooks/deliveries",
+        params: zod => ({
+            webhookId: zod.string().optional()
+        })
     }),
     Settings: new Route({
         name: "Webhooks/Settings",

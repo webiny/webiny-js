@@ -1,8 +1,8 @@
-import type { StorybookConfig } from "@storybook/react-vite";
+import type { StorybookConfig } from "storybook-react-rsbuild";
 import { dirname, join } from "node:path";
 import path from "path";
 import { fileURLToPath } from "node:url";
-import svgr from "vite-plugin-svgr";
+import { pluginSvgr } from "@rsbuild/plugin-svgr";
 import tailwindcss from "@tailwindcss/postcss";
 
 function getAbsolutePath(value: string): any {
@@ -21,7 +21,7 @@ const config: StorybookConfig = {
     addons: [getAbsolutePath("@storybook/addon-a11y"), getAbsolutePath("@storybook/addon-docs")],
 
     framework: {
-        name: getAbsolutePath("@storybook/react-vite"),
+        name: getAbsolutePath("storybook-react-rsbuild"),
         options: {}
     },
 
@@ -30,28 +30,27 @@ const config: StorybookConfig = {
         disableWhatsNewNotifications: true
     },
 
-    viteFinal: async config => {
+    rsbuildFinal: async config => {
         config.resolve = config.resolve || {};
         config.resolve.alias = {
             ...config.resolve.alias,
             "~": path.resolve(import.meta.dirname, "../src")
         };
 
-        config.css = {
-            ...config.css,
-            postcss: {
-                plugins: [tailwindcss]
-            }
+        config.tools = config.tools || {};
+        config.tools.postcss = (_, { addPlugins }) => {
+            addPlugins(tailwindcss);
         };
 
         config.plugins = [
             ...(config.plugins || []),
-            svgr({
+            pluginSvgr({
                 svgrOptions: {
                     exportType: "named",
                     namedExport: "ReactComponent"
                 },
-                include: "**/packages/icons/**/*.svg"
+                mixedImport: true,
+                include: /packages\/icons\/.*\.svg$/
             })
         ];
 

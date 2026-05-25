@@ -1,20 +1,24 @@
 import React, { useMemo, useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
+import { DiContainerProvider, useContainer, useFeature, useRoute } from "@webiny/app";
 import { Button, Heading, Skeleton, Text } from "@webiny/admin-ui";
 import { ListWebhookDeliveriesFeature } from "~/admin/features/listWebhookDeliveries/feature.js";
 import { ListAvailableEventsFeature } from "~/admin/features/listAvailableEvents/feature.js";
 import { ResendWebhookDeliveryFeature } from "~/admin/features/resendWebhookDelivery/feature.js";
+import { ListWebhooksFeature } from "~/admin/features/ListWebhooks/feature.js";
 import { WebhookDeliveriesPagePresenterFeature } from "../feature.js";
+import { Routes } from "~/admin/routes.js";
 import { DeliveryFilters } from "./DeliveryFilters.js";
 import { DeliveryList } from "./DeliveryList.js";
 
 const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner() {
     const { presenter } = useFeature(WebhookDeliveriesPagePresenterFeature);
+    const { route } = useRoute(Routes.Deliveries);
+    const webhookId = route?.params?.webhookId;
 
     useEffect(() => {
-        void presenter.init();
-    }, [presenter]);
+        void presenter.init(webhookId);
+    }, [presenter, webhookId]);
 
     const { vm } = presenter;
 
@@ -58,6 +62,7 @@ export const WebhookDeliveriesPage = () => {
         ListWebhookDeliveriesFeature.register(child);
         ListAvailableEventsFeature.register(child);
         ResendWebhookDeliveryFeature.register(child);
+        ListWebhooksFeature.register(child);
         WebhookDeliveriesPagePresenterFeature.register(child);
         return child;
     }, [container]);

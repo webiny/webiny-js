@@ -3,7 +3,7 @@ import debounce from "lodash/debounce.js";
 import { observer } from "mobx-react-lite";
 import { Accordion, Scrollbar, Text } from "@webiny/admin-ui";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
-import { DeliveryAccordionRow } from "~/admin/presentation/WebhookDeliveries/components/DeliveryAccordionRow.js";
+import { DeliveryAccordionRow } from "./DeliveryAccordionRow.js";
 import { DeliveryBottomInfoBar } from "./DeliveryBottomInfoBar.js";
 import type { IWebhookDeliveriesPagePresenter } from "../abstractions.js";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
