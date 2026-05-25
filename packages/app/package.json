@@ -28,7 +28,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "@webiny/react-properties": "0.0.0",
-    "@webiny/stdlib": "^0.0.3",
+    "@webiny/stdlib": "^0.0.4",
     "apollo-cache": "^1.3.5",
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.6.10",

@@ -9734,13 +9734,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/folder-hash@npm:^4.0.4":
-  version: 4.0.4
-  resolution: "@types/folder-hash@npm:4.0.4"
-  checksum: 10/69ea717701c11a62f1cac9e85f5fddd6d80c7bf4d63edfa7b19f43756483ff6b8ad73ae18d0d618670a9dfda0e4568a4be9958da54dde8178d9f5594bfcd4c47
-  languageName: node
-  linkType: hard
-
 "@types/fs-extra@npm:^11.0.4":
   version: 11.0.4
   resolution: "@types/fs-extra@npm:11.0.4"
@@ -10809,11 +10802,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny-scripts/build-packages@workspace:scripts/buildPackages"
   dependencies:
-    "@types/folder-hash": "npm:^4.0.4"
     "@types/yargs": "npm:^17.0.35"
+    "@webiny/stdlib": "npm:^0.0.4"
     chalk: "npm:^5.6.2"
     execa: "npm:^5.1.1"
-    folder-hash: "npm:^4.1.3"
     fs-extra: "npm:^11.3.5"
     listr2: "npm:^10.2.1"
     load-json-file: "npm:^7.0.1"
@@ -10890,7 +10882,6 @@ __metadata:
   resolution: "@webiny-scripts/release@workspace:scripts/release"
   dependencies:
     "@octokit/rest": "npm:^22.0.1"
-    "@types/folder-hash": "npm:^4.0.4"
     "@types/yargs": "npm:^17.0.35"
     chalk: "npm:^5.6.2"
     execa: "npm:^5.1.1"
@@ -12565,7 +12556,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.3"
+    "@webiny/stdlib": "npm:^0.0.4"
     apollo-cache: "npm:^1.3.5"
     apollo-cache-inmemory: "npm:^1.6.6"
     apollo-client: "npm:^2.6.10"
@@ -12985,7 +12976,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.3"
+    "@webiny/stdlib": "npm:^0.0.4"
     "@webiny/utils": "npm:0.0.0"
     graphql: "npm:^16.14.0"
     graphql-scalars: "npm:^1.25.0"
@@ -13505,9 +13496,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/stdlib@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "@webiny/stdlib@npm:0.0.3"
+"@webiny/stdlib@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "@webiny/stdlib@npm:0.0.4"
   dependencies:
     "@webiny/di": "npm:^1.0.1"
     dot-prop: "npm:^10.1.0"
@@ -13516,7 +13507,7 @@ __metadata:
     pino-pretty: "npm:^13.1.3"
     type-fest: "npm:^5.6.0"
     zod: "npm:^4.4.3"
-  checksum: 10/92d09061ebb3f20e36e09a868de9ba8ecca013b434b71bda3c0acfd449fcfb0a54b45646c947fabcca5e8ffadce7477b722381bed2cbd1268ab7c0057321e1a7
+  checksum: 10/d8bf3a45611af18aa90506c25907a3dc9af4de2cd04ca8dbadb28262ca0a7c50d15442f74270775c26881845b61493cf198c8d55a08c03e433e6c06e438daa17
   languageName: node
   linkType: hard
 
@@ -16314,18 +16305,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4.4.0":
-  version: 4.4.0
-  resolution: "debug@npm:4.4.0"
-  dependencies:
-    ms: "npm:^2.1.3"
-  peerDependenciesMeta:
-    supports-color:
-      optional: true
-  checksum: 10/1847944c2e3c2c732514b93d11886575625686056cd765336212dc15de2d2b29612b6cd80e1afba767bb8e1803b778caf9973e98169ef1a24a7a7009e1820367
-  languageName: node
-  linkType: hard
-
 "debug@npm:^3.1.0":
   version: 3.2.7
   resolution: "debug@npm:3.2.7"
@@ -18040,18 +18019,6 @@ __metadata:
   version: 1.0.3
   resolution: "flatten@npm:1.0.3"
   checksum: 10/5c57379816f1692aaa79fbc6390e0a0644e5e8442c5783ed57c6d315468eddbc53a659eaa03c9bb1e771b0f4a9bd8dd8a2620286bf21fd6538a7857321fdfb20
-  languageName: node
-  linkType: hard
-
-"folder-hash@npm:^4.1.3":
-  version: 4.1.3
-  resolution: "folder-hash@npm:4.1.3"
-  dependencies:
-    debug: "npm:4.4.0"
-    minimatch: "npm:7.4.9"
-  bin:
-    folder-hash: bin/folder-hash
-  checksum: 10/8f8e2233b6c7dadba9d2808921b30f8d4f0b0cdd703cc9d48e56d1f782e43f40574bddaad242f2c55ea64e1e3417a56e8e247065f59afcd3b2b98d14b92cabb3
   languageName: node
   linkType: hard
 
@@ -24144,13 +24111,13 @@ __metadata:
     "@types/react-dom": "npm:18.3.7"
     "@vitest/coverage-v8": "npm:^4.1.7"
     "@webiny/di": "npm:^1.0.1"
+    "@webiny/stdlib": "npm:^0.0.4"
     adio: "npm:^3.0.0"
     chalk: "npm:^5.6.2"
     cross-env: "npm:^10.1.0"
     deepmerge: "npm:^4.3.1"
     execa: "npm:^5.1.1"
     fast-glob: "npm:^3.3.3"
-    folder-hash: "npm:^4.1.3"
     fs-extra: "npm:^11.3.5"
     fsevents: "npm:^2.3.3"
     get-yarn-workspaces: "npm:^1.0.2"
