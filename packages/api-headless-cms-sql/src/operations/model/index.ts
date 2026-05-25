@@ -9,10 +9,10 @@ import type {
     StorageCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import type { IModelRow } from "./types.js";
-import { KnexInstance } from "~/schema/abstractions/index.js";
-import { TableNameResolver } from "~/schema/abstractions/index.js";
-import { ModelSchemaManager } from "~/schema/abstractions/index.js";
-import { EntrySchemaManager } from "~/schema/abstractions/index.js";
+import { KnexInstance } from "~/features/schema/abstractions/index.js";
+import { TableNameResolver } from "~/features/schema/abstractions/index.js";
+import { ModelSchemaManager } from "~/features/schema/abstractions/index.js";
+import { EntrySchemaManager } from "~/features/schema/abstractions/index.js";
 import { modelToRow } from "./mappers.js";
 import { rowToModel } from "./mappers.js";
 

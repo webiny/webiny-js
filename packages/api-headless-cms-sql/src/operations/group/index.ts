@@ -9,9 +9,9 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import type { IGroupRow } from "./types.js";
 import { GROUP_COLUMNS } from "./types.js";
-import { KnexInstance } from "~/schema/abstractions/index.js";
-import { TableNameResolver } from "~/schema/abstractions/index.js";
-import { GroupSchemaManager } from "~/schema/abstractions/index.js";
+import { KnexInstance } from "~/features/schema/abstractions/index.js";
+import { TableNameResolver } from "~/features/schema/abstractions/index.js";
+import { GroupSchemaManager } from "~/features/schema/abstractions/index.js";
 import { groupToRow } from "./mappers.js";
 import { rowToGroup } from "./mappers.js";
 import { parseSortField } from "~/utils/parseSortField.js";

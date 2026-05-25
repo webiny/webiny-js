@@ -1,4 +1,4 @@
-import type { ITableNameResolver } from "~/schema/abstractions/index.js";
+import type { ITableNameResolver } from "~/features/schema/abstractions/index.js";
 
 interface ITableNameResolverParams {
     sharedTables: boolean;

@@ -3,16 +3,16 @@ import type { SqlStorageOperationsFactory } from "~/types.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createModelsStorageOperations } from "~/operations/model/index.js";
 import { createEntriesStorageOperations } from "~/operations/entry/index.js";
-import { TableNameResolverImpl } from "~/utils/TableNameResolver.js";
+import { TableNameResolverImpl } from "~/features/schema/TableNameResolver.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
-import { SchemaFeature } from "~/schema/feature.js";
-import { GroupSchemaManager } from "~/schema/abstractions/index.js";
-import { ModelSchemaManager } from "~/schema/abstractions/index.js";
-import { EntrySchemaManager } from "~/schema/abstractions/index.js";
-import { KnexInstance } from "~/schema/abstractions/index.js";
-import { TableNameResolver } from "~/schema/abstractions/index.js";
+import { SchemaFeature } from "~/features/schema/feature.js";
+import { GroupSchemaManager } from "~/features/schema/abstractions/index.js";
+import { ModelSchemaManager } from "~/features/schema/abstractions/index.js";
+import { EntrySchemaManager } from "~/features/schema/abstractions/index.js";
+import { KnexInstance } from "~/features/schema/abstractions/index.js";
+import { TableNameResolver } from "~/features/schema/abstractions/index.js";
 import type { Knex } from "knex";
 
 const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
