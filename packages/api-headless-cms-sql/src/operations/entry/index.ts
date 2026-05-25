@@ -90,23 +90,32 @@ export const createEntriesStorageOperations = (
     const modelFieldsCache = new Map<string, ModelFields>();
     const fieldColumnsCache = new Map<string, IFieldColumnEntry[]>();
 
+    /* Builds a stable cache key from modelId + sorted field storageIds. */
+    const getCacheKey = (model: CmsModel): string => {
+        const modelFields = Array.isArray(model.fields) ? model.fields : [];
+        const fieldIds = modelFields.map(f => f.storageId).sort().join(",");
+        return `${model.modelId}:${fieldIds}`;
+    };
+
     const getCachedModelFields = (model: CmsModel): ModelFields => {
-        const cached = modelFieldsCache.get(model.modelId);
+        const key = getCacheKey(model);
+        const cached = modelFieldsCache.get(key);
         if (cached) {
             return cached;
         }
         const result = buildModelFields(model);
-        modelFieldsCache.set(model.modelId, result);
+        modelFieldsCache.set(key, result);
         return result;
     };
 
     const getCachedFieldColumns = (model: CmsModel): IFieldColumnEntry[] => {
-        const cached = fieldColumnsCache.get(model.modelId);
+        const key = getCacheKey(model);
+        const cached = fieldColumnsCache.get(key);
         if (cached) {
             return cached;
         }
         const result = getFieldColumns(model);
-        fieldColumnsCache.set(model.modelId, result);
+        fieldColumnsCache.set(key, result);
         return result;
     };
 
@@ -677,6 +686,10 @@ export const createEntriesStorageOperations = (
                     isPublished: latestStorageEntry.status === "published"
                 });
                 latestRow.tenant = model.tenant;
+
+                if (wasPublished) {
+                    latestRow.live = null;
+                }
 
                 await scopedQuery(tableName, model.tenant)
                     .where("id", latestStorageEntry.id)

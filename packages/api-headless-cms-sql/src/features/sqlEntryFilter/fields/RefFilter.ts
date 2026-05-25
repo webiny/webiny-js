@@ -1,28 +1,15 @@
+import WebinyError from "@webiny/error";
 import { SqlEntryFilter as SqlEntryFilterAbstraction } from "../abstractions/index.js";
-import { parseWhereKey } from "../../../utils/parseWhereKey.js";
 
 class RefFilterImpl implements SqlEntryFilterAbstraction.Interface {
     public readonly fieldType = "ref";
 
     public exec(params: SqlEntryFilterAbstraction.ExecParams): void {
-        const { applyFiltering, value, field, query } = params;
-
-        if (!value || typeof value !== "object" || Array.isArray(value)) {
-            return;
-        }
-
-        const refObject = value as Record<string, unknown>;
-
-        for (const refKey of Object.keys(refObject)) {
-            const { operator } = parseWhereKey(refKey);
-
-            applyFiltering({
-                query,
-                column: field.columnName,
-                operator,
-                value: refObject[refKey]
-            });
-        }
+        throw new WebinyError(
+            `Filtering by ref field "${params.field.fieldId}" is not yet supported in SQL storage. Ref fields are stored as JSON and require dedicated index columns.`,
+            "REF_FILTER_NOT_SUPPORTED",
+            { fieldId: params.field.fieldId }
+        );
     }
 }
 

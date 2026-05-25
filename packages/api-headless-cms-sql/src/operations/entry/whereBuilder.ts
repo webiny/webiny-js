@@ -273,18 +273,22 @@ export const applySearch = (
         return;
     }
 
+    const validFields = searchFields.filter(id => {
+        const f = fields[id];
+        return f && f.searchable;
+    });
+
+    if (validFields.length === 0) {
+        return;
+    }
+
     const term = `%${search}%`;
 
     query.where(function (this: Knex.QueryBuilder) {
         let first = true;
 
-        for (const fieldId of searchFields) {
+        for (const fieldId of validFields) {
             const field = fields[fieldId];
-
-            if (!field || !field.searchable) {
-                continue;
-            }
-
             const column = field.columnName;
 
             if (first) {
