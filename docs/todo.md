@@ -1,3 +1,0 @@
-- search via presenter? or inline state?
-- navigator padding?
-- starter kit updates?
