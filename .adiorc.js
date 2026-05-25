@@ -22,7 +22,13 @@ export default {
         devDependencies: true,
         peerDependencies: true
     },
-    ignoreDirs: ["node_modules/", "dist/", "build/", "nextjs/", "packages/admin-ui/storybook-static/"],
+    ignoreDirs: [
+        "node_modules/",
+        "dist/",
+        "build/",
+        "nextjs/",
+        "packages/admin-ui/storybook-static/"
+    ],
     packages: getWorkspaces()
         .filter(pkg => !pkg.includes("system-requirements"))
         .map(pkg => pkg.replace(/\//g, path.sep).replace(process.cwd() + path.sep, ""))
