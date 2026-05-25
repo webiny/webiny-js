@@ -86,7 +86,11 @@ export class Release {
             throw Error(`Failed to publish ${failures.length} package(s). See logs above.`);
         }
 
-        this.logger.info("Packages were published to NPM under %s dist-tag", this.distTag);
+        this.logger.info(
+            "Packages were published to NPM under %s dist-tag, with version %s",
+            this.distTag,
+            version
+        );
 
         if (this.createGithubRelease.isEnabled()) {
             await this.createRelease(version);
