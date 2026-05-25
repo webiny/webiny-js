@@ -14,6 +14,7 @@ const DELIVERY_FIELDS = /* GraphQL */ `
     status
     payload
     requestHeaders
+    responseHeaders
     responseTime
     responseStatus
     responseBody
@@ -21,9 +22,9 @@ const DELIVERY_FIELDS = /* GraphQL */ `
 `;
 
 export const LIST_WEBHOOK_DELIVERIES = /* GraphQL */ `
-    query ListWebhookDeliveries($webhookId: ID!, $limit: Int, $after: String) {
+    query ListWebhookDeliveries($where: WebhookDeliveryListWhereInput, $limit: Int, $after: String) {
         webhooks {
-            listWebhookDeliveries(webhookId: $webhookId, limit: $limit, after: $after) {
+            listWebhookDeliveries(where: $where, limit: $limit, after: $after) {
                 data {
                     ${DELIVERY_FIELDS}
                 }

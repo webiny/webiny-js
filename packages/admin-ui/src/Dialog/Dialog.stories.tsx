@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { Dialog } from "./Dialog.js";
 import { Button } from "~/Button/index.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";

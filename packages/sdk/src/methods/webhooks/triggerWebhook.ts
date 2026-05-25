@@ -28,7 +28,6 @@ export const triggerWebhook = createMethod(
                         responseTime
                         responseStatus
                         responseBody
-                        expiresAt
                         createdOn
                     }
                     error {

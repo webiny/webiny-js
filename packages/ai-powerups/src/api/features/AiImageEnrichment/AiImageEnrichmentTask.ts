@@ -102,7 +102,7 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
                 output: aiOutputSchema,
                 connection: {
                     sdkName: firstProvider.model.split("/")[0],
-                    apiKey: this.encryption.decrypt(firstProvider.apiKeyEncrypted)
+                    apiKey: await this.encryption.decrypt(firstProvider.apiKeyEncrypted)
                 },
                 messages: [
                     {

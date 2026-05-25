@@ -3,6 +3,7 @@ import type { WebhookSettings } from "~/admin/shared/types.js";
 
 export interface UpdateWebhookSettingsInput {
     signingSecret?: string;
+    deliveryRetentionDays?: number;
 }
 
 export interface IUpdateWebhookSettingsGateway {

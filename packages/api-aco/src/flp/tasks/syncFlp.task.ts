@@ -7,14 +7,15 @@ import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
 
 class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
-    id = SYNC_FLP_TASK_ID;
-    title = "ACO - Sync FLP record";
-    description = "Synchronizes the FLP catalog by updating the FLP record and its descendants.";
-    databaseLogs = false;
+    public readonly id = SYNC_FLP_TASK_ID;
+    public readonly title = "ACO - Sync FLP record";
+    public readonly description =
+        "Synchronizes the FLP catalog by updating the FLP record and its descendants.";
+    public readonly databaseLogs = false;
+    public readonly isPrivate = true;
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
 
-    selfCleanup = ["onSuccess" as const, "onAbort" as const];
-
-    constructor(
+    public constructor(
         private getFolder: GetFolderUseCase.Interface,
         private listFolders: ListFoldersUseCase.Interface,
         private listModels: ListModelsUseCase.Interface

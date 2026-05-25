@@ -1,0 +1,45 @@
+{
+  "name": "@webiny/background-tasks",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./api": "./api/index.js",
+    "./admin/*": "./admin/*",
+    "./*": "./*"
+  },
+  "description": "Background Tasks feature for Webiny",
+  "keywords": [
+    "background-tasks:base"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/background-tasks"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/admin-ui": "0.0.0",
+    "@webiny/app": "0.0.0",
+    "@webiny/app-admin": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/icons": "0.0.0",
+    "@webiny/sdk": "0.0.0",
+    "lodash": "^4.18.1",
+    "mobx": "^6.15.3",
+    "mobx-react-lite": "^4.1.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "typescript": "6.0.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

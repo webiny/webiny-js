@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { ReactComponent as StormIcon } from "@webiny/icons/storm.svg";
 import { Avatar } from "./Avatar.js";
 

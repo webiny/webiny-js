@@ -3,7 +3,7 @@ import {
     IsRemotePulumiBackendService,
     ProjectSdkParamsService
 } from "~/abstractions/index.js";
-import { GracefulError } from "@webiny/project";
+import { GracefulError } from "~/index.js";
 
 class ValidateProductionPulumiStateImpl implements CoreBeforeDeploy.Interface {
     constructor(

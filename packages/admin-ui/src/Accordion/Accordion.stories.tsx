@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { Accordion, type AccordionItemProps as BaseAccordionItemProps } from "./Accordion.js";
 
 import { ReactComponent as WarningIcon } from "@webiny/icons/insert_chart.svg";

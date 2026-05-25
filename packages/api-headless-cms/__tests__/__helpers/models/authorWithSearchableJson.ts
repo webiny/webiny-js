@@ -30,7 +30,9 @@ export const createAuthorWithSearchableJson = (params?: ICreateAuthorWithSearcha
                 fieldId: "name",
                 type: "text",
                 label: "Name",
-                list: false
+                list: false,
+                validation: [],
+                listValidation: []
             },
             {
                 id: "info",
@@ -38,7 +40,9 @@ export const createAuthorWithSearchableJson = (params?: ICreateAuthorWithSearcha
                 fieldId: "info",
                 type: "searchable-json",
                 label: "Info",
-                list: false
+                list: false,
+                validation: [],
+                listValidation: []
             },
             {
                 id: "nonSearchableJson",
@@ -46,9 +50,12 @@ export const createAuthorWithSearchableJson = (params?: ICreateAuthorWithSearcha
                 fieldId: "nonSearchableJson",
                 type: "json",
                 label: "Non Searchable JSON",
-                list: false
+                list: false,
+                validation: [],
+                listValidation: []
             }
         ],
-        group
+        group: group.id,
+        icon: null
     });
 };

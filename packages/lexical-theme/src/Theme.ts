@@ -1,8 +1,15 @@
 import type { EditorThemeClasses } from "lexical";
-import type { ColorValue, EditorTheme, TypographyMap, TypographyValue } from "~/types.js";
+import type {
+    ColorValue,
+    FontSizes,
+    EditorTheme,
+    TypographyMap,
+    TypographyValue
+} from "~/types.js";
 
 type InternalProps = {
     $colors: EditorTheme["colors"];
+    $fontSizes: EditorTheme["fontSizes"];
     $typography: EditorTheme["typography"];
     $cacheKey: string;
 };
@@ -13,34 +20,43 @@ export class Theme {
     static cache: Record<string, Theme> = {};
     static lastUsedTheme: Theme | null = null;
     public readonly tokens: EditorThemeClasses;
-    private _colors: ColorValue[];
-    private _typography: Record<string, TypographyValue[]>;
-    private _typographyMap: TypographyMap;
+    private readonly _colors: ColorValue[];
+    private readonly _fontSizes: FontSizes;
+    private readonly _typography: Record<string, TypographyValue[]>;
+    private readonly _typographyMap: TypographyMap;
 
-    constructor(
-        colors: EditorTheme["colors"],
-        typography: EditorTheme["typography"],
-        tokens: EditorThemeClasses
-    ) {
-        this._colors = colors;
-        this._typography = typography;
-        this._typographyMap = this.toTypographyMap(typography);
-        this.tokens = tokens;
+    constructor(params: {
+        colors: EditorTheme["colors"];
+        typography: EditorTheme["typography"];
+        fontSizes: EditorTheme["fontSizes"];
+        tokens: EditorThemeClasses;
+    }) {
+        this._colors = params.colors;
+        this._typography = params.typography;
+        this._fontSizes = params.fontSizes;
+        this._typographyMap = this.toTypographyMap(params.typography);
+        this.tokens = params.tokens;
     }
 
     static empty() {
-        return new Theme([], {}, {});
+        return new Theme({ colors: [], typography: {}, fontSizes: [], tokens: {} });
     }
 
     static from(lexicalTheme: EditorThemeClasses) {
-        const { $colors, $typography, $cacheKey, ...tokens } = lexicalTheme as InternalTheme;
+        const { $colors, $typography, $fontSizes, $cacheKey, ...tokens } =
+            lexicalTheme as InternalTheme;
 
         if (!$colors) {
             return Theme.lastUsedTheme ?? Theme.empty();
         }
 
         if (!Theme.cache[$cacheKey]) {
-            Theme.cache[$cacheKey] = new Theme($colors, $typography, tokens);
+            Theme.cache[$cacheKey] = new Theme({
+                colors: $colors,
+                typography: $typography,
+                fontSizes: $fontSizes,
+                tokens
+            });
         }
 
         Theme.lastUsedTheme = Theme.cache[$cacheKey];
@@ -54,6 +70,10 @@ export class Theme {
 
     get typography() {
         return this._typography;
+    }
+
+    get fontSizes() {
+        return this._fontSizes;
     }
 
     getTypographyById(id: string) {
@@ -75,7 +95,6 @@ export class Theme {
     /*
      *  Creates a map of style key ID's and typography style objects
      */
-
     private toTypographyMap(typography: EditorTheme["typography"]): TypographyMap {
         return Object.keys(typography).reduce((acc, key) => {
             const items = typography[key];

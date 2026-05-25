@@ -22,7 +22,9 @@
     "typescript": "6.0.3"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

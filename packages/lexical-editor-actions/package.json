@@ -21,7 +21,9 @@
     "@webiny/build-tools": "0.0.0"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

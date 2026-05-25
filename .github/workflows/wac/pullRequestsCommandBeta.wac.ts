@@ -10,6 +10,7 @@ import {
 
 // The HEAD branch of the PR (e.g. "release/6.3.0") — used as checkout path and working dir.
 const PR_BRANCH = "${{ needs.prBranch.outputs.pr-branch }}";
+const RELEASE_VERSION = "${{ needs.prBranch.outputs.release-version }}";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: PR_BRANCH });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: PR_BRANCH });
@@ -56,7 +57,8 @@ export const pullRequestsCommandBeta = createWorkflow({
             name: "Get PR branch",
             checkout: false,
             outputs: {
-                "pr-branch": "${{ steps.pr-branch.outputs.pr-branch }}"
+                "pr-branch": "${{ steps.pr-branch.outputs.pr-branch }}",
+                "release-version": "${{ steps.release-version.outputs.release-version }}"
             },
             steps: [
                 {
@@ -64,6 +66,16 @@ export const pullRequestsCommandBeta = createWorkflow({
                     id: "pr-branch",
                     env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
                     run: 'echo "pr-branch=$(gh pr view ${{ github.event.issue.number }} --repo ${{ github.repository }} --json headRefName -q .headRefName)" >> $GITHUB_OUTPUT'
+                },
+                {
+                    name: "Parse release version from branch name",
+                    id: "release-version",
+                    run: [
+                        'BRANCH="${{ steps.pr-branch.outputs.pr-branch }}"',
+                        'VERSION="${BRANCH#release/}"',
+                        'if [ "$VERSION" = "$BRANCH" ]; then echo "Branch does not match release/* pattern" && exit 1; fi',
+                        'echo "release-version=$VERSION" >> $GITHUB_OUTPUT'
+                    ].join("\n")
                 }
             ]
         }),
@@ -121,7 +133,7 @@ export const pullRequestsCommandBeta = createWorkflow({
                             id: "release",
                             run: [
                                 "set -o pipefail",
-                                "yarn release --type=beta --tag=beta 2>&1 | tee /tmp/release-output.txt",
+                                `yarn release --type=beta --tag=beta --version=${RELEASE_VERSION} 2>&1 | tee /tmp/release-output.txt`,
                                 "BETA_VERSION=$(grep -oE '[0-9]+\\.[0-9]+\\.[0-9]+-beta\\.[0-9]+' /tmp/release-output.txt | tail -1)",
                                 'echo "beta-version=$BETA_VERSION" >> $GITHUB_OUTPUT'
                             ].join("\n")
@@ -154,7 +166,6 @@ export const pullRequestsCommandBeta = createWorkflow({
             env: {
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}",
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
-                LATEST_VERSION: "${{ vars.LATEST_VERSION }}",
                 SLACK_RELEASE_CHANNEL_WEBHOOK: "${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}"
             },
             checkout: { path: PR_BRANCH, ref: PR_BRANCH, "fetch-depth": 0 },
@@ -181,9 +192,8 @@ export const pullRequestsCommandBeta = createWorkflow({
                             id: "release",
                             run: [
                                 "set -o pipefail",
-                                "yarn release --type=latest --sourceTag=beta --createGithubRelease=true 2>&1 | tee /tmp/release-output.txt",
-                                "LATEST_VERSION=$(grep -oE '[0-9]+\\.[0-9]+\\.[0-9]+' /tmp/release-output.txt | tail -1)",
-                                'echo "latest-version=$LATEST_VERSION" >> $GITHUB_OUTPUT'
+                                `yarn release --type=latest --version=${RELEASE_VERSION} --createGithubRelease=latest 2>&1 | tee /tmp/release-output.txt`,
+                                'echo "latest-version=' + RELEASE_VERSION + '" >> $GITHUB_OUTPUT'
                             ].join("\n")
                         }
                     ],

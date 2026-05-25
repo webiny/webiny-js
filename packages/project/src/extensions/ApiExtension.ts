@@ -1,5 +1,5 @@
 import { defineExtension, zodSrcPath } from "~/extensions/index.js";
-import { ExtensionSrcResolver } from "@webiny/project";
+import { ExtensionSrcResolver } from "~/index.js";
 import { z } from "zod";
 import path from "path";
 import { Node, Project, ArrayLiteralExpression } from "ts-morph";

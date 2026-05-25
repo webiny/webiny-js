@@ -11,6 +11,7 @@ import type { IWebhookSettings } from "~/api/domain/WebhookSettings.js";
 
 interface WebhookSettingsValues {
     signingSecret?: string;
+    deliveryRetentionDays?: number;
 }
 
 class GetWebhookSettingsRepositoryImpl implements RepositoryAbstraction.Interface {
@@ -39,7 +40,8 @@ class GetWebhookSettingsRepositoryImpl implements RepositoryAbstraction.Interfac
 
             if (entryResult.isOk()) {
                 return Result.ok({
-                    signingSecret: entryResult.value.values.signingSecret
+                    signingSecret: entryResult.value.values.signingSecret,
+                    deliveryRetentionDays: entryResult.value.values.deliveryRetentionDays
                 });
             }
 
@@ -54,7 +56,7 @@ class GetWebhookSettingsRepositoryImpl implements RepositoryAbstraction.Interfac
                 return Result.fail(WebhookPersistenceError.from(createResult.error));
             }
 
-            return Result.ok({ signingSecret: undefined });
+            return Result.ok({ signingSecret: undefined, deliveryRetentionDays: undefined });
         } catch (error) {
             return Result.fail(WebhookPersistenceError.from(error));
         }

@@ -4,12 +4,12 @@ import { type IDeleteFlpTaskInput } from "~/types.js";
 import { DeleteFlpUseCase } from "~/features/flp/DeleteFlp/index.js";
 
 class DeleteFlpTaskImpl implements TaskDefinition.Interface<IDeleteFlpTaskInput> {
-    id = DELETE_FLP_TASK_ID;
-    title = "ACO - Delete FLP record";
-    description =
+    public readonly id = DELETE_FLP_TASK_ID;
+    public readonly title = "ACO - Delete FLP record";
+    public readonly description =
         "Synchronizes the FLP catalog by deleting the FLP record based on the provided folder.";
-    databaseLogs = false;
-
+    public readonly databaseLogs = false;
+    public readonly isPrivate = true;
     public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
 
     constructor(private deleteFlp: DeleteFlpUseCase.Interface) {}

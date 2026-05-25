@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
 import { FilesListCache } from "../shared/abstractions.js";
+import { FileFieldsProvider } from "../shared/FileFieldsProvider.js";
 import {
     UpdateFileUseCase as UseCaseAbstraction,
     UpdateFileGateway as GatewayAbstraction,
@@ -52,6 +53,9 @@ function createContainer(mockGateway: MockGateway) {
 
     // Register the shared cache instance.
     container.registerInstance(FilesListCache, cache);
+
+    // Register the file fields provider.
+    container.register(FileFieldsProvider).inSingletonScope();
 
     // Register the real repository and use case.
     container.register(UpdateFileRepository).inSingletonScope();

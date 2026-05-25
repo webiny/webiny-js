@@ -2,7 +2,7 @@ import React from "react";
 import { onError } from "apollo-link-error";
 import { type ServerError } from "apollo-link-http-common";
 import { print } from "graphql/language/index.js";
-import { boolean } from "boolean";
+import { toBoolean } from "@webiny/stdlib";
 import { ApolloLinkPlugin } from "./ApolloLinkPlugin.js";
 import createErrorOverlay from "./NetworkErrorLinkPlugin/createErrorOverlay.js";
 import { LocalAwsLambdaTimeoutMessage } from "./NetworkErrorLinkPlugin/LocalAwsLambdaTimeoutMessage.js";
@@ -26,7 +26,7 @@ export class NetworkErrorLinkPlugin extends ApolloLinkPlugin {
 
     public override createLink() {
         return onError(({ networkError, operation }) => {
-            const debug = appConfig.getKey("DEBUG", boolean(process.env.REACT_APP_DEBUG));
+            const debug = appConfig.getKey("DEBUG", toBoolean(process.env.REACT_APP_DEBUG));
 
             if (networkError) {
                 // Publish network error event
