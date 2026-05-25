@@ -72,6 +72,17 @@ export class Release {
 
         if (this.dryRun) {
             this.logger.info("Dry run — skipping publish, GitHub release, and git reset.");
+
+            try {
+                const distTags = await this.fetchDistTags();
+                const previousLatest = distTags["latest"];
+                const fromRef = previousLatest ? `v${previousLatest}` : "HEAD~10";
+                const changelog = await new Changelog(process.cwd()).generate(fromRef, "HEAD");
+                this.logger.log("Changelog preview:\n\n%s\n", changelog);
+            } catch (err: any) {
+                this.logger.warning("Could not generate changelog preview: %s", err.message);
+            }
+
             return { version, tag: this.distTag };
         }
 
@@ -110,7 +121,7 @@ export class Release {
     }
 
     protected validateConfig() {
-        if (this.createGithubRelease.isEnabled() && !process.env.GH_TOKEN) {
+        if (!this.dryRun && this.createGithubRelease.isEnabled() && !process.env.GH_TOKEN) {
             throw Error("GH_TOKEN environment variable is not set.");
         }
 
