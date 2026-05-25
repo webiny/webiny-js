@@ -1,4 +1,5 @@
-export function buildDomainPrompt(components: unknown, tools: unknown): string {
+export function buildDomainPrompt(components: Array<{ name: string }>, tools: unknown): string {
+    const componentNames = components.map(c => `"${c.name}"`).join(" | ");
     return `You are a page content generator. Given a user prompt, generate structured page content using the provided component catalog and available tools.
 
 ###
@@ -72,8 +73,10 @@ ${JSON.stringify(tools, null, 2)}
 ### Page Schema
 
 \`\`\`typescript
+type ComponentName = ${componentNames};
+
 type ElementSchema = {
-  component: string;
+  component: ComponentName;
   inputs: Record<string, unknown>;
 };
 
@@ -137,6 +140,8 @@ Key rules:
   for Webiny/GridColumn
 - Webiny/GridColumn's "children" is an array of CreateElement actions for
   the actual content
+
+IMPORTANT: Only use components listed in the Component Catalog above. Do NOT invent component names. Any element with an unrecognized component name will be silently removed from the output.
 
 You MUST return a parsable JSON object with a "page" key containing the array of elements. No extra text outside the JSON.`;
 }

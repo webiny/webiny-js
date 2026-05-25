@@ -14,6 +14,7 @@ import type {
 } from "./abstractions.js";
 import { buildDomainPrompt } from "./buildPrompt.js";
 import { LlmJsonResponse } from "./LlmJsonResponse.js";
+import { ComponentFilter } from "./ComponentFilter.js";
 
 class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.Interface {
     constructor(
@@ -60,7 +61,8 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
             Object.assign(sdkTools, projectFileTool);
         }
 
-        const systemText = buildDomainPrompt(params.components, params.tools) + context.toString();
+        const components = params.components as Array<{ name: string }>;
+        const systemText = buildDomainPrompt(components, params.tools) + context.toString();
 
         const system = {
             role: "system" as const,
@@ -91,7 +93,9 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
                 aiResult.text ||
                 (aiResult.steps.filter(step => step.text.length > 0).pop()?.text ?? "");
 
-            const output = LlmJsonResponse.fromRawText(text).toString();
+            const elements = LlmJsonResponse.fromRawText(text).toArray();
+            const componentFilter = new ComponentFilter(components);
+            const output = JSON.stringify(componentFilter.filter(elements));
 
             const filesRead = new Set<string>();
             let toolCallsMade = 0;
