@@ -173,6 +173,16 @@ export const entryToRow = (
     for (const fc of fieldColumns) {
         const value = getNestedValue(entry.values as Record<string, unknown>, fc.path);
 
+        if (fc.type === "ref__entryId") {
+            /* Extract entryId from ref value for the companion column. */
+            if (value && typeof value === "object" && !Array.isArray(value)) {
+                row[fc.columnName] = (value as Record<string, unknown>).entryId ?? null;
+            } else {
+                row[fc.columnName] = null;
+            }
+            continue;
+        }
+
         if (value != null && typeof value === "object") {
             row[fc.columnName] = JSON.stringify(value);
         } else {
@@ -192,6 +202,11 @@ export const rowToEntry = (
     const values: Record<string, unknown> = {};
 
     for (const fc of fieldColumns) {
+        if (fc.type === "ref__entryId") {
+            /* Companion column is denormalized; skip it when reconstructing entry values. */
+            continue;
+        }
+
         const rawValue = row[fc.columnName];
 
         let value: unknown;

@@ -68,6 +68,30 @@ export const buildFieldColumnMap = (
             continue;
         }
 
+        if (field.type === "ref") {
+            const mainColumnName = storagePathToColumnName(currentPath);
+
+            /* Main column stores the full ref JSON. */
+            entries.push({
+                columnName: mainColumnName,
+                storageId: field.storageId,
+                fieldId: field.fieldId,
+                type: field.type,
+                path: currentPath
+            });
+
+            /* Companion column stores the entryId for filtering. */
+            entries.push({
+                columnName: `${mainColumnName}__entryId`,
+                storageId: field.storageId,
+                fieldId: field.fieldId,
+                type: "ref__entryId",
+                path: currentPath
+            });
+
+            continue;
+        }
+
         entries.push({
             columnName: storagePathToColumnName(currentPath),
             storageId: field.storageId,

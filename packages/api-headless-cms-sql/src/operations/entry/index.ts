@@ -93,7 +93,10 @@ export const createEntriesStorageOperations = (
     /* Builds a stable cache key from modelId + sorted field storageIds. */
     const getCacheKey = (model: CmsModel): string => {
         const modelFields = Array.isArray(model.fields) ? model.fields : [];
-        const fieldIds = modelFields.map(f => f.storageId).sort().join(",");
+        const fieldIds = modelFields
+            .map(f => f.storageId)
+            .sort()
+            .join(",");
         return `${model.modelId}:${fieldIds}`;
     };
 
