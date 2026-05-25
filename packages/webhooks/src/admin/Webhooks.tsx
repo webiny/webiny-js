@@ -16,7 +16,6 @@ import { UpdateWebhookSettingsFeature } from "./features/updateWebhookSettings/i
 import { WebhookPermissionsFeature } from "./features/permissions/index.js";
 import { WebhookListPresenterFeature } from "./presentation/WebhookList/index.js";
 import { WebhookFormPresenterFeature } from "./presentation/WebhookForm/index.js";
-import { WebhookDeliveriesPresenterFeature } from "./presentation/WebhookDeliveries/index.js";
 import { WebhookSettingsPresenterFeature } from "./presentation/WebhookSettings/index.js";
 import { WebhookRoutes } from "./WebhookRoutes.js";
 import { WEBHOOK_PERMISSIONS_SCHEMA } from "~/admin/permissions.js";
@@ -42,7 +41,6 @@ export const Webhooks = () => {
             {/* Presentation features. */}
             <RegisterFeature feature={WebhookListPresenterFeature} />
             <RegisterFeature feature={WebhookFormPresenterFeature} />
-            <RegisterFeature feature={WebhookDeliveriesPresenterFeature} />
             <RegisterFeature feature={WebhookSettingsPresenterFeature} />
             {/* Routes + menu. */}
             <WebhookRoutes />

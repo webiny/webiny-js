@@ -23,7 +23,6 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     private _saving = false;
     private _isNew = false;
     private _webhook: Webhook | null = null;
-    private _showDeliveries = false;
     private _webhookId: string | null = null;
     private _form: IFormModel;
     private _entityFieldNames: string[] = [];
@@ -35,7 +34,6 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
             saving: this._saving,
             isNew: this._isNew,
             webhook: this._webhook,
-            showDeliveries: this._showDeliveries,
             permissions: {
                 canEdit: this.permissions.canEdit("webhook"),
                 canDelete: this.permissions.canDelete("webhook")
@@ -272,14 +270,6 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
             return;
         }
         await this.deleteWebhookUseCase.execute(this._webhookId);
-    }
-
-    public openDeliveries(): void {
-        this._showDeliveries = true;
-    }
-
-    public closeDeliveries(): void {
-        this._showDeliveries = false;
     }
 
     public async init(id: string): Promise<void> {

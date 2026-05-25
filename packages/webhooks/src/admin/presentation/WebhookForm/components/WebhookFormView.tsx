@@ -14,7 +14,6 @@ import { WebhookPermissionsFeature } from "~/admin/features/permissions/feature.
 import { Routes } from "~/admin/routes.js";
 import { SigningSecret } from "./SigningSecret.js";
 import { HasPermission } from "~/admin/presentation/security/HasPermission.js";
-import { WebhookDeliveriesDrawer } from "~/admin/presentation/WebhookDeliveries/components/WebhookDeliveriesDrawer.js";
 
 const SectionHeading = ({ field }: { field: any }) => {
     return <Heading level={6}>{String(field.label ?? "")}</Heading>;
@@ -45,50 +44,44 @@ const WebhookFormViewInner = observer(function WebhookFormViewInner() {
     }
 
     return (
-        <>
-            <div className="flex flex-col h-main-content">
-                <div className="flex items-center justify-between py-sm px-md">
-                    <Heading level={5}>
-                        {vm.isNew ? "Create Webhook" : (vm.webhook?.name ?? "Edit Webhook")}
-                    </Heading>
-                    <div className="flex gap-sm">
-                        {!vm.isNew ? (
-                            <Button variant="secondary" onClick={() => presenter.openDeliveries()}>
-                                Deliveries
-                            </Button>
-                        ) : null}
-                        <Button variant="secondary" onClick={() => goToRoute(Routes.List)}>
-                            Cancel
+        <div className="flex flex-col h-main-content">
+            <div className="flex items-center justify-between py-sm px-md">
+                <Heading level={5}>
+                    {vm.isNew ? "Create Webhook" : (vm.webhook?.name ?? "Edit Webhook")}
+                </Heading>
+                <div className="flex gap-sm">
+                    {!vm.isNew && vm.webhook ? (
+                        <Button
+                            variant="secondary"
+                            onClick={() =>
+                                goToRoute(Routes.Deliveries, { webhookId: vm.webhook!.id })
+                            }
+                        >
+                            Deliveries
                         </Button>
-                        <HasPermission entity="webhook" action="edit">
-                            <Button
-                                variant="primary"
-                                onClick={() => void presenter.save()}
-                                disabled={vm.saving}
-                            >
-                                {vm.saving ? "Saving..." : "Save"}
-                            </Button>
-                        </HasPermission>
-                    </div>
-                </div>
-                <Separator />
-
-                <div className="p-lg">
-                    <>
-                        <FormErrors form={vm.form} />
-                        <FormView name="Webhook" form={vm.form} renderers={renderers} />
-                        <SigningSecret presenter={presenter} />
-                    </>
+                    ) : null}
+                    <Button variant="secondary" onClick={() => goToRoute(Routes.List)}>
+                        Cancel
+                    </Button>
+                    <HasPermission entity="webhook" action="edit">
+                        <Button
+                            variant="primary"
+                            onClick={() => void presenter.save()}
+                            disabled={vm.saving}
+                        >
+                            {vm.saving ? "Saving..." : "Save"}
+                        </Button>
+                    </HasPermission>
                 </div>
             </div>
-            {vm.showDeliveries && vm.webhook ? (
-                <WebhookDeliveriesDrawer
-                    webhookId={vm.webhook.id}
-                    open={vm.showDeliveries}
-                    onClose={() => presenter.closeDeliveries()}
-                />
-            ) : null}
-        </>
+            <Separator />
+
+            <div className="p-lg">
+                <FormErrors form={vm.form} />
+                <FormView name="Webhook" form={vm.form} renderers={renderers} />
+                <SigningSecret presenter={presenter} />
+            </div>
+        </div>
     );
 });
 
