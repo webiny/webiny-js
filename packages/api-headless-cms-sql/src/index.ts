@@ -10,9 +10,13 @@ import { FieldTypeMapperFeature } from "~/features/fieldTypeMapper/feature.js";
 import { GroupSchemaManagerFeature } from "~/features/groupSchemaManager/feature.js";
 import { ModelSchemaManagerFeature } from "~/features/modelSchemaManager/feature.js";
 import { EntrySchemaManagerFeature } from "~/features/entrySchemaManager/feature.js";
+import { SqlOperatorFeature } from "~/features/sqlOperator/feature.js";
+import { SqlEntryFilterFeature } from "~/features/sqlEntryFilter/feature.js";
 import { GroupSchemaManager } from "~/features/groupSchemaManager/abstractions.js";
 import { ModelSchemaManager } from "~/features/modelSchemaManager/abstractions.js";
 import { EntrySchemaManager } from "~/features/entrySchemaManager/abstractions.js";
+import { SqlOperatorRegistry } from "~/features/sqlOperator/abstractions/index.js";
+import { SqlEntryFilterRegistry } from "~/features/sqlEntryFilter/abstractions/index.js";
 import { KnexInstance } from "~/features/knexInstance/abstractions.js";
 import {
     TableNameResolver,
@@ -23,13 +27,16 @@ import { TableNameResolverFeature } from "~/features/tableNameResolver/feature.j
 import { KnexInstanceFeature } from "~/features/knexInstance/feature.js";
 
 const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
-    const { plugins, container } = params;
+    const { container } = params;
 
     const knex = container.resolve(KnexInstance);
     const tableNameResolver = container.resolve(TableNameResolver);
+    const tableNameResolverConfig = container.resolve(TableNameResolverConfig);
     const groupSchemaManager = container.resolve(GroupSchemaManager);
     const modelSchemaManager = container.resolve(ModelSchemaManager);
     const entrySchemaManager = container.resolve(EntrySchemaManager);
+    const operatorRegistry = container.resolve(SqlOperatorRegistry);
+    const filterRegistry = container.resolve(SqlEntryFilterRegistry);
 
     const groups = createGroupsStorageOperations(knex, tableNameResolver, groupSchemaManager);
 
@@ -43,7 +50,10 @@ const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
     const entries = createEntriesStorageOperations({
         knex,
         tableNameResolver,
-        plugins
+        entrySchemaManager,
+        operatorRegistry,
+        filterRegistry,
+        sharedTables: tableNameResolverConfig.sharedTables
     });
 
     return {
@@ -90,6 +100,8 @@ export const registerSqlStorageOperations = (config: ISqlStorageOperationsConfig
             GroupSchemaManagerFeature.register(container);
             ModelSchemaManagerFeature.register(container);
             EntrySchemaManagerFeature.register(container);
+            SqlOperatorFeature.register(container);
+            SqlEntryFilterFeature.register(container);
 
             container.registerFactory(StorageOperationsFactoryAbstraction, () => {
                 return new SqlStorageOperationsFactoryImpl();
