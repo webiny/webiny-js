@@ -1,5 +1,5 @@
 import type { Knex } from "knex";
-import type { IColumnDefinition } from "./abstractions.js";
+import type { IColumnDefinition } from "./abstractions/index.js";
 
 export const addColumn = (
     table: Knex.CreateTableBuilder | Knex.AlterTableBuilder,

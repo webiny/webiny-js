@@ -1,5 +1,5 @@
-import type { SqlColumnType } from "./abstractions.js";
-import { FieldTypeMapper } from "./abstractions.js";
+import type { SqlColumnType } from "./abstractions/index.js";
+import { FieldTypeMapper } from "./abstractions/index.js";
 
 class FieldTypeMapperImpl implements FieldTypeMapper.Interface {
     private readonly mapping: Record<string, SqlColumnType> = {

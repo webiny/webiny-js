@@ -8,11 +8,11 @@ import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import { SchemaFeature } from "~/schema/feature.js";
-import { GroupSchemaManager } from "~/schema/abstractions.js";
-import { ModelSchemaManager } from "~/schema/abstractions.js";
-import { EntrySchemaManager } from "~/schema/abstractions.js";
-import { KnexInstance } from "~/schema/KnexInstance.js";
-import { TableNameResolver } from "~/schema/TableNameResolver.js";
+import { GroupSchemaManager } from "~/schema/abstractions/index.js";
+import { ModelSchemaManager } from "~/schema/abstractions/index.js";
+import { EntrySchemaManager } from "~/schema/abstractions/index.js";
+import { KnexInstance } from "~/schema/abstractions/index.js";
+import { TableNameResolver } from "~/schema/abstractions/index.js";
 import type { Knex } from "knex";
 
 const createSqlStorageOperations: SqlStorageOperationsFactory = params => {

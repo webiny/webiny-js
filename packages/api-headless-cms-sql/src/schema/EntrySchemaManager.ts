@@ -1,10 +1,10 @@
 import type { Knex } from "knex";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import type { IStoredTableSchema } from "./abstractions.js";
-import { EntrySchemaManager } from "./abstractions.js";
-import { FieldTypeMapper } from "./abstractions.js";
-import { SchemaRegistry } from "./abstractions.js";
-import { KnexInstance } from "./KnexInstance.js";
+import type { IStoredTableSchema } from "./abstractions/index.js";
+import { EntrySchemaManager } from "./abstractions/index.js";
+import { FieldTypeMapper } from "./abstractions/index.js";
+import { SchemaRegistry } from "./abstractions/index.js";
+import { KnexInstance } from "./abstractions/index.js";
 import { addColumn } from "./columnBuilder.js";
 
 const SCHEMAS_TABLE = "cms_table_schemas";

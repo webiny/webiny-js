@@ -1,7 +1,7 @@
-import type { IColumnDefinition } from "./abstractions.js";
-import { ModelSchemaManager } from "./abstractions.js";
-import { SchemaRegistry } from "./abstractions.js";
-import { KnexInstance } from "./KnexInstance.js";
+import type { IColumnDefinition } from "./abstractions/index.js";
+import { ModelSchemaManager } from "./abstractions/index.js";
+import { SchemaRegistry } from "./abstractions/index.js";
+import { KnexInstance } from "./abstractions/index.js";
 import { applyColumnDefinitions } from "./columnBuilder.js";
 
 const MODEL_TABLE_COLUMNS: IColumnDefinition[] = [

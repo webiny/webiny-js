@@ -1,4 +1,4 @@
-import { SchemaRegistry } from "./abstractions.js";
+import { SchemaRegistry } from "./abstractions/index.js";
 
 class SchemaRegistryImpl implements SchemaRegistry.Interface {
     private readonly verified: Set<string> = new Set();

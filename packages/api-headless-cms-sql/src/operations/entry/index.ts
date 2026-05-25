@@ -1,7 +1,7 @@
 import type { CmsEntryStorageOperations } from "@webiny/api-headless-cms/types/index.js";
 import type { PluginsContainer } from "@webiny/plugins/types.js";
-import type { KnexInstance } from "~/schema/KnexInstance.js";
-import type { TableNameResolver } from "~/schema/TableNameResolver.js";
+import type { KnexInstance } from "~/schema/abstractions/index.js";
+import type { TableNameResolver } from "~/schema/abstractions/index.js";
 
 interface CreateEntriesStorageOperationsParams {
     knex: KnexInstance.Interface;
