@@ -1,5 +1,18 @@
 import { createAbstraction } from "@webiny/feature/api/index.js";
 
+export interface ITableNameResolverConfig {
+    sharedTables: boolean;
+    tableNamePrefix?: string;
+}
+
+export const TableNameResolverConfig = createAbstraction<ITableNameResolverConfig>(
+    "Cms/Sql/TableNameResolverConfig"
+);
+
+export namespace TableNameResolverConfig {
+    export type Interface = ITableNameResolverConfig;
+}
+
 export interface ITableNameResolver {
     resolve(tenant: string, entityName: string): string;
 }

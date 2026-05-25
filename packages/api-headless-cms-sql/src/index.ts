@@ -1,9 +1,7 @@
-import type { CmsContext } from "~/types.js";
-import type { SqlStorageOperationsFactory } from "~/types.js";
+import type { CmsContext, SqlStorageOperationsFactory } from "~/types.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createModelsStorageOperations } from "~/operations/model/index.js";
 import { createEntriesStorageOperations } from "~/operations/entry/index.js";
-import { TableNameResolverImpl } from "~/features/tableNameResolver/TableNameResolver.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
@@ -16,8 +14,13 @@ import { GroupSchemaManager } from "~/features/groupSchemaManager/abstractions.j
 import { ModelSchemaManager } from "~/features/modelSchemaManager/abstractions.js";
 import { EntrySchemaManager } from "~/features/entrySchemaManager/abstractions.js";
 import { KnexInstance } from "~/features/knexInstance/abstractions.js";
-import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js";
+import {
+    TableNameResolver,
+    TableNameResolverConfig
+} from "~/features/tableNameResolver/abstractions.js";
 import type { Knex } from "knex";
+import { TableNameResolverFeature } from "~/features/tableNameResolver/feature.js";
+import { KnexInstanceFeature } from "~/features/knexInstance/feature.js";
 
 const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
     const { plugins, container } = params;
@@ -70,19 +73,18 @@ class SqlStorageOperationsFactoryImpl implements StorageOperationsFactoryAbstrac
 }
 
 export const registerSqlStorageOperations = (config: ISqlStorageOperationsConfig) => {
-    const sharedTables = process.env.WEBINY_SHARED_TABLES === "true";
-
-    const tableNameResolver = new TableNameResolverImpl({
-        sharedTables,
-        tableNamePrefix: config.tableNamePrefix
-    });
-
     const storageOperationsFeature = createFeature({
         name: "cms.storageOperations.sql",
         register: container => {
-            container.registerFactory(KnexInstance, () => config.knex);
-            container.registerInstance(TableNameResolver, tableNameResolver);
+            const sharedTables = process.env.WEBINY_SHARED_TABLES === "true";
 
+            container.registerInstance(TableNameResolverConfig, {
+                sharedTables,
+                tableNamePrefix: config.tableNamePrefix
+            });
+
+            KnexInstanceFeature.register(container, config.knex);
+            TableNameResolverFeature.register(container);
             SchemaRegistryFeature.register(container);
             FieldTypeMapperFeature.register(container);
             GroupSchemaManagerFeature.register(container);
