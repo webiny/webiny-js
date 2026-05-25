@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import {
     ListPackagesService,
     MergeExportsService,
@@ -89,23 +90,41 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
             }
         }
 
-        // Icons from @webiny/icons/dist
+        // Icons from @webiny/icons source (material design + extras)
         const iconsPkg = fullPackagesList.find(pkg => pkg.packageJson.name === "@webiny/icons");
         if (iconsPkg) {
-            const iconsDistPath = iconsPkg.paths.packageFolder.join("dist").toString();
-            if (fs.existsSync(iconsDistPath)) {
-                const iconFiles = getAllFiles(iconsDistPath).filter(
-                    f => !f.endsWith("package.json")
-                );
+            // Material design icons
+            const materialIconsPkgUrl = await import.meta
+                .resolve("@material-design-icons/svg/package.json");
+            const materialIconsDir = path.join(
+                path.dirname(fileURLToPath(materialIconsPkgUrl)),
+                "outlined"
+            );
+            if (fs.existsSync(materialIconsDir)) {
+                const iconFiles = getAllFiles(materialIconsDir);
                 for (const iconFile of iconFiles) {
-                    const relativePath = path.relative(iconsDistPath, iconFile);
+                    const relativePath = path.relative(materialIconsDir, iconFile);
                     files.push({
                         relativePath: path.join("admin", "icons", relativePath),
                         content: fs.readFileSync(iconFile, "utf-8")
                     });
                 }
-                exports["./admin/icons/*"] = "./admin/icons/*";
             }
+
+            // Extra icons
+            const extraIconsDir = iconsPkg.paths.packageFolder.join("src/extraIcons").toString();
+            if (fs.existsSync(extraIconsDir)) {
+                const iconFiles = getAllFiles(extraIconsDir);
+                for (const iconFile of iconFiles) {
+                    const relativePath = path.relative(extraIconsDir, iconFile);
+                    files.push({
+                        relativePath: path.join("admin", "icons", relativePath),
+                        content: fs.readFileSync(iconFile, "utf-8")
+                    });
+                }
+            }
+
+            exports["./admin/icons/*"] = "./admin/icons/*";
         }
 
         // Merged export files
