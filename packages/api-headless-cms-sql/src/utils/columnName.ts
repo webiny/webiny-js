@@ -6,7 +6,10 @@ export interface IFieldColumnEntry {
     storageId: string;
     fieldId: string;
     type: string;
+    /* Path using storageId segments (for column name computation). */
     path: string[];
+    /* Path using fieldId segments (for traversing entry.values). */
+    fieldIdPath: string[];
 }
 
 /*
@@ -47,22 +50,32 @@ export const storagePathToColumnName = (segments: string[]): string => {
  */
 export const buildFieldColumnMap = (
     fields: CmsModelField[],
-    parentPath: string[] = []
+    parentPath: string[] = [],
+    parentFieldIdPath: string[] = []
 ): IFieldColumnEntry[] => {
     const entries: IFieldColumnEntry[] = [];
 
     for (const field of fields) {
         const currentPath = [...parentPath, field.storageId];
+        const currentFieldIdPath = [...parentFieldIdPath, field.fieldId];
 
         if (field.type === "object" && field.settings?.fields) {
-            const children = buildFieldColumnMap(field.settings.fields, currentPath);
+            const children = buildFieldColumnMap(
+                field.settings.fields,
+                currentPath,
+                currentFieldIdPath
+            );
             entries.push(...children);
             continue;
         }
 
         if (field.type === "dynamicZone" && field.settings?.templates) {
             for (const template of field.settings.templates) {
-                const children = buildFieldColumnMap(template.fields, currentPath);
+                const children = buildFieldColumnMap(
+                    template.fields,
+                    currentPath,
+                    currentFieldIdPath
+                );
                 entries.push(...children);
             }
             continue;
@@ -71,22 +84,22 @@ export const buildFieldColumnMap = (
         if (field.type === "ref") {
             const mainColumnName = storagePathToColumnName(currentPath);
 
-            /* Main column stores the full ref JSON. */
             entries.push({
                 columnName: mainColumnName,
                 storageId: field.storageId,
                 fieldId: field.fieldId,
                 type: field.type,
-                path: currentPath
+                path: currentPath,
+                fieldIdPath: currentFieldIdPath
             });
 
-            /* Companion column stores the entryId for filtering. */
             entries.push({
                 columnName: `${mainColumnName}__entryId`,
                 storageId: field.storageId,
                 fieldId: field.fieldId,
                 type: "ref__entryId",
-                path: currentPath
+                path: currentPath,
+                fieldIdPath: currentFieldIdPath
             });
 
             continue;
@@ -97,7 +110,8 @@ export const buildFieldColumnMap = (
             storageId: field.storageId,
             fieldId: field.fieldId,
             type: field.type,
-            path: currentPath
+            path: currentPath,
+            fieldIdPath: currentFieldIdPath
         });
     }
 

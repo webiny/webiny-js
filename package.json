@@ -128,6 +128,7 @@
     "test:ddb": "WEBINY_STORAGE=ddb vitest --config testing/vitest.config.ts --run",
     "test:es": "WEBINY_STORAGE=ddb-es,ddb vitest --config testing/vitest.config.ts --run",
     "test:os": "WEBINY_STORAGE=ddb-os,ddb vitest --config testing/vitest.config.ts --run",
+    "test:sql": "WEBINY_STORAGE=sql,ddb vitest --config testing/vitest.config.ts --run",
     "trigger-release": "node ./scripts/release/triggerRelease.js",
     "tsc": "tsc",
     "update-packages": "tsx ./scripts/updatePackages.ts",
@@ -191,6 +192,11 @@
     "@types/hoist-non-react-statics": "^3.3.7",
     "@webiny/di": "^1.0.1",
     "jwt-decode": "^4.0.0"
+  },
+  "dependenciesMeta": {
+    "better-sqlite3": {
+      "built": true
+    }
   },
   "engines": {
     "node": ">=22.0.0"

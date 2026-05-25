@@ -171,7 +171,7 @@ export const entryToRow = (
 
     /* Map value columns. */
     for (const fc of fieldColumns) {
-        const value = getNestedValue(entry.values as Record<string, unknown>, fc.path);
+        const value = getNestedValue(entry.values as Record<string, unknown>, fc.fieldIdPath);
 
         if (fc.type === "ref__entryId") {
             /* Extract entryId from ref value for the companion column. */
@@ -217,7 +217,7 @@ export const rowToEntry = (
             value = rawValue ?? null;
         }
 
-        setNestedValue(values, fc.path, value);
+        setNestedValue(values, fc.fieldIdPath, value);
     }
 
     const locationJson = row.location;
