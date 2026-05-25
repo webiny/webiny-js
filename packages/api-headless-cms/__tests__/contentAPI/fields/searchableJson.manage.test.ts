@@ -5,25 +5,39 @@ import { AUTHOR_WITH_SEARCHABLE_JSON_MODEL_ID } from "~tests/__helpers/models/au
 import { useAuthorWithSearchableJsonManager } from "~tests/__helpers/handler/authorWithSearchableJson/manager.js";
 import type { CmsContext, CmsEntry, CmsModel } from "~/types/index.js";
 
+const johnDoeValues: IAuthorWithSearchableJsonCmsEntryValues = Object.freeze({
+    name: "John Doe",
+    info: {
+        age: 30,
+        hobbies: ["reading", "gaming"],
+        address: {
+            street: "123 Main St",
+            city: "Anytown",
+            country: "Country"
+        }
+    }
+});
+
+const jacobDoeValues = Object.freeze({
+    name: "Jacob Doe",
+    info: {
+        age: 25,
+        hobbies: ["swimming", "gaming"],
+        address: {
+            street: "456 Elm St",
+            city: "Othertown",
+            country: "Country"
+        }
+    }
+});
+
 describe("searchable-json field - manage - author", () => {
     const manager = useAuthorWithSearchableJsonManager();
 
-    const values: IAuthorWithSearchableJsonCmsEntryValues = Object.freeze({
-        name: "John Doe",
-        info: {
-            age: 30,
-            hobbies: ["reading", "gaming"],
-            address: {
-                street: "123 Main St",
-                city: "Anytown",
-                country: "Country"
-            }
-        }
-    });
-
     let context: CmsContext;
     let model: CmsModel;
-    let entry: CmsEntry<IAuthorWithSearchableJsonCmsEntryValues>;
+    let johnDoeEntry: CmsEntry<IAuthorWithSearchableJsonCmsEntryValues>;
+    let jacobDoeEntry: CmsEntry<IAuthorWithSearchableJsonCmsEntryValues>;
     /**
      *
      */
@@ -33,28 +47,42 @@ describe("searchable-json field - manage - author", () => {
 
         model = await context.cms.getModel(AUTHOR_WITH_SEARCHABLE_JSON_MODEL_ID);
 
-        entry = await context.cms.createEntry<IAuthorWithSearchableJsonCmsEntryValues>(model, {
-            values
-        });
+        johnDoeEntry = await context.cms.createEntry<IAuthorWithSearchableJsonCmsEntryValues>(
+            model,
+            {
+                values: johnDoeValues
+            }
+        );
+
+        jacobDoeEntry = await context.cms.createEntry<IAuthorWithSearchableJsonCmsEntryValues>(
+            model,
+            {
+                values: jacobDoeValues
+            }
+        );
     });
 
     it("should have an entry with searchable-json field", async () => {
-        expect(entry).toMatchObject({
+        expect(johnDoeEntry).toMatchObject({
             id: expect.stringMatching(/^([a-zA-Z0-9]+)#0001$/),
-            values
+            values: johnDoeValues
         });
-        expect(entry.values).toEqual(values);
+        expect(johnDoeEntry.values).toEqual(johnDoeValues);
 
-        const getEntryResult = await context.cms.getEntryById(model, entry.id);
+        const getEntryResult = await context.cms.getEntryById(model, johnDoeEntry.id);
         expect(getEntryResult).toMatchObject({
-            id: entry.id,
-            values
+            id: johnDoeEntry.id,
+            values: johnDoeValues
         });
 
         const [listEntriesResult] = await context.cms.listLatestEntries(model);
         expect(listEntriesResult[0]).toMatchObject({
-            id: entry.id,
-            values
+            id: jacobDoeEntry.id,
+            values: jacobDoeValues
+        });
+        expect(listEntriesResult[1]).toMatchObject({
+            id: johnDoeEntry.id,
+            values: johnDoeValues
         });
     });
 
@@ -87,8 +115,9 @@ describe("searchable-json field - manage - author", () => {
             }
         });
         expect(searchUnknownNotResult.data.content.error).toBeNull();
-        expect(searchUnknownNotResult.data.content.data).toHaveLength(1);
-        expect(searchUnknownNotResult.data.content.data[0].values.name).toBe("John Doe");
+        expect(searchUnknownNotResult.data.content.data).toHaveLength(2);
+        expect(searchUnknownNotResult.data.content.data[0].values.name).toBe("Jacob Doe");
+        expect(searchUnknownNotResult.data.content.data[1].values.name).toBe("John Doe");
     });
     /**
      * Name
@@ -122,7 +151,8 @@ describe("searchable-json field - manage - author", () => {
                 }
             }
         });
-        expect(searchNameFailResult.data.content.data).toHaveLength(0);
+        expect(searchNameFailResult.data.content.data).toHaveLength(1);
+        expect(searchNameFailResult.data.content.data[0].values.name).toBe(jacobDoeValues.name);
 
         const [searchNameResult] = await manager.listAuthors({
             where: {
@@ -131,8 +161,9 @@ describe("searchable-json field - manage - author", () => {
                 }
             }
         });
-        expect(searchNameResult.data.content.data).toHaveLength(1);
-        expect(searchNameResult.data.content.data[0].values.name).toBe("John Doe");
+        expect(searchNameResult.data.content.data).toHaveLength(2);
+        expect(searchNameResult.data.content.data[0].values.name).toBe(jacobDoeValues.name);
+        expect(searchNameResult.data.content.data[1].values.name).toBe(johnDoeValues.name);
     });
 
     it("should use name to search for an entry - contains", async () => {
@@ -164,7 +195,8 @@ describe("searchable-json field - manage - author", () => {
                 }
             }
         });
-        expect(searchNameFailResult.data.content.data).toHaveLength(0);
+        expect(searchNameFailResult.data.content.data).toHaveLength(1);
+        expect(searchNameFailResult.data.content.data[0].values.name).toBe(jacobDoeValues.name);
 
         const [searchNameResult] = await manager.listAuthors({
             where: {
@@ -173,8 +205,9 @@ describe("searchable-json field - manage - author", () => {
                 }
             }
         });
-        expect(searchNameResult.data.content.data).toHaveLength(1);
-        expect(searchNameResult.data.content.data[0].values.name).toBe("John Doe");
+        expect(searchNameResult.data.content.data).toHaveLength(2);
+        expect(searchNameResult.data.content.data[0].values.name).toBe(jacobDoeValues.name);
+        expect(searchNameResult.data.content.data[1].values.name).toBe(johnDoeValues.name);
     });
     /**
      * Info.Age
@@ -215,7 +248,8 @@ describe("searchable-json field - manage - author", () => {
                 }
             }
         });
-        expect(searchAgeFailResult.data.content.data).toHaveLength(0);
+        expect(searchAgeFailResult.data.content.data).toHaveLength(1);
+        expect(searchAgeFailResult.data.content.data[0].values.name).toBe(jacobDoeValues.name);
 
         const [searchAgeResult] = await manager.listAuthors({
             where: {
@@ -227,8 +261,9 @@ describe("searchable-json field - manage - author", () => {
             }
         });
 
-        expect(searchAgeResult.data.content.data).toHaveLength(1);
-        expect(searchAgeResult.data.content.data[0].values.name).toBe("John Doe");
+        expect(searchAgeResult.data.content.data).toHaveLength(2);
+        expect(searchAgeResult.data.content.data[0].values.name).toBe(jacobDoeValues.name);
+        expect(searchAgeResult.data.content.data[1].values.name).toBe(johnDoeValues.name);
     });
 
     it.skip("should use info.age to search for an entry - gte", async () => {
@@ -266,8 +301,9 @@ describe("searchable-json field - manage - author", () => {
                 }
             }
         });
-        expect(searchAgeResult.data.content.data).toHaveLength(1);
-        expect(searchAgeResult.data.content.data[0].values.name).toBe("John Doe");
+        expect(searchAgeResult.data.content.data).toHaveLength(2);
+        expect(searchAgeResult.data.content.data[0].values.name).toBe(jacobDoeValues.name);
+        expect(searchAgeResult.data.content.data[1].values.name).toBe(johnDoeValues.name);
 
         const [searchAgeFailResult] = await manager.listAuthors({
             where: {
@@ -278,7 +314,8 @@ describe("searchable-json field - manage - author", () => {
                 }
             }
         });
-        expect(searchAgeFailResult.data.content.data).toHaveLength(0);
+        expect(searchAgeFailResult.data.content.data).toHaveLength(1);
+        expect(searchAgeResult.data.content.data[0].values.name).toBe(jacobDoeValues.name);
     });
     /**
      * Info.Hobbies
@@ -305,7 +342,8 @@ describe("searchable-json field - manage - author", () => {
                 }
             }
         });
-        expect(searchHobbiesFailResult.data.content.data).toHaveLength(0);
+        expect(searchHobbiesFailResult.data.content.data).toHaveLength(1);
+        expect(searchHobbiesFailResult.data.content.data[0].values.name).toBe(jacobDoeValues.name);
     });
     /**
      * Info.Address.Street
@@ -336,7 +374,8 @@ describe("searchable-json field - manage - author", () => {
                 }
             }
         });
-        expect(searchStreetFailResult.data.content.data).toHaveLength(0);
+        expect(searchStreetFailResult.data.content.data).toHaveLength(1);
+        expect(searchStreetFailResult.data.content.data[0].values.name).toBe(jacobDoeValues.name);
     });
 
     it.skip("should use info.address.street to search for an entry - not_equal", async () => {
@@ -351,7 +390,8 @@ describe("searchable-json field - manage - author", () => {
                 }
             }
         });
-        expect(searchStreetFailResult.data.content.data).toHaveLength(0);
+        expect(searchStreetFailResult.data.content.data).toHaveLength(1);
+        expect(searchStreetFailResult.data.content.data[0].values.name).toBe(jacobDoeValues.name);
 
         const [searchStreetResult] = await manager.listAuthors({
             where: {
@@ -394,7 +434,8 @@ describe("searchable-json field - manage - author", () => {
                 }
             }
         });
-        expect(searchStreetFailResult.data.content.data).toHaveLength(0);
+        expect(searchStreetFailResult.data.content.data).toHaveLength(1);
+        expect(searchStreetFailResult.data.content.data[0].values.name).toBe(jacobDoeValues.name);
     });
 
     it.skip("should use info.address.street to search for an entry - not_contains", async () => {
@@ -409,7 +450,8 @@ describe("searchable-json field - manage - author", () => {
                 }
             }
         });
-        expect(searchStreetFailResult.data.content.data).toHaveLength(0);
+        expect(searchStreetFailResult.data.content.data).toHaveLength(1);
+        expect(searchStreetFailResult.data.content.data[0].values.name).toBe(jacobDoeValues.name);
 
         const [searchStreetResult] = await manager.listAuthors({
             where: {
