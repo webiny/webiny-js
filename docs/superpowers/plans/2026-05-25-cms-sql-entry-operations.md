@@ -41,6 +41,83 @@
 
 ---
 
+## Review Corrections (applied post-review)
+
+The following corrections override the original task descriptions. Executing agents MUST apply these.
+
+### RC-1: `publish` must update old published status + `live` field (affects Task 12)
+
+When publishing a revision:
+1. Old published row: set `isPublished = false` AND `status = 'unpublished'`
+2. Target row: full update with `isPublished = true`, `status = 'published'`
+3. ALL rows for the entryId: set `live = JSON({version: targetVersion})`
+4. ALL rows for the entryId: sync entry-level meta
+
+### RC-2: `unpublish` must clear `live` field (affects Task 12)
+
+When unpublishing: set `live = null` on ALL rows for the entryId (in addition to updating the target row).
+
+### RC-3: `ENTRY_LEVEL_META_FIELDS` must exclude `createdBy`/`createdOn` (affects Task 9)
+
+`createdBy` and `createdOn` are immutable — set once at entry creation. Remove them and their sub-columns (`createdBy_id`, `createdBy_displayName`, `createdBy_type`) from `ENTRY_LEVEL_META_FIELDS`. The correct sync set is:
+
+```typescript
+export const ENTRY_LEVEL_META_FIELDS = [
+    "modifiedOn", "savedOn", "deletedOn", "restoredOn",
+    "firstPublishedOn", "lastPublishedOn",
+    "modifiedBy_id", "modifiedBy",
+    "savedBy_id", "savedBy",
+    "deletedBy_id", "deletedBy",
+    "restoredBy_id", "restoredBy",
+    "firstPublishedBy_id", "firstPublishedBy",
+    "lastPublishedBy_id", "lastPublishedBy"
+] as const;
+```
+
+### RC-4: `deleteRevision` — no auto-promote of published, clear `live` (affects Task 12)
+
+When deleting a published revision:
+- The row is deleted (taking `isPublished` with it)
+- No other revision is auto-promoted to published
+- Set `live = null` on all remaining rows (entry is now unpublished)
+
+### RC-5: Shared tables support — add `tenant` column and filtering (affects Tasks 3, 9, 12)
+
+When `WEBINY_SHARED_TABLES=true`, multiple tenants share the same table. Changes needed:
+- **Task 3**: Add `table.string("tenant").index()` to `applyEntryMetaColumns`
+- **Task 9**: Add `tenant: string | null` to `IEntryRow` and `"tenant"` to `ENTRY_META_COLUMNS`
+- **Task 12**: Every query must add `.where("tenant", model.tenant)` when shared tables is enabled. The `resolveTable` helper should return both the table name and a query builder that includes the tenant filter. The `createEntriesStorageOperations` params should include `sharedTables: boolean` (from `TableNameResolverConfig`).
+
+### RC-6: `IModelField` needs `parents` array for deep nesting (affects Tasks 7, 11)
+
+Add to `IModelField` in Task 7:
+```typescript
+parents: { fieldId: string; storageId: string }[];
+```
+
+Update `buildModelFields` in Task 11 to:
+- Recursively walk object/dynamicZone fields, building the parents chain
+- Key the field map by dot-joined `fieldId` paths (e.g., `values.address.city`)
+- Prefix all user fields with `values.` (matching DDB/DDB-ES pattern)
+- System fields have `parents: []`
+
+### RC-7: Memoize field maps per model (affects Tasks 11, 12)
+
+`buildModelFields` and `getFieldColumns` should be memoized by `modelId` within the `createEntriesStorageOperations` closure. Build once per model, reuse on every query. Use a `Map<string, ...>` cache.
+
+### RC-8: `parseWhereKey` explicit operator ordering (affects Task 11)
+
+Operators MUST be checked longest-first:
+```typescript
+const OPERATORS = [
+    "not_contains", "not_startsWith", "not_between", "not_in",
+    "contains", "startsWith", "between",
+    "gte", "gt", "lte", "lt", "in", "not"
+];
+```
+
+---
+
 ## File Structure
 
 ```
