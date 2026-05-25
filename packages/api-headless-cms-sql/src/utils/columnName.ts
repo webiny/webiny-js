@@ -30,10 +30,7 @@ export const storagePathToColumnName = (segments: string[]): string => {
     const top = segments[0];
     const leaf = segments[segments.length - 1];
     const intermediates = segments.slice(1, -1);
-    const hash8 = createHash("sha256")
-        .update(intermediates.join("."))
-        .digest("hex")
-        .slice(0, 8);
+    const hash8 = createHash("sha256").update(intermediates.join(".")).digest("hex").slice(0, 8);
 
     return `${top}__${hash8}__${leaf}`;
 };

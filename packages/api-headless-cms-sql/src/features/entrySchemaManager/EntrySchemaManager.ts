@@ -48,9 +48,7 @@ class EntrySchemaManagerImpl implements EntrySchemaManagerAbstraction.Interface 
             ? (JSON.parse(storedSchema.fields) as CmsModelField[])
             : [];
 
-        const storedColumns = new Set(
-            buildFieldColumnMap(storedFields).map(e => e.columnName)
-        );
+        const storedColumns = new Set(buildFieldColumnMap(storedFields).map(e => e.columnName));
 
         const currentColumns = buildFieldColumnMap(fields);
         const newColumns = currentColumns.filter(e => !storedColumns.has(e.columnName));
