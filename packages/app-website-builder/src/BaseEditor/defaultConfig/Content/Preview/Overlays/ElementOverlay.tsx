@@ -105,13 +105,9 @@ export const ElementOverlay = React.memo(() => {
                             data-label-for={previewBox.id}
                             data-state={isDragging ? "dragging" : boxState}
                             onClick={onClick}
-                            className={cn(
-                                "absolute text-sm text-neutral-light p-xs opacity-0 pointer-events-auto",
-                                "data-[state=hover]:bg-success data-[state=hover]:opacity-100",
-                                "data-[state=active]:bg-primary data-[state=active]:opacity-100",
-                                "data-[state=dragging]:opacity-30"
-                            )}
-                            style={{ top: -24 }}
+                            className={
+                                "absolute px-xs py-[1px] text-[11px] text-neutral-light leading-md opacity-0 pointer-events-auto  rounded-t-sm data-[state=hover]:bg-success data-[state=hover]:opacity-100 data-[state=active]:bg-primary data-[state=active]:opacity-100 data-[state=dragging]:opacity-30 top-[-18px] right-[0px]"
+                            }
                         >
                             {componentName}
                         </div>
