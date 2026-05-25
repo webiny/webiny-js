@@ -33,16 +33,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ai-sdk/gateway@npm:3.0.119":
-  version: 3.0.119
-  resolution: "@ai-sdk/gateway@npm:3.0.119"
+"@ai-sdk/gateway@npm:3.0.120":
+  version: 3.0.120
+  resolution: "@ai-sdk/gateway@npm:3.0.120"
   dependencies:
     "@ai-sdk/provider": "npm:3.0.10"
     "@ai-sdk/provider-utils": "npm:4.0.27"
     "@vercel/oidc": "npm:3.2.0"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10/1a8a9a1ed929a0274360588fa4f2caf6379dd660434a672c9555b460213d5ae289be78d59e9572ee34a7eecce60f19070844d25b1d80103416d863e26e1c0711
+  checksum: 10/b917b87da89fbbd67f304cd2e1731b5af0f3c408ca43391686ed847b7678437f49ff38477a8b22598a4ebb6577e6f45b82b63ff6416afb22a349c71dc9506164
   languageName: node
   linkType: hard
 
@@ -3939,13 +3939,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify/json@npm:^2.2.477":
-  version: 2.2.477
-  resolution: "@iconify/json@npm:2.2.477"
+"@iconify/json@npm:^2.2.478":
+  version: 2.2.478
+  resolution: "@iconify/json@npm:2.2.478"
   dependencies:
     "@iconify/types": "npm:*"
     pathe: "npm:^2.0.3"
-  checksum: 10/b97a10e7935ac74a8a3cdcf0cc0f26f20f21da81be51dcc082a28af2ec5c2e28048a61a93d899b8edc628b958bf53467dd3984a357a5a99177b8810c52b7415b
+  checksum: 10/a33f5e47ebb567eadb217302fbd91e1d2648c7bfb6df30a2887db38daf442a9c29a4ca2cd613809df817ac38673a24ac732a76ff3e9cb1824226b05274fbe66a
   languageName: node
   linkType: hard
 
@@ -6814,9 +6814,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^3.142.0, @pulumi/pulumi@npm:^3.242.0":
-  version: 3.242.0
-  resolution: "@pulumi/pulumi@npm:3.242.0"
+"@pulumi/pulumi@npm:^3.142.0, @pulumi/pulumi@npm:^3.243.0":
+  version: 3.243.0
+  resolution: "@pulumi/pulumi@npm:3.243.0"
   dependencies:
     "@grpc/grpc-js": "npm:^1.10.1"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -6853,7 +6853,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10/738d1d961dc39624a692d22fea0a2accc38820c31ebbe5711d13f49cf36261fafd0e943630f98d349b91ec0d383d903bf06dd335c7ff7e0f1aaad33f6bc6e01f
+  checksum: 10/4d242669307634ced9c9328d3859311d8b81ae167c81328277ca1d7fe49c905e12526414c1bc481025bc5f763cc8216c42b17febe1aac59a74a6518696d10a26
   languageName: node
   linkType: hard
 
@@ -8604,10 +8604,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sigstore/core@npm:^3.1.0, @sigstore/core@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@sigstore/core@npm:3.2.0"
-  checksum: 10/2425d20297d57a5f5a62f0e6c2f4280818015ea00b3defebdac63f13c7d01db988602c316c16e374ba091c3649dd9a22ae8c9ba3ac165f736b0503164c5da5f5
+"@sigstore/core@npm:^3.2.0, @sigstore/core@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "@sigstore/core@npm:3.2.1"
+  checksum: 10/2f6c1ced55f8ed3f7fc705a668eb95db9471511dfb1f054927822bf97a051dd62228ecf6a9f1932d240c2c4ae69a3b5066550789e5ad8f4257839a4370e5a120
   languageName: node
   linkType: hard
 
@@ -8618,7 +8618,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sigstore/sign@npm:^4.1.0":
+"@sigstore/sign@npm:^4.1.1":
   version: 4.1.1
   resolution: "@sigstore/sign@npm:4.1.1"
   dependencies:
@@ -8632,7 +8632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sigstore/tuf@npm:^4.0.1":
+"@sigstore/tuf@npm:^4.0.2":
   version: 4.0.2
   resolution: "@sigstore/tuf@npm:4.0.2"
   dependencies:
@@ -8642,14 +8642,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sigstore/verify@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@sigstore/verify@npm:3.1.0"
+"@sigstore/verify@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@sigstore/verify@npm:3.1.1"
   dependencies:
     "@sigstore/bundle": "npm:^4.0.0"
-    "@sigstore/core": "npm:^3.1.0"
+    "@sigstore/core": "npm:^3.2.1"
     "@sigstore/protobuf-specs": "npm:^0.5.0"
-  checksum: 10/c85713cc326236ef39608e4b061c1192306fd3edd7a1334237d5d53dbb132f04e3f9d3cfd4bb2d521bf0c95a9f98945a748c97ecb06e5f36cfd09488a0d3d73f
+  checksum: 10/4cb24b0e62b85ebf2b62698041e0dc212d152fd40a95c05c237357c992265a23e5789f86b138bea2eea0c5f6b994974d968f03dde9c692a514f96ae4b26f31a9
   languageName: node
   linkType: hard
 
@@ -11135,7 +11135,7 @@ __metadata:
     clsx: "npm:^2.1.1"
     cmdk: "npm:^1.1.1"
     css-loader: "npm:^7.1.4"
-    date-fns: "npm:^4.2.1"
+    date-fns: "npm:^4.3.0"
     file-loader: "npm:6.2.0"
     lodash: "npm:^4.18.1"
     minimatch: "npm:^10.2.5"
@@ -11186,7 +11186,7 @@ __metadata:
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    ai: "npm:^6.0.190"
+    ai: "npm:^6.0.191"
     front-matter: "npm:^4.0.2"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.15.3"
@@ -11330,7 +11330,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    ai: "npm:^6.0.190"
+    ai: "npm:^6.0.191"
     dataloader: "npm:^2.2.3"
     jest-dynalite: "npm:^3.6.1"
     jose: "npm:^6.2.3"
@@ -12073,7 +12073,7 @@ __metadata:
     "@emotion/styled": "npm:11.14.1"
     "@fortawesome/fontawesome-svg-core": "npm:^7.2.0"
     "@fortawesome/react-fontawesome": "npm:^3.3.1"
-    "@iconify/json": "npm:^2.2.477"
+    "@iconify/json": "npm:^2.2.478"
     "@lexical/utils": "npm:^0.44.0"
     "@svgr/webpack": "npm:^8.1.0"
     "@testing-library/react": "npm:^16.3.2"
@@ -12156,7 +12156,7 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    date-fns: "npm:^4.2.1"
+    date-fns: "npm:^4.3.0"
     execa: "npm:^5.1.1"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.18.1"
@@ -13041,7 +13041,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    date-fns: "npm:^4.2.1"
+    date-fns: "npm:^4.3.0"
     dot-prop: "npm:^10.1.0"
     dynamodb-toolbox: "npm:^0.9.5"
     fuse.js: "npm:7.3.0"
@@ -13492,7 +13492,7 @@ __metadata:
   resolution: "@webiny/project-aws@workspace:packages/project-aws"
   dependencies:
     "@pulumi/aws": "npm:^7.30.0"
-    "@pulumi/pulumi": "npm:^3.242.0"
+    "@pulumi/pulumi": "npm:^3.243.0"
     "@pulumi/random": "npm:^4.21.0"
     "@types/lodash": "npm:^4.17.24"
     "@types/ncp": "npm:^2.0.8"
@@ -13605,7 +13605,7 @@ __metadata:
   resolution: "@webiny/pulumi-sdk@workspace:packages/pulumi-sdk"
   dependencies:
     "@pulumi/aws": "npm:^7.30.0"
-    "@pulumi/pulumi": "npm:^3.242.0"
+    "@pulumi/pulumi": "npm:^3.243.0"
     "@types/lodash": "npm:^4.17.24"
     "@webiny/build-tools": "npm:0.0.0"
     decompress: "npm:^4.2.1"
@@ -13626,7 +13626,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi@workspace:packages/pulumi"
   dependencies:
-    "@pulumi/pulumi": "npm:^3.242.0"
+    "@pulumi/pulumi": "npm:^3.243.0"
     "@types/lodash": "npm:^4.17.24"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
@@ -14178,17 +14178,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ai@npm:^6.0.190":
-  version: 6.0.190
-  resolution: "ai@npm:6.0.190"
+"ai@npm:^6.0.191":
+  version: 6.0.191
+  resolution: "ai@npm:6.0.191"
   dependencies:
-    "@ai-sdk/gateway": "npm:3.0.119"
+    "@ai-sdk/gateway": "npm:3.0.120"
     "@ai-sdk/provider": "npm:3.0.10"
     "@ai-sdk/provider-utils": "npm:4.0.27"
     "@opentelemetry/api": "npm:^1.9.0"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10/2168a77bc35704aefe6091af24a5f0ba4bf43e72220744c4257df0209b89c628af7774221f6f10d47095fcb61abeef98a56526507c22ca619ef7836239f01acf
+  checksum: 10/d16ce40a620837c8c9045edb80ff538bf18ba4710f7ca8cfa92238bb31ef3953259afd7e306543a7b300a2f2b3e4c0042be4dc4d43ac5015df84cd30c63c1c20
   languageName: node
   linkType: hard
 
@@ -16529,10 +16529,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^4.1.0, date-fns@npm:^4.2.1":
-  version: 4.2.1
-  resolution: "date-fns@npm:4.2.1"
-  checksum: 10/c2731946a2d022935b3641062cd64bcdd62a65066115fee3490ba360a17fbf42134918493c43acb2c5c995b9ea4a2c7f505f0d9c02e73351cd2899b13e081729
+"date-fns@npm:^4.1.0, date-fns@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "date-fns@npm:4.3.0"
+  checksum: 10/be129ab084a43cb06d2f598008fc3816b9c3767f0e9b7f08c19981b99f361cdee623c63d89e8eb305ebb488778027358127284a2f2aca6da258b3cd33d7366fe
   languageName: node
   linkType: hard
 
@@ -25652,16 +25652,16 @@ __metadata:
   linkType: hard
 
 "sigstore@npm:^4.0.0":
-  version: 4.1.0
-  resolution: "sigstore@npm:4.1.0"
+  version: 4.1.1
+  resolution: "sigstore@npm:4.1.1"
   dependencies:
     "@sigstore/bundle": "npm:^4.0.0"
-    "@sigstore/core": "npm:^3.1.0"
+    "@sigstore/core": "npm:^3.2.1"
     "@sigstore/protobuf-specs": "npm:^0.5.0"
-    "@sigstore/sign": "npm:^4.1.0"
-    "@sigstore/tuf": "npm:^4.0.1"
-    "@sigstore/verify": "npm:^3.1.0"
-  checksum: 10/7312eed22f82bebcd80a897a163e220bb1df2c084c308d17fb431ff03ef28cf20e3b17312fd8024793dcefa27e794c31174d604a28fc85672a9d6d7f34bbd4a6
+    "@sigstore/sign": "npm:^4.1.1"
+    "@sigstore/tuf": "npm:^4.0.2"
+    "@sigstore/verify": "npm:^3.1.1"
+  checksum: 10/8fb38bbdc3ee1e79b3f19e0015ebf35b7d7f890673722f182960ec88f02a52f2f631fc983e7f8bafa3a37653a760ddc00277721a8f9159ee6ee311159ca3dfbe
   languageName: node
   linkType: hard
 
