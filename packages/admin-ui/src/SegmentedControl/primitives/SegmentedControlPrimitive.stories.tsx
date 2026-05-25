@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { SegmentedControlPrimitive } from "./SegmentedControlPrimitive.js";
 import { Icon } from "~/Icon/index.js";
 import { ReactComponent as LockIcon } from "@webiny/icons/notifications.svg";

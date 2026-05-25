@@ -26,8 +26,7 @@
     "vitest": "^4.1.7"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "adio": {
     "ignore": {
@@ -35,5 +34,8 @@
         "@webiny/app-theme"
       ]
     }
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

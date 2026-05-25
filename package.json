@@ -11,7 +11,8 @@
       "scripts/prepublishOnly",
       "scripts/cli",
       "scripts/cjsToEsm",
-      "scripts/generateSkills"
+      "scripts/generateSkills",
+      "scripts/release"
     ]
   },
   "author": "Webiny Ltd.",
@@ -23,7 +24,7 @@
     "@babel/code-frame": "^7.29.0",
     "@commitlint/cli": "^21.0.1",
     "@commitlint/config-conventional": "^21.0.1",
-    "@grpc/grpc-js": "^1.14.3",
+    "@grpc/grpc-js": "^1.14.4",
     "@lexical/code": "^0.44.0",
     "@lexical/hashtag": "^0.44.0",
     "@lexical/headless": "^0.44.0",
@@ -37,19 +38,19 @@
     "@lexical/selection": "^0.44.0",
     "@lexical/text": "^0.44.0",
     "@lexical/utils": "^0.44.0",
-    "@octokit/rest": "^20.1.2",
+    "@octokit/rest": "^22.0.1",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^24.12.4",
     "@types/react": "18.3.29",
     "@types/react-dom": "18.3.7",
     "@vitest/coverage-v8": "^4.1.7",
+    "@webiny/stdlib": "^0.0.4",
     "adio": "^3.0.0",
     "chalk": "^5.6.2",
     "cross-env": "^10.1.0",
     "deepmerge": "^4.3.1",
     "execa": "^5.1.1",
     "fast-glob": "^3.3.3",
-    "folder-hash": "^4.1.3",
     "fs-extra": "^11.3.5",
     "get-yarn-workspaces": "^1.0.2",
     "github-actions-wac": "^2.0.0",
@@ -57,7 +58,6 @@
     "husky": "^9.1.7",
     "inquirer": "^13.4.3",
     "jest-extended": "^7.0.0",
-    "lerna": "8.1.2",
     "lexical": "^0.44.0",
     "load-json-file": "^7.0.1",
     "lodash": "^4.18.1",
@@ -68,7 +68,7 @@
     "oxlint": "^1.66.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "semver": "^7.8.0",
+    "semver": "^7.8.1",
     "ts-expect": "^1.3.0",
     "tsx": "4.21.0",
     "type-fest": "^5.6.0",
@@ -176,21 +176,13 @@
       ]
     }
   },
-  "lerna": {
-    "version": "0.0.0",
-    "packages": [
-      "packages/*"
-    ]
-  },
   "resolutions": {
-    "lerna/minimatch": "^3.1.3",
     "@types/react": "18.3.29",
     "handlebars": "4.7.9",
     "@types/react-dom": "18.3.7",
     "lodash": "4.18.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "lerna@8.1.2": "patch:lerna@npm%3A8.1.2#./.yarn/patches/lerna-npm-8.1.2-be48ad2329.patch",
     "apollo-link@^1.2.14": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch",
     "apollo-link@^1.0.0": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch"
   },

@@ -14,8 +14,8 @@
     "./*": "./*"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^3.0.78",
-    "@ai-sdk/openai": "^3.0.64",
+    "@ai-sdk/anthropic": "^3.0.79",
+    "@ai-sdk/openai": "^3.0.65",
     "@webiny/api": "0.0.0",
     "@webiny/di": "^1.0.1",
     "@webiny/error": "0.0.0",
@@ -27,7 +27,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "ai": "^6.0.185",
+    "ai": "^6.0.191",
     "dataloader": "^2.2.3",
     "jose": "^6.2.3",
     "jsonwebtoken": "^9.0.3",
@@ -49,7 +49,9 @@
     "vitest": "^4.1.7"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

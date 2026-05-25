@@ -34,7 +34,8 @@
           "BaseError"
         ]
       }
-    }
+    },
+    "publishFrom": "dist"
   },
   "dependencies": {
     "@webiny/di": "^1.0.1"
@@ -44,7 +45,6 @@
     "typescript": "6.0.3"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   }
 }

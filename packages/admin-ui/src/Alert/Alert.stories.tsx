@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { Alert } from "./Alert.js";
 import React from "react";
 import { ReactComponent as LifeBuoyIcon } from "@webiny/icons/safety_check.svg";

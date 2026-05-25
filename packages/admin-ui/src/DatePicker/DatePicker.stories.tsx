@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { addDays, nextSaturday } from "date-fns";
 import { DatePicker } from "./DatePicker.js";
 

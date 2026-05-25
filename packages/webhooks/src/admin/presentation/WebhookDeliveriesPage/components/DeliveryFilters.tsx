@@ -22,6 +22,16 @@ export const DeliveryFilters = observer(function DeliveryFilters({
         <Grid className="py-sm">
             <Grid.Column span={2}>
                 <Select
+                    placeholder="All webhooks"
+                    value={vm.filters.webhookId ?? ""}
+                    options={vm.availableWebhooks}
+                    onChange={value => presenter.setWebhookFilter(value || null)}
+                    displayResetAction={true}
+                    onValueReset={() => presenter.setWebhookFilter(null)}
+                />
+            </Grid.Column>
+            <Grid.Column span={2}>
+                <Select
                     placeholder="All apps"
                     value={vm.filters.app ?? ""}
                     options={vm.availableApps}

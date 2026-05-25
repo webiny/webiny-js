@@ -27,14 +27,13 @@
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3",
     "vitest": "^4.1.7",
-    "webpack": "^5.106.2"
+    "webpack": "^5.107.1"
   },
   "peerDependencies": {
     "next": ">=15"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "adio": {
     "ignore": {
@@ -44,5 +43,8 @@
         "@webiny/website-builder-react"
       ]
     }
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

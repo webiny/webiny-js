@@ -28,7 +28,7 @@
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/plugins": "0.0.0",
-    "@webiny/stdlib": "^0.0.3",
+    "@webiny/stdlib": "^0.0.4",
     "@webiny/utils": "0.0.0",
     "graphql": "^16.14.0",
     "graphql-scalars": "^1.25.0",
@@ -43,8 +43,10 @@
     "vitest": "^4.1.7"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
+  "webiny": {
+    "publishFrom": "dist"
+  }
 }

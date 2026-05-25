@@ -1,13 +1,10 @@
-import type { StorybookConfig } from "@storybook/react-webpack5";
+import type { StorybookConfig } from "storybook-react-rsbuild";
 import { dirname, join } from "node:path";
 import path from "path";
 import { fileURLToPath } from "node:url";
+import { pluginSvgr } from "@rsbuild/plugin-svgr";
 import tailwindcss from "@tailwindcss/postcss";
 
-/**
- * This function is used to resolve the absolute path of a package.
- * It is needed in projects that use Yarn PnP or are set up within a monorepo.
- */
 function getAbsolutePath(value: string): any {
     return dirname(fileURLToPath(import.meta.resolve(join(value, "package.json"))));
 }
@@ -21,14 +18,10 @@ const config: StorybookConfig = {
 
     staticDirs: ["../assets"],
 
-    addons: [
-        getAbsolutePath("@storybook/addon-a11y"),
-        getAbsolutePath("@storybook/addon-webpack5-compiler-swc"),
-        getAbsolutePath("@storybook/addon-docs")
-    ],
+    addons: [getAbsolutePath("@storybook/addon-a11y"), getAbsolutePath("@storybook/addon-docs")],
 
     framework: {
-        name: getAbsolutePath("@storybook/react-webpack5"),
+        name: getAbsolutePath("storybook-react-rsbuild"),
         options: {}
     },
 
@@ -37,124 +30,36 @@ const config: StorybookConfig = {
         disableWhatsNewNotifications: true
     },
 
-    webpackFinal: async config => {
+    rsbuildFinal: async config => {
         config.resolve = config.resolve || {};
         config.resolve.alias = {
             ...config.resolve.alias,
             "~": path.resolve(import.meta.dirname, "../src")
         };
 
-        // We use explicit `.js` imports, and webpack looks for that extension literally.
-        // We need to instruct it to try resolving other extensions.
-        config.resolve.extensionAlias = {
-            ".js": [".ts", ".tsx", ".js"],
-            ...config.resolve.extensionAlias
+        config.tools = config.tools || {};
+        config.tools.postcss = (_, { addPlugins }) => {
+            addPlugins(tailwindcss);
         };
 
-        // Remove existing CSS rules to avoid conflicts
-        config.module = config.module || {};
-        config.module.rules = config.module.rules || [];
-        config.module.rules = config.module.rules.filter(rule => {
-            const test = (rule as { test?: RegExp }).test;
-            return !(test && test.toString().includes("css"));
-        });
-
-        // Add custom style handling for CSS (including Tailwind)
-        config.module.rules.push({
-            test: /\.css$/i,
-            use: [
-                "style-loader",
-                {
-                    loader: "css-loader",
-                    options: {
-                        importLoaders: 1,
-                        url: false,
-                        import: false
-                    }
+        config.plugins = [
+            ...(config.plugins || []),
+            pluginSvgr({
+                svgrOptions: {
+                    exportType: "named",
+                    namedExport: "ReactComponent"
                 },
-                {
-                    loader: "postcss-loader",
-                    options: {
-                        postcssOptions: {
-                            plugins: [tailwindcss]
-                        }
-                    }
-                }
-            ]
-        });
-
-        // Keep SCSS support for other files
-        config.module?.rules?.push({
-            test: /\.s[ac]ss$/i,
-            use: [
-                "style-loader",
-                {
-                    loader: "css-loader",
-                    options: {
-                        importLoaders: 1
-                    }
-                },
-                {
-                    loader: "postcss-loader",
-                    options: {
-                        postcssOptions: {
-                            plugins: [tailwindcss]
-                        }
-                    }
-                },
-                {
-                    loader: "sass-loader",
-                    options: {
-                        implementation: fileURLToPath(import.meta.resolve("sass"))
-                    }
-                }
-            ]
-        });
-
-        // Add SVG handling
-        const svgRule = config.module?.rules?.find(rule => {
-            const test = (rule as { test: RegExp }).test;
-            return test ? test.test(".svg") : false;
-        }) as { [key: string]: any };
-
-        if (svgRule) {
-            svgRule.exclude = /\.svg$/;
-        }
-
-        config.module?.rules?.push({
-            test: /\.svg$/i,
-            use: [
-                {
-                    loader: "@svgr/webpack",
-                    options: {
-                        svgoConfig: {
-                            plugins: [
-                                {
-                                    name: "preset-default",
-                                    params: {
-                                        overrides: {
-                                            removeViewBox: false
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                },
-                {
-                    loader: "file-loader",
-                    options: {
-                        name: "[name].[hash].[ext]"
-                    }
-                }
-            ]
-        });
+                mixedImport: true,
+                include: /packages\/icons\/.*\.svg$/
+            })
+        ];
 
         return config;
     },
 
     features: {
-        controls: true
+        controls: true,
+        storyStoreV7: true
     }
 };
 

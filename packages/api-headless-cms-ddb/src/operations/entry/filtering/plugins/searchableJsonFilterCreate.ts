@@ -1,7 +1,18 @@
-import dot from "dot-object";
 import type { CmsEntryFieldFilterPluginCreateResponse } from "~/plugins/CmsEntryFieldFilterPlugin.js";
 import { CmsEntryFieldFilterPlugin } from "~/plugins/CmsEntryFieldFilterPlugin.js";
 import { extractWhereParams } from "~/operations/entry/filtering/where.js";
+
+function dotFlatten(obj: Record<string, any>, prefix = ""): Record<string, any> {
+    return Object.entries(obj).reduce<Record<string, any>>((acc, [key, val]) => {
+        const path = prefix ? `${prefix}.${key}` : key;
+        if (val && typeof val === "object" && !Array.isArray(val)) {
+            Object.assign(acc, dotFlatten(val, path));
+        } else {
+            acc[path] = val;
+        }
+        return acc;
+    }, {});
+}
 
 export const searchableJsonFilterCreate = () => {
     const plugin = new CmsEntryFieldFilterPlugin({
@@ -11,7 +22,7 @@ export const searchableJsonFilterCreate = () => {
 
             const filters = [];
 
-            const accessPatterns = dot.dot(objectValue);
+            const accessPatterns = dotFlatten(objectValue);
 
             for (const key in accessPatterns) {
                 const value = accessPatterns[key];

@@ -20,12 +20,14 @@
     "typescript": "6.0.3"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "adio": {
     "ignoreDirs": [
       "__tests__"
     ]
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

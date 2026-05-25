@@ -19,8 +19,7 @@
     "watch": "node ../cli/bin.js run watch"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "devDependencies": {
     "@webiny/handler-aws": "0.0.0",
@@ -50,5 +49,8 @@
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "zod": "4.4.3"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

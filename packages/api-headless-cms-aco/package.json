@@ -18,8 +18,7 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "devDependencies": {
     "@webiny/api-core": "0.0.0",
@@ -39,5 +38,8 @@
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "vitest": "^4.1.7"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

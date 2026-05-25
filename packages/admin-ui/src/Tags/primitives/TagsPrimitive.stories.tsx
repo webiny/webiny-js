@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { ReactComponent as TagIcon } from "@webiny/icons/tag.svg";
 import { TagsPrimitive } from "./TagsPrimitive.js";
 import { Button } from "~/Button/index.js";
