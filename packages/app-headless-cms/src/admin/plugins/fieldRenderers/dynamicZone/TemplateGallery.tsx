@@ -93,6 +93,7 @@ const Gallery = makeDecoratable("TemplateGallery", (props: TemplateGalleryProps)
                     <DelayedOnChange value={search} onChange={setSearch}>
                         {({ value, onChange }) => (
                             <Input
+                                autoFocus={true}
                                 value={value}
                                 onChange={onChange}
                                 placeholder={"Search templates..."}
