@@ -13,13 +13,7 @@ import type {
     GenerationTelemetry
 } from "./abstractions.js";
 import { buildDomainPrompt } from "./buildPrompt.js";
-
-function stripCodeFence(text: string): string {
-    return text
-        .replace(/^```(?:json)?\s*\n?/, "")
-        .replace(/\n?```\s*$/, "")
-        .trim();
-}
+import { LlmJsonResponse } from "./LlmJsonResponse.js";
 
 class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.Interface {
     constructor(
@@ -97,7 +91,7 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
                 aiResult.text ||
                 (aiResult.steps.filter(step => step.text.length > 0).pop()?.text ?? "");
 
-            const output = stripCodeFence(text);
+            const output = LlmJsonResponse.fromRawText(text).toString();
 
             const filesRead = new Set<string>();
             let toolCallsMade = 0;

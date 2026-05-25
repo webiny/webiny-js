@@ -8,7 +8,7 @@ export function useCreateElement() {
 
     const createElement = useCallback(
         (payload: CommandPayload<typeof Commands.CreateElement>) => {
-            editor.executeCommand(Commands.CreateElement, payload);
+            return editor.executeCommand(Commands.CreateElement, payload);
         },
         [editor]
     );
