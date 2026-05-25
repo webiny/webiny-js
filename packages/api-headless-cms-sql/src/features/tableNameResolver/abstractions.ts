@@ -4,10 +4,8 @@ export interface ITableNameResolver {
     resolve(tenant: string, entityName: string): string;
 }
 
-export const TableNameResolverAbstraction = createAbstraction<ITableNameResolver>(
-    "Cms/Sql/TableNameResolver"
-);
+export const TableNameResolver = createAbstraction<ITableNameResolver>("Cms/Sql/TableNameResolver");
 
-export namespace TableNameResolverAbstraction {
+export namespace TableNameResolver {
     export type Interface = ITableNameResolver;
 }

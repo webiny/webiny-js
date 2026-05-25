@@ -9,9 +9,8 @@ export interface ISchemaRegistry {
     removeVerified(tableName: string): void;
 }
 
-export const SchemaRegistryAbstraction =
-    createAbstraction<ISchemaRegistry>("Cms/Sql/SchemaRegistry");
+export const SchemaRegistry = createAbstraction<ISchemaRegistry>("Cms/Sql/SchemaRegistry");
 
-export namespace SchemaRegistryAbstraction {
+export namespace SchemaRegistry {
     export type Interface = ISchemaRegistry;
 }

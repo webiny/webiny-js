@@ -9,10 +9,10 @@ import type {
     StorageCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import type { IModelRow } from "./types.js";
-import { KnexInstanceAbstraction } from "~/features/knexInstance/abstractions.js";
-import { TableNameResolverAbstraction } from "~/features/tableNameResolver/abstractions.js";
-import { ModelSchemaManagerAbstraction } from "~/features/modelSchemaManager/abstractions.js";
-import { EntrySchemaManagerAbstraction } from "~/features/entrySchemaManager/abstractions.js";
+import { KnexInstance } from "~/features/knexInstance/abstractions.js";
+import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js";
+import { ModelSchemaManager } from "~/features/modelSchemaManager/abstractions.js";
+import { EntrySchemaManager } from "~/features/entrySchemaManager/abstractions.js";
 import { modelToRow } from "./mappers.js";
 import { rowToModel } from "./mappers.js";
 
@@ -28,10 +28,10 @@ const extractFields = (model: StorageCmsModel): CmsModelField[] => {
 };
 
 export const createModelsStorageOperations = (
-    knex: KnexInstanceAbstraction.Interface,
-    tableNameResolver: TableNameResolverAbstraction.Interface,
-    modelSchemaManager: ModelSchemaManagerAbstraction.Interface,
-    entrySchemaManager: EntrySchemaManagerAbstraction.Interface
+    knex: KnexInstance.Interface,
+    tableNameResolver: TableNameResolver.Interface,
+    modelSchemaManager: ModelSchemaManager.Interface,
+    entrySchemaManager: EntrySchemaManager.Interface
 ): CmsModelStorageOperations => {
     const tableName = (tenant: string) => {
         return tableNameResolver.resolve(tenant, MODELS_ENTITY);

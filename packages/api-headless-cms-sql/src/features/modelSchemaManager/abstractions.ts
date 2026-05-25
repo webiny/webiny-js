@@ -4,10 +4,10 @@ export interface IModelSchemaManager {
     ensure(tableName: string): Promise<void>;
 }
 
-export const ModelSchemaManagerAbstraction = createAbstraction<IModelSchemaManager>(
+export const ModelSchemaManager = createAbstraction<IModelSchemaManager>(
     "Cms/Sql/ModelSchemaManager"
 );
 
-export namespace ModelSchemaManagerAbstraction {
+export namespace ModelSchemaManager {
     export type Interface = IModelSchemaManager;
 }

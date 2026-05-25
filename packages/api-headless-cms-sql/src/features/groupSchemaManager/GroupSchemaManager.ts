@@ -1,7 +1,7 @@
 import type { IColumnDefinition } from "~/features/fieldTypeMapper/abstractions.js";
-import { GroupSchemaManagerAbstraction } from "./abstractions.js";
-import { SchemaRegistryAbstraction } from "~/features/schemaRegistry/abstractions.js";
-import { KnexInstanceAbstraction } from "~/features/knexInstance/abstractions.js";
+import { GroupSchemaManager as GroupSchemaManagerAbstraction } from "./abstractions.js";
+import { SchemaRegistry } from "~/features/schemaRegistry/abstractions.js";
+import { KnexInstance } from "~/features/knexInstance/abstractions.js";
 import { applyColumnDefinitions } from "~/features/entrySchemaManager/columnBuilder.js";
 
 const GROUP_TABLE_COLUMNS: IColumnDefinition[] = [
@@ -22,13 +22,10 @@ const GROUP_TABLE_COLUMNS: IColumnDefinition[] = [
 ];
 
 class GroupSchemaManagerImpl implements GroupSchemaManagerAbstraction.Interface {
-    private readonly knex: KnexInstanceAbstraction.Interface;
-    private readonly registry: SchemaRegistryAbstraction.Interface;
+    private readonly knex: KnexInstance.Interface;
+    private readonly registry: SchemaRegistry.Interface;
 
-    constructor(
-        knex: KnexInstanceAbstraction.Interface,
-        registry: SchemaRegistryAbstraction.Interface
-    ) {
+    constructor(knex: KnexInstance.Interface, registry: SchemaRegistry.Interface) {
         this.knex = knex;
         this.registry = registry;
     }
@@ -52,5 +49,5 @@ class GroupSchemaManagerImpl implements GroupSchemaManagerAbstraction.Interface 
 
 export const GroupSchemaManager = GroupSchemaManagerAbstraction.createImplementation({
     implementation: GroupSchemaManagerImpl,
-    dependencies: [KnexInstanceAbstraction, SchemaRegistryAbstraction]
+    dependencies: [KnexInstance, SchemaRegistry]
 });

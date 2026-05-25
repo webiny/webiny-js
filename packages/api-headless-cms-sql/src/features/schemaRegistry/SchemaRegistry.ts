@@ -1,4 +1,4 @@
-import { SchemaRegistryAbstraction } from "./abstractions.js";
+import { SchemaRegistry as SchemaRegistryAbstraction } from "./abstractions.js";
 
 class SchemaRegistryImpl implements SchemaRegistryAbstraction.Interface {
     private readonly verified: Set<string> = new Set();

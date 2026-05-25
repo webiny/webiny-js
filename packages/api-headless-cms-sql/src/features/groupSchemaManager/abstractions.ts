@@ -4,10 +4,10 @@ export interface IGroupSchemaManager {
     ensure(tableName: string): Promise<void>;
 }
 
-export const GroupSchemaManagerAbstraction = createAbstraction<IGroupSchemaManager>(
+export const GroupSchemaManager = createAbstraction<IGroupSchemaManager>(
     "Cms/Sql/GroupSchemaManager"
 );
 
-export namespace GroupSchemaManagerAbstraction {
+export namespace GroupSchemaManager {
     export type Interface = IGroupSchemaManager;
 }

@@ -9,9 +9,9 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import type { IGroupRow } from "./types.js";
 import { GROUP_COLUMNS } from "./types.js";
-import { KnexInstanceAbstraction } from "~/features/knexInstance/abstractions.js";
-import { TableNameResolverAbstraction } from "~/features/tableNameResolver/abstractions.js";
-import { GroupSchemaManagerAbstraction } from "~/features/groupSchemaManager/abstractions.js";
+import { KnexInstance } from "~/features/knexInstance/abstractions.js";
+import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js";
+import { GroupSchemaManager } from "~/features/groupSchemaManager/abstractions.js";
 import { groupToRow } from "./mappers.js";
 import { rowToGroup } from "./mappers.js";
 import { parseSortField } from "~/utils/parseSortField.js";
@@ -19,9 +19,9 @@ import { parseSortField } from "~/utils/parseSortField.js";
 const GROUPS_ENTITY = "groups";
 
 export const createGroupsStorageOperations = (
-    knex: KnexInstanceAbstraction.Interface,
-    tableNameResolver: TableNameResolverAbstraction.Interface,
-    groupSchemaManager: GroupSchemaManagerAbstraction.Interface
+    knex: KnexInstance.Interface,
+    tableNameResolver: TableNameResolver.Interface,
+    groupSchemaManager: GroupSchemaManager.Interface
 ): CmsGroupStorageOperations => {
     const ensureSchema = async (tenant: string) => {
         const name = tableNameResolver.resolve(tenant, GROUPS_ENTITY);
