@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { Switch } from "~/Switch/index.js";
 import { Tooltip } from "~/Tooltip/index.js";
 

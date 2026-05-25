@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { Drawer } from "./Drawer.js";
 import { Button } from "~/Button/index.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";
