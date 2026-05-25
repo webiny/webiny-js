@@ -6,6 +6,7 @@ export interface IFieldColumnEntry {
     storageId: string;
     fieldId: string;
     type: string;
+    list: boolean;
     /* Path using storageId segments (for column name computation). */
     path: string[];
     /* Path using fieldId segments (for traversing entry.values). */
@@ -59,7 +60,7 @@ export const buildFieldColumnMap = (
         const currentPath = [...parentPath, field.storageId];
         const currentFieldIdPath = [...parentFieldIdPath, field.fieldId];
 
-        if (field.type === "object" && field.settings?.fields) {
+        if (field.type === "object" && field.settings?.fields && !field.list) {
             const children = buildFieldColumnMap(
                 field.settings.fields,
                 currentPath,
@@ -89,6 +90,7 @@ export const buildFieldColumnMap = (
                 storageId: field.storageId,
                 fieldId: field.fieldId,
                 type: field.type,
+                list: field.list || false,
                 path: currentPath,
                 fieldIdPath: currentFieldIdPath
             });
@@ -98,6 +100,7 @@ export const buildFieldColumnMap = (
                 storageId: field.storageId,
                 fieldId: field.fieldId,
                 type: "ref__entryId",
+                list: false,
                 path: currentPath,
                 fieldIdPath: currentFieldIdPath
             });
@@ -110,6 +113,7 @@ export const buildFieldColumnMap = (
             storageId: field.storageId,
             fieldId: field.fieldId,
             type: field.type,
+            list: field.list || false,
             path: currentPath,
             fieldIdPath: currentFieldIdPath
         });

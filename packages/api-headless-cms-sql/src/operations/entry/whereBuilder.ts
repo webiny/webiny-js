@@ -12,6 +12,7 @@ import type { SqlOperatorRegistry } from "~/features/sqlOperator/abstractions/in
 import type { SqlEntryFilterRegistry } from "~/features/sqlEntryFilter/abstractions/index.js";
 import { storagePathToColumnName } from "~/utils/columnName.js";
 import { parseWhereKey } from "~/utils/parseWhereKey.js";
+import { normalizeValue } from "~/features/sqlOperator/normalizeValue.js";
 
 export { parseWhereKey };
 
@@ -134,7 +135,7 @@ export const applyWhere = (params: IApplyWhereParams): void => {
         operatorRegistry.get(filterParams.operator).apply({
             query: filterParams.query,
             column: filterParams.column,
-            value: filterParams.value
+            value: normalizeValue(filterParams.value)
         });
     };
 

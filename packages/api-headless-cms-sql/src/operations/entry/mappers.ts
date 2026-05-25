@@ -7,16 +7,29 @@ import type { IEntryRow } from "./types.js";
 import type { IFieldColumnEntry } from "~/utils/columnName.js";
 import { buildFieldColumnMap } from "~/utils/columnName.js";
 
-/* Field types that are stored as JSON in the database. */
-const JSON_FIELD_TYPES = new Set([
-    "file",
-    "ref",
-    "object",
-    "dynamicZone",
-    "json",
-    "searchable-json",
-    "location"
-]);
+/* Checks if a string begins with { or [ (i.e. was JSON.stringified from an object/array). */
+const isJsonObject = (s: string): boolean => {
+    const ch = s.charCodeAt(0);
+    return ch === 123 || ch === 91;
+};
+
+/* Collapses nested objects where every property is null into a single null. */
+const collapseNullObjects = (obj: Record<string, unknown>): void => {
+    for (const key of Object.keys(obj)) {
+        const val = obj[key];
+
+        if (val != null && typeof val === "object" && !Array.isArray(val)) {
+            const nested = val as Record<string, unknown>;
+            collapseNullObjects(nested);
+
+            const allNull = Object.values(nested).every(v => v === null);
+
+            if (allNull) {
+                obj[key] = null;
+            }
+        }
+    }
+};
 
 /* Traverses a nested object by path segments. */
 const getNestedValue = (obj: Record<string, unknown>, path: string[]): unknown => {
@@ -176,7 +189,8 @@ export const entryToRow = (
         if (fc.type === "ref__entryId") {
             /* Extract entryId from ref value for the companion column. */
             if (value && typeof value === "object" && !Array.isArray(value)) {
-                row[fc.columnName] = (value as Record<string, unknown>).entryId ?? null;
+                const refObj = value as Record<string, unknown>;
+                row[fc.columnName] = (refObj.entryId ?? refObj.id ?? null) as string | null;
             } else {
                 row[fc.columnName] = null;
             }
@@ -211,14 +225,18 @@ export const rowToEntry = (
 
         let value: unknown;
 
-        if (rawValue != null && JSON_FIELD_TYPES.has(fc.type) && typeof rawValue === "string") {
+        if (rawValue == null) {
+            value = null;
+        } else if (typeof rawValue === "string" && isJsonObject(rawValue)) {
             value = JSON.parse(rawValue);
         } else {
-            value = rawValue ?? null;
+            value = rawValue;
         }
 
         setNestedValue(values, fc.fieldIdPath, value);
     }
+
+    collapseNullObjects(values);
 
     const locationJson = row.location;
     const location = locationJson ? JSON.parse(locationJson as string) : undefined;

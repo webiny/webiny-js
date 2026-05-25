@@ -1,6 +1,19 @@
 import { SqlEntryFilter as SqlEntryFilterAbstraction } from "../abstractions/index.js";
 import { parseWhereKey } from "~/utils/parseWhereKey.js";
 
+const toEntryId = (value: unknown): unknown => {
+    if (typeof value === "string") {
+        const idx = value.indexOf("#");
+        return idx === -1 ? value : value.slice(0, idx);
+    }
+
+    if (Array.isArray(value)) {
+        return value.map(toEntryId);
+    }
+
+    return value;
+};
+
 class RefFilterImpl implements SqlEntryFilterAbstraction.Interface {
     public readonly fieldType = "ref";
 
@@ -9,7 +22,6 @@ class RefFilterImpl implements SqlEntryFilterAbstraction.Interface {
         const values = params.value;
 
         if (values === null || values === undefined) {
-            /* Filter for entries where the ref is null. */
             applyFiltering({
                 query,
                 column: `${field.columnName}__entryId`,
@@ -32,14 +44,14 @@ class RefFilterImpl implements SqlEntryFilterAbstraction.Interface {
                 continue;
             }
 
-            const { operator } = parseWhereKey(key);
+            const { fieldId, operator } = parseWhereKey(key);
+            const needsEntryIdConversion = fieldId === "id" || fieldId === "entryId";
 
-            /* All ref sub-property filters go to the __entryId companion column. */
             applyFiltering({
                 query,
                 column: `${field.columnName}__entryId`,
                 operator,
-                value: refValue
+                value: needsEntryIdConversion ? toEntryId(refValue) : refValue
             });
         }
     }

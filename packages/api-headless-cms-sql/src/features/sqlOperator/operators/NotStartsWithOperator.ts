@@ -6,7 +6,7 @@ class NotStartsWithOperatorImpl implements SqlOperatorAbstraction.Interface {
     public apply(params: SqlOperatorAbstraction.ApplyParams): void {
         const { query, column, value } = params;
 
-        if (typeof value !== "string") {
+        if (typeof value !== "string" || value === "") {
             return;
         }
 
