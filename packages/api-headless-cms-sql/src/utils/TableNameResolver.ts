@@ -5,23 +5,24 @@ interface ITableNameResolverParams {
 
 export class TableNameResolver {
     private readonly sharedTables: boolean;
-    private readonly prefix: string;
+    private readonly prefix: string | null;
 
     constructor(params: ITableNameResolverParams) {
         this.sharedTables = params.sharedTables;
-        this.prefix = params.tableNamePrefix ? this.sanitize(params.tableNamePrefix) : "cms";
+        this.prefix = params.tableNamePrefix ? this.sanitize(params.tableNamePrefix) : null;
     }
 
     public resolve(tenant: string, entityName: string): string {
         const sanitizedEntity = this.sanitize(entityName);
+        const base = this.prefix ? `${this.prefix}_cms` : "cms";
 
         if (this.sharedTables) {
-            return `${this.prefix}_${sanitizedEntity}`;
+            return `${base}_${sanitizedEntity}`;
         }
 
         const sanitizedTenant = this.sanitize(tenant);
 
-        return `${this.prefix}_${sanitizedTenant}_${sanitizedEntity}`;
+        return `${base}_${sanitizedTenant}_${sanitizedEntity}`;
     }
 
     private sanitize(value: string): string {
