@@ -14,7 +14,13 @@ export const ElementPreview = ({ element }: ElementPreviewProps) => {
     return (
         <div className={"flex items-center gap-sm"}>
             <div className={"fill-accent-default"}>
-                {component.image && <Icon icon={<InlineSvg src={component.image} />} size={"md"} />}
+                {component.image && (
+                    <Icon
+                        icon={<InlineSvg src={component.image} />}
+                        size={"md"}
+                        label={component.label ?? element.component.name}
+                    />
+                )}
             </div>
             <span className={"text-md font-semibold text-neutral-primary"}>
                 {component.label ?? element.component.name}
