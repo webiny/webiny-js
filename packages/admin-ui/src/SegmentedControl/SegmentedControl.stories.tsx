@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react;
+import type { Meta, StoryObj } from "@storybook/react";
 import { ReactComponent as LockIcon } from "@webiny/icons/notifications.svg";
 import { ReactComponent as PersonIcon } from "@webiny/icons/person.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
