@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { ReactComponent as BoldIcon } from "@webiny/icons/format_bold.svg";
 import { ReactComponent as ItalicIcon } from "@webiny/icons/format_italic.svg";
 import { ReactComponent as UnderlineIcon } from "@webiny/icons/format_underlined.svg";

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const { getPackages } = require("./utils/getPackages");
 const { WorkspaceGraph } = require("./utils/WorkspaceGraph.js");
-const { hashElement } = require("folder-hash");
+const { hashFolderAsync } = require("@webiny/stdlib/node");
 const fs = require("fs-extra");
 const execa = require("execa");
 const path = require("path");
@@ -281,9 +281,9 @@ function getPackageCacheFolderPath(workspacePackage) {
 }
 
 async function getPackageSourceHash(workspacePackage) {
-    const { hash } = await hashElement(workspacePackage.packageFolder, {
-        folders: { exclude: ["dist", "lib"] },
-        files: { exclude: ["tsconfig.build.tsbuildinfo"] }
+    const { hash } = await hashFolderAsync(workspacePackage.packageFolder, {
+        excludeFolders: ["dist", "lib"],
+        excludeFiles: ["tsconfig.build.tsbuildinfo"]
     });
 
     return hash;

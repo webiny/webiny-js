@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { ReactComponent as NotificationsIcon } from "@webiny/icons/notifications.svg";
 import { ReactComponent as CalendarIcon } from "@webiny/icons/calendar_month.svg";
 
