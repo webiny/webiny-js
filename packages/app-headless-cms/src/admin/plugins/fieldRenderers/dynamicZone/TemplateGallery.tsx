@@ -10,7 +10,7 @@ import { Dialog } from "@webiny/admin-ui";
 import { ReactComponent as PlusIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as GridIcon } from "@webiny/icons/grid_view.svg";
-import { ReactComponent as ListIcon } from "@webiny/icons/view_list.svg";
+import { ReactComponent as ListIcon } from "@webiny/icons/list.svg";
 
 export interface TemplateGalleryContainerProps {
     children: React.ReactNode;
@@ -88,7 +88,7 @@ const Gallery = makeDecoratable("TemplateGallery", (props: TemplateGalleryProps)
 
     return (
         <GalleryContainer>
-            <div className={"flex items-center gap-sm pb-md"}>
+            <div className={"flex items-center gap-sm pb-md pt-xs"}>
                 <div className={"flex-1 min-w-0"}>
                     <DelayedOnChange value={search} onChange={setSearch}>
                         {({ value, onChange }) => (
