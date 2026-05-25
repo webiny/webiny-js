@@ -11,13 +11,14 @@ beforeEach(async () => {
         return;
     }
 
-    /* Get all table names and drop them. */
+    /* Drop all tables and bump the schema reset version so SchemaRegistry caches are invalidated. */
     const tables = await knex.raw(
         "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
     );
     for (const { name } of tables) {
         await knex.schema.dropTableIfExists(name);
     }
+    globalThis.__schemaRegistryVersion = (globalThis.__schemaRegistryVersion || 0) + 1;
 });
 
 afterAll(async () => {

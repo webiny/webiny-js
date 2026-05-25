@@ -26,7 +26,7 @@ export const rowToGroup = (row: IGroupRow): CmsGroup => {
         name: row.name,
         slug: row.slug,
         tenant: row.tenant,
-        description: row.description,
+        description: row.description || null,
         icon: row.icon ? JSON.parse(row.icon) : null,
         createdBy: row.createdBy ? JSON.parse(row.createdBy) : undefined,
         createdOn: row.createdOn ?? undefined,

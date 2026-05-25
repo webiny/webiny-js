@@ -6,7 +6,7 @@ class NotContainsOperatorImpl implements SqlOperatorAbstraction.Interface {
     public apply(params: SqlOperatorAbstraction.ApplyParams): void {
         const { query, column, value } = params;
 
-        if (typeof value !== "string") {
+        if (typeof value !== "string" || value.trim().length === 0) {
             return;
         }
 

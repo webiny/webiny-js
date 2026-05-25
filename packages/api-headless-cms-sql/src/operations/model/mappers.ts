@@ -38,7 +38,7 @@ export const rowToModel = (row: IModelRow): StorageCmsModel => {
         pluralApiName: row.pluralApiName,
         group: row.group,
         icon: row.icon ? JSON.parse(row.icon) : null,
-        description: row.description,
+        description: row.description || null,
         fields: JSON.parse(row.fields),
         layout: JSON.parse(row.layout),
         tags: row.tags ? JSON.parse(row.tags) : undefined,

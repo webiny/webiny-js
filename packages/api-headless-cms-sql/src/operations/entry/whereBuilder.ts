@@ -204,9 +204,9 @@ export const applyWhere = (params: IApplyWhereParams): void => {
             if (key === "AND") {
                 const andConditions = value as CmsEntryListWhere[];
 
-                qb.where(function (this: Knex.QueryBuilder) {
+                qb.where(function (this) {
                     for (const condition of andConditions) {
-                        this.andWhere(function (this: Knex.QueryBuilder) {
+                        this.andWhere(function (this) {
                             execWhere(this, condition as Record<string, unknown>, isValues);
                         });
                     }
@@ -218,16 +218,16 @@ export const applyWhere = (params: IApplyWhereParams): void => {
             if (key === "OR") {
                 const orConditions = value as CmsEntryListWhere[];
 
-                qb.where(function (this: Knex.QueryBuilder) {
+                qb.where(function (this) {
                     for (let i = 0; i < orConditions.length; i++) {
                         const condition = orConditions[i];
 
                         if (i === 0) {
-                            this.where(function (this: Knex.QueryBuilder) {
+                            this.where(function (this) {
                                 execWhere(this, condition as Record<string, unknown>, isValues);
                             });
                         } else {
-                            this.orWhere(function (this: Knex.QueryBuilder) {
+                            this.orWhere(function (this) {
                                 execWhere(this, condition as Record<string, unknown>, isValues);
                             });
                         }
@@ -274,10 +274,12 @@ export const applySearch = (
         return;
     }
 
-    const validFields = searchFields.filter(id => {
-        const f = fields[id];
-        return f && f.searchable;
-    });
+    const validFields = searchFields
+        .map(id => (id.startsWith("values.") ? id.slice(7) : id))
+        .filter(id => {
+            const f = fields[id];
+            return f && f.searchable;
+        });
 
     if (validFields.length === 0) {
         return;
@@ -285,7 +287,7 @@ export const applySearch = (
 
     const term = `%${search}%`;
 
-    query.where(function (this: Knex.QueryBuilder) {
+    query.where(function (this) {
         let first = true;
 
         for (const fieldId of validFields) {
