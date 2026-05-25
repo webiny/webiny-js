@@ -82,10 +82,12 @@ type CreateElementAction = {
   params: ElementSchema;
 };
 
-type PageSchema = ElementSchema[];
+type PageSchema = {
+  page: ElementSchema[];
+};
 \`\`\`
 
-For slot inputs, use \`{ "action": "CreateElement", "params": { "component": "...", "inputs": { ... } } }\`. For root array items, use \`ElementSchema\` shape.
+For slot inputs, use \`{ "action": "CreateElement", "params": { "component": "...", "inputs": { ... } } }\`. For root items inside the "page" array, use \`ElementSchema\` shape.
 Note: \`CreateElement\` uses "action" — it is a structural instruction for the page builder, not a tool invocation.
 
 ### Grid Structure Example
@@ -136,5 +138,5 @@ Key rules:
 - Webiny/GridColumn's "children" is an array of CreateElement actions for
   the actual content
 
-You MUST return parsable JSON string without any extra text or envelopes.`;
+You MUST return a parsable JSON object with a "page" key containing the array of elements. No extra text outside the JSON.`;
 }
