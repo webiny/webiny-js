@@ -8,7 +8,7 @@ export class ToggleGroupItem {
     private readonly _disabled: boolean;
     private readonly _icon: any;
     private readonly _iconPosition: "start" | "end";
-    private readonly _tooltip?: string;
+    private readonly _tooltip?: any;
 
     protected constructor(data: {
         id: string;
@@ -17,7 +17,7 @@ export class ToggleGroupItem {
         disabled: boolean;
         icon: any;
         iconPosition: "start" | "end";
-        tooltip?: string;
+        tooltip?: any;
     }) {
         this._id = data.id;
         this._label = data.label;

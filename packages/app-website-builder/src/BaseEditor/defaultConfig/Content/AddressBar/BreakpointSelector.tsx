@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ToggleGroupPrimitive } from "@webiny/admin-ui";
+import { Text, ToggleGroupPrimitive } from "@webiny/admin-ui";
 import { useBreakpoint } from "~/BaseEditor/hooks/useBreakpoint.js";
 import { InlineSvg } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/InlineSvg.js";
 
@@ -10,7 +10,17 @@ export const BreakpointSelector = () => {
         return breakpoints.map(bp => ({
             value: bp.name,
             icon: <InlineSvg src={bp.icon} className={"size-md"} />,
-            tooltip: bp.title
+            tooltip: (
+                <Text size="md">
+                    <strong>{bp.title}</strong>
+                    {bp.description && (
+                        <>
+                            <br />
+                            {bp.description}
+                        </>
+                    )}
+                </Text>
+            )
         }));
     }, [breakpoints]);
 
