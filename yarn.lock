@@ -10890,7 +10890,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/admin-ui@npm:*, @webiny/admin-ui@npm:0.0.0, @webiny/admin-ui@workspace:packages/admin-ui":
+"@webiny/admin-ui@npm:0.0.0, @webiny/admin-ui@workspace:packages/admin-ui":
   version: 0.0.0-use.local
   resolution: "@webiny/admin-ui@workspace:packages/admin-ui"
   dependencies:
@@ -11093,7 +11093,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-core@npm:*, @webiny/api-core@npm:0.0.0, @webiny/api-core@workspace:packages/api-core":
+"@webiny/api-core@npm:0.0.0, @webiny/api-core@workspace:packages/api-core":
   version: 0.0.0-use.local
   resolution: "@webiny/api-core@workspace:packages/api-core"
   dependencies:
@@ -11671,7 +11671,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-website-builder-workflows@npm:*, @webiny/api-website-builder-workflows@workspace:packages/api-website-builder-workflows":
+"@webiny/api-website-builder-workflows@npm:0.0.0, @webiny/api-website-builder-workflows@workspace:packages/api-website-builder-workflows":
   version: 0.0.0-use.local
   resolution: "@webiny/api-website-builder-workflows@workspace:packages/api-website-builder-workflows"
   dependencies:
@@ -11691,7 +11691,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-website-builder@npm:*, @webiny/api-website-builder@npm:0.0.0, @webiny/api-website-builder@workspace:packages/api-website-builder":
+"@webiny/api-website-builder@npm:0.0.0, @webiny/api-website-builder@workspace:packages/api-website-builder":
   version: 0.0.0-use.local
   resolution: "@webiny/api-website-builder@workspace:packages/api-website-builder"
   dependencies:
@@ -11845,7 +11845,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-admin@npm:*, @webiny/app-admin@npm:0.0.0, @webiny/app-admin@workspace:packages/app-admin":
+"@webiny/app-admin@npm:0.0.0, @webiny/app-admin@workspace:packages/app-admin":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin@workspace:packages/app-admin"
   dependencies:
@@ -12532,7 +12532,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app@npm:*, @webiny/app@npm:0.0.0, @webiny/app@workspace:packages/app":
+"@webiny/app@npm:0.0.0, @webiny/app@workspace:packages/app":
   version: 0.0.0-use.local
   resolution: "@webiny/app@workspace:packages/app"
   dependencies:
@@ -12621,7 +12621,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/aws-sdk@npm:*, @webiny/aws-sdk@npm:0.0.0, @webiny/aws-sdk@workspace:packages/aws-sdk":
+"@webiny/aws-sdk@npm:0.0.0, @webiny/aws-sdk@workspace:packages/aws-sdk":
   version: 0.0.0-use.local
   resolution: "@webiny/aws-sdk@workspace:packages/aws-sdk"
   dependencies:
@@ -12676,7 +12676,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/build-tools@npm:*, @webiny/build-tools@npm:0.0.0, @webiny/build-tools@workspace:packages/build-tools":
+"@webiny/build-tools@npm:0.0.0, @webiny/build-tools@workspace:packages/build-tools":
   version: 0.0.0-use.local
   resolution: "@webiny/build-tools@workspace:packages/build-tools"
   dependencies:
@@ -12768,22 +12768,22 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
     "@types/react": "npm:18.3.29"
-    "@webiny/admin-ui": "npm:*"
-    "@webiny/api-core": "npm:*"
-    "@webiny/app": "npm:*"
-    "@webiny/app-admin": "npm:*"
-    "@webiny/aws-sdk": "npm:*"
-    "@webiny/build-tools": "npm:*"
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
-    "@webiny/feature": "npm:*"
-    "@webiny/form": "npm:*"
-    "@webiny/handler-graphql": "npm:*"
-    "@webiny/icons": "npm:*"
-    "@webiny/project": "npm:*"
-    "@webiny/project-aws": "npm:*"
-    "@webiny/project-utils": "npm:*"
-    "@webiny/validation": "npm:*"
-    "@webiny/wcp": "npm:*"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/form": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/icons": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/validation": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
     aws-amplify: "npm:^6.17.0"
     graphql: "npm:^16.14.0"
     graphql-tag: "npm:^2.12.6"
@@ -12879,7 +12879,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/feature@npm:*, @webiny/feature@npm:0.0.0, @webiny/feature@workspace:packages/feature":
+"@webiny/feature@npm:0.0.0, @webiny/feature@workspace:packages/feature":
   version: 0.0.0-use.local
   resolution: "@webiny/feature@workspace:packages/feature"
   dependencies:
@@ -12889,7 +12889,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/form@npm:*, @webiny/form@npm:0.0.0, @webiny/form@workspace:packages/form":
+"@webiny/form@npm:0.0.0, @webiny/form@workspace:packages/form":
   version: 0.0.0-use.local
   resolution: "@webiny/form@workspace:packages/form"
   dependencies:
@@ -12953,7 +12953,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-graphql@npm:*, @webiny/handler-graphql@npm:0.0.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
+"@webiny/handler-graphql@npm:0.0.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-graphql@workspace:packages/handler-graphql"
   dependencies:
@@ -13035,7 +13035,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/icons@npm:*, @webiny/icons@npm:0.0.0, @webiny/icons@workspace:packages/icons":
+"@webiny/icons@npm:0.0.0, @webiny/icons@workspace:packages/icons":
   version: 0.0.0-use.local
   resolution: "@webiny/icons@workspace:packages/icons"
   dependencies:
@@ -13252,8 +13252,8 @@ __metadata:
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/api-record-locking": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
-    "@webiny/api-website-builder": "npm:*"
-    "@webiny/api-website-builder-workflows": "npm:*"
+    "@webiny/api-website-builder": "npm:0.0.0"
+    "@webiny/api-website-builder-workflows": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
@@ -13265,13 +13265,13 @@ __metadata:
     "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/languages": "npm:0.0.0"
-    "@webiny/project-aws": "npm:*"
-    "@webiny/tenant-manager": "npm:*"
+    "@webiny/project-aws": "npm:0.0.0"
+    "@webiny/tenant-manager": "npm:0.0.0"
     react: "npm:18.3.1"
   languageName: unknown
   linkType: soft
 
-"@webiny/project-aws@npm:*, @webiny/project-aws@npm:0.0.0, @webiny/project-aws@workspace:packages/project-aws":
+"@webiny/project-aws@npm:0.0.0, @webiny/project-aws@workspace:packages/project-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/project-aws@workspace:packages/project-aws"
   dependencies:
@@ -13304,7 +13304,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@npm:*, @webiny/project-utils@npm:0.0.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@npm:0.0.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -13319,17 +13319,17 @@ __metadata:
     vitest: "npm:^4.1.7"
     yargs: "npm:^18.0.0"
   peerDependencies:
-    "@webiny/api": "*"
-    "@webiny/api-core": "*"
-    "@webiny/api-dynamodb-to-elasticsearch": "*"
-    "@webiny/api-opensearch": "*"
-    "@webiny/aws-sdk": "*"
-    "@webiny/handler-aws": "*"
-    "@webiny/tasks": "*"
+    "@webiny/api": 0.0.0
+    "@webiny/api-core": 0.0.0
+    "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
+    "@webiny/api-opensearch": 0.0.0
+    "@webiny/aws-sdk": 0.0.0
+    "@webiny/handler-aws": 0.0.0
+    "@webiny/tasks": 0.0.0
   languageName: unknown
   linkType: soft
 
-"@webiny/project@npm:*, @webiny/project@npm:0.0.0, @webiny/project@workspace:packages/project":
+"@webiny/project@npm:0.0.0, @webiny/project@workspace:packages/project":
   version: 0.0.0-use.local
   resolution: "@webiny/project@workspace:packages/project"
   dependencies:
@@ -13557,7 +13557,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/tenant-manager@npm:*, @webiny/tenant-manager@npm:0.0.0, @webiny/tenant-manager@workspace:packages/tenant-manager":
+"@webiny/tenant-manager@npm:0.0.0, @webiny/tenant-manager@workspace:packages/tenant-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/tenant-manager@workspace:packages/tenant-manager"
   dependencies:
@@ -13638,7 +13638,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/validation@npm:*, @webiny/validation@npm:0.0.0, @webiny/validation@workspace:packages/validation":
+"@webiny/validation@npm:0.0.0, @webiny/validation@workspace:packages/validation":
   version: 0.0.0-use.local
   resolution: "@webiny/validation@workspace:packages/validation"
   dependencies:
@@ -13651,7 +13651,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/wcp@npm:*, @webiny/wcp@npm:0.0.0, @webiny/wcp@workspace:packages/wcp":
+"@webiny/wcp@npm:0.0.0, @webiny/wcp@workspace:packages/wcp":
   version: 0.0.0-use.local
   resolution: "@webiny/wcp@workspace:packages/wcp"
   dependencies:

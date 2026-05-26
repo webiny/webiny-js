@@ -122,7 +122,7 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
             const resolved = await this.pipelineRunner.resolve(aiResponseJson);
             const items = Array.isArray(resolved) ? resolved : [resolved];
 
-            this._createElements(
+            await this._createElements(
                 items.map((element: { component: string; inputs: Record<string, unknown> }) => ({
                     componentName: element.component,
                     parentId: "root",
@@ -130,8 +130,6 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
                     bindings: { inputs: element.inputs }
                 }))
             );
-        } catch (e) {
-            console.error(e);
         } finally {
             runInAction(() => {
                 this._processing = false;

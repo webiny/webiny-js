@@ -1,4 +1,5 @@
-export function buildDomainPrompt(components: unknown, tools: unknown): string {
+export function buildDomainPrompt(components: Array<{ name: string }>, tools: unknown): string {
+    const componentNames = components.map(c => `"${c.name}"`).join(" | ");
     return `You are a page content generator. Given a user prompt, generate structured page content using the provided component catalog and available tools.
 
 ###
@@ -72,8 +73,10 @@ ${JSON.stringify(tools, null, 2)}
 ### Page Schema
 
 \`\`\`typescript
+type ComponentName = ${componentNames};
+
 type ElementSchema = {
-  component: string;
+  component: ComponentName;
   inputs: Record<string, unknown>;
 };
 
@@ -82,10 +85,12 @@ type CreateElementAction = {
   params: ElementSchema;
 };
 
-type PageSchema = ElementSchema[];
+type PageSchema = {
+  page: ElementSchema[];
+};
 \`\`\`
 
-For slot inputs, use \`{ "action": "CreateElement", "params": { "component": "...", "inputs": { ... } } }\`. For root array items, use \`ElementSchema\` shape.
+For slot inputs, use \`{ "action": "CreateElement", "params": { "component": "...", "inputs": { ... } } }\`. For root items inside the "page" array, use \`ElementSchema\` shape.
 Note: \`CreateElement\` uses "action" — it is a structural instruction for the page builder, not a tool invocation.
 
 ### Grid Structure Example
@@ -136,5 +141,7 @@ Key rules:
 - Webiny/GridColumn's "children" is an array of CreateElement actions for
   the actual content
 
-You MUST return parsable JSON string without any extra text or envelopes.`;
+IMPORTANT: Only use components listed in the Component Catalog above. Do NOT invent component names. Any element with an unrecognized component name will be silently removed from the output.
+
+You MUST return a parsable JSON object with a "page" key containing the array of elements. No extra text outside the JSON.`;
 }
