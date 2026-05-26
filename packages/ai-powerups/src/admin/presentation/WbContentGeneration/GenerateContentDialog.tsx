@@ -43,8 +43,10 @@ export const GenerateContentDialog = observer(() => {
     const { createElement } = useCreateElement();
 
     const createElements = useCallback(
-        (elements: CreateElementParams[]) => {
-            elements.forEach(el => createElement(el));
+        async (elements: CreateElementParams[]) => {
+            for (const el of elements) {
+                await createElement(el);
+            }
         },
         [createElement]
     );
@@ -73,7 +75,17 @@ export const GenerateContentDialog = observer(() => {
             WS_ACTION_CONTENT,
             async message => {
                 const responseText = await decompressGzipBase64(message.data.value);
-                await presenter.processAiResponse(responseText);
+                try {
+                    await presenter.processAiResponse(responseText);
+                } catch (e) {
+                    console.error("Failed to process AI response", { responseText });
+                    console.error(e);
+                    toast.showWarningToast({
+                        title: "Failed to process AI response",
+                        description: "Open the console for more details."
+                    });
+                    presenter.cancelPrompt();
+                }
             }
         );
 
