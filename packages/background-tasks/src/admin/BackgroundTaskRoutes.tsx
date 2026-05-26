@@ -5,6 +5,7 @@ import { AdminLayout } from "@webiny/app-admin";
 import { HasPermission } from "./presentation/security/HasPermission.js";
 import { TaskDefinitionsView } from "./presentation/TaskDefinitions/components/TaskDefinitionsView.js";
 import { TaskExecutionsView } from "./presentation/TaskExecutions/components/TaskExecutionsView.js";
+import { BackgroundTaskSettingsView } from "./presentation/BackgroundTaskSettings/components/BackgroundTaskSettingsView.js";
 import { Routes } from "./routes.js";
 import { ReactComponent as TaskIcon } from "@webiny/icons/task.svg";
 import { ReactComponent as ListIcon } from "@webiny/icons/list.svg";
@@ -56,6 +57,19 @@ export const BackgroundTaskRoutes = () => {
                             icon={<Menu.Link.Icon label="Task Executions" element={<TaskIcon />} />}
                         />
                     }
+                />
+                <Route
+                    route={Routes.Settings}
+                    element={
+                        <AdminLayout title="Background Task Settings">
+                            <BackgroundTaskSettingsView />
+                        </AdminLayout>
+                    }
+                />
+                <Menu
+                    name="backgroundTasks.settings"
+                    parent="settings.system"
+                    element={<Menu.Link text="Background Tasks" to={getLink(Routes.Settings)} />}
                 />
             </HasPermission>
         </AdminConfig>
