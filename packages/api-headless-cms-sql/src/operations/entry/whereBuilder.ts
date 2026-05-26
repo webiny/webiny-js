@@ -204,10 +204,10 @@ export const applyWhere = (params: IApplyWhereParams): void => {
             if (key === "AND") {
                 const andConditions = value as CmsEntryListWhere[];
 
-                qb.where(function (this) {
+                qb.where(outer => {
                     for (const condition of andConditions) {
-                        this.andWhere(function (this) {
-                            execWhere(this, condition as Record<string, unknown>, isValues);
+                        outer.andWhere(inner => {
+                            execWhere(inner, condition as Record<string, unknown>, isValues);
                         });
                     }
                 });
@@ -218,17 +218,17 @@ export const applyWhere = (params: IApplyWhereParams): void => {
             if (key === "OR") {
                 const orConditions = value as CmsEntryListWhere[];
 
-                qb.where(function (this) {
+                qb.where(outer => {
                     for (let i = 0; i < orConditions.length; i++) {
                         const condition = orConditions[i];
 
                         if (i === 0) {
-                            this.where(function (this) {
-                                execWhere(this, condition as Record<string, unknown>, isValues);
+                            outer.where(inner => {
+                                execWhere(inner, condition as Record<string, unknown>, isValues);
                             });
                         } else {
-                            this.orWhere(function (this) {
-                                execWhere(this, condition as Record<string, unknown>, isValues);
+                            outer.orWhere(inner => {
+                                execWhere(inner, condition as Record<string, unknown>, isValues);
                             });
                         }
                     }
@@ -287,7 +287,7 @@ export const applySearch = (
 
     const term = `%${search}%`;
 
-    query.where(function (this) {
+    query.where(queryBuilder => {
         let first = true;
 
         for (const fieldId of validFields) {
@@ -295,10 +295,10 @@ export const applySearch = (
             const column = field.columnName;
 
             if (first) {
-                this.whereRaw("LOWER(??) LIKE LOWER(?)", [column, term]);
+                queryBuilder.whereRaw("LOWER(??) LIKE LOWER(?)", [column, term]);
                 first = false;
             } else {
-                this.orWhereRaw("LOWER(??) LIKE LOWER(?)", [column, term]);
+                queryBuilder.orWhereRaw("LOWER(??) LIKE LOWER(?)", [column, term]);
             }
         }
     });

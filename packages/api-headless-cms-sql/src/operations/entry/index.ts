@@ -55,18 +55,18 @@ const applyKeysetCondition = (
     sortFields: { column: string; direction: "asc" | "desc" }[],
     cursorValues: ICursorValues
 ): void => {
-    qb.where(function (this: Knex.QueryBuilder) {
+    qb.where(outer => {
         for (let i = 0; i < sortFields.length; i++) {
-            this.orWhere(function (this: Knex.QueryBuilder) {
+            outer.orWhere(inner => {
                 for (let j = 0; j <= i; j++) {
                     const sf = sortFields[j];
                     const cv = cursorValues[sf.column];
 
                     if (j < i) {
-                        this.andWhere(sf.column, cv as string | number);
+                        inner.andWhere(sf.column, cv as string | number);
                     } else {
                         const op = sf.direction === "asc" ? ">" : "<";
-                        this.andWhere(sf.column, op, cv as string | number);
+                        inner.andWhere(sf.column, op, cv as string | number);
                     }
                 }
             });
