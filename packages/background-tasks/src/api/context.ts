@@ -20,6 +20,10 @@ import {
 } from "~/api/features/CleanupTaskSubtree/index.js";
 import { TestingRunTaskDefinition } from "~/api/tasks/testingRunTask.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { BackgroundTaskSettingsModel } from "~/api/models/BackgroundTaskSettingsModel.js";
+import { GetBackgroundTaskSettingsFeature } from "~/api/features/GetBackgroundTaskSettings/feature.js";
+import { UpdateBackgroundTaskSettingsFeature } from "~/api/features/UpdateBackgroundTaskSettings/feature.js";
+import { createBackgroundTaskSettingsGraphQL } from "~/api/graphql/BackgroundTaskSettingsSchema.js";
 
 const createTasksCrud = () => {
     const tasksCrudPlugin = new ContextPlugin<Context>(async context => {
@@ -54,6 +58,7 @@ const createTasksContext = (): Plugin[] => {
     const modelsPlugin = createRegisterExtensionPlugin(context => {
         context.container.register(TaskPrivateModel);
         context.container.register(TaskLogPrivateModel);
+        context.container.register(BackgroundTaskSettingsModel);
     });
 
     return [...createServicePlugins(), createTasksCrud(), modelsPlugin];
@@ -62,6 +67,7 @@ const createTasksContext = (): Plugin[] => {
 export const createBackgroundTaskContext = (): Plugin[] => {
     return [
         ...createTasksContext(),
+        ...createBackgroundTaskSettingsGraphQL(),
         new ContextPlugin<Context>(context => {
             // Register legacy tasks context via a new abstraction
             context.container.registerInstance(TaskService, context.tasks);
@@ -74,6 +80,10 @@ export const createBackgroundTaskContext = (): Plugin[] => {
 
             // Register a test task
             context.container.register(TestingRunTaskDefinition);
+
+            // Settings features.
+            GetBackgroundTaskSettingsFeature.register(context.container);
+            UpdateBackgroundTaskSettingsFeature.register(context.container, context);
         })
     ];
 };
