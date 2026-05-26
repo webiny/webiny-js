@@ -13,10 +13,6 @@ export class ModelsProvider implements ProviderAbstraction.Interface {
         private accessControl: AccessControl.Interface | undefined
     ) {}
 
-    count(): number {
-        return this.getModels().length;
-    }
-
     async list(tenant: string): Promise<CmsModel[]> {
         const modelImpls = this.getModels();
         const allModels: CmsModel[] = [];

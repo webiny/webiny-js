@@ -16,8 +16,10 @@ import { ModelFieldCompression } from "~/features/contentModel/ModelFieldCompres
  * ModelsFetcherImpl - Implementation with multi-level caching.
  *
  * Caching strategy:
- * - Plugin models: resolved fresh on every call (set grows as ContextPlugins run)
- * - Database models: cached per tenant (raw from DB, stable within a request)
+ * 1. Plugin models are cached per tenant (with access control applied by PluginModelsProvider)
+ * 2. Database models are cached per tenant (raw from DB)
+ * 3. Filtered database models are cached per tenant + identity (with access control applied)
+ * 4. Final merged list is cached per tenant + identity
  */
 class ModelsFetcherImpl implements FetcherAbstraction.Interface {
     public constructor(
@@ -32,17 +34,22 @@ class ModelsFetcherImpl implements FetcherAbstraction.Interface {
         try {
             const tenant = this.tenantContext.getTenant();
 
-            // Plugin models are resolved fresh on every call because ContextPlugins
-            // may register ModelFactory implementations at any point during request
-            // initialization. Caching here would freeze the list at whatever was
-            // registered at the time of the first call, causing models registered
-            // by later ContextPlugins (e.g. Webiny Task) to be silently omitted.
-            const pluginModels = await this.pluginModelsProvider.list(tenant.id);
+            // Create a cache key based on tenant + identity
+            const cacheKey = createCacheKey({
+                tenant: tenant.id
+            });
 
-            // DB models are stable within a request — cache them per tenant.
-            const databaseModels = await this.fetchAndMergeModels(tenant.id);
+            // Try to get from cache first
+            const cached = await this.modelCache.getOrSet(cacheKey, async () => {
+                // Fetch plugin models (with caching and access control)
+                const pluginModels = await this.pluginModelsProvider.list(tenant.id);
 
-            return Result.ok([...pluginModels, ...databaseModels]);
+                const databaseModels = await this.fetchAndMergeModels(tenant.id);
+
+                return [...pluginModels, ...databaseModels];
+            });
+
+            return Result.ok(cached);
         } catch (error) {
             return Result.fail(new ModelPersistenceError(error as Error));
         }
