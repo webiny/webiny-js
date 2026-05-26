@@ -2,6 +2,7 @@ import { createImplementation } from "@webiny/di";
 import {
     Command,
     ListPackagesService,
+    MergeExportsService,
     ScanExportsFoldersService,
     UiService
 } from "../../abstractions/index.js";
@@ -11,7 +12,8 @@ export class ValidateWebinyPkgCommand implements Command.Interface<void> {
     constructor(
         private ui: UiService.Interface,
         private listPackagesService: ListPackagesService.Interface,
-        private scanExportsFoldersService: ScanExportsFoldersService.Interface
+        private scanExportsFoldersService: ScanExportsFoldersService.Interface,
+        private mergeExportsService: MergeExportsService.Interface
     ) {}
 
     async execute(): Promise<Command.CommandDefinition<void>> {
@@ -24,7 +26,8 @@ export class ValidateWebinyPkgCommand implements Command.Interface<void> {
                 const validator = new ValidateWebinyPkg(
                     this.ui,
                     this.listPackagesService,
-                    this.scanExportsFoldersService
+                    this.scanExportsFoldersService,
+                    this.mergeExportsService
                 );
                 await validator.execute();
             }
@@ -35,5 +38,5 @@ export class ValidateWebinyPkgCommand implements Command.Interface<void> {
 export const validateWebinyPkgCommand = createImplementation({
     abstraction: Command,
     implementation: ValidateWebinyPkgCommand,
-    dependencies: [UiService, ListPackagesService, ScanExportsFoldersService]
+    dependencies: [UiService, ListPackagesService, ScanExportsFoldersService, MergeExportsService]
 });
