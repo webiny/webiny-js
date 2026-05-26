@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { Select } from "@webiny/admin-ui";
 import { useStyles } from "../../useStyles.js";
 import { InheritanceLabel } from "~/BaseEditor/defaultConfig/Sidebar/InheritanceLabel.js";
+import { SidebarRow } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/SidebarRow.js";
 
 const options = [
     { label: "None", value: "none" },
@@ -34,7 +35,7 @@ export const BorderStyle = observer(({ elementId }: BorderStyleProps) => {
     const inheritance = inheritanceMap?.borderStyle ?? {};
 
     return (
-        <Select
+        <SidebarRow
             label={
                 <InheritanceLabel
                     onReset={onReset}
@@ -43,11 +44,15 @@ export const BorderStyle = observer(({ elementId }: BorderStyleProps) => {
                     text={"Border style"}
                 />
             }
-            description={"Select border style"}
-            value={styles.borderStyle ?? "none"}
-            displayResetAction={false}
-            onChange={onValueChange}
-            options={options}
-        />
+        >
+            <Select
+                size={"md"}
+                variant={"secondary"}
+                value={styles.borderStyle ?? "none"}
+                displayResetAction={false}
+                onChange={onValueChange}
+                options={options}
+            />
+        </SidebarRow>
     );
 });

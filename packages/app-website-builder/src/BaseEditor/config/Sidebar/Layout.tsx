@@ -1,6 +1,6 @@
 import React from "react";
 import { makeDecoratable } from "@webiny/app-admin";
-import { Tabs } from "@webiny/admin-ui";
+import { SegmentedControl } from "@webiny/admin-ui";
 import { Sidebar } from "./Sidebar.js";
 
 export const Layout = makeDecoratable("SidebarLayout", () => {
@@ -8,15 +8,13 @@ export const Layout = makeDecoratable("SidebarLayout", () => {
         <div
             data-role="editor-sidebar"
             data-affects-preview={"width"}
-            className={"bg-neutral-base border-l-sm border-l-neutral-dimmed"}
+            className={
+                "bg-neutral-base border-l-sm border-l-neutral-dimmed h-full flex flex-col p-sm"
+            }
         >
-            <Tabs
-                size="md"
-                spacing={"md"}
-                separator={true}
-                defaultValue={"element"}
-                tabs={[<Sidebar.Elements group="groups" key={"groups"} />]}
-            />
+            <SegmentedControl.Tabs className={"flex-1 flex flex-col min-h-0"} variant={"dimmed"}>
+                <Sidebar.Elements group={"groups"} />
+            </SegmentedControl.Tabs>
         </div>
     );
 });

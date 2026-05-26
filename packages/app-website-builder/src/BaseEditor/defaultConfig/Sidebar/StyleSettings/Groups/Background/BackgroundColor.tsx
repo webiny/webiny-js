@@ -4,6 +4,7 @@ import { ColorPicker } from "@webiny/admin-ui";
 
 import { useStyles } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/useStyles.js";
 import { InheritanceLabel } from "~/BaseEditor/defaultConfig/Sidebar/InheritanceLabel.js";
+import { SidebarRow } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/SidebarRow.js";
 
 export const BackgroundColor = observer(({ elementId }: { elementId: string }) => {
     const { styles, onChange, onPreviewChange, inheritanceMap } = useStyles(elementId);
@@ -42,7 +43,7 @@ export const BackgroundColor = observer(({ elementId }: { elementId: string }) =
     const inheritance = inheritanceMap?.backgroundColor ?? {};
 
     return (
-        <ColorPicker
+        <SidebarRow
             label={
                 <InheritanceLabel
                     onReset={onReset}
@@ -51,9 +52,8 @@ export const BackgroundColor = observer(({ elementId }: { elementId: string }) =
                     text={"Color"}
                 />
             }
-            description="Select your background color"
-            value={value}
-            onChange={handleChange}
-        />
+        >
+            <ColorPicker value={value} onChange={handleChange} size={"md"} variant={"secondary"} />
+        </SidebarRow>
     );
 });

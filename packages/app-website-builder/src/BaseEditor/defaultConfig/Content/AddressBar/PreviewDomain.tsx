@@ -38,10 +38,7 @@ export const PreviewDomain = () => {
         editor.executeCommand(Commands.RefreshPreview);
     }, [previewDomain]);
 
-    const classNames = cn(
-        "absolute left-0 top-0",
-        isOverridden ? "fill-accent-default" : "fill-neutral-disabled"
-    );
+    const classNames = cn("absolute left-0 top-0", isOverridden ? "fill-accent-default" : "");
 
     return (
         <DropdownMenu

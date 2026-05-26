@@ -31,7 +31,7 @@ export const Layout = makeDecoratable("EditorLayout", () => {
     return (
         <EditorLayoutContainer>
             <EditorConfig.Ui.TopBar />
-            <div className={"flex flex-row border-solid border-t-1 border-neutral-dimmed"}>
+            <div className={"flex flex-row"}>
                 <IsNotReadOnly>
                     <EditorConfig.Ui.Toolbar />
                 </IsNotReadOnly>

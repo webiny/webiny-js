@@ -7,4 +7,5 @@ export interface ToggleGroupItemParams {
     disabled?: boolean;
     icon?: React.ReactNode;
     iconPosition?: "start" | "end";
+    tooltip?: React.ReactNode;
 }
