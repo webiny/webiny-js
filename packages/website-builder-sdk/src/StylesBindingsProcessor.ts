@@ -1,5 +1,6 @@
 import set from "lodash/set.js";
 import unset from "lodash/unset.js";
+import { toJS } from "mobx";
 import type { DocumentElementBindings, DocumentElementStyleBindings } from "~/types.js";
 import { InheritedValueResolver } from "~/InheritedValueResolver.js";
 import { StylesUpdater } from "./StylesUpdater.js";
@@ -93,7 +94,7 @@ export class StylesBindingsProcessor {
 
     private getBaseStyles(): ElementStylesBindings {
         const baseStyles: ElementStylesBindings = {
-            styles: structuredClone(this.rawBindings.styles) ?? {},
+            styles: structuredClone(toJS(this.rawBindings.styles)) ?? {},
             overrides: {}
         };
 
@@ -104,7 +105,7 @@ export class StylesBindingsProcessor {
                     set(
                         baseStyles,
                         `overrides.${bp}.styles`,
-                        structuredClone(this.rawBindings.overrides[bp].styles)
+                        structuredClone(toJS(this.rawBindings.overrides[bp].styles))
                     );
                 }
             }
