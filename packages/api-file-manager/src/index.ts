@@ -13,7 +13,7 @@ import { createGraphQLSchemaPlugin } from "./graphql/index.js";
 
 export * from "./delivery/index.js";
 export * from "./modelModifier/CmsModelModifier.js";
-
+//test2
 export const createFileManagerContext = () => {
     const fileManagerContextPlugin = new ContextPlugin<ApiCoreContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
