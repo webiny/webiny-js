@@ -1,4 +1,4 @@
-import { TaskDataStatus } from "@webiny/tasks";
+import { TaskDataStatus } from "@webiny/background-tasks/api";
 import type { IBulkActionOperationByModelTaskParams } from "~/types.js";
 import { BulkActionOperationByModelAction } from "~/types.js";
 import { BulkActionContext } from "~/features/BulkActionContext/index.js";

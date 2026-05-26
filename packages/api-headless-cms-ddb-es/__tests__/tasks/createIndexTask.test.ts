@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "./mocks/models";
 import { createIndexesTaskDefinition } from "@webiny/api-elasticsearch-tasks/tasks";
-import type { Context as TasksContext } from "@webiny/tasks/types";
+import type { Context as TasksContext } from "@webiny/background-tasks/api/types";
 import type { CmsContext } from "~/types";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import type { IElasticsearchCreateIndexesTaskInput } from "@webiny/api-elasticsearch-tasks/tasks/createIndexes/types";

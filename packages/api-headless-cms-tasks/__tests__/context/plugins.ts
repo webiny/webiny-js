@@ -8,7 +8,7 @@ import type { ContextPlugin } from "@webiny/api";
 import type { HcmsTasksContext } from "~/types";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { createBackgroundTaskContext } from "@webiny/tasks";
+import { createBackgroundTaskContext } from "@webiny/background-tasks/api";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createHcmsTasks } from "~/index";
 import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin";

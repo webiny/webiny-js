@@ -9,7 +9,10 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createIdentity, createPermissions } from "~tests/context/helpers";
-import { createBackgroundTaskContext, createBackgroundTaskGraphQL } from "@webiny/tasks";
+import {
+    createBackgroundTaskContext,
+    createBackgroundTaskGraphQL
+} from "@webiny/background-tasks/api";
 import { createHcmsBulkActions } from "~/index";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
