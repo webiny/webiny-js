@@ -51,7 +51,6 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
     }: TaskDefinition.RunParams<IAiImageEnrichmentTaskInput>): Promise<
         TaskDefinition.Result<IAiImageEnrichmentTaskInput>
     > {
-        console.log("aaaaaa");
         if (controller.runtime.isAborted()) {
             return controller.response.aborted();
         }
@@ -73,9 +72,7 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
         const srcPrefix = settingsResult.isOk() ? (settingsResult.value.srcPrefix ?? "") : "";
         const imageUrl = `${srcPrefix}${file.key}`;
 
-        console.log("neee");
         const aiSettingsResult = await this.getSettings.execute();
-        console.log("nee222e", aiSettingsResult);
 
         if (aiSettingsResult.isFail()) {
             return controller.response.error({
@@ -93,7 +90,6 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
             });
         }
 
-        console.log("aaaa");
         let tags: string[] = [];
         let description = "";
         try {
