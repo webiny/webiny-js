@@ -26,6 +26,7 @@ const twMerge = extendTailwindMerge({
                 "border-neutral-black",
                 "border-neutral-dark",
                 "border-neutral-dimmed",
+                "border-neutral-dimmed-darker",
                 "border-neutral-muted",
                 "border-neutral-strong",
                 "border-neutral-subtle",

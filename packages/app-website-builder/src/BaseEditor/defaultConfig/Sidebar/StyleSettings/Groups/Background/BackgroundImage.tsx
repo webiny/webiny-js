@@ -6,6 +6,7 @@ import { useStyles } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/useS
 import { BackgroundImageParser } from "./BackgroundImageParser.js";
 import { useBreakpoint } from "~/BaseEditor/hooks/useBreakpoint.js";
 import { InheritanceLabel } from "../../../InheritanceLabel.js";
+import { SidebarRow } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/SidebarRow.js";
 
 type FileInfo = {
     id: string;
@@ -95,27 +96,30 @@ export const BackgroundImage = observer(({ elementId }: { elementId: string }) =
     const fileInfo = metadata.get<FileInfo>("backgroundImage");
 
     return (
-        <FileManager
-            images={true}
-            onChange={onFileChange}
-            render={({ showFileManager }) => (
-                <FilePicker
-                    label={
-                        <InheritanceLabel
-                            onReset={onReset}
-                            isOverridden={inheritance?.overridden ?? false}
-                            inheritedFrom={inheritance?.inheritedFrom}
-                            text={"Image"}
-                        />
-                    }
-                    description="Select a background image"
-                    type="compact"
-                    value={url ? fileInfo : undefined}
-                    onSelectItem={() => showFileManager()}
-                    onRemoveItem={onRemove}
-                    onEditItem={() => showFileManager()}
+        <SidebarRow
+            label={
+                <InheritanceLabel
+                    onReset={onReset}
+                    isOverridden={inheritance?.overridden ?? false}
+                    inheritedFrom={inheritance?.inheritedFrom}
+                    text={"Image"}
                 />
-            )}
-        />
+            }
+        >
+            <FileManager
+                images={true}
+                onChange={onFileChange}
+                render={({ showFileManager }) => (
+                    <FilePicker
+                        variant={"secondary"}
+                        type="compact"
+                        value={url ? fileInfo : undefined}
+                        onSelectItem={() => showFileManager()}
+                        onRemoveItem={onRemove}
+                        onEditItem={() => showFileManager()}
+                    />
+                )}
+            />
+        </SidebarRow>
     );
 });

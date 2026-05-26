@@ -255,11 +255,10 @@ export class PreviewEvents {
          * We need to use the `preview-container` to get the exact position from the top (we MUST ignore scroll position).
          * However, for everything else we use the actual `preview-body`,
          */
-        const containerRect = previewContainer.getBoundingClientRect();
         const bodyRect = previewBody.getBoundingClientRect();
 
         return {
-            top: containerRect.top,
+            top: bodyRect.top + previewContainer.scrollTop,
             left: bodyRect.left,
             width: bodyRect.width,
             height: bodyRect.height
