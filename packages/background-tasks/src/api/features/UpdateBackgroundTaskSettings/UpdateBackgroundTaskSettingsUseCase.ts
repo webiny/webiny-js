@@ -9,21 +9,18 @@ import {
     BackgroundTaskValidationError
 } from "~/api/domain/errors.js";
 import type { IBackgroundTaskSettings } from "~/api/domain/BackgroundTaskSettings.js";
-import { checkPermissions } from "~/api/graphql/checkPermissions.js";
-import type { Context } from "~/api/types.js";
+import { BackgroundTaskPermissions } from "~/api/features/BackgroundTaskPermissions/abstractions.js";
 
-export class UpdateBackgroundTaskSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
+class UpdateBackgroundTaskSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private readonly context: Context,
+        private readonly permissions: BackgroundTaskPermissions.Interface,
         private readonly repository: UpdateBackgroundTaskSettingsRepository.Interface
     ) {}
 
     async execute(
         input: UseCaseAbstraction.Input
     ): Promise<Result<IBackgroundTaskSettings, UseCaseAbstraction.Error>> {
-        try {
-            await checkPermissions(this.context, { rwd: "w" });
-        } catch {
+        if (!(await this.permissions.canEdit("task"))) {
             return Result.fail(new BackgroundTaskNotAuthorizedError());
         }
 
@@ -35,3 +32,8 @@ export class UpdateBackgroundTaskSettingsUseCaseImpl implements UseCaseAbstracti
         return this.repository.execute(parsed.data);
     }
 }
+
+export const UpdateBackgroundTaskSettingsUseCase = UseCaseAbstraction.createImplementation({
+    implementation: UpdateBackgroundTaskSettingsUseCaseImpl,
+    dependencies: [BackgroundTaskPermissions, UpdateBackgroundTaskSettingsRepository]
+});

@@ -23,6 +23,7 @@ import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { BackgroundTaskSettingsModel } from "~/api/models/BackgroundTaskSettingsModel.js";
 import { GetBackgroundTaskSettingsFeature } from "~/api/features/GetBackgroundTaskSettings/feature.js";
 import { UpdateBackgroundTaskSettingsFeature } from "~/api/features/UpdateBackgroundTaskSettings/feature.js";
+import { BackgroundTaskPermissionsFeature } from "~/api/features/BackgroundTaskPermissions/feature.js";
 import { createBackgroundTaskSettingsGraphQL } from "~/api/graphql/BackgroundTaskSettingsSchema.js";
 
 const createTasksCrud = () => {
@@ -81,9 +82,12 @@ export const createBackgroundTaskContext = (): Plugin[] => {
             // Register a test task
             context.container.register(TestingRunTaskDefinition);
 
+            // Permissions.
+            BackgroundTaskPermissionsFeature.register(context.container);
+
             // Settings features.
             GetBackgroundTaskSettingsFeature.register(context.container);
-            UpdateBackgroundTaskSettingsFeature.register(context.container, context);
+            UpdateBackgroundTaskSettingsFeature.register(context.container);
         })
     ];
 };
