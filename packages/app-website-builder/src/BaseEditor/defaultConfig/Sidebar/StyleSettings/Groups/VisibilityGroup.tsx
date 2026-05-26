@@ -1,11 +1,12 @@
 import React from "react";
-import { Accordion } from "@webiny/admin-ui";
+import { ReactComponent as VisibilityIcon } from "@webiny/icons/visibility.svg";
+import { StyleAccordion } from "../StyleAccordion.js";
 import { Visibility, type VisibilityProps } from "./Visibility/index.js";
 
 export const VisibilityGroup = ({ elementId }: VisibilityProps) => {
     return (
-        <Accordion.Item title={"Visibility"} description={"Set element visibility"}>
+        <StyleAccordion.Item title={"Visibility"} icon={<VisibilityIcon />}>
             <Visibility elementId={elementId} />
-        </Accordion.Item>
+        </StyleAccordion.Item>
     );
 };

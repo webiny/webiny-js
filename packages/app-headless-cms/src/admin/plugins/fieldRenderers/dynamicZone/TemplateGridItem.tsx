@@ -6,14 +6,14 @@ import { Text, Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
 import { ReactComponent as PlusIcon } from "@webiny/icons/add_circle_outline.svg";
 
-export interface TemplateCardProps {
+export interface TemplateGridItemProps {
     template: CmsDynamicZoneTemplate;
     onTemplate: (template: CmsDynamicZoneTemplate) => void;
 }
 
-export const TemplateItem = makeDecoratable(
-    "TemplateItem",
-    ({ template, onTemplate }: TemplateCardProps) => {
+export const TemplateGridItem = makeDecoratable(
+    "TemplateGridItem",
+    ({ template, onTemplate }: TemplateGridItemProps) => {
         const [isHovered, setIsHovered] = useState(false);
 
         return (

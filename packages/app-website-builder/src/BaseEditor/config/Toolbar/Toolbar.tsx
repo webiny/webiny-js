@@ -6,12 +6,13 @@ import { Layout } from "./Layout.js";
 import type { ElementsProps as BaseElementsProps } from "../Elements.js";
 import { Elements as BaseElements } from "../Elements.js";
 import { createGetId } from "../createGetId.js";
+import { Tab } from "./Tab.js";
 
 const SCOPE = "toolbar";
 
 const BaseToolbar = makeDecoratable("ToolbarLayout", () => {
     return (
-        <div className={"w-[300px] flex-none"} data-affects-preview={"width"}>
+        <div className={"w-[var(--wb-spacing-toolbar)] flex-none"} data-affects-preview={"width"}>
             <Layout />
         </div>
     );
@@ -42,5 +43,6 @@ const Elements = makeDecoratable("ToolbarElements", (props: ElementsProps) => {
 export const Toolbar = Object.assign(BaseToolbar, {
     Layout,
     Element: BaseToolbarElement,
-    Elements
+    Elements,
+    Tab
 });

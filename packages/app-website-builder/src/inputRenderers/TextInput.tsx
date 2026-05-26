@@ -23,12 +23,14 @@ export const TextInputRenderer = ({
 
     return (
         <Input
+            size={"md"}
+            variant={"secondary"}
             value={value}
             onChange={previewValue}
             onBlur={e => commitValue(e.currentTarget.value)}
             onEnter={e => commitValue(e.currentTarget.value)}
             label={label}
-            description={input.description}
+            hint={input.description}
             note={input.helperText}
         />
     );

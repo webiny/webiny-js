@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
-import { cn } from "@webiny/admin-ui";
+import { cn, Icon } from "@webiny/admin-ui";
+import { InlineSvg } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/InlineSvg.js";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import type { Box } from "../Box.js";
 import { $highlightElement, $selectElement } from "~/editorSdk/utils/index.js";
@@ -105,14 +106,17 @@ export const ElementOverlay = React.memo(() => {
                             data-label-for={previewBox.id}
                             data-state={isDragging ? "dragging" : boxState}
                             onClick={onClick}
-                            className={cn(
-                                "absolute text-sm text-neutral-light p-xs opacity-0 pointer-events-auto",
-                                "data-[state=hover]:bg-success data-[state=hover]:opacity-100",
-                                "data-[state=active]:bg-primary data-[state=active]:opacity-100",
-                                "data-[state=dragging]:opacity-30"
-                            )}
-                            style={{ top: -24 }}
+                            className={
+                                "absolute flex items-center gap-xxs px-xs py-[1px] text-[11px] text-neutral-light leading-md opacity-0 pointer-events-auto rounded-t-sm data-[state=hover]:bg-success data-[state=hover]:opacity-100 data-[state=active]:bg-primary data-[state=active]:opacity-100 data-[state=dragging]:opacity-30 top-[-18px] right-none fill-white"
+                            }
                         >
+                            {componentManifest.image && (
+                                <Icon
+                                    icon={<InlineSvg src={componentManifest.image} />}
+                                    label={componentName}
+                                    className={"size-[14px]"}
+                                />
+                            )}
                             {componentName}
                         </div>
                     </div>

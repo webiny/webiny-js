@@ -88,15 +88,18 @@ export const ValueSelector = (props: ValueSelectorProps) => {
     };
 
     const classNames = cn([
-        "cursor-pointer bg-neutral-base",
+        "cursor-pointer bg-neutral-base w-[45px]",
         "border-sm border-solid border-neutral-muted",
-        props.overridden && props.inheritedFrom && "bg-success text-neutral-light",
-        props.disabled && "bg-neutral-disabled text-neutral-disabled pointer-events-none",
-        "flex flex-row text-sm mx-auto justify-center rounded-sm py-px px-xxs"
+        { "bg-success text-neutral-light": props.overridden && props.inheritedFrom },
+        {
+            "text-neutral-dimmed border-neutral-dimmed-darker bg-neutral-subtle pointer-events-none":
+                props.disabled
+        },
+        "flex flex-row text-sm mx-auto justify-center rounded-sm py-xxs px-xs"
     ]);
 
     const label = (
-        <div className={classNames} onClick={() => setIsOpen(true)} style={{ width: 45 }}>
+        <div className={classNames} onClick={() => setIsOpen(true)}>
             {props.value ?? 0} {props.isKeyword ? null : props.unit}
         </div>
     );

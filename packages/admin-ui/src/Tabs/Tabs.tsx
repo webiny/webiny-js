@@ -24,7 +24,6 @@ const DecoratableTabs = ({
     const [tabs, setTabs] = useState<TabItem[]>([]);
 
     const defaultValue = useMemo(() => {
-        // `defaultValue` prop works only at first render so we need to use the `tabComponents` instead of the `TabItems`
         return (
             initialValue ||
             tabComponents.find(tab => !tab.props.disabled && tab.props.visible !== false)?.props
@@ -34,7 +33,6 @@ const DecoratableTabs = ({
 
     const triggers = useMemo(
         () => (
-            // We need to generate a key like this to trigger a proper component re-render when child tabs change.
             <List
                 key={tabs.map(tab => tab.id).join(";")}
                 size={size}

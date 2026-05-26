@@ -41,7 +41,7 @@ export const InheritanceLabel = ({
     }, [inheritedFrom, breakpoint.name, breakpoints.length]);
 
     if (isBaseBreakpoint) {
-        return <FormComponentLabel text={text} />;
+        return <FormComponentLabel className={"mb-0"} text={text} />;
     }
 
     return (
@@ -68,7 +68,7 @@ export const InheritanceLabel = ({
                     />
                 </div>
             </DropdownMenu>
-            <FormComponentLabel text={text} />
+            <FormComponentLabel className={"mb-0"} text={text} />
         </div>
     );
 };

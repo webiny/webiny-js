@@ -1,7 +1,6 @@
 import React from "react";
-import { ReactComponent as TouchIcon } from "@webiny/icons/touch_app.svg";
 import { EditorConfig } from "~/BaseEditor/config/index.js";
-import { InfoMessage } from "./Sidebar/InfoMessage.js";
+import { SidebarEmptyState } from "./Sidebar/SidebarEmptyState.js";
 import { StyleSettingsGroup } from "./Sidebar/StyleSettings/StyleSettingsGroup.js";
 import { StyleProperties } from "./Sidebar/StyleSettings/StyleProperties.js";
 import { ElementSettingsGroup } from "./Sidebar/ElementSettings/ElementSettingsGroup.js";
@@ -17,10 +16,7 @@ const { Ui } = EditorConfig;
 const ClickToActivate = () => {
     return (
         <Ui.NoActiveElement>
-            <InfoMessage
-                icon={<TouchIcon />}
-                message={"Select an element on the canvas to activate this panel."}
-            />
+            <SidebarEmptyState message={"Select an element in the canvas to edit properties."} />
         </Ui.NoActiveElement>
     );
 };
