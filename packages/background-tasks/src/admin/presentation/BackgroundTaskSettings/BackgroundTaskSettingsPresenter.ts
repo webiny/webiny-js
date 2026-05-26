@@ -43,7 +43,7 @@ class BackgroundTaskSettingsPresenterImpl implements IBackgroundTaskSettingsPres
                     .label("Retention (days)")
                     .placeholder("90")
                     .description(
-                        `How long to keep completed task runs. 0 = never delete. Max ${BACKGROUND_TASK_MAX_RETENTION_DAYS} days.`
+                        `How long to keep completed task runs. 0 = never delete. Max ${BACKGROUND_TASK_MAX_RETENTION_DAYS} days. Changing this value only affects future task executions; existing records are not retroactively deleted.`
                     )
             }),
             layout: layout => [layout.row("retentionDays")]

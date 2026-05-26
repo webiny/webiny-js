@@ -4,6 +4,7 @@ import { GetModelRepository } from "@webiny/api-headless-cms/features/contentMod
 import { GetLatestRevisionByEntryIdRepository } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { UpdateEntryRepository } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { UpdateEntryDataFactory } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
+import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { GetBackgroundTaskSettingsRepository } from "~/api/features/GetBackgroundTaskSettings/abstractions.js";
 import {
     UpdateBackgroundTaskSettingsRepository as RepositoryAbstraction,
@@ -13,21 +14,31 @@ import {
     BackgroundTaskModelNotFoundError,
     BackgroundTaskPersistenceError
 } from "~/api/domain/errors.js";
-import { BACKGROUND_TASK_SETTINGS_MODEL_ID } from "~/api/domain/constants.js";
+import {
+    BACKGROUND_TASK_SETTINGS_MODEL_ID,
+    BACKGROUND_TASK_DEFAULT_RETENTION_DAYS
+} from "~/api/domain/constants.js";
 import type { IBackgroundTaskSettings } from "~/api/domain/BackgroundTaskSettings.js";
 
 interface BackgroundTaskSettingsValues {
-    retentionDays?: number;
+    retentionDays?: number | null;
 }
 
 class UpdateBackgroundTaskSettingsRepositoryImpl implements RepositoryAbstraction.Interface {
+    private readonly defaultRetentionDays: number;
+
     constructor(
         private readonly getModelRepository: GetModelRepository.Interface,
         private readonly getSettingsRepository: GetBackgroundTaskSettingsRepository.Interface,
         private readonly getLatestRevisionRepository: GetLatestRevisionByEntryIdRepository.Interface,
         private readonly updateEntryRepository: UpdateEntryRepository.Interface,
-        private readonly updateEntryDataFactory: UpdateEntryDataFactory.Interface
-    ) {}
+        private readonly updateEntryDataFactory: UpdateEntryDataFactory.Interface,
+        buildParams: BuildParams.Interface
+    ) {
+        this.defaultRetentionDays =
+            buildParams.get<number>("BackgroundTasks.RetentionDays") ??
+            BACKGROUND_TASK_DEFAULT_RETENTION_DAYS;
+    }
 
     async execute(
         input: IUpdateBackgroundTaskSettingsInput
@@ -62,12 +73,16 @@ class UpdateBackgroundTaskSettingsRepositoryImpl implements RepositoryAbstractio
                 return Result.fail(BackgroundTaskPersistenceError.from(entryResult.error));
             }
 
+            /* Store null when the value matches the default so the default stays in control. */
+            const storedValue =
+                input.retentionDays === this.defaultRetentionDays ? null : input.retentionDays;
+
             const { entry } =
                 await this.updateEntryDataFactory.create<BackgroundTaskSettingsValues>(
                     model,
                     {
                         values: {
-                            retentionDays: input.retentionDays
+                            retentionDays: storedValue
                         }
                     },
                     entryResult.value
@@ -79,7 +94,7 @@ class UpdateBackgroundTaskSettingsRepositoryImpl implements RepositoryAbstractio
             }
 
             const settings: IBackgroundTaskSettings = {
-                retentionDays: entry.values.retentionDays
+                retentionDays: entry.values.retentionDays ?? this.defaultRetentionDays
             };
 
             return Result.ok(settings);
@@ -96,6 +111,7 @@ export const UpdateBackgroundTaskSettingsRepository = RepositoryAbstraction.crea
         GetBackgroundTaskSettingsRepository,
         GetLatestRevisionByEntryIdRepository,
         UpdateEntryRepository,
-        UpdateEntryDataFactory
+        UpdateEntryDataFactory,
+        BuildParams
     ]
 });
