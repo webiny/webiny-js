@@ -110,7 +110,7 @@ export class StylesStore {
             return;
         }
 
-        const styles = new StylesValueObject(toJS(this.devFriendlyStyles));
+        const styles = new StylesValueObject(structuredClone(toJS(this.devFriendlyStyles)));
 
         cb({ styles, metadata: this.elementMetadata });
 
