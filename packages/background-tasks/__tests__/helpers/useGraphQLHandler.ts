@@ -24,6 +24,13 @@ import {
     type ITriggerTaskVariables
 } from "~tests/helpers/graphql/tasks";
 import { createListTaskLogsQuery } from "~tests/helpers/graphql/logs";
+import {
+    createGetSettingsQuery,
+    createUpdateSettingsMutation,
+    type IGetSettingsResponse,
+    type IUpdateSettingsResponse,
+    type IUpdateSettingsVariables
+} from "~tests/helpers/graphql/settings";
 import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
@@ -179,6 +186,24 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
             return invoke({
                 body: {
                     query: createListTaskLogsQuery(),
+                    variables
+                }
+            });
+        },
+        /**
+         * Settings
+         */
+        getSettings: async () => {
+            return invoke<IGetSettingsResponse>({
+                body: {
+                    query: createGetSettingsQuery()
+                }
+            });
+        },
+        updateSettings: async (variables: IUpdateSettingsVariables) => {
+            return invoke<IUpdateSettingsResponse>({
+                body: {
+                    query: createUpdateSettingsMutation(),
                     variables
                 }
             });
