@@ -73,6 +73,21 @@ export class WorkspaceGraph {
         }
     }
 
+    getDependents() {
+        const dependents = new Map();
+        for (const [name] of this.graph) {
+            dependents.set(name, []);
+        }
+        for (const [name, deps] of this.graph) {
+            for (const dep of deps) {
+                if (this.graph.has(dep)) {
+                    dependents.get(dep).push(name);
+                }
+            }
+        }
+        return dependents;
+    }
+
     toposort() {
         if (this.sorted) {
             return this.sorted;

@@ -40,6 +40,10 @@ export async function getBatches(options: GetBatchesOptions = {}) {
 
     const useCache = options.cache ?? false;
 
+    const workspaceGraph = new WorkspaceGraph({
+        ignore: ["@webiny/project-utils"]
+    });
+
     // 1. Determine for which packages we can use the cached built code, and for which we need to execute build.
     if (!useCache) {
         workspacesPackages.forEach(pkg => packagesNoCache.push(pkg));
@@ -59,6 +63,37 @@ export async function getBatches(options: GetBatchesOptions = {}) {
                 packagesUseCache.push(workspacePackage);
             } else {
                 packagesNoCache.push(workspacePackage);
+            }
+        }
+    }
+
+    // 1.5 When using cache, also rebuild any package that depends on a changed package.
+    if (packagesNoCache.length > 0 && useCache) {
+        const dependents = workspaceGraph.getDependents();
+
+        const tainted = new Set(packagesNoCache.map(p => p.packageJson.name));
+        const queue = [...tainted];
+        while (queue.length > 0) {
+            const name = queue.pop()!;
+            for (const dependent of dependents.get(name) || []) {
+                if (!tainted.has(dependent)) {
+                    tainted.add(dependent);
+                    queue.push(dependent);
+                }
+            }
+        }
+
+        for (const name of tainted) {
+            if (packagesNoCache.some(p => p.packageJson.name === name)) continue;
+            const pkg = workspacesPackages.find(p => p.packageJson.name === name);
+            if (pkg) {
+                packagesNoCache.push(pkg);
+            }
+        }
+
+        for (let i = packagesUseCache.length - 1; i >= 0; i--) {
+            if (tainted.has(packagesUseCache[i].packageJson.name)) {
+                packagesUseCache.splice(i, 1);
             }
         }
     }
@@ -96,9 +131,7 @@ export async function getBatches(options: GetBatchesOptions = {}) {
         return { batches: [], packagesNoCache, allPackages: workspacesPackages };
     }
 
-    const rawPackagesList = new WorkspaceGraph({
-        ignore: ["@webiny/project-utils"]
-    }).toposort();
+    const rawPackagesList = workspaceGraph.toposort();
 
     const packagesList: Record<string, string[]> = {};
 
