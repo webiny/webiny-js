@@ -15,6 +15,7 @@ const { green } = chalk;
 interface GetBatchesOptions {
     cache?: boolean;
     packagesWhitelist?: string[];
+    rebuildDependents?: boolean;
 }
 
 export async function getBatches(options: GetBatchesOptions = {}) {
@@ -67,8 +68,8 @@ export async function getBatches(options: GetBatchesOptions = {}) {
         }
     }
 
-    // 1.5 When using cache, also rebuild any package that depends on a changed package.
-    if (packagesNoCache.length > 0 && useCache) {
+    // 1.5 When using cache and --rebuild-dependents, also rebuild any package that depends on a changed package.
+    if (options.rebuildDependents && packagesNoCache.length > 0 && useCache) {
         const dependents = workspaceGraph.getDependents();
 
         const tainted = new Set(packagesNoCache.map(p => p.packageJson.name));
