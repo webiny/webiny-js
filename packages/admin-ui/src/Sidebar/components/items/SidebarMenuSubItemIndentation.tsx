@@ -27,7 +27,7 @@ const SidebarMenuSubItemIndentation = ({ lvl, variant }: SidebarMenuSubItemInden
                         orientation={"vertical"}
                         margin={"none"}
                         variant={"strong"}
-                        className={separatorVariants({ variant })}
+                        className={separatorVariants({ variant, className: "!h-full" })}
                     />
                 </div>
             ))}
