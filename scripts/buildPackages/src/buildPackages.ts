@@ -10,6 +10,7 @@ import { buildPackage } from "./buildSinglePackage";
 import { getHardwareInfo } from "./getHardwareInfo";
 import execa from "execa";
 
+import path from "path";
 import { hideBin } from "yargs/helpers";
 import { PackageBuildError } from "./PackageBuildError";
 import { queueMetaWrite } from "./writeMetaQueue";
@@ -17,6 +18,27 @@ import { queueMetaWrite } from "./writeMetaQueue";
 const argv = yargs(hideBin(process.argv)).parse();
 
 const { green, red } = chalk;
+
+const projectFolder = path.basename(process.cwd());
+
+const sendNotification = async (title: string, message: string) => {
+    try {
+        switch (process.platform) {
+            case "darwin":
+                await execa("osascript", [
+                    "-e",
+                    `display notification "${message}" with title "${title}"`
+                ]);
+                break;
+            case "linux":
+                await execa("notify-send", [title, message]);
+                break;
+            // Windows: no built-in CLI toast notification, skip
+        }
+    } catch {
+        // silently fail
+    }
+};
 
 interface BuildOptions {
     p?: string | string[];
@@ -74,7 +96,16 @@ export const buildPackages = async () => {
 
     if (allPackages.length === 1) {
         const [pkg] = allPackages;
-        await buildPackage(pkg, options.buildOverrides, "inherit", options.safeReplace);
+        try {
+            await buildPackage(pkg, options.buildOverrides, "inherit", options.safeReplace);
+            await sendNotification(
+                `Webiny Build (${projectFolder})`,
+                "Build completed successfully"
+            );
+        } catch (err) {
+            await sendNotification(`Webiny Build (${projectFolder})`, "Build failed");
+            throw err;
+        }
     } else {
         const start = Date.now();
 
@@ -176,10 +207,18 @@ export const buildPackages = async () => {
                 console.log();
             });
 
+            await sendNotification(
+                `Webiny Build (${projectFolder})`,
+                `Build failed after ${duration} seconds`
+            );
             console.log(`Build failed in ${red(duration)} seconds.`);
             process.exit(1);
         }
 
+        await sendNotification(
+            `Webiny Build (${projectFolder})`,
+            `Build finished in ${duration} seconds`
+        );
         console.log(`\nBuild finished in ${green(duration)} seconds.`);
     }
 };
