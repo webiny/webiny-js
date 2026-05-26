@@ -1,4 +1,5 @@
 import { Output } from "ai";
+import sharp from "sharp";
 import { z } from "zod";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
@@ -72,6 +73,28 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
         const srcPrefix = settingsResult.isOk() ? (settingsResult.value.srcPrefix ?? "") : "";
         const imageUrl = `${srcPrefix}${file.key}`;
 
+        // Extract width/height/format from the image bytes — nothing else in the
+        // upload pipeline populates `metadata.image`, so Next.js <Image> consumers
+        // (e.g. TextImageBlock) get undefined dimensions without this.
+        let imageDimensions: { width?: number; height?: number; format?: string } | null = null;
+        try {
+            const imageResponse = await fetch(imageUrl);
+            if (imageResponse.ok) {
+                const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+                const meta = await sharp(imageBuffer).metadata();
+                imageDimensions = {
+                    width: meta.width,
+                    height: meta.height,
+                    format: meta.format
+                };
+            }
+        } catch (error) {
+            console.log(
+                "Failed to extract image dimensions:",
+                error instanceof Error ? error.message : String(error)
+            );
+        }
+
         const aiSettingsResult = await this.getSettings.execute();
 
         if (aiSettingsResult.isFail()) {
@@ -128,11 +151,25 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
 
         const mergedTags = [...new Set([...file.tags, ...tags])];
 
-        const updateResult = await this.updateFile.execute({
+        // UpdateFileUseCase does a shallow merge of `input`, so omit `metadata`
+        // when we have nothing to add (preserves original). When we DO add image
+        // dimensions, deep-merge with the existing metadata to keep exif/iptc.
+        const updatePayload: Parameters<UpdateFileUseCase.Interface["execute"]>[0] = {
             id: file.id,
             tags: mergedTags,
             description
-        });
+        };
+        if (imageDimensions) {
+            updatePayload.metadata = {
+                ...(file.metadata || {}),
+                image: {
+                    ...(file.metadata?.image || {}),
+                    ...imageDimensions
+                }
+            };
+        }
+
+        const updateResult = await this.updateFile.execute(updatePayload);
 
         if (updateResult.isFail()) {
             return controller.response.error({

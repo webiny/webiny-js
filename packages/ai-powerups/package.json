@@ -54,6 +54,13 @@
   "publishConfig": {
     "access": "public"
   },
+  "adio": {
+    "ignore": {
+      "src": [
+        "sharp"
+      ]
+    }
+  },
   "webiny": {
     "publishFrom": "dist"
   }

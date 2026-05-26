@@ -3,6 +3,7 @@ import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
+import { ListTagsUseCase } from "@webiny/api-file-manager/features/file/ListTags/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { AiPromptContextBuilder } from "~/api/features/AiPromptContext/index.js";
 import { createReadProjectFileTool } from "~/api/features/AiPromptContext/ReadProjectFileTool.js";
@@ -22,7 +23,8 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
         private getSettings: GetSettingsUseCase.Interface,
         private ai: Ai.Interface,
         private aiSdkTools: AiSdkTools.Interface,
-        private encryption: Encryption.Interface
+        private encryption: Encryption.Interface,
+        private listTags: ListTagsUseCase.Interface
     ) {}
 
     async execute(
@@ -61,8 +63,17 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
             Object.assign(sdkTools, projectFileTool);
         }
 
+        // Fetch image tags so the prompt can enumerate what's queryable; without
+        // this the model invents tag/IDs instead of calling listImagesByTag.
+        const tagsResult = await this.listTags.execute({
+            where: { type_startsWith: "image/" },
+            limit: 100
+        });
+        const imageTags = tagsResult.isOk() ? tagsResult.value.map(t => t.tag) : [];
+
         const components = params.components as Array<{ name: string }>;
-        const systemText = buildDomainPrompt(components, params.tools) + context.toString();
+        const systemText =
+            buildDomainPrompt(components, params.tools, imageTags) + context.toString();
 
         const system = {
             role: "system" as const,
@@ -115,7 +126,9 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
                 filesRead: [...filesRead],
                 cacheHit: context.cacheHit,
                 toolCallsMade,
-                totalSteps: aiResult.steps.length
+                totalSteps: aiResult.steps.length,
+                toolsAvailable: Object.keys(sdkTools),
+                imageTagsInPrompt: imageTags
             };
 
             return Result.ok({ output, telemetry });
@@ -132,5 +145,12 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
 export const WbGeneratePageContentUseCaseImplementation =
     WbGeneratePageContentUseCase.createImplementation({
         implementation: WbGeneratePageContentUseCaseImpl,
-        dependencies: [AiPromptContextBuilder, GetSettingsUseCase, Ai, AiSdkTools, Encryption]
+        dependencies: [
+            AiPromptContextBuilder,
+            GetSettingsUseCase,
+            Ai,
+            AiSdkTools,
+            Encryption,
+            ListTagsUseCase
+        ]
     });

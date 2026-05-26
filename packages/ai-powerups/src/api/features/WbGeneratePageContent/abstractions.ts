@@ -15,6 +15,8 @@ export interface GenerationTelemetry {
     cacheHit: boolean;
     toolCallsMade: number;
     totalSteps: number;
+    toolsAvailable: string[];
+    imageTagsInPrompt: string[];
 }
 
 export interface GeneratePageContentResult {

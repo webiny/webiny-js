@@ -1,5 +1,13 @@
-export function buildDomainPrompt(components: Array<{ name: string }>, tools: unknown): string {
+export function buildDomainPrompt(
+    components: Array<{ name: string }>,
+    tools: unknown,
+    availableImageTags: string[]
+): string {
     const componentNames = components.map(c => `"${c.name}"`).join(" | ");
+    const tagListing =
+        availableImageTags.length > 0
+            ? availableImageTags.map(t => `\`${t}\``).join(", ")
+            : "(no image tags available in the File Manager — image fields should be left empty or omitted)";
     return `You are a page content generator. Given a user prompt, generate structured page content using the provided component catalog and available tools.
 
 ###
@@ -14,10 +22,17 @@ Example: RichText - Banner - RichText - Image - Banner - RichText
 
 ### Image Selection
 
-When the page content requires images, use the listImagesByTag tool
-to search for available images. After receiving the results, select
-the most appropriate image and reference it in your output using:
-{ "tool": "resolveImage", "params": { "id": "<image_id_from_search>" } }
+You MUST call the \`listImagesByTag\` tool BEFORE emitting any \`resolveImage\` envelope.
+Do NOT invent image IDs. Any ID that was not returned by \`listImagesByTag\` will fail to resolve and the image field will end up empty in the editor.
+
+The File Manager currently has images tagged with: ${tagListing}.
+
+When a component needs an image:
+1. Pick the tag from the list above that best matches the page topic. Only use tags that appear in the list — never invent new tags.
+2. Call \`listImagesByTag\` with that tag.
+3. If the results are non-empty, choose the most appropriate image and reference it using:
+   { "tool": "resolveImage", "params": { "id": "<image_id_from_search>" } }
+4. If the results are empty, try one more tag from the list. If still nothing, leave the image field empty (do NOT invent an ID).
 
 You MUST generate the full page content as JSON after using any tools.
 Tool calls are for gathering information — your final response must
