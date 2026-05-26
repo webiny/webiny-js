@@ -19,6 +19,8 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
     private _form: FormModel.Interface | null = null;
     private _settings: IAiPowerUpsSettings | null = null;
     private _timeoutId: ReturnType<typeof setTimeout> | null = null;
+    private _intervalId: ReturnType<typeof setInterval> | null = null;
+    private _elapsedSeconds = 0;
 
     constructor(
         private toolRegistry: ToolRegistry.Interface,
@@ -36,7 +38,8 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
             loading: this._loading,
             submitting: this._submitting,
             processing: this._processing,
-            timedOut: this._timedOut
+            timedOut: this._timedOut,
+            elapsedSeconds: this._elapsedSeconds
         };
     }
 
@@ -145,11 +148,18 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
 
     private startTimeout(): void {
         this.clearTimeout();
+        this._elapsedSeconds = 0;
+        this._intervalId = setInterval(() => {
+            runInAction(() => {
+                this._elapsedSeconds++;
+            });
+        }, 1000);
         this._timeoutId = setTimeout(() => {
             runInAction(() => {
                 this._submitting = false;
                 this._timedOut = true;
             });
+            this.clearInterval();
         }, SUBMIT_TIMEOUT_MS);
     }
 
@@ -157,6 +167,14 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
         if (this._timeoutId !== null) {
             clearTimeout(this._timeoutId);
             this._timeoutId = null;
+        }
+        this.clearInterval();
+    }
+
+    private clearInterval(): void {
+        if (this._intervalId !== null) {
+            clearInterval(this._intervalId);
+            this._intervalId = null;
         }
     }
 
