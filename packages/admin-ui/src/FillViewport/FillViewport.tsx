@@ -44,42 +44,45 @@ function useFillViewportStyle(axis: "width" | "height" | "both") {
 
 type FillViewportProps = React.HTMLAttributes<HTMLDivElement>;
 
-const BaseFillViewportHeight = ({ className, children, ...props }: FillViewportProps) => {
+const BaseFillViewportHeight = ({ children, style: userStyle, ...rest }: FillViewportProps) => {
     const { ref, style } = useFillViewportStyle("height");
 
     return (
         <div
+            {...rest}
             ref={ref}
-            style={style !== undefined ? { height: style.height, ...props.style } : props.style}
-            {...props}
+            data-fill-viewport="height"
+            style={style !== undefined ? { height: style.height, ...userStyle } : userStyle}
         >
             {children}
         </div>
     );
 };
 
-const BaseFillViewportWidth = ({ className, children, ...props }: FillViewportProps) => {
+const BaseFillViewportWidth = ({ children, style: userStyle, ...rest }: FillViewportProps) => {
     const { ref, style } = useFillViewportStyle("width");
 
     return (
         <div
+            {...rest}
             ref={ref}
-            style={style !== undefined ? { width: style.width, ...props.style } : props.style}
-            {...props}
+            data-fill-viewport="width"
+            style={style !== undefined ? { width: style.width, ...userStyle } : userStyle}
         >
             {children}
         </div>
     );
 };
 
-const BaseFillViewport = ({ className, children, ...props }: FillViewportProps) => {
+const BaseFillViewport = ({ children, style: userStyle, ...rest }: FillViewportProps) => {
     const { ref, style } = useFillViewportStyle("both");
 
     return (
         <div
+            {...rest}
             ref={ref}
-            style={style !== undefined ? { ...style, ...props.style } : props.style}
-            {...props}
+            data-fill-viewport="both"
+            style={style !== undefined ? { ...style, ...userStyle } : userStyle}
         >
             {children}
         </div>
