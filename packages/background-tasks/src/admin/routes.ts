@@ -8,5 +8,9 @@ export const Routes = {
     Executions: new Route({
         name: "BackgroundTasks/Executions",
         path: "/background-tasks/executions"
+    }),
+    Settings: new Route({
+        name: "BackgroundTasks/Settings",
+        path: "/background-tasks/settings"
     })
 };

@@ -39,9 +39,12 @@ class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
             ? await this.encryption.decrypt(String(settings.password))
             : "";
 
+        const port = Number(settings.port || 587);
+
         const transportSettings: TransportSettings = {
             host: String(settings.host || ""),
-            port: Number(settings.port || 25),
+            port,
+            secure: settings.secure ?? port === 465,
             user: String(settings.user || ""),
             password,
             from: String(settings.from || ""),

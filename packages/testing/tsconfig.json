@@ -15,12 +15,12 @@
     { "path": "../api-website-builder" },
     { "path": "../api-websockets" },
     { "path": "../aws-sdk" },
+    { "path": "../background-tasks" },
     { "path": "../error" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
-    { "path": "../tasks" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -56,6 +56,10 @@
       "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
+      "@webiny/background-tasks/api": ["../background-tasks/src/api/index.js"],
+      "@webiny/background-tasks/admin/*": ["../background-tasks/src/admin/*"],
+      "@webiny/background-tasks/*": ["../background-tasks/src/*"],
+      "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
@@ -66,8 +70,6 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/tasks/*": ["../tasks/src/*"],
-      "@webiny/tasks": ["../tasks/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

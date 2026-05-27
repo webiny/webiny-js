@@ -2,6 +2,7 @@ import React from "react";
 import { cva } from "~/utils.js";
 import type { SidebarMenuItemProps } from "./SidebarMenuRootItem.js";
 import { DivButton } from "./DivButton.js";
+import { SidebarMenuItemBadge } from "./SidebarMenuItemBadge.js";
 import { DistributedOmit } from "type-fest";
 import { useAdminUi } from "~/index.js";
 
@@ -47,6 +48,7 @@ const SidebarMenuSubButton = ({
 
     action,
     text,
+    badge,
     className,
     to,
     ...linkProps
@@ -64,6 +66,7 @@ const SidebarMenuSubButton = ({
         <LinkComponent {...sharedProps} to={to} {...linkProps}>
             {icon}
             {text}
+            {badge && (typeof badge === "string" ? <SidebarMenuItemBadge text={badge} /> : badge)}
         </LinkComponent>
     ) : (
         // We can't use the default button element here because the content of the button
@@ -75,6 +78,7 @@ const SidebarMenuSubButton = ({
         >
             {icon}
             {text}
+            {badge && (typeof badge === "string" ? <SidebarMenuItemBadge text={badge} /> : badge)}
         </DivButton>
     );
 
