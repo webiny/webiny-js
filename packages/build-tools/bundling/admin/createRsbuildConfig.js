@@ -12,7 +12,6 @@ export const createRsbuildConfig = ({ cwd }) => {
     const envVars = getEnvVars();
     const mode = getMode();
 
-    console.log("RSBUILDCFG ENV VARS", envVars);
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: {
             entry: {
