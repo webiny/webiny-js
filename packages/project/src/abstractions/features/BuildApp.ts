@@ -5,7 +5,6 @@ import { type IPackagesBuilder } from "~/abstractions/models/index.js";
 export interface IBuildAppParams {
     app: AppName;
     deploymentChecks?: boolean;
-    analyze?: boolean;
 }
 
 export type IBuildResult = IPackagesBuilder;

@@ -20,16 +20,18 @@ export class RunnableBuildProcess implements IRunnableBuildProcess {
     constructor(params: RunnableProcessParams) {
         this.builder = params.builder;
         this.pkg = params.pkg;
-
-        const buildEnv: Record<string, string | undefined> = { ...process.env };
-        if (params.builder.getBuildParams().analyze) {
-            buildEnv.RSDOCTOR = "true";
-        }
+        this.forkOptions = params.forkOptions || {
+            env: { ...process.env },
+            stdio: ["pipe", "pipe", "pipe", "ipc"]
+        };
+    }
 
         this.forkOptions = params.forkOptions || {
             env: buildEnv,
             stdio: ["pipe", "pipe", "pipe", "ipc"]
         };
+
+        console.log('ovo su fork optsi', this.forkOptions);
     }
 
     run() {
@@ -42,6 +44,10 @@ export class RunnableBuildProcess implements IRunnableBuildProcess {
             this.forkOptions
         );
 
+        console.log('runamo')
+        console.log(workerPath,
+            [JSON.stringify({ ...buildParams, package: this.pkg })],
+            this.forkOptions)
         return new Promise<void>((resolve, reject) => {
             buildProcess.on("message", (message: Record<string, any>) => {
                 if (message.error) {

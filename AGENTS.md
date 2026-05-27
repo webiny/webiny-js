@@ -14,7 +14,6 @@ When new backend features are discovered, update `ai-context/core-features-refer
 - Only import one named import per line
 - when generating code, one file MUST only contain one class
 - When refactoring, we don't care about backwards compatibility, unless explicitly stated in the prompt
-- Avoid inlining complex conditionals or ternaries inside object/array literals. Extract them into a named variable first.
 
 ## Building
 

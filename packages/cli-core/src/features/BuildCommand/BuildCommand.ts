@@ -42,6 +42,10 @@ export class BuildCommand implements CliCommandFactory.Interface<IBuildCommandPa
                 }
             ],
             handler: async (params: IBuildCommandParams) => {
+                if (params.analyze) {
+                    process.env.RSDOCTOR = "true";
+                }
+
                 const stdio = this.stdioService;
                 const ui = this.ui;
 
