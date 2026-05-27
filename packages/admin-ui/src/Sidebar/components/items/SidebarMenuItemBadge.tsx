@@ -1,5 +1,4 @@
 import React from "react";
-import { cn } from "~/utils.js";
 
 interface SidebarMenuItemBadgeProps {
     text: React.ReactNode;
