@@ -13,6 +13,8 @@ import { Routes } from "./routes.js";
 
 const { Menu, Route } = AdminConfig;
 
+const beta = <Menu.Link.Badge text="BETA" />;
+
 export const WebhookRoutes = () => {
     const { getLink } = useRouter();
 
@@ -57,6 +59,7 @@ export const WebhookRoutes = () => {
                     element={
                         <Menu.Link
                             text="Webhooks"
+                            badge={beta}
                             to={getLink(Routes.List)}
                             icon={<Menu.Link.Icon label="Webhooks" element={<WebhookIcon />} />}
                         />
@@ -67,11 +70,12 @@ export const WebhookRoutes = () => {
                     parent="dev-tools"
                     element={
                         <Menu.Link
-                            text="Webhooks Delivery Log"
+                            text="Webhooks Log"
+                            badge={beta}
                             to={getLink(Routes.Deliveries)}
                             icon={
                                 <Menu.Link.Icon
-                                    label="Webhooks Delivery Log"
+                                    label="Webhooks Log"
                                     element={<WebhookDeliveryIcon />}
                                 />
                             }
@@ -81,7 +85,9 @@ export const WebhookRoutes = () => {
                 <Menu
                     name="webhooks.settings"
                     parent="settings.system"
-                    element={<Menu.Link text="Webhooks" to={getLink(Routes.Settings)} />}
+                    element={
+                        <Menu.Link badge={beta} text="Webhooks" to={getLink(Routes.Settings)} />
+                    }
                 />
             </HasPermission>
         </AdminConfig>

@@ -71,7 +71,13 @@ export const BackgroundTaskRoutes = () => {
                 <Menu
                     name="backgroundTasks.settings"
                     parent="settings.system"
-                    element={<Menu.Link text="Background Tasks" to={getLink(Routes.Settings)} />}
+                    element={
+                        <Menu.Link
+                            text="Background Tasks"
+                            to={getLink(Routes.Settings)}
+                            badge={<Menu.Link.Badge text="BETA" />}
+                        />
+                    }
                 />
             </HasPermission>
         </AdminConfig>
