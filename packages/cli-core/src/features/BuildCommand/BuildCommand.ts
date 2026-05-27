@@ -9,7 +9,9 @@ import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
 import { createBaseAppOptions } from "~/features/common/index.js";
 
-export type IBuildCommandParams = IBaseAppParams;
+export interface IBuildCommandParams extends IBaseAppParams {
+    analyze?: boolean;
+}
 
 export class BuildCommand implements CliCommandFactory.Interface<IBuildCommandParams> {
     constructor(
@@ -33,8 +35,22 @@ export class BuildCommand implements CliCommandFactory.Interface<IBuildCommandPa
                     required: true
                 }
             ],
-            options: createBaseAppOptions(projectSdk),
+            options: [
+                ...createBaseAppOptions(projectSdk),
+                {
+                    name: "analyze",
+                    description: "Run bundle analysis during build",
+                    type: "boolean"
+                }
+            ],
             handler: async (params: IBuildCommandParams) => {
+                if (params.analyze) {
+                    // Set directly on process.env so forked build processes
+                    // (RunnableBuildProcess) inherit it automatically via { ...process.env }.
+                    // rsbuild detects RSDOCTOR=true and enables bundle analysis natively.
+                    process.env.RSDOCTOR = "true";
+                }
+
                 const stdio = this.stdioService;
                 const ui = this.ui;
 
