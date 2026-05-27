@@ -1,4 +1,3 @@
-import { createContextPlugin } from "@webiny/api";
 import { CodeMailerSettingsFeature } from "~/features/CodeMailerSettings/feature.js";
 import { GetSettingsFeature } from "~/features/GetSettings/feature.js";
 import { SaveSettingsFeature } from "~/features/SaveSettings/feature.js";
