@@ -1,8 +1,5 @@
 import { Result } from "@webiny/feature/api";
-import {
-    EventPublisher,
-    EventPublisher as EventPublisherAbstraction
-} from "@webiny/api-core/features/eventPublisher/index.js";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     SaveSettingsUseCase,
     SaveSettingsRepository,
@@ -23,7 +20,7 @@ import { ActiveTransport } from "~/domain/MailTransport/abstractions.js";
 class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private eventPublisher: EventPublisherAbstraction.Interface,
+        private eventPublisher: EventPublisher.Interface,
         private repository: SaveSettingsRepository.Interface,
         private codeSettings: CodeMailerSettings.Interface,
         private activeTransport: ActiveTransport.Interface

@@ -4,12 +4,14 @@ import type { TransportSendData, TransportSendResponse } from "~/types.js";
 import {
     NoTransportAvailableError,
     NoSettingsConfiguredError,
+    TransportCreateError,
     TransportSendError
 } from "./errors.js";
 
 export interface IMailerServiceErrors {
     noTransport: NoTransportAvailableError;
     noSettings: NoSettingsConfiguredError;
+    transportCreate: TransportCreateError;
     transportSend: TransportSendError;
 }
 

@@ -185,6 +185,40 @@ describe("Settings Transporter CRUD", () => {
         });
     });
 
+    it("should default secure to true when port is 465", async () => {
+        const context = await handle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        const result = await saveSettings.execute({ ...input, port: 465 });
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value).toMatchObject({ port: 465, secure: true });
+    });
+
+    it("should respect explicit secure: false even on port 465", async () => {
+        const context = await handle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        const result = await saveSettings.execute({ ...input, port: 465, secure: false });
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value).toMatchObject({ port: 465, secure: false });
+    });
+
+    it("should infer secure from stored port 465 when reading back", async () => {
+        const context = await handle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        await saveSettings.execute({ ...input, port: 465 });
+
+        const getSettings = context.container.resolve(GetSettingsUseCase);
+        const result = await getSettings.execute("Mailer/SmtpTransport");
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.settings?.secure).toBe(true);
+        expect(result.value.settings?.port).toBe(465);
+    });
+
     it("should not be possible to save settings due to no permissions", async () => {
         const { handle: noAccessHandle } = createContextHandler({
             permissions: []

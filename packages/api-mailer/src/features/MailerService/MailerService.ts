@@ -3,6 +3,7 @@ import { MailerService as Abstraction } from "~/domain/MailerService/abstraction
 import {
     NoTransportAvailableError,
     NoSettingsConfiguredError,
+    TransportCreateError,
     TransportSendError
 } from "~/domain/MailerService/errors.js";
 import {
@@ -39,7 +40,7 @@ class MailerServiceImpl implements Abstraction.Interface {
         try {
             transport = await this.getTransport(transportName, settings);
         } catch (error) {
-            return Result.fail(new TransportSendError(error));
+            return Result.fail(new TransportCreateError(error));
         }
 
         if (!transport) {
