@@ -10802,6 +10802,7 @@ __metadata:
     fs-extra: "npm:^11.3.5"
     listr2: "npm:^10.2.1"
     load-json-file: "npm:^7.0.1"
+    node-notifier: "npm:^10.0.1"
     serialize-error: "npm:^13.0.1"
     tsx: "npm:4.21.0"
     write-json-file: "npm:^7.0.0"
@@ -18678,6 +18679,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"growly@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "growly@npm:1.3.0"
+  checksum: 10/77f9abc3a854ec628580939f004ba8f05c677f9a6c957be817525f20f68f75368c4879c64d12551f262a9a00de33fbefc4deb24f8f2124429c906ef20ec3c678
+  languageName: node
+  linkType: hard
+
 "gunzip-maybe@npm:1.4.2":
   version: 1.4.2
   resolution: "gunzip-maybe@npm:1.4.2"
@@ -19348,6 +19356,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-docker@npm:^2.0.0":
+  version: 2.2.1
+  resolution: "is-docker@npm:2.2.1"
+  bin:
+    is-docker: cli.js
+  checksum: 10/3fef7ddbf0be25958e8991ad941901bf5922ab2753c46980b60b05c1bf9c9c2402d35e6dc32e4380b980ef5e1970a5d9d5e5aa2e02d77727c3b6b5e918474c56
+  languageName: node
+  linkType: hard
+
 "is-docker@npm:^3.0.0":
   version: 3.0.0
   resolution: "is-docker@npm:3.0.0"
@@ -19652,6 +19669,15 @@ __metadata:
     call-bound: "npm:^1.0.3"
     get-intrinsic: "npm:^1.2.6"
   checksum: 10/1d5e1d0179beeed3661125a6faa2e59bfb48afda06fc70db807f178aa0ebebc3758fb6358d76b3d528090d5ef85148c345dcfbf90839592fe293e3e5e82f2134
+  languageName: node
+  linkType: hard
+
+"is-wsl@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "is-wsl@npm:2.2.0"
+  dependencies:
+    is-docker: "npm:^2.0.0"
+  checksum: 10/20849846ae414997d290b75e16868e5261e86ff5047f104027026fd61d8b5a9b0b3ade16239f35e1a067b3c7cc02f70183cb661010ed16f4b6c7c93dad1b19d8
   languageName: node
   linkType: hard
 
@@ -21612,6 +21638,20 @@ __metadata:
   bin:
     node-gyp: bin/node-gyp.js
   checksum: 10/cd97bf17f0f3e6288c42cc23a6db8528a98e7530abdb72ab558272906d603362e4558069f99f8a5250bc78f65ff305b1438caca4f1b31c81904a8798c242603e
+  languageName: node
+  linkType: hard
+
+"node-notifier@npm:^10.0.1":
+  version: 10.0.1
+  resolution: "node-notifier@npm:10.0.1"
+  dependencies:
+    growly: "npm:^1.3.0"
+    is-wsl: "npm:^2.2.0"
+    semver: "npm:^7.3.5"
+    shellwords: "npm:^0.1.1"
+    uuid: "npm:^8.3.2"
+    which: "npm:^2.0.2"
+  checksum: 10/b238ffe16fd3b14df4c021e7d2a64483a3ac549b22d93e3c0bcfd9557a12d1c370ce6d8889308bc9c31c7464d99b224e7056dbd8cf4fb37b0f6296185972774a
   languageName: node
   linkType: hard
 
@@ -25174,6 +25214,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"shellwords@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "shellwords@npm:0.1.1"
+  checksum: 10/c122808ca53c828747ee69503755a5d35d8c1493e943d15ebfd6fe028517ec1af6f8a4c2dc9d995b0df75bd4246382c0dd2dc792a82ce5a6448307a643fc5a38
+  languageName: node
+  linkType: hard
+
 "shimmer@npm:^1.2.1":
   version: 1.2.1
   resolution: "shimmer@npm:1.2.1"
@@ -27631,7 +27678,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"which@npm:^2.0.1":
+"which@npm:^2.0.1, which@npm:^2.0.2":
   version: 2.0.2
   resolution: "which@npm:2.0.2"
   dependencies:
