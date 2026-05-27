@@ -7,12 +7,13 @@ import { SmtpTransportFeature } from "~/features/SmtpTransport/feature.js";
 import { MailerServiceFeature } from "~/features/MailerService/feature.js";
 import { SendMailFeature } from "~/features/SendMail/feature.js";
 import { createSettingsGraphQL } from "~/graphql/settings.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 export { MailerService } from "./domain/MailerService/abstractions.js";
 export type { IMailerService, IMailerServiceErrors } from "./domain/MailerService/abstractions.js";
 
 export const createMailerContext = () => {
-    return createContextPlugin(context => {
+    return createRegisterExtensionPlugin(context => {
         // Register all features.
         CodeMailerSettingsFeature.register(context.container);
         DummyTransportFeature.register(context.container);
