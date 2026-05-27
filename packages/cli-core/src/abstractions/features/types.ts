@@ -6,5 +6,4 @@ export interface IBaseAppParams {
     env: string;
     variant?: string;
     region?: string;
-    analyze?: boolean;
 }
