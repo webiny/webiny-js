@@ -11,7 +11,8 @@ const DecoratableMenuItem = makeDecoratable("MenuItem", MenuLinkBase);
 
 const MenuItem = Object.assign(DecoratableMenuItem, {
     Action: Sidebar.Item.Action,
-    Icon: Sidebar.Item.Icon
+    Icon: Sidebar.Item.Icon,
+    Badge: Sidebar.Item.Badge
 });
 
 export { MenuItem };
