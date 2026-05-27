@@ -20,8 +20,9 @@ web:
 auth:
   htpasswd:
     file: ./htpasswd
-    # -1 disables registration, anonymous access handled by packages config
-    max_users: -1
+    # Maximum amount of users allowed to register, defaults to "+inf".
+    # You can set this to -1 to disable registration.
+    #max_users: 1000
 
 # a list of other known repositories we can talk to
 uplinks:
@@ -29,18 +30,15 @@ uplinks:
     url: https://registry.npmjs.org/
 
 packages:
-  "@webiny/*":
-    access: $anonymous
-    publish: $anonymous
-
   "@*/*":
-    access: $anonymous
-    publish: $anonymous
+    # scoped packages
+    access: $all
+    publish: $all
     proxy: npmjs
 
   "**":
-    access: $anonymous
-    publish: $anonymous
+    access: $all
+    publish: $all
     proxy: npmjs
 
 # You can specify HTTP/1.1 server keep alive timeout in seconds for incomming connections.
