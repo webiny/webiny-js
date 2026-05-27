@@ -35,8 +35,8 @@
     "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",
     "@webiny/api-opensearch": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
-    "@webiny/handler-aws": "0.0.0",
-    "@webiny/tasks": "0.0.0"
+    "@webiny/background-tasks": "0.0.0",
+    "@webiny/handler-aws": "0.0.0"
   },
   "license": "MIT",
   "publishConfig": {

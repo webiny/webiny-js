@@ -1,5 +1,5 @@
-import type { ITaskService } from "@webiny/tasks/plugins/TaskServicePlugin";
-import { TaskServicePlugin } from "@webiny/tasks/plugins/TaskServicePlugin";
+import type { ITaskService } from "@webiny/background-tasks/api/plugins/TaskServicePlugin";
+import { TaskServicePlugin } from "@webiny/background-tasks/api/plugins/TaskServicePlugin";
 
 class MockTaskServicePlugin extends TaskServicePlugin {
     public override name = "tasks.mockTaskService";

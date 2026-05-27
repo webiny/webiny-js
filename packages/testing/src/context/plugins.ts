@@ -3,7 +3,7 @@ import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { createBackgroundTaskContext } from "@webiny/tasks";
+import { createBackgroundTaskContext } from "@webiny/background-tasks/api";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types/index.js";
 import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";

@@ -12,9 +12,9 @@
     { "path": "../tenant-manager" },
     { "path": "../api-core-ddb" },
     { "path": "../api-file-manager-s3" },
+    { "path": "../background-tasks" },
     { "path": "../handler-aws" },
     { "path": "../plugins" },
-    { "path": "../tasks" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -46,12 +46,14 @@
       "@webiny/api-core-ddb": ["../api-core-ddb/src"],
       "@webiny/api-file-manager-s3/*": ["../api-file-manager-s3/src/*"],
       "@webiny/api-file-manager-s3": ["../api-file-manager-s3/src"],
+      "@webiny/background-tasks/api": ["../background-tasks/src/api/index.js"],
+      "@webiny/background-tasks/admin/*": ["../background-tasks/src/admin/*"],
+      "@webiny/background-tasks/*": ["../background-tasks/src/*"],
+      "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/tasks/*": ["../tasks/src/*"],
-      "@webiny/tasks": ["../tasks/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }
