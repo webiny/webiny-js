@@ -42,7 +42,7 @@ export function collectInputEntries(params: ComputeInputsHashParams): InputEntry
         }
     }
 
-    entries.sort((a, b) => a.key.localeCompare(b.key));
+    entries.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
     return entries;
 }
 
