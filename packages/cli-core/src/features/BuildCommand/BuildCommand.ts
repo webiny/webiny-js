@@ -42,7 +42,7 @@ export class BuildCommand implements CliCommandFactory.Interface<IBuildCommandPa
                 }
             ],
             handler: async (params: IBuildCommandParams) => {
-                if (params.analyze) {
+                if ((params as Record<string, any>).analyze) {
                     process.env.RSDOCTOR = "true";
                 }
 
