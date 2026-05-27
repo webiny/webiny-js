@@ -10,6 +10,7 @@ import {
     type ErrorObject
 } from "./abstractions.js";
 import { TelemetryService } from "~/features/telemetry/index.js";
+import { NewsletterSubscriptionService } from "~/features/newsletter/index.js";
 
 class SystemInstallerPresenterImpl implements Abstraction.Interface {
     private loading = true;
@@ -23,6 +24,7 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
 
     constructor(
         private telemetry: TelemetryService.Interface,
+        private newsletter: NewsletterSubscriptionService.Interface,
         private repository: SystemInstallerRepository.Interface
     ) {
         // TODO: Wizard steps need to be implemented via plugins, but this will do for now.
@@ -136,7 +138,11 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
 
             // ToS acceptance in the basic-info step covers consent. Fire-and-forget
             // so a slow/failed newsletter call never blocks the wizard.
-            void this.subscribeToNewsletter(installerData.Cognito);
+            void this.newsletter.subscribe({
+                email: installerData.Cognito.email,
+                firstName: installerData.Cognito.firstName,
+                lastName: installerData.Cognito.lastName
+            });
         } catch (error) {
             runInAction(() => {
                 this.error = error;
@@ -146,32 +152,6 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
         }
     };
 
-    private async subscribeToNewsletter(cognito: any): Promise<void> {
-        if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") {
-            return;
-        }
-        if (!cognito?.email || !cognito?.firstName || !cognito?.lastName) {
-            return;
-        }
-
-        try {
-            await fetch("https://t.webiny.com/newsletter", {
-                method: "POST",
-                // text/plain keeps the request CORS-simple (no preflight), matching
-                // the /event convention. The server parses the body as JSON regardless.
-                headers: { "Content-Type": "text/plain;charset=UTF-8" },
-                body: JSON.stringify({
-                    firstName: cognito.firstName,
-                    lastName: cognito.lastName,
-                    email: cognito.email,
-                    source: "install-wizard"
-                })
-            });
-        } catch {
-            // Best-effort: never surface to the user.
-        }
-    }
-
     finishInstallation = () => {
         this.startUsing = true;
     };
@@ -180,5 +160,5 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
 export const SystemInstallerPresenter = createImplementation({
     abstraction: Abstraction,
     implementation: SystemInstallerPresenterImpl,
-    dependencies: [TelemetryService, SystemInstallerRepository]
+    dependencies: [TelemetryService, NewsletterSubscriptionService, SystemInstallerRepository]
 });
