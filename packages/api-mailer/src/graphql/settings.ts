@@ -1,10 +1,11 @@
 import { ErrorResponse, GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { GetSettingsUseCase } from "~/features/GetSettings/abstractions.js";
 import { SaveSettingsUseCase } from "~/features/SaveSettings/abstractions.js";
-import { ActiveTransport } from "~/domain/MailTransport/abstractions.js";
 import type { MailerSettingsSource } from "~/features/GetSettings/abstractions.js";
 import type { Context } from "@webiny/api/types.js";
 import type { TransportSettings } from "~/types.js";
+
+const SMTP_TRANSPORT_NAME = "Mailer/SmtpTransport";
 
 const emptyResolver = () => ({});
 
@@ -81,15 +82,8 @@ export const createSettingsGraphQL = () => {
             MailerQuery: {
                 getSettings: async (_, __, context) => {
                     try {
-                        const activeTransport = context.container.resolve(ActiveTransport);
-                        const transportName = activeTransport.name();
-
-                        if (!transportName) {
-                            return { data: null, error: null };
-                        }
-
                         const getSettings = context.container.resolve(GetSettingsUseCase);
-                        const result = await getSettings.execute(transportName);
+                        const result = await getSettings.execute(SMTP_TRANSPORT_NAME);
 
                         const { settings, source } = result.value;
 

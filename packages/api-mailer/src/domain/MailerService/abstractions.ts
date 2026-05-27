@@ -1,16 +1,10 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { TransportSendData, TransportSendResponse } from "~/types.js";
-import {
-    NoTransportAvailableError,
-    NoSettingsConfiguredError,
-    TransportCreateError,
-    TransportSendError
-} from "./errors.js";
+import { NoTransportAvailableError, TransportCreateError, TransportSendError } from "./errors.js";
 
 export interface IMailerServiceErrors {
     noTransport: NoTransportAvailableError;
-    noSettings: NoSettingsConfiguredError;
     transportCreate: TransportCreateError;
     transportSend: TransportSendError;
 }
