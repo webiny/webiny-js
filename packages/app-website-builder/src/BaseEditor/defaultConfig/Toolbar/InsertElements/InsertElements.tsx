@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Icon, Text, ScrollArea, InputPrimitive, ToggleGroupPrimitive } from "@webiny/admin-ui";
+import {
+    Icon,
+    Text,
+    ScrollArea,
+    InputPrimitive,
+    ToggleGroupPrimitive,
+    FillViewportHeight
+} from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as ListIcon } from "@webiny/icons/format_list_bulleted.svg";
 import { ReactComponent as GridIcon } from "@webiny/icons/grid_view.svg";
@@ -22,8 +29,8 @@ export const InsertElements = () => {
     const isGrid = viewType === "grid";
 
     return (
-        <div className={"mb-sm pt-sm"}>
-            <div className={"flex-shrink-0 flex items-center gap-xs mb-md"}>
+        <FillViewportHeight className={"mb-sm pt-sm grid grid-rows-[auto_1fr] overflow-hidden"}>
+            <div className={"flex items-center gap-xs mb-md"}>
                 <InputPrimitive
                     value={search}
                     onChange={value => setSearch(value ?? "")}
@@ -41,7 +48,7 @@ export const InsertElements = () => {
                     size={"md"}
                 />
             </div>
-            <ScrollArea className={"flex-1 min-h-0"}>
+            <ScrollArea className={"h-full min-h-0"}>
                 <div>
                     {groups.map(group => {
                         const items = query
@@ -82,6 +89,6 @@ export const InsertElements = () => {
                     })}
                 </div>
             </ScrollArea>
-        </div>
+        </FillViewportHeight>
     );
 };
