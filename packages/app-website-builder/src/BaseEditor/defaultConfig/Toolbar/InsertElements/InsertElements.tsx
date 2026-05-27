@@ -22,7 +22,7 @@ export const InsertElements = () => {
     const isGrid = viewType === "grid";
 
     return (
-        <div className={"h-full flex flex-col mb-sm pt-sm"}>
+        <div className={"mb-sm pt-sm"}>
             <div className={"flex-shrink-0 flex items-center gap-xs mb-md"}>
                 <InputPrimitive
                     value={search}
@@ -41,7 +41,7 @@ export const InsertElements = () => {
                     size={"md"}
                 />
             </div>
-            <ScrollArea className={"flex-1"}>
+            <ScrollArea className={"flex-1 min-h-0"}>
                 <div>
                     {groups.map(group => {
                         const items = query
