@@ -4,6 +4,10 @@ import { DummyMailTransport } from "./DummyMailTransport.js";
 class DummyMailTransportFactoryImpl implements MailTransportFactory.Interface {
     public readonly name = "Mailer/DummyTransport";
 
+    canUse(): boolean {
+        return true;
+    }
+
     async createTransport(): Promise<IMailTransport> {
         return new DummyMailTransport();
     }
