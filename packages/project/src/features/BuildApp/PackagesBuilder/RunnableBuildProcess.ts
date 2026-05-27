@@ -21,7 +21,10 @@ export class RunnableBuildProcess implements IRunnableBuildProcess {
         this.builder = params.builder;
         this.pkg = params.pkg;
         this.forkOptions = params.forkOptions || {
-            env: { ...process.env },
+            env: {
+                ...process.env,
+                ...(params.builder.getBuildParams().analyze ? { RSDOCTOR: "true" } : {})
+            },
             stdio: ["pipe", "pipe", "pipe", "ipc"]
         };
     }

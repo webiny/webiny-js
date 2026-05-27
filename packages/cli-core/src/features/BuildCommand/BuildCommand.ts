@@ -33,7 +33,15 @@ export class BuildCommand implements CliCommandFactory.Interface<IBuildCommandPa
                     required: true
                 }
             ],
-            options: createBaseAppOptions(projectSdk),
+            options: [
+                ...createBaseAppOptions(projectSdk),
+                {
+                    name: "analyze",
+                    description: "Run RSDoctor analysis during build",
+                    type: "boolean",
+                    alias: "a"
+                }
+            ],
             handler: async (params: IBuildCommandParams) => {
                 const stdio = this.stdioService;
                 const ui = this.ui;
