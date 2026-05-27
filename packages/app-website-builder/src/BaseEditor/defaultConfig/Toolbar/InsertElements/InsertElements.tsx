@@ -29,7 +29,7 @@ export const InsertElements = () => {
     const isGrid = viewType === "grid";
 
     return (
-        <FillViewportHeight className={"mb-sm pt-sm grid grid-rows-[auto_1fr] overflow-hidden"}>
+        <div className={"mb-sm pt-sm"}>
             <div className={"flex items-center gap-xs mb-md"}>
                 <InputPrimitive
                     value={search}
@@ -48,47 +48,49 @@ export const InsertElements = () => {
                     size={"md"}
                 />
             </div>
-            <ScrollArea className={"h-full min-h-0"}>
-                <div>
-                    {groups.map(group => {
-                        const items = query
-                            ? group.items.filter(item =>
-                                  (item.label ?? item.name).toLowerCase().includes(query)
-                              )
-                            : group.items;
+            <FillViewportHeight>
+                <ScrollArea className={"h-full"}>
+                    <div>
+                        {groups.map(group => {
+                            const items = query
+                                ? group.items.filter(item =>
+                                      (item.label ?? item.name).toLowerCase().includes(query)
+                                  )
+                                : group.items;
 
-                        if (!items.length) {
-                            return null;
-                        }
+                            if (!items.length) {
+                                return null;
+                            }
 
-                        return (
-                            <div key={group.name} className={"p-sm flex flex-col gap-y-sm"}>
-                                <div className={"flex gap-x-sm"}>
-                                    <Icon
-                                        color={"accent"}
-                                        icon={
-                                            group.icon ? (
-                                                <InlineSvg src={group.icon} />
-                                            ) : (
-                                                <DashboardIcon />
-                                            )
-                                        }
-                                        label={group.label}
-                                    />
-                                    <Text size={"md"} className={"font-semibold"}>
-                                        {group.label}
-                                    </Text>
+                            return (
+                                <div key={group.name} className={"p-sm flex flex-col gap-y-sm"}>
+                                    <div className={"flex gap-x-sm"}>
+                                        <Icon
+                                            color={"accent"}
+                                            icon={
+                                                group.icon ? (
+                                                    <InlineSvg src={group.icon} />
+                                                ) : (
+                                                    <DashboardIcon />
+                                                )
+                                            }
+                                            label={group.label}
+                                        />
+                                        <Text size={"md"} className={"font-semibold"}>
+                                            {group.label}
+                                        </Text>
+                                    </div>
+                                    {isGrid ? (
+                                        <GroupItemsGrid items={items} />
+                                    ) : (
+                                        <GroupItemsList items={items} />
+                                    )}
                                 </div>
-                                {isGrid ? (
-                                    <GroupItemsGrid items={items} />
-                                ) : (
-                                    <GroupItemsList items={items} />
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-            </ScrollArea>
-        </FillViewportHeight>
+                            );
+                        })}
+                    </div>
+                </ScrollArea>
+            </FillViewportHeight>
+        </div>
     );
 };

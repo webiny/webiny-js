@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect } from "react";
-import { cn, makeDecoratable } from "~/utils.js";
+import React, { useEffect, useRef, useState } from "react";
+import { makeDecoratable } from "~/utils.js";
 
 interface FillViewportStyle {
     width?: number;
@@ -50,7 +50,6 @@ const BaseFillViewportHeight = ({ className, children, ...props }: FillViewportP
     return (
         <div
             ref={ref}
-            className={cn(className)}
             style={style !== undefined ? { height: style.height, ...props.style } : props.style}
             {...props}
         >
@@ -65,7 +64,6 @@ const BaseFillViewportWidth = ({ className, children, ...props }: FillViewportPr
     return (
         <div
             ref={ref}
-            className={cn(className)}
             style={style !== undefined ? { width: style.width, ...props.style } : props.style}
             {...props}
         >
@@ -80,7 +78,6 @@ const BaseFillViewport = ({ className, children, ...props }: FillViewportProps) 
     return (
         <div
             ref={ref}
-            className={cn(className)}
             style={style !== undefined ? { ...style, ...props.style } : props.style}
             {...props}
         >
