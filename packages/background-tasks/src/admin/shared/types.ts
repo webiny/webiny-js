@@ -16,3 +16,7 @@ export type Task = Omit<TaskRun, "taskStatus"> & {
 export type { TaskLog } from "@webiny/sdk";
 export type { TaskLogItem } from "@webiny/sdk";
 export type { TaskDefinition } from "@webiny/sdk";
+
+export interface BackgroundTaskSettings {
+    retentionDays: number | undefined;
+}

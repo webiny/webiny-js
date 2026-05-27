@@ -12,6 +12,9 @@ import { TaskPermissionsFeature } from "./features/permissions/index.js";
 import { TaskExecutionsPresenterFeature } from "./presentation/TaskExecutions/index.js";
 import { TaskDefinitionsPresenterFeature } from "./presentation/TaskDefinitions/index.js";
 import { TaskDetailPresenterFeature } from "./presentation/TaskDetail/index.js";
+import { GetBackgroundTaskSettingsFeature } from "./features/getBackgroundTaskSettings/index.js";
+import { UpdateBackgroundTaskSettingsFeature } from "./features/updateBackgroundTaskSettings/index.js";
+import { BackgroundTaskSettingsPresenterFeature } from "./presentation/BackgroundTaskSettings/index.js";
 import { BackgroundTaskRoutes } from "./BackgroundTaskRoutes.js";
 import { BACKGROUND_TASK_PERMISSIONS_SCHEMA } from "~/admin/permissions.js";
 
@@ -28,10 +31,13 @@ export const BackgroundTasks = () => {
             <RegisterFeature feature={ListLogsFeature} />
             <RegisterFeature feature={ListDefinitionsFeature} />
             <RegisterFeature feature={TaskPermissionsFeature} />
+            <RegisterFeature feature={GetBackgroundTaskSettingsFeature} />
+            <RegisterFeature feature={UpdateBackgroundTaskSettingsFeature} />
             {/* Presentation features. */}
             <RegisterFeature feature={TaskExecutionsPresenterFeature} />
             <RegisterFeature feature={TaskDefinitionsPresenterFeature} />
             <RegisterFeature feature={TaskDetailPresenterFeature} />
+            <RegisterFeature feature={BackgroundTaskSettingsPresenterFeature} />
             {/* Routes + menu. */}
             <BackgroundTaskRoutes />
             {/* Security permissions UI. */}

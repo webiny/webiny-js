@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
  * Tests in this file will use real data and Elasticsearch instance.
  */
 import { useHandler } from "~tests/helpers/useHandler";
-import { TaskDataStatus } from "@webiny/tasks/types";
+import { TaskDataStatus } from "@webiny/background-tasks/api/types";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition";
 

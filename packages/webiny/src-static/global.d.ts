@@ -6,7 +6,7 @@
  */
 
 // Import module augmentations from other packages
-import "@webiny/tasks/global.js";
+import "@webiny/background-tasks/api/global.js";
 
 // Import ambient type declarations
 import "./ambient/images.js";

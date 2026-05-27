@@ -1,4 +1,4 @@
-import "@webiny/tasks/types.js";
+import "@webiny/background-tasks/api/types.js";
 import { TaskDefinition } from "@webiny/api-core/exports/api/tasks.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
