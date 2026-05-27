@@ -7,7 +7,7 @@ export const createWatchFunction =
 
         // Must be a dynamic import — see rslibCompile.js for the reason.
         const { createRsbuild } = await import("@rsbuild/core");
-        const rsbuildConfig = await createRsbuildConfig({ cwd });
+        const rsbuildConfig = await createRsbuildConfig({ cwd, enforceMaxBundleSize: false });
 
         const rsbuild = await createRsbuild({ rsbuildConfig });
 

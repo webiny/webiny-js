@@ -2,6 +2,7 @@ import React from "react";
 import { cn, cva } from "~/utils.js";
 import type { SidebarMenuItemProps } from "./SidebarMenuRootItem.js";
 import { DivButton } from "./DivButton.js";
+import { SidebarMenuItemBadge } from "./SidebarMenuItemBadge.js";
 import { useAdminUi } from "~/index.js";
 
 const variants = cva(
@@ -44,6 +45,7 @@ const SidebarMenuRootButton = ({
 
     action,
     text,
+    badge,
     to,
     ...linkProps
 }: SidebarMenuButtonBaseProps) => {
@@ -60,6 +62,7 @@ const SidebarMenuRootButton = ({
         <LinkComponent {...sharedProps} to={to} {...linkProps}>
             {icon}
             {text}
+            {badge && (typeof badge === "string" ? <SidebarMenuItemBadge text={badge} /> : badge)}
         </LinkComponent>
     ) : (
         <DivButton
@@ -69,6 +72,7 @@ const SidebarMenuRootButton = ({
         >
             {icon}
             {text}
+            {badge && (typeof badge === "string" ? <SidebarMenuItemBadge text={badge} /> : badge)}
         </DivButton>
     );
 

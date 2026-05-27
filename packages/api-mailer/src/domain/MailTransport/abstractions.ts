@@ -15,6 +15,7 @@ export namespace MailTransport {
 
 export interface IMailTransportFactory {
     name: string;
+    canUse(settings: TransportSettings | null): boolean;
     createTransport(settings: TransportSettings): Promise<IMailTransport>;
 }
 
@@ -24,14 +25,4 @@ export const MailTransportFactory =
 export namespace MailTransportFactory {
     export type Interface = IMailTransportFactory;
     export type Return = Promise<IMailTransport>;
-}
-
-export interface IActiveTransport {
-    name(): string | null;
-}
-
-export const ActiveTransport = createAbstraction<IActiveTransport>("ActiveTransport");
-
-export namespace ActiveTransport {
-    export type Interface = IActiveTransport;
 }
