@@ -14,6 +14,7 @@ class NewsletterSubscriptionServiceImpl implements Abstraction.Interface {
         }
 
         try {
+            // TODO: use an injectable service here.
             await fetch("https://t.webiny.com/newsletter", {
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=UTF-8" },
