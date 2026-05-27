@@ -142,7 +142,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "5c19d85c38b6076157d6373cd496e53c28b222d288b33686c37ffd9993d8ab51",
+  "exportGenerationHash": "a9e9428800c668172653eb3821a9ac0a0abab1a1f0ee06c19356f7c9b80b6818",
   "webiny": {
     "publishFrom": "dist"
   }
