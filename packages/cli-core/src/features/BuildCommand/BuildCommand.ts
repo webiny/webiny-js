@@ -9,7 +9,9 @@ import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
 import { createBaseAppOptions } from "~/features/common/index.js";
 
-export type IBuildCommandParams = IBaseAppParams;
+export interface IBuildCommandParams extends IBaseAppParams {
+    analyze?: boolean;
+}
 
 export class BuildCommand implements CliCommandFactory.Interface<IBuildCommandParams> {
     constructor(
@@ -42,7 +44,9 @@ export class BuildCommand implements CliCommandFactory.Interface<IBuildCommandPa
                 }
             ],
             handler: async (params: IBuildCommandParams) => {
-                if ((params as Record<string, any>).analyze) {
+                if (params.analyze) {
+                    // Set directly on process.env so forked build processes
+                    // (RunnableBuildProcess) inherit it automatically via { ...process.env }.
                     process.env.RSDOCTOR = "true";
                 }
 
