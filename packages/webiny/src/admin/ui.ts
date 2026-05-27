@@ -40,6 +40,11 @@ export { Drawer } from "@webiny/admin-ui/Drawer/index.js";
 export { DropdownMenu } from "@webiny/admin-ui/DropdownMenu/index.js";
 export { DynamicFieldset } from "@webiny/admin-ui/DynamicFieldset/index.js";
 export { FilePicker } from "@webiny/admin-ui/FilePicker/index.js";
+export {
+    FillViewportHeight,
+    FillViewportWidth,
+    FillViewport
+} from "@webiny/admin-ui/FillViewport/index.js";
 export { Grid } from "@webiny/admin-ui/Grid/index.js";
 export { HeaderBar } from "@webiny/admin-ui/HeaderBar/index.js";
 export { Heading } from "@webiny/admin-ui/Heading/index.js";
