@@ -8,7 +8,7 @@ const SidebarMenuItemBadge = ({ text }: SidebarMenuItemBadgeProps) => {
     return (
         <span
             className={
-                "inline-flex items-center rounded-sm bg-primary px-xs text-[10px] font-semibold text-neutral-light leading-none h-[16px] shrink-0"
+                "inline-flex items-center rounded-sm bg-primary/50 px-xs text-[10px] font-semibold text-neutral-light leading-none h-md shrink-0"
             }
         >
             {text}
