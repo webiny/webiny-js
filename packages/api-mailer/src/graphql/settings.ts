@@ -37,6 +37,7 @@ export const createSettingsGraphQL = () => {
             type MailerTransportSettings {
                 host: String
                 port: Number
+                secure: Boolean
                 user: String
                 from: String
                 replyTo: String
@@ -55,6 +56,7 @@ export const createSettingsGraphQL = () => {
             input MailerTransportSettingsInput {
                 host: String!
                 port: Number
+                secure: Boolean
                 user: String!
                 password: String
                 from: String!

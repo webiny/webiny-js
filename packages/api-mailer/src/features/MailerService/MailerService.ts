@@ -34,7 +34,13 @@ class MailerServiceImpl implements Abstraction.Interface {
             return Result.fail(new NoSettingsConfiguredError());
         }
 
-        const transport = await this.getTransport(transportName, settings);
+        let transport: MailTransport.Interface | null;
+
+        try {
+            transport = await this.getTransport(transportName, settings);
+        } catch (error) {
+            return Result.fail(new TransportSendError(error));
+        }
 
         if (!transport) {
             return Result.fail(new NoTransportAvailableError());

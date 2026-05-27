@@ -6,6 +6,7 @@ import { registerCodeSmtpSettings } from "./helpers/registerCodeSmtpSettings";
 const smtpSettings = {
     host: "smtp.example.com",
     port: 587,
+    secure: false,
     user: "user@example.com",
     password: "secret-password",
     from: "noreply@example.com",

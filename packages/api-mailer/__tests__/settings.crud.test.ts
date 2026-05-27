@@ -45,7 +45,8 @@ describe("Settings Transporter CRUD", () => {
         // for retrieving the stored password is GetSettingsUseCase / Repository.
         expect(result.value).toEqual({
             host: input.host,
-            port: 25,
+            port: 587,
+            secure: false,
             user: input.user,
             from: input.from,
             replyTo: input.replyTo
@@ -66,7 +67,8 @@ describe("Settings Transporter CRUD", () => {
         expect(result.value).toEqual({
             settings: {
                 ...input,
-                port: 25
+                port: 587,
+                secure: false
             },
             source: "storage"
         });
@@ -88,6 +90,7 @@ describe("Settings Transporter CRUD", () => {
         expect(updateResult.value).toEqual({
             host: "dummy-host2.webiny",
             port: 30,
+            secure: false,
             user: input.user,
             from: input.from,
             replyTo: input.replyTo
@@ -103,6 +106,7 @@ describe("Settings Transporter CRUD", () => {
         expect(updateResult2.value).toEqual({
             host: "dummy-host3.webiny",
             port: 30,
+            secure: false,
             user: input.user,
             from: input.from,
             replyTo: input.replyTo
@@ -125,13 +129,14 @@ describe("Settings Transporter CRUD", () => {
             host: "dummy-host2.webiny",
             user: input.user,
             from: input.from,
-            port: 25
+            port: 587
         });
 
         expect(updateResult.isOk()).toBe(true);
         expect(updateResult.value).toEqual({
             host: "dummy-host2.webiny",
-            port: 25,
+            port: 587,
+            secure: false,
             user: input.user,
             from: input.from,
             replyTo: input.replyTo
@@ -146,7 +151,8 @@ describe("Settings Transporter CRUD", () => {
             settings: {
                 ...input,
                 password: input.password,
-                port: 25,
+                port: 587,
+                secure: false,
                 host: "dummy-host2.webiny"
             },
             source: "storage"
@@ -172,7 +178,8 @@ describe("Settings Transporter CRUD", () => {
         expect(result.value).toEqual({
             settings: {
                 ...input,
-                port: 25
+                port: 587,
+                secure: false
             },
             source: "storage"
         });
