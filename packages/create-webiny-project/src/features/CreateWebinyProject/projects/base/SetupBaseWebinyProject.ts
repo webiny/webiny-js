@@ -17,10 +17,10 @@ export const renames = [
         prev: "template.package.json",
         next: "package.json"
     },
-    {
-        prev: "example.yarnrc.yml",
-        next: ".yarnrc.yml"
-    }
+    // {
+    //     prev: "example.yarnrc.yml",
+    //     next: ".yarnrc.yml"
+    // }
 ];
 
 export class SetupBaseWebinyProject {
