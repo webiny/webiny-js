@@ -1,9 +1,12 @@
 import { createImplementation } from "@webiny/di";
+import { EnvConfig } from "@webiny/app/features/envConfig";
 import { NewsletterSubscriptionService as Abstraction } from "./abstractions.js";
 
 class NewsletterSubscriptionServiceImpl implements Abstraction.Interface {
+    constructor(private envConfig: EnvConfig.Interface) {}
+
     async subscribe(params: { email: string; firstName: string; lastName: string }): Promise<void> {
-        if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") {
+        if (!this.envConfig.get("telemetryEnabled")) {
             return;
         }
         if (!params.email || !params.firstName || !params.lastName) {
@@ -30,5 +33,5 @@ class NewsletterSubscriptionServiceImpl implements Abstraction.Interface {
 export const NewsletterSubscriptionService = createImplementation({
     abstraction: Abstraction,
     implementation: NewsletterSubscriptionServiceImpl,
-    dependencies: []
+    dependencies: [EnvConfig]
 });

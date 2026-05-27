@@ -138,7 +138,7 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
 
             // ToS acceptance in the basic-info step covers consent. Fire-and-forget
             // so a slow/failed newsletter call never blocks the wizard.
-            void this.newsletter.subscribe({
+            this.newsletter.subscribe({
                 email: installerData.Cognito.email,
                 firstName: installerData.Cognito.firstName,
                 lastName: installerData.Cognito.lastName
