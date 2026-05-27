@@ -2,16 +2,17 @@ import {
     AdminBeforeWatch,
     IsTelemetryEnabled,
     GetProjectIdService,
+    GetProjectInstallationIdService,
     GetProjectVersionService
 } from "~/abstractions/index.js";
 import { globalConfig } from "@webiny/global-config";
 import { isCI } from "ci-info";
-import { readInstallationId } from "../installationId.js";
 
 class SetAdminAppEnvVarsBeforeWatchImpl implements AdminBeforeWatch.Interface {
     constructor(
         private isTelemetryEnabled: IsTelemetryEnabled.Interface,
         private getProjectIdService: GetProjectIdService.Interface,
+        private getProjectInstallationIdService: GetProjectInstallationIdService.Interface,
         private getProjectVersionService: GetProjectVersionService.Interface
     ) {}
 
@@ -27,7 +28,7 @@ class SetAdminAppEnvVarsBeforeWatchImpl implements AdminBeforeWatch.Interface {
         }
 
         if (!("REACT_APP_WEBINY_INSTALLATION_ID" in process.env)) {
-            const installationId = readInstallationId();
+            const installationId = this.getProjectInstallationIdService.execute();
             if (installationId) {
                 process.env.REACT_APP_WEBINY_INSTALLATION_ID = installationId;
             }
@@ -62,5 +63,10 @@ class SetAdminAppEnvVarsBeforeWatchImpl implements AdminBeforeWatch.Interface {
 
 export const SetAdminAppEnvVarsBeforeWatch = AdminBeforeWatch.createImplementation({
     implementation: SetAdminAppEnvVarsBeforeWatchImpl,
-    dependencies: [IsTelemetryEnabled, GetProjectIdService, GetProjectVersionService]
+    dependencies: [
+        IsTelemetryEnabled,
+        GetProjectIdService,
+        GetProjectInstallationIdService,
+        GetProjectVersionService
+    ]
 });

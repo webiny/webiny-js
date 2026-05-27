@@ -56,15 +56,15 @@ const getWcpOrgProjectId = () => {
 
 /**
  * Reads the anonymous per-project installation id from
- * `<project-root>/webiny.installation.json`. Generated once at
+ * `<project-root>/package.json` → `webiny.installationId`. Generated once at
  * `create-webiny-project` time and tracked in git so it stays stable across
  * machines that share the project. Returns null if the file is missing or
  * unreadable — telemetry events still fire, just without the property.
  */
 const getInstallationId = () => {
     try {
-        const data = loadJsonFileSync(path.join(process.cwd(), "webiny.installation.json"));
-        return typeof data?.installationId === "string" ? data.installationId : null;
+        const data = loadJsonFileSync(path.join(process.cwd(), "package.json"));
+        return typeof data?.webiny?.installationId === "string" ? data.webiny.installationId : null;
     } catch {
         return null;
     }

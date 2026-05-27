@@ -6,6 +6,7 @@ export { GetAppService } from "./GetAppService.js";
 export { GetCwdService } from "./GetCwdService.js";
 export { GetProjectConfigService } from "./GetProjectConfigService.js";
 export { GetProjectIdService } from "./GetProjectIdService.js";
+export { GetProjectInstallationIdService } from "./GetProjectInstallationIdService.js";
 export { GetProjectService } from "./GetProjectService.js";
 export { GetProjectVersionService } from "./GetProjectVersionService.js";
 export { GetPulumiService } from "./GetPulumiService.js";

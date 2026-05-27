@@ -20,7 +20,7 @@ let projectId = null;
  *   1. URL param `iid` on first load. Persisted to localStorage.
  *   2. localStorage.
  *   3. `process.env.REACT_APP_WEBINY_INSTALLATION_ID` (build-time fallback,
- *      set from `<project>/webiny.installation.json`).
+ *      set from `<project>/package.json` → `webiny.installationId`).
  *
  * Attached as a super-property on every admin event so PostHog funnels can
  * group per-install.
