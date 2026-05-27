@@ -48,7 +48,16 @@ export function collectInputEntries(params: ComputeInputsHashParams): InputEntry
 
 export function computeInputsHash(params: ComputeInputsHashParams): string {
     const hasher = crypto.createHash("sha256");
+    const debug = process.env.WBY_HASH_DEBUG === "1";
     for (const { key, filePath } of collectInputEntries(params)) {
+        const fileHash = crypto
+            .createHash("sha256")
+            .update(fs.readFileSync(filePath))
+            .digest("hex")
+            .slice(0, 8);
+        if (debug) {
+            process.stderr.write(`  ${fileHash}  ${key}\n`);
+        }
         hasher.update(`${key}:`);
         hasher.update(fs.readFileSync(filePath));
         hasher.update("\n---\n");
