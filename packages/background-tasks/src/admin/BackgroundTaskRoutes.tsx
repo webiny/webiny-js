@@ -40,6 +40,7 @@ export const BackgroundTaskRoutes = () => {
                     element={
                         <Menu.Link
                             text="Task Definitions"
+                            badge={<Menu.Link.Badge text="BETA" />}
                             to={getLink(Routes.Definitions)}
                             icon={
                                 <Menu.Link.Icon label="Task Definitions" element={<ListIcon />} />
@@ -53,6 +54,7 @@ export const BackgroundTaskRoutes = () => {
                     element={
                         <Menu.Link
                             text="Task Executions"
+                            badge={<Menu.Link.Badge text="BETA" />}
                             to={getLink(Routes.Executions)}
                             icon={<Menu.Link.Icon label="Task Executions" element={<TaskIcon />} />}
                         />

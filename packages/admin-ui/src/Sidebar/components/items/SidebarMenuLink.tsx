@@ -9,6 +9,10 @@ import {
     SidebarMenuItemAction,
     type SidebarMenuItemActionProps
 } from "~/Sidebar/components/items/SidebarMenuItemAction.js";
+import {
+    SidebarMenuItemBadge,
+    type SidebarMenuItemBadgeProps
+} from "~/Sidebar/components/items/SidebarMenuItemBadge.js";
 
 const SidebarMenuLinkBase = (props: SidebarMenuItemLinkProps) => {
     return <SidebarMenuItem {...props} />;
@@ -18,12 +22,14 @@ const DecoratableSidebarMenuLink = makeDecoratable("SidebarMenuLink", SidebarMen
 
 const SidebarMenuLink = withStaticProps(DecoratableSidebarMenuLink, {
     Icon: SidebarMenuItemIcon,
-    Action: SidebarMenuItemAction
+    Action: SidebarMenuItemAction,
+    Badge: SidebarMenuItemBadge
 });
 
 export {
     SidebarMenuLink,
     type SidebarMenuItemLinkProps,
     type SidebarMenuItemIconProps,
-    type SidebarMenuItemActionProps
+    type SidebarMenuItemActionProps,
+    type SidebarMenuItemBadgeProps
 };
