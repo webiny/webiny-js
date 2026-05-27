@@ -1,5 +1,6 @@
 import path from "path";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
+import { RsdoctorRspackPlugin } from "@rsdoctor/rspack-plugin";
 import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
 const DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE = 4_718_592; // 4.5 MB
@@ -10,6 +11,7 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
     const paths = getPaths(cwd);
     const mode = getMode();
     const isDebugEnabled = process.env.DEBUG === "true";
+    const isRsdoctorEnabled = process.env.RSDOCTOR === "true";
 
     // Configurable via WEBINY_INFRA_API_MAX_BUNDLE_SIZE (bytes).
     // Only enforced during build — watch mode skips size checks.
@@ -55,7 +57,8 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                     new rspack.IgnorePlugin({
                         resourceRegExp: /canvas/,
                         contextRegExp: /jsdom$/
-                    })
+                    }),
+                    ...(isRsdoctorEnabled ? [new RsdoctorRspackPlugin()] : [])
                 ],
                 resolve: {
                     fallback: {
