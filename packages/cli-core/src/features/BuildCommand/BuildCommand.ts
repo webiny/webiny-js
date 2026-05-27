@@ -38,8 +38,7 @@ export class BuildCommand implements CliCommandFactory.Interface<IBuildCommandPa
                 {
                     name: "analyze",
                     description: "Run RSDoctor analysis during build",
-                    type: "boolean",
-                    alias: "a"
+                    type: "boolean"
                 }
             ],
             handler: async (params: IBuildCommandParams) => {
