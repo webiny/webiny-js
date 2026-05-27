@@ -4,7 +4,7 @@ import { createMockModels } from "./mocks/models";
 import { createIndexesTaskDefinition } from "@webiny/api-elasticsearch-tasks/tasks";
 import type { Context as TasksContext } from "@webiny/background-tasks/api/types";
 import type { CmsContext } from "~/types";
-import { createRunner } from "@webiny/project-utils/testing/tasks";
+import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
 import type { IElasticsearchCreateIndexesTaskInput } from "@webiny/api-elasticsearch-tasks/tasks/createIndexes/types";
 import { configurations } from "~/configurations";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
@@ -47,7 +47,7 @@ describe("Create index task", () => {
             })
         ).sort((a, b) => (a.index > b.index ? 1 : -1));
 
-        expect(indexes).toHaveLength(7);
+        expect(indexes).toHaveLength(8);
 
         expect(indexes).toEqual(
             [
@@ -97,6 +97,13 @@ describe("Create index task", () => {
                     index: createIndexName({
                         tenant: "root",
                         modelId: "tag"
+                    }),
+                    settings: expect.any(Object)
+                },
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "backgroundtasksettings"
                     }),
                     settings: expect.any(Object)
                 }
