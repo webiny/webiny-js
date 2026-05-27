@@ -4,7 +4,6 @@ import { pluginReact } from "@rsbuild/plugin-react";
 import { pluginSvgr } from "@rsbuild/plugin-svgr";
 import { pluginSass } from "@rsbuild/plugin-sass";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
-import { RsdoctorRspackPlugin } from "@rsdoctor/rspack-plugin";
 import tailwindcss from "@tailwindcss/postcss";
 import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
@@ -12,7 +11,6 @@ export const createRsbuildConfig = ({ cwd }) => {
     const paths = getPaths(cwd);
     const envVars = getEnvVars();
     const mode = getMode();
-    const isRsdoctorEnabled = process.env.RSDOCTOR === "true";
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: {
@@ -44,10 +42,7 @@ export const createRsbuildConfig = ({ cwd }) => {
                     // Wait for dependency builds to finish before triggering a recompilation.
                     aggregateTimeout: 500,
                     ignored: ["**/node_modules/**", "**/.git/**"]
-                },
-                ...(isRsdoctorEnabled && {
-                    plugins: [new RsdoctorRspackPlugin({})]
-                })
+                }
             }
         },
         server: { port: process.env.PORT || 3001, host: "0.0.0.0" },
