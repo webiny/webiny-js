@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Icon, Text, ScrollArea, InputPrimitive, ToggleGroupPrimitive } from "@webiny/admin-ui";
+import {
+    Icon,
+    Text,
+    ScrollArea,
+    InputPrimitive,
+    ToggleGroupPrimitive,
+    FillViewportHeight
+} from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as ListIcon } from "@webiny/icons/format_list_bulleted.svg";
 import { ReactComponent as GridIcon } from "@webiny/icons/grid_view.svg";
@@ -22,8 +29,8 @@ export const InsertElements = () => {
     const isGrid = viewType === "grid";
 
     return (
-        <div className={"h-full flex flex-col mb-sm pt-sm"}>
-            <div className={"flex-shrink-0 flex items-center gap-xs mb-md"}>
+        <div className={"mb-sm pt-sm"}>
+            <div className={"flex items-center gap-xs mb-md"}>
                 <InputPrimitive
                     value={search}
                     onChange={value => setSearch(value ?? "")}
@@ -41,47 +48,49 @@ export const InsertElements = () => {
                     size={"md"}
                 />
             </div>
-            <ScrollArea className={"flex-1"}>
-                <div>
-                    {groups.map(group => {
-                        const items = query
-                            ? group.items.filter(item =>
-                                  (item.label ?? item.name).toLowerCase().includes(query)
-                              )
-                            : group.items;
+            <FillViewportHeight>
+                <ScrollArea className={"h-full"}>
+                    <div>
+                        {groups.map(group => {
+                            const items = query
+                                ? group.items.filter(item =>
+                                      (item.label ?? item.name).toLowerCase().includes(query)
+                                  )
+                                : group.items;
 
-                        if (!items.length) {
-                            return null;
-                        }
+                            if (!items.length) {
+                                return null;
+                            }
 
-                        return (
-                            <div key={group.name} className={"p-sm flex flex-col gap-y-sm"}>
-                                <div className={"flex gap-x-sm"}>
-                                    <Icon
-                                        color={"accent"}
-                                        icon={
-                                            group.icon ? (
-                                                <InlineSvg src={group.icon} />
-                                            ) : (
-                                                <DashboardIcon />
-                                            )
-                                        }
-                                        label={group.label}
-                                    />
-                                    <Text size={"md"} className={"font-semibold"}>
-                                        {group.label}
-                                    </Text>
+                            return (
+                                <div key={group.name} className={"p-sm flex flex-col gap-y-sm"}>
+                                    <div className={"flex gap-x-sm"}>
+                                        <Icon
+                                            color={"accent"}
+                                            icon={
+                                                group.icon ? (
+                                                    <InlineSvg src={group.icon} />
+                                                ) : (
+                                                    <DashboardIcon />
+                                                )
+                                            }
+                                            label={group.label}
+                                        />
+                                        <Text size={"md"} className={"font-semibold"}>
+                                            {group.label}
+                                        </Text>
+                                    </div>
+                                    {isGrid ? (
+                                        <GroupItemsGrid items={items} />
+                                    ) : (
+                                        <GroupItemsList items={items} />
+                                    )}
                                 </div>
-                                {isGrid ? (
-                                    <GroupItemsGrid items={items} />
-                                ) : (
-                                    <GroupItemsList items={items} />
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-            </ScrollArea>
+                            );
+                        })}
+                    </div>
+                </ScrollArea>
+            </FillViewportHeight>
         </div>
     );
 };

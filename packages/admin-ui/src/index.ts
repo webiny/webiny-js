@@ -19,6 +19,7 @@ export * from "./Drawer/index.js";
 export * from "./DropdownMenu/index.js";
 export * from "./DynamicFieldset/index.js";
 export * from "./FilePicker/index.js";
+export * from "./FillViewport/index.js";
 export * from "./FormComponent/index.js";
 export * from "./Grid/index.js";
 export * from "./HeaderBar/index.js";
