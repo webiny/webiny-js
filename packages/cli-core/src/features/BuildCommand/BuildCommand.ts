@@ -39,7 +39,7 @@ export class BuildCommand implements CliCommandFactory.Interface<IBuildCommandPa
                 ...createBaseAppOptions(projectSdk),
                 {
                     name: "analyze",
-                    description: "Run RSDoctor analysis during build",
+                    description: "Run bundle analysis during build",
                     type: "boolean"
                 }
             ],
@@ -47,6 +47,7 @@ export class BuildCommand implements CliCommandFactory.Interface<IBuildCommandPa
                 if (params.analyze) {
                     // Set directly on process.env so forked build processes
                     // (RunnableBuildProcess) inherit it automatically via { ...process.env }.
+                    // rsbuild detects RSDOCTOR=true and enables bundle analysis natively.
                     process.env.RSDOCTOR = "true";
                 }
 

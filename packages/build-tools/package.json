@@ -69,7 +69,8 @@
         "bufferutil",
         "utf-8-validate",
         "css-loader",
-        "url-loader"
+        "url-loader",
+        "@rsdoctor/rspack-plugin"
       ]
     }
   },
