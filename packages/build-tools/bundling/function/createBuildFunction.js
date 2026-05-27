@@ -8,7 +8,7 @@ export const createBuildFunction =
 
         // Must be a dynamic import — see rslibCompile.js for the reason.
         const { createRsbuild } = await import("@rsbuild/core");
-        const rsbuildConfig = await createRsbuildConfig({ cwd });
+        const rsbuildConfig = await createRsbuildConfig({ cwd, enforceMaxBundleSize: true });
 
         const rsbuild = await createRsbuild({ rsbuildConfig });
 

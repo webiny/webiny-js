@@ -34,17 +34,17 @@
           "BaseError"
         ]
       }
-    }
+    },
+    "publishFrom": "dist"
   },
   "dependencies": {
-    "@webiny/di": "^0.2.3"
+    "@webiny/di": "^1.0.1"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   }
 }

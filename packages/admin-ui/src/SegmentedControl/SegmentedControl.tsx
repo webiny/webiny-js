@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
-import { makeDecoratable } from "~/utils.js";
+import { makeDecoratable, withStaticProps } from "~/utils.js";
+import { SegmentedControlTabs } from "./SegmentedControlTabs.js";
 import type { SegmentedControlPrimitiveProps } from "./primitives/index.js";
 import { SegmentedControlPrimitive } from "./primitives/index.js";
 import type { FormComponentProps } from "~/FormComponent/index.js";
@@ -51,6 +52,10 @@ const DecoratableSegmentedControl = ({
     );
 };
 
-const SegmentedControl = makeDecoratable("SegmentedControl", DecoratableSegmentedControl);
+const BaseSegmentedControl = makeDecoratable("SegmentedControl", DecoratableSegmentedControl);
+
+const SegmentedControl = withStaticProps(BaseSegmentedControl, {
+    Tabs: SegmentedControlTabs
+});
 
 export { SegmentedControl, type SegmentedControlProps };

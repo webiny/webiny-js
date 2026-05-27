@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Dialog, FormComponentLabel } from "@webiny/admin-ui";
-import { CompositionScope } from "@webiny/app-admin";
 import type { RichTextValueWithHtml } from "@webiny/app-admin";
 import { LexicalEditor } from "./LexicalEditor.js";
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
@@ -49,6 +48,7 @@ const EditorDialog = (props: EditorDialogProps) => {
             data-hover-manager={"ignore"}
             title={`Edit ${props.input.label}`}
             dismissible={false}
+            scrollable={false}
             showCloseButton={false}
             actions={
                 <>
@@ -62,9 +62,7 @@ const EditorDialog = (props: EditorDialogProps) => {
                 </>
             }
         >
-            <CompositionScope name={"expanded"}>
-                <LexicalEditor value={localValue} onChange={setLocalValue} />
-            </CompositionScope>
+            <LexicalEditor.Expanded value={localValue} onChange={setLocalValue} />
         </Dialog>
     );
 };
@@ -88,9 +86,7 @@ const ExpandableLexicalInputRenderer = ({
     return (
         <>
             <FormComponentLabel text={label} />
-            <CompositionScope name={"compact"}>
-                <LexicalEditor value={value} onChange={onChange} key={input.name} />
-            </CompositionScope>
+            <LexicalEditor.Compact value={value} onChange={onChange} key={input.name} />
             <EditorDialog
                 open={isExpanded}
                 value={value}

@@ -1,18 +1,32 @@
+import semver from "semver";
 import { Release } from "./Release";
-
-const VERSION = process.env.BETA_VERSION || "--conventional-prerelease";
 
 export class BetaRelease extends Release {
     constructor(logger: any) {
         super(logger);
-
         this.setTag("beta");
-        this.setVersion([VERSION, "--preid", "beta"]);
         this.setCreateGithubRelease(false);
     }
 
-    override setTag(tag: string) {
-        super.setTag(tag);
-        this.setVersion([VERSION, "--preid", tag]);
+    override async computeVersion(): Promise<string> {
+        if (!this.version) {
+            throw Error(`"--version" is required for beta releases.`);
+        }
+
+        const preid = this.preid || this.distTag || "beta";
+        const distTags = await this.fetchDistTags();
+        const tagVersion = distTags[this.distTag!];
+
+        if (tagVersion) {
+            const currentBase = `${semver.major(tagVersion)}.${semver.minor(tagVersion)}.${semver.patch(tagVersion)}`;
+
+            if (currentBase === this.version) {
+                const prerelease = semver.prerelease(tagVersion);
+                const suffix = prerelease && typeof prerelease[1] === "number" ? prerelease[1] : -1;
+                return `${this.version}-${preid}.${suffix + 1}`;
+            }
+        }
+
+        return `${this.version}-${preid}.0`;
     }
 }

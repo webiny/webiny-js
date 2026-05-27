@@ -1,4 +1,4 @@
-import { boolean } from "boolean";
+import { toBoolean } from "@webiny/stdlib";
 import type { GraphQLSchema } from "graphql";
 import type { Context } from "@webiny/handler";
 import { RoutePlugin } from "@webiny/handler";
@@ -49,7 +49,7 @@ export default (options: HandlerGraphQLOptions = {}): Plugin[] => {
     let schema: GraphQLSchema | undefined = undefined;
     let cacheKey: string | undefined = undefined;
 
-    const debug = boolean(options.debug);
+    const debug = toBoolean(options.debug);
 
     const path = options?.path || "/graphql";
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { BreakpointSelector } from "./BreakpointSelector.js";
 import { PreviewInNewTab } from "./PreviewInNewTab.js";
 import { OpenInNewTab } from "./OpenInNewTab.js";
 import { RefreshPreview } from "./RefreshPreview.js";
@@ -40,9 +39,6 @@ export const AddressBar = () => {
                     <PreviewInNewTab />
                     <OpenInNewTab />
                 </div>
-            </div>
-            <div className={"flex-none"}>
-                <BreakpointSelector />
             </div>
         </div>
     );

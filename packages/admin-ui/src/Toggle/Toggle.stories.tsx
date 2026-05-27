@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { ReactComponent as BoldIcon } from "@webiny/icons/format_bold.svg";
 import { Tooltip } from "~/Tooltip/index.js";
 import { Toggle } from "~/Toggle/index.js";

@@ -27,6 +27,8 @@ import { WebsiteBuilderWorkflows } from "@webiny/app-website-builder-workflows";
 import { Container } from "@webiny/di";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import { WbScheduler } from "@webiny/app-website-builder-scheduler";
+import { Webhooks } from "@webiny/webhooks/admin";
+import { BackgroundTasks } from "@webiny/background-tasks/admin";
 
 export interface AdminProps extends Omit<
     BaseAdminProps,
@@ -66,6 +68,8 @@ const App = (props: AdminProps) => {
             <CmsWorkflows />
             <WebsiteBuilderWorkflows />
             <WbScheduler />
+            <Webhooks />
+            <BackgroundTasks />
             {props.children}
         </BaseAdmin>
     );

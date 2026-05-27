@@ -1,5 +1,5 @@
 import type { OpenSearchContext } from "@webiny/api-opensearch/types.js";
-import type { Context as TasksContext } from "@webiny/tasks/types.js";
+import type { Context as TasksContext } from "@webiny/background-tasks/api/types.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { Client, createOpenSearchTable } from "@webiny/api-opensearch";
 import type { BatchReadItem } from "@webiny/db-dynamodb/utils/batch/batchRead.js";

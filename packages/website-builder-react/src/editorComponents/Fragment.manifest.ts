@@ -8,7 +8,7 @@ export const Fragment = createComponent(FragmentComponent, {
     label: "Fragment",
     useInAiContentGeneration: false,
     group: "basic",
-    image: `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M120-120v-720h720v720H120Zm80-80h560v-560H200v560Zm0 0v-560 560Z"/></svg>`,
+    image: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14z"/></svg>`,
     inputs: [
         createTextInput({
             name: "name",

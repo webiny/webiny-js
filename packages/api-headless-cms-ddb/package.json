@@ -36,24 +36,24 @@
     "@webiny/handler-db": "0.0.0",
     "@webiny/utils": "0.0.0",
     "dataloader": "^2.2.3",
-    "dot-object": "^2.1.5",
     "dot-prop": "^10.1.0",
     "lodash": "^4.18.1"
   },
   "devDependencies": {
-    "@types/dot-object": "^2.1.6",
     "@types/jsonpack": "^1.1.6",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^0.2.3",
+    "@webiny/di": "^1.0.1",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "jest-dynalite": "^3.6.1",
     "typescript": "6.0.3",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.7"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
+  "webiny": {
+    "publishFrom": "dist"
+  }
 }

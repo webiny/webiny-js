@@ -3,11 +3,11 @@ import type {
     IResponseContinueResult,
     IResponseResult,
     ITaskEvent
-} from "../../../tasks/src/types";
-import { TaskRunner } from "../../../tasks/src/runner";
+} from "../../../background-tasks/src/api/types";
+import { TaskRunner } from "../../../background-tasks/src/api/runner";
 import { timerFactory } from "../../../handler-aws/src/utils";
-import { TaskEventValidation } from "../../../tasks/src/runner/TaskEventValidation";
-import { ResponseContinueResult } from "../../../tasks/src/response/ResponseContinueResult";
+import { TaskEventValidation } from "../../../background-tasks/src/api/runner/TaskEventValidation";
+import { ResponseContinueResult } from "../../../background-tasks/src/api/response/ResponseContinueResult";
 import { createMockTaskServicePlugin } from "./mockTaskTriggerTransportPlugin";
 import { TaskDefinition } from "../../../api-core/src/features/task/TaskDefinition/index.js";
 

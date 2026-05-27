@@ -4,12 +4,12 @@ import { type ICreateFlpTaskInput } from "~/types.js";
 import { CreateFlpUseCase } from "~/features/flp/CreateFlp/index.js";
 
 class CreateFlpTaskImpl implements TaskDefinition.Interface<ICreateFlpTaskInput> {
-    id = CREATE_FLP_TASK_ID;
-    title = "ACO - Create FLP record";
-    description =
+    public readonly id = CREATE_FLP_TASK_ID;
+    public readonly title = "ACO - Create FLP record";
+    public readonly description =
         "Synchronizes the FLP catalog by creating the FLP record based on the provided folder.";
-    databaseLogs = false;
-
+    public readonly databaseLogs = false;
+    public readonly isPrivate = true;
     public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
 
     constructor(private createFlp: CreateFlpUseCase.Interface) {}

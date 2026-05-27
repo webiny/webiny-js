@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { ReactComponent as AuditLogsIcon } from "@webiny/icons/assignment.svg";
 import { ReactComponent as FormBuilderIcon } from "@webiny/icons/check_box.svg";
 import { ReactComponent as CmsIcon } from "@webiny/icons/web.svg";

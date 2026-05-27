@@ -1,5 +1,5 @@
-import type { ITask, Context } from "@webiny/tasks";
-import { TaskLogItemType } from "@webiny/tasks";
+import type { ITask, Context } from "@webiny/background-tasks/api";
+import { TaskLogItemType } from "@webiny/background-tasks/api";
 import type { IUseCase } from "~/abstractions/index.js";
 import type { HcmsBulkActionsContext } from "~/types.js";
 

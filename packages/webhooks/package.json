@@ -1,0 +1,58 @@
+{
+  "name": "@webiny/webhooks",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./api": "./api/index.js",
+    "./admin/*": "./admin/*",
+    "./*": "./*"
+  },
+  "description": "Webhooks feature for Webiny",
+  "keywords": [
+    "webhooks:base"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/webhooks"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/admin-ui": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/app": "0.0.0",
+    "@webiny/app-admin": "0.0.0",
+    "@webiny/background-tasks": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
+    "@webiny/icons": "0.0.0",
+    "@webiny/sdk": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "lodash": "^4.18.1",
+    "mobx": "^6.15.3",
+    "mobx-react-lite": "^4.1.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "standardwebhooks": "^1.0.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@webiny/api": "0.0.0",
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "^1.0.1",
+    "@webiny/handler": "0.0.0",
+    "@webiny/handler-aws": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

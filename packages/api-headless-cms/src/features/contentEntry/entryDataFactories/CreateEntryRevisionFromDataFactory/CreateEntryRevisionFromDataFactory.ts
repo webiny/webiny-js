@@ -197,7 +197,8 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
                 input: rawInput,
                 original: originalEntry
             }),
-            live: originalEntry.live
+            live: originalEntry.live,
+            expiresAt: null
         };
 
         return {

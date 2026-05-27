@@ -9,7 +9,7 @@ import {
 } from "~/BaseEditor/metadata/index.js";
 import { Commands } from "~/BaseEditor/index.js";
 import type { Editor } from "~/editorSdk/Editor.js";
-import { autorun, makeAutoObservable, runInAction } from "mobx";
+import { autorun, makeAutoObservable, runInAction, toJS } from "mobx";
 import { type InheritanceInfo, InheritanceProcessor } from "@webiny/website-builder-sdk";
 import {
     BindingsProcessor,
@@ -110,7 +110,7 @@ export class StylesStore {
             return;
         }
 
-        const styles = new StylesValueObject(structuredClone(this.devFriendlyStyles));
+        const styles = new StylesValueObject(structuredClone(toJS(this.devFriendlyStyles)));
 
         cb({ styles, metadata: this.elementMetadata });
 

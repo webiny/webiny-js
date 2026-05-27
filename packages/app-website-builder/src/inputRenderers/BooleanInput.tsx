@@ -1,6 +1,11 @@
 import React from "react";
-import { Switch } from "@webiny/admin-ui";
+import { SegmentedControl } from "@webiny/admin-ui";
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
+
+const ITEMS = [
+    { label: "Off", value: "false" },
+    { label: "On", value: "true" }
+];
 
 export const BooleanInputRenderer = ({
     value,
@@ -10,14 +15,15 @@ export const BooleanInputRenderer = ({
 }: ElementInputRendererProps) => {
     const { description, helperText } = input;
     return (
-        <Switch
+        <SegmentedControl
             label={label}
             note={helperText}
             description={description}
-            checked={value}
+            items={ITEMS}
+            value={String(value)}
             onChange={newValue => {
                 onChange(({ value }) => {
-                    value.set(newValue);
+                    value.set(newValue === "true");
                 });
             }}
         />

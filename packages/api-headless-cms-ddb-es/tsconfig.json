@@ -15,10 +15,10 @@
     { "path": "../utils" },
     { "path": "../api-core" },
     { "path": "../api-dynamodb-to-elasticsearch" },
+    { "path": "../background-tasks" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
-    { "path": "../tasks" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -56,14 +56,16 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
+      "@webiny/background-tasks/api": ["../background-tasks/src/api/index.js"],
+      "@webiny/background-tasks/admin/*": ["../background-tasks/src/admin/*"],
+      "@webiny/background-tasks/*": ["../background-tasks/src/*"],
+      "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/tasks/*": ["../tasks/src/*"],
-      "@webiny/tasks": ["../tasks/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

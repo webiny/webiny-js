@@ -1,5 +1,4 @@
 import { Release } from "./Release";
-import semver from "semver";
 
 export class LatestRelease extends Release {
     defaultTag = "latest";
@@ -7,25 +6,6 @@ export class LatestRelease extends Release {
     constructor(logger: any) {
         super(logger);
         this.setTag(this.defaultTag);
-        this.setSourceTag("beta");
-
-        this.setVersion(mostRecentVersion => {
-            // Check if specific version is enforced via an ENV variable.
-            const envVersion = process.env.LATEST_VERSION;
-            if (envVersion && semver.valid(envVersion)) {
-                return envVersion;
-            }
-
-            // If most recent version is a prerelease version, coerce it to a non-prerelease version.
-            const currentVersion = semver.parse(mostRecentVersion);
-            if (currentVersion && currentVersion.prerelease.length > 0) {
-                return semver.coerce(mostRecentVersion)?.version!;
-            }
-
-            // Determine version using conventional commits specs.
-            return "--conventional-commits";
-        });
-        // By setting `latest`, this release will be marked as `latest` on Github
         this.setCreateGithubRelease("latest");
     }
 
@@ -41,5 +21,12 @@ export class LatestRelease extends Release {
         }
 
         super.setTag(tag);
+    }
+
+    override async computeVersion(): Promise<string> {
+        if (!this.version) {
+            throw Error(`"--version" is required for latest releases.`);
+        }
+        return this.version;
     }
 }

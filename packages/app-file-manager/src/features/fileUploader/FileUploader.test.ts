@@ -4,6 +4,7 @@ import { Result } from "@webiny/sdk";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
 import { WebinySdk } from "@webiny/app-admin/features/webinySdk/abstractions.js";
 import { FilesListCache } from "../shared/abstractions.js";
+import { FileFieldsProvider } from "../shared/FileFieldsProvider.js";
 import { FileUploader as Abstraction } from "./abstractions.js";
 import { FileUploader } from "./FileUploader.js";
 import type { FmFile } from "../shared/types.js";
@@ -58,6 +59,7 @@ function createContainer(mockSdk: MockSdk) {
 
     container.registerInstance(WebinySdk, mockSdk as any);
     container.registerInstance(FilesListCache, cache);
+    container.register(FileFieldsProvider).inSingletonScope();
     container.register(FileUploader).inSingletonScope();
 
     return { container, cache };

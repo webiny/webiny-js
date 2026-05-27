@@ -10,10 +10,10 @@
     { "path": "../api-core" },
     { "path": "../api-headless-cms" },
     { "path": "../aws-sdk" },
+    { "path": "../background-tasks" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
     { "path": "../plugins" },
-    { "path": "../tasks" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -41,14 +41,16 @@
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
+      "@webiny/background-tasks/api": ["../background-tasks/src/api/index.js"],
+      "@webiny/background-tasks/admin/*": ["../background-tasks/src/admin/*"],
+      "@webiny/background-tasks/*": ["../background-tasks/src/*"],
+      "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/tasks/*": ["../tasks/src/*"],
-      "@webiny/tasks": ["../tasks/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

@@ -3,6 +3,17 @@ import { DataFieldBuilder } from "./FieldBuilder.js";
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import type { FieldTypeValidator } from "./fieldTypeValidator.js";
 
+export enum TextFieldSubTypes {
+    COMPRESSED = "compressed",
+    ENCRYPTED = "encrypted"
+}
+
+export enum TextFieldTypes {
+    TEXT = "text",
+    COMPRESSED = "text:compressed",
+    ENCRYPTED = "text:encrypted"
+}
+
 export interface ITextFieldBuilder
     extends
         DataFieldBuilder<"text">,
@@ -16,7 +27,10 @@ export interface ITextFieldBuilder
         FieldTypeValidator.UpperCase,
         FieldTypeValidator.LowerCaseSpace,
         FieldTypeValidator.UpperCaseSpace,
-        FieldTypeValidator.Unique {}
+        FieldTypeValidator.Unique {
+    compress(): this;
+    encrypt(): this;
+}
 
 // Module augmentation for TypeScript autocomplete
 declare module "../abstractions.js" {
@@ -144,6 +158,25 @@ class TextFieldBuilder extends DataFieldBuilder<"text"> implements ITextFieldBui
             message: message || "Value must be unique.",
             settings: {}
         });
+    }
+
+    public compress(): this {
+        this.setSubType(TextFieldSubTypes.COMPRESSED);
+
+        this.settings({
+            disableFullTextSearch: true
+        });
+
+        return this;
+    }
+    public encrypt(): this {
+        this.setSubType(TextFieldSubTypes.ENCRYPTED);
+
+        this.settings({
+            disableFullTextSearch: true
+        });
+
+        return this;
     }
 }
 

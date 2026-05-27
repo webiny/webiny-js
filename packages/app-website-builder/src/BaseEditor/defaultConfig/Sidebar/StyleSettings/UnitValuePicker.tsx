@@ -62,6 +62,7 @@ export const UnitValuePicker = (props: UnitValueProps) => {
                 <Input
                     disabled={isAuto}
                     size={"md"}
+                    variant={"secondary"}
                     value={isAuto ? "-" : (props.value ?? defaultValue)}
                     onEnter={onEnter}
                     autoSelect={true}
@@ -70,9 +71,10 @@ export const UnitValuePicker = (props: UnitValueProps) => {
                     autoFocus={true}
                 />
             </div>
-            <div className={"flex-col"}>
+            <div className={"w-[80px] shrink-0"}>
                 <Select
-                    size="md"
+                    size={"md"}
+                    variant={"secondary"}
                     value={props.unit}
                     options={props.units}
                     onChange={setUnit}

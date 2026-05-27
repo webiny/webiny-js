@@ -61,7 +61,7 @@ class ProvidersHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interface {
                     apiKeyMasked = existingMatch?.apiKeyMasked ?? "";
                 } else {
                     // New plaintext key — encrypt and mask
-                    apiKeyEncrypted = this.encryption.encrypt(preset.apiKey);
+                    apiKeyEncrypted = await this.encryption.encrypt(preset.apiKey);
                     apiKeyMasked = this.masker.mask(preset.apiKey, [8, 4]);
                 }
 

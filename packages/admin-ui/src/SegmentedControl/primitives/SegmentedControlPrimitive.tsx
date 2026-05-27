@@ -128,6 +128,10 @@ interface SegmentedControlPrimitiveProps {
      * Disabled state for all items.
      */
     disabled?: boolean;
+    /**
+     * Stretch the control to fill its container width, with buttons sharing space equally.
+     */
+    fullWidth?: boolean;
 }
 
 interface SegmentedControlVm {
@@ -145,10 +149,18 @@ const SegmentedControlRenderer = ({
     value,
     variant = "light",
     className,
-    disabled
+    disabled,
+    fullWidth
 }: SegmentedControlRendererProps) => {
     return (
-        <div role="radiogroup" className={cn(segmentedControlRootVariants({ variant }), className)}>
+        <div
+            role="radiogroup"
+            className={cn(
+                segmentedControlRootVariants({ variant }),
+                fullWidth && "flex w-full",
+                className
+            )}
+        >
             {items.map(item => (
                 <SegmentedControlItemButton
                     key={item.id}
@@ -156,6 +168,7 @@ const SegmentedControlRenderer = ({
                     isActive={value === item.value}
                     onValueChange={changeValue}
                     variant={variant}
+                    className={fullWidth ? "flex-1" : undefined}
                 />
             ))}
         </div>

@@ -13,7 +13,7 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@types/react": "18.3.28",
+    "@types/react": "18.3.29",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
@@ -29,12 +29,14 @@
     "typescript": "6.0.3"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "svgo": {
     "plugins": {
       "removeViewBox": false
     }
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

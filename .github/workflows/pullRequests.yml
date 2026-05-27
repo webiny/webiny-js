@@ -128,6 +128,10 @@ jobs:
       - build
     name: Build project (core, api, admin)
     if: '!startsWith(github.head_ref, ''release/'')'
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -152,6 +156,10 @@ jobs:
       - name: Build core
         run: yarn webiny build core
         working-directory: ${{ github.base_ref }}
+      - name: API bundle size limit
+        run: >-
+          echo "API bundle size limit:
+          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"
       - name: Build api
         run: yarn webiny build api --no-deployment-checks
         working-directory: ${{ github.base_ref }}
@@ -159,9 +167,6 @@ jobs:
         run: yarn webiny build admin --no-deployment-checks
         working-directory: ${{ github.base_ref }}
     runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysis:
     needs:
       - constants

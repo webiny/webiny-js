@@ -26,22 +26,21 @@
     "load-json-file": "^7.0.1",
     "pino": "^10.3.1",
     "pino-pretty": "^13.1.3",
-    "vitest": "^4.1.6",
+    "vitest": "^4.1.7",
     "yargs": "^18.0.0"
   },
   "peerDependencies": {
-    "@webiny/api": "*",
-    "@webiny/api-core": "*",
-    "@webiny/api-dynamodb-to-elasticsearch": "*",
-    "@webiny/api-opensearch": "*",
-    "@webiny/aws-sdk": "*",
-    "@webiny/handler-aws": "*",
-    "@webiny/tasks": "*"
+    "@webiny/api": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",
+    "@webiny/api-opensearch": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
+    "@webiny/background-tasks": "0.0.0",
+    "@webiny/handler-aws": "0.0.0"
   },
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "directory": "."
+    "access": "public"
   },
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

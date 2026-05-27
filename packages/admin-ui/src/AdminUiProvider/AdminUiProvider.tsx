@@ -1,16 +1,24 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Toast } from "~/Toast/index.js";
 import { Tooltip } from "~/Tooltip/index.js";
 import { type LinkComponent, DefaultLinkComponent } from "~/index.js";
+import type { FileUrlFormatter } from "./FileUrlFormatter.js";
 
 export type CompileMarkdown = (markdown: React.ReactNode) => React.ReactNode;
 
 export interface AdminUiContextValue {
     linkComponent: LinkComponent;
     compileMarkdown: CompileMarkdown;
+    fileUrlFormatter: FileUrlFormatter;
 }
 
 const passthrough = (markdown: string) => markdown;
+
+const passthroughFileUrlFormatter: FileUrlFormatter = {
+    format(_url: URL): void {
+        // passthrough — no-op
+    }
+};
 
 export const AdminUiContext = React.createContext<AdminUiContextValue | undefined>(undefined);
 
@@ -21,12 +29,14 @@ interface MarkdownCompiler {
 export interface AdminUiProviderProps {
     linkComponent?: LinkComponent;
     markdownCompiler?: MarkdownCompiler;
+    fileUrlFormatter?: FileUrlFormatter;
     children: React.ReactNode;
 }
 
 export const AdminUiProvider = ({ children, ...props }: AdminUiProviderProps) => {
     const linkComponent = props.linkComponent ?? DefaultLinkComponent;
     const markdownCompiler = props.markdownCompiler ?? passthrough;
+    const fileUrlFormatter = props.fileUrlFormatter ?? passthroughFileUrlFormatter;
 
     // Cache to store compiled markdown results
     const cacheRef = useRef(new Map<string, React.ReactNode>());
@@ -64,8 +74,13 @@ export const AdminUiProvider = ({ children, ...props }: AdminUiProviderProps) =>
         [markdownCompiler]
     );
 
+    const contextValue = useMemo(
+        () => ({ linkComponent, compileMarkdown, fileUrlFormatter }),
+        [linkComponent, compileMarkdown, fileUrlFormatter]
+    );
+
     return (
-        <AdminUiContext.Provider value={{ linkComponent, compileMarkdown }}>
+        <AdminUiContext.Provider value={contextValue}>
             <Tooltip.Provider>{children}</Tooltip.Provider>
             <Toast.Provider />
         </AdminUiContext.Provider>

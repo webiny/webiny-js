@@ -12,6 +12,7 @@ export type WebsiteBuilderTheme = {
     fonts?: string[];
     breakpoints: Breakpoint[];
     colors: ColorStyle[];
+    fontSizes?: FontSizes;
     typography: Typography;
 };
 type KnownKeys = "desktop" | "tablet" | "mobile";
@@ -42,6 +43,8 @@ export type TypographyStyle = {
 
 export type Typography = Record<string, TypographyStyle[]>;
 
+export type FontSizes = string[];
+
 export type WebsiteBuilderThemeInput = {
     /**
      * CSS to include in the editor.
@@ -51,6 +54,11 @@ export type WebsiteBuilderThemeInput = {
      * Fonts to load when the editor loads.
      */
     fonts?: string[];
+    /**
+     * Font sizes to use in the editor.
+     * Define this if you want to see a font size dropdown in the editor.
+     */
+    fontSizes?: FontSizes;
     /**
      * {
      *   title: "Desktop",

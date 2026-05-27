@@ -39,7 +39,7 @@ export type { RichTextValueWithHtml } from "./components/index.js";
 export { HasPermission } from "./presentation/security/components/HasPermission.js";
 export { SecureRoute } from "./presentation/security/components/SecureRoute.js";
 
-export { FileManager, FileManagerRenderer } from "./base/ui/FileManager.js";
+export { FileManager } from "./base/ui/FileManager.js";
 export type {
     FileManagerProps,
     FileManagerRendererProps,
@@ -80,6 +80,7 @@ import "./features/formModel/fieldTypes/DateTimeFieldType.js";
 import "./features/formModel/fieldTypes/FileFieldType.js";
 import "./features/formModel/fieldTypes/FileUrlFieldType.js";
 import "./features/formModel/fieldTypes/ObjectFieldType.js";
+import "./features/formModel/fieldTypes/LexicalFieldType.js";
 export { FormModelFactory } from "./features/formModel/abstractions.js";
 export type { FormModel } from "./features/formModel/abstractions.js";
 export type {

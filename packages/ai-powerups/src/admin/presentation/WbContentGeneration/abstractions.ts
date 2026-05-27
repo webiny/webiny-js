@@ -9,7 +9,7 @@ export type CreateElementParams = {
     bindings?: { inputs?: Record<string, unknown> };
 };
 
-export type CreateElementsFn = (elements: CreateElementParams[]) => void;
+export type CreateElementsFn = (elements: CreateElementParams[]) => void | Promise<void>;
 
 export interface IGenerateContentVm {
     form: IFormVM | null;
@@ -17,6 +17,7 @@ export interface IGenerateContentVm {
     submitting: boolean;
     processing: boolean;
     timedOut: boolean;
+    elapsedSeconds: number;
 }
 
 export interface IGenerateContentPresenter {

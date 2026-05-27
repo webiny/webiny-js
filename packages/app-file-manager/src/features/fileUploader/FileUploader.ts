@@ -1,6 +1,6 @@
 import { makeAutoObservable, computed, runInAction } from "mobx";
 import { WebinySdk } from "@webiny/app-admin/features/webinySdk/abstractions.js";
-import { FilesListCache } from "../shared/abstractions.js";
+import { FilesListCache, FileFieldsProvider } from "../shared/abstractions.js";
 import {
     FileUploader as Abstraction,
     type UploadJob,
@@ -8,7 +8,6 @@ import {
     type FileUploaderViewModel,
     type BatchUploadOptions
 } from "./abstractions.js";
-import { FILE_FIELDS } from "~/features/shared/FILE_FIELDS.js";
 
 let jobCounter = 0;
 
@@ -22,11 +21,16 @@ class FileUploaderImpl implements Abstraction.Interface {
 
     constructor(
         private sdk: WebinySdk.Interface,
-        private cache: FilesListCache.Interface
+        private cache: FilesListCache.Interface,
+        private fileFieldsProvider: FileFieldsProvider.Interface
     ) {
-        makeAutoObservable<FileUploaderImpl, "sdk" | "cache" | "abortControllers">(this, {
+        makeAutoObservable<
+            FileUploaderImpl,
+            "sdk" | "cache" | "fileFieldsProvider" | "abortControllers"
+        >(this, {
             sdk: false,
             cache: false,
+            fileFieldsProvider: false,
             abortControllers: false,
             vm: computed
         });
@@ -59,6 +63,7 @@ class FileUploaderImpl implements Abstraction.Interface {
     }
 
     async upload(file: File, data: UploadFileData): Promise<void> {
+        const fileFields = await this.fileFieldsProvider.execute();
         const jobId = createJobId();
         const controller = new AbortController();
         this.abortControllers.set(jobId, controller);
@@ -78,7 +83,7 @@ class FileUploaderImpl implements Abstraction.Interface {
             const result = await this.sdk.fileManager.createFile({
                 file,
                 data,
-                fields: FILE_FIELDS,
+                fields: fileFields,
                 onProgress: progress => {
                     runInAction(() => {
                         const idx = this.jobs.findIndex(j => j.id === jobId);
@@ -134,6 +139,7 @@ class FileUploaderImpl implements Abstraction.Interface {
         files: Array<{ file: File; data: UploadFileData }>,
         options?: BatchUploadOptions
     ): Promise<void> {
+        const fileFields = await this.fileFieldsProvider.execute();
         const controller = new AbortController();
 
         // Create jobs for each file.
@@ -156,7 +162,7 @@ class FileUploaderImpl implements Abstraction.Interface {
         const sdkFiles = files.map((entry, index) => ({
             file: entry.file,
             data: entry.data,
-            fields: FILE_FIELDS,
+            fields: fileFields,
             onProgress: (progress: { sent: number; total: number; percentage: number }) => {
                 runInAction(() => {
                     const jobId = jobIds[index];
@@ -277,5 +283,5 @@ class FileUploaderImpl implements Abstraction.Interface {
 
 export const FileUploader = Abstraction.createImplementation({
     implementation: FileUploaderImpl,
-    dependencies: [WebinySdk, FilesListCache]
+    dependencies: [WebinySdk, FilesListCache, FileFieldsProvider]
 });

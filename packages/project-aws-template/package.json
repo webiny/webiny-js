@@ -30,8 +30,8 @@
     "@webiny/api-opensearch": "0.0.0",
     "@webiny/api-record-locking": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
-    "@webiny/api-website-builder": "*",
-    "@webiny/api-website-builder-workflows": "*",
+    "@webiny/api-website-builder": "0.0.0",
+    "@webiny/api-website-builder-workflows": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
     "@webiny/api-workflows": "0.0.0",
     "@webiny/app": "0.0.0",
@@ -43,13 +43,12 @@
     "@webiny/handler-db": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/languages": "0.0.0",
-    "@webiny/project-aws": "*",
-    "@webiny/tenant-manager": "*",
+    "@webiny/project-aws": "0.0.0",
+    "@webiny/tenant-manager": "0.0.0",
     "react": "18.3.1"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "."
+    "access": "public"
   },
   "adio": {
     "ignore": {

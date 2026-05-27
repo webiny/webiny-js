@@ -15,7 +15,7 @@
   "dependencies": {
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^0.2.3",
+    "@webiny/di": "^1.0.1",
     "@webiny/feature-flags": "0.0.0",
     "@webiny/global-config": "0.0.0",
     "@webiny/pulumi-sdk": "0.0.0",
@@ -51,7 +51,7 @@
     "replace-in-path": "^1.1.0",
     "serialize-error": "^13.0.1",
     "ts-morph": "^28.0.0",
-    "tsx": "^4.21.0",
+    "tsx": "4.21.0",
     "write-json-file": "^7.0.0",
     "zod": "4.4.3"
   },
@@ -72,8 +72,10 @@
     }
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
+  "webiny": {
+    "publishFrom": "dist"
+  }
 }

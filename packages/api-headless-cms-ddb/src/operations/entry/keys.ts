@@ -57,17 +57,19 @@ export interface ICreateEntryPublishedKeysParams {
     id: string;
     tenant: string;
     modelId: string;
+    expiresAt: number | null;
 }
 
 export const createEntryPublishedKeys = (params: ICreateEntryPublishedKeysParams) => {
-    const { tenant } = params;
+    const { tenant, expiresAt } = params;
     return {
         PK: createPartitionKey(params),
         SK: createPublishedSortKey(),
         GSI1_PK: createGSIPartitionKey(params, "P"),
         GSI1_SK: createGSISortKey(params),
         TYPE: `cms.entry.p`,
-        GSI_TENANT: tenant
+        GSI_TENANT: tenant,
+        expiresAt
     };
 };
 
@@ -75,17 +77,19 @@ export interface ICreateEntryLatestKeysParams {
     id: string;
     tenant: string;
     modelId: string;
+    expiresAt: number | null;
 }
 
 export const createEntryLatestKeys = (params: ICreateEntryLatestKeysParams) => {
-    const { tenant } = params;
+    const { tenant, expiresAt } = params;
     return {
         PK: createPartitionKey(params),
         SK: createLatestSortKey(),
         GSI1_PK: createGSIPartitionKey(params, "L"),
         GSI1_SK: createGSISortKey(params),
         TYPE: `cms.entry.l`,
-        GSI_TENANT: tenant
+        GSI_TENANT: tenant,
+        expiresAt
     };
 };
 
@@ -94,16 +98,18 @@ export interface ICreateRevisionKeysParams {
     tenant: string;
     version: number;
     modelId: string;
+    expiresAt: number | null;
 }
 
 export const createEntryRevisionKeys = (params: ICreateRevisionKeysParams) => {
-    const { tenant } = params;
+    const { tenant, expiresAt } = params;
     return {
         PK: createPartitionKey(params),
         SK: createRevisionSortKey(params),
         GSI1_PK: createGSIPartitionKey(params, "A"),
         GSI1_SK: createGSISortKey(params),
         TYPE: `cms.entry`,
-        GSI_TENANT: tenant
+        GSI_TENANT: tenant,
+        expiresAt
     };
 };

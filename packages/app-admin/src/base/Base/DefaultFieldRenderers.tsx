@@ -23,6 +23,7 @@ import { FilePickerRenderer } from "~/base/Base/FieldRenderers/FilePickerRendere
 import { FileUrlPickerRenderer } from "~/base/Base/FieldRenderers/FileUrlPickerRenderer.js";
 import { MultiFilePickerRenderer } from "~/base/Base/FieldRenderers/MultiFilePickerRenderer.js";
 import { CodeEditorRenderer } from "~/base/Base/FieldRenderers/CodeEditorRenderer.js";
+import { LexicalRenderer } from "~/base/Base/FieldRenderers/LexicalRenderer.js";
 
 export const DefaultFieldRenderers = () => {
     return (
@@ -74,6 +75,7 @@ export const DefaultFieldRenderers = () => {
                 component={FileUrlPickerRenderer}
             />
             <AdminConfig.Form.FieldRenderer name={"codeEditor"} component={CodeEditorRenderer} />
+            <AdminConfig.Form.FieldRenderer name={"lexical"} component={LexicalRenderer} />
         </AdminConfig>
     );
 };

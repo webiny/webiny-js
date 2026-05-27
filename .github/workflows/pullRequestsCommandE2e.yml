@@ -194,6 +194,7 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-constants.outputs.pulumi-backend-url }}
+      WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -279,6 +280,10 @@ jobs:
       - name: Enable extension whitelabeling
         working-directory: new-webiny-project
         run: yarn webiny extension whitelabeling
+      - name: API bundle size limit
+        run: >-
+          echo "API bundle size limit:
+          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev
@@ -316,6 +321,9 @@ jobs:
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install Cypress binary
+        run: cd cypress-tests && yarn cypress install
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Cypress - run installation wizard test
         run: >-
@@ -378,6 +386,7 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.pulumi-backend-url }}
+      WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
       AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.OPENSEARCH_DOMAIN_NAME }}
       OPENSEARCH_ENDPOINT: ${{ secrets.OPENSEARCH_ENDPOINT }}
       OPENSEARCH_USERNAME: ${{ secrets.OPENSEARCH_USERNAME }}
@@ -477,6 +486,10 @@ jobs:
       - name: Enable extension whitelabeling
         working-directory: new-webiny-project
         run: yarn webiny extension whitelabeling
+      - name: API bundle size limit
+        run: >-
+          echo "API bundle size limit:
+          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev
@@ -521,6 +534,9 @@ jobs:
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install Cypress binary
+        run: cd cypress-tests && yarn cypress install
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Cypress - run installation wizard test
         run: >-

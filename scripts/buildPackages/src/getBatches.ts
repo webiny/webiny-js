@@ -1,8 +1,8 @@
 import fs from "fs-extra";
-import execa from "execa";
 import path from "path";
 import chalk from "chalk";
 import { getPackages } from "../../utils/getPackages";
+import { WorkspaceGraph } from "../../utils/WorkspaceGraph.js";
 import { Package } from "./types";
 import { CACHE_FOLDER_PATH } from "./constants";
 import { getBuildOutputFolder } from "./getBuildOutputFolder";
@@ -15,6 +15,7 @@ const { green } = chalk;
 interface GetBatchesOptions {
     cache?: boolean;
     packagesWhitelist?: string[];
+    rebuildDependents?: boolean;
 }
 
 export async function getBatches(options: GetBatchesOptions = {}) {
@@ -40,6 +41,10 @@ export async function getBatches(options: GetBatchesOptions = {}) {
 
     const useCache = options.cache ?? false;
 
+    const workspaceGraph = new WorkspaceGraph({
+        ignore: ["@webiny/project-utils"]
+    });
+
     // 1. Determine for which packages we can use the cached built code, and for which we need to execute build.
     if (!useCache) {
         workspacesPackages.forEach(pkg => packagesNoCache.push(pkg));
@@ -59,6 +64,37 @@ export async function getBatches(options: GetBatchesOptions = {}) {
                 packagesUseCache.push(workspacePackage);
             } else {
                 packagesNoCache.push(workspacePackage);
+            }
+        }
+    }
+
+    // 1.5 When using cache and --rebuild-dependents, also rebuild any package that depends on a changed package.
+    if (options.rebuildDependents && packagesNoCache.length > 0 && useCache) {
+        const dependents = workspaceGraph.getDependents();
+
+        const tainted = new Set(packagesNoCache.map(p => p.packageJson.name));
+        const queue = [...tainted];
+        while (queue.length > 0) {
+            const name = queue.pop()!;
+            for (const dependent of dependents.get(name) || []) {
+                if (!tainted.has(dependent)) {
+                    tainted.add(dependent);
+                    queue.push(dependent);
+                }
+            }
+        }
+
+        for (const name of tainted) {
+            if (packagesNoCache.some(p => p.packageJson.name === name)) continue;
+            const pkg = workspacesPackages.find(p => p.packageJson.name === name);
+            if (pkg) {
+                packagesNoCache.push(pkg);
+            }
+        }
+
+        for (let i = packagesUseCache.length - 1; i >= 0; i--) {
+            if (tainted.has(packagesUseCache[i].packageJson.name)) {
+                packagesUseCache.splice(i, 1);
             }
         }
     }
@@ -96,16 +132,7 @@ export async function getBatches(options: GetBatchesOptions = {}) {
         return { batches: [], packagesNoCache, allPackages: workspacesPackages };
     }
 
-    // Building all packages - we're respecting the dependency graph.
-    // Note: lists only packages in "packages" folder (check `lerna.json` config).
-    const rawPackagesList: Record<string, string[]> = await execa("lerna", [
-        "list",
-        "--toposort",
-        "--graph",
-        "--all",
-        // We must ignore `project-utils`, because it's a dev dependency for all our packages.
-        "--ignore=@webiny/project-utils"
-    ]).then(({ stdout }) => JSON.parse(stdout));
+    const rawPackagesList = workspaceGraph.toposort();
 
     const packagesList: Record<string, string[]> = {};
 
