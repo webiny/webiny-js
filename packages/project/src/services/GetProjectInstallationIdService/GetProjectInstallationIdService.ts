@@ -1,37 +1,40 @@
 import { createImplementation } from "@webiny/di";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { GetProjectInstallationIdService } from "~/abstractions/index.js";
+import { GetCwdService, GetProjectInstallationIdService } from "~/abstractions/index.js";
 
 class DefaultGetProjectInstallationIdService implements GetProjectInstallationIdService.Interface {
-    cachedInstallationId: string | null | undefined;
+    private loaded = false;
+    private installationId: string | null = null;
+
+    constructor(private getCwdService: GetCwdService.Interface) {}
 
     execute() {
-        if (this.cachedInstallationId !== undefined) {
-            return this.cachedInstallationId;
+        if (this.loaded) {
+            return this.installationId;
         }
 
         try {
-            const path = join(process.cwd(), "package.json");
+            const path = join(this.getCwdService.execute(), "package.json");
             if (!existsSync(path)) {
-                this.cachedInstallationId = null;
                 return null;
             }
             const data = JSON.parse(readFileSync(path, "utf8"));
-            this.cachedInstallationId =
+            this.installationId =
                 typeof data?.webiny?.installationId === "string"
                     ? data.webiny.installationId
                     : null;
         } catch {
-            this.cachedInstallationId = null;
+            this.installationId = null;
         }
 
-        return this.cachedInstallationId;
+        this.loaded = true;
+        return this.installationId;
     }
 }
 
 export const getProjectInstallationIdService = createImplementation({
     abstraction: GetProjectInstallationIdService,
     implementation: DefaultGetProjectInstallationIdService,
-    dependencies: []
+    dependencies: [GetCwdService]
 });

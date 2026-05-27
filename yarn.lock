@@ -13837,7 +13837,7 @@ __metadata:
   resolution: "@webiny/telemetry@workspace:packages/telemetry"
   dependencies:
     "@webiny/global-config": "npm:0.0.0"
-    "@webiny/wts-client": "npm:^3.0.1"
+    "@webiny/wts-client": "npm:^3.0.2"
     ci-info: "npm:^4.4.0"
     jsesc: "npm:^3.1.0"
     load-json-file: "npm:^7.0.1"
@@ -14042,15 +14042,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/wts-client@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@webiny/wts-client@npm:3.0.1"
+"@webiny/wts-client@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@webiny/wts-client@npm:3.0.2"
   peerDependencies:
     react: ">=18"
   peerDependenciesMeta:
     react:
       optional: true
-  checksum: 10/bf4e433c5a8ed508d198228ff811725f5a477360ef8dfeb5b0029a544c6fb365254b2944e7b812423d5461bebc706138c2d69a6f43e62e7a2879b4b14a55e8a7
+  checksum: 10/9bbd019d51d54a99d6fa3bd1e4eb127e53a0ea5856004852099b29440b7519c1d0e3a03b103e6ffda3d5f8b83cee2e13b133e5cc82acd6b6e6604097f77133fd
   languageName: node
   linkType: hard
 
