@@ -26,14 +26,6 @@ export class RunnableBuildProcess implements IRunnableBuildProcess {
         };
     }
 
-        this.forkOptions = params.forkOptions || {
-            env: buildEnv,
-            stdio: ["pipe", "pipe", "pipe", "ipc"]
-        };
-
-        console.log('ovo su fork optsi', this.forkOptions);
-    }
-
     run() {
         const workerPath = path.resolve(import.meta.dirname, "worker.js");
 
@@ -44,10 +36,6 @@ export class RunnableBuildProcess implements IRunnableBuildProcess {
             this.forkOptions
         );
 
-        console.log('runamo')
-        console.log(workerPath,
-            [JSON.stringify({ ...buildParams, package: this.pkg })],
-            this.forkOptions)
         return new Promise<void>((resolve, reject) => {
             buildProcess.on("message", (message: Record<string, any>) => {
                 if (message.error) {
