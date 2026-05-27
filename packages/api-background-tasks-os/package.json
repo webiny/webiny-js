@@ -16,8 +16,8 @@
   "dependencies": {
     "@webiny/api-elasticsearch-tasks": "0.0.0",
     "@webiny/api-headless-cms-es-tasks": "0.0.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/tasks": "0.0.0"
+    "@webiny/background-tasks": "0.0.0",
+    "@webiny/plugins": "0.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

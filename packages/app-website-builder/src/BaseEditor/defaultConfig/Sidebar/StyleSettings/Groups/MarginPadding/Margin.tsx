@@ -88,28 +88,29 @@ export const Margin = observer(({ elementId, children }: MarginProps) => {
     const rowClassname = "flex flex-row w-full justify-center items-center";
 
     return (
-        <div className="flex flex-col rounded-md relative">
-            {/* Margin Label */}
-            <span className="absolute text-sm" style={{ top: 5, left: 7 }}>
-                Margin
-            </span>
-
+        <>
             {/* Top Margin */}
-            <div className={rowClassname} style={{ paddingTop: "8px" }}>
-                <ValueSelector
-                    label={linked ? "Margin" : "Top margin"}
-                    {...marginTop}
-                    onReset={onReset}
-                    units={heightOptions}
-                    onChange={onMarginTopChange}
-                    onChangePreview={onMarginTopPreviewChange}
-                />
+            <div className={"grid grid-cols-3 items-center"}>
+                <span className="text-sm text-neutral-strong">Margin</span>
+
+                <div className={"flex justify-center"}>
+                    <ValueSelector
+                        label={linked ? "Margin" : "Top margin"}
+                        {...marginTop}
+                        onReset={onReset}
+                        units={heightOptions}
+                        onChange={onMarginTopChange}
+                        onChangePreview={onMarginTopPreviewChange}
+                    />
+                </div>
+
+                <div className={"flex justify-end"}>
+                    <LinkedEditing linked={linked} onToggle={onToggleLinkedEditing} />
+                </div>
             </div>
 
-            <LinkedEditing linked={linked} onToggle={onToggleLinkedEditing} />
-
             {/* Middle Row (Left Margin + Padding Box + Right Margin) */}
-            <div className={rowClassname} style={{ paddingTop: "8px" }}>
+            <div className={rowClassname}>
                 <ValueSelector
                     label={"Left margin"}
                     {...marginLeft}
@@ -126,7 +127,7 @@ export const Margin = observer(({ elementId, children }: MarginProps) => {
             </div>
 
             {/* Bottom Margin */}
-            <div className={rowClassname} style={{ padding: "8px 0" }}>
+            <div className={rowClassname}>
                 <ValueSelector
                     label={"Bottom margin"}
                     {...marginBottom}
@@ -134,6 +135,6 @@ export const Margin = observer(({ elementId, children }: MarginProps) => {
                     disabled={linked}
                 />
             </div>
-        </div>
+        </>
     );
 });

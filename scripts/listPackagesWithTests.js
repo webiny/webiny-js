@@ -133,8 +133,11 @@ const CUSTOM_HANDLERS = {
     "app-trash-bin": () => {
         return ["packages/app-trash-bin"];
     },
-    tasks: () => {
-        return ["packages/tasks --storage=ddb", "packages/tasks --storage=ddb-es,ddb"];
+    "background-tasks": () => {
+        return [
+            "packages/background-tasks --storage=ddb",
+            "packages/background-tasks --storage=ddb-es,ddb"
+        ];
     },
     "api-elasticsearch-tasks": () => {
         return ["packages/api-elasticsearch-tasks --storage=ddb-es,ddb"];

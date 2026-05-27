@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { SegmentedControlPrimitive } from "./SegmentedControlPrimitive.js";
 import { Icon } from "~/Icon/index.js";
 import { ReactComponent as LockIcon } from "@webiny/icons/notifications.svg";
@@ -115,5 +115,13 @@ export const PartiallyDisabled: Story = {
             { label: "Item 4 (disabled)", value: "item4", disabled: true }
         ],
         value: "item1"
+    }
+};
+
+export const FullWidth: Story = {
+    args: {
+        items,
+        value: "item1",
+        fullWidth: true
     }
 };

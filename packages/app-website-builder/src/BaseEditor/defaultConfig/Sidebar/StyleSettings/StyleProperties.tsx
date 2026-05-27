@@ -1,7 +1,8 @@
 import React, { useCallback } from "react";
-import { Accordion } from "@webiny/admin-ui";
+import { StyleAccordion } from "./StyleAccordion.js";
 import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
 import type { DocumentElement } from "@webiny/website-builder-sdk";
+import { ElementPreview } from "~/BaseEditor/defaultConfig/Sidebar/ElementPreview.js";
 import { Background } from "./Groups/Background.js";
 import { Border } from "./Groups/Border.js";
 import { MarginPadding } from "./Groups/MarginPadding.js";
@@ -33,14 +34,21 @@ const ElementStyleProperties = ({ element }: { element: DocumentElement }) => {
     );
 
     return (
-        <Accordion>
-            {isHidden(StyleSettings.Layout) ? null : <Layout elementId={element.id} />}
-            {isHidden(StyleSettings.MarginPadding) ? null : (
-                <MarginPadding elementId={element.id} />
-            )}
-            {isHidden(StyleSettings.Border) ? null : <Border elementId={element.id} />}
-            {isHidden(StyleSettings.Background) ? null : <Background elementId={element.id} />}
-            {isHidden(StyleSettings.Visibility) ? null : <VisibilityGroup elementId={element.id} />}
-        </Accordion>
+        <>
+            <div className={"pt-md mb-md px-sm"}>
+                <ElementPreview element={element} />
+            </div>
+            <StyleAccordion>
+                {isHidden(StyleSettings.Layout) ? null : <Layout elementId={element.id} />}
+                {isHidden(StyleSettings.MarginPadding) ? null : (
+                    <MarginPadding elementId={element.id} />
+                )}
+                {isHidden(StyleSettings.Border) ? null : <Border elementId={element.id} />}
+                {isHidden(StyleSettings.Background) ? null : <Background elementId={element.id} />}
+                {isHidden(StyleSettings.Visibility) ? null : (
+                    <VisibilityGroup elementId={element.id} />
+                )}
+            </StyleAccordion>
+        </>
     );
 };

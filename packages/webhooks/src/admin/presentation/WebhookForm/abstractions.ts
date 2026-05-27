@@ -7,7 +7,6 @@ export interface IWebhookFormViewModel {
     saving: boolean;
     isNew: boolean;
     webhook: Webhook | null;
-    showDeliveries: boolean;
     permissions: {
         canEdit: boolean;
         canDelete: boolean;
@@ -20,8 +19,6 @@ export interface IWebhookFormPresenter {
     init(id: string): void;
     save(): Promise<void>;
     deleteWebhook(): Promise<void>;
-    openDeliveries(): void;
-    closeDeliveries(): void;
 }
 
 export const WebhookFormPresenter =

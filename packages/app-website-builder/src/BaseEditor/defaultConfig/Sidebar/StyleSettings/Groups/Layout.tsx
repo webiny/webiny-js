@@ -1,5 +1,7 @@
 import React from "react";
-import { Accordion, Grid } from "@webiny/admin-ui";
+import { Grid } from "@webiny/admin-ui";
+import { ReactComponent as LayoutIcon } from "@webiny/icons/auto_awesome_mosaic.svg";
+import { StyleAccordion } from "../StyleAccordion.js";
 import { Alignment } from "./Layout/Alignment.js";
 import { LengthWithUnitInput } from "./Layout/LengthWithUnitInput.js";
 import { UnitsOptions } from "../UnitsOptions.js";
@@ -13,8 +15,8 @@ const heightOptions = UnitsOptions.heightUnits().add("auto").getOptions();
 
 export const Layout = ({ elementId }: LayoutProps) => {
     return (
-        <Accordion.Item title={"Layout"} description={"Set alignment, width, and height"}>
-            <Grid>
+        <StyleAccordion.Item title={"Layout"} icon={<LayoutIcon />}>
+            <Grid gap={"small"}>
                 <Grid.Column span={12}>
                     <Alignment elementId={elementId} />
                 </Grid.Column>
@@ -55,6 +57,6 @@ export const Layout = ({ elementId }: LayoutProps) => {
                     />
                 </Grid.Column>
             </Grid>
-        </Accordion.Item>
+        </StyleAccordion.Item>
     );
 };

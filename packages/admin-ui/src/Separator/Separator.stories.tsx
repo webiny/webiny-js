@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { Separator } from "./Separator.js";
 import React from "react";
 import { Heading } from "~/Heading/index.js";

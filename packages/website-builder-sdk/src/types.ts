@@ -100,6 +100,7 @@ export type ComponentGroup = {
     name: string;
     label: string;
     description?: string;
+    icon?: string;
     filter?: (component: ComponentManifest, context: ComponentGroupFilterContext) => boolean;
 };
 

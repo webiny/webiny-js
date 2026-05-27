@@ -20,7 +20,8 @@ const DecoratableMenuLink = makeDecoratable("MenuLink", MenuLinkBase);
 
 const MenuLink = Object.assign(DecoratableMenuLink, {
     Action: Sidebar.Link.Action,
-    Icon: Sidebar.Link.Icon
+    Icon: Sidebar.Link.Icon,
+    Badge: Sidebar.Link.Badge
 });
 
 export { MenuLink };

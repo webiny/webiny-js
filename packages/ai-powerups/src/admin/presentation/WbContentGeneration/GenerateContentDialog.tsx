@@ -11,6 +11,12 @@ import { GenerateContentFeature } from "./feature.js";
 import { decompressGzipBase64 } from "./decompressGzipBase64.js";
 import type { CreateElementParams } from "./abstractions.js";
 
+function formatElapsed(totalSeconds: number): string {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
 export const GENERATE_CONTENT_DIALOG = "generate-content";
 
 export const WS_ACTION_CONTENT = "aiPowerUps.generatePageContent.content";
@@ -43,8 +49,10 @@ export const GenerateContentDialog = observer(() => {
     const { createElement } = useCreateElement();
 
     const createElements = useCallback(
-        (elements: CreateElementParams[]) => {
-            elements.forEach(el => createElement(el));
+        async (elements: CreateElementParams[]) => {
+            for (const el of elements) {
+                await createElement(el);
+            }
         },
         [createElement]
     );
@@ -73,7 +81,17 @@ export const GenerateContentDialog = observer(() => {
             WS_ACTION_CONTENT,
             async message => {
                 const responseText = await decompressGzipBase64(message.data.value);
-                await presenter.processAiResponse(responseText);
+                try {
+                    await presenter.processAiResponse(responseText);
+                } catch (e) {
+                    console.error("Failed to process AI response", { responseText });
+                    console.error(e);
+                    toast.showWarningToast({
+                        title: "Failed to process AI response",
+                        description: "Open the console for more details."
+                    });
+                    presenter.cancelPrompt();
+                }
             }
         );
 
@@ -132,7 +150,20 @@ export const GenerateContentDialog = observer(() => {
             }
         >
             {vm.loading ? <OverlayLoader text={"Loading..."} /> : null}
-            {vm.submitting ? <OverlayLoader text={"Generating content..."} /> : null}
+            {vm.submitting ? (
+                <OverlayLoader
+                    className={"bg-neutral-base/90"}
+                    text={
+                        <>
+                            <div>Generating content... {formatElapsed(vm.elapsedSeconds)}</div>
+                            <div className="text-sm text-neutral-muted pt-xs">
+                                Content generation can take a few minutes, depending on the model
+                                you&apos;re using.
+                            </div>
+                        </>
+                    }
+                />
+            ) : null}
             {vm.processing ? <OverlayLoader text={"Processing content..."} /> : null}
             {vm.form ? <FormView name="GenerateContent" form={vm.form} /> : null}
         </Dialog>

@@ -1,5 +1,5 @@
 import React from "react";
-import type { Preview } from "@storybook/react-webpack5";
+import type { Preview } from "@storybook/react";
 import { AdminUiProvider } from "../src/AdminUiProvider/AdminUiProvider.js";
 
 import "../src/theme.css";

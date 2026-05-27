@@ -6,7 +6,7 @@ import { SettingsPersistenceError } from "~/domain/errors.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { MAILER_TRANSPORT_SETTINGS } from "~/constants.js";
 
-const DEFAULT_PORT = 25;
+const DEFAULT_PORT = 587;
 
 class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
     constructor(
@@ -31,9 +31,12 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
         const encryptedPassword = await this.encryption.encrypt(passwordToStore);
 
         // Prepare data
+        const port = input.port ?? transportSettings.port ?? DEFAULT_PORT;
+
         const data = {
             host: input.host ?? transportSettings.host,
-            port: input.port ?? transportSettings.port ?? DEFAULT_PORT,
+            port,
+            secure: input.secure ?? transportSettings.secure ?? port === 465,
             user: input.user ?? transportSettings.user,
             password: encryptedPassword,
             from: input.from ?? transportSettings.from,

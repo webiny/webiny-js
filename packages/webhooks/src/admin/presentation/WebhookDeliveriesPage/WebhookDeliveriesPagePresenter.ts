@@ -7,7 +7,8 @@ import {
 } from "~/admin/features/listWebhookDeliveries/abstractions.js";
 import { ResendWebhookDeliveryUseCase } from "~/admin/features/resendWebhookDelivery/abstractions.js";
 import { ListAvailableEventsUseCase } from "~/admin/features/listAvailableEvents/abstractions.js";
-import { WebhookDeliveriesDataSource } from "~/admin/presentation/WebhookDeliveries/WebhookDeliveriesDataSource.js";
+import { ListWebhooksUseCase } from "~/admin/features/ListWebhooks/abstractions.js";
+import { WebhookDeliveriesDataSource } from "./WebhookDeliveriesDataSource.js";
 import {
     WebhookDeliveriesPagePresenter as Abstraction,
     type IWebhookDeliveriesPagePresenter,
@@ -18,7 +19,9 @@ import {
 
 class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresenter {
     private _availableEvents: WebhookEvent[] = [];
+    private _availableWebhooks: IDeliveryFilterOption[] = [];
     private _filters: IDeliveryPageFilters = {
+        webhookId: null,
         app: null,
         entity: null,
         eventName: null,
@@ -33,13 +36,15 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
         private readonly listPresenter: ListPresenter.Interface<WebhookDelivery>,
         private readonly listDeliveriesUseCase: ListWebhookDeliveriesUseCase.Interface,
         private readonly listAvailableEventsUseCase: ListAvailableEventsUseCase.Interface,
-        private readonly resendDeliveryUseCase: ResendWebhookDeliveryUseCase.Interface
+        private readonly resendDeliveryUseCase: ResendWebhookDeliveryUseCase.Interface,
+        private readonly listWebhooksUseCase: ListWebhooksUseCase.Interface
     ) {
         makeAutoObservable(this, { vm: computed });
     }
 
     get vm(): IWebhookDeliveriesPageViewModel {
         return {
+            availableWebhooks: this._availableWebhooks,
             availableApps: this._computeAvailableApps(),
             availableEntities: this._computeAvailableEntities(),
             availableEventNames: this._computeAvailableEventNames(),
@@ -52,19 +57,29 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
         };
     }
 
-    public async init(): Promise<void> {
+    public async init(webhookId?: string): Promise<void> {
         runInAction(() => {
             this._loading = true;
             this._error = null;
+            if (webhookId) {
+                this._filters = { ...this._filters, webhookId };
+            }
         });
         try {
-            const events = await this.listAvailableEventsUseCase.execute();
+            const [events, webhooksResult] = await Promise.all([
+                this.listAvailableEventsUseCase.execute(),
+                this.listWebhooksUseCase.execute({ limit: 1000 })
+            ]);
             runInAction(() => {
                 this._availableEvents = events;
+                this._availableWebhooks = webhooksResult.items.map(w => ({
+                    value: w.id,
+                    label: w.name
+                }));
             });
         } catch (err) {
             runInAction(() => {
-                this._error = err instanceof Error ? err.message : "Failed to load events.";
+                this._error = err instanceof Error ? err.message : "Failed to load data.";
             });
         } finally {
             runInAction(() => {
@@ -76,8 +91,14 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
         });
     }
 
+    public setWebhookFilter(webhookId: string | null): void {
+        this._filters = { ...this._filters, webhookId };
+        this._expandedDeliveryId = null;
+        this._applyFilters();
+    }
+
     public setAppFilter(app: string | null): void {
-        this._filters = { app, entity: null, eventName: null, status: this._filters.status };
+        this._filters = { ...this._filters, app, entity: null, eventName: null };
         this._expandedDeliveryId = null;
         this._applyFilters();
     }
@@ -134,6 +155,11 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
 
     private _buildWhere(): ListWebhookDeliveriesWhere {
         const where: ListWebhookDeliveriesWhere = {};
+
+        if (this._filters.webhookId) {
+            where.webhookId_eq = this._filters.webhookId;
+        }
+
         const { app, entity, eventName } = this._filters;
 
         if (app || entity || eventName) {
@@ -212,6 +238,7 @@ export const WebhookDeliveriesPagePresenter = Abstraction.createImplementation({
         ListPresenter,
         ListWebhookDeliveriesUseCase,
         ListAvailableEventsUseCase,
-        ResendWebhookDeliveryUseCase
+        ResendWebhookDeliveryUseCase,
+        ListWebhooksUseCase
     ]
 });

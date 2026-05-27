@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { RadioGroupPrimitive } from "./RadioGroupPrimitive.js";
 import { Text } from "~/Text/index.js";
 import { Button } from "~/Button/index.js";

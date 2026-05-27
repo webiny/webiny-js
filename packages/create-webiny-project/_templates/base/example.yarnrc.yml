@@ -1,0 +1,15 @@
+approvedGitRepositories:
+  - "https://github.com/webiny/webiny-upgrades-v6"
+
+compressionLevel: mixed
+
+enableScripts: false
+
+nodeLinker: node-modules
+
+npmMinimalAgeGate: 3d
+npmPreapprovedPackages:
+  - "@webiny/*"
+  - "wts-client"
+
+yarnPath: .yarn/releases/yarn-4.14.1.cjs
