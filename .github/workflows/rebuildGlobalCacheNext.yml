@@ -57,6 +57,13 @@ jobs:
           retention-days: 1
           include-hidden-files: true
           path: next/.webiny/cached-packages
+      - name: Upload yarn cache artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: yarn-cache
+          retention-days: 1
+          include-hidden-files: true
+          path: next/.yarn/cache
       - name: Upload packages artifact
         uses: actions/upload-artifact@v6
         with:

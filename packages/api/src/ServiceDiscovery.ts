@@ -24,6 +24,7 @@ class ServiceManifestLoader {
 
         const manifests = await this.loadManifests();
 
+        console.log("dobio manifests::", manifests);
         if (!manifests) {
             return undefined;
         }

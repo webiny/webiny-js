@@ -47,6 +47,16 @@ const createRebuildGlobalCacheWorkflow = (branchName: string) => ({
                               }
                           },
                           {
+                              name: "Upload yarn cache artifact",
+                              uses: "actions/upload-artifact@v6",
+                              with: {
+                                  name: "yarn-cache",
+                                  "retention-days": 1,
+                                  "include-hidden-files": true,
+                                  path: `${branchName}/.yarn/cache`
+                              }
+                          },
+                          {
                               name: "Upload packages artifact",
                               uses: "actions/upload-artifact@v6",
                               with: {
