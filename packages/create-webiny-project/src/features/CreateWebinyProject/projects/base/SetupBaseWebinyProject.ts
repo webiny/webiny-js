@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import fs from "fs-extra";
 import path from "path";
 import { GetProjectRootPath } from "../../../../services/GetProjectRootPath.js";
@@ -44,5 +45,13 @@ export class SetupBaseWebinyProject {
                 }
             );
         }
+
+        // Anonymous per-project identifier used by telemetry to group CLI/admin
+        // events at the install level. Tracked in git (not in .webiny/) so it
+        // stays stable across machines collaborating on the same project.
+        const pkgPath = path.join(projectRootFolderPath, "package.json");
+        const pkg = fs.readJsonSync(pkgPath);
+        pkg.webiny = { ...pkg.webiny, installationId: randomUUID() };
+        fs.writeJsonSync(pkgPath, pkg, { spaces: 2 });
     }
 }

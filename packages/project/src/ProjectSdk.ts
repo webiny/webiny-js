@@ -12,6 +12,7 @@ import {
     GetProductionEnvironments,
     GetProject,
     GetProjectIdService,
+    GetProjectInstallationIdService,
     SetProjectIdService,
     GetProjectConfig,
     GetProjectInfo,
@@ -94,6 +95,9 @@ export class ProjectSdk {
     }
     getProjectVersion() {
         return this.container.resolve(GetProjectVersionService).execute();
+    }
+    getProjectInstallationId() {
+        return this.container.resolve(GetProjectInstallationIdService).execute();
     }
 
     getProjectInfo() {

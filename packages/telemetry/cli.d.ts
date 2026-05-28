@@ -1,6 +1,5 @@
 export declare interface SendEventParams {
     event: string;
-    user?: string;
     version?: string;
     properties: Record<string, any>;
 }

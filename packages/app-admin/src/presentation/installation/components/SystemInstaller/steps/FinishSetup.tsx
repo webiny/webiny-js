@@ -6,6 +6,8 @@ import type {
     ErrorObject,
     ISystemInstallerPresenter
 } from "~/presentation/installation/presenters/SystemInstaller/abstractions.js";
+import { handleStartUsing } from "./FinishSetup/handleStartUsing.js";
+import { handleRestartInstallation } from "./FinishSetup/handleRestartInstallation.js";
 
 interface StepProps {
     error?: ErrorObject;
@@ -44,9 +46,7 @@ export const FinishSetupStep = ({
                                     variant={"secondary"}
                                     size={"lg"}
                                     text={"Restart installation"}
-                                    onClick={() => {
-                                        window.location.reload();
-                                    }}
+                                    onClick={handleRestartInstallation}
                                 />
                             </Grid.Column>
                         ) : (
@@ -74,7 +74,7 @@ export const FinishSetupStep = ({
                                     variant={"primary"}
                                     size={"lg"}
                                     text={"Start using Webiny"}
-                                    onClick={finishInstallation}
+                                    onClick={() => handleStartUsing(finishInstallation)}
                                 />
                             </Grid.Column>
                         ) : (
