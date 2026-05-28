@@ -11,30 +11,23 @@ const INSTALL_FINISH_URL =
  * be aliased to the deployer's machine_id. Falls through to the local
  * `finishInstallation` flow otherwise.
  */
-export const handleStartUsing = (
-    finishInstallation: ISystemInstallerPresenter["finishInstallation"]
-) => {
-    if (typeof window === "undefined") {
-        finishInstallation();
-        return;
-    }
-
+const buildInstallFinishHref = (): string | null => {
     if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") {
-        finishInstallation();
-        return;
+        return null;
     }
 
+    if (typeof window === "undefined") {
+        return null;
+    }
     const isCloudFrontHost = window.location.hostname.endsWith(".cloudfront.net");
     const allowAlternate = Boolean(process.env.REACT_APP_WEBINY_INSTALL_FINISH_URL);
     if (!isCloudFrontHost && !allowAlternate) {
-        finishInstallation();
-        return;
+        return null;
     }
 
     const machineId = getMachineId();
     if (!machineId) {
-        finishInstallation();
-        return;
+        return null;
     }
 
     const currentUrl = window.location.origin + window.location.pathname;
@@ -42,5 +35,18 @@ export const handleStartUsing = (
         machine_id: machineId,
         return_to: currentUrl
     });
-    window.location.assign(`${INSTALL_FINISH_URL}?${params.toString()}`);
+    return `${INSTALL_FINISH_URL}?${params.toString()}`;
+};
+
+export const handleStartUsing = (
+    finishInstallation: ISystemInstallerPresenter["finishInstallation"]
+) => {
+    if (typeof window !== "undefined") {
+        const handoff = buildInstallFinishHref();
+        if (handoff) {
+            window.location.assign(handoff);
+            return;
+        }
+    }
+    finishInstallation();
 };
