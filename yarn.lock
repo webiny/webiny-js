@@ -13837,11 +13837,11 @@ __metadata:
   resolution: "@webiny/telemetry@workspace:packages/telemetry"
   dependencies:
     "@webiny/global-config": "npm:0.0.0"
+    "@webiny/wts-client": "npm:^3.0.2"
     ci-info: "npm:^4.4.0"
     jsesc: "npm:^3.1.0"
     load-json-file: "npm:^7.0.1"
     strip-ansi: "npm:^7.2.0"
-    wts-client: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
 
@@ -14041,6 +14041,18 @@ __metadata:
     vitest: "npm:^4.1.7"
   languageName: unknown
   linkType: soft
+
+"@webiny/wts-client@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@webiny/wts-client@npm:3.0.2"
+  peerDependencies:
+    react: ">=18"
+  peerDependenciesMeta:
+    react:
+      optional: true
+  checksum: 10/9bbd019d51d54a99d6fa3bd1e4eb127e53a0ea5856004852099b29440b7519c1d0e3a03b103e6ffda3d5f8b83cee2e13b133e5cc82acd6b6e6604097f77133fd
+  languageName: node
+  linkType: hard
 
 "@whatwg-node/promise-helpers@npm:^1.0.0":
   version: 1.3.2
@@ -28382,16 +28394,6 @@ __metadata:
     is-wsl: "npm:^3.1.0"
     powershell-utils: "npm:^0.1.0"
   checksum: 10/46800b92fa4974f2a846a93f0b8c409a455c35897d001a7599b5524766b603c8fb0945d2b21ad6ad27d4b0ae7e72ca2e58d832ccfcaabf659399921c6448b1d0
-  languageName: node
-  linkType: hard
-
-"wts-client@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "wts-client@npm:2.0.0"
-  dependencies:
-    btoa: "npm:^1.2.1"
-    js-cookie: "npm:^2.2.1"
-  checksum: 10/f6be5fa9df130469eddac303eb33af0e7271bb54af7944a538eafafc363cc77ccadd094c52e952926021a705e07f5b3ba9af51c15d19c30173bf4bff60cce728
   languageName: node
   linkType: hard
 

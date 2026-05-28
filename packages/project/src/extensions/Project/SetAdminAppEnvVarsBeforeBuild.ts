@@ -1,6 +1,7 @@
 import {
     AdminBeforeBuild,
     GetProjectIdService,
+    GetProjectInstallationIdService,
     GetProjectVersionService,
     IsTelemetryEnabled
 } from "~/abstractions/index.js";
@@ -11,6 +12,7 @@ class SetAdminAppEnvVarsBeforeBuildImpl implements AdminBeforeBuild.Interface {
     constructor(
         private isTelemetryEnabled: IsTelemetryEnabled.Interface,
         private getProjectIdService: GetProjectIdService.Interface,
+        private getProjectInstallationIdService: GetProjectInstallationIdService.Interface,
         private getProjectVersionService: GetProjectVersionService.Interface
     ) {}
 
@@ -23,6 +25,13 @@ class SetAdminAppEnvVarsBeforeBuildImpl implements AdminBeforeBuild.Interface {
         if (projectId) {
             process.env.REACT_APP_WEBINY_PROJECT_ID = projectId;
             process.env.REACT_APP_WCP_PROJECT_ID = projectId;
+        }
+
+        if (!("REACT_APP_WEBINY_INSTALLATION_ID" in process.env)) {
+            const installationId = this.getProjectInstallationIdService.execute();
+            if (installationId) {
+                process.env.REACT_APP_WEBINY_INSTALLATION_ID = installationId;
+            }
         }
 
         if (!("REACT_APP_WEBINY_TELEMETRY" in process.env)) {
@@ -54,5 +63,10 @@ class SetAdminAppEnvVarsBeforeBuildImpl implements AdminBeforeBuild.Interface {
 
 export const SetAdminAppEnvVarsBeforeBuild = AdminBeforeBuild.createImplementation({
     implementation: SetAdminAppEnvVarsBeforeBuildImpl,
-    dependencies: [IsTelemetryEnabled, GetProjectIdService, GetProjectVersionService]
+    dependencies: [
+        IsTelemetryEnabled,
+        GetProjectIdService,
+        GetProjectInstallationIdService,
+        GetProjectVersionService
+    ]
 });
