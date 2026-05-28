@@ -6,6 +6,7 @@ const STORAGE_PROJECT_ID = "wts_project_id";
 
 let wtsInstance = null;
 let projectId = null;
+let distinctId = null;
 
 /**
  * Resolves the WTS client identity for the admin app.
@@ -30,7 +31,7 @@ const initWts = () => {
         return wtsInstance;
     }
 
-    let distinctId = process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID;
+    distinctId = process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID;
     projectId = process.env.REACT_APP_WEBINY_INSTALLATION_ID || null;
 
     if (typeof window !== "undefined") {
@@ -79,17 +80,7 @@ const initWts = () => {
  */
 export const getMachineId = () => {
     initWts();
-    if (typeof window !== "undefined") {
-        try {
-            const stored = window.localStorage.getItem(STORAGE_MACHINE_ID);
-            if (stored) {
-                return stored;
-            }
-        } catch {
-            // ignore
-        }
-    }
-    return process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID || null;
+    return distinctId || null;
 };
 
 export const sendEvent = async (event, properties = {}) => {
