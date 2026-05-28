@@ -18,7 +18,7 @@ const INSTALL_FINISH_URL =
  * be aliased to the deployer's machine_id. Falls through to the local
  * `finishInstallation` flow otherwise.
  */
-const buildInstallFinishHref = (currentUrl: string): string | null => {
+const buildInstallFinishHref = (): string | null => {
     if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") {
         return null;
     }
@@ -37,11 +37,27 @@ const buildInstallFinishHref = (currentUrl: string): string | null => {
         return null;
     }
 
+    const currentUrl = window.location.origin + window.location.pathname;
     const params = new URLSearchParams({
         machine_id: machineId,
         return_to: currentUrl
     });
     return `${INSTALL_FINISH_URL}?${params.toString()}`;
+};
+
+const handleRestartInstallation = () => {
+    window.location.reload();
+};
+
+const handleStartUsing = (finishInstallation: ISystemInstallerPresenter["finishInstallation"]) => {
+    if (typeof window !== "undefined") {
+        const handoff = buildInstallFinishHref();
+        if (handoff) {
+            window.location.assign(handoff);
+            return;
+        }
+    }
+    finishInstallation();
 };
 
 interface StepProps {
@@ -63,19 +79,6 @@ export const FinishSetupStep = ({
         installSystem();
     }, []);
 
-    const handleStartUsing = () => {
-        if (typeof window !== "undefined") {
-            const handoff = buildInstallFinishHref(
-                window.location.origin + window.location.pathname
-            );
-            if (handoff) {
-                window.location.assign(handoff);
-                return;
-            }
-        }
-        finishInstallation();
-    };
-
     const subtitle = isInstalled
         ? "Setup complete! Everything went smooth as a breeze!"
         : "We're finalizing installation of Webiny...please wait.";
@@ -94,9 +97,7 @@ export const FinishSetupStep = ({
                                     variant={"secondary"}
                                     size={"lg"}
                                     text={"Restart installation"}
-                                    onClick={() => {
-                                        window.location.reload();
-                                    }}
+                                    onClick={handleRestartInstallation}
                                 />
                             </Grid.Column>
                         ) : (
@@ -124,7 +125,7 @@ export const FinishSetupStep = ({
                                     variant={"primary"}
                                     size={"lg"}
                                     text={"Start using Webiny"}
-                                    onClick={handleStartUsing}
+                                    onClick={() => handleStartUsing(finishInstallation)}
                                 />
                             </Grid.Column>
                         ) : (
