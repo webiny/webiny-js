@@ -1,9 +1,18 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature, useRoute } from "@webiny/app";
-import { FormErrors, useRouter, useFieldRenderers } from "@webiny/app-admin";
-import { Button, Heading, OverlayLoader, Separator } from "@webiny/admin-ui";
-import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
+import {
+    FormErrors,
+    useRouter,
+    useFieldRenderers,
+    SimpleForm,
+    SimpleFormHeader,
+    SimpleFormContent,
+    SimpleFormFooter,
+    FormView
+} from "@webiny/app-admin";
+import { Button, OverlayLoader } from "@webiny/admin-ui";
+import { useToast } from "@webiny/admin-ui";
 import { WebhookFormPresenterFeature } from "../feature.js";
 import { GetWebhookFeature } from "~/admin/features/getWebhook/feature.js";
 import { CreateWebhookFeature } from "~/admin/features/createWebhook/feature.js";
@@ -16,13 +25,14 @@ import { SigningSecret } from "./SigningSecret.js";
 import { HasPermission } from "~/admin/presentation/security/HasPermission.js";
 
 const SectionHeading = ({ field }: { field: any }) => {
-    return <Heading level={6}>{String(field.label ?? "")}</Heading>;
+    return <span className="text-md font-semibold">{String(field.label ?? "")}</span>;
 };
 
 const WebhookFormViewInner = observer(function WebhookFormViewInner() {
     const { presenter } = useFeature(WebhookFormPresenterFeature);
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.Form);
+    const toast = useToast();
     const id = route.params.id;
     const defaultRenderers = useFieldRenderers();
 
@@ -37,51 +47,42 @@ const WebhookFormViewInner = observer(function WebhookFormViewInner() {
         void presenter.init(id);
     }, [presenter, id]);
 
+    const saveForm = useCallback(async () => {
+        const res = await presenter.save();
+        if (res) {
+            toast.showSuccessToast({ title: "Webhook saved successfully!" });
+        }
+    }, [presenter]);
+
     const { vm } = presenter;
 
-    if (vm.loading) {
-        return <OverlayLoader />;
-    }
-
     return (
-        <div className="flex flex-col h-main-content">
-            <div className="flex items-center justify-between py-sm px-md">
-                <Heading level={5}>
-                    {vm.isNew ? "Create Webhook" : (vm.webhook?.name ?? "Edit Webhook")}
-                </Heading>
-                <div className="flex gap-sm">
-                    {!vm.isNew && vm.webhook ? (
-                        <Button
-                            variant="secondary"
-                            onClick={() =>
-                                goToRoute(Routes.Deliveries, { webhookId: vm.webhook!.id })
-                            }
-                        >
-                            Deliveries
-                        </Button>
-                    ) : null}
-                    <Button variant="secondary" onClick={() => goToRoute(Routes.List)}>
-                        Cancel
-                    </Button>
-                    <HasPermission entity="webhook" action="edit">
-                        <Button
-                            variant="primary"
-                            onClick={() => void presenter.save()}
-                            disabled={vm.saving}
-                        >
-                            {vm.saving ? "Saving..." : "Save"}
-                        </Button>
-                    </HasPermission>
+        <SimpleForm>
+            {vm.loading ? <OverlayLoader text={"Loading..."} /> : null}
+            {vm.saving ? <OverlayLoader text={"Saving..."} /> : null}
+            {vm.form.errors.length > 0 ? (
+                <div className={"mb-lg"}>
+                    <FormErrors form={vm.form} />
                 </div>
-            </div>
-            <Separator />
-
-            <div className="p-lg">
-                <FormErrors form={vm.form} />
+            ) : null}
+            <SimpleFormHeader
+                title={vm.isNew ? "Create Webhook" : (vm.webhook?.name ?? "Edit Webhook")}
+            />
+            <SimpleFormContent>
                 <FormView name="Webhook" form={vm.form} renderers={renderers} />
                 <SigningSecret presenter={presenter} />
-            </div>
-        </div>
+            </SimpleFormContent>
+            <SimpleFormFooter className={"border-t-sm border-t-neutral-dimmed pt-lg"}>
+                <Button variant="secondary" onClick={() => goToRoute(Routes.List)}>
+                    Cancel
+                </Button>
+                <HasPermission entity="webhook" action="edit">
+                    <Button variant="primary" onClick={saveForm} disabled={vm.saving}>
+                        {vm.saving ? "Saving..." : "Save"}
+                    </Button>
+                </HasPermission>
+            </SimpleFormFooter>
+        </SimpleForm>
     );
 });
 

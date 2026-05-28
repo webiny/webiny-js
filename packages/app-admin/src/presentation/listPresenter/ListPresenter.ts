@@ -24,6 +24,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     private _requeryScheduled = false;
     private _limit: number | undefined = undefined;
     private _initialized = false;
+    private _loadingMore = false;
 
     constructor() {
         this._selection = new SelectionController<TRow>(
@@ -52,8 +53,8 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             appliedQuery: this._appliedQuery,
             pagination: {
                 hasMore: meta.hasMoreItems,
-                loading,
-                loadingMore: false,
+                loading: loading && !this._loadingMore,
+                loadingMore: this._loadingMore,
                 totalCount: meta.totalCount,
                 currentCount: rows.length
             },
@@ -133,6 +134,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             if (!meta.hasMoreItems || this._dataSource.loading) {
                 return;
             }
+            this._loadingMore = true;
             try {
                 await this._dataSource.loadMore(this.buildQuery(meta.cursor));
                 runInAction(() => {
@@ -141,6 +143,10 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             } catch (err) {
                 runInAction(() => {
                     this._error = this.toListError(err);
+                });
+            } finally {
+                runInAction(() => {
+                    this._loadingMore = false;
                 });
             }
         },

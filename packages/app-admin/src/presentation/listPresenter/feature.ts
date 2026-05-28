@@ -5,7 +5,7 @@ import { ListPresenter } from "./ListPresenter.js";
 export const ListPresenterFeature = createFeature({
     name: "ListPresenter",
     register(container) {
-        container.register(ListPresenter).inSingletonScope();
+        container.register(ListPresenter);
     },
     resolve(container) {
         return {

@@ -8,7 +8,6 @@ import { TaskExecutionsView } from "./presentation/TaskExecutions/components/Tas
 import { BackgroundTaskSettingsView } from "./presentation/BackgroundTaskSettings/components/BackgroundTaskSettingsView.js";
 import { Routes } from "./routes.js";
 import { ReactComponent as TaskIcon } from "@webiny/icons/task.svg";
-import { ReactComponent as ListIcon } from "@webiny/icons/list.svg";
 
 const { Menu, Route } = AdminConfig;
 
@@ -35,28 +34,19 @@ export const BackgroundTaskRoutes = () => {
                     }
                 />
                 <Menu
-                    name="backgroundTasks.definitions"
-                    parent="dev-tools"
-                    element={
-                        <Menu.Link
-                            text="Task Definitions"
-                            badge={<Menu.Link.Badge text="BETA" />}
-                            to={getLink(Routes.Definitions)}
-                            icon={
-                                <Menu.Link.Icon label="Task Definitions" element={<ListIcon />} />
-                            }
-                        />
-                    }
-                />
-                <Menu
                     name="backgroundTasks.executions"
                     parent="dev-tools"
                     element={
                         <Menu.Link
-                            text="Task Executions"
+                            text="Background Tasks"
                             badge={<Menu.Link.Badge text="BETA" />}
                             to={getLink(Routes.Executions)}
-                            icon={<Menu.Link.Icon label="Task Executions" element={<TaskIcon />} />}
+                            icon={
+                                <Menu.Link.Icon
+                                    label="Background Task Executions"
+                                    element={<TaskIcon />}
+                                />
+                            }
                         />
                     }
                 />
