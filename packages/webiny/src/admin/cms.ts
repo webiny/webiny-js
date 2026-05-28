@@ -29,4 +29,4 @@ export type {
     CmsModelField,
     CmsModelLayoutField,
     CmsIdentity
-} from "@webiny/app-headless-cms-common/types/index.ts";
+} from "@webiny/app-headless-cms-common/types/index.js";

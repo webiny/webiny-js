@@ -1,6 +1,6 @@
 import React from "react";
 import * as lexical from "lexical";
-import { useRichTextEditor } from "webiny/admin/lexical";
+import { useRichTextEditor } from "webiny/admin/ui/lexical";
 import * as CmsLexical from "webiny/admin/cms/lexical";
 import * as WbLexical from "webiny/admin/website-builder/lexical";
 
@@ -89,22 +89,22 @@ const InsertEmojiButton = () => {
 export default () => {
     return (
         <>
-            <WbLexical.ExpandedEditorConfig>
-                <WbLexical.ExpandedEditorConfig.ToolbarAction
+            <WbLexical.LexicalEditorConfig.Expanded>
+                <WbLexical.LexicalEditorConfig.Expanded.ToolbarAction
                     name="insertEmoji"
                     element={<InsertEmojiButton />}
                     after="link"
                 />
-                <WbLexical.ExpandedEditorConfig.Plugin
+                <WbLexical.LexicalEditorConfig.Expanded.Plugin
                     name="emojiPlugin"
                     element={<EmojiPlugin />}
                 />
-                <WbLexical.ExpandedEditorConfig.Node name={"emojiNode"} node={EmojiNode} />
-            </WbLexical.ExpandedEditorConfig>
+                <WbLexical.LexicalEditorConfig.Expanded.Node name={"emojiNode"} node={EmojiNode} />
+            </WbLexical.LexicalEditorConfig.Expanded>
 
-            <WbLexical.CompactEditorConfig>
-                <WbLexical.CompactEditorConfig.Node name={"emojiNode"} node={EmojiNode} />
-            </WbLexical.CompactEditorConfig>
+            <WbLexical.LexicalEditorConfig.Compact>
+                <WbLexical.LexicalEditorConfig.Compact.Node name={"emojiNode"} node={EmojiNode} />
+            </WbLexical.LexicalEditorConfig.Compact>
 
             <CmsLexical.LexicalEditorConfig>
                 <CmsLexical.LexicalEditorConfig.ToolbarAction

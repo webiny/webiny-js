@@ -74,30 +74,30 @@ export const Padding = observer(({ elementId }: PaddingProps) => {
         }
     };
 
-    const rowClassname = "flex flex-row w-full justify-center items-center py-xs";
+    const rowClassname = "flex flex-row w-full justify-center items-center";
 
     return (
-        <div className="flex flex-col items-center bg-neutral-muted border-sm border-neutral-muted relative rounded-md">
-            <span className="absolute text-sm" style={{ top: 3, left: 5 }}>
-                Padding
-            </span>
-
-            <LinkedEditing linked={linked} onToggle={onToggleLinkedEditing} />
-
+        <div className="flex flex-col items-center bg-neutral-disabled relative rounded-lg p-sm">
             {/* Top Padding */}
-            <div className={rowClassname} style={{ paddingTop: "8px" }}>
-                <ValueSelector
-                    label={"Top padding"}
-                    {...paddingTop}
-                    onReset={onReset}
-                    units={heightOptions}
-                    onChange={onPaddingTopChange}
-                    onChangePreview={onPaddingTopPreviewChange}
-                />
+            <div className={"grid grid-cols-3 items-center w-full"}>
+                <span className="text-sm text-neutral-strong">Padding</span>
+                <div className={"flex justify-center"}>
+                    <ValueSelector
+                        label={"Top padding"}
+                        {...paddingTop}
+                        onReset={onReset}
+                        units={heightOptions}
+                        onChange={onPaddingTopChange}
+                        onChangePreview={onPaddingTopPreviewChange}
+                    />
+                </div>
+                <div className={"flex justify-end"}>
+                    <LinkedEditing linked={linked} onToggle={onToggleLinkedEditing} />
+                </div>
             </div>
 
             {/* Center Row (Left Padding + Content + Right Padding) */}
-            <div className={rowClassname} style={{ width: 168, paddingTop: "8px" }}>
+            <div className={rowClassname} style={{ width: 168, paddingTop: "16px" }}>
                 <ValueSelector
                     label={"Left padding"}
                     {...paddingLeft}

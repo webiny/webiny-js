@@ -14,8 +14,8 @@
   "author": "Webiny LTD",
   "license": "MIT",
   "dependencies": {
-    "@webiny/plugins": "0.0.0",
-    "@webiny/tasks": "0.0.0"
+    "@webiny/background-tasks": "0.0.0",
+    "@webiny/plugins": "0.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
@@ -23,7 +23,9 @@
     "typescript": "6.0.3"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

@@ -77,6 +77,9 @@ export { DynamicFieldset } from "~/DynamicFieldset/index.js";
 // FilePicker
 export { FilePicker } from "~/FilePicker/index.js";
 
+// FillViewport
+export { FillViewportHeight, FillViewportWidth, FillViewport } from "~/FillViewport/index.js";
+
 // Grid
 export { Grid } from "~/Grid/index.js";
 

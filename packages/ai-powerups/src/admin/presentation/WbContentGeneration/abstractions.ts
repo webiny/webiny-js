@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
+import type { IFormVM } from "@webiny/app-admin/features/formModel/abstractions.js";
 
 export type CreateElementParams = {
     componentName: string;
@@ -8,18 +9,20 @@ export type CreateElementParams = {
     bindings?: { inputs?: Record<string, unknown> };
 };
 
-export type CreateElementsFn = (elements: CreateElementParams[]) => void;
+export type CreateElementsFn = (elements: CreateElementParams[]) => void | Promise<void>;
 
 export interface IGenerateContentVm {
-    prompt: string;
+    form: IFormVM | null;
+    loading: boolean;
     submitting: boolean;
     processing: boolean;
+    timedOut: boolean;
+    elapsedSeconds: number;
 }
 
 export interface IGenerateContentPresenter {
     readonly vm: IGenerateContentVm;
     init(components: Record<string, any>[], createElements: CreateElementsFn): void;
-    setPrompt(value: string): void;
     submit(): Promise<void>;
     cancelPrompt(): void;
     processAiResponse(responseText: string): Promise<void>;

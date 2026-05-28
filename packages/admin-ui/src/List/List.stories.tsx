@@ -7,7 +7,7 @@ import { ReactComponent as TrashIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as UserIcon } from "@webiny/icons/person.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as HelpIcon } from "@webiny/icons/help.svg";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { List, type ListItemProps as BaseListItemProps } from "./List.js";
 import { Avatar } from "~/Avatar/index.js";
 

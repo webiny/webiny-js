@@ -1,4 +1,5 @@
 import type { WbStatus } from "~/constants.js";
+import type { WbIdentity } from "~/types.js";
 
 export interface PageRevisionGatewayDto {
     id: string;
@@ -8,4 +9,7 @@ export interface PageRevisionGatewayDto {
     status: WbStatus;
     savedOn: string;
     locked: boolean;
+    createdBy: WbIdentity;
+    createdOn: string;
+    revisionDescription: string | undefined;
 }

@@ -231,6 +231,8 @@
   --spacing-sidebar-collapsed: 44px;
   --spacing-sidebar-expanded: 256px;
   --spacing-header: 45px;
+  --wb-spacing-toolbar: 329px;
+  --wb-spacing-sidebar: 329px;
   --spacing-main-content: calc(100vh - var(--spacing-header));
 
   /* With TW4, `leading-none` maps to `--spacing-none`, which is 0px. So, we
@@ -349,7 +351,7 @@
 @utility fill-grid {
   background-image: radial-gradient(var(--color-neutral-strong) 1px, transparent 0px);
   background-size: 15px 15px;
-  @apply bg-neutral-light;
+  @apply bg-neutral-subtle;
 }
 
 @layer base {

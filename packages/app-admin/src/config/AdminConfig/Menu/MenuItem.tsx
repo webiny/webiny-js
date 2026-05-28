@@ -1,5 +1,5 @@
 import React from "react";
-import { makeDecoratable } from "~/index.js";
+import { makeDecoratable } from "@webiny/react-composition";
 import { Sidebar } from "@webiny/admin-ui";
 import { type SidebarMenuItemButtonProps } from "@webiny/admin-ui/Sidebar/components/items/SidebarMenuItem.js";
 
@@ -11,7 +11,8 @@ const DecoratableMenuItem = makeDecoratable("MenuItem", MenuLinkBase);
 
 const MenuItem = Object.assign(DecoratableMenuItem, {
     Action: Sidebar.Item.Action,
-    Icon: Sidebar.Item.Icon
+    Icon: Sidebar.Item.Icon,
+    Badge: Sidebar.Item.Badge
 });
 
 export { MenuItem };

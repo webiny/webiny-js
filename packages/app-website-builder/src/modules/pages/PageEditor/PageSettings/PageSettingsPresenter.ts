@@ -1,4 +1,4 @@
-import { makeAutoObservable, computed } from "mobx";
+import { makeAutoObservable, computed, toJS } from "mobx";
 import { FormModelFactory, FormModel } from "@webiny/app-admin";
 import { PageSettingsPresenter as PresenterAbstraction } from "./abstractions.js";
 import { PageSettingsGroup } from "./abstractions.js";
@@ -67,9 +67,7 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
             return false;
         }
 
-        console.log("data", data);
-
-        const doc = structuredClone(this.originalData);
+        const doc = structuredClone(toJS(this.originalData));
 
         for (const group of this.groups) {
             group.mapFromForm(data[group.name] ?? {}, doc);
@@ -139,7 +137,7 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
                     return [];
                 }
 
-                const tabsBuilder = layout.tabs("settings-tabs").renderer("tabs-vertical");
+                const tabsBuilder = layout.tabs("settings-tabs").renderer("tabsVertical");
 
                 for (const { group, layoutFns } of collected) {
                     tabsBuilder.tab(group.name, tab => {

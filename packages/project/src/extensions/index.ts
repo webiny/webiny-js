@@ -10,6 +10,7 @@ import { BuildParam } from "./ApiBuildParam.js";
 import { AdminBuildParam } from "./AdminBuildParam.js";
 import { AdminExtension } from "./AdminExtension.js";
 import { ApiExtension } from "./ApiExtension.js";
+import { ApiMaxBundleSize } from "./ApiMaxBundleSize.js";
 
 // Hooks.
 import {
@@ -57,6 +58,7 @@ export { BuildParam };
 export { AdminBuildParam };
 export { AdminExtension };
 export { ApiExtension };
+export { ApiMaxBundleSize };
 
 // Hooks.
 export { BeforeBuild };
@@ -129,7 +131,8 @@ export const definitions = [
     BuildParam.def,
     AdminBuildParam.def,
     AdminExtension.def,
-    ApiExtension.def
+    ApiExtension.def,
+    ApiMaxBundleSize.def
 ];
 
 export { Project } from "./Project.js";

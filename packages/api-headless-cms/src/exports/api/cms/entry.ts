@@ -83,6 +83,13 @@ export {
     EntryAfterUpdateEventHandler
 } from "~/features/contentEntry/UpdateEntry/events.js";
 
+// UpdateEntryRevisionDescription
+export { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/UpdateRevisionDescription/abstractions.js";
+export {
+    EntryBeforeUpdateRevisionDescriptionEventHandler,
+    EntryAfterUpdateRevisionDescriptionEventHandler
+} from "~/features/contentEntry/UpdateRevisionDescription/events.js";
+
 // UpdateSingletonEntry
 export { UpdateSingletonEntryUseCase } from "~/features/contentEntry/UpdateSingletonEntry/abstractions.js";
 
@@ -139,6 +146,14 @@ export { ContentEntryTraverserProvider } from "~/features/contentEntry/ContentEn
 
 // ValidateEntry
 export { ValidateEntryUseCase } from "~/features/contentEntry/ValidateEntry/abstractions.js";
+
+// EntryDataFactories
+export { CreateEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreateEntryDataFactory/abstractions.js";
+export { CreateEntryRevisionFromDataFactory } from "~/features/contentEntry/entryDataFactories/CreateEntryRevisionFromDataFactory/abstractions.js";
+export { CreatePublishEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreatePublishEntryDataFactory/abstractions.js";
+export { CreateRepublishEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreateRepublishEntryDataFactory/abstractions.js";
+export { CreateUnpublishEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreateUnpublishEntryDataFactory/abstractions.js";
+export { UpdateEntryDataFactory } from "~/features/contentEntry/entryDataFactories/UpdateEntryDataFactory/abstractions.js";
 
 /**
  * Mapper helpers for custom where and sort inputs.

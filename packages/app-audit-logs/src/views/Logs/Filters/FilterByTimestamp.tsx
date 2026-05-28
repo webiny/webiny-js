@@ -1,6 +1,6 @@
 import React from "react";
 import { format } from "date-fns";
-import { Input } from "@webiny/ui/Input/index.js";
+import { Input } from "@webiny/admin-ui";
 import { useBind } from "@webiny/form";
 import { TimestampFiltersContainer } from "./styled.js";
 

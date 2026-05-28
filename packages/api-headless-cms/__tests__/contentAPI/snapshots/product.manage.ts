@@ -52,6 +52,7 @@ export default /* GraphQL */ `
         meta: ProductApiSingularMeta
         wbyAco_location: WbyAcoLocation
         live: CmsEntryLive
+        revisionDescription: String
 
         values: ProductApiSingularValues
     }
@@ -71,10 +72,6 @@ export default /* GraphQL */ `
         title: String
         description: String
         image: String
-        """
-        Custom meta data stored in the root of the entry object.
-        """
-        data: JSON
     }
 
     type ProductApiSingular_Variant_Options {
@@ -621,6 +618,11 @@ export default /* GraphQL */ `
             revision: ID!
             data: ProductApiSingularInput!
             options: UpdateCmsEntryOptionsInput
+        ): ProductApiSingularResponse
+
+        updateProductApiSingularRevisionDescription(
+            revision: ID!
+            revisionDescription: String
         ): ProductApiSingularResponse
 
         validateProductApiSingular(

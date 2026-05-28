@@ -1,4 +1,4 @@
-import "@webiny/tasks/features/TaskController/augmentation.js";
+import "@webiny/background-tasks/api/features/TaskController/augmentation.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 export interface FilePermission extends SecurityPermission {

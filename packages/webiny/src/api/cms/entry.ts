@@ -58,6 +58,11 @@ export {
     EntryBeforeUpdateEventHandler,
     EntryAfterUpdateEventHandler
 } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/events.js";
+export { UpdateRevisionDescriptionUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateRevisionDescription/abstractions.js";
+export {
+    EntryBeforeUpdateRevisionDescriptionEventHandler,
+    EntryAfterUpdateRevisionDescriptionEventHandler
+} from "@webiny/api-headless-cms/features/contentEntry/UpdateRevisionDescription/events.js";
 export { UpdateSingletonEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateSingletonEntry/abstractions.js";
 export { GetEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntriesByIds/abstractions.js";
 export { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry/abstractions.js";
@@ -86,5 +91,11 @@ export {
 } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/abstractions.js";
 export { ContentEntryTraverserProvider } from "@webiny/api-headless-cms/features/contentEntry/ContentEntryTraverser/index.js";
 export { ValidateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/ValidateEntry/abstractions.js";
+export { CreateEntryDataFactory } from "@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreateEntryDataFactory/abstractions.js";
+export { CreateEntryRevisionFromDataFactory } from "@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreateEntryRevisionFromDataFactory/abstractions.js";
+export { CreatePublishEntryDataFactory } from "@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreatePublishEntryDataFactory/abstractions.js";
+export { CreateRepublishEntryDataFactory } from "@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreateRepublishEntryDataFactory/abstractions.js";
+export { CreateUnpublishEntryDataFactory } from "@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreateUnpublishEntryDataFactory/abstractions.js";
+export { UpdateEntryDataFactory } from "@webiny/api-headless-cms/features/contentEntry/entryDataFactories/UpdateEntryDataFactory/abstractions.js";
 export { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
 export { CmsSortMapper } from "@webiny/api-headless-cms/features/sortMapper/abstractions.js";

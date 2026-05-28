@@ -10,6 +10,7 @@ import {
     type ErrorObject
 } from "./abstractions.js";
 import { TelemetryService } from "~/features/telemetry/index.js";
+import { NewsletterSubscriptionService } from "~/features/newsletter/index.js";
 
 class SystemInstallerPresenterImpl implements Abstraction.Interface {
     private loading = true;
@@ -23,6 +24,7 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
 
     constructor(
         private telemetry: TelemetryService.Interface,
+        private newsletter: NewsletterSubscriptionService.Interface,
         private repository: SystemInstallerRepository.Interface
     ) {
         // TODO: Wizard steps need to be implemented via plugins, but this will do for now.
@@ -123,15 +125,25 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
             });
             await this.repository.installSystem(installationInput);
 
+            // We intentionally do NOT send `projectName` or `organizationName` to
+            // telemetry — those are user-typed free-text fields that risk
+            // identifying the user's company. Only the categorical
+            // `referralSource` is forwarded for funnel attribution.
             await this.telemetry.sendEvent("install-wizard-end", {
-                project: basicInfo.projectName,
-                organization: basicInfo.organizationName,
                 referralSource: basicInfo.referralSource
             });
 
             runInAction(() => {
                 this.isInstalled = true;
                 this.installing = false;
+            });
+
+            // ToS acceptance in the basic-info step covers consent. Fire-and-forget
+            // so a slow/failed newsletter call never blocks the wizard.
+            this.newsletter.subscribe({
+                email: installerData.Cognito.email,
+                firstName: installerData.Cognito.firstName,
+                lastName: installerData.Cognito.lastName
             });
         } catch (error) {
             runInAction(() => {
@@ -150,5 +162,5 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
 export const SystemInstallerPresenter = createImplementation({
     abstraction: Abstraction,
     implementation: SystemInstallerPresenterImpl,
-    dependencies: [TelemetryService, SystemInstallerRepository]
+    dependencies: [TelemetryService, NewsletterSubscriptionService, SystemInstallerRepository]
 });

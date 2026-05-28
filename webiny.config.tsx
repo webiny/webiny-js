@@ -8,6 +8,8 @@ export const Extensions = () => {
     return (
         <>
             {/* Admin 👇 */}
+            <Admin.Extension src={"@/extensions/previewUrlModifier/index.tsx"} />
+            {/*<Admin.Extension src={"@/extensions/fileUrlFormatter/index.tsx"} />*/}
             <Admin.Extension src={"@/extensions/sampleEcommerce/index.tsx"} />
             <Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />
             <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
@@ -25,11 +27,12 @@ export const Extensions = () => {
             <Infra.OpenSearch enabled={false} />
 
             <Infra.Encryption passphrase={"my-passphrase"} />
+            {/*<Infra.Api.MaxBundleSize size={2359296}  />*/}
 
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
-            <Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />
+            {/*<Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />*/}
             {/*<Infra.EnvVar varName="MY_ENV_VAR" value="myValue" />*/}
             {/*<Infra.Api.LambdaFunction*/}
             {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}

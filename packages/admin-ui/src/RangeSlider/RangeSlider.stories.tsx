@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { RangeSlider } from "./RangeSlider.js";
 
 const meta: Meta<typeof RangeSlider> = {

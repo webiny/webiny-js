@@ -460,6 +460,7 @@ export interface CmsContentEntry<TValues extends GenericRecord = GenericRecord> 
         status: CmsContentEntryStatusType;
         version: number;
     };
+    revisionDescription?: string;
     values: TValues;
 }
 
@@ -485,6 +486,7 @@ export interface CmsContentEntryRevision {
     revisionFirstPublishedBy: CmsIdentity | null;
     revisionLastPublishedBy: CmsIdentity | null;
     wbyAco_location: Location;
+    revisionDescription?: string;
     meta: {
         title: string;
         locked: boolean;

@@ -220,6 +220,39 @@ export const pullRequests = createWorkflow({
                 ...runBuildCacheSteps
             ]
         }),
+        buildProject: createJob({
+            needs: ["constants", "build"],
+            name: "Build project (core, api, admin)",
+            if: NOT_RELEASE_PR,
+            env: {
+                WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}"
+            },
+            checkout: { path: DIR_WEBINY_JS },
+            steps: [
+                ...yarnCacheSteps,
+                ...runBuildCacheSteps,
+                ...installBuildSteps,
+                {
+                    name: "Build core",
+                    run: "yarn webiny build core",
+                    "working-directory": DIR_WEBINY_JS
+                },
+                {
+                    name: "API bundle size limit",
+                    run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"'
+                },
+                {
+                    name: "Build api",
+                    run: "yarn webiny build api --no-deployment-checks",
+                    "working-directory": DIR_WEBINY_JS
+                },
+                {
+                    name: "Build admin",
+                    run: "yarn webiny build admin --no-deployment-checks",
+                    "working-directory": DIR_WEBINY_JS
+                }
+            ]
+        }),
         staticCodeAnalysis: createJob({
             needs: ["constants"],
             name: "Static code analysis",
@@ -237,6 +270,10 @@ export const pullRequests = createWorkflow({
                         {
                             name: "Check Package Node Modules",
                             run: "yarn check-package-dependencies"
+                        },
+                        {
+                            name: "Validate webiny package",
+                            run: "yarn webiny-scripts validate-webiny-package"
                         }
                     ],
                     { "working-directory": DIR_WEBINY_JS }
@@ -286,7 +323,7 @@ export const pullRequests = createWorkflow({
         aiFixStaticAnalysis: createJob({
             name: "AI Fix Static Analysis",
             needs: ["constants", "staticCodeAnalysis"],
-            if: "failure() && needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true' && github.event.pull_request.user.login == 'adrians5j'",
+            if: "failure() && needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true'",
             permissions: { contents: "write" },
             checkout: { path: DIR_WEBINY_JS },
             env: { ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}" },
@@ -340,7 +377,7 @@ export const pullRequests = createWorkflow({
                     name: "Commit fixes",
                     uses: "stefanzweifel/git-auto-commit-action@v5",
                     with: {
-                        commit_message: "chore: ai fix static analysis [skip ci]",
+                        commit_message: "chore: ai fix static analysis",
                         repository: DIR_WEBINY_JS
                     }
                 }

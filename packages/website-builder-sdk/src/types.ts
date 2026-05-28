@@ -100,6 +100,7 @@ export type ComponentGroup = {
     name: string;
     label: string;
     description?: string;
+    icon?: string;
     filter?: (component: ComponentManifest, context: ComponentGroupFilterContext) => boolean;
 };
 
@@ -309,6 +310,9 @@ export type PublicRedirect = {
 
 export type EditorPage = EditorDocument & Pick<Page, "properties" | "status" | "location">;
 
+export interface EditorOptions {
+    isReadOnly?: boolean;
+}
 export type EditorDocument = Document;
 
 export type Page = Document & {

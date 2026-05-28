@@ -5,6 +5,7 @@ import type { EditorTheme } from "@webiny/lexical-theme";
 import { createLexicalTokens } from "@webiny/lexical-theme/createLexicalEditorTokens.js";
 import { useWebsiteBuilderTheme } from "~/BaseEditor/components/index.js";
 import "./wbStaticToolbar.css";
+import { CompositionScope } from "@webiny/app-admin";
 
 const placeholderStyles: React.CSSProperties = { position: "absolute", top: 40, left: 25 };
 
@@ -27,12 +28,13 @@ const lexicalTokens = createLexicalTokens("wb-lx-");
 
 export type LexicalEditorProps = Omit<React.ComponentProps<typeof BaseLexicalEditor>, "theme">;
 
-export const LexicalEditor = (props: LexicalEditorProps) => {
+const LexicalEditorComponent = (props: LexicalEditorProps) => {
     const { theme } = useWebsiteBuilderTheme();
 
     const editorTheme: EditorTheme = {
         colors: theme?.colors ?? [],
         typography: theme?.typography ?? {},
+        fontSizes: theme?.fontSizes ?? [],
         tokens: lexicalTokens
     };
 
@@ -48,4 +50,25 @@ export const LexicalEditor = (props: LexicalEditorProps) => {
             theme={editorTheme}
         />
     );
+};
+
+const ExpandedLexicalEditor = (props: LexicalEditorProps) => {
+    return (
+        <CompositionScope name={"expanded"}>
+            <LexicalEditorComponent {...props} />
+        </CompositionScope>
+    );
+};
+
+const CompactLexicalEditor = (props: LexicalEditorProps) => {
+    return (
+        <CompositionScope name={"compact"}>
+            <LexicalEditorComponent {...props} />
+        </CompositionScope>
+    );
+};
+
+export const LexicalEditor = {
+    Expanded: ExpandedLexicalEditor,
+    Compact: CompactLexicalEditor
 };

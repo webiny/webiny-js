@@ -24,6 +24,11 @@ export const createWbSdk = (invoke: InvokeCallable) => {
         async updatePage(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.UPDATE_PAGE, variables } });
         },
+        async updatePageRevisionDescription(variables = {}) {
+            return invoke({
+                body: { query: PAGES_GQL.UPDATE_PAGE_REVISION_DESCRIPTION, variables }
+            });
+        },
         async publishPage(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.PUBLISH_PAGE, variables } });
         },

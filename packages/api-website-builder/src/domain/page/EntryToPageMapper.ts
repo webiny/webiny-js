@@ -22,6 +22,7 @@ export class EntryToPageMapper {
             tenant: entry.tenant,
             system: entry.system,
             live: entry.live,
+            revisionDescription: entry.revisionDescription || "",
             deleted: entry.wbyDeleted || false,
             properties: entry.values.properties,
             metadata: entry.values.metadata,

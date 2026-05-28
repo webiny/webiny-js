@@ -2,7 +2,7 @@
 name: webiny-api-catalog
 context: webiny-api
 description: >
-  api — 11 abstractions.
+  api — 21 abstractions.
 ---
 
 # api
@@ -14,6 +14,34 @@ description: >
 3. Import: `import { Name } from "<importPath>";`
 
 ## Abstractions
+
+---
+
+**Name:** `Ai`
+**Import:** `import { Ai } from "webiny/api"`
+**Source:** `@webiny/api-core/features/ai/index.ts`
+**Description:** Interact with AI language models using registered providers.
+
+---
+
+**Name:** `AiConnectionFactory`
+**Import:** `import { AiConnectionFactory } from "webiny/api"`
+**Source:** `@webiny/api-core/features/ai/index.ts`
+**Description:** Factory that asynchronously produces an AiConnection.
+
+---
+
+**Name:** `AiSdk`
+**Import:** `import { AiSdk } from "webiny/api"`
+**Source:** `@webiny/api-core/features/ai/index.ts`
+**Description:** A single AI SDK instance (e.g. OpenAI, Anthropic) that resolves model instances.
+
+---
+
+**Name:** `AiSdkFactory`
+**Import:** `import { AiSdkFactory } from "webiny/api"`
+**Source:** `@webiny/api-core/features/ai/index.ts`
+**Description:** Factory that asynchronously initialises an AI SDK. Register one per provider namespace.
 
 ---
 
@@ -37,6 +65,18 @@ description: >
 
 ---
 
+**Name:** `Compression`
+**Import:** `import { Compression } from "webiny/api"`
+**Source:** `@webiny/utils/features/compression/abstractions/Compression.ts`
+
+---
+
+**Name:** `CompressionHandler`
+**Import:** `import { CompressionHandler } from "webiny/api"`
+**Source:** `@webiny/utils/features/compression/abstractions/CompressionHandler.ts`
+
+---
+
 **Name:** `createAbstraction`
 **Import:** `import { createAbstraction } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`
@@ -56,6 +96,13 @@ description: >
 
 ---
 
+**Name:** `Encryption`
+**Import:** `import { Encryption } from "webiny/api"`
+**Source:** `@webiny/api-core/features/encryption/index.ts`
+**Description:** Symmetric encryption and decryption using a configured secret key.
+
+---
+
 **Name:** `EventPublisher`
 **Import:** `import { EventPublisher } from "webiny/api"`
 **Source:** `@webiny/api-core/features/eventPublisher/index.ts`
@@ -67,6 +114,20 @@ description: >
 **Import:** `import { GlobalKeyValueStore } from "webiny/api"`
 **Source:** `@webiny/api-core/features/keyValueStore/index.ts`
 **Description:** Global (non-tenant-scoped) key-value store.
+
+---
+
+**Name:** `IAiConnection`
+**Kind:** type
+**Import:** `import type { IAiConnection } from "webiny/api"`
+**Source:** `@webiny/api-core/features/ai/index.ts`
+
+---
+
+**Name:** `IAiConnectionInline`
+**Kind:** type
+**Import:** `import type { IAiConnectionInline } from "webiny/api"`
+**Source:** `@webiny/api-core/features/ai/index.ts`
 
 ---
 
@@ -89,5 +150,11 @@ description: >
 **Source:** `@webiny/feature/api/index.ts`
 **Description:** A container type that represents either a successful result (`ok`) or a failure (`fail`).
 Inspired by functional programming constructs like `Either` or `Result` in other languages.
+
+---
+
+**Name:** `Route`
+**Import:** `import { Route } from "webiny/api"`
+**Source:** `@webiny/handler/abstractions/Route.ts`
 
 ---

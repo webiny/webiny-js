@@ -1,6 +1,7 @@
 export const FILE_FIELDS = [
     "id",
     "name",
+    "description",
     "key",
     "src",
     "type",
@@ -24,6 +25,5 @@ export const FILE_FIELDS = [
     "metadata.image.format",
     "metadata.image.orientation",
     "metadata.exif",
-    "metadata.iptc",
-    "accessControl.type"
+    "metadata.iptc"
 ];

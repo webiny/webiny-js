@@ -37,6 +37,8 @@ const createCypressJobs = (dbSetup: string) => {
         cypressTests: `e2e-wby-cms-${dbSetup}-cypress-tests`
     };
 
+    const dbDisplayName = dbSetup === "ddb-os" ? "DDB+OS" : "DDB";
+
     const constantsJob: NormalJob = createJob({
         needs: ["baseBranch", "constants", "build"],
         name: `Constants - ${dbSetup.toUpperCase()}`,
@@ -65,7 +67,8 @@ const createCypressJobs = (dbSetup: string) => {
         CYPRESS_MAILOSAUR_API_KEY: "${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}",
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
         PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
-        WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`
+        WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
+        WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}"
     };
 
     if (dbSetup === "ddb-os") {
@@ -77,7 +80,7 @@ const createCypressJobs = (dbSetup: string) => {
     }
 
     const projectSetupJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants", jobNames.constants],
+        needs: ["baseBranch", "constants", jobNames.constants, "checkComment"],
         name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
         outputs: {
             "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
@@ -157,6 +160,10 @@ const createCypressJobs = (dbSetup: string) => {
                 "working-directory": DIR_TEST_PROJECT,
                 run: "yarn webiny extension whitelabeling"
             },
+            {
+                name: "API bundle size limit",
+                run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"'
+            },
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
             ...(dbSetup === "ddb-os"
                 ? [
@@ -167,6 +174,25 @@ const createCypressJobs = (dbSetup: string) => {
                       }
                   ]
                 : []),
+            {
+                name: "Extract admin app URL",
+                id: "admin-url",
+                "working-directory": DIR_TEST_PROJECT,
+                run: `echo "admin-url=$(yarn webiny output admin --env dev --json 2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT`
+            },
+            {
+                name: "Update PR comment with admin URL",
+                env: {
+                    GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}",
+                    ADMIN_URL: `\${{ steps.admin-url.outputs.admin-url }}`,
+                    COMMENT_ID: `\${{ needs.checkComment.outputs.comment-id }}`
+                },
+                run: [
+                    `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt`,
+                    `sed -i "s@| ${dbDisplayName} | 🔄 Deploying... | - |@| ${dbDisplayName} | ✅ Ready | $ADMIN_URL |@" /tmp/comment.txt`,
+                    `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
+                ].join("\n")
+            },
             ...withCommonParams(
                 [
                     // Commented this out b/c of an issue. Basically, the
@@ -186,6 +212,10 @@ const createCypressJobs = (dbSetup: string) => {
                         name: "Save Cypress config",
                         id: "save-cypress-config",
                         run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
+                    },
+                    {
+                        name: "Install Cypress binary",
+                        run: "cd cypress-tests && yarn cypress install"
                     },
                     {
                         name: "Cypress - run installation wizard test",
@@ -217,6 +247,9 @@ export const pullRequestsCommandE2e = createWorkflow({
             name: `Check comment for /e2e`,
             if: "${{ github.event.issue.pull_request }}",
             checkout: false,
+            outputs: {
+                "comment-id": "${{ steps.create-comment.outputs.comment-id }}"
+            },
             steps: [
                 {
                     name: "Check for Command",
@@ -233,10 +266,11 @@ export const pullRequestsCommandE2e = createWorkflow({
                 },
                 {
                     name: "Create comment",
+                    id: "create-comment",
                     uses: "peter-evans/create-or-update-comment@v2",
                     with: {
                         "issue-number": "${{ github.event.issue.number }}",
-                        body: "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:"
+                        body: "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:\n\n| Database | Status | Admin URL |\n| --- | --- | --- |\n| DDB | 🔄 Deploying... | - |\n| DDB+OS | 🔄 Deploying... | - |"
                     }
                 }
             ]
@@ -287,7 +321,17 @@ export const pullRequestsCommandE2e = createWorkflow({
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
                 ...installBuildSteps,
-                ...runBuildCacheSteps
+                ...runBuildCacheSteps,
+                {
+                    name: "Upload build cache artifact",
+                    uses: "actions/upload-artifact@v6",
+                    with: {
+                        name: "build-cache",
+                        "retention-days": 1,
+                        "include-hidden-files": true,
+                        path: `${DIR_WEBINY_JS}/.webiny/cached-packages`
+                    }
+                }
             ]
         }),
         ...createCypressJobs("ddb"),

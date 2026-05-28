@@ -18,7 +18,6 @@ import type {
     UpdateCmsEntryOptionsInput
 } from "./types.js";
 import type { CmsModel } from "./model.js";
-import type { GenericRecord } from "@webiny/api/types.js";
 
 /**
  * Cms Entry CRUD methods in the context.
@@ -114,9 +113,17 @@ export interface CmsEntryContext {
         model: CmsModel,
         id: string,
         input: UpdateCmsEntryInput<TInput>,
-        meta?: GenericRecord,
         options?: UpdateCmsEntryOptionsInput
     ) => Promise<CmsEntry<TInput>>;
+    /**
+     * Update entry revision description.
+     * It does not matter if the entry is published/unpublished or any other state.
+     */
+    updateRevisionDescription: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string,
+        revisionDescription: string | undefined
+    ) => Promise<CmsEntry<T>>;
     /**
      * Validate the entry - either new one or existing one.
      */

@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "lodash/debounce.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { EmptyView } from "@webiny/app-admin";
-import { Scrollbar } from "@webiny/ui/Scrollbar/index.js";
+import { useSecurity } from "@webiny/app-admin";
+import { Scrollbar } from "@webiny/admin-ui";
 import { LoadingMore } from "~/views/Logs/LoadingMore/index.js";
 import { LoadMoreButton } from "~/views/Logs/LoadMoreButton/index.js";
 import { Header } from "~/views/Logs/Header/index.js";
@@ -10,9 +11,7 @@ import { Filters } from "~/views/Logs/Filters/index.js";
 import { Table } from "~/views/Logs/Table/index.js";
 import { Preview } from "~/views/Logs/Preview/index.js";
 import { useAuditLogsList } from "~/hooks/index.js";
-import { MainContainer, Wrapper } from "./styled.js";
 import type { IAuditLog } from "~/types.js";
-import { useSecurity } from "@webiny/app-admin";
 
 const t = i18n.ns("app-audit-logs/views/logs");
 
@@ -41,58 +40,56 @@ const AuditLogsView = () => {
     });
 
     const loadMoreOnScroll = debounce(({ scrollFrame }) => {
-        if (scrollFrame.top > 0.8) {
+        if (scrollFrame.top > 0.8 && !list.isListLoadingMore && list.meta.hasMoreItems) {
             list.listMoreRecords();
         }
     }, 200);
 
     return (
-        <>
-            <MainContainer>
-                <Header
-                    title="Audit Logs"
-                    showingFilters={list.showingFilters}
-                    showFilters={list.showFilters}
-                    hideFilters={list.hideFilters}
-                />
-                <Wrapper>
-                    <Filters showingFilters={list.showingFilters} setWhere={list.setWhere} />
-                    {list.records.length === 0 && !list.isListLoading ? (
-                        <EmptyView title={t`No results found.`} action={null} />
-                    ) : (
-                        <>
-                            <Preview
-                                auditLog={selectedAuditLog}
-                                onClose={() => closePreviewModal()}
+        <div className={"flex flex-col h-main-content"}>
+            <Header
+                title="Audit Logs"
+                showingFilters={list.showingFilters}
+                showFilters={list.showFilters}
+                hideFilters={list.hideFilters}
+            />
+            <div className={"flex-1 min-h-0"}>
+                <Filters showingFilters={list.showingFilters} setWhere={list.setWhere} />
+                {list.records.length === 0 && !list.isListLoading ? (
+                    <EmptyView title={t`No results found.`} action={null} />
+                ) : (
+                    <>
+                        <Preview
+                            auditLog={selectedAuditLog}
+                            onClose={() => closePreviewModal()}
+                            hasAccessToUsers={hasAccessToUsers}
+                        />
+                        <Scrollbar
+                            data-testid="default-data-list"
+                            onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
+                        >
+                            <Table
+                                ref={tableRef}
+                                records={list.records}
+                                loading={list.isListLoading && !list.isListLoadingMore}
+                                handleRecordSelect={handleAuditLogSelect}
+                                sorting={list.sorting}
+                                onSortingChange={list.setSorting}
                                 hasAccessToUsers={hasAccessToUsers}
                             />
-                            <Scrollbar
-                                data-testid="default-data-list"
-                                onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
-                            >
-                                <Table
-                                    ref={tableRef}
-                                    records={list.records}
-                                    loading={list.isListLoading}
-                                    handleRecordSelect={handleAuditLogSelect}
-                                    sorting={list.sorting}
-                                    onSortingChange={list.setSorting}
-                                    hasAccessToUsers={hasAccessToUsers}
-                                />
-                                <LoadMoreButton
-                                    show={!list.isListLoading && list.meta.hasMoreItems}
-                                    disabled={list.isListLoadingMore}
-                                    windowHeight={windowHeight}
-                                    tableHeight={tableHeight}
-                                    onClick={list.listMoreRecords}
-                                />
-                            </Scrollbar>
-                            {list.isListLoadingMore && <LoadingMore />}
-                        </>
-                    )}
-                </Wrapper>
-            </MainContainer>
-        </>
+                            <LoadMoreButton
+                                show={!list.isListLoading && list.meta.hasMoreItems}
+                                disabled={list.isListLoadingMore}
+                                windowHeight={windowHeight}
+                                tableHeight={tableHeight}
+                                onClick={list.listMoreRecords}
+                            />
+                        </Scrollbar>
+                        {list.isListLoadingMore && <LoadingMore />}
+                    </>
+                )}
+            </div>
+        </div>
     );
 };
 

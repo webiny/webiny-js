@@ -1,13 +1,8 @@
 import React, { useCallback, useMemo } from "react";
-import {
-    Dialog,
-    DialogActions,
-    DialogCancel,
-    DialogContent,
-    DialogTitle
-} from "~/admin/components/Dialog.js";
+import { Dialog } from "~/admin/components/Dialog.js";
+import { Dialog as AdminUiDialog } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
 import type { CmsModel } from "~/types.js";
-import { ButtonPrimary } from "@webiny/ui/Button/index.js";
 import { FullyDeleteModelStateStatus } from "./types.js";
 import { Content } from "./dialog/Content.js";
 import { createValidationValue } from "./dialog/validationValue.js";
@@ -107,36 +102,40 @@ export const FullyDeleteModelDialog = ({
         <Dialog
             open={!!model}
             onClose={onClose}
-            preventOutsideDismiss={true}
+            dismissible={false}
             data-testid="cms-delete-content-model-dialog"
+            title={title}
+            actions={
+                <>
+                    <AdminUiDialog.CancelAction
+                        data-testid="cms-delete-content-model-close-button"
+                        text={
+                            status === FullyDeleteModelStateStatus.PROCESSED ||
+                            status === FullyDeleteModelStateStatus.ERROR
+                                ? "OK"
+                                : "Cancel"
+                        }
+                    />
+                    {(status === FullyDeleteModelStateStatus.NONE ||
+                        status === FullyDeleteModelStateStatus.UNDERSTOOD) && (
+                        <Button
+                            variant={"primary"}
+                            data-testid="cms-delete-content-model-confirm-button"
+                            onClick={onYesClick}
+                        >
+                            {primaryButtonText}
+                        </Button>
+                    )}
+                </>
+            }
         >
-            <DialogTitle>{title}</DialogTitle>
-            <DialogContent>
-                <Content
-                    model={model}
-                    setConfirmation={setConfirmation}
-                    confirmation={confirmation}
-                    error={state.error}
-                    status={status}
-                />
-            </DialogContent>
-            <DialogActions>
-                <DialogCancel data-testid="cms-delete-content-model-close-button">
-                    {status === FullyDeleteModelStateStatus.PROCESSED ||
-                    status === FullyDeleteModelStateStatus.ERROR
-                        ? "OK"
-                        : "Cancel"}
-                </DialogCancel>
-                {(status === FullyDeleteModelStateStatus.NONE ||
-                    status === FullyDeleteModelStateStatus.UNDERSTOOD) && (
-                    <ButtonPrimary
-                        data-testid="cms-delete-content-model-confirm-button"
-                        onClick={onYesClick}
-                    >
-                        {primaryButtonText}
-                    </ButtonPrimary>
-                )}
-            </DialogActions>
+            <Content
+                model={model}
+                setConfirmation={setConfirmation}
+                confirmation={confirmation}
+                error={state.error}
+                status={status}
+            />
         </Dialog>
     );
 };

@@ -15,6 +15,7 @@ export interface FolderTreeProps {
     folderActions?: FolderActionConfig[];
     onFolderClick: (data: FolderDto) => void;
     enableCreate?: boolean;
+    onCreateFolder?: () => void;
     rootFolderLabel?: string;
     enableActions?: boolean;
     dropConfirmation?: boolean;
@@ -28,6 +29,7 @@ export const FolderTree = ({
     hiddenFolderIds,
     enableActions,
     enableCreate,
+    onCreateFolder,
     onFolderClick,
     dropConfirmation,
     rootFolderLabel
@@ -52,7 +54,7 @@ export const FolderTree = ({
         }
 
         const canCreate = canManageStructure(focusedFolderId!);
-        const button = <ButtonCreate disabled={!canCreate} />;
+        const button = <ButtonCreate disabled={!canCreate} onCreateFolder={onCreateFolder} />;
 
         return canCreate ? (
             button
@@ -62,7 +64,7 @@ export const FolderTree = ({
                 trigger={button}
             />
         );
-    }, [enableCreate, canManageStructure, focusedFolderId, localFolders]);
+    }, [enableCreate, canManageStructure, focusedFolderId, localFolders, onCreateFolder]);
 
     if (getIsFolderLoading()) {
         return <Loader />;

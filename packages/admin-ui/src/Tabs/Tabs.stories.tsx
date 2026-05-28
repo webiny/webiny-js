@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { ReactComponent as PersonIcon } from "@webiny/icons/person.svg";
 import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
 import { Tabs } from "./Tabs.js";

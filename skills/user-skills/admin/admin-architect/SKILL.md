@@ -562,6 +562,44 @@ Creates a feature definition for the admin runtime.
 | `def.register(container)` | Called at startup with the DI `Container` instance               |
 | `def.resolve(container)`  | **Required.** Resolves abstractions for `useFeature()` consumers |
 
+## React Component Rules
+
+1. **No `&&` conditional rendering** — never use `condition && (<Component />)` in JSX. For small one-two liners, use a ternary with explicit `: null`. For anything larger, extract to its own component file where the child decides whether to render.
+
+**Bad** (never use `&&`):
+
+```tsx
+{
+  delivery.responseStatus !== null && <Text size="sm">HTTP {delivery.responseStatus}</Text>;
+}
+```
+
+**Good** (small inline ternary):
+
+```tsx
+{
+  delivery.responseTime ? <Text size="sm">{delivery.responseTime}ms</Text> : null;
+}
+```
+
+**Good** (larger block — own file, e.g., `ResponseStatus.tsx`):
+
+```tsx
+export const ResponseStatus = ({ presenter }: Props) => {
+  const { vm } = presenter;
+  if (vm.responseStatus === null) {
+    return null;
+  }
+  return <Text size="sm">HTTP {vm.responseStatus}</Text>;
+};
+```
+
+2. **One component per file** — every React component lives in its own file. No exceptions.
+
+3. **React is a dumb view layer** — components read `presenter.vm` and call presenter methods. No business logic, no data fetching, no state derivation in components.
+
+4. **Pass presenter to child components** — child components receive the full `presenter`, not split `vm` + `actions` props. The child reads what it needs from `presenter.vm`.
+
 ## Key Rules
 
 1. **Abstractions first** — any new business logic MUST be encapsulated in `createAbstraction` + `createFeature`.

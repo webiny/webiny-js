@@ -9,8 +9,7 @@ export const IsReadOnly = ({ children }: IsNotReadOnlyProps) => {
     const isEditorReadOnly = useSelectFromEditor(state => state.isReadOnly);
 
     if (isEditorReadOnly) {
-        return null;
+        return <>{children}</>;
     }
-
-    return <>{children}</>;
+    return null;
 };

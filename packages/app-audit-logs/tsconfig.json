@@ -2,13 +2,13 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../admin-ui" },
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../common-audit-logs" },
     { "path": "../form" },
     { "path": "../react-composition" },
-    { "path": "../react-properties" },
-    { "path": "../ui" }
+    { "path": "../react-properties" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -17,6 +17,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/admin-ui/*": ["../admin-ui/src/*"],
+      "@webiny/admin-ui": ["../admin-ui/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
@@ -28,9 +30,7 @@
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
-      "@webiny/react-properties": ["../react-properties/src"],
-      "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"]
+      "@webiny/react-properties": ["../react-properties/src"]
     }
   }
 }

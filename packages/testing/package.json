@@ -27,6 +27,7 @@
     "@webiny/api-website-builder": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
+    "@webiny/background-tasks": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
@@ -34,19 +35,20 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "@webiny/tasks": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "graphql": "^16.13.2",
+    "graphql": "^16.14.0",
     "rimraf": "^6.1.3",
     "typescript": "6.0.3"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "scripts": {
     "build": "node ../cli/bin.js run build",
     "watch": "node ../cli/bin.js run watch"
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
+  "webiny": {
+    "publishFrom": "dist"
+  }
 }

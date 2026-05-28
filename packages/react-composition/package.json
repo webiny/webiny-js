@@ -18,7 +18,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@types/react": "18.3.28",
+    "@types/react": "18.3.29",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
@@ -26,10 +26,12 @@
     "@testing-library/react": "^16.3.2",
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.7"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

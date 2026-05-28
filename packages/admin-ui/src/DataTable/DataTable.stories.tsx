@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import type { DataTableColumns, DataTableDefaultData, DataTableSorting } from "./DataTable.js";
 import { DataTable } from "./DataTable.js";
 import { Avatar } from "~/Avatar/index.js";

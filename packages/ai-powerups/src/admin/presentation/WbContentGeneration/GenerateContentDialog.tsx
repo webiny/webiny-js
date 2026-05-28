@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
-import { useDialog } from "@webiny/app-admin";
-import { Dialog, OverlayLoader, Textarea, useToast } from "@webiny/admin-ui";
+import { useDialog, FormView } from "@webiny/app-admin";
+import { Dialog, OverlayLoader, useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
 import type { IncomingGenericData } from "@webiny/app-websockets";
 import { useWebsockets } from "@webiny/app-websockets";
@@ -10,6 +10,12 @@ import { useCreateElement } from "@webiny/app-website-builder/BaseEditor/hooks/u
 import { GenerateContentFeature } from "./feature.js";
 import { decompressGzipBase64 } from "./decompressGzipBase64.js";
 import type { CreateElementParams } from "./abstractions.js";
+
+function formatElapsed(totalSeconds: number): string {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
 
 export const GENERATE_CONTENT_DIALOG = "generate-content";
 
@@ -43,8 +49,10 @@ export const GenerateContentDialog = observer(() => {
     const { createElement } = useCreateElement();
 
     const createElements = useCallback(
-        (elements: CreateElementParams[]) => {
-            elements.forEach(el => createElement(el));
+        async (elements: CreateElementParams[]) => {
+            for (const el of elements) {
+                await createElement(el);
+            }
         },
         [createElement]
     );
@@ -73,7 +81,17 @@ export const GenerateContentDialog = observer(() => {
             WS_ACTION_CONTENT,
             async message => {
                 const responseText = await decompressGzipBase64(message.data.value);
-                await presenter.processAiResponse(responseText);
+                try {
+                    await presenter.processAiResponse(responseText);
+                } catch (e) {
+                    console.error("Failed to process AI response", { responseText });
+                    console.error(e);
+                    toast.showWarningToast({
+                        title: "Failed to process AI response",
+                        description: "Open the console for more details."
+                    });
+                    presenter.cancelPrompt();
+                }
             }
         );
 
@@ -94,59 +112,25 @@ export const GenerateContentDialog = observer(() => {
         };
     }, []);
 
-    const submitHtml = () => {
-        presenter.processAiResponse(
-            JSON.stringify([
-                {
-                    component: "Webiny/Lexical",
-                    inputs: {
-                        content: {
-                            tool: "textToLexical",
-                            params: {
-                                text: "<h1>Song of the Living Earth</h1><p>The morning opens gently, and the world begins to sing. From forest shadows to rolling tides, nature carries a melody that feels both timeless and new. This song celebrates the quiet power of the wild, where every breeze, birdcall, and wave becomes part of a larger harmony.</p><h2>Verse One: Dawn in the Forest</h2><p>The sun wakes softly through the pine,</p><p>And gold spills down the cedar line.</p><p>The brook hums low beneath the trees,</p><p>A silver thread in morning breeze.</p>"
-                            }
-                        }
-                    }
-                },
-                {
-                    component: "Webiny/Lexical",
-                    inputs: {
-                        content: {
-                            tool: "textToLexical",
-                            params: {
-                                text: "<h2>Verse Two: The River’s Journey</h2><p>The river travels, clear and bold,</p><p>Through stone and root and fields of gold.</p><p>It teaches hearts to move, to flow,</p><p>To leave the banks and still grow whole.</p><h3>Chorus</h3><p>Oh, nature sings in every leaf,</p><p>In winds of joy and rains of grief.</p><p>We listen close, we learn, we stay,</p><p>And find our rhythm in its sway.</p><p>Like mountains holding up the sky,</p><p>And eagles carving paths to fly,</p><p>The earth reminds us, calm and free,</p><p>That life is meant for harmony.</p>"
-                            }
-                        }
-                    }
-                },
-                {
-                    component: "Webiny/Lexical",
-                    inputs: {
-                        content: {
-                            tool: "textToLexical",
-                            params: {
-                                text: "<h2>Verse Three: Evening Wildflowers</h2><p>When daylight fades to amber sky,</p><p>The meadow blooms before goodbye.</p><p>The crickets tune the final part,</p><p>And dusk grows tender in the heart.</p><p>So let us walk with gentle feet,</p><p>And keep the wild, and keep it sweet.</p><p>For every branch, each shore, each stream,</p><p>Is nature’s voice inside the dream.</p><p><strong>Final refrain:</strong> Oh, nature sings in every leaf, in winds of joy and rains of grief. We listen close, we learn, we stay, and find our rhythm in its sway.</p><p><em>Let the earth be your song, and the song be your home.</em></p>"
-                            }
-                        }
-                    }
-                }
-            ])
-        );
-    };
-
     useEffect(() => {
-        if (wasSubmitting.current && !vm.submitting) {
+        if (wasSubmitting.current && !vm.submitting && !vm.timedOut) {
             closeDialog();
         }
         wasSubmitting.current = vm.submitting;
     }, [vm.submitting]);
 
+    useEffect(() => {
+        if (vm.timedOut) {
+            toast.showWarningToast({
+                title: "Request timed out",
+                description: "The AI generation took too long. Please try again."
+            });
+        }
+    }, [vm.timedOut]);
+
     const handleSubmit = async () => {
         await presenter.submit();
     };
-
-    const isProcessing = vm.processing;
-    const isSubmitting = vm.submitting;
 
     return (
         <Dialog
@@ -157,24 +141,31 @@ export const GenerateContentDialog = observer(() => {
             actions={
                 <>
                     <Dialog.CancelAction onClick={closeDialog} text="Cancel" />
-                    <Dialog.ConfirmAction onClick={submitHtml} text="Submit HTML" />
                     <Dialog.ConfirmAction
                         onClick={handleSubmit}
                         text="Generate"
-                        disabled={!vm.prompt.trim() || vm.submitting}
+                        disabled={vm.loading || vm.submitting}
                     />
                 </>
             }
         >
-            {isSubmitting ? <OverlayLoader text={"Generating content..."} /> : null}
-            {isProcessing ? <OverlayLoader text={"Processing content..."} /> : null}
-            <Textarea
-                label="Prompt"
-                description="Describe the page content you want to generate."
-                value={vm.prompt}
-                onChange={value => presenter.setPrompt(String(value ?? ""))}
-                rows={6}
-            />
+            {vm.loading ? <OverlayLoader text={"Loading..."} /> : null}
+            {vm.submitting ? (
+                <OverlayLoader
+                    className={"bg-neutral-base/90"}
+                    text={
+                        <>
+                            <div>Generating content... {formatElapsed(vm.elapsedSeconds)}</div>
+                            <div className="text-sm text-neutral-muted pt-xs">
+                                Content generation can take a few minutes, depending on the model
+                                you&apos;re using.
+                            </div>
+                        </>
+                    }
+                />
+            ) : null}
+            {vm.processing ? <OverlayLoader text={"Processing content..."} /> : null}
+            {vm.form ? <FormView name="GenerateContent" form={vm.form} /> : null}
         </Dialog>
     );
 });

@@ -43,6 +43,7 @@ export default /* GraphQL */ `
         meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
         wbyAco_location: WbyAcoLocation
         live: CmsEntryLive
+        revisionDescription: String
 
         values: CategoryApiNameWhichIsABitDifferentThanModelIdValues
     }
@@ -62,10 +63,6 @@ export default /* GraphQL */ `
         title: String
         description: String
         image: String
-        """
-        Custom meta data stored in the root of the entry object.
-        """
-        data: JSON
     }
 
     input CategoryApiNameWhichIsABitDifferentThanModelIdInputValues {
@@ -440,6 +437,11 @@ export default /* GraphQL */ `
             revision: ID!
             data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!
             options: UpdateCmsEntryOptionsInput
+        ): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
+
+        updateCategoryApiNameWhichIsABitDifferentThanModelIdRevisionDescription(
+            revision: ID!
+            revisionDescription: String
         ): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
         validateCategoryApiNameWhichIsABitDifferentThanModelId(

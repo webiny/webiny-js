@@ -1,15 +1,6 @@
 import React from "react";
 import { addMinutes, format } from "date-fns";
-import { Cell, Grid } from "@webiny/ui/Grid/index.js";
-import {
-    Dialog,
-    DialogActions,
-    DialogCancel,
-    DialogContent,
-    DialogTitle
-} from "@webiny/ui/Dialog/index.js";
-import { CodeEditor } from "@webiny/ui/CodeEditor/index.js";
-import { Tooltip } from "@webiny/ui/Tooltip/index.js";
+import { Grid, Dialog, CodeEditor, Tooltip } from "@webiny/admin-ui";
 import { Action } from "~/views/Logs/Table/index.js";
 import { Text } from "~/components/Text.js";
 import { PayloadWrapper, previewDialog } from "./styled.js";
@@ -28,79 +19,77 @@ export const Preview = ({ auditLog, onClose, hasAccessToUsers }: HeaderProps) =>
     const date = new Date(auditLog.createdOn);
 
     return (
-        <Dialog open={!!auditLog} onClose={onClose} className={previewDialog} size={"xl"}>
-            <DialogTitle>
-                {auditLog.message}
-                <div className="title-actions" tabIndex={0}></div>
-            </DialogTitle>
-
-            <DialogContent>
-                <Grid>
-                    <Cell span={6}>
-                        <Text use="overline">Application</Text>
-                        <br />
-                        <Text use="subtitle2">{auditLog.app}</Text>
-                    </Cell>
-                    <Cell span={6}>
-                        <Text use="overline">Date</Text>
-                        <br />
-                        <Tooltip
-                            placement="right"
-                            content={`UTC: ${format(
-                                addMinutes(date, date.getTimezoneOffset()),
-                                "yyyy-MM-dd HH:mm:ss"
-                            )}`}
-                        >
+        <Dialog
+            open={!!auditLog}
+            onClose={onClose}
+            className={previewDialog}
+            size={"xl"}
+            title={auditLog.message}
+            actions={<Dialog.CancelAction onClick={onClose} text={"Close"} />}
+        >
+            <Grid>
+                <Grid.Column span={6}>
+                    <Text use="overline">Application</Text>
+                    <br />
+                    <Text use="subtitle2">{auditLog.app}</Text>
+                </Grid.Column>
+                <Grid.Column span={6}>
+                    <Text use="overline">Date</Text>
+                    <br />
+                    <Tooltip
+                        side="right"
+                        content={`UTC: ${format(
+                            addMinutes(date, date.getTimezoneOffset()),
+                            "yyyy-MM-dd HH:mm:ss"
+                        )}`}
+                        trigger={
                             <Text use={"subtitle2"}>{format(date, "yyyy-MM-dd HH:mm:ss (O)")}</Text>
-                        </Tooltip>
-                    </Cell>
-                    <Cell span={6}>
-                        <Text use="overline">Entity</Text>
-                        <br />
-                        <Text use="subtitle2">{auditLog.entity.label}</Text>
-                    </Cell>
-                    <Cell span={6}>
-                        <Text use="overline">Entity Id</Text>
-                        <br />
-                        {auditLog.entity.link ? (
-                            <a href={auditLog.entity.link} target={"blank"}>
-                                <Text use="subtitle2">{auditLog.entityId}</Text>
-                            </a>
-                        ) : (
+                        }
+                    />
+                </Grid.Column>
+                <Grid.Column span={6}>
+                    <Text use="overline">Entity</Text>
+                    <br />
+                    <Text use="subtitle2">{auditLog.entity.label}</Text>
+                </Grid.Column>
+                <Grid.Column span={6}>
+                    <Text use="overline">Entity Id</Text>
+                    <br />
+                    {auditLog.entity.link ? (
+                        <a href={auditLog.entity.link} target={"blank"}>
                             <Text use="subtitle2">{auditLog.entityId}</Text>
-                        )}
-                    </Cell>
-                    <Cell span={6}>
-                        <Text use="overline">Action</Text>
-                        <br />
-                        <Action label={auditLog.action.label} value={auditLog.action.value} />
-                    </Cell>
-                    {hasAccessToUsers && (
-                        <Cell span={6}>
+                        </a>
+                    ) : (
+                        <Text use="subtitle2">{auditLog.entityId}</Text>
+                    )}
+                </Grid.Column>
+                <Grid.Column span={6}>
+                    <Text use="overline">Action</Text>
+                    <br />
+                    <Action label={auditLog.action.label} value={auditLog.action.value} />
+                </Grid.Column>
+                {
+                    (hasAccessToUsers ? (
+                        <Grid.Column span={6}>
                             <Text use="overline">Initiator</Text>
                             <br />
                             <a href={`/admin-users?id=${auditLog.createdBy.id}`} target={"blank"}>
                                 <Text use={"subtitle2"}>{auditLog.createdBy.displayName}</Text>
                             </a>
                             <Text use={"body2"}>{` (${auditLog.createdBy.role})`}</Text>
-                        </Cell>
-                    )}
-                    <Cell span={12}>
-                        <Text use="overline">Payload</Text>
-                        <PayloadWrapper>
-                            <CodeEditor
-                                mode="json"
-                                theme="chrome"
-                                value={JSON.stringify(JSON.parse(auditLog.content), null, 2)}
-                                readOnly
-                            />
-                        </PayloadWrapper>
-                    </Cell>
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <DialogCancel onClick={onClose}>Close</DialogCancel>
-            </DialogActions>
+                        </Grid.Column>
+                    ) : undefined) as any
+                }
+                <Grid.Column span={12}>
+                    <Text use="overline">Payload</Text>
+                    <PayloadWrapper>
+                        <CodeEditor
+                            language="json"
+                            value={JSON.stringify(JSON.parse(auditLog.content), null, 2)}
+                        />
+                    </PayloadWrapper>
+                </Grid.Column>
+            </Grid>
         </Dialog>
     );
 };

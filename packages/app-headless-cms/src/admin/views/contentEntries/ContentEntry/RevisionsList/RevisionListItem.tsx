@@ -1,6 +1,19 @@
 import React from "react";
-import { Date } from "@webiny/ui/DateTime/index.js";
-import { DropdownMenu, Icon, IconButton, List, Tooltip } from "@webiny/admin-ui";
+const DateDisplay = ({ date }: { date: string }) => {
+    const formatted = React.useMemo(() => {
+        const d = new globalThis.Date(date);
+        if (isNaN(d.getTime())) {
+            return "";
+        }
+        return new Intl.DateTimeFormat(navigator.language, {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }).format(d);
+    }, [date]);
+    return <>{formatted}</>;
+};
+import { DropdownMenu, Icon, IconButton, List, Tooltip, Text } from "@webiny/admin-ui";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
 import { ReactComponent as BeenHereIcon } from "@webiny/icons/beenhere.svg";
@@ -76,12 +89,24 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
         <List.Item
             icon={<Tooltip content={tooltipText} trigger={icon} />}
             title={revision.meta.title || t`N/A`}
-            description={t`Last modified by {author} on {time} (#{version})`({
-                // Added this because revisionCreatedBy can be returned as null from GraphQL.
-                author: revision.revisionCreatedBy?.displayName,
-                time: <Date date={revision.revisionSavedOn} />,
-                version: revision.meta.version
-            })}
+            description={
+                <>
+                    {revision.revisionDescription ? (
+                        <Text as={"div"} size={"md"} className={"mb-2"}>
+                            {revision.revisionDescription}
+                        </Text>
+                    ) : null}
+                    <Text as={"div"} size={"sm"}>
+                        {t`Last modified by {author} on {time} (#{version})`({
+                            // Added this because revisionCreatedBy can be returned as null from GraphQL.
+                            author: revision.revisionCreatedBy?.displayName,
+                            time: <DateDisplay date={revision.revisionSavedOn} />,
+                            version: revision.meta.version
+                        })}
+                    </Text>
+                </>
+            }
+            about={revision.revisionDescription}
             actions={
                 <DropdownMenu
                     trigger={

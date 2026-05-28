@@ -22,17 +22,16 @@
     "@webiny/icons": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "@webiny/react-properties": "0.0.0",
-    "@webiny/ui": "0.0.0",
-    "graphql": "^16.13.2",
+    "graphql": "^16.14.0",
     "lodash": "^4.18.1",
-    "mobx": "^6.15.0",
+    "mobx": "^6.15.3",
     "mobx-react-lite": "^4.1.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.7"
   },
   "devDependencies": {
-    "@types/react": "18.3.28",
+    "@types/react": "18.3.29",
     "@webiny/build-tools": "0.0.0",
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
@@ -40,7 +39,9 @@
     "typescript": "6.0.3"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

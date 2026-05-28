@@ -617,14 +617,14 @@ describe("content model plugins", () => {
                     listContentModels: {
                         data: [
                             {
-                                modelId: "shop",
-                                name: "shop",
-                                plugin: false
-                            },
-                            {
                                 modelId: "product",
                                 name: "Product",
                                 plugin: true
+                            },
+                            {
+                                modelId: "shop",
+                                name: "shop",
+                                plugin: false
                             }
                         ],
                         error: null

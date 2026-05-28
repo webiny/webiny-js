@@ -10,7 +10,7 @@ export const CellRevision = () => {
     const { version } = parseIdentifier(row.data.targetId);
     return (
         <RowTitle>
-            <RowText use={"subtitle2"}>{version}</RowText>
+            <RowText size={"sm"}>{version}</RowText>
         </RowTitle>
     );
 };

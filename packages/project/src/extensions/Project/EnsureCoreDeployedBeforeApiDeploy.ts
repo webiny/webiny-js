@@ -3,7 +3,7 @@ import {
     GetAppStackOutput,
     ProjectSdkParamsService
 } from "~/abstractions/index.js";
-import { GracefulError } from "@webiny/project";
+import { GracefulError } from "~/index.js";
 
 class EnsureCoreDeployedBeforeApiDeployImpl implements ApiBeforeDeploy.Interface {
     constructor(

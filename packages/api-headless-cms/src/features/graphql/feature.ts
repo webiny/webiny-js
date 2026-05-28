@@ -28,6 +28,7 @@ export const GraphQLFeature = createFeature({
         container.register(RichTextFieldToGraphQL);
         container.register(SearchableJsonFieldToGraphQL);
         container.register(TextFieldToGraphQL);
-        container.register(CmsModelFieldToGraphQLRegistry);
+
+        container.register(CmsModelFieldToGraphQLRegistry).inSingletonScope();
     }
 });

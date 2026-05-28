@@ -6,7 +6,7 @@ import { FormComponentNote } from "@webiny/admin-ui";
 import { FormComponentDescription } from "@webiny/admin-ui";
 import type { CmsModelFieldRendererPlugin, CmsModelField } from "~/types.js";
 import { useForm } from "@webiny/form";
-import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor.js";
+import { LexicalEditor } from "~/admin/components/LexicalCmsEditor/LexicalEditor.js";
 import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
@@ -53,7 +53,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                     text={field.description}
                                     disabled={disabled}
                                 />
-                                <LexicalCmsEditor
+                                <LexicalEditor
                                     disabled={disabled}
                                     value={bind.value}
                                     onChange={bind.onChange}

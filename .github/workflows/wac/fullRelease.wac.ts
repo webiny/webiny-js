@@ -44,7 +44,7 @@ export const fullRelease = createWorkflow({
                 },
                 {
                     name: `Create and push release branch`,
-                    run: `git checkout -b release/${VERSION} && git commit --allow-empty -m "chore: start release ${VERSION} [no ci]" -m "Empty commit to allow PR creation." && git push origin release/${VERSION}`
+                    run: `git checkout -b release/${VERSION} && git commit --allow-empty -m "chore: start release ${VERSION}" -m "Empty commit to allow PR creation." && git push origin release/${VERSION}`
                 },
                 {
                     name: "Open pull request",

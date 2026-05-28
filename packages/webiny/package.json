@@ -21,12 +21,15 @@
     "@webiny/api-scheduler": "0.0.0",
     "@webiny/api-website-builder": "0.0.0",
     "@webiny/api-website-builder-scheduler": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-aco": "0.0.0",
     "@webiny/app-admin": "0.0.0",
+    "@webiny/app-file-manager": "0.0.0",
     "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-headless-cms-common": "0.0.0",
     "@webiny/app-website-builder": "0.0.0",
+    "@webiny/background-tasks": "0.0.0",
     "@webiny/cli-core": "0.0.0",
     "@webiny/db-dynamodb": "0.0.0",
     "@webiny/feature": "0.0.0",
@@ -38,10 +41,10 @@
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
     "@webiny/project-aws-template": "0.0.0",
-    "@webiny/tasks": "0.0.0",
     "@webiny/tenant-manager": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
+    "@webiny/webhooks": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0",
     "react": "18.3.1"
   },
@@ -51,8 +54,7 @@
     "typescript": "6.0.3"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "adio": {
     "ignore": {
@@ -82,6 +84,7 @@
     "./api/system": "./api/system.js",
     "./api/tasks": "./api/tasks.js",
     "./api/tenancy": "./api/tenancy.js",
+    "./api/webhooks": "./api/webhooks.js",
     "./api": "./api.js",
     "./api/file-manager/file": "./api/file-manager/file.js",
     "./api/file-manager/permissions": "./api/file-manager/permissions.js",
@@ -112,8 +115,11 @@
     "./admin/configs": "./admin/configs.js",
     "./admin/form": "./admin/form.js",
     "./admin/tenancy": "./admin/tenancy.js",
+    "./admin/ui/file-manager": "./admin/ui/file-manager.js",
+    "./admin/ui/lexical": "./admin/ui/lexical.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
+    "./admin/cms/field-renderers/common": "./admin/cms/field-renderers/common.js",
     "./admin/cms/field-renderers/dynamic-zone": "./admin/cms/field-renderers/dynamic-zone.js",
     "./admin/cms/field-renderers/object": "./admin/cms/field-renderers/object.js",
     "./admin/cms/lexical": "./admin/cms/lexical.js",
@@ -129,12 +135,15 @@
     "./api/db": "./api/db.js",
     "./admin/languages": "./admin/languages.js",
     "./api/languages": "./api/languages.js",
-    "./admin/lexical": "./admin/lexical.js",
     "./infra/admin": "./infra/admin.js",
     "./infra/api": "./infra/api.js",
     "./infra/core": "./infra/core.js",
     "./infra": "./infra.js",
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
+  },
+  "exportGenerationHash": "a9e9428800c668172653eb3821a9ac0a0abab1a1f0ee06c19356f7c9b80b6818",
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

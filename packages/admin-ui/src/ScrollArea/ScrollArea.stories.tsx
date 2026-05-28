@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { ScrollArea, ScrollBar, ScrollPosition } from "./ScrollArea.js";
 import React from "react";
 import { Heading } from "~/Heading/index.js";

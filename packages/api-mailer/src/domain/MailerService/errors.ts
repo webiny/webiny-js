@@ -21,6 +21,16 @@ export class NoSettingsConfiguredError extends BaseError {
     }
 }
 
+export class TransportCreateError extends BaseError {
+    override readonly code = "Mailer/MailerService/TransportCreateError" as const;
+
+    constructor(error: unknown) {
+        super({
+            message: error instanceof Error ? error.message : String(error)
+        });
+    }
+}
+
 export class TransportSendError extends BaseError<{ error: TransportSendResponse["error"] }> {
     override readonly code = "Mailer/MailerService/TransportSendError" as const;
 

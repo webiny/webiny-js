@@ -10,6 +10,9 @@ interface UseSnackbarResponse {
     hideSnackbar: () => void;
 }
 
+/**
+ * @deprecated Use the new `useToast` hook from `@webiny/admin-ui` instead.
+ */
 export const useSnackbar = (): UseSnackbarResponse => {
     const { showToast, hideAllToasts } = useToast();
 

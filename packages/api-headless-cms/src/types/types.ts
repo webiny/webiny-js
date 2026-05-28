@@ -433,15 +433,6 @@ export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
      */
     location?: ICmsEntryLocation;
     /**
-     * Settings for the given entry.
-     *
-     * Introduced with Advanced Publishing Workflow. Will always be inserted once this PR is merged.
-     * Be aware that when accessing properties in it on old systems, it will break if not checked first.
-     *
-     * Available only on the Manage API in entry GraphQL type `meta.data` property.
-     */
-    meta?: GenericRecord;
-    /**
      * Is the entry in the bin?
      */
     wbyDeleted?: boolean | null;
@@ -456,6 +447,14 @@ export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
      * Is this CMS Entry live (no matter the revision).
      */
     live: ICmsEntryLive | null;
+    /**
+     * A revision description.
+     */
+    revisionDescription: string | undefined;
+    /**
+     * A timestamp of when the entry should be automatically deleted from the database.
+     */
+    expiresAt: number | null;
 }
 
 export interface CmsStorageEntry<T extends CmsEntryValues = CmsEntryValues> extends CmsEntry<T> {
@@ -743,6 +742,8 @@ export interface CreateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
     system?: Partial<ICmsEntrySystem>;
 
     values: TValues | undefined;
+
+    expiresAt?: Date | undefined;
 }
 
 export interface CreateCmsEntryOptionsInput {
@@ -843,6 +844,8 @@ export interface UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
     system?: Partial<ICmsEntrySystem>;
 
     values?: Partial<TValues>;
+
+    expiresAt?: Date | number | null | undefined;
 }
 
 export interface UpdateCmsEntryOptionsInput {

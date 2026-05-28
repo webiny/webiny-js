@@ -24,6 +24,7 @@ import { LexicalLinkForm } from "@webiny/app-admin";
 import { LexicalEditorConfig } from "@webiny/lexical-editor";
 import { TypographyDropDown } from "./TypographyDropDown.js";
 import { ExpandEditorAction } from "./ExpandEditorAction.js";
+import { FontSizeAction } from "@webiny/lexical-editor";
 
 const { ToolbarElement, Plugin } = LexicalEditorConfig;
 
@@ -58,6 +59,7 @@ export const DefaultLexicalConfig = () => {
                         name={"floatingLinkEditor"}
                         element={<FloatingLinkEditorPlugin LinkForm={LexicalLinkForm} />}
                     />
+                    <ToolbarElement name="fontSize" element={<FontSizeAction />} />
                     <ToolbarElement name="fontColor" element={<FontColorAction />} />
                     <ToolbarElement name="typography" element={<TypographyAction />} />
                     <ToolbarElement name="textAlignment" element={<TextAlignmentAction />} />

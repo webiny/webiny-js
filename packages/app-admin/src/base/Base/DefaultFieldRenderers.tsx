@@ -21,7 +21,9 @@ import { HiddenRenderer } from "~/base/Base/FieldRenderers/HiddenRenderer.js";
 import { KeyValueTagsRenderer } from "~/base/Base/FieldRenderers/ObjectRenderer/KeyValueTagsRenderer.js";
 import { FilePickerRenderer } from "~/base/Base/FieldRenderers/FilePickerRenderer.js";
 import { FileUrlPickerRenderer } from "~/base/Base/FieldRenderers/FileUrlPickerRenderer.js";
+import { MultiFilePickerRenderer } from "~/base/Base/FieldRenderers/MultiFilePickerRenderer.js";
 import { CodeEditorRenderer } from "~/base/Base/FieldRenderers/CodeEditorRenderer.js";
+import { LexicalRenderer } from "~/base/Base/FieldRenderers/LexicalRenderer.js";
 
 export const DefaultFieldRenderers = () => {
     return (
@@ -65,10 +67,15 @@ export const DefaultFieldRenderers = () => {
             />
             <AdminConfig.Form.FieldRenderer name={"filePicker"} component={FilePickerRenderer} />
             <AdminConfig.Form.FieldRenderer
+                name={"multiFilePicker"}
+                component={MultiFilePickerRenderer}
+            />
+            <AdminConfig.Form.FieldRenderer
                 name={"fileUrlPicker"}
                 component={FileUrlPickerRenderer}
             />
             <AdminConfig.Form.FieldRenderer name={"codeEditor"} component={CodeEditorRenderer} />
+            <AdminConfig.Form.FieldRenderer name={"lexical"} component={LexicalRenderer} />
         </AdminConfig>
     );
 };

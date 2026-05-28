@@ -1,12 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import debounce from "lodash/debounce.js";
 import { NewEntryButton } from "./NewEntryButton.js";
-import { AutoComplete } from "@webiny/ui/AutoComplete/index.js";
+import { AutoComplete } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { SimpleLink } from "@webiny/app-admin";
 import { useNewRefEntry } from "../hooks/useNewRefEntry.js";
 import { useReference } from "./useReference.js";
-import { renderItem } from "./renderItem.js";
 import { createEntryUrl } from "./createEntryUrl.js";
 import type { CmsModelField } from "~/types.js";
 import type { BindComponentRenderProp } from "@webiny/form";
@@ -28,12 +27,40 @@ const ContentEntriesAutocomplete = ({ bind }: ContentEntriesAutocompleteProps) =
     const rules = useFieldEffectiveRules(field);
     const { models } = useModels();
     const [showNewEntryModal, setShowNewEntryModal] = useState(false);
-    const { options, setSearch, value, loading, onChange } = useReference({
+    const {
+        options: rawOptions,
+        setSearch,
+        value,
+        loading,
+        onChange
+    } = useReference({
         bind,
         field
     });
 
     const disabled = !rules.canEdit || rules.disabled;
+
+    const options = useMemo(
+        () => rawOptions.map(opt => ({ label: opt.name, value: opt.entryId, item: opt })),
+        [rawOptions]
+    );
+
+    const currentValue = useMemo(() => (value ? value.entryId : undefined), [value]);
+
+    const onValueChange = useCallback(
+        (entryId: string) => {
+            const opt = options.find(o => o.value === entryId);
+            if (opt?.item) {
+                onChange(entryId, opt.item);
+            }
+        },
+        [options, onChange]
+    );
+
+    const onValueSearch = useCallback(
+        debounce((search: string) => setSearch(search), 250),
+        [setSearch]
+    );
 
     let entryInfo: string | null = null;
     if (value && !value.published) {
@@ -48,11 +75,8 @@ const ContentEntriesAutocomplete = ({ bind }: ContentEntriesAutocompleteProps) =
         });
     }
     const { renderNewEntryModal, refModelId, help } = useNewRefEntry({ field });
-    const model = models.find(model => model.modelId === refModelId);
+    const model = models.find(m => m.modelId === refModelId);
 
-    /*
-     * Wrap AutoComplete input in NewRefEntry modal.
-     */
     if (renderNewEntryModal) {
         return (
             <>
@@ -67,18 +91,17 @@ const ContentEntriesAutocomplete = ({ bind }: ContentEntriesAutocompleteProps) =
                 ) : null}
 
                 <AutoComplete
-                    {...bind}
-                    renderItem={renderItem}
-                    onChange={onChange}
+                    validation={bind.validation}
                     loading={loading}
-                    value={value || undefined}
+                    value={currentValue}
                     options={options}
                     label={field.label}
                     note={entryInfo}
                     data-testid={`fr.input.autocomplete.${field.label}`}
                     description={<>{field.help}</>}
-                    onInput={debounce(search => setSearch(search), 250)}
-                    noResultFound={<NewEntryButton onClick={() => setShowNewEntryModal(true)} />}
+                    onValueChange={onValueChange}
+                    onValueSearch={onValueSearch}
+                    emptyMessage={<NewEntryButton onClick={() => setShowNewEntryModal(true)} />}
                 />
             </>
         );
@@ -86,18 +109,17 @@ const ContentEntriesAutocomplete = ({ bind }: ContentEntriesAutocompleteProps) =
 
     return (
         <AutoComplete
-            {...bind}
             disabled={disabled}
-            renderItem={renderItem}
-            onChange={onChange}
+            validation={bind.validation}
             loading={loading}
-            value={value || undefined}
+            value={currentValue}
             options={options}
             label={field.label}
             description={<>{field.help}</>}
             note={entryInfo}
-            onInput={debounce(search => setSearch(search), 250)}
-            noResultFound={help}
+            onValueChange={onValueChange}
+            onValueSearch={onValueSearch}
+            emptyMessage={help}
         />
     );
 };

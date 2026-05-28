@@ -1,11 +1,9 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 export interface ToIndexParams {
     model: CmsModel;
     field: CmsModelField;
-    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     value: any;
     rawValue: any;
     getFieldIndex(fieldType: string): ICmsEntryOpenSearchFieldIndex;
@@ -19,7 +17,6 @@ export interface ToIndexValue {
 export interface FromIndexParams {
     model: CmsModel;
     field: CmsModelField;
-    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     value: any;
     rawValue: any;
     getFieldIndex(fieldType: string): ICmsEntryOpenSearchFieldIndex;

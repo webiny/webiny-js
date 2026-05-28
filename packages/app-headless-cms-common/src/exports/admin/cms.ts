@@ -4,4 +4,4 @@ export type {
     CmsModelField,
     CmsModelLayoutField,
     CmsIdentity
-} from "~/types/index.ts";
+} from "~/types/index.js";

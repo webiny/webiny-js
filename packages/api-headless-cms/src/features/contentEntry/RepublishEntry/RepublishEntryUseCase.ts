@@ -1,6 +1,5 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { RepublishEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { RepublishEntryRepository } from "./abstractions.js";
@@ -14,40 +13,26 @@ import {
 } from "./events.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
-import { createRepublishEntryData } from "~/crud/contentEntry/entryDataFactories/index.js";
-import { CmsContext } from "~/features/shared/abstractions.js";
+import { CreateRepublishEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreateRepublishEntryDataFactory/index.js";
 
-/**
- * RepublishEntryUseCase - Orchestrates republishing an entry.
- *
- * Responsibilities:
- * - Apply access control (both write and publish permissions)
- * - Get the entry to republish
- * - Prepare entry data with updated timestamps
- * - Publish domain events
- * - Delegate to repository for storage operations (update + publish)
- */
 class RepublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
         private repository: RepublishEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
-        private identityContext: IdentityContext.Interface,
         private eventPublisher: EventPublisher.Interface,
-        private cmsContext: CmsContext.Interface
+        private createRepublishEntryDataFactory: CreateRepublishEntryDataFactory.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string
     ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
-        // Check access control (write and publish)
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w", pw: "p" });
         if (!canAccess) {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        // Get the entry to republish
         const result = await this.getRevisionById.execute<T>(model, id);
 
         if (result.isFail()) {
@@ -56,7 +41,6 @@ class RepublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const originalEntry = result.value;
 
-        // Check access control on the specific entry
         const canAccessEntry = await this.accessControl.canAccessEntry({
             model,
             entry: originalEntry,
@@ -68,16 +52,12 @@ class RepublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        // Prepare entry data for republishing
-        const { entry } = await createRepublishEntryData<T>({
-            context: this.cmsContext,
+        const { entry } = await this.createRepublishEntryDataFactory.create<T>(
             model,
-            originalEntry,
-            getIdentity: () => this.identityContext.getIdentity()
-        });
+            originalEntry
+        );
 
         try {
-            // Publish before event
             await this.eventPublisher.publish(
                 new EntryBeforeRepublishEvent({
                     entry,
@@ -85,7 +65,6 @@ class RepublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 })
             );
 
-            // Delegate to repository (update + publish)
             const repositoryResult = await this.repository.execute<T>(model, entry);
 
             if (repositoryResult.isFail()) {
@@ -101,7 +80,6 @@ class RepublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
             const publishedEntry = repositoryResult.value;
 
-            // Publish after event
             await this.eventPublisher.publish(
                 new EntryAfterRepublishEvent({
                     entry: publishedEntry,
@@ -130,8 +108,7 @@ export const RepublishEntryUseCase = createImplementation({
         RepublishEntryRepository,
         AccessControl,
         GetRevisionByIdUseCase,
-        IdentityContext,
         EventPublisher,
-        CmsContext
+        CreateRepublishEntryDataFactory
     ]
 });

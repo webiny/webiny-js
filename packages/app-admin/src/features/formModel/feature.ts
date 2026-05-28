@@ -10,7 +10,8 @@ import {
     DateTimeFieldType,
     FileFieldType,
     FileUrlFieldType,
-    ObjectFieldType
+    ObjectFieldType,
+    LexicalFieldType
 } from "./fieldTypes/index.js";
 
 export const FormModelFeature = createFeature({
@@ -23,6 +24,7 @@ export const FormModelFeature = createFeature({
         container.register(FileFieldType);
         container.register(FileUrlFieldType);
         container.register(ObjectFieldType);
+        container.register(LexicalFieldType);
 
         container.register(FieldBuilderRegistry).inSingletonScope();
         container.register(ConditionRuleEvaluator).inSingletonScope();

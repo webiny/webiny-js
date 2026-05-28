@@ -3,7 +3,7 @@ import React, { useEffect, useCallback, useRef, useMemo } from "react";
 import camelCase from "lodash/camelCase.js";
 import { Grid, Switch, Input, Textarea } from "@webiny/admin-ui";
 import { validation } from "@webiny/validation";
-import { Tags } from "@webiny/ui/Tags/index.js";
+import { Tags } from "@webiny/admin-ui";
 import { useForm, Bind } from "@webiny/form";
 import { useModelFieldEditor } from "~/admin/components/FieldEditor/index.js";
 import { useModelEditor } from "~/admin/hooks/index.js";
@@ -198,7 +198,6 @@ const GeneralTab = () => {
                             description={
                                 "Field tags are useful for developers and are not visible in the UI (optional)"
                             }
-                            protectedTags={fieldPlugin.field.tags}
                             data-testid={`cms.editor.field.settings.general.tags`}
                         />
                     </Bind>

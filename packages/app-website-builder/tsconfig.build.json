@@ -19,7 +19,6 @@
     { "path": "../lexical-theme/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
     { "path": "../react-properties/tsconfig.build.json" },
-    { "path": "../ui/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
     { "path": "../website-builder-sdk/tsconfig.build.json" }
@@ -67,8 +66,6 @@
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
       "@webiny/react-properties": ["../react-properties/src"],
-      "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],

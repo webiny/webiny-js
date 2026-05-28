@@ -3,6 +3,7 @@ import { createAbstraction } from "~/abstractions/createAbstraction.js";
 export type UpgradeCommandPackageVersion = `${number}.${number}.${number}` | "latest";
 
 export interface IUpgradeCommandHandlerHandleParams {
+    force: boolean;
     showLogs: boolean;
     logLevel: string;
     showStackTrace: boolean;

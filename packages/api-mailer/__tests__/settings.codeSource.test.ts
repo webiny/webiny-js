@@ -31,6 +31,7 @@ vi.mock("nodemailer", () => {
 const codeSettings = {
     host: "code-host.webiny",
     port: 587,
+    secure: false,
     user: "code-user",
     password: "code-password",
     from: "code-from@example.com",
@@ -109,6 +110,7 @@ describe("Mailer settings — code source end-to-end", () => {
                         data: {
                             host: codeSettings.host,
                             port: codeSettings.port,
+                            secure: codeSettings.secure,
                             user: codeSettings.user,
                             from: codeSettings.from,
                             replyTo: codeSettings.replyTo,

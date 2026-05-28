@@ -1,0 +1,80 @@
+import { Result } from "@webiny/feature/api";
+import { GetModelRepository } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { ListEntriesRepository } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
+import { WebhookDeliveryTransformer } from "~/api/features/Transformers/abstractions/WebhookDeliveryTransformer.js";
+import {
+    ListWebhookDeliveriesRepository as RepositoryAbstraction,
+    type IListWebhookDeliveriesOutput
+} from "./abstractions.js";
+import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
+import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
+import type { IListWebhookDeliveriesInput } from "./abstractions.js";
+import type { WebhookDeliveryCmsEntryValues } from "~/api/domain/WebhookDelivery.js";
+import { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
+import { CmsSortMapper } from "@webiny/api-headless-cms/features/sortMapper/abstractions.js";
+
+class ListWebhookDeliveriesRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private readonly getModelRepository: GetModelRepository.Interface,
+        private readonly listEntriesRepository: ListEntriesRepository.Interface,
+        private readonly transformer: WebhookDeliveryTransformer.Interface,
+        private readonly whereMapper: CmsWhereMapper.Interface,
+        private readonly sortMapper: CmsSortMapper.Interface
+    ) {}
+
+    async execute(
+        params: IListWebhookDeliveriesInput
+    ): Promise<Result<IListWebhookDeliveriesOutput, RepositoryAbstraction.Error>> {
+        try {
+            const modelResult = await this.getModelRepository.execute(WEBHOOK_DELIVERY_MODEL_ID);
+            if (modelResult.isFail()) {
+                return Result.fail(new WebhookModelNotFoundError(WEBHOOK_DELIVERY_MODEL_ID));
+            }
+
+            const model = modelResult.value;
+
+            const listResult =
+                await this.listEntriesRepository.execute<WebhookDeliveryCmsEntryValues>(model, {
+                    where: this.whereMapper.map({
+                        fields: model.fields,
+                        input: params.where
+                    }),
+                    sort: this.sortMapper.map({
+                        fields: model.fields,
+                        input: params.sort
+                    }),
+                    limit: params.limit ?? 100,
+                    after: params.after
+                });
+
+            if (listResult.isFail()) {
+                return Result.fail(WebhookPersistenceError.from(listResult.error));
+            }
+
+            const { entries, meta } = listResult.value;
+            const items = entries.map(entry => this.transformer.fromStorage(entry));
+
+            return Result.ok({
+                items,
+                meta: {
+                    cursor: meta.cursor,
+                    hasMoreItems: meta.hasMoreItems,
+                    totalCount: meta.totalCount
+                }
+            });
+        } catch (error) {
+            return Result.fail(WebhookPersistenceError.from(error));
+        }
+    }
+}
+
+export const ListWebhookDeliveriesRepository = RepositoryAbstraction.createImplementation({
+    implementation: ListWebhookDeliveriesRepositoryImpl,
+    dependencies: [
+        GetModelRepository,
+        ListEntriesRepository,
+        WebhookDeliveryTransformer,
+        CmsWhereMapper,
+        CmsSortMapper
+    ]
+});

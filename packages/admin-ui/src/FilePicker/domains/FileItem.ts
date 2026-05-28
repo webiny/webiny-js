@@ -23,22 +23,21 @@ export class FileItem {
     }
 
     static create(data: FileItemDto): FileItem {
+        const url = "url" in data ? data.url : data.src;
         return new FileItem({
             id: generateId(data.id),
-            name: data.name ?? data.url,
-            url: data.url,
+            name: data.name ?? url,
+            url,
             mimeType: data.mimeType ?? this.getDefaultMimeType(),
             size: data.size ?? 0
         });
     }
 
     static createFromUrl(url: string): FileItem {
-        console.log("createFromUrl", url);
         const documentUrl = new URL(url);
         const pathname = documentUrl.pathname;
         const name = pathname.substring(pathname.lastIndexOf("/") + 1);
         const extension = name.split(".").pop()?.toLowerCase() || "";
-        console.log("extension", extension);
 
         // Map extensions to mimetypes
         const mimeTypes: Record<string, string> = {
