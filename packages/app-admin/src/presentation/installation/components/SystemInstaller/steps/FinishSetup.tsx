@@ -7,10 +7,7 @@ import type {
     ISystemInstallerPresenter
 } from "~/presentation/installation/presenters/SystemInstaller/abstractions.js";
 import { handleStartUsing } from "./FinishSetup/handleStartUsing.js";
-
-const handleRestartInstallation = () => {
-    window.location.reload();
-};
+import { handleRestartInstallation } from "./FinishSetup/handleRestartInstallation.js";
 
 interface StepProps {
     error?: ErrorObject;
