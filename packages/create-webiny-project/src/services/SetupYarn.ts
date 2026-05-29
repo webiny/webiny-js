@@ -70,18 +70,24 @@ export class SetupYarn {
     }
 
     private loadExampleYarnRc(): Record<string, any> | null {
+        const exampleYarnRcPath = path.join(
+            import.meta.dirname,
+            "..",
+            "..",
+            "_templates",
+            "base",
+            "example.yarnrc.yml"
+        );
+
         try {
-            const exampleYarnRcPath = path.join(
-                import.meta.dirname,
-                "..",
-                "..",
-                "_templates",
-                "base",
-                "example.yarnrc.yml"
-            );
             return yaml.load(fs.readFileSync(exampleYarnRcPath, "utf-8")) as Record<string, any>;
-        } catch {
+        } catch (err) {
+            const exists = fs.existsSync(exampleYarnRcPath);
             console.log(yellow("Warning: could not load example .yarnrc.yml template."));
+            console.log(yellow(`  import.meta.dirname: ${import.meta.dirname}`));
+            console.log(yellow(`  resolved path: ${exampleYarnRcPath}`));
+            console.log(yellow(`  file exists: ${exists}`));
+            console.log(yellow(`  error: ${(err as Error).message}`));
             return null;
         }
     }
