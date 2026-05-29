@@ -16820,6 +16820,7 @@ __metadata:
     type-fest: "npm:^5.6.0"
     uuid: "npm:^14.0.0"
     validate-npm-package-name: "npm:^8.0.0"
+    vitest: "npm:^4.1.7"
     write-json-file: "npm:^7.0.0"
     yargs: "npm:^18.0.0"
     yesno: "npm:^0.4.0"
