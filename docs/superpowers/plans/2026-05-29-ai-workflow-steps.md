@@ -21,6 +21,11 @@ These issues were found during code review and resolved:
 | 3 | `setIdentity()` mutates shared state — fragile? | Confirmed correct — bg tasks run as the triggering identity, `setIdentity()` is the standard pattern |
 | 4 | `trigger()` return value ignored in event handlers | Added result check + error logging in both handlers |
 | 5 | `TaskService`/`Ai` availability in bg task Lambda | Confirmed — same code as GraphQL Lambda, just different resource config |
+| 6 | `WorkflowStateApproveStepHandler` not exported from barrel | Add export to `ApproveWorkflowStateStep/index.ts` |
+| 7 | Zod discriminated union output may not assign to `NonEmptyArray<IWorkflowStep>` | Verify during Task 4 type check — keep `.transform()` cast if needed |
+| 8 | `CreateWorkflow/UpdateWorkflow/StoreWorkflow` abstractions may still have `NonEmptyArray` for teams | Verify during Task 1 type check — update if needed |
+| 9 | `startStep.execute()` starts first pending step, not a specific `stepId` | By design — `stepId` is for prompt/model lookup; added comment in task definition |
+| 10 | Logger call convention | Using object form `{ message }` — extendable with `data`, `code`, etc. later |
 
 ---
 
@@ -52,6 +57,7 @@ These issues were found during code review and resolved:
 | `src/graphql/validation/step.ts` | Zod discriminated union: human steps require teams, AI steps require prompt + model |
 | `src/graphql/workflows.ts` | Add `WorkflowStepType` enum, update `WorkflowStep`/`WorkflowStepInput` types |
 | `src/graphql/workflowState.ts` | Add `type`, `prompt`, `model` to `WorkflowStateStep` type |
+| `src/features/workflowState/ApproveWorkflowStateStep/index.ts` | Add missing `WorkflowStateApproveStepHandler` barrel export |
 | `src/index.ts` | Register `AutoStartAiStepFeature` and `AiWorkflowStepTaskFeature` |
 
 ---
@@ -396,16 +402,24 @@ export const stepValidation = zod.discriminatedUnion("type", [
 
 - [ ] **Step 2: Update workflow validation if needed**
 
-Check `src/graphql/validation/workflow.ts` — it imports `stepValidation` and uses it in an array. The `.transform(value => value as NonEmptyArray<IWorkflowStep>)` may need updating since the discriminated union output type differs. Update the transform to match the new step types:
+Check `src/graphql/validation/workflow.ts` — it imports `stepValidation` and uses it in an array. Try removing the `.transform(value => value as NonEmptyArray<IWorkflowStep>)` cast first:
 
 ```typescript
-/* In src/graphql/validation/workflow.ts, update the steps field: */
+/* In src/graphql/validation/workflow.ts, try without the cast: */
 steps: zod
     .array(stepValidation)
     .min(1, "You must add at least one step.")
 ```
 
-Remove the `.transform(value => value as NonEmptyArray<IWorkflowStep>)` if the Zod output type now satisfies `IWorkflowStep[]`. The `NonEmptyArray` constraint is enforced by `.min(1)`.
+If the type check in Step 3 fails because the Zod discriminated union output doesn't assign to `NonEmptyArray<IWorkflowStep>`, keep the `.transform()` cast:
+
+```typescript
+/* Fallback — keep the cast if needed: */
+steps: zod
+    .array(stepValidation)
+    .min(1, "You must add at least one step.")
+    .transform(value => value as NonEmptyArray<IWorkflowStep>)
+```
 
 - [ ] **Step 3: Verify validation compiles**
 
@@ -529,13 +543,26 @@ git commit -m "feat(api-workflows): add AI step type to GraphQL schema"
 ## Task 6: Create Auto-Start Event Handlers
 
 **Files:**
+- Modify: `src/features/workflowState/ApproveWorkflowStateStep/index.ts` (add missing barrel export)
 - Create: `src/features/workflowState/AutoStartAiStep/abstractions.ts`
 - Create: `src/features/workflowState/AutoStartAiStep/AutoStartAiStepOnCreateHandler.ts`
 - Create: `src/features/workflowState/AutoStartAiStep/AutoStartAiStepOnApproveHandler.ts`
 - Create: `src/features/workflowState/AutoStartAiStep/feature.ts`
 - Create: `src/features/workflowState/AutoStartAiStep/index.ts`
 
-- [ ] **Step 1: Create abstractions**
+- [ ] **Step 1: Add missing barrel export to ApproveWorkflowStateStep**
+
+In `src/features/workflowState/ApproveWorkflowStateStep/index.ts`, add the missing handler export:
+
+```typescript
+export { ApproveWorkflowStateStepUseCase } from "./abstractions.js";
+export { WorkflowStateApproveStepEvent } from "./events.js";
+export { WorkflowStateApproveStepHandler } from "./events.js";
+```
+
+This makes the import pattern consistent with `CreateWorkflowState/index.ts` which already exports its handler.
+
+- [ ] **Step 2: Create abstractions**
 
 Create `src/features/workflowState/AutoStartAiStep/abstractions.ts`:
 
@@ -549,7 +576,7 @@ export interface IAiWorkflowStepTaskInput {
 }
 ```
 
-- [ ] **Step 2: Create the AfterCreate handler**
+- [ ] **Step 3: Create the AfterCreate handler**
 
 Create `src/features/workflowState/AutoStartAiStep/AutoStartAiStepOnCreateHandler.ts`:
 
@@ -609,7 +636,7 @@ Note: `Logger` import path may need verification. Search with:
 grep -r "export.*const Logger " packages/api-core/src/ --include="*.ts" | grep -v dist | head -5
 ```
 
-- [ ] **Step 3: Create the ApproveStep handler**
+- [ ] **Step 4: Create the ApproveStep handler**
 
 Create `src/features/workflowState/AutoStartAiStep/AutoStartAiStepOnApproveHandler.ts`:
 
@@ -673,7 +700,7 @@ export const AutoStartAiStepOnApproveHandler =
     });
 ```
 
-- [ ] **Step 4: Create feature registration**
+- [ ] **Step 5: Create feature registration**
 
 Create `src/features/workflowState/AutoStartAiStep/feature.ts`:
 
@@ -691,7 +718,7 @@ export const AutoStartAiStepFeature = createFeature({
 });
 ```
 
-- [ ] **Step 5: Create barrel export**
+- [ ] **Step 6: Create barrel export**
 
 Create `src/features/workflowState/AutoStartAiStep/index.ts`:
 
@@ -701,7 +728,7 @@ export { AI_WORKFLOW_STEP_TASK_ID } from "./abstractions.js";
 export type { IAiWorkflowStepTaskInput } from "./abstractions.js";
 ```
 
-- [ ] **Step 6: Verify types compile**
+- [ ] **Step 7: Verify types compile**
 
 Run: `yarn check -p @webiny/api-workflows 2>&1 | tail -30`
 
@@ -711,7 +738,7 @@ grep -r "export.*TaskService" packages/api-core/src/ --include="*.ts" | grep -v 
 grep -r "export.*const Logger" packages/api-core/src/ --include="*.ts" | grep -v dist | head -10
 ```
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add .
@@ -802,7 +829,12 @@ class AiWorkflowStepTaskDefinitionImpl
         /* Set AI identity — bg tasks run as the triggering identity via setIdentity. */
         this.identityContext.setIdentity(AI_IDENTITY);
 
-        /* Start the AI step (transition pending → inReview). */
+        /*
+         * Start the AI step (transition pending → inReview).
+         * startStep.execute() always acts on the current pending step — it does not accept a stepId.
+         * input.stepId is only used below to look up the prompt/model from the step definition.
+         * This is safe because the event handlers only trigger this task when the pending step IS the AI step.
+         */
         const startResult = await this.identityContext.withoutAuthorization(async () => {
             return this.startStep.execute(input.workflowStateId);
         });
