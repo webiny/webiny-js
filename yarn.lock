@@ -14464,7 +14464,7 @@ __metadata:
     "@types/postcss-import": "npm:^14.0.3"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/website-builder-vue": "npm:0.0.0"
-    postcss: "npm:^8.5.10"
+    postcss: "npm:^8.5.15"
     postcss-import: "npm:^16.1.1"
     typescript: "npm:6.0.3"
     vite: "npm:^6.0.0"
@@ -14524,7 +14524,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
-    mobx: "npm:^6.15.0"
+    mobx: "npm:^6.15.3"
     typescript: "npm:6.0.3"
     vue: "npm:^3.5.0"
   peerDependencies:
@@ -22318,13 +22318,6 @@ __metadata:
     react-native:
       optional: true
   checksum: 10/ce2c848129c052e1901f530329ec440e4b7f7264073e0f91bda240b2c37826f964d1fcab8cf43c4a1fa0d596074364e9ce52094e3db0bd5ca1d59147b92200f7
-  languageName: node
-  linkType: hard
-
-"mobx@npm:^6.15.0":
-  version: 6.15.4
-  resolution: "mobx@npm:6.15.4"
-  checksum: 10/5c8dc30a9418359dc5aa0214fda105f878c34cefe47ecda72dfa0414c0c33e743bc4798fb4699ff5e2f6e34faabcdd326812198531a5b23e50a37fbbb507a78c
   languageName: node
   linkType: hard
 
