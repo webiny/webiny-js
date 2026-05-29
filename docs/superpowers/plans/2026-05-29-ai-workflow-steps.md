@@ -4,9 +4,23 @@
 
 **Goal:** Extend `packages/api-workflows` so workflow steps can be either human-reviewed or AI-evaluated, with AI steps auto-starting via background tasks.
 
-**Architecture:** Add a `type: "human" | "ai"` discriminator to `IWorkflowStep`. AI steps carry an inline `prompt` and `model`. Event handlers on `WorkflowStateAfterCreateEvent` and `WorkflowStateApproveStepEvent` detect AI steps and trigger a background task. The task sets AI identity, calls `StartWorkflowStateStep`, runs the prompt via `Ai.Interface`, and calls `ApproveWorkflowStateStep` or `RejectWorkflowStateStep` based on the structured verdict `{ status: "approved" | "rejected", comment?: string }`.
+**Architecture:** Add a `type: "human" | "ai"` discriminator to `IWorkflowStep`. AI steps carry an inline `prompt` and `model`. Event handlers on `WorkflowStateAfterCreateEvent` and `WorkflowStateApproveStepEvent` detect AI steps and trigger a background task. The task sets AI identity via `setIdentity()`, calls `StartWorkflowStateStep`, runs the prompt via `Ai.Interface`, and calls `ApproveWorkflowStateStep` or `RejectWorkflowStateStep` based on the structured verdict `{ status: "approved" | "rejected", comment?: string }`.
 
 **Tech Stack:** TypeScript, Zod, Webiny DI (`createAbstraction`/`createImplementation`/`createFeature`), Webiny Background Tasks (`TaskDefinition`), Vercel AI SDK via `Ai.Interface`
+
+---
+
+## Review Resolutions
+
+These issues were found during code review and resolved:
+
+| # | Issue | Resolution |
+|---|-------|-----------|
+| 1 | `AI_IDENTITY` was a plain object but `setIdentity()` requires an `Identity` class | Create `AiIdentity` class extending `AuthenticatedIdentity` |
+| 2 | Task ordering: `teams` becomes optional before null-guard is added | Merged domain types + AiIdentity + state machine into one task |
+| 3 | `setIdentity()` mutates shared state — fragile? | Confirmed correct — bg tasks run as the triggering identity, `setIdentity()` is the standard pattern |
+| 4 | `trigger()` return value ignored in event handlers | Added result check + error logging in both handlers |
+| 5 | `TaskService`/`Ai` availability in bg task Lambda | Confirmed — same code as GraphQL Lambda, just different resource config |
 
 ---
 
@@ -15,13 +29,13 @@
 ### New Files
 | File | Responsibility |
 |------|---------------|
-| `src/domain/workflowState/AiIdentity.ts` | AI identity constant used as `savedBy` for all AI step actions |
-| `src/features/workflowState/AutoStartAiStep/abstractions.ts` | Handler abstraction exports |
+| `src/domain/workflowState/AiIdentity.ts` | `AiIdentity` class extending `AuthenticatedIdentity`, used as `savedBy` for all AI step actions |
+| `src/features/workflowState/AutoStartAiStep/abstractions.ts` | Task ID constant, task input interface |
 | `src/features/workflowState/AutoStartAiStep/AutoStartAiStepOnCreateHandler.ts` | Event handler: check first step on workflow state create |
 | `src/features/workflowState/AutoStartAiStep/AutoStartAiStepOnApproveHandler.ts` | Event handler: check next step after step approval |
 | `src/features/workflowState/AutoStartAiStep/feature.ts` | DI registration for both handlers |
 | `src/features/workflowState/AutoStartAiStep/index.ts` | Barrel export |
-| `src/features/workflowState/AiWorkflowStepTask/abstractions.ts` | Task input/output types, task ID constant |
+| `src/features/workflowState/AiWorkflowStepTask/abstractions.ts` | Task input/output types |
 | `src/features/workflowState/AiWorkflowStepTask/AiWorkflowStepTaskDefinition.ts` | Background task: start step, run AI eval, approve/reject |
 | `src/features/workflowState/AiWorkflowStepTask/feature.ts` | DI registration |
 | `src/features/workflowState/AiWorkflowStepTask/index.ts` | Barrel export |
@@ -31,9 +45,9 @@
 |------|--------|
 | `src/domain/workflow/abstractions.ts` | Add `WorkflowStepType`, `type`, `prompt`, `model` to `IWorkflowStep`; make `teams` optional |
 | `src/domain/workflow/workflowModel.ts` | Add `type`, `prompt`, `model` CMS fields to workflow step object |
-| `src/domain/workflow/WorkflowMapper.ts` | Pass through new fields |
+| `src/domain/workflow/WorkflowMapper.ts` | Pass through new fields (verify only — steps are spread) |
 | `src/domain/workflowState/stateModel.ts` | Add `type`, `prompt`, `model` CMS fields; make `teams` optional |
-| `src/domain/workflowState/WorkflowState.ts` | Update `enrichStep` to handle AI steps; AI identity gets `canReview: true` on AI steps |
+| `src/domain/workflowState/WorkflowState.ts` | Update `enrichStep` to handle AI steps; AI identity gets `canReview: true` on AI steps; null-guard `step.teams ?? []` |
 | `src/features/shared/abstractions.ts` | Add `WorkflowStepType`, `type`, `prompt`, `model` to `IWorkflowStepInput`; make `teams` optional |
 | `src/graphql/validation/step.ts` | Zod discriminated union: human steps require teams, AI steps require prompt + model |
 | `src/graphql/workflows.ts` | Add `WorkflowStepType` enum, update `WorkflowStep`/`WorkflowStepInput` types |
@@ -42,11 +56,15 @@
 
 ---
 
-## Task 1: Update Domain Types
+## Task 1: Update Domain Types, Create AI Identity, and Update State Machine
+
+> Merged from original Tasks 1 + 6 to prevent a crash window where `teams` is optional at the type level but the null-guard in `enrichStep` hasn't been added yet.
 
 **Files:**
 - Modify: `src/domain/workflow/abstractions.ts`
 - Modify: `src/features/shared/abstractions.ts`
+- Create: `src/domain/workflowState/AiIdentity.ts`
+- Modify: `src/domain/workflowState/WorkflowState.ts`
 
 - [ ] **Step 1: Update `IWorkflowStep` in domain abstractions**
 
@@ -96,13 +114,95 @@ export interface IWorkflowStepInput {
 
 Remove the `NonEmptyArray` import if it becomes unused.
 
-- [ ] **Step 3: Verify types compile**
+- [ ] **Step 3: Create `AiIdentity` class**
+
+Create `src/domain/workflowState/AiIdentity.ts`:
+
+```typescript
+import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
+
+export class AiIdentity extends AuthenticatedIdentity {
+    constructor() {
+        super({
+            id: "ai-reviewer",
+            displayName: "AI Reviewer",
+            type: "ai"
+        });
+    }
+}
+
+export const AI_IDENTITY = new AiIdentity();
+```
+
+- [ ] **Step 4: Update `enrichStep` in WorkflowState**
+
+In `src/domain/workflowState/WorkflowState.ts`, import the AI identity:
+
+```typescript
+import { AI_IDENTITY } from "./AiIdentity.js";
+```
+
+Then replace the entire `enrichStep` method body:
+
+```typescript
+private enrichStep(params: IEnrichStepWithPermissionParams): IEnrichedWorkflowStateRecordStep {
+    const { step, createdBy } = params;
+    const identity = this.currentIdentity;
+
+    const stepType = step.type ?? "human";
+    const isAiStep = stepType === "ai";
+    const isAiIdentity = identity.id === AI_IDENTITY.id;
+
+    /* AI steps: only the AI identity can review; humans cannot. */
+    if (isAiStep) {
+        return {
+            ...step,
+            isOwner: step.savedBy?.id === identity.id,
+            canTakeOver: false,
+            canReview: isAiIdentity
+        };
+    }
+
+    /* Human steps: existing logic unchanged. */
+    if (createdBy.id === identity.id) {
+        return {
+            ...step,
+            isOwner: false,
+            canTakeOver: false,
+            canReview: false
+        };
+    }
+
+    const isOwner = step.savedBy?.id === identity.id;
+
+    const canReview = (step.teams ?? []).some(team => {
+        return this.teams.some(t => {
+            return t.id === team.id;
+        });
+    });
+
+    const canTakeOver =
+        canReview && !!step.savedBy?.id && step.state === WorkflowStateRecordState.inReview;
+
+    return {
+        ...step,
+        canTakeOver: !isOwner ? canTakeOver : false,
+        isOwner,
+        canReview
+    };
+}
+```
+
+Key changes:
+- Reads `step.type`, defaults to `"human"` for backward compat with existing records.
+- AI steps: `canReview = true` only for AI identity. `canTakeOver = false` always. `isOwner` based on `savedBy` match.
+- Human steps: uses `step.teams ?? []` to handle optional teams safely — prevents null-deref.
+
+- [ ] **Step 5: Verify types compile**
 
 Run: `yarn check -p @webiny/api-workflows 2>&1 | tail -30`
 
-Expected: Type errors in files that reference `IWorkflowStep.teams` as required — these will be fixed in subsequent tasks. Note any errors for reference.
-
-- [ ] **Step 4: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add .
@@ -113,7 +213,7 @@ yarn format > /dev/null 2>&1
 yarn lint
 yarn webiny sync-dependencies
 git add .
-git commit -m "feat(api-workflows): add step type discriminator and AI fields to domain types"
+git commit -m "feat(api-workflows): add step type discriminator, AI identity, and state machine guards"
 ```
 
 ---
@@ -126,10 +226,10 @@ git commit -m "feat(api-workflows): add step type discriminator and AI fields to
 
 - [ ] **Step 1: Add AI fields to workflow model**
 
-In `src/domain/workflow/workflowModel.ts`, inside the `steps` object's `.fields(fields => ({...}))` callback, add three new fields and make `teams` non-required:
+In `src/domain/workflow/workflowModel.ts`, inside the `steps` object's `.fields(fields => ({...}))` callback, add three new fields:
 
+Add after `id`:
 ```typescript
-/* Inside the steps .fields() callback, add these fields after `id`: */
 type: fields
     .text()
     .label("Type")
@@ -138,21 +238,13 @@ type: fields
         { label: "Human", value: "human" },
         { label: "AI", value: "ai" }
     ]),
+```
 
-/* After the existing `notifications` field, add: */
+Add after the existing `notifications` field:
+```typescript
 prompt: fields.longText().label("Prompt"),
 model: fields.text().label("Model"),
 ```
-
-Also, remove `.required()` and `.listMinLength()` from the `teams` field inside the steps object — make it optional. Change:
-```typescript
-teams: fields
-    .object()
-    .label("Teams")
-    .list()
-    .fields(teamFields => ({
-```
-(remove the `.required()` and `.listMinLength()` that were previously on teams — these are currently not there in the workflow model, only in the state model)
 
 - [ ] **Step 2: Add AI fields to workflow state model**
 
@@ -199,17 +291,15 @@ git commit -m "feat(api-workflows): add type, prompt, model fields to CMS models
 - Modify: `src/domain/workflow/WorkflowMapper.ts`
 - Modify: `src/domain/workflowState/WorkflowStateMapper.ts`
 
-- [ ] **Step 1: Update WorkflowMapper.fromCmsEntry**
+- [ ] **Step 1: Verify WorkflowMapper**
 
-In `src/domain/workflow/WorkflowMapper.ts`, the `fromCmsEntry` method spreads `entry.values.steps` — since steps are stored as objects in CMS, the new fields (`type`, `prompt`, `model`) are already included when the step object is spread. **Verify this is the case.** If steps are mapped field-by-field instead of spread, add the new fields explicitly.
+In `src/domain/workflow/WorkflowMapper.ts`, the `fromCmsEntry` method does `steps: entry.values.steps` and `toCmsEntry` does `steps: workflow.steps`. Both spread the entire step object. New fields (`type`, `prompt`, `model`) flow through automatically.
 
-The `toCmsEntry` method similarly passes through `workflow.steps` — verify and add fields if needed.
-
-No changes needed if steps are spread (which they are — `steps: entry.values.steps` in fromCmsEntry and `steps: workflow.steps` in toCmsEntry).
+No code changes needed — just verify.
 
 - [ ] **Step 2: Verify WorkflowStateMapper**
 
-In `src/domain/workflowState/WorkflowStateMapper.ts`, `fromCmsEntry` does `steps: input.values.steps` and `toCmsEntry` does `steps: input.steps`. Both spread the entire step object. New fields flow through automatically.
+In `src/domain/workflowState/WorkflowStateMapper.ts`, `fromCmsEntry` does `steps: input.values.steps` and `toCmsEntry` does `steps: input.steps`. Same pattern — new fields flow through.
 
 No code changes needed — just verify.
 
@@ -228,7 +318,7 @@ yarn format > /dev/null 2>&1
 yarn lint
 yarn webiny sync-dependencies
 git add .
-git commit -m "feat(api-workflows): update mappers for new step fields"
+git commit -m "feat(api-workflows): verify mappers pass through new step fields"
 ```
 
 ---
@@ -309,7 +399,7 @@ export const stepValidation = zod.discriminatedUnion("type", [
 Check `src/graphql/validation/workflow.ts` — it imports `stepValidation` and uses it in an array. The `.transform(value => value as NonEmptyArray<IWorkflowStep>)` may need updating since the discriminated union output type differs. Update the transform to match the new step types:
 
 ```typescript
-/* In src/graphql/validation/workflow.ts, update the steps transform: */
+/* In src/graphql/validation/workflow.ts, update the steps field: */
 steps: zod
     .array(stepValidation)
     .min(1, "You must add at least one step.")
@@ -370,7 +460,7 @@ input WorkflowStepInput {
 }
 ```
 
-Note: `teams` changes from `[WorkflowStepTeamInput!]!` to `[WorkflowStepTeamInput!]` (no longer required).
+Note: `teams` changes from `[WorkflowStepTeamInput!]!` to `[WorkflowStepTeamInput!]` (no longer required at the GraphQL level — Zod handles conditional validation).
 
 Update `WorkflowStep` output type:
 ```graphql
@@ -436,111 +526,7 @@ git commit -m "feat(api-workflows): add AI step type to GraphQL schema"
 
 ---
 
-## Task 6: Create AI Identity and Update State Machine
-
-**Files:**
-- Create: `src/domain/workflowState/AiIdentity.ts`
-- Modify: `src/domain/workflowState/WorkflowState.ts`
-
-- [ ] **Step 1: Create AI identity constant**
-
-Create `src/domain/workflowState/AiIdentity.ts`:
-
-```typescript
-import type { IWorkflowStateIdentity } from "./abstractions.js";
-
-export const AI_IDENTITY: IWorkflowStateIdentity = {
-    id: "ai-reviewer",
-    displayName: "AI Reviewer",
-    type: "ai"
-};
-```
-
-- [ ] **Step 2: Update `enrichStep` in WorkflowState**
-
-In `src/domain/workflowState/WorkflowState.ts`, import the AI identity:
-
-```typescript
-import { AI_IDENTITY } from "./AiIdentity.js";
-```
-
-Then update the `enrichStep` method. Replace the existing body with logic that handles AI steps:
-
-```typescript
-private enrichStep(params: IEnrichStepWithPermissionParams): IEnrichedWorkflowStateRecordStep {
-    const { step, createdBy } = params;
-    const identity = this.currentIdentity;
-
-    const stepType = step.type ?? "human";
-    const isAiStep = stepType === "ai";
-    const isAiIdentity = identity.id === AI_IDENTITY.id;
-
-    /* AI steps: only the AI identity can review; humans cannot. */
-    if (isAiStep) {
-        return {
-            ...step,
-            isOwner: step.savedBy?.id === identity.id,
-            canTakeOver: false,
-            canReview: isAiIdentity
-        };
-    }
-
-    /* Human steps: existing logic unchanged. */
-    if (createdBy.id === identity.id) {
-        return {
-            ...step,
-            isOwner: false,
-            canTakeOver: false,
-            canReview: false
-        };
-    }
-
-    const isOwner = step.savedBy?.id === identity.id;
-
-    const canReview = (step.teams ?? []).some(team => {
-        return this.teams.some(t => {
-            return t.id === team.id;
-        });
-    });
-
-    const canTakeOver =
-        canReview && !!step.savedBy?.id && step.state === WorkflowStateRecordState.inReview;
-
-    return {
-        ...step,
-        canTakeOver: !isOwner ? canTakeOver : false,
-        isOwner,
-        canReview
-    };
-}
-```
-
-Key changes:
-- Reads `step.type`, defaults to `"human"` for backward compat.
-- AI steps: `canReview = true` only for AI identity. `canTakeOver = false` always. `isOwner` based on `savedBy` match.
-- Human steps: uses `step.teams ?? []` to handle optional teams safely.
-
-- [ ] **Step 3: Verify types compile**
-
-Run: `yarn check -p @webiny/api-workflows 2>&1 | tail -30`
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add .
-yarn > /dev/null 2>&1
-node scripts/generateTsConfigsInPackages.js
-yarn adio
-yarn format > /dev/null 2>&1
-yarn lint
-yarn webiny sync-dependencies
-git add .
-git commit -m "feat(api-workflows): add AI identity and update state machine for AI steps"
-```
-
----
-
-## Task 7: Create Auto-Start Event Handlers
+## Task 6: Create Auto-Start Event Handlers
 
 **Files:**
 - Create: `src/features/workflowState/AutoStartAiStep/abstractions.ts`
@@ -570,11 +556,15 @@ Create `src/features/workflowState/AutoStartAiStep/AutoStartAiStepOnCreateHandle
 ```typescript
 import { WorkflowStateAfterCreateHandler } from "~/features/workflowState/CreateWorkflowState/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { AI_WORKFLOW_STEP_TASK_ID } from "./abstractions.js";
 import type { IAiWorkflowStepTaskInput } from "./abstractions.js";
 
 class AutoStartAiStepOnCreateHandlerImpl implements WorkflowStateAfterCreateHandler.Interface {
-    constructor(private taskService: TaskService.Interface) {}
+    constructor(
+        private readonly taskService: TaskService.Interface,
+        private readonly logger: Logger.Interface
+    ) {}
 
     public async handle(event: WorkflowStateAfterCreateHandler.Event): Promise<void> {
         const { state } = event.payload;
@@ -590,7 +580,7 @@ class AutoStartAiStepOnCreateHandlerImpl implements WorkflowStateAfterCreateHand
             return;
         }
 
-        await this.taskService.trigger<IAiWorkflowStepTaskInput>({
+        const result = await this.taskService.trigger<IAiWorkflowStepTaskInput>({
             definition: AI_WORKFLOW_STEP_TASK_ID,
             name: `AI Step: ${firstStep.title}`,
             input: {
@@ -599,13 +589,24 @@ class AutoStartAiStepOnCreateHandlerImpl implements WorkflowStateAfterCreateHand
                 stepId: firstStep.id
             }
         });
+
+        if (result.isFail()) {
+            this.logger.error({
+                message: `Failed to trigger AI step task for workflow state "${state.id}", step "${firstStep.id}": ${result.error.message}`
+            });
+        }
     }
 }
 
 export const AutoStartAiStepOnCreateHandler = WorkflowStateAfterCreateHandler.createImplementation({
     implementation: AutoStartAiStepOnCreateHandlerImpl,
-    dependencies: [TaskService]
+    dependencies: [TaskService, Logger]
 });
+```
+
+Note: `Logger` import path may need verification. Search with:
+```bash
+grep -r "export.*const Logger " packages/api-core/src/ --include="*.ts" | grep -v dist | head -5
 ```
 
 - [ ] **Step 3: Create the ApproveStep handler**
@@ -615,12 +616,16 @@ Create `src/features/workflowState/AutoStartAiStep/AutoStartAiStepOnApproveHandl
 ```typescript
 import { WorkflowStateApproveStepHandler } from "~/features/workflowState/ApproveWorkflowStateStep/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { WorkflowStateRecordState } from "~/domain/workflowState/abstractions.js";
 import { AI_WORKFLOW_STEP_TASK_ID } from "./abstractions.js";
 import type { IAiWorkflowStepTaskInput } from "./abstractions.js";
 
 class AutoStartAiStepOnApproveHandlerImpl implements WorkflowStateApproveStepHandler.Interface {
-    constructor(private taskService: TaskService.Interface) {}
+    constructor(
+        private readonly taskService: TaskService.Interface,
+        private readonly logger: Logger.Interface
+    ) {}
 
     public async handle(event: WorkflowStateApproveStepHandler.Event): Promise<void> {
         const { state } = event.payload;
@@ -643,7 +648,7 @@ class AutoStartAiStepOnApproveHandlerImpl implements WorkflowStateApproveStepHan
             return;
         }
 
-        await this.taskService.trigger<IAiWorkflowStepTaskInput>({
+        const result = await this.taskService.trigger<IAiWorkflowStepTaskInput>({
             definition: AI_WORKFLOW_STEP_TASK_ID,
             name: `AI Step: ${nextPendingStep.title}`,
             input: {
@@ -652,13 +657,19 @@ class AutoStartAiStepOnApproveHandlerImpl implements WorkflowStateApproveStepHan
                 stepId: nextPendingStep.id
             }
         });
+
+        if (result.isFail()) {
+            this.logger.error({
+                message: `Failed to trigger AI step task for workflow state "${state.id}", step "${nextPendingStep.id}": ${result.error.message}`
+            });
+        }
     }
 }
 
 export const AutoStartAiStepOnApproveHandler =
     WorkflowStateApproveStepHandler.createImplementation({
         implementation: AutoStartAiStepOnApproveHandlerImpl,
-        dependencies: [TaskService]
+        dependencies: [TaskService, Logger]
     });
 ```
 
@@ -694,9 +705,10 @@ export type { IAiWorkflowStepTaskInput } from "./abstractions.js";
 
 Run: `yarn check -p @webiny/api-workflows 2>&1 | tail -30`
 
-Verify `TaskService` import path is correct. If `TaskService` is not exported from `@webiny/api-core/features/task/TaskService/index.js`, search for the correct path:
+Verify `TaskService` and `Logger` import paths are correct. If not:
 ```bash
 grep -r "export.*TaskService" packages/api-core/src/ --include="*.ts" | grep -v dist | head -10
+grep -r "export.*const Logger" packages/api-core/src/ --include="*.ts" | grep -v dist | head -10
 ```
 
 - [ ] **Step 7: Commit**
@@ -715,7 +727,7 @@ git commit -m "feat(api-workflows): add auto-start event handlers for AI steps"
 
 ---
 
-## Task 8: Create Background Task Definition
+## Task 7: Create Background Task Definition
 
 **Files:**
 - Create: `src/features/workflowState/AiWorkflowStepTask/abstractions.ts`
@@ -787,7 +799,7 @@ class AiWorkflowStepTaskDefinitionImpl
             return controller.response.aborted();
         }
 
-        /* Set AI identity so use cases recognize us as the AI reviewer. */
+        /* Set AI identity — bg tasks run as the triggering identity via setIdentity. */
         this.identityContext.setIdentity(AI_IDENTITY);
 
         /* Start the AI step (transition pending → inReview). */
@@ -993,7 +1005,7 @@ git commit -m "feat(api-workflows): add AI workflow step background task definit
 
 ---
 
-## Task 9: Wire Everything in index.ts
+## Task 8: Wire Everything in index.ts
 
 **Files:**
 - Modify: `src/index.ts`
@@ -1041,7 +1053,7 @@ git commit -m "feat(api-workflows): register AI step features in workflow contex
 
 ---
 
-## Task 10: Verify and Build
+## Task 9: Verify and Build
 
 **Files:** None (verification only)
 
