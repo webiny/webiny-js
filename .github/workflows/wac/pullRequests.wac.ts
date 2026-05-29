@@ -153,7 +153,8 @@ export const pullRequests = createWorkflow({
                 "is-fork-pr": "${{ steps.is-fork-pr.outputs.is-fork-pr }}",
                 "changed-packages": "${{ steps.detect-changed-packages.outputs.changed-packages }}",
                 "latest-webiny-version":
-                    "${{ steps.latest-webiny-version.outputs.latest-webiny-version }}"
+                    "${{ steps.latest-webiny-version.outputs.latest-webiny-version }}",
+                "skip-ai-fix": "${{ steps.skip-ai-fix-check.outputs.skip-ai-fix }}"
             },
             steps: [
                 {
@@ -202,6 +203,14 @@ export const pullRequests = createWorkflow({
                     name: "Get latest Webiny version on NPM",
                     id: "latest-webiny-version",
                     run: addToOutputs("latest-webiny-version", "$(npm view @webiny/cli version)")
+                },
+                {
+                    name: "Check if AI fix should be skipped",
+                    id: "skip-ai-fix-check",
+                    run: addToOutputs(
+                        "skip-ai-fix",
+                        "$(if git log -1 --format=%B ${{ github.event.pull_request.head.sha }} | grep -q '\\[skip-ai\\]'; then echo 'true'; else echo 'false'; fi)"
+                    )
                 }
             ]
         }),
@@ -323,7 +332,7 @@ export const pullRequests = createWorkflow({
         aiFixStaticAnalysis: createJob({
             name: "AI Fix Static Analysis",
             needs: ["constants", "staticCodeAnalysis"],
-            if: "failure() && needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true'",
+            if: "failure() && needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true' && needs.constants.outputs.skip-ai-fix != 'true'",
             permissions: { contents: "write" },
             checkout: { path: DIR_WEBINY_JS },
             env: { ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}" },
@@ -377,7 +386,7 @@ export const pullRequests = createWorkflow({
                     name: "Commit fixes",
                     uses: "stefanzweifel/git-auto-commit-action@v5",
                     with: {
-                        commit_message: "chore: ai fix static analysis",
+                        commit_message: "chore: ai fix static analysis [skip-ai]",
                         repository: DIR_WEBINY_JS
                     }
                 }
