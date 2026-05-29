@@ -16,7 +16,7 @@ import { useEcommerceApi } from "~/features/index.js";
 
 declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
-        "resource-picker": { fieldType: "text"; settings?: { rows?: number } };
+        [key: `resource-picker:${string}`]: { fieldType: "text"; settings?: { rows?: number } };
     }
 }
 
@@ -77,7 +77,7 @@ export class EcommerceResourcePageType implements IPageType {
                 .text()
                 .label(toTitleCaseLabel(this.config.resourceType))
                 .required()
-                .renderer("resource-picker")
+                .renderer(`resource-picker:${this.config.apiName}`)
                 .afterChange((value, f) => {
                     if (!value) {
                         return;
