@@ -11,18 +11,25 @@ import { environment } from "./Environment.js";
 export class PreviewSdk implements IContentSdk {
     private liveSdk: IContentSdk;
     private dataProvider: IDataProvider;
+    private previewParams: string | undefined;
 
-    constructor(dataProvider: IDataProvider, liveSdk: IContentSdk) {
+    constructor(dataProvider: IDataProvider, liveSdk: IContentSdk, previewParams?: string) {
         this.liveSdk = liveSdk;
         this.dataProvider = dataProvider;
+        this.previewParams = previewParams;
     }
 
     async getPage(path: string): Promise<PublicPage | null> {
-        // On the client the wb.* params are in window.location.search; on the
-        // server they come via the framework headers provider (X-Preview-Params).
-        const previewDocument = environment.isClient()
-            ? PreviewDocument.createFromWindow()
-            : await PreviewDocument.createFromHeaders();
+        let previewDocument: PreviewDocument;
+
+        if (this.previewParams) {
+            // Params were passed directly via init config (server-side SSR path).
+            previewDocument = PreviewDocument.createFromParams(this.previewParams);
+        } else if (environment.isClient()) {
+            previewDocument = PreviewDocument.createFromWindow();
+        } else {
+            previewDocument = await PreviewDocument.createFromHeaders();
+        }
 
         if (!previewDocument.matches({ type: "page", path })) {
             return this.liveSdk.getPage(path);
