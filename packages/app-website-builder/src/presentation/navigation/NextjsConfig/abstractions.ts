@@ -2,15 +2,24 @@ import { createAbstraction } from "@webiny/feature/admin";
 
 export type NextjsConfig = string;
 
+export type StarterKitFramework = "nextjs" | "nuxt";
+
+export const STARTER_KIT_FRAMEWORKS: { value: StarterKitFramework; label: string }[] = [
+    { value: "nextjs", label: "Next.js" },
+    { value: "nuxt", label: "Nuxt" }
+];
+
 // Presenter
 export interface INextjsConfigVm {
     loading: boolean;
     config: NextjsConfig | undefined;
+    framework: StarterKitFramework;
 }
 
 export interface INextjsConfigPresenter {
     vm: INextjsConfigVm;
     init(): void;
+    setFramework(framework: StarterKitFramework): void;
 }
 
 export const NextjsConfigPresenter =
@@ -23,8 +32,8 @@ export namespace NextjsConfigPresenter {
 
 // Repository
 export interface INextjsConfigRepository {
-    getConfig(): NextjsConfig | undefined;
-    loadConfig(): Promise<void>;
+    getConfig(framework: StarterKitFramework): NextjsConfig | undefined;
+    loadConfig(framework: StarterKitFramework): Promise<void>;
 }
 
 export const NextjsConfigRepository =
@@ -36,7 +45,7 @@ export namespace NextjsConfigRepository {
 
 // Gateway
 export interface INextjsConfigGateway {
-    getConfig(): Promise<NextjsConfig>;
+    getConfig(framework: StarterKitFramework): Promise<NextjsConfig>;
 }
 
 export const NextjsConfigGateway = createAbstraction<INextjsConfigGateway>("NextjsConfigGateway");

@@ -2,7 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { IMarkdownContentBuilder } from "~/features/nextjs/MarkdownContentBuilder.js";
 
 export interface INextjsConfig {
-    execute(): Promise<IMarkdownContentBuilder>;
+    execute(framework: string): Promise<IMarkdownContentBuilder>;
 }
 
 /** Configuration for Next.js website rendering. */

@@ -1,10 +1,10 @@
-import { NextjsConfigGateway as GatewayAbstraction } from "./abstractions.js";
+import { NextjsConfigGateway as GatewayAbstraction, StarterKitFramework } from "./abstractions.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 
 const GET_NEXTJS_CONFIG = /* GraphQL */ `
-    query GetNextjsConfig {
+    query GetNextjsConfig($framework: String) {
         websiteBuilder {
-            getNextjsConfig {
+            getNextjsConfig(framework: $framework) {
                 data
                 error {
                     code
@@ -37,9 +37,10 @@ type GetNextjsConfigResponse = {
 class NextjsGraphQLGateway implements GatewayAbstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
 
-    async getConfig(): Promise<GatewayAbstraction.NextjsConfigDTO> {
+    async getConfig(framework: StarterKitFramework): Promise<GatewayAbstraction.NextjsConfigDTO> {
         const response = await this.client.execute<GetNextjsConfigResponse>({
-            query: GET_NEXTJS_CONFIG
+            query: GET_NEXTJS_CONFIG,
+            variables: { framework }
         });
 
         const envelope = response.websiteBuilder.getNextjsConfig;

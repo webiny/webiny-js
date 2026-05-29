@@ -14,7 +14,7 @@ class Schema implements CoreGraphQLSchemaFactory.Interface {
             }
 
             extend type WbQuery {
-                getNextjsConfig: NextjsConfigResponse
+                getNextjsConfig(framework: String): NextjsConfigResponse
             }
         `);
 
@@ -25,7 +25,8 @@ class Schema implements CoreGraphQLSchemaFactory.Interface {
                 identityContext: IdentityContext.Interface,
                 nextJsConfig: NextjsConfig.Interface
             ) {
-                return async () => {
+                return async ({ args }: { args: { framework?: string } }) => {
+                    const framework = args?.framework ?? "nextjs";
                     const identity = identityContext.getIdentity();
                     if (!identity.isAdmin()) {
                         return new NotAuthorizedResponse();
@@ -40,7 +41,7 @@ class Schema implements CoreGraphQLSchemaFactory.Interface {
                         });
                     }
 
-                    const config = await nextJsConfig.execute();
+                    const config = await nextJsConfig.execute(framework);
 
                     return new Response(config.build());
                 };

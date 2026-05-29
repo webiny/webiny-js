@@ -2,29 +2,30 @@ import { makeAutoObservable, runInAction } from "mobx";
 import {
     NextjsConfigRepository as RepositoryAbstraction,
     NextjsConfigGateway,
-    NextjsConfig
+    NextjsConfig,
+    StarterKitFramework
 } from "./abstractions.js";
 
 class NextjsConfigRepositoryImpl implements RepositoryAbstraction.Interface {
-    private config: NextjsConfig | undefined = undefined;
+    private configs: Map<StarterKitFramework, NextjsConfig> = new Map();
 
     constructor(private gateway: NextjsConfigGateway.Interface) {
         makeAutoObservable(this);
     }
 
-    getConfig(): NextjsConfig | undefined {
-        return this.config;
+    getConfig(framework: StarterKitFramework): NextjsConfig | undefined {
+        return this.configs.get(framework);
     }
 
-    async loadConfig(): Promise<void> {
-        if (this.config) {
+    async loadConfig(framework: StarterKitFramework): Promise<void> {
+        if (this.configs.has(framework)) {
             return;
         }
 
         try {
-            const config = await this.gateway.getConfig();
+            const config = await this.gateway.getConfig(framework);
             runInAction(() => {
-                this.config = config;
+                this.configs.set(framework, config);
             });
         } catch {
             // Ignore errors for now.

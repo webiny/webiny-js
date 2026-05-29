@@ -14,7 +14,7 @@ export const Extension = React.memo(() => {
                 name={"wb.nextjs"}
                 parent={"wb"}
                 pin={"end"}
-                element={<Menu.Item text={"Configure Next.js"} onClick={toggleOn} />}
+                element={<Menu.Item text={"Configure Starter Kit"} onClick={toggleOn} />}
             />
         </>
     );
