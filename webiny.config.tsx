@@ -11,6 +11,7 @@ export const Extensions = () => {
             <Admin.Extension src={"@/extensions/previewUrlModifier/index.tsx"} />
             {/*<Admin.Extension src={"@/extensions/fileUrlFormatter/index.tsx"} />*/}
             <Admin.Extension src={"@/extensions/sampleEcommerce/index.tsx"} />
+            {/*<Admin.Extension src={"@/extensions/saleorEcommerce/index.tsx"} />*/}
             <Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />
             <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
             <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
@@ -88,7 +89,7 @@ export const Extensions = () => {
                         variant: "green"
                     },
                     {
-                        name: "blue",
+                        name: "blue"
                         env: "dev",
                         variant: "blue"
                     }

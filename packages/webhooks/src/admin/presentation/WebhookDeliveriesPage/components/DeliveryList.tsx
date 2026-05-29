@@ -1,19 +1,35 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import debounce from "lodash/debounce.js";
 import { observer } from "mobx-react-lite";
-import { Accordion, Scrollbar, Text } from "@webiny/admin-ui";
+import { Accordion, Scrollbar, Skeleton, Text } from "@webiny/admin-ui";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import { DeliveryAccordionRow } from "./DeliveryAccordionRow.js";
 import { DeliveryBottomInfoBar } from "./DeliveryBottomInfoBar.js";
 import type { IWebhookDeliveriesPagePresenter } from "../abstractions.js";
 import type { WebhookDelivery } from "~/admin/shared/types.js";
 
+interface ExpandedState {
+    expandedId: string | null;
+    toggle(id: string): void;
+}
+
+function useExpandedState(): ExpandedState {
+    const [expandedId, setExpandedId] = useState<string | null>(null);
+    return {
+        expandedId,
+        toggle(id: string) {
+            setExpandedId(prev => (prev === id ? null : id));
+        }
+    };
+}
+
 interface DeliveryListProps {
     presenter: IWebhookDeliveriesPagePresenter;
 }
 
-export const DeliveryList = observer(function DeliveryList({ presenter }: DeliveryListProps) {
+export const DeliveryList = observer(({ presenter }: DeliveryListProps) => {
     const { vm } = presenter;
+    const expanded = useExpandedState();
 
     const { showConfirmation: showResendConfirmation } = useConfirmationDialog({
         title: "Resend Delivery",
@@ -46,15 +62,19 @@ export const DeliveryList = observer(function DeliveryList({ presenter }: Delive
                         <DeliveryAccordionRow
                             key={delivery.id}
                             delivery={delivery}
-                            open={vm.expandedDeliveryId === delivery.id}
+                            open={expanded.expandedId === delivery.id}
                             resending={vm.resendingIds.has(delivery.id)}
-                            onOpenChange={open =>
-                                presenter.expandDelivery(open ? delivery.id : null)
-                            }
+                            onOpenChange={() => expanded.toggle(delivery.id)}
                             onResend={id => showResendConfirmation(() => presenter.resend(id))}
                         />
                     ))}
                 </Accordion>
+                {vm.list.pagination.loadingMore ? (
+                    <div className="flex flex-col gap-sm p-md">
+                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-8 w-full" />
+                    </div>
+                ) : null}
             </Scrollbar>
             <DeliveryBottomInfoBar presenter={presenter} />
         </div>

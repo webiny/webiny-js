@@ -55,7 +55,7 @@ describe("tasks - definitions crud", () => {
         expect(definitions).toMatchObject([
             {
                 id: "testingRun",
-                title: "A mock task to test run the step function permissions."
+                title: "Test Step Function Permissions"
             },
             {
                 id: "testDefinitionNumber1",

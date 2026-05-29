@@ -22,8 +22,8 @@ export interface IWebhookDeliveriesPageViewModel {
     availableEventNames: IDeliveryFilterOption[];
     filters: IDeliveryPageFilters;
     list: IListViewModel<WebhookDelivery>;
-    expandedDeliveryId: string | null;
     resendingIds: Set<string>;
+    hasFilters: boolean;
     loading: boolean;
     error: string | null;
 }
@@ -36,7 +36,7 @@ export interface IWebhookDeliveriesPagePresenter {
     setEntityFilter(entity: string | null): void;
     setEventFilter(eventName: string | null): void;
     setStatusFilter(status: string[]): void;
-    expandDelivery(id: string | null): void;
+    clearFilters(): void;
     loadMore(): Promise<void>;
     resend(id: string): Promise<void>;
 }

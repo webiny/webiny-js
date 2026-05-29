@@ -5,6 +5,7 @@ import { DataTable, Heading, Separator, Text } from "@webiny/admin-ui";
 import { TaskDefinitionsPresenterFeature } from "../feature.js";
 import { ListDefinitionsFeature } from "~/admin/features/listDefinitions/feature.js";
 import type { TaskDefinition } from "~/admin/shared/types.js";
+import { TaskExecutionsButton } from "~/admin/presentation/TaskDefinitions/components/TaskExecutionsButton.js";
 
 const TaskDefinitionsViewInner = observer(function TaskDefinitionsViewInner() {
     const { presenter } = useFeature(TaskDefinitionsPresenterFeature);
@@ -50,6 +51,7 @@ const TaskDefinitionsViewInner = observer(function TaskDefinitionsViewInner() {
         <div className="flex flex-col h-main-content">
             <div className="flex items-center justify-between py-sm px-md">
                 <Heading level={5}>Task Definitions</Heading>
+                <TaskExecutionsButton />
             </div>
             <Separator />
             <div className="flex-1 overflow-auto">

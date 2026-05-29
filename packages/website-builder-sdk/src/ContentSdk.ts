@@ -29,6 +29,7 @@ export type ApiConfig = {
 
 export type ContentSDKConfig = ApiConfig & {
     preview?: boolean;
+    previewParams?: string;
     theme?: WebsiteBuilderThemeInput;
 };
 
@@ -84,7 +85,7 @@ export class ContentSdk implements IContentSdk, IRedirects {
 
         if (config.preview && !environment.isEditing()) {
             this.isPreview = true;
-            liveSdk = new PreviewSdk(dataProvider, liveSdk);
+            liveSdk = new PreviewSdk(dataProvider, liveSdk, config.previewParams);
         }
 
         const theme = Theme.from(config.theme ?? {});

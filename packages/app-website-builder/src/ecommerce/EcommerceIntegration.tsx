@@ -89,7 +89,10 @@ const PageType = (props: PageTypeProps) => {
 
     return (
         <AdminConfig>
-            <AdminConfig.Form.FieldRenderer name={"resource-picker"} component={renderer} />
+            <AdminConfig.Form.FieldRenderer
+                name={`resource-picker:${pluginName}`}
+                component={renderer}
+            />
         </AdminConfig>
     );
 };

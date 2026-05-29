@@ -1,7 +1,9 @@
 import React, { useMemo, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature, useRoute } from "@webiny/app";
-import { Button, Heading, Skeleton, Text } from "@webiny/admin-ui";
+import { Separator } from "@webiny/admin-ui";
+import { Skeleton } from "@webiny/admin-ui";
+import { Button, Heading, Text } from "@webiny/admin-ui";
 import { ListWebhookDeliveriesFeature } from "~/admin/features/listWebhookDeliveries/feature.js";
 import { ListAvailableEventsFeature } from "~/admin/features/listAvailableEvents/feature.js";
 import { ResendWebhookDeliveryFeature } from "~/admin/features/resendWebhookDelivery/feature.js";
@@ -10,6 +12,17 @@ import { WebhookDeliveriesPagePresenterFeature } from "../feature.js";
 import { Routes } from "~/admin/routes.js";
 import { DeliveryFilters } from "./DeliveryFilters.js";
 import { DeliveryList } from "./DeliveryList.js";
+import { WebhookDefinitionsButton } from "~/admin/presentation/WebhookDeliveriesPage/components/WebhookDefinitionsButton.js";
+
+const Loader = () => {
+    return (
+        <div className="flex flex-col gap-sm p-md">
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+        </div>
+    );
+};
 
 const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner() {
     const { presenter } = useFeature(WebhookDeliveriesPagePresenterFeature);
@@ -21,16 +34,6 @@ const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner(
     }, [presenter, webhookId]);
 
     const { vm } = presenter;
-
-    if (vm.loading && vm.list.rows.length === 0) {
-        return (
-            <div className="flex flex-col gap-sm p-md">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-            </div>
-        );
-    }
 
     if (vm.error) {
         return (
@@ -45,11 +48,16 @@ const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner(
 
     return (
         <div className="flex flex-col h-main-content">
-            <div className="p-md pb-0 flex flex-col gap-md">
-                <Heading level={4}>Delivery Log</Heading>
+            <div className="flex items-center justify-between py-sm px-md">
+                <Heading level={5}>Webhook Deliveries</Heading>
+                <WebhookDefinitionsButton />
+            </div>
+            <Separator />
+            <div className={"p-sm"}>
                 <DeliveryFilters presenter={presenter} />
             </div>
-            <DeliveryList presenter={presenter} />
+            <Separator />
+            {vm.loading ? <Loader /> : <DeliveryList presenter={presenter} />}
         </div>
     );
 });

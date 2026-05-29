@@ -13,6 +13,10 @@ export class PreviewDocument {
         });
     }
 
+    static createFromParams(params: string): PreviewDocument {
+        return new PreviewDocument("wb", new URLSearchParams(params));
+    }
+
     static createFromWindow(): PreviewDocument {
         const query = new URLSearchParams(window.location.search);
         return new PreviewDocument("wb", query);

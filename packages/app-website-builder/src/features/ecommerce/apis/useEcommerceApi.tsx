@@ -39,7 +39,7 @@ export const useEcommerceApi = (pluginName: string) => {
                     )
                 });
             });
-    }, []);
+    }, [pluginName]);
 
     return { api };
 };

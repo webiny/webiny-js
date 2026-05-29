@@ -52,7 +52,7 @@ const DatePickerTriggerInner = forwardRef<
                     )}
                     {...props}
                 >
-                    <span className={cn(!displayValue && "text-neutral-dimmed")}>
+                    <span className={cn("truncate", !displayValue && "text-neutral-dimmed")}>
                         {displayValue || placeholder || "Select..."}
                     </span>
                     <Icon icon={<IconComponent />} label={iconLabel} size="sm" color="inherit" />

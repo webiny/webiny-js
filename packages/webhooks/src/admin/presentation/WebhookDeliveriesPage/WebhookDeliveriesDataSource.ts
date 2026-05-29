@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction, computed } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import type {
     IDataSource,
     IDataSourceQuery,
@@ -15,13 +15,9 @@ export class WebhookDeliveriesDataSource implements IDataSource<WebhookDelivery>
     private _meta: IDataSourceMeta = { cursor: null, hasMoreItems: false, totalCount: 0 };
     private _loading = false;
 
-    constructor(
-        private readonly listDeliveriesUseCase: IListWebhookDeliveriesUseCase,
-        private readonly where: ListWebhookDeliveriesWhere
-    ) {
+    constructor(private readonly listDeliveriesUseCase: IListWebhookDeliveriesUseCase) {
         makeAutoObservable<WebhookDeliveriesDataSource, "listDeliveriesUseCase">(this, {
-            listDeliveriesUseCase: false,
-            rows: computed
+            listDeliveriesUseCase: false
         });
     }
 
@@ -40,7 +36,7 @@ export class WebhookDeliveriesDataSource implements IDataSource<WebhookDelivery>
     async query(params: IDataSourceQuery): Promise<void> {
         this._loading = true;
         const result = await this.listDeliveriesUseCase.execute({
-            where: this.where,
+            where: (params.filters ?? {}) as ListWebhookDeliveriesWhere,
             limit: params.limit,
             after: params.cursor
         });
@@ -61,7 +57,7 @@ export class WebhookDeliveriesDataSource implements IDataSource<WebhookDelivery>
         }
         this._loading = true;
         const result = await this.listDeliveriesUseCase.execute({
-            where: this.where,
+            where: (params.filters ?? {}) as ListWebhookDeliveriesWhere,
             limit: params.limit,
             after: this._meta.cursor ?? undefined
         });
