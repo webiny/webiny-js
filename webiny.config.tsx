@@ -2,6 +2,7 @@ import React from "react";
 import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
+import { WebLlmExtension } from "@/extensions/webLlm/WebLlmExtension.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
 export const Extensions = () => {
@@ -15,6 +16,7 @@ export const Extensions = () => {
             <Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />
             <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
             <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
+            <WebLlmExtension />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}

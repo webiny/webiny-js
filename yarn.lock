@@ -5134,6 +5134,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mlc-ai/web-llm@npm:^0.2.83":
+  version: 0.2.83
+  resolution: "@mlc-ai/web-llm@npm:0.2.83"
+  dependencies:
+    loglevel: "npm:^1.9.1"
+  checksum: 10/ff0540a4aab8f57de9b01e14a0aa946c80210bc43754c41f3f58a99287613669162d59952f0a4ffdd82c9963ad4d95a68da6f09ec5e94b5d7de1b7bb9c1ce2cf
+  languageName: node
+  linkType: hard
+
 "@modelcontextprotocol/sdk@npm:^1.29.0":
   version: 1.29.0
   resolution: "@modelcontextprotocol/sdk@npm:1.29.0"
@@ -21138,6 +21147,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"loglevel@npm:^1.9.1":
+  version: 1.9.2
+  resolution: "loglevel@npm:1.9.2"
+  checksum: 10/6153d8db308323f7ee20130bc40309e7a976c30a10379d8666b596d9c6441965c3e074c8d7ee3347fe5cfc059c0375b6f3e8a10b93d5b813cc5547f5aa412a29
+  languageName: node
+  linkType: hard
+
 "long@npm:^5.0.0, long@npm:^5.3.2":
   version: 5.3.2
   resolution: "long@npm:5.3.2"
@@ -24861,6 +24877,7 @@ __metadata:
     "@lexical/selection": "npm:^0.44.0"
     "@lexical/text": "npm:^0.44.0"
     "@lexical/utils": "npm:^0.44.0"
+    "@mlc-ai/web-llm": "npm:^0.2.83"
     "@octokit/rest": "npm:^22.0.1"
     "@types/fs-extra": "npm:^11.0.4"
     "@types/hoist-non-react-statics": "npm:^3.3.7"
