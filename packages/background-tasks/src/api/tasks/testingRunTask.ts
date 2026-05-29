@@ -2,7 +2,8 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 
 class TestingRunTask implements TaskDefinition.Interface {
     id = "testingRun";
-    title = "A mock task to test run the step function permissions.";
+    title = "Test Step Function Permissions";
+    description = "A task to test the step function permissions.";
 
     async run({ controller }: TaskDefinition.RunParams) {
         return controller.response.done("Task successfully finished.");

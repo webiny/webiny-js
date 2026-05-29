@@ -2,6 +2,7 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { Grid, MultiSelect, Select } from "@webiny/admin-ui";
 import type { IWebhookDeliveriesPagePresenter } from "../abstractions.js";
+import { Button } from "@webiny/admin-ui";
 
 interface DeliveryFiltersProps {
     presenter: IWebhookDeliveriesPagePresenter;
@@ -14,14 +15,13 @@ const STATUS_OPTIONS = [
     { value: "failed", label: "Failed" }
 ];
 
-export const DeliveryFilters = observer(function DeliveryFilters({
-    presenter
-}: DeliveryFiltersProps) {
+export const DeliveryFilters = observer(({ presenter }: DeliveryFiltersProps) => {
     const { vm } = presenter;
     return (
-        <Grid className="py-sm">
+        <Grid>
             <Grid.Column span={2}>
                 <Select
+                    size={"md"}
                     placeholder="All webhooks"
                     value={vm.filters.webhookId ?? ""}
                     options={vm.availableWebhooks}
@@ -32,6 +32,7 @@ export const DeliveryFilters = observer(function DeliveryFilters({
             </Grid.Column>
             <Grid.Column span={2}>
                 <Select
+                    size={"md"}
                     placeholder="All apps"
                     value={vm.filters.app ?? ""}
                     options={vm.availableApps}
@@ -42,6 +43,7 @@ export const DeliveryFilters = observer(function DeliveryFilters({
             </Grid.Column>
             <Grid.Column span={2}>
                 <Select
+                    size={"md"}
                     placeholder="All entities"
                     value={vm.filters.entity ?? ""}
                     options={vm.availableEntities}
@@ -53,6 +55,7 @@ export const DeliveryFilters = observer(function DeliveryFilters({
             </Grid.Column>
             <Grid.Column span={2}>
                 <Select
+                    size={"md"}
                     placeholder="All events"
                     value={vm.filters.eventName ?? ""}
                     options={vm.availableEventNames}
@@ -64,11 +67,22 @@ export const DeliveryFilters = observer(function DeliveryFilters({
             </Grid.Column>
             <Grid.Column span={2}>
                 <MultiSelect
+                    size={"md"}
                     placeholder="All statuses"
                     value={vm.filters.status}
                     options={STATUS_OPTIONS}
                     onChange={values => presenter.setStatusFilter(values)}
                 />
+            </Grid.Column>
+            <Grid.Column span={2}>
+                <Button
+                    variant="tertiary"
+                    size="md"
+                    onClick={() => presenter.clearFilters()}
+                    disabled={!vm.hasFilters}
+                >
+                    Clear filters
+                </Button>
             </Grid.Column>
         </Grid>
     );

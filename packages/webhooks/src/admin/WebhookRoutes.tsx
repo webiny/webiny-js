@@ -2,7 +2,6 @@ import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { AdminLayout } from "@webiny/app-admin";
-import { ReactComponent as WebhookIcon } from "@webiny/icons/webhook.svg";
 import { ReactComponent as WebhookDeliveryIcon } from "@webiny/icons/webhook.svg";
 import { HasPermission } from "./presentation/security/HasPermission.js";
 import { WebhookListView } from "./presentation/WebhookList/components/WebhookListView.js";
@@ -12,6 +11,8 @@ import { WebhookDeliveriesPage } from "./presentation/WebhookDeliveriesPage/comp
 import { Routes } from "./routes.js";
 
 const { Menu, Route } = AdminConfig;
+
+const beta = <Menu.Link.Badge text="BETA" />;
 
 export const WebhookRoutes = () => {
     const { getLink } = useRouter();
@@ -52,26 +53,16 @@ export const WebhookRoutes = () => {
                     }
                 />
                 <Menu
-                    name="webhooks.list"
-                    parent={"dev-tools"}
-                    element={
-                        <Menu.Link
-                            text="Webhooks"
-                            to={getLink(Routes.List)}
-                            icon={<Menu.Link.Icon label="Webhooks" element={<WebhookIcon />} />}
-                        />
-                    }
-                />
-                <Menu
                     name="webhooks.deliveries"
                     parent="dev-tools"
                     element={
                         <Menu.Link
-                            text="Webhooks Delivery Log"
+                            text="Webhooks"
+                            badge={beta}
                             to={getLink(Routes.Deliveries)}
                             icon={
                                 <Menu.Link.Icon
-                                    label="Webhooks Delivery Log"
+                                    label="Webhooks"
                                     element={<WebhookDeliveryIcon />}
                                 />
                             }
@@ -81,7 +72,9 @@ export const WebhookRoutes = () => {
                 <Menu
                     name="webhooks.settings"
                     parent="settings.system"
-                    element={<Menu.Link text="Webhooks" to={getLink(Routes.Settings)} />}
+                    element={
+                        <Menu.Link badge={beta} text="Webhooks" to={getLink(Routes.Settings)} />
+                    }
                 />
             </HasPermission>
         </AdminConfig>

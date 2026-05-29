@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "@webiny/app-admin";
 import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-ui";
 import {
+    Button,
     DataTable,
     DropdownMenu,
     IconButton,
@@ -12,7 +13,8 @@ import {
     Text,
     TimeAgo
 } from "@webiny/admin-ui";
-import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin/hooks/index.js";
+import { useToast } from "@webiny/admin-ui";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import { HasPermission } from "~/admin/presentation/security/HasPermission.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as Edit } from "@webiny/icons/edit.svg";
@@ -32,7 +34,7 @@ export const WebhookListContent = observer(function WebhookListContent({
 }: WebhookListContentProps) {
     const { vm } = presenter;
     const { goToRoute } = useRouter();
-    const { showSnackbar } = useSnackbar();
+    const toast = useToast();
 
     const { showConfirmation: showDeleteConfirmation } = useConfirmationDialog({
         title: "Delete Webhook",
@@ -108,6 +110,22 @@ export const WebhookListContent = observer(function WebhookListContent({
                 enableSorting: true,
                 size: 120
             },
+            deliveries: {
+                header: "Deliveries",
+                truncate: false,
+                cell: (row: Webhook) => {
+                    return (
+                        <Button
+                            variant={"secondary"}
+                            onClick={() => {
+                                goToRoute(Routes.Deliveries, { webhookId: row.id });
+                            }}
+                        >
+                            Deliveries
+                        </Button>
+                    );
+                }
+            },
             actions: {
                 header: " ",
                 cell: (row: Webhook) => (
@@ -131,7 +149,7 @@ export const WebhookListContent = observer(function WebhookListContent({
                                 icon={<WebhookIcon />}
                                 onClick={() => {
                                     void presenter.triggerWebhook(row.id).then(() => {
-                                        showSnackbar("Test event triggered.");
+                                        toast.showSuccessToast({ title: "Test event triggered!" });
                                     });
                                 }}
                                 text={"Trigger Test"}
@@ -140,6 +158,7 @@ export const WebhookListContent = observer(function WebhookListContent({
                         <HasPermission entity="webhook" action="delete">
                             <DropdownMenu.Separator />
                             <DropdownMenu.Item
+                                className={"text-destructive-primary! [&_svg]:fill-destructive"}
                                 onClick={() => {
                                     showDeleteConfirmation(() => presenter.deleteWebhook(row.id));
                                 }}
@@ -155,7 +174,7 @@ export const WebhookListContent = observer(function WebhookListContent({
                 enableResizing: false
             }
         }),
-        [presenter, goToRoute, showDeleteConfirmation, showSnackbar]
+        [presenter]
     );
 
     if (!vm.list.pagination.loading && vm.list.rows.length === 0) {

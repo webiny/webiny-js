@@ -56,7 +56,9 @@ class BackgroundTaskSettingsPresenterImpl implements IBackgroundTaskSettingsPres
             return false;
         }
 
-        this._saving = true;
+        runInAction(() => {
+            this._saving = true;
+        });
 
         try {
             const settings = await this.updateSettingsUseCase.execute({

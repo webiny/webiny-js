@@ -8,20 +8,23 @@ import {
     DataTable,
     DatePicker,
     DropdownMenu,
+    Grid,
     Heading,
     IconButton,
     Input,
     Scrollbar,
     Select,
     Separator,
+    Skeleton,
     Tag,
     Text,
     TimeAgo
 } from "@webiny/admin-ui";
-import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin/hooks/index.js";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as StopCircleIcon } from "@webiny/icons/stop_circle.svg";
+import { useToast } from "@webiny/admin-ui";
 import { TaskExecutionsPresenterFeature } from "../feature.js";
 import { ListTasksFeature } from "~/admin/features/listTasks/feature.js";
 import { DeleteTaskFeature } from "~/admin/features/deleteTask/feature.js";
@@ -30,6 +33,7 @@ import { ListDefinitionsFeature } from "~/admin/features/listDefinitions/feature
 import { TaskPermissionsFeature } from "~/admin/features/permissions/feature.js";
 import type { Task, TaskStatus } from "~/admin/shared/types.js";
 import { TaskDetailDrawer } from "~/admin/presentation/TaskDetail/components/TaskDetailDrawer.js";
+import { TaskDefinitionsButton } from "~/admin/presentation/TaskExecutions/components/TaskDefinitionsButton.js";
 
 const STATUS_TAG_VARIANT: Record<
     string,
@@ -52,7 +56,7 @@ const STATUS_OPTIONS: { label: string; value: TaskStatus }[] = [
 
 const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
     const { presenter } = useFeature(TaskExecutionsPresenterFeature);
-    const { showSnackbar } = useSnackbar();
+    const toast = useToast();
 
     useEffect(() => {
         presenter.init();
@@ -185,30 +189,32 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                         >
                             {isRunning && (
                                 <DropdownMenu.Item
+                                    text="Abort"
                                     icon={<StopCircleIcon />}
                                     onClick={() => {
                                         showAbortConfirmation(() =>
                                             presenter.abortTask(row.id).then(() => {
-                                                showSnackbar("Task aborted.");
+                                                toast.showSuccessToast({ title: "Task aborted." });
                                             })
                                         );
                                     }}
-                                    text="Abort"
                                 />
                             )}
                             {isTerminal && vm.permissions.canDelete && (
                                 <>
                                     {isRunning && <DropdownMenu.Separator />}
                                     <DropdownMenu.Item
+                                        text="Delete"
                                         icon={<DeleteIcon />}
                                         onClick={() => {
                                             showDeleteConfirmation(() =>
                                                 presenter.deleteTask(row.id).then(() => {
-                                                    showSnackbar("Task deleted.");
+                                                    toast.showSuccessToast({
+                                                        title: "Task deleted."
+                                                    });
                                                 })
                                             );
                                         }}
-                                        text="Delete"
                                     />
                                 </>
                             )}
@@ -221,104 +227,108 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                 enableResizing: false
             }
         }),
-        [
-            vm.permissions,
-            vm.definitionOptions,
-            presenter,
-            showDeleteConfirmation,
-            showAbortConfirmation,
-            showSnackbar
-        ]
+        [vm.permissions, vm.definitionOptions]
     );
+
+    const hasFilters = Object.keys(vm.list.filters).length > 0;
 
     return (
         <>
             <div className="flex flex-col h-main-content">
                 <div className="flex items-center justify-between py-sm px-md">
                     <Heading level={5}>Task Executions</Heading>
+                    <TaskDefinitionsButton />
                 </div>
                 <Separator />
-                <div className="flex items-center gap-sm px-md py-xs flex-wrap">
-                    <div className="w-[240px]">
-                        <Input
-                            placeholder="Search by name..."
-                            value={vm.list.search}
-                            onChange={value => {
-                                presenter.search.set(value);
-                            }}
-                        />
-                    </div>
-                    <div className="w-[160px]">
-                        <Select
-                            placeholder="Status"
-                            options={STATUS_OPTIONS}
-                            value={(vm.list.filters.taskStatus_in as string) ?? ""}
-                            onChange={value => {
-                                if (value) {
-                                    presenter.filter.set("taskStatus_in", value);
-                                } else {
-                                    presenter.filter.clear("taskStatus_in");
-                                }
-                            }}
-                        />
-                    </div>
-                    {vm.definitionOptions.length > 0 && (
-                        <div className="w-[200px]">
+                <div className={"p-sm"}>
+                    <Grid>
+                        <Grid.Column span={2}>
+                            <Input
+                                size={"md"}
+                                placeholder="Search by name..."
+                                value={vm.list.search}
+                                onChange={value => {
+                                    presenter.search.set(value);
+                                }}
+                            />
+                        </Grid.Column>
+                        <Grid.Column span={2}>
                             <Select
-                                placeholder="Definition"
-                                options={vm.definitionOptions}
-                                value={vm.list.filters.definitionId as string}
+                                size={"md"}
+                                placeholder="Status"
+                                options={STATUS_OPTIONS}
+                                value={(vm.list.filters.taskStatus_in as string) ?? ""}
                                 onChange={value => {
                                     if (value) {
-                                        presenter.filter.set("definitionId", value);
+                                        presenter.filter.set("taskStatus_in", value);
                                     } else {
-                                        presenter.filter.clear("definitionId");
+                                        presenter.filter.clear("taskStatus_in");
                                     }
                                 }}
                             />
-                        </div>
-                    )}
-                    <div className="w-[240px]">
-                        <DatePicker
-                            type="dateTimeTz"
-                            placeholder="Created from"
-                            value={vm.list.filters.createdOn_gte as string}
-                            onChange={value => {
-                                if (value) {
-                                    presenter.filter.set("createdOn_gte", value);
-                                } else {
-                                    presenter.filter.clear("createdOn_gte");
-                                }
-                            }}
-                        />
-                    </div>
-                    <div className="w-[240px]">
-                        <DatePicker
-                            type="dateTimeTz"
-                            placeholder="Created to"
-                            value={vm.list.filters.createdOn_lte as string}
-                            onChange={value => {
-                                if (value) {
-                                    presenter.filter.set("createdOn_lte", value);
-                                } else {
-                                    presenter.filter.clear("createdOn_lte");
-                                }
-                            }}
-                        />
-                    </div>
-                    {Object.keys(vm.list.filters).length > 0 && (
+                        </Grid.Column>
+                        {vm.definitionOptions.length > 0 ? (
+                            <Grid.Column span={2}>
+                                <Select
+                                    size={"md"}
+                                    placeholder="Definition"
+                                    options={vm.definitionOptions}
+                                    value={vm.list.filters.definitionId as string}
+                                    onChange={value => {
+                                        if (value) {
+                                            presenter.filter.set("definitionId", value);
+                                        } else {
+                                            presenter.filter.clear("definitionId");
+                                        }
+                                    }}
+                                />
+                            </Grid.Column>
+                        ) : null}
+                        <Grid.Column span={2}>
+                            <DatePicker
+                                size={"md"}
+                                type="dateTimeTz"
+                                placeholder="Created from"
+                                value={vm.list.filters.createdOn_gte as string}
+                                onChange={value => {
+                                    if (value) {
+                                        presenter.filter.set("createdOn_gte", value);
+                                    } else {
+                                        presenter.filter.clear("createdOn_gte");
+                                    }
+                                }}
+                            />
+                        </Grid.Column>
+                        <Grid.Column span={2}>
+                            <DatePicker
+                                size={"md"}
+                                type="dateTimeTz"
+                                placeholder="Created to"
+                                value={vm.list.filters.createdOn_lte as string}
+                                onChange={value => {
+                                    if (value) {
+                                        presenter.filter.set("createdOn_lte", value);
+                                    } else {
+                                        presenter.filter.clear("createdOn_lte");
+                                    }
+                                }}
+                            />
+                        </Grid.Column>
                         <Button
                             variant="tertiary"
-                            size="sm"
+                            size="md"
                             onClick={() => presenter.filter.clearAll()}
+                            disabled={!hasFilters}
                         >
                             Clear filters
                         </Button>
-                    )}
+                    </Grid>
                 </div>
                 <Separator />
                 <div className="flex-1 overflow-hidden">
-                    {!vm.list.pagination.loading && vm.list.rows.length === 0 ? (
+                    {!vm.list.pagination.loading &&
+                    !vm.list.pagination.loadingMore &&
+                    vm.list.rows.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full gap-md">
                             <Text className="text-neutral-strong">No tasks found.</Text>
                         </div>
@@ -327,11 +337,17 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                             <DataTable<Task>
                                 columns={columns}
                                 data={vm.list.rows}
-                                loading={vm.list.pagination.loading && vm.list.rows.length === 0}
+                                loading={vm.list.pagination.loading}
                                 sorting={sorting}
                                 onSortingChange={onSortingChange}
                                 stickyHeader
                             />
+                            {vm.list.pagination.loadingMore ? (
+                                <div className="flex flex-col gap-sm p-md">
+                                    <Skeleton className="h-8 w-full" />
+                                    <Skeleton className="h-8 w-full" />
+                                </div>
+                            ) : null}
                         </Scrollbar>
                     )}
                 </div>
@@ -343,11 +359,11 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
                     onClose={() => presenter.selectTask(null)}
                     onAbort={async (id: string) => {
                         await presenter.abortTask(id);
-                        showSnackbar("Task aborted.");
+                        toast.showSuccessToast({ title: "Task aborted." });
                     }}
                     onDelete={async (id: string) => {
                         await presenter.deleteTask(id);
-                        showSnackbar("Task deleted.");
+                        toast.showSuccessToast({ title: "Task deleted." });
                     }}
                 />
             )}

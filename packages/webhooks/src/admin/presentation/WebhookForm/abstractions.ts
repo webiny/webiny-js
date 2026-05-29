@@ -17,7 +17,7 @@ export interface IWebhookFormViewModel {
 export interface IWebhookFormPresenter {
     vm: IWebhookFormViewModel;
     init(id: string): void;
-    save(): Promise<void>;
+    save(): Promise<boolean>;
     deleteWebhook(): Promise<void>;
 }
 

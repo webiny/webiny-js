@@ -9,6 +9,7 @@ import { TriggerWebhookFeature } from "~/admin/features/triggerWebhook/feature.j
 import { WebhookPermissionsFeature } from "~/admin/features/permissions/feature.js";
 import { CreateWebhookButton } from "./CreateWebhookButton.js";
 import { WebhookListContent } from "./WebhookListContent.js";
+import { WebhookDeliveriesButton } from "~/admin/presentation/WebhookList/components/WebhookDeliveriesButton.js";
 
 const WebhookListViewInner = observer(function WebhookListViewInner() {
     const { presenter } = useFeature(WebhookListPresenterFeature);
@@ -21,7 +22,10 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
         <div className="flex flex-col h-main-content">
             <div className="flex items-center justify-between py-sm px-md">
                 <Heading level={5}>Webhooks</Heading>
-                <CreateWebhookButton />
+                <div className={"flex gap-sm"}>
+                    <WebhookDeliveriesButton />
+                    <CreateWebhookButton />
+                </div>
             </div>
             <Separator />
             <WebhookListContent presenter={presenter} />
