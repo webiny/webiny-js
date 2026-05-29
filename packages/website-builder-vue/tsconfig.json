@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [{ "path": "../website-builder-sdk" }],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
+      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
+    }
+  }
+}

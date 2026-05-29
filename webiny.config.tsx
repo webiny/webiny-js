@@ -89,7 +89,7 @@ export const Extensions = () => {
                         variant: "green"
                     },
                     {
-                        name: "blue",
+                        name: "blue"
                         env: "dev",
                         variant: "blue"
                     }
