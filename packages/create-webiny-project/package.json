@@ -37,7 +37,8 @@
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
-    "@types/validate-npm-package-name": "^4.0.2"
+    "@types/validate-npm-package-name": "^4.0.2",
+    "vitest": "^4.1.7"
   },
   "publishConfig": {
     "access": "public"

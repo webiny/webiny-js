@@ -46,6 +46,12 @@ export class SetupYarn {
         // Default settings are applied here. Currently, we only apply the `nodeLinker` param.
         parsedYarnRc.nodeLinker = "node-modules";
 
+        /* Apply defaults from the example .yarnrc.yml template. */
+        const exampleYarnRc = this.loadExampleYarnRc();
+        if (exampleYarnRc) {
+            Object.assign(parsedYarnRc, exampleYarnRc);
+        }
+
         // Enables adding additional params into the `.yarnrc.yml` file.
         if (assignToYarnrc) {
             let parsedAssignToYarnRc;
@@ -61,5 +67,22 @@ export class SetupYarn {
         }
 
         fs.writeFileSync(yarnRcPath, yaml.dump(parsedYarnRc));
+    }
+
+    private loadExampleYarnRc(): Record<string, any> | null {
+        try {
+            const exampleYarnRcPath = path.join(
+                import.meta.dirname,
+                "..",
+                "..",
+                "_templates",
+                "base",
+                "example.yarnrc.yml"
+            );
+            return yaml.load(fs.readFileSync(exampleYarnRcPath, "utf-8")) as Record<string, any>;
+        } catch {
+            console.log(yellow("Warning: could not load example .yarnrc.yml template."));
+            return null;
+        }
     }
 }
