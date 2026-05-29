@@ -1,38 +1,14 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { autorun } from "mobx";
-import { observer } from "mobx-react-lite";
+import { toast } from "sonner";
 import { useFeature } from "webiny/admin";
-import { Toast, useToast } from "webiny/admin/ui";
 import { WebLlmFeature } from "./feature.js";
 import { MODEL_ID } from "./WebLlmService.js";
 
-const ProgressDescription = observer(() => {
-    const { service } = useFeature(WebLlmFeature);
-
-    if (service.status === "loading") {
-        return (
-            <Toast.Description
-                text={service.progress ? service.progress.text : "Initializing..."}
-            />
-        );
-    }
-
-    if (service.status === "ready") {
-        return <Toast.Description text={`${MODEL_ID} is ready.`} />;
-    }
-
-    if (service.status === "error") {
-        return <Toast.Description text={`Failed: ${service.error}`} />;
-    }
-
-    return <Toast.Description text={"Starting..."} />;
-});
+const TOAST_ID = "webllm-progress";
 
 export const WebLlmAutoLoader = () => {
-    console.log("[WebLLM] Autoloader");
     const { service } = useFeature(WebLlmFeature);
-    const { showToast, hideToast } = useToast();
-    const toastId = useRef<string | number | null>(null);
 
     useEffect(() => {
         service.loadModel();
@@ -40,26 +16,19 @@ export const WebLlmAutoLoader = () => {
 
     useEffect(() => {
         return autorun(() => {
-            const status = service.status;
-            console.log("status", status);
+            const { status, progress, error } = service;
 
-            if (status === "loading" || status === "ready" || status === "error") {
-                if (toastId.current === null) {
-                    toastId.current = showToast({
-                        title: "WebLLM",
-                        description: <ProgressDescription />,
-                        duration: Infinity,
-                        dismissible: false
-                    });
-                }
+            if (status === "loading") {
+                const text = progress ? progress.text : "Initializing...";
+                toast.loading(text, { id: TOAST_ID, duration: Infinity });
             }
 
-            if (status === "ready" || status === "error") {
-                if (toastId.current !== null) {
-                    const id = toastId.current;
-                    setTimeout(() => hideToast(id), 4000);
-                    toastId.current = null;
-                }
+            if (status === "ready") {
+                toast.success(`${MODEL_ID} is ready.`, { id: TOAST_ID, duration: 4000 });
+            }
+
+            if (status === "error") {
+                toast.error(`Failed: ${error}`, { id: TOAST_ID, duration: 8000 });
             }
         });
     }, []);

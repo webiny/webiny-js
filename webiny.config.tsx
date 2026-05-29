@@ -13,9 +13,9 @@ export const Extensions = () => {
             {/*<Admin.Extension src={"@/extensions/fileUrlFormatter/index.tsx"} />*/}
             <Admin.Extension src={"@/extensions/sampleEcommerce/index.tsx"} />
             {/*<Admin.Extension src={"@/extensions/saleorEcommerce/index.tsx"} />*/}
-            <Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />
-            <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
-            <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
+            {/*<Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />*/}
+            {/*<Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />*/}
+            {/*<Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />*/}
             <WebLlmExtension />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
