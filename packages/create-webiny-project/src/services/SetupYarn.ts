@@ -1,8 +1,8 @@
 import path from "path";
 import fs from "fs-extra";
 import yaml from "js-yaml";
-import { findUpSync } from "find-up";
 import { GetProjectRootPath } from "./GetProjectRootPath.js";
+import { GetTemplatesFolderPath } from "./GetTemplatesFolderPath.js";
 import { CliParams } from "../types.js";
 import chalk from "chalk";
 
@@ -71,26 +71,15 @@ export class SetupYarn {
     }
 
     private loadExampleYarnRc(): Record<string, any> | null {
-        const packageJsonPath = findUpSync("package.json", { cwd: import.meta.dirname });
-        if (!packageJsonPath) {
-            console.log(yellow("Warning: could not locate package root for example .yarnrc.yml."));
-            return null;
-        }
-
-        const packageRoot = path.dirname(packageJsonPath);
-        const exampleYarnRcPath = path.join(
-            packageRoot,
-            "_templates",
-            "base",
-            "example.yarnrc.yml"
-        );
+        const getTemplatesFolderPath = new GetTemplatesFolderPath();
+        const templatesFolderPath = getTemplatesFolderPath.execute();
+        const exampleYarnRcPath = path.join(templatesFolderPath, "base", "example.yarnrc.yml");
 
         try {
             return yaml.load(fs.readFileSync(exampleYarnRcPath, "utf-8")) as Record<string, any>;
         } catch (err) {
             console.log(yellow("Warning: could not load example .yarnrc.yml template."));
             console.log(yellow(`  resolved path: ${exampleYarnRcPath}`));
-            console.log(yellow(`  file exists: ${fs.existsSync(exampleYarnRcPath)}`));
             console.log(yellow(`  error: ${(err as Error).message}`));
             return null;
         }
