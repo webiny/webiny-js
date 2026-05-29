@@ -6,4 +6,5 @@ enableScripts: false
 npmMinimalAgeGate: 3d
 npmPreapprovedPackages:
   - "@webiny/*"
+  - "webiny"
   - "wts-client"
