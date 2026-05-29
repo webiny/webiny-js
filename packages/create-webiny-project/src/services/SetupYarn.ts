@@ -71,15 +71,38 @@ export class SetupYarn {
     }
 
     private loadExampleYarnRc(): Record<string, any> | null {
-        const getTemplatesFolderPath = new GetTemplatesFolderPath();
-        const templatesFolderPath = getTemplatesFolderPath.execute();
+        let templatesFolderPath: string;
+        try {
+            const getTemplatesFolderPath = new GetTemplatesFolderPath();
+            templatesFolderPath = getTemplatesFolderPath.execute();
+        } catch (err) {
+            console.log(yellow("Warning: could not locate _templates folder."));
+            console.log(yellow(`  import.meta.dirname (SetupYarn): ${import.meta.dirname}`));
+            console.log(
+                yellow(
+                    `  parent contents: ${fs.readdirSync(path.join(import.meta.dirname, "..")).join(", ")}`
+                )
+            );
+            console.log(yellow(`  error: ${(err as Error).message}`));
+            return null;
+        }
+
         const exampleYarnRcPath = path.join(templatesFolderPath, "base", "example.yarnrc.yml");
 
         try {
-            return yaml.load(fs.readFileSync(exampleYarnRcPath, "utf-8")) as Record<string, any>;
+            const raw = fs.readFileSync(exampleYarnRcPath, "utf-8");
+            console.log(`Loaded example .yarnrc.yml from: ${exampleYarnRcPath}`);
+            const parsed = yaml.load(raw) as Record<string, any>;
+            if (!parsed || typeof parsed !== "object") {
+                console.log(yellow("Warning: example .yarnrc.yml parsed to a non-object value."));
+                console.log(yellow(`  raw content: ${raw}`));
+                return null;
+            }
+            return parsed;
         } catch (err) {
             console.log(yellow("Warning: could not load example .yarnrc.yml template."));
             console.log(yellow(`  resolved path: ${exampleYarnRcPath}`));
+            console.log(yellow(`  file exists: ${fs.existsSync(exampleYarnRcPath)}`));
             console.log(yellow(`  error: ${(err as Error).message}`));
             return null;
         }
