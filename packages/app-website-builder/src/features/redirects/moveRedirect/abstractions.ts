@@ -17,6 +17,18 @@ export namespace MoveRedirectGateway {
     export type Interface = IMoveRedirectGateway;
 }
 
+export interface IMoveRedirectRepository {
+    execute(params: MoveRedirectParams): Promise<void>;
+}
+
+export const MoveRedirectRepository = createAbstraction<IMoveRedirectRepository>(
+    "WebsiteBuilder/MoveRedirectRepository"
+);
+
+export namespace MoveRedirectRepository {
+    export type Interface = IMoveRedirectRepository;
+}
+
 export interface IMoveRedirectUseCase {
     execute(params: MoveRedirectParams): Promise<void>;
 }

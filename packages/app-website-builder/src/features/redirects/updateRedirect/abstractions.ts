@@ -21,6 +21,18 @@ export namespace UpdateRedirectGateway {
     export type Interface = IUpdateRedirectGateway;
 }
 
+export interface IUpdateRedirectRepository {
+    execute(params: UpdateRedirectParams): Promise<Redirect>;
+}
+
+export const UpdateRedirectRepository = createAbstraction<IUpdateRedirectRepository>(
+    "WebsiteBuilder/UpdateRedirectRepository"
+);
+
+export namespace UpdateRedirectRepository {
+    export type Interface = IUpdateRedirectRepository;
+}
+
 export interface IUpdateRedirectUseCase {
     execute(params: UpdateRedirectParams): Promise<Redirect>;
 }

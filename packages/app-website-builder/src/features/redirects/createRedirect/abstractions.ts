@@ -22,6 +22,18 @@ export namespace CreateRedirectGateway {
     export type Interface = ICreateRedirectGateway;
 }
 
+export interface ICreateRedirectRepository {
+    execute(params: CreateRedirectGatewayParams): Promise<Redirect>;
+}
+
+export const CreateRedirectRepository = createAbstraction<ICreateRedirectRepository>(
+    "WebsiteBuilder/CreateRedirectRepository"
+);
+
+export namespace CreateRedirectRepository {
+    export type Interface = ICreateRedirectRepository;
+}
+
 export interface CreateRedirectUseCaseParams {
     location: WbLocation;
     redirectFrom: string;

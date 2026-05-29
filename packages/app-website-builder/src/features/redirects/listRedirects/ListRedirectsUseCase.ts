@@ -1,19 +1,19 @@
 import {
     ListRedirectsUseCase as UseCaseAbstraction,
-    ListRedirectsGateway,
+    ListRedirectsRepository,
     type ListRedirectsGatewayParams,
     type ListRedirectsGatewayResult
 } from "./abstractions.js";
 
 class ListRedirectsUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private gateway: ListRedirectsGateway.Interface) {}
+    constructor(private repository: ListRedirectsRepository.Interface) {}
 
     async execute(params: ListRedirectsGatewayParams): Promise<ListRedirectsGatewayResult> {
-        return this.gateway.execute(params);
+        return this.repository.execute(params);
     }
 }
 
 export const ListRedirectsUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListRedirectsUseCaseImpl,
-    dependencies: [ListRedirectsGateway]
+    dependencies: [ListRedirectsRepository]
 });

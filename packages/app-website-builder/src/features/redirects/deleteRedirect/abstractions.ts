@@ -16,6 +16,18 @@ export namespace DeleteRedirectGateway {
     export type Interface = IDeleteRedirectGateway;
 }
 
+export interface IDeleteRedirectRepository {
+    execute(params: DeleteRedirectParams): Promise<void>;
+}
+
+export const DeleteRedirectRepository = createAbstraction<IDeleteRedirectRepository>(
+    "WebsiteBuilder/DeleteRedirectRepository"
+);
+
+export namespace DeleteRedirectRepository {
+    export type Interface = IDeleteRedirectRepository;
+}
+
 export interface IDeleteRedirectUseCase {
     execute(params: DeleteRedirectParams): Promise<void>;
 }

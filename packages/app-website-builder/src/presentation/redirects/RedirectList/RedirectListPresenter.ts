@@ -4,25 +4,23 @@ import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abs
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import { ListRedirectsUseCase } from "~/features/redirects/listRedirects/abstractions.js";
 import { RedirectsListCache } from "~/features/redirects/shared/abstractions.js";
-import { CreateRedirectPresenter } from "~/presentation/redirects/CreateRedirect/abstractions.js";
-import { EditRedirectPresenter } from "~/presentation/redirects/EditRedirect/abstractions.js";
 import {
     RedirectListPresenter as Abstraction,
     type IRedirectListPresenter,
     type IRedirectListViewModel,
     type IRedirectListActions,
-    type IRedirectListInitConfig
+    type IRedirectListInitConfig,
+    CreateRedirectPresenter
 } from "./abstractions.js";
 import { RedirectListDataSource } from "./RedirectListDataSource.js";
 import type { Redirect } from "~/domain/Redirect/Redirect.js";
-import type { ICreateRedirectPresenter } from "~/presentation/redirects/CreateRedirect/abstractions.js";
-import type { IEditRedirectPresenter } from "~/presentation/redirects/EditRedirect/abstractions.js";
+import { EditRedirectPresenter } from "./abstractions.js";
 
 class RedirectListPresenterImpl implements IRedirectListPresenter {
     private _showingFilters = false;
     private _disposeReaction: (() => void) | null = null;
-    private _createRedirect: ICreateRedirectPresenter | null = null;
-    private _editRedirect: IEditRedirectPresenter | null = null;
+    private _createRedirect: CreateRedirectPresenter.Interface | null = null;
+    private _editRedirect: EditRedirectPresenter.Interface | null = null;
 
     constructor(
         private listPresenter: ListPresenter.Interface<Redirect>,

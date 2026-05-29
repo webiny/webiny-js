@@ -32,6 +32,18 @@ export namespace ListRedirectsGateway {
     export type Interface = IListRedirectsGateway;
 }
 
+export interface IListRedirectsRepository {
+    execute(params: ListRedirectsGatewayParams): Promise<ListRedirectsGatewayResult>;
+}
+
+export const ListRedirectsRepository = createAbstraction<IListRedirectsRepository>(
+    "WebsiteBuilder/ListRedirectsRepository"
+);
+
+export namespace ListRedirectsRepository {
+    export type Interface = IListRedirectsRepository;
+}
+
 export interface IListRedirectsUseCase {
     execute(params: ListRedirectsGatewayParams): Promise<ListRedirectsGatewayResult>;
 }

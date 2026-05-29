@@ -1,11 +1,55 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IListViewModel } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { IListActions } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
+import type { IFormVM } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { IFolderTreeViewModel } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import type { Redirect } from "~/domain/Redirect/Redirect.js";
-import type { ICreateRedirectPresenter } from "~/presentation/redirects/CreateRedirect/abstractions.js";
-import type { IEditRedirectPresenter } from "~/presentation/redirects/EditRedirect/abstractions.js";
+import type { RedirectDto } from "~/domain/Redirect/RedirectDto.js";
 
+// Create Redirect
+export interface ICreateRedirectViewModel {
+    loading: string | null;
+    form: IFormVM;
+}
+
+export interface ICreateRedirectPresenter {
+    vm: ICreateRedirectViewModel;
+    init(folderId: string): void;
+    save(): Promise<boolean>;
+}
+
+export const CreateRedirectPresenter = createAbstraction<ICreateRedirectPresenter>(
+    "WebsiteBuilder/CreateRedirectPresenter"
+);
+
+export namespace CreateRedirectPresenter {
+    export type Interface = ICreateRedirectPresenter;
+    export type ViewModel = ICreateRedirectViewModel;
+}
+
+// Edit Redirect
+export interface IEditRedirectViewModel {
+    redirect: RedirectDto | null;
+    loading: string | null;
+    form: IFormVM;
+}
+
+export interface IEditRedirectPresenter {
+    vm: IEditRedirectViewModel;
+    loadRedirect(redirectId: string): Promise<void>;
+    save(): Promise<boolean>;
+}
+
+export const EditRedirectPresenter = createAbstraction<IEditRedirectPresenter>(
+    "WebsiteBuilder/EditRedirectPresenter"
+);
+
+export namespace EditRedirectPresenter {
+    export type Interface = IEditRedirectPresenter;
+    export type ViewModel = IEditRedirectViewModel;
+}
+
+// List
 export interface IRedirectListInitConfig {
     initialFolderId?: string;
 }
