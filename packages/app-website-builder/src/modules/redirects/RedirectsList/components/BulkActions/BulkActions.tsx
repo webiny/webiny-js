@@ -2,29 +2,30 @@ import React, { useMemo } from "react";
 import { Text, IconButton, cn } from "@webiny/admin-ui";
 import { ReactComponent as Close } from "@webiny/icons/close.svg";
 import { Buttons } from "@webiny/app-admin";
-import { useDocumentList } from "~/modules/redirects/RedirectsList/useDocumentList.js";
-import { useSelectRedirects } from "~/features/redirects/selectRedirects/useSelectRedirects.js";
+import { observer } from "mobx-react-lite";
+import { useRedirectListPresenter } from "~/presentation/redirects/RedirectList/RedirectListPresenterProvider.js";
 import { useRedirectListConfig } from "~/modules/redirects/configs/index.js";
 
 export const getRedirectsLabel = (count = 0): string => {
     return `${count} ${count === 1 ? "redirect" : "redirects"}`;
 };
 
-export const BulkActions = () => {
+export const BulkActions = observer(() => {
     const { browser } = useRedirectListConfig();
-    const { vm } = useDocumentList();
-    const { selectRedirects } = useSelectRedirects();
+    const { vm, actions } = useRedirectListPresenter();
+
+    const selectedCount = vm.list.selection.selectedCount;
 
     const headline = useMemo((): string => {
-        const label = getRedirectsLabel(vm.selected.length);
+        const label = getRedirectsLabel(selectedCount);
         return `${label} selected`;
-    }, [vm.selected]);
+    }, [selectedCount]);
 
     return (
         <div
             className={cn(
                 "w-full bg-neutral-disabled px-md py-sm",
-                vm.selected.length > 0 ? "block" : "hidden"
+                selectedCount > 0 ? "block" : "hidden"
             )}
         >
             <div className={"flex items-center justify-between gap-sm"}>
@@ -40,10 +41,10 @@ export const BulkActions = () => {
                         variant={"ghost"}
                         size={"sm"}
                         icon={<Close />}
-                        onClick={() => selectRedirects([])}
+                        onClick={() => actions.selection.deselectAll()}
                     />
                 </div>
             </div>
         </div>
     );
-};
+});

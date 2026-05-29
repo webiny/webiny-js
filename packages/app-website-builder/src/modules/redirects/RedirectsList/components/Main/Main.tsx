@@ -2,22 +2,22 @@ import React, { useCallback } from "react";
 import debounce from "lodash/debounce.js";
 import { useCreateDialog, useGetFolderLevelPermission } from "@webiny/app-aco";
 import { Scrollbar } from "@webiny/admin-ui";
-import { useDocumentList } from "~/modules/redirects/RedirectsList/useDocumentList.js";
+import { observer } from "mobx-react-lite";
+import { useRedirectListPresenter } from "~/presentation/redirects/RedirectList/RedirectListPresenterProvider.js";
 import { Header } from "~/modules/redirects/RedirectsList/components/Header/index.js";
 import { BottomInfoBar } from "~/modules/redirects/RedirectsList/components/BottomInfoBar/index.js";
 import { Table } from "~/modules/redirects/RedirectsList/components/Table/index.js";
 import { Empty } from "~/modules/redirects/RedirectsList/components/Empty/index.js";
-import { useLoadMoreRedirects } from "~/features/redirects/index.js";
 import { BulkActions } from "../BulkActions/index.js";
 import { Filters } from "~/modules/redirects/RedirectsList/components/Filters/index.js";
-import { useCreateRedirectDialog } from "~/modules/redirects/RedirectsList/index.js";
 
-const Main = () => {
-    const { vm } = useDocumentList();
-    const { loadMoreRedirects } = useLoadMoreRedirects();
+const Main = observer(() => {
+    const { vm, actions } = useRedirectListPresenter();
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
 
-    const { showCreateRedirectDialog } = useCreateRedirectDialog(vm.folderId);
+    const folderId = vm.folders.currentFolderId ?? "root";
+    const isRoot = folderId === "root";
+
     const { getFolderLevelPermission: canManageContent } =
         useGetFolderLevelPermission("canManageContent");
 
@@ -25,38 +25,45 @@ const Main = () => {
         useGetFolderLevelPermission("canManageStructure");
 
     const canCreateContent = useCallback(
-        (folderId: string) => {
-            return canManageContent(folderId);
+        (id: string) => {
+            return canManageContent(id);
         },
         [canManageContent]
     );
 
     const canCreateFolder = useCallback(
-        (folderId: string) => {
-            return canManageStructure(folderId);
+        (id: string) => {
+            return canManageStructure(id);
         },
         [canManageStructure]
     );
 
     const onCreateFolder = useCallback(() => {
-        showCreateFolderDialog({ currentParentId: vm.folderId });
-    }, [vm.folderId]);
+        showCreateFolderDialog({ currentParentId: folderId });
+    }, [folderId]);
+
+    const onCreateDocument = useCallback(() => {
+        actions.showCreateDialog(folderId);
+    }, [folderId, actions]);
 
     const onTableScroll = debounce(async ({ scrollFrame }) => {
         if (scrollFrame.top > 0.8) {
-            await loadMoreRedirects();
+            await actions.loadMore();
         }
     }, 200);
+
+    const isEmpty = vm.list.empty;
+    const isSearch = !vm.showFolders;
 
     return (
         <div className={"h-full relative overflow-hidden"}>
             <Header
-                title={vm.title}
-                canCreateFolder={canCreateFolder(vm.folderId)}
-                canCreateContent={canCreateContent(vm.folderId)}
+                title={vm.folders.currentFolderId ? undefined : undefined}
+                canCreateFolder={canCreateFolder(folderId)}
+                canCreateContent={canCreateContent(folderId)}
                 onCreateFolder={onCreateFolder}
-                onCreateDocument={showCreateRedirectDialog}
-                isRoot={vm.isRoot}
+                onCreateDocument={onCreateDocument}
+                isRoot={isRoot}
             />
             <div
                 style={{ top: "105px" }}
@@ -68,13 +75,13 @@ const Main = () => {
                     data-testid="default-data-list"
                     onScrollFrame={scrollFrame => onTableScroll({ scrollFrame })}
                 >
-                    {vm.isEmpty ? (
+                    {isEmpty ? (
                         <Empty
-                            isSearch={vm.isSearch}
-                            canCreateFolder={canCreateFolder(vm.folderId)}
-                            canCreateContent={canCreateContent(vm.folderId)}
+                            isSearch={isSearch}
+                            canCreateFolder={canCreateFolder(folderId)}
+                            canCreateContent={canCreateContent(folderId)}
                             onCreateFolder={onCreateFolder}
-                            onCreateDocument={showCreateRedirectDialog}
+                            onCreateDocument={onCreateDocument}
                         />
                     ) : (
                         <Table />
@@ -84,6 +91,6 @@ const Main = () => {
             </div>
         </div>
     );
-};
+});
 
 export { Main };

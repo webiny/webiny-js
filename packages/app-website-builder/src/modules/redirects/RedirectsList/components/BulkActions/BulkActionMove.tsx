@@ -6,7 +6,8 @@ import { observer } from "mobx-react-lite";
 import { getRedirectsLabel } from "~/modules/redirects/RedirectsList/components/BulkActions/BulkActions.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import { RedirectListConfig } from "~/modules/redirects/configs/index.js";
-import { useMoveRedirect } from "~/features/redirects/index.js";
+import { useContainer } from "@webiny/app";
+import { MoveRedirectUseCase } from "~/features/redirects/moveRedirect/abstractions.js";
 
 export const BulkActionMove = observer(() => {
     const { useWorker, useButtons, useDialog } = RedirectListConfig.Browser.BulkAction;
@@ -16,7 +17,8 @@ export const BulkActionMove = observer(() => {
     const { showConfirmationDialog, showResultsDialog } = useDialog();
     const { showDialog: showMoveDialog } = useMoveToFolderDialog();
 
-    const { moveRedirect } = useMoveRedirect();
+    const container = useContainer();
+    const moveRedirectUseCase = container.resolve(MoveRedirectUseCase);
     const { currentFolderId } = useNavigateFolder();
 
     const redirectsLabel = useMemo(() => {
@@ -32,7 +34,7 @@ export const BulkActionMove = observer(() => {
                 execute: async () => {
                     await worker.processInSeries(async ({ item, report }) => {
                         try {
-                            await moveRedirect({
+                            await moveRedirectUseCase.execute({
                                 id: item.id,
                                 folderId: folder.id
                             });

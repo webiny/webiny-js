@@ -3,7 +3,8 @@ import { Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { observer } from "mobx-react-lite";
 import { getRedirectsLabel } from "~/modules/redirects/RedirectsList/components/BulkActions/BulkActions.js";
-import { useDeleteRedirect } from "~/features/redirects/index.js";
+import { useContainer } from "@webiny/app";
+import { DeleteRedirectUseCase } from "~/features/redirects/deleteRedirect/abstractions.js";
 import { RedirectListConfig } from "~/modules/redirects/configs/index.js";
 
 export const BulkActionDelete = observer(() => {
@@ -13,7 +14,8 @@ export const BulkActionDelete = observer(() => {
 
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
-    const { deleteRedirect } = useDeleteRedirect();
+    const container = useContainer();
+    const deleteRedirectUseCase = container.resolve(DeleteRedirectUseCase);
 
     const redirectsLabel = useMemo(() => {
         return getRedirectsLabel(worker.items.length);
@@ -27,7 +29,7 @@ export const BulkActionDelete = observer(() => {
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
-                        await deleteRedirect({ id: item.id });
+                        await deleteRedirectUseCase.execute({ id: item.id });
 
                         report.success({
                             title: item.redirectFrom,

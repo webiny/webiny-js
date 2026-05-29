@@ -2,10 +2,8 @@ import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import type { CallbackParams } from "@webiny/app-admin";
 import { useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { useDocumentList } from "~/modules/redirects/RedirectsList/useDocumentList.js";
-import { Redirect, type RedirectDto, RedirectDtoMapper } from "~/domain/Redirect/index.js";
-import type { TableRow } from "~/modules/redirects/RedirectsList/presenters/index.js";
-import { useSelectRedirects } from "~/features/redirects/selectRedirects/useSelectRedirects.js";
+import { type RedirectDto, RedirectDtoMapper } from "~/domain/Redirect/index.js";
+import { useRedirectListPresenter } from "~/presentation/redirects/RedirectList/RedirectListPresenterProvider.js";
 
 export interface BulkActionConfig {
     name: string;
@@ -52,23 +50,23 @@ export const BaseBulkAction = ({
 };
 
 const useWorker = () => {
-    const { vm } = useDocumentList();
-    const { selectRedirects } = useSelectRedirects<TableRow>();
+    const { vm, actions } = useRedirectListPresenter();
     const { current: worker } = useRef(new Worker<RedirectDto>());
 
     const items = useMemo(() => {
-        const redirects = vm.selected.map(item => Redirect.create(item.data));
-        return redirects.map(redirect => RedirectDtoMapper.toDTO(redirect));
-    }, [vm.selected]);
+        const selectedIds = vm.list.selection.selectedIds;
+        return vm.list.rows
+            .filter(r => selectedIds.has(r.id))
+            .map(r => RedirectDtoMapper.toDTO(r));
+    }, [vm.list.selection.selectedIds, vm.list.rows]);
 
     useEffect(() => {
         worker.items = items;
     }, [items.length]);
 
-    // Reset selected items in both useDocumentList and Worker
     const resetItems = useCallback(() => {
         worker.items = [];
-        selectRedirects([]);
+        actions.selection.deselectAll();
     }, []);
 
     // Reset results in Worker

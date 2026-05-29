@@ -1,16 +1,13 @@
 import React from "react";
 import type { FiltersOnSubmit } from "@webiny/app-admin";
 import { Filters as BaseFilters } from "@webiny/app-admin";
-import { useDocumentList } from "~/modules/redirects/RedirectsList/useDocumentList.js";
-import { useNavigateFolder } from "@webiny/app-aco";
+import { observer } from "mobx-react-lite";
+import { useRedirectListPresenter } from "~/presentation/redirects/RedirectList/RedirectListPresenterProvider.js";
 import { useRedirectListConfig } from "~/modules/redirects/configs/index.js";
-import { useFilterRedirects } from "~/features/redirects/index.js";
 
-export const Filters = () => {
+export const Filters = observer(() => {
     const { browser } = useRedirectListConfig();
-    const { vm } = useDocumentList();
-    const { filterRedirects } = useFilterRedirects();
-    const { currentFolderId } = useNavigateFolder();
+    const { vm, actions } = useRedirectListPresenter();
 
     const applyFilters: FiltersOnSubmit = data => {
         if (!Object.keys(data).length) {
@@ -18,14 +15,16 @@ export const Filters = () => {
         }
 
         const convertedFilters = browser.filtersToWhere.reduce(
-            (data, converter) => converter(data),
+            (acc, converter) => converter(acc),
             data
         );
 
-        filterRedirects(convertedFilters, currentFolderId);
+        for (const [key, value] of Object.entries(convertedFilters)) {
+            actions.filter.set(key, value);
+        }
     };
 
     return (
-        <BaseFilters filters={browser.filters} show={vm.isFilterVisible} onChange={applyFilters} />
+        <BaseFilters filters={browser.filters} show={vm.showingFilters} onChange={applyFilters} />
     );
-};
+});

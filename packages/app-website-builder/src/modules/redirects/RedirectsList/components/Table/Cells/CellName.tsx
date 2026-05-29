@@ -6,7 +6,7 @@ import { ReactComponent as File } from "@webiny/icons/description.svg";
 import type { RedirectTableRow } from "~/modules/redirects/RedirectsList/presenters/index.js";
 import { RedirectListConfig } from "~/modules/redirects/configs/index.js";
 import { FolderCellName } from "~/modules/shared/FolderCellName.js";
-import { useEditRedirectDialog } from "~/modules/redirects/RedirectsList/index.js";
+import { useRedirectListPresenter } from "~/presentation/redirects/RedirectList/RedirectListPresenterProvider.js";
 import { usePermissions } from "~/presentation/security/usePermissions.js";
 
 interface DocumentCellRowTitleProps {
@@ -14,7 +14,7 @@ interface DocumentCellRowTitleProps {
 }
 
 const DocumentCellRowTitle = ({ document }: DocumentCellRowTitleProps) => {
-    const { showEditRedirectDialog } = useEditRedirectDialog();
+    const { actions } = useRedirectListPresenter();
     const permissions = usePermissions();
 
     return (
@@ -23,7 +23,7 @@ const DocumentCellRowTitle = ({ document }: DocumentCellRowTitleProps) => {
                 className={"flex w-full items-center cursor-pointer"}
                 onClick={() => {
                     if (permissions.canEdit("redirect")) {
-                        showEditRedirectDialog(document.id);
+                        actions.showEditDialog(document.id);
                     }
                 }}
             >
