@@ -224,13 +224,15 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
         }
     }
 
-    public async save(): Promise<void> {
+    public async save(): Promise<boolean> {
         const data = await this._form.submit<Record<string, unknown>>();
         if (data === false) {
-            return;
+            return false;
         }
 
-        this._saving = true;
+        runInAction(() => {
+            this._saving = true;
+        });
 
         try {
             const merged = {
@@ -263,6 +265,8 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                 this._saving = false;
             });
         }
+
+        return true;
     }
 
     public async deleteWebhook(): Promise<void> {

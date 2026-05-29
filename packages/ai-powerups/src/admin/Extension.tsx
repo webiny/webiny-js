@@ -27,6 +27,7 @@ const AiPowerUpsSettings = () => {
                 element={
                     <Menu.Link
                         text={"AI Power-Ups"}
+                        badge={<Menu.Link.Badge text="BETA" />}
                         to={getLink(Routes.Settings)}
                         pinnable={true}
                     />

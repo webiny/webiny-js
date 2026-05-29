@@ -63,7 +63,9 @@ class WebhookSettingsPresenterImpl implements IWebhookSettingsPresenter {
             return false;
         }
 
-        this._saving = true;
+        runInAction(() => {
+            this._saving = true;
+        });
 
         try {
             const settings = await this.updateWebhookSettingsUseCase.execute({

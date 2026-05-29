@@ -1,10 +1,7 @@
 import { makeAutoObservable, computed, runInAction } from "mobx";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { WebhookDelivery, WebhookEvent } from "~/admin/shared/types.js";
-import {
-    ListWebhookDeliveriesUseCase,
-    type ListWebhookDeliveriesWhere
-} from "~/admin/features/listWebhookDeliveries/abstractions.js";
+import { ListWebhookDeliveriesUseCase } from "~/admin/features/listWebhookDeliveries/abstractions.js";
 import { ResendWebhookDeliveryUseCase } from "~/admin/features/resendWebhookDelivery/abstractions.js";
 import { ListAvailableEventsUseCase } from "~/admin/features/listAvailableEvents/abstractions.js";
 import { ListWebhooksUseCase } from "~/admin/features/ListWebhooks/abstractions.js";
@@ -17,17 +14,20 @@ import {
     type IDeliveryPageFilters
 } from "./abstractions.js";
 
-class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresenter {
-    private _availableEvents: WebhookEvent[] = [];
-    private _availableWebhooks: IDeliveryFilterOption[] = [];
-    private _filters: IDeliveryPageFilters = {
+const createEmptyFilters = (): IDeliveryPageFilters => {
+    return {
         webhookId: null,
         app: null,
         entity: null,
         eventName: null,
         status: []
     };
-    private _expandedDeliveryId: string | null = null;
+};
+
+class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresenter {
+    private _availableEvents: WebhookEvent[] = [];
+    private _availableWebhooks: IDeliveryFilterOption[] = [];
+    private _filters: IDeliveryPageFilters = createEmptyFilters();
     private _resendingIds: Set<string> = new Set();
     private _loading = false;
     private _error: string | null = null;
@@ -49,10 +49,10 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
             availableEntities: this._computeAvailableEntities(),
             availableEventNames: this._computeAvailableEventNames(),
             filters: { ...this._filters },
+            hasFilters: this._hasFilters(),
             list: this.listPresenter.vm,
-            expandedDeliveryId: this._expandedDeliveryId,
             resendingIds: new Set(this._resendingIds),
-            loading: this._loading,
+            loading: this._loading || this.listPresenter.vm.pagination.loading,
             error: this._error
         };
     }
@@ -86,43 +86,44 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
                 this._loading = false;
             });
         }
-        runInAction(() => {
-            this._applyFilters();
+
+        const dataSource = new WebhookDeliveriesDataSource(this.listDeliveriesUseCase);
+        this.listPresenter.init({
+            dataSource,
+            initialSort: { field: "createdOn", direction: "DESC" },
+            initialFilters: this._buildWhere(),
+            limit: 20
         });
+    }
+
+    public clearFilters(): void {
+        this._filters = createEmptyFilters();
+        this.listPresenter.actions.filter.clearAll();
     }
 
     public setWebhookFilter(webhookId: string | null): void {
         this._filters = { ...this._filters, webhookId };
-        this._expandedDeliveryId = null;
-        this._applyFilters();
+        this._syncFilters();
     }
 
     public setAppFilter(app: string | null): void {
         this._filters = { ...this._filters, app, entity: null, eventName: null };
-        this._expandedDeliveryId = null;
-        this._applyFilters();
+        this._syncFilters();
     }
 
     public setEntityFilter(entity: string | null): void {
         this._filters = { ...this._filters, entity, eventName: null };
-        this._expandedDeliveryId = null;
-        this._applyFilters();
+        this._syncFilters();
     }
 
     public setEventFilter(eventName: string | null): void {
         this._filters = { ...this._filters, eventName };
-        this._expandedDeliveryId = null;
-        this._applyFilters();
+        this._syncFilters();
     }
 
     public setStatusFilter(status: string[]): void {
         this._filters = { ...this._filters, status };
-        this._expandedDeliveryId = null;
-        this._applyFilters();
-    }
-
-    public expandDelivery(id: string | null): void {
-        this._expandedDeliveryId = this._expandedDeliveryId === id ? null : id;
+        this._syncFilters();
     }
 
     public async loadMore(): Promise<void> {
@@ -143,18 +144,26 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
         }
     }
 
-    private _applyFilters(): void {
-        const where = this._buildWhere();
-        const dataSource = new WebhookDeliveriesDataSource(this.listDeliveriesUseCase, where);
-        this.listPresenter.init({
-            dataSource,
-            initialSort: { field: "createdOn", direction: "DESC" },
-            limit: 20
-        });
+    private _hasFilters(): boolean {
+        return (
+            this._filters.webhookId !== null ||
+            this._filters.app !== null ||
+            this._filters.entity !== null ||
+            this._filters.eventName !== null ||
+            this._filters.status.length > 0
+        );
     }
 
-    private _buildWhere(): ListWebhookDeliveriesWhere {
-        const where: ListWebhookDeliveriesWhere = {};
+    private _syncFilters(): void {
+        const where = this._buildWhere();
+        this.listPresenter.actions.filter.clearAll();
+        for (const [key, value] of Object.entries(where)) {
+            this.listPresenter.actions.filter.set(key, value);
+        }
+    }
+
+    private _buildWhere(): Record<string, unknown> {
+        const where: Record<string, unknown> = {};
 
         if (this._filters.webhookId) {
             where.webhookId_eq = this._filters.webhookId;
