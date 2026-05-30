@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
+import { observer } from "mobx-react-lite";
 import { Table as AcoTable } from "@webiny/app-aco";
 import { useListViewTableProps } from "@webiny/app-admin";
-import { observer } from "mobx-react-lite";
 import { useRedirectListPresenter } from "~/presentation/redirects/RedirectList/index.js";
 import { useRedirectListConfig } from "~/presentation/redirects/RedirectList/configs/RedirectListConfig.js";
-import type { TableRow } from "~/presentation/redirects/RedirectList/components/TableRowMapper.js";
-import { TableRowMapper } from "~/presentation/redirects/RedirectList/components/TableRowMapper.js";
+import type { TableRow } from "./TableRowMapper.js";
+import { TableRowMapper } from "./TableRowMapper.js";
 
 export const Table = observer(() => {
     const { vm } = useRedirectListPresenter();

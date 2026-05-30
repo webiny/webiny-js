@@ -11,10 +11,18 @@ import { EmptyView } from "@webiny/app-admin";
 import { Button, Tooltip } from "@webiny/admin-ui";
 import { useRedirectListPresenter } from "./RedirectListPresenterProvider.js";
 import { useRedirectListConfig } from "../configs/RedirectListConfig.js";
-import { ButtonsCreate } from "./Header/ButtonsCreate.js";
+import { ButtonsCreate } from "./ButtonsCreate.js";
 import { Table } from "./Table/Table.js";
 import { CreateRedirectDialog } from "./CreateRedirectDialog.js";
 import { EditRedirectDialog } from "./EditRedirectDialog.js";
+
+interface RedirectEmptyProps {
+    isSearch: boolean;
+    canCreateContent: boolean;
+    canCreateFolder: boolean;
+    onCreateDocument: (event: React.SyntheticEvent) => void;
+    onCreateFolder: (event: React.SyntheticEvent) => void;
+}
 
 const RedirectEmpty = ({
     isSearch,
@@ -22,13 +30,7 @@ const RedirectEmpty = ({
     canCreateFolder,
     onCreateDocument,
     onCreateFolder
-}: {
-    isSearch: boolean;
-    canCreateContent: boolean;
-    canCreateFolder: boolean;
-    onCreateDocument: (event: React.SyntheticEvent) => void;
-    onCreateFolder: (event: React.SyntheticEvent) => void;
-}) => {
+}: RedirectEmptyProps) => {
     if (isSearch) {
         return <EmptyView icon={<SearchIcon />} title={"No results found."} action={null} />;
     }
@@ -104,10 +106,7 @@ export const DocumentList = observer(() => {
     const { getFolderLevelPermission: canManageStructure } =
         useGetFolderLevelPermission("canManageStructure");
 
-    const canCreateContent = useCallback(
-        (id: string) => canManageContent(id),
-        [canManageContent]
-    );
+    const canCreateContent = useCallback((id: string) => canManageContent(id), [canManageContent]);
 
     const canCreateFolder = useCallback(
         (id: string) => canManageStructure(id),
@@ -131,9 +130,9 @@ export const DocumentList = observer(() => {
                 actions={actions}
                 namespace="wb/redirect/list"
                 showingFilters={vm.showingFilters}
-                onToggleFilters={() =>
-                    vm.showingFilters ? actions.hideFilters() : actions.showFilters()
-                }
+                onToggleFilters={() => {
+                    vm.showingFilters ? actions.hideFilters() : actions.showFilters();
+                }}
                 sidebar={
                     <ListView.Sidebar title="Redirects">
                         <ListView.Sidebar.Section grow>
@@ -166,10 +165,7 @@ export const DocumentList = observer(() => {
                     />
                 }
                 bulkActions={
-                    <ListView.BulkActions
-                        itemLabel="redirect"
-                        actions={browser.bulkActions}
-                    />
+                    <ListView.BulkActions itemLabel="redirect" actions={browser.bulkActions} />
                 }
                 filters={
                     <ListView.Filters

@@ -6,9 +6,9 @@ import { observer } from "mobx-react-lite";
 import { ROOT_FOLDER } from "~/constants.js";
 import { useContainer } from "@webiny/app";
 import { MoveRedirectUseCase } from "~/features/redirects/moveRedirect/abstractions.js";
-import { RedirectListConfig } from "../../configs/RedirectListConfig.js";
-import { useRedirectListPresenter } from "../RedirectListPresenterProvider.js";
-import { getRedirectsLabel } from "./index.js";
+import { RedirectListConfig } from "../configs/RedirectListConfig.js";
+import { useRedirectListPresenter } from "./RedirectListPresenterProvider.js";
+import { getRedirectsLabel } from "./getRedirectsLabel.js";
 
 const { useWorker, useButtons, useDialog } = RedirectListConfig.Browser.BulkAction;
 

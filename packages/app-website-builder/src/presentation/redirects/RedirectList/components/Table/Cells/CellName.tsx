@@ -5,7 +5,7 @@ import { ReactComponent as Folder } from "@webiny/icons/folder.svg";
 import { ReactComponent as FolderShared } from "@webiny/icons/folder_shared.svg";
 import type { FolderTableRow } from "@webiny/app-aco";
 import { usePermissions } from "~/presentation/security/usePermissions.js";
-import type { RedirectTableRow } from "~/presentation/redirects/RedirectList/components/TableRowMapper.js";
+import type { RedirectTableRow } from "../TableRowMapper.js";
 import { useRedirectListPresenter } from "~/presentation/redirects/RedirectList/index.js";
 import { RedirectListConfig } from "~/presentation/redirects/RedirectList/index.js";
 

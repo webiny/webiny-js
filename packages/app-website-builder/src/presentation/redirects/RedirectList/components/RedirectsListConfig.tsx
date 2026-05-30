@@ -1,18 +1,19 @@
 import React from "react";
-import { DeleteFolder, EditFolder, SetFolderPermissions, CellAuthor, CellCreated, CellModified } from "@webiny/app-aco";
 import {
-    CellActions,
-    CellName,
-    CellEnabled,
-    Delete,
-    Edit,
-    Move
-} from "./Table/index.js";
-import { BulkActionDelete, BulkActionMove } from "./BulkActions/index.js";
-import { FilterByStatus } from "./Filters/index.js";
+    DeleteFolder,
+    EditFolder,
+    SetFolderPermissions,
+    CellAuthor,
+    CellCreated,
+    CellModified
+} from "@webiny/app-aco";
+import { CellActions, CellName, CellEnabled, Delete, Edit, Move } from "./Table/index.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
-import {RedirectListConfig} from "~/presentation/redirects/RedirectList/index.js";
+import { RedirectListConfig } from "~/presentation/redirects/RedirectList/index.js";
 import { CellRedirectType } from "./Table/Cells/CellRedirectType.js";
+import { FilterByStatus } from "./FilterByStatus.js";
+import { BulkActionMove } from "./BulkActionMove.js";
+import { BulkActionDelete } from "./BulkActionDelete.js";
 
 const { Browser } = RedirectListConfig;
 
