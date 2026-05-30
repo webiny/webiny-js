@@ -18,7 +18,7 @@ Every admin list view (Redirects, FileManager, Pages) repeats identical layout b
 
 ---
 
-## Phase 1: Foundation + Sidebar + Header + BottomBar + Redirects Migration (Tracer Bullet) [ ]
+## Phase 1: Foundation + Sidebar + Header + BottomBar + Redirects Migration (Tracer Bullet) [x]
 
 **Goal**: Build the core compound component skeleton and migrate Redirects layout to prove the pattern end-to-end.
 
@@ -111,7 +111,7 @@ Every admin list view (Redirects, FileManager, Pages) repeats identical layout b
 
 ---
 
-## Phase 2: BulkActions + Filters + Content (scroll-to-loadMore) + Empty [ ]
+## Phase 2: BulkActions + Filters + Content (scroll-to-loadMore) + Empty [x]
 
 **Goal**: Complete the content area sub-components and finish the Redirects migration (except Table bridge).
 
@@ -150,7 +150,7 @@ Every admin list view (Redirects, FileManager, Pages) repeats identical layout b
 
 ---
 
-## Phase 3: ListView.Table Bridge + Standard Cells [ ]
+## Phase 3: ListView.Table Bridge + Standard Cells [x]
 
 **Goal**: Extract the Table bridge hook and standard cells. Eliminate the per-module table adapter and duplicated cell components.
 
@@ -190,7 +190,7 @@ Standard cells use `TableRowContext` directly (not `createUseTableRow`) since th
 
 ---
 
-## Phase 4: Cleanup + Exports [ ]
+## Phase 4: Cleanup + Exports [x]
 
 **Goal**: Final cleanup, proper public API exports, delete all dead code.
 

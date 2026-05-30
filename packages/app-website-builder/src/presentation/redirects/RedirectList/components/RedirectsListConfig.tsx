@@ -1,10 +1,7 @@
 import React from "react";
-import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
+import { DeleteFolder, EditFolder, SetFolderPermissions, CellAuthor, CellCreated, CellModified } from "@webiny/app-aco";
 import {
     CellActions,
-    CellAuthor,
-    CellCreated,
-    CellModified,
     CellName,
     CellEnabled,
     Delete,

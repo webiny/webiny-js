@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { observer } from "mobx-react-lite";
-import { getRedirectsLabel } from "./BulkActions.js";
+import { getRedirectsLabel } from "./index.js";
 import { useContainer } from "@webiny/app";
 import { DeleteRedirectUseCase } from "~/features/redirects/deleteRedirect/abstractions.js";
 import { RedirectListConfig } from "../../configs/RedirectListConfig.js";

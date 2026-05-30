@@ -8,7 +8,7 @@ import { useContainer } from "@webiny/app";
 import { MoveRedirectUseCase } from "~/features/redirects/moveRedirect/abstractions.js";
 import { RedirectListConfig } from "../../configs/RedirectListConfig.js";
 import { useRedirectListPresenter } from "../RedirectListPresenterProvider.js";
-import { getRedirectsLabel } from "./BulkActions.js";
+import { getRedirectsLabel } from "./index.js";
 
 const { useWorker, useButtons, useDialog } = RedirectListConfig.Browser.BulkAction;
 
