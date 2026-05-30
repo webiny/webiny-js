@@ -190,38 +190,7 @@ Standard cells use `TableRowContext` directly (not `createUseTableRow`) since th
 
 ---
 
-## SKIP: Phase 4: FileManager Migration
-
-**Goal**: Validate `ListView` flexibility by migrating FileManager, which has grid/table toggle, file upload, tags sidebar, and overlay mode.
-
-### What to build
-
-No new `ListView` sub-components expected. If `Header.Search` or other sub-components need additional props (e.g., `disabled`, extra `className`), extend them.
-
-**In `packages/app-file-manager/`:**
-
-- Rewrite list view to use `<ListView>` with:
-  - `ListView.Sidebar` with two sections (FolderTree + TagsList)
-  - `ListView.Header` with Title, Search, FiltersToggle, ViewModeSwitch (domain-specific), Upload button
-  - `ListView.BulkActions`
-  - `ListView.Filters`
-  - `ListView.Content` with conditional grid/table rendering
-  - `ListView.BottomBar`
-- Use `useListViewTableProps()` for FileTable
-- Use standard cells from `app-aco`
-- Delete duplicated layout/header/bulk-action/bottom-bar components
-
-### Acceptance criteria
-
-- [ ] FileManager renders identically to before
-- [ ] FileManager sidebar has two sections: folders (capped height) + tags (fills remainder)
-- [ ] Grid/table toggle works within `ListView.Content`
-- [ ] Standard cells shared between Redirects and FileManager
-- [ ] Upload and overlay mode unaffected
-
----
-
-## Phase 5: Cleanup + Exports [ ]
+## Phase 4: Cleanup + Exports [ ]
 
 **Goal**: Final cleanup, proper public API exports, delete all dead code.
 
@@ -229,15 +198,15 @@ No new `ListView` sub-components expected. If `Header.Search` or other sub-compo
 
 - Update `packages/app-admin/src/components/index.ts` (or equivalent barrel) to export `ListView` and `useListView`.
 - Update `packages/app-aco/src/index.ts` to export standard cells.
-- Delete all unused files across Redirects and FileManager.
+- Delete all unused files in Redirects module.
 - Verify no broken imports across the monorepo.
 
 ### Acceptance criteria
 
 - [ ] `ListView` exported from `@webiny/app-admin`
 - [ ] Standard cells exported from `@webiny/app-aco`
-- [ ] No dead code in Redirects or FileManager modules
-- [ ] `yarn build` passes for `app-admin`, `app-aco`, `app-website-builder`, `app-file-manager`
+- [ ] No dead code in Redirects module
+- [ ] `yarn build` passes for `app-admin`, `app-aco`, `app-website-builder`
 - [ ] `yarn lint` passes
 
 ---
@@ -250,4 +219,3 @@ After each phase:
 2. `yarn build -p @webiny/app-website-builder --no-cache --safe-replace` — confirm consumer builds
 3. Start dev server, navigate to Redirects list — visual parity check
 4. Test: search, filter toggle, sort columns, select rows, bulk actions, scroll loadMore, empty states, folder navigation
-5. After Phase 4: repeat for FileManager
