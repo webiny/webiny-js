@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
+import type { CallbackParams, Result } from "~/components/BulkActions/Worker.js";
 
 // ---------------------------------------------------------------------------
 // DataSource interfaces
@@ -84,6 +85,16 @@ export interface IListViewModel<TRow> {
 // ListActions
 // ---------------------------------------------------------------------------
 
+export interface IWorkerActions<T = any> {
+    process(callback: (items: T[]) => void): void;
+    processInSeries(
+        callback: (params: CallbackParams<T>) => Promise<void>,
+        chunkSize?: number
+    ): Promise<void>;
+    readonly results: Result[];
+    resetResults(): Promise<void>;
+}
+
 export interface IListActions {
     search: {
         set(query: string): void;
@@ -106,6 +117,7 @@ export interface IListActions {
         selectRows(ids: string[]): void;
         isSelected(id: string): boolean;
     };
+    worker: IWorkerActions;
     loadMore(): Promise<void>;
     refresh(): Promise<void>;
 }

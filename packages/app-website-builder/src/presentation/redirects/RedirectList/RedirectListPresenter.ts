@@ -31,6 +31,7 @@ class RedirectListPresenterImpl implements IRedirectListPresenter {
         private redirectsListCache: RedirectsListCache.Interface,
         private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface
     ) {
+        this.actions = this.createActions();
         makeAutoObservable<RedirectListPresenterImpl, "_disposeReaction">(this, {
             _disposeReaction: false,
             vm: computed
@@ -48,71 +49,7 @@ class RedirectListPresenterImpl implements IRedirectListPresenter {
         };
     }
 
-    actions: IRedirectListActions = {
-        search: {
-            set: (query: string) => this.listPresenter.actions.search.set(query),
-            clear: () => this.listPresenter.actions.search.clear()
-        },
-        sort: {
-            set: (field: string, direction: "ASC" | "DESC") =>
-                this.listPresenter.actions.sort.set(field, direction),
-            toggle: (field: string) => this.listPresenter.actions.sort.toggle(field)
-        },
-        filter: {
-            set: (key: string, value: unknown) => this.listPresenter.actions.filter.set(key, value),
-            clear: (key: string) => this.listPresenter.actions.filter.clear(key),
-            clearAll: () => this.listPresenter.actions.filter.clearAll()
-        },
-        selection: {
-            toggle: (id: string) => this.listPresenter.actions.selection.toggle(id),
-            selectRangeTo: (id: string) => this.listPresenter.actions.selection.selectRangeTo(id),
-            selectAll: () => this.listPresenter.actions.selection.selectAll(),
-            deselectAll: () => this.listPresenter.actions.selection.deselectAll(),
-            selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
-            isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
-        },
-        loadMore: () => this.listPresenter.actions.loadMore(),
-        refresh: () => this.listPresenter.actions.refresh(),
-        showFilters: () => {
-            this._showingFilters = true;
-        },
-        hideFilters: () => {
-            this._showingFilters = false;
-        },
-        showCreateDialog: (folderId: string) => {
-            this._createRedirect = this.createRedirectPresenter;
-            this.createRedirectPresenter.init(folderId);
-        },
-        showEditDialog: (redirectId: string) => {
-            this._editRedirect = this.editRedirectPresenter;
-            void this.editRedirectPresenter.loadRedirect(redirectId);
-        },
-        hideCreateDialog: () => {
-            this._createRedirect = null;
-        },
-        hideEditDialog: () => {
-            this._editRedirect = null;
-        },
-        folders: {
-            selectFolder: (folderId: string | null) => {
-                this.listPresenter.actions.search.clear();
-                this.folderTreePresenter.selectFolder(folderId);
-            },
-            createFolder: (parentFolderId?: string) =>
-                this.folderTreePresenter.createFolder(parentFolderId),
-            editFolder: (folderId: string) => this.folderTreePresenter.editFolder(folderId),
-            deleteFolder: (folderId: string) => this.folderTreePresenter.deleteFolder(folderId),
-            moveFolder: (folderId: string, targetParentId: string | null) =>
-                this.folderTreePresenter.moveFolder(folderId, targetParentId),
-            loadChildFolders: (parentIds: string[]) =>
-                this.folderTreePresenter.loadChildFolders(parentIds),
-            canManageStructure: (folderId: string) =>
-                this.folderTreePresenter.canManageStructure(folderId),
-            getAncestorIds: (folderId: string) => this.folderTreePresenter.getAncestorIds(folderId),
-            submitOperation: () => this.folderTreePresenter.submitOperation(),
-            cancelOperation: () => this.folderTreePresenter.cancelOperation()
-        }
-    };
+    readonly actions: IRedirectListActions;
 
     init(config?: IRedirectListInitConfig): void {
         const initialFolderId = config?.initialFolderId ?? "root";
@@ -148,6 +85,78 @@ class RedirectListPresenterImpl implements IRedirectListPresenter {
             this._disposeReaction();
             this._disposeReaction = null;
         }
+    }
+
+    private createActions(): IRedirectListActions {
+        return {
+            search: {
+                set: (query: string) => this.listPresenter.actions.search.set(query),
+                clear: () => this.listPresenter.actions.search.clear()
+            },
+            sort: {
+                set: (field: string, direction: "ASC" | "DESC") =>
+                    this.listPresenter.actions.sort.set(field, direction),
+                toggle: (field: string) => this.listPresenter.actions.sort.toggle(field)
+            },
+            filter: {
+                set: (key: string, value: unknown) =>
+                    this.listPresenter.actions.filter.set(key, value),
+                clear: (key: string) => this.listPresenter.actions.filter.clear(key),
+                clearAll: () => this.listPresenter.actions.filter.clearAll()
+            },
+            selection: {
+                toggle: (id: string) => this.listPresenter.actions.selection.toggle(id),
+                selectRangeTo: (id: string) =>
+                    this.listPresenter.actions.selection.selectRangeTo(id),
+                selectAll: () => this.listPresenter.actions.selection.selectAll(),
+                deselectAll: () => this.listPresenter.actions.selection.deselectAll(),
+                selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
+                isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
+            },
+            worker: this.listPresenter.actions.worker,
+            loadMore: () => this.listPresenter.actions.loadMore(),
+            refresh: () => this.listPresenter.actions.refresh(),
+            showFilters: () => {
+                this._showingFilters = true;
+            },
+            hideFilters: () => {
+                this._showingFilters = false;
+            },
+            showCreateDialog: (folderId: string) => {
+                this._createRedirect = this.createRedirectPresenter;
+                this.createRedirectPresenter.init(folderId);
+            },
+            showEditDialog: (redirectId: string) => {
+                this._editRedirect = this.editRedirectPresenter;
+                void this.editRedirectPresenter.loadRedirect(redirectId);
+            },
+            hideCreateDialog: () => {
+                this._createRedirect = null;
+            },
+            hideEditDialog: () => {
+                this._editRedirect = null;
+            },
+            folders: {
+                selectFolder: (folderId: string | null) => {
+                    this.listPresenter.actions.search.clear();
+                    this.folderTreePresenter.selectFolder(folderId);
+                },
+                createFolder: (parentFolderId?: string) =>
+                    this.folderTreePresenter.createFolder(parentFolderId),
+                editFolder: (folderId: string) => this.folderTreePresenter.editFolder(folderId),
+                deleteFolder: (folderId: string) => this.folderTreePresenter.deleteFolder(folderId),
+                moveFolder: (folderId: string, targetParentId: string | null) =>
+                    this.folderTreePresenter.moveFolder(folderId, targetParentId),
+                loadChildFolders: (parentIds: string[]) =>
+                    this.folderTreePresenter.loadChildFolders(parentIds),
+                canManageStructure: (folderId: string) =>
+                    this.folderTreePresenter.canManageStructure(folderId),
+                getAncestorIds: (folderId: string) =>
+                    this.folderTreePresenter.getAncestorIds(folderId),
+                submitOperation: () => this.folderTreePresenter.submitOperation(),
+                cancelOperation: () => this.folderTreePresenter.cancelOperation()
+            }
+        };
     }
 
     private shouldShowFolders(): boolean {

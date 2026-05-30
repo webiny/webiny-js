@@ -6,21 +6,21 @@ import { getRedirectsLabel } from "./getRedirectsLabel.js";
 import { useContainer } from "@webiny/app";
 import { DeleteRedirectUseCase } from "~/features/redirects/deleteRedirect/abstractions.js";
 import { RedirectListConfig } from "../configs/RedirectListConfig.js";
+import { useRedirectListPresenter } from "./RedirectListPresenterProvider.js";
 
-const { useWorker, useButtons, useDialog } = RedirectListConfig.Browser.BulkAction;
+const { useButtons, useDialog } = RedirectListConfig.Browser.BulkAction;
 
 export const BulkActionDelete = observer(() => {
     const { ButtonDefault } = useButtons();
-    const worker = useWorker();
-
+    const { vm, actions } = useRedirectListPresenter();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
     const container = useContainer();
     const deleteRedirectUseCase = container.resolve(DeleteRedirectUseCase);
 
     const redirectsLabel = useMemo(() => {
-        return getRedirectsLabel(worker.items.length);
-    }, [worker.items.length]);
+        return getRedirectsLabel(vm.list.selection.selectedCount);
+    }, [vm.list.selection.selectedCount]);
 
     const openDeleteDialog = () =>
         showConfirmationDialog({
@@ -28,7 +28,7 @@ export const BulkActionDelete = observer(() => {
             message: `You are about to delete ${redirectsLabel}. Are you sure you want to continue?`,
             loadingLabel: `Processing ${redirectsLabel}...`,
             execute: async () => {
-                await worker.processInSeries(async ({ item, report }) => {
+                await actions.worker.processInSeries(async ({ item, report }) => {
                     try {
                         await deleteRedirectUseCase.execute({ id: item.id });
 
@@ -44,13 +44,13 @@ export const BulkActionDelete = observer(() => {
                     }
                 });
 
-                worker.resetItems();
+                actions.selection.deselectAll();
 
                 showResultsDialog({
-                    results: worker.results,
+                    results: actions.worker.results,
                     title: "Delete redirects",
                     message: "Finished deleting redirects! See full report below:",
-                    onCancel: worker.resetResults
+                    onCancel: actions.worker.resetResults
                 });
             }
         });

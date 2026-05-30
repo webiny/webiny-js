@@ -10,6 +10,7 @@ import {
     type IDataSourceQuery
 } from "./abstractions.js";
 import { SelectionController } from "./SelectionController.js";
+import { Worker } from "~/components/BulkActions/Worker.js";
 
 class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     private _sort: { field: string; direction: "ASC" | "DESC" } | null = null;
@@ -25,6 +26,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     private _limit: number | undefined = undefined;
     private _initialized = false;
     private _loadingMore = false;
+    private _worker = new Worker<TRow>();
 
     constructor() {
         this._selection = new SelectionController<TRow>(
@@ -126,6 +128,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             selectRows: (ids: string[]) => this._selection.selectRows(ids),
             isSelected: (id: string) => this._selection.isSelected(id)
         },
+        worker: this.createWorkerActions(),
         loadMore: async () => {
             if (!this._dataSource) {
                 return;
@@ -222,6 +225,35 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             clearTimeout(this._debounceTimer);
             this._debounceTimer = null;
         }
+    }
+
+    private getSelectedRows(): TRow[] {
+        const ids = this._selection.selectedIds;
+        const rows = this._dataSource?.rows ?? [];
+        return rows.filter(row => ids.has(this.getRowId(row)));
+    }
+
+    private createWorkerActions(): IListActions["worker"] {
+        const worker = this._worker;
+        const getSelectedRows = () => this.getSelectedRows();
+
+        return {
+            process: (callback: (items: TRow[]) => void) => {
+                worker.items = getSelectedRows();
+                worker.process(callback);
+            },
+            processInSeries: async (
+                callback: Parameters<Worker<TRow>["processInSeries"]>[0],
+                chunkSize?: number
+            ) => {
+                worker.items = getSelectedRows();
+                await worker.processInSeries(callback, chunkSize);
+            },
+            get results() {
+                return worker.results;
+            },
+            resetResults: () => worker.resetResults()
+        };
     }
 
     private getRowId(row: TRow): string {

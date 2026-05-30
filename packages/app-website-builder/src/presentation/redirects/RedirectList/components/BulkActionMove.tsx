@@ -10,23 +10,22 @@ import { RedirectListConfig } from "../configs/RedirectListConfig.js";
 import { useRedirectListPresenter } from "./RedirectListPresenterProvider.js";
 import { getRedirectsLabel } from "./getRedirectsLabel.js";
 
-const { useWorker, useButtons, useDialog } = RedirectListConfig.Browser.BulkAction;
+const { useButtons, useDialog } = RedirectListConfig.Browser.BulkAction;
 
 export const BulkActionMove = observer(() => {
     const { ButtonDefault } = useButtons();
-    const worker = useWorker();
+    const { vm, actions } = useRedirectListPresenter();
 
     const { showConfirmationDialog, showResultsDialog } = useDialog();
     const { showDialog: showMoveDialog } = useMoveToFolderDialog();
 
     const container = useContainer();
     const moveRedirectUseCase = container.resolve(MoveRedirectUseCase);
-    const { vm } = useRedirectListPresenter();
     const currentFolderId = vm.folders.currentFolderId;
 
     const redirectsLabel = useMemo(() => {
-        return getRedirectsLabel(worker.items.length);
-    }, [worker.items.length]);
+        return getRedirectsLabel(vm.list.selection.selectedCount);
+    }, [vm.list.selection.selectedCount]);
 
     const openWorkerDialog = useCallback(
         (folder: NodeDto) => {
@@ -35,7 +34,7 @@ export const BulkActionMove = observer(() => {
                 message: `You are about to move ${redirectsLabel} to ${folder.label}. Are you sure you want to continue?`,
                 loadingLabel: `Processing ${redirectsLabel}...`,
                 execute: async () => {
-                    await worker.processInSeries(async ({ item, report }) => {
+                    await actions.worker.processInSeries(async ({ item, report }) => {
                         try {
                             await moveRedirectUseCase.execute({
                                 id: item.id,
@@ -54,13 +53,13 @@ export const BulkActionMove = observer(() => {
                         }
                     });
 
-                    worker.resetItems();
+                    actions.selection.deselectAll();
 
                     showResultsDialog({
-                        results: worker.results,
+                        results: actions.worker.results,
                         title: "Move redirects",
                         message: "Finished moving redirects! See full report below:",
-                        onCancel: worker.resetResults
+                        onCancel: actions.worker.resetResults
                     });
                 }
             });

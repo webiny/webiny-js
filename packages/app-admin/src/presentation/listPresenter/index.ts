@@ -8,6 +8,7 @@ export type {
     IListPresenterConfig,
     IListViewModel,
     IListActions,
+    IWorkerActions,
     IListError,
     IDataSource,
     IDataSourceQuery,

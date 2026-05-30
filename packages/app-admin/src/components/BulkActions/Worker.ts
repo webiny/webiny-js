@@ -1,3 +1,4 @@
+import React from "react";
 import chunk from "lodash/chunk.js";
 import { makeAutoObservable } from "mobx";
 
