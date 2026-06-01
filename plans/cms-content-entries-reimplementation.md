@@ -6,7 +6,7 @@
 
 Durable decisions that apply across all phases:
 
-- **Data fetching**: WebinySdk (`sdk.cms.*`) replaces ApolloClient. All HTTP goes through SDK methods that call `executeGraphQL` with `POST ${endpoint}/graphql`.
+- **Data fetching**: `CmsGraphQLClient` abstraction replaces ApolloClient. Gateways build model-specific GraphQL queries (same as current app-headless-cms) and execute via `CmsGraphQLClient`. No SDK changes needed.
 - **Feature pattern**: Every operation follows Gateway → Repository → UseCase, each registered via `createFeature()` + `createAbstraction()` / `createImplementation()`. Gateways are singletons, Repositories are singletons (own cache references), UseCases are transient.
 - **Caching**: Shared `ContentEntriesListCache` (singleton `ListCache<ContentEntry>`, MobX observable). All mutating repositories update the same cache instance.
 - **Form rendering**: FormModel from `app-admin/features/formModel`. CMS models are mapped to `FormModelConfig` at runtime. CMS provides NO renderers or rendering logic — only a mapping layer.
@@ -19,36 +19,7 @@ Durable decisions that apply across all phases:
 
 ---
 
-## Phase 1: SDK Methods
-
-**User stories**: 3 (foundation for all data fetching)
-
-### What to build
-
-Add the missing CMS SDK methods to `packages/sdk/src/methods/cms/`. Each method follows the existing pattern: Zod input/output schema, `executeGraphQL` call, `Result<T, Error>` return type.
-
-Methods to add:
-- `createRevisionFrom` — create a new revision from an existing entry
-- `listRevisions` — list all revisions of an entry
-- `getSingletonEntry` — get a singleton content entry
-- `updateSingletonEntry` — update a singleton content entry
-- `bulkAction` — execute bulk operations (publish, unpublish, move, delete)
-
-Existing methods that already work: `getEntry`, `listEntries`, `createEntry`, `updateEntryRevision`, `publishEntryRevision`, `unpublishEntryRevision`, `deleteEntryRevision`.
-
-### Acceptance criteria
-
-- [ ] `createRevisionFrom` SDK method exists, builds correct GraphQL mutation, returns `Result<ContentEntry, Error>`
-- [ ] `listRevisions` SDK method exists, returns `Result<ContentEntry[], Error>` with list metadata
-- [ ] `getSingletonEntry` SDK method exists, returns `Result<ContentEntry, Error>`
-- [ ] `updateSingletonEntry` SDK method exists, returns `Result<ContentEntry, Error>`
-- [ ] `bulkAction` SDK method exists, accepts action type + entry IDs, returns `Result<BulkActionResult, Error>`
-- [ ] All new methods follow the same patterns as existing CMS SDK methods (Zod schemas, `executeGraphQL`, error handling)
-- [ ] Unit tests for each new method (mock fetch, verify query shape and variable mapping)
-
----
-
-## Phase 2: Headless Features
+## Phase 1: Headless Features
 
 **User stories**: 3, 4, 7
 
@@ -84,7 +55,7 @@ Bulk action features (batch cache operations):
 ### Acceptance criteria
 
 - [ ] Each feature registers in a DI container via `createFeature()` with `register()` / `resolve()`
-- [ ] Gateways call `WebinySdk` (not Apollo, not raw fetch)
+- [ ] Gateways call `CmsGraphQLClient` (not Apollo directly, not raw fetch)
 - [ ] Repositories update `ContentEntriesListCache` after mutations (verified by reading cache state in tests)
 - [ ] UseCases return `{ success: true, data }` or `{ success: false, error }` — no thrown exceptions
 - [ ] `ContentEntryFieldsProvider` produces correct field selection for any `CmsModel` definition
@@ -93,7 +64,7 @@ Bulk action features (batch cache operations):
 
 ---
 
-## Phase 3: CmsModel → FormModel Mapping
+## Phase 2: CmsModel → FormModel Mapping
 
 **User stories**: 2, 5, 10, 12, 13, 14, 15
 
@@ -138,7 +109,7 @@ The mapping layer that converts any `CmsModel` into a `FormModelConfig` for `For
 
 ---
 
-## Phase 4: Presenters
+## Phase 3: Presenters
 
 **User stories**: 6, 8, 9
 
@@ -190,7 +161,7 @@ MobX-based presenters that compose features and expose observable ViewModels. No
 
 ---
 
-## Phase 5: Views + Integration
+## Phase 4: Views + Integration
 
 **User stories**: 1, 8, 11, 16, 17, 18, 19, 20
 
@@ -245,7 +216,7 @@ React observer components that mount presenters and render UI. This is where the
 
 ---
 
-## Phase 6: Cleanup
+## Phase 5: Cleanup
 
 **User stories**: all (regression safety)
 

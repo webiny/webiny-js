@@ -1,0 +1,38 @@
+import { createFeature } from "@webiny/feature/admin";
+import { ContentEntriesCache } from "./abstractions.js";
+import type { CmsContentEntry } from "~/types.js";
+import { ListCache } from "~/features/ListCache.js";
+import { GetEntryFeature } from "./getEntry/feature.js";
+import { ListEntriesFeature } from "./listEntries/feature.js";
+import { CreateEntryFeature } from "./createEntry/feature.js";
+import { UpdateEntryFeature } from "./updateEntry/feature.js";
+import { PublishEntryFeature } from "./publishEntry/feature.js";
+import { UnpublishEntryFeature } from "./unpublishEntry/feature.js";
+import { DeleteEntryFeature } from "./deleteEntry/feature.js";
+import { DeleteEntryRevisionFeature } from "./deleteEntryRevision/feature.js";
+import { CreateRevisionFromFeature } from "./createRevisionFrom/feature.js";
+import { ListRevisionsFeature } from "./listRevisions/feature.js";
+import { UpdateRevisionDescriptionFeature } from "./updateRevisionDescription/feature.js";
+import { SingletonEntryFeature } from "./singletonEntry/feature.js";
+import { BulkActionFeature } from "./bulkAction/feature.js";
+
+export const ContentEntryFeature = createFeature({
+    name: "CmsContentEntry",
+    register(container) {
+        container.registerInstance(ContentEntriesCache, new ListCache<CmsContentEntry>());
+
+        GetEntryFeature.register(container);
+        ListEntriesFeature.register(container);
+        CreateEntryFeature.register(container);
+        UpdateEntryFeature.register(container);
+        PublishEntryFeature.register(container);
+        UnpublishEntryFeature.register(container);
+        DeleteEntryFeature.register(container);
+        DeleteEntryRevisionFeature.register(container);
+        CreateRevisionFromFeature.register(container);
+        ListRevisionsFeature.register(container);
+        UpdateRevisionDescriptionFeature.register(container);
+        SingletonEntryFeature.register(container);
+        BulkActionFeature.register(container);
+    }
+});
