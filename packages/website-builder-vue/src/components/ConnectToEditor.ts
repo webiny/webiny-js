@@ -38,7 +38,7 @@ export const ConnectToEditor = defineComponent({
 
             return h(
                 DocumentStoreProvider,
-                { id: data.value.properties.id, document: data.value },
+                { id: data.value.id, document: data.value },
                 { default: () => h(ElementRenderer, { id: "root" }) }
             );
         };
