@@ -2,7 +2,6 @@
   "name": "@webiny/website-builder-nuxt",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -37,6 +36,9 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   },
   "adio": {
     "ignore": {
