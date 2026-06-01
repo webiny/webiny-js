@@ -3,48 +3,54 @@ import React from "react";
 import { plugins } from "@webiny/plugins";
 import Draggable from "../Draggable.js";
 import type { CmsModelFieldTypePlugin, CmsModelLayoutFieldTypePlugin } from "~/types.js";
-import { Heading, Icon, Text } from "@webiny/admin-ui";
+import { Icon, Text } from "@webiny/admin-ui";
+
+interface GridItemProps {
+    testId: string;
+    label: string;
+    icon: React.ReactElement;
+    onDragStart: DragEventHandler;
+    dragRef: (element: HTMLElement | null) => void;
+}
+
+const GridItem = ({ testId, label, icon, onDragStart, dragRef }: GridItemProps) => {
+    return (
+        <div
+            ref={dragRef}
+            data-testid={testId}
+            onDragStart={onDragStart}
+            className={
+                "flex flex-col items-center justify-center gap-[8px] size-20 bg-neutral-subtle rounded-md cursor-grab hover:bg-neutral-dimmed transition-colors shrink-0"
+            }
+        >
+            <Icon icon={icon} label={label} size={"lg"} color={"neutral-strong"} />
+            <span
+                className={
+                    "text-xs font-normal text-neutral-strong text-center leading-4 overflow-hidden text-ellipsis whitespace-nowrap w-full px-[8px]"
+                }
+            >
+                {label}
+            </span>
+        </div>
+    );
+};
 
 interface FieldProps {
     onFieldDragStart: DragEventHandler;
     fieldType: CmsModelFieldTypePlugin["field"];
 }
 
-const Field = (props: FieldProps) => {
-    const {
-        onFieldDragStart,
-        fieldType: { type, label, icon, description }
-    } = props;
+const Field = ({ onFieldDragStart, fieldType: { type, label, icon } }: FieldProps) => {
     return (
         <Draggable beginDrag={{ type: "newField", fieldType: type }}>
             {({ drag }) => (
-                <div
-                    ref={element => {
-                        drag(element);
-                    }}
-                    data-testid={`cms-editor-fields-field-${type}`}
+                <GridItem
+                    testId={`cms-editor-fields-field-${type}`}
+                    label={label}
+                    icon={icon as React.ReactElement}
                     onDragStart={onFieldDragStart}
-                    className={
-                        "bg-neutral-base rounded-sm mb-sm py-sm px-md cursor-grab last-of-type:mb-none hover:opacity-80 transition-opacity"
-                    }
-                >
-                    <div className={"flex items-center gap-md"}>
-                        <div>
-                            <Icon
-                                icon={icon as React.ReactElement}
-                                label={label}
-                                size={"md"}
-                                color={"neutral-light"}
-                            />
-                        </div>
-                        <div>
-                            <Heading level={6}>{label}</Heading>
-                            <Text size={"sm"} className={"text-neutral-strong"}>
-                                {description}
-                            </Text>
-                        </div>
-                    </div>
-                </div>
+                    dragRef={element => drag(element)}
+                />
             )}
         </Draggable>
     );
@@ -55,36 +61,20 @@ interface LayoutFieldItemProps {
     layoutField: CmsModelLayoutFieldTypePlugin["field"];
 }
 
-const LayoutFieldItem = (props: LayoutFieldItemProps) => {
-    const {
-        onFieldDragStart,
-        layoutField: { type, label, icon, description }
-    } = props;
+const LayoutFieldItem = ({
+    onFieldDragStart,
+    layoutField: { type, label, icon }
+}: LayoutFieldItemProps) => {
     return (
         <Draggable beginDrag={{ type: "newLayoutField", layoutFieldType: type }}>
             {({ drag }) => (
-                <div
-                    ref={element => {
-                        drag(element);
-                    }}
-                    data-testid={`cms-editor-fields-layout-field-${type}`}
+                <GridItem
+                    testId={`cms-editor-fields-layout-field-${type}`}
+                    label={label}
+                    icon={icon as React.ReactElement}
                     onDragStart={onFieldDragStart}
-                    className={
-                        "bg-neutral-base rounded-sm mb-sm py-sm px-md cursor-grab last-of-type:mb-none hover:opacity-80 transition-opacity"
-                    }
-                >
-                    <div className={"flex items-center gap-md"}>
-                        <div>
-                            <Icon icon={icon} label={label} size={"md"} color={"neutral-light"} />
-                        </div>
-                        <div>
-                            <Heading level={6}>{label}</Heading>
-                            <Text size={"sm"} className={"text-neutral-strong"}>
-                                {description}
-                            </Text>
-                        </div>
-                    </div>
-                </div>
+                    dragRef={element => drag(element)}
+                />
             )}
         </Draggable>
     );
@@ -95,7 +85,7 @@ interface FieldsSidebarProps {
 }
 
 export const FieldsSidebar = ({ onFieldDragStart }: FieldsSidebarProps) => {
-    const fieldTypePlugin = plugins
+    const fieldTypePlugins = plugins
         .byType<CmsModelFieldTypePlugin>("cms-editor-field-type")
         .filter(p => !p.field.hideInAdmin);
 
@@ -112,13 +102,15 @@ export const FieldsSidebar = ({ onFieldDragStart }: FieldsSidebarProps) => {
             >
                 Fields
             </Text>
-            {fieldTypePlugin.map(fieldPlugin => (
-                <Field
-                    key={fieldPlugin.field.type}
-                    fieldType={fieldPlugin.field}
-                    onFieldDragStart={onFieldDragStart}
-                />
-            ))}
+            <div className={"flex flex-wrap gap-[6px]"}>
+                {fieldTypePlugins.map(fieldPlugin => (
+                    <Field
+                        key={fieldPlugin.field.type}
+                        fieldType={fieldPlugin.field}
+                        onFieldDragStart={onFieldDragStart}
+                    />
+                ))}
+            </div>
             {layoutFieldPlugins.length > 0 && (
                 <>
                     <Text
@@ -128,13 +120,15 @@ export const FieldsSidebar = ({ onFieldDragStart }: FieldsSidebarProps) => {
                     >
                         Layout
                     </Text>
-                    {layoutFieldPlugins.map(lp => (
-                        <LayoutFieldItem
-                            key={lp.field.type}
-                            layoutField={lp.field}
-                            onFieldDragStart={onFieldDragStart}
-                        />
-                    ))}
+                    <div className={"flex flex-wrap gap-[6px]"}>
+                        {layoutFieldPlugins.map(lp => (
+                            <LayoutFieldItem
+                                key={lp.field.type}
+                                layoutField={lp.field}
+                                onFieldDragStart={onFieldDragStart}
+                            />
+                        ))}
+                    </div>
                 </>
             )}
         </>

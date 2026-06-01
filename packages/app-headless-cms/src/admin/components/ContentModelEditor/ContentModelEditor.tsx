@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import { makeDecoratable, useDialogs, LeftPanel, RightPanel, SplitView } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { Heading, OverlayLoader, Tabs, Text, TimeAgo } from "@webiny/admin-ui";
-import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
-import { ReactComponent as PreviewIcon } from "@webiny/icons/fullscreen.svg";
+import { Heading, OverlayLoader, Text, TimeAgo } from "@webiny/admin-ui";
 import { FieldsSidebar } from "./FieldsSidebar.js";
 import { FieldEditor } from "../FieldEditor/index.js";
 import { PreviewTab } from "./PreviewTab.js";
@@ -73,7 +71,7 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
 
     return (
         <div className={"content-model-editor flex-1"}>
-            <Header />
+            <Header activeTab={activeTab} onTabChange={setActiveTab} />
             <div className={"w-full overflow-y-auto h-main-content"}>
                 <SplitView>
                     <LeftPanel span={4} className={"bg-neutral-light"}>
@@ -96,49 +94,29 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                                     </Text>
                                 </div>
                             )}
-                            <Tabs
-                                size={"md"}
-                                spacing={"xl"}
-                                separator={true}
-                                value={String(activeTab)}
-                                onValueChange={setActiveTab}
-                                tabs={[
-                                    <Tabs.Tab
-                                        key={"edit"}
-                                        value={"edit"}
-                                        trigger={"Edit"}
-                                        icon={<EditIcon />}
-                                        data-testid={"cms.editor.tab.edit"}
-                                        content={
-                                            <div className={"relative mb-lg"}>
-                                                <FieldEditor
-                                                    fields={data.fields}
-                                                    layout={data.layout || []}
-                                                    onChange={onChange}
-                                                />
-                                            </div>
-                                        }
-                                    />,
-                                    <Tabs.Tab
-                                        key={"preview"}
-                                        value={"preview"}
-                                        trigger={"Preview"}
-                                        icon={<PreviewIcon />}
-                                        data-testid={"cms.editor.tab.preview"}
-                                        content={
-                                            <ContentEntryEditorWithConfig>
-                                                <ContentEntriesProvider contentModel={data}>
-                                                    <ContentEntryProvider readonly={true}>
-                                                        <PreviewTab
-                                                            activeTab={activeTab === "preview"}
-                                                        />
-                                                    </ContentEntryProvider>
-                                                </ContentEntriesProvider>
-                                            </ContentEntryEditorWithConfig>
-                                        }
+                            {activeTab === "edit" && (
+                                <div
+                                    className={"relative mb-lg"}
+                                    data-testid={"cms.editor.tab.edit"}
+                                >
+                                    <FieldEditor
+                                        fields={data.fields}
+                                        layout={data.layout || []}
+                                        onChange={onChange}
                                     />
-                                ]}
-                            />
+                                </div>
+                            )}
+                            {activeTab === "preview" && (
+                                <div data-testid={"cms.editor.tab.preview"}>
+                                    <ContentEntryEditorWithConfig>
+                                        <ContentEntriesProvider contentModel={data}>
+                                            <ContentEntryProvider readonly={true}>
+                                                <PreviewTab activeTab={true} />
+                                            </ContentEntryProvider>
+                                        </ContentEntriesProvider>
+                                    </ContentEntryEditorWithConfig>
+                                </div>
+                            )}
                         </div>
                     </RightPanel>
                 </SplitView>
