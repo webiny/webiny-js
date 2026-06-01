@@ -1,0 +1,55 @@
+{
+  "name": "@webiny/website-builder-nuxt",
+  "version": "0.0.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./vite": "./vite.js",
+    "./lexical.css": "./lexical.css"
+  },
+  "description": "A Nuxt.js integration SDK for Webiny Website Builder.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/website-builder-vue": "0.0.0",
+    "postcss": "^8.5.15",
+    "postcss-import": "^16.1.1"
+  },
+  "devDependencies": {
+    "@types/postcss-import": "^14.0.3",
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "6.0.3",
+    "vite": "^6.0.0",
+    "vue": "^3.5.0"
+  },
+  "peerDependencies": {
+    "nuxt": ">=3",
+    "vue": ">=3.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  },
+  "adio": {
+    "ignore": {
+      "src": [
+        "#imports"
+      ],
+      "dependencies": [
+        "postcss",
+        "postcss-import",
+        "@webiny/website-builder-vue"
+      ]
+    }
+  }
+}
