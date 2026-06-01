@@ -37,6 +37,7 @@ export interface IContentEntriesPresenter {
     vm: IContentEntriesViewModel;
     actions: IContentEntriesActions;
     init(config: IContentEntriesInitConfig): void;
+    setModel(model: CmsModel): void;
     dispose(): void;
 }
 
