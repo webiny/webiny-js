@@ -87,7 +87,7 @@ export const DocumentRenderer = defineComponent({
                                 : h(
                                       DocumentStoreProvider,
                                       {
-                                          id: document!.properties.id,
+                                          id: document!.id,
                                           document: document!
                                       },
                                       {
