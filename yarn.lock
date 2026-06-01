@@ -11695,7 +11695,7 @@ __metadata:
     sonner: "npm:^2.0.7"
     storybook: "npm:^10.4.1"
     storybook-react-rsbuild: "npm:^3.3.4"
-    tailwind-merge: "npm:^2.6.1"
+    tailwind-merge: "npm:^3.6.0"
     tailwindcss: "npm:^4.3.0"
     tw-animate-css: "npm:^1.4.0"
     type-fest: "npm:^5.6.0"
@@ -27268,10 +27268,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwind-merge@npm:^2.6.1":
-  version: 2.6.1
-  resolution: "tailwind-merge@npm:2.6.1"
-  checksum: 10/b68e9e63f0d8e4f8e8b9801b978c2d6c78136a20e407586b3bf4c905759ccbfa4ba9d0b6af06b0241816578866cb3dce660078fc29847a8a1dfabb87d315b80b
+"tailwind-merge@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "tailwind-merge@npm:3.6.0"
+  checksum: 10/1da88698b6d878c391ab83064346e4b5b038d1b519d90825044df4b096971522c12253c7d6ab586c9da04e2039ba46573696138ea3d19c685d3c236f1f892899
   languageName: node
   linkType: hard
 
