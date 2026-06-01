@@ -19,7 +19,7 @@ Durable decisions that apply across all phases:
 
 ---
 
-## Phase 1: Headless Features
+## [x] Phase 1: Headless Features
 
 **User stories**: 3, 4, 7
 
@@ -64,7 +64,7 @@ Bulk action features (batch cache operations):
 
 ---
 
-## Phase 2: CmsModel → FormModel Mapping
+## [x] Phase 2: CmsModel → FormModel Mapping
 
 **User stories**: 2, 5, 10, 12, 13, 14, 15
 
@@ -109,7 +109,7 @@ The mapping layer that converts any `CmsModel` into a `FormModelConfig` for `For
 
 ---
 
-## Phase 3: Presenters
+## [ ] Phase 3: Presenters
 
 **User stories**: 6, 8, 9
 
@@ -161,7 +161,7 @@ MobX-based presenters that compose features and expose observable ViewModels. No
 
 ---
 
-## Phase 4: Views + Integration
+## [ ] Phase 4: Views + Integration
 
 **User stories**: 1, 8, 11, 16, 17, 18, 19, 20
 
@@ -216,7 +216,7 @@ React observer components that mount presenters and render UI. This is where the
 
 ---
 
-## Phase 5: Cleanup
+## [ ] Phase 5: Cleanup
 
 **User stories**: all (regression safety)
 
