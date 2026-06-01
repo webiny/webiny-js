@@ -17,7 +17,7 @@ export const CmsWorkflows = () => {
     return (
         <Wcp.CanUseWorkflows>
             <ListOpenInNewWindow />
-            <CmsEntriesWorkflowStateListFooterMenu />
+            {/*<CmsEntriesWorkflowStateListFooterMenu />*/}
             <CmsWorkflowsEditor />
             <ContentEntryFormWorkflow />
             <ContentEntryWorkflow />

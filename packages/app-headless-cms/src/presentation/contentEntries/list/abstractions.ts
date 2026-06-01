@@ -3,7 +3,10 @@ import type {
     IListViewModel,
     IListActions
 } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
-import type { IFolderTreeViewModel } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import type {
+    IFolderTreeViewModel,
+    IFolderTreePresenter
+} from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import type { CmsContentEntry, CmsModel } from "~/types.js";
 
 export interface IContentEntriesInitConfig {
@@ -17,20 +20,30 @@ export interface IContentEntriesViewModel {
     folders: IFolderTreeViewModel;
     selectedEntryId: string | null;
     showingEntry: boolean;
+    showFolders: boolean;
+    showingFilters: boolean;
     loading: boolean;
 }
 
-export interface IContentEntriesActions {
-    search: IListActions["search"];
-    sort: IListActions["sort"];
-    filter: IListActions["filter"];
-    selection: IListActions["selection"];
-    loadMore(): Promise<void>;
-    refresh(): Promise<void>;
+export interface IContentEntriesActions extends IListActions {
     selectEntry(id: string): void;
     deselectEntry(): void;
     createEntry(): void;
     bulkAction(action: string, data?: Record<string, unknown>): Promise<void>;
+    showFilters(): void;
+    hideFilters(): void;
+    folders: {
+        selectFolder(folderId: string | null): void;
+        createFolder(parentFolderId?: string): void;
+        editFolder(folderId: string): void;
+        deleteFolder(folderId: string): Promise<void>;
+        moveFolder(folderId: string, targetParentId: string | null): Promise<void>;
+        loadChildFolders(parentIds: string[]): Promise<void>;
+        canManageStructure(folderId: string): boolean;
+        getAncestorIds(folderId: string): string[];
+        submitOperation(): Promise<boolean>;
+        cancelOperation(): void;
+    };
 }
 
 export interface IContentEntriesPresenter {

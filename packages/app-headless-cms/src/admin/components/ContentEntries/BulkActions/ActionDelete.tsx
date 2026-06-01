@@ -2,17 +2,17 @@ import React from "react";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { observer } from "mobx-react-lite";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
-import { useRecords } from "@webiny/app-aco";
 import { useSnackbar } from "@webiny/app-admin";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { useCms, useModel } from "~/admin/hooks/index.js";
 import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 import { Tooltip } from "@webiny/admin-ui";
 
 export const ActionDelete = observer(() => {
     const { model } = useModel();
     const { deleteEntry } = useCms();
-    const { removeRecordFromCache } = useRecords();
+    const { actions } = useContentEntriesPresenter();
     const { showSnackbar } = useSnackbar();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
@@ -43,10 +43,6 @@ export const ActionDelete = observer(() => {
 
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
-                        /**
-                         * We need an entryId because we want to delete all revisions of the entry.
-                         * By sending an entryId (id without #version), we are telling to the API to delete all revisions.
-                         */
                         const { id } = parseIdentifier(item.id);
                         const response = await deleteEntry({ model, id });
 
@@ -56,8 +52,6 @@ export const ActionDelete = observer(() => {
                                     "Unknown error while moving the entry to trash."
                             );
                         }
-
-                        removeRecordFromCache(id);
 
                         report.success({
                             title: `${item.meta.title}`,
@@ -72,6 +66,7 @@ export const ActionDelete = observer(() => {
                 });
 
                 worker.resetItems();
+                await actions.refresh();
 
                 showResultsDialog({
                     results: worker.results,

@@ -1,16 +1,23 @@
 import React, { useCallback } from "react";
 import { ReactComponent as MoveIcon } from "@webiny/icons/exit_to_app.svg";
-import { useRecords, useMoveToFolderDialog, useNavigateFolder } from "@webiny/app-aco";
-import { useSnackbar } from "@webiny/app-admin";
+import { useMoveToFolderDialog } from "@webiny/app-aco";
+import { useSnackbar, useFeature } from "@webiny/app-admin";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { ROOT_FOLDER } from "~/admin/constants.js";
+import { useModel } from "~/admin/hooks/index.js";
+import { MoveEntryFeature } from "~/features/contentEntry/moveEntry/feature.js";
+import type { IMoveEntryUseCase } from "~/features/contentEntry/moveEntry/abstractions.js";
 import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 import { type NodeDto, Tooltip } from "@webiny/admin-ui";
 
 export const ActionMove = observer(() => {
-    const { moveRecord } = useRecords();
-    const { currentFolderId } = useNavigateFolder();
+    const { model } = useModel();
+    const { useCase: moveEntryUseCase } = useFeature(MoveEntryFeature) as {
+        useCase: IMoveEntryUseCase;
+    };
+    const { vm, actions } = useContentEntriesPresenter();
     const { showSnackbar } = useSnackbar();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
@@ -20,6 +27,7 @@ export const ActionMove = observer(() => {
     const { showDialog: showMoveDialog } = useMoveToFolderDialog();
 
     const entriesLabel = getEntriesLabel();
+    const currentFolderId = vm.folders.currentFolderId;
 
     const openWorkerDialog = useCallback(
         (folder: NodeDto) => {
@@ -53,11 +61,10 @@ export const ActionMove = observer(() => {
 
                     await worker.processInSeries(async ({ item, report }) => {
                         try {
-                            await moveRecord({
+                            await moveEntryUseCase.execute({
+                                model,
                                 id: item.id,
-                                location: {
-                                    folderId: folder.id
-                                }
+                                folderId: folder.id
                             });
 
                             report.success({
@@ -73,6 +80,7 @@ export const ActionMove = observer(() => {
                     });
 
                     worker.resetItems();
+                    await actions.refresh();
 
                     showResultsDialog({
                         results: worker.results,

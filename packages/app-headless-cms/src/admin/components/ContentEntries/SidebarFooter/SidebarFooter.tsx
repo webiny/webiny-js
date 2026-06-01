@@ -10,7 +10,7 @@ export const SidebarFooter = makeDecoratable(({ children }: ISidebarFooterProps)
     return (
         <div className={"px-xs py-sm bg-neutral-base"}>
             {children}
-            <TrashBin />
+            {/*<TrashBin />*/}
         </div>
     );
 });

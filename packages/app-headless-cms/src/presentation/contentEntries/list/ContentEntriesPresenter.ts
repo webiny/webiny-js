@@ -18,8 +18,10 @@ import { ContentEntriesDataSource } from "./ContentEntriesDataSource.js";
 class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
     private _model: CmsModel | null = null;
     private _selectedEntryId: string | null = null;
+    private _showingFilters = false;
     private _loading = false;
     private _disposeReaction: IReactionDisposer | null = null;
+    private _initConfig: IContentEntriesInitConfig | null = null;
 
     constructor(
         private listPresenter: ListPresenter.Interface<CmsContentEntry>,
@@ -41,12 +43,17 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
     }
 
     get vm(): IContentEntriesViewModel {
+        const hasSearch = this.listPresenter.vm.search.length > 0;
+        const hasFilters = Object.keys(this.listPresenter.vm.filters).some(k => k !== "folderId");
+
         return {
             model: this._model,
             list: this.listPresenter.vm,
             folders: this.folderTreePresenter.vm,
             selectedEntryId: this._selectedEntryId,
             showingEntry: this._selectedEntryId !== null,
+            showFolders: !hasSearch && !hasFilters,
+            showingFilters: this._showingFilters,
             loading: this._loading
         };
     }
@@ -76,6 +83,7 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
         },
         loadMore: () => this.listPresenter.actions.loadMore(),
         refresh: () => this.listPresenter.actions.refresh(),
+
         selectEntry: (id: string) => {
             this._selectedEntryId = id;
         },
@@ -104,19 +112,39 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
 
             this.listPresenter.actions.selection.deselectAll();
             await this.listPresenter.actions.refresh();
+        },
+
+        showFilters: () => {
+            this._showingFilters = true;
+        },
+        hideFilters: () => {
+            this._showingFilters = false;
+        },
+
+        folders: {
+            selectFolder: (folderId: string | null) =>
+                this.folderTreePresenter.selectFolder(folderId),
+            createFolder: (parentFolderId?: string) =>
+                this.folderTreePresenter.createFolder(parentFolderId),
+            editFolder: (folderId: string) => this.folderTreePresenter.editFolder(folderId),
+            deleteFolder: (folderId: string) => this.folderTreePresenter.deleteFolder(folderId),
+            moveFolder: (folderId: string, targetParentId: string | null) =>
+                this.folderTreePresenter.moveFolder(folderId, targetParentId),
+            loadChildFolders: (parentIds: string[]) =>
+                this.folderTreePresenter.loadChildFolders(parentIds),
+            canManageStructure: (folderId: string) =>
+                this.folderTreePresenter.canManageStructure(folderId),
+            getAncestorIds: (folderId: string) => this.folderTreePresenter.getAncestorIds(folderId),
+            submitOperation: () => this.folderTreePresenter.submitOperation(),
+            cancelOperation: () => this.folderTreePresenter.cancelOperation()
         }
     };
 
     init(config: IContentEntriesInitConfig): void {
         this._loading = true;
         this._model = null;
-
-        // Model will be set externally via setModel() after loading.
-        // For now, store the config for when the model arrives.
         this._initConfig = config;
     }
-
-    private _initConfig: IContentEntriesInitConfig | null = null;
 
     setModel(model: CmsModel): void {
         this._model = model;

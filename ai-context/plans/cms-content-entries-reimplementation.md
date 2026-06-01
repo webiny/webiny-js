@@ -216,7 +216,54 @@ React observer components that mount presenters and render UI. This is where the
 
 ---
 
-## [ ] Phase 5: Cleanup
+## [ ] Phase 5: Migrate Config Components off ACO Hooks
+
+**User stories**: 16, 17, 19
+
+### What to build
+
+The config-registered table cells, entry actions, and bulk actions in `ContentEntriesModule.tsx` depend on old ACO hooks (`useRecords`, `useNavigateFolder`, `useMoveToFolderDialog`) and old CMS hooks (`useContentEntriesList`, `useContentEntry`). These must be rewritten to use the new presenter-based hooks instead.
+
+**Components to migrate:**
+
+Table cells (`admin/components/ContentEntries/Table/Cells/`):
+- `CellName` — uses `useNavigateFolder`, `useContentEntriesList` (for `getEntryEditUrl`)
+- Other cells (`CellAuthor`, `CellCreated`, `CellModified`, `CellStatus`, `CellLive`, `CellActions`) — check each for old hook usage
+
+Table entry actions (`admin/components/ContentEntries/Table/Actions/`):
+- `EditEntry` — uses `useContentEntriesList`
+- `ChangeEntryStatus` — uses `useContentEntry`
+- `DeleteEntry` — uses `useContentEntry`
+- `MoveEntry` — likely uses `useRecords` / `useMoveToFolderDialog`
+
+Bulk actions (`admin/components/ContentEntries/BulkActions/`):
+- `ActionPublish` — uses `useRecords` (`updateRecordInCache`)
+- `ActionUnpublish` — uses `useRecords` (`updateRecordInCache`)
+- `ActionMove` — uses `useRecords` (`moveRecord`), `useNavigateFolder`, `useMoveToFolderDialog`
+- `ActionDelete` — uses `useRecords` (`removeRecordFromCache`)
+
+**Migration strategy:**
+- Replace `useRecords().updateRecordInCache` / `removeRecordFromCache` / `moveRecord` with presenter actions (cache is now managed by the feature layer automatically)
+- Replace `useNavigateFolder()` with `useContentEntriesPresenter().actions.folders.selectFolder`
+- Replace `useContentEntriesList()` with `useContentEntriesPresenter()`
+- Replace `useContentEntry()` with `useContentEntryFormPresenter()`
+- Replace `useMoveToFolderDialog()` with presenter-driven move action
+
+### Acceptance criteria
+
+- [ ] No `useRecords` calls remain in content entry components
+- [ ] No `useNavigateFolder` calls remain in content entry components
+- [ ] No `useContentEntriesList` calls remain in content entry components
+- [ ] No `useContentEntry` calls remain in content entry components
+- [ ] No `useMoveToFolderDialog` calls remain in content entry components
+- [ ] Table renders with all columns (name, author, created, modified, status, live, actions)
+- [ ] Bulk actions work (publish, unpublish, move, delete)
+- [ ] Entry actions work (edit, change status, move, delete)
+- [ ] Folder navigation works via cell click
+
+---
+
+## [ ] Phase 6: Cleanup
 
 **User stories**: all (regression safety)
 

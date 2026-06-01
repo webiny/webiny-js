@@ -5,8 +5,7 @@ import { OverlayLoader } from "@webiny/admin-ui";
 import { CompositionScope } from "@webiny/react-composition";
 import { AdminConfig, AdminLayout } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { ContentEntriesContainer } from "~/admin/views/contentEntries/ContentEntriesContainer.js";
-import { ContentEntries } from "~/admin/views/contentEntries/ContentEntries.js";
+import { ContentEntriesRouteAdapter } from "~/presentation/contentEntries/views/ContentEntriesRouteAdapter.js";
 import { Routes } from "~/routes.js";
 import { CmsMenuLoader } from "~/admin/menus/CmsMenuLoader.js";
 import { ContentModelsWidget } from "~/admin/components/ContentModelsWidget.js";
@@ -73,11 +72,9 @@ export const RoutesConfig = () => {
                             <Helmet>
                                 <title>{t`Content`}</title>
                             </Helmet>
-                            <ContentEntriesContainer>
-                                <CompositionScope name={"cms"}>
-                                    <ContentEntries />
-                                </CompositionScope>
-                            </ContentEntriesContainer>
+                            <CompositionScope name={"cms"}>
+                                <ContentEntriesRouteAdapter />
+                            </CompositionScope>
                         </AdminLayout>
                     </SecureRoute>
                 }

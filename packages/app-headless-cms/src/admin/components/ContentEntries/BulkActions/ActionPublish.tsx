@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { usePermission, useCms, useModel } from "~/admin/hooks/index.js";
 import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions.js";
-import { useRecords } from "@webiny/app-aco";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 import { useSnackbar } from "@webiny/app-admin";
 import { Tooltip } from "@webiny/admin-ui";
 
@@ -12,7 +12,7 @@ export const ActionPublish = observer(() => {
     const { model } = useModel();
     const { canPublish } = usePermission();
     const { publishEntryRevision } = useCms();
-    const { updateRecordInCache } = useRecords();
+    const { actions } = useContentEntriesPresenter();
     const { showSnackbar } = useSnackbar();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
@@ -55,8 +55,6 @@ export const ActionPublish = observer(() => {
                             );
                         }
 
-                        updateRecordInCache(response.entry);
-
                         report.success({
                             title: `${item.meta.title}`,
                             message: "Entry successfully published."
@@ -70,6 +68,7 @@ export const ActionPublish = observer(() => {
                 });
 
                 worker.resetItems();
+                await actions.refresh();
 
                 showResultsDialog({
                     results: worker.results,

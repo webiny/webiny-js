@@ -1,57 +1,116 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
+import { DialogsProvider } from "@webiny/app-admin";
 import { ListPresenterFeature } from "@webiny/app-admin/presentation/listPresenter/index.js";
 import { FoldersFeature } from "@webiny/app-aco/features/folders/feature.js";
 import { FolderTreePresenterFeature } from "@webiny/app-aco/presentation/folderTree/feature.js";
 import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.js";
+import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
 import { ContentEntryFeature } from "~/features/contentEntry/feature.js";
 import { CmsGraphQLClientFeature } from "~/features/graphQLClient/feature.js";
 import { CmsFormModelFeature } from "~/features/formModel/feature.js";
 import { ModelFeature } from "~/features/model/feature.js";
 import { GetModelFeature } from "~/features/model/getModel/feature.js";
 import type { IGetModelUseCase } from "~/features/model/getModel/abstractions.js";
+import type { CmsModel } from "~/types.js";
 import { ContentEntriesPresenterFeature } from "../list/feature.js";
 import { ContentEntryFormPresenterFeature } from "../form/feature.js";
+import { SingletonEntryPresenterFeature } from "../singleton/feature.js";
 import { ContentEntriesPresenterProvider } from "./ContentEntriesPresenterProvider.js";
 import { ContentEntryFormPresenterProvider } from "./ContentEntryFormPresenterProvider.js";
+import { ContentEntryListWithConfig } from "~/admin/config/contentEntries/list/ContentEntryListConfig.js";
+import { ModelProvider } from "~/admin/components/ModelProvider/index.js";
+import { ContentEntriesListLayout } from "./ContentEntriesListLayout.js";
+import { SingletonEntryLayout } from "./SingletonEntryLayout.js";
 import type { IContentEntriesPresenter } from "../list/abstractions.js";
 import type { IContentEntryFormPresenter } from "../form/abstractions.js";
+import type { ISingletonEntryPresenter } from "../singleton/abstractions.js";
 
 export interface ContentEntriesViewProps {
     modelId: string;
     children?: React.ReactNode;
 }
 
-const ContentEntriesViewInner = observer(({ modelId, children }: ContentEntriesViewProps) => {
-    const { presenter: listPresenter } = useFeature(ContentEntriesPresenterFeature) as {
-        presenter: IContentEntriesPresenter;
-    };
-    const { presenter: formPresenter } = useFeature(ContentEntryFormPresenterFeature) as {
-        presenter: IContentEntryFormPresenter;
-    };
-    const { useCase: getModelUseCase } = useFeature(GetModelFeature) as {
-        useCase: IGetModelUseCase;
-    };
+const ContentEntriesViewInner = ({ modelId, children }: ContentEntriesViewProps) => {
+    const [model, setModel] = useState<CmsModel | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    let getModelUseCase: IGetModelUseCase;
+    let listPresenter: IContentEntriesPresenter;
+    let formPresenter: IContentEntryFormPresenter;
+    let singletonPresenter: ISingletonEntryPresenter;
+
+    try {
+        const getModelResult = useFeature(GetModelFeature) as { useCase: IGetModelUseCase };
+        getModelUseCase = getModelResult.useCase;
+        const listResult = useFeature(ContentEntriesPresenterFeature) as { presenter: IContentEntriesPresenter };
+        listPresenter = listResult.presenter;
+        const formResult = useFeature(ContentEntryFormPresenterFeature) as { presenter: IContentEntryFormPresenter };
+        formPresenter = formResult.presenter;
+        const singletonResult = useFeature(SingletonEntryPresenterFeature) as { presenter: ISingletonEntryPresenter };
+        singletonPresenter = singletonResult.presenter;
+    } catch (err) {
+        console.error("[ContentEntriesView] DI resolution failed:", err);
+        return <div>DI Error: {err instanceof Error ? err.message : String(err)}</div>;
+    }
 
     useEffect(() => {
         listPresenter.init({ modelId });
 
-        getModelUseCase.execute({ modelId }).then(model => {
-            listPresenter.setModel(model);
-        });
+        getModelUseCase
+            .execute({ modelId })
+            .then(loadedModel => {
+                console.log("[ContentEntriesView] Model loaded:", loadedModel.modelId, loadedModel.name);
+                setModel(loadedModel);
 
-        return () => listPresenter.dispose();
+                if (loadedModel.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {
+                    singletonPresenter.init({ model: loadedModel });
+                } else {
+                    listPresenter.setModel(loadedModel);
+                }
+            })
+            .catch(err => {
+                console.error("[ContentEntriesView] Failed to load model:", err);
+                setError(err instanceof Error ? err.message : String(err));
+            });
+
+        return () => {
+            listPresenter.dispose();
+            singletonPresenter.dispose();
+        };
     }, [modelId]);
 
-    return (
-        <ContentEntriesPresenterProvider presenter={listPresenter}>
-            <ContentEntryFormPresenterProvider presenter={formPresenter}>
+    if (error) {
+        return <div>Error loading model: {error}</div>;
+    }
+
+    if (!model) {
+        return <div>Loading model...</div>;
+    }
+
+    if (model.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {
+        return (
+            <>
+                <SingletonEntryLayout presenter={singletonPresenter} />
                 {children}
-            </ContentEntryFormPresenterProvider>
-        </ContentEntriesPresenterProvider>
+            </>
+        );
+    }
+
+    return (
+        <ModelProvider model={model}>
+            <ContentEntryListWithConfig>
+                <ContentEntriesPresenterProvider presenter={listPresenter}>
+                    <ContentEntryFormPresenterProvider presenter={formPresenter}>
+                        <ContentEntriesListLayout />
+                        {children}
+                    </ContentEntryFormPresenterProvider>
+                </ContentEntriesPresenterProvider>
+            </ContentEntryListWithConfig>
+        </ModelProvider>
     );
-});
+};
 
 export const ContentEntriesView = ({ modelId, children }: ContentEntriesViewProps) => {
     const container = useContainer();
@@ -60,24 +119,25 @@ export const ContentEntriesView = ({ modelId, children }: ContentEntriesViewProp
         const child = container.createChildContainer();
 
         CmsGraphQLClientFeature.register(child);
-        // FormModelFeature.register(child);
+        FormModelFeature.register(child);
         CmsFormModelFeature.register(child);
-        // ListPresenterFeature.register(child);
+        ListPresenterFeature.register(child);
         FoldersFeature.register(child, { type: "cms" });
         FolderTreePresenterFeature.register(child);
-        // TODO: move this to the parent container; entry features should be registered only once.
         ContentEntryFeature.register(child);
-        // TODO: move this to the parent container; model features should be registered only once.
         ModelFeature.register(child);
         ContentEntriesPresenterFeature.register(child);
         ContentEntryFormPresenterFeature.register(child);
+        SingletonEntryPresenterFeature.register(child);
 
         return child;
     }, []);
 
     return (
         <DiContainerProvider container={scopedContainer}>
-            <ContentEntriesViewInner modelId={modelId}>{children}</ContentEntriesViewInner>
+            <DialogsProvider>
+                <ContentEntriesViewInner modelId={modelId}>{children}</ContentEntriesViewInner>
+            </DialogsProvider>
         </DiContainerProvider>
     );
 };

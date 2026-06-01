@@ -1,14 +1,13 @@
 import React from "react";
 import type { FolderDto } from "@webiny/app-aco";
 
-import { Icon, Link, Text } from "@webiny/admin-ui";
+import { Icon, Text } from "@webiny/admin-ui";
 import { ReactComponent as Folder } from "@webiny/icons/folder.svg";
 import { ReactComponent as FolderShared } from "@webiny/icons/folder_shared.svg";
 import { ReactComponent as File } from "@webiny/icons/description.svg";
-import { useNavigateFolder } from "@webiny/app-aco";
 
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
-import { useContentEntriesList } from "~/admin/views/contentEntries/hooks/index.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 import { usePermission } from "~/admin/hooks/index.js";
 
 import type { CmsContentEntry } from "~/types.js";
@@ -18,7 +17,7 @@ interface FolderCellNameProps {
 }
 
 export const FolderCellName = ({ folder }: FolderCellNameProps) => {
-    const { navigateToFolder } = useNavigateFolder();
+    const { actions } = useContentEntriesPresenter();
 
     let icon = <Folder />;
     if (folder.hasNonInheritedPermissions && folder.canManagePermissions) {
@@ -30,7 +29,7 @@ export const FolderCellName = ({ folder }: FolderCellNameProps) => {
             className={
                 "flex items-center gap-sm truncate cursor-pointer font-semibold hover:underline"
             }
-            onClick={() => navigateToFolder(folder.id)}
+            onClick={() => actions.folders.selectFolder(folder.id)}
         >
             <Icon
                 size={"sm"}
@@ -66,19 +65,20 @@ interface EntryCellNameProps {
 }
 
 export const EntryCellName = ({ entry }: EntryCellNameProps) => {
-    const { getEntryEditUrl } = useContentEntriesList();
+    const { actions } = useContentEntriesPresenter();
     const { canEdit } = usePermission();
-
-    const entryEditUrl = getEntryEditUrl(entry);
 
     if (!canEdit(entry, "cms.contentEntry")) {
         return <EntryCellRowTitle entry={entry} />;
     }
 
     return (
-        <Link to={entryEditUrl} variant={"secondary"} className={"truncate"}>
+        <div
+            className={"truncate cursor-pointer hover:underline"}
+            onClick={() => actions.selectEntry(entry.id)}
+        >
             <EntryCellRowTitle entry={entry} />
-        </Link>
+        </div>
     );
 };
 
