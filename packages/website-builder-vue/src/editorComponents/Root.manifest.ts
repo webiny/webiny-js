@@ -6,5 +6,6 @@ export const Root = createComponent(RootComponent, {
     name: "Webiny/Root",
     label: "Main Content",
     acceptsChildren: true,
-    hideFromToolbar: true
+    hideFromToolbar: true,
+    useInAiContentGeneration: false
 });
