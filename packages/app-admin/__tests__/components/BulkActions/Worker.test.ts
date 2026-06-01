@@ -19,28 +19,19 @@ describe("Worker", () => {
         worker = new Worker<Item>();
     });
 
-    it("should set and get items", () => {
-        const items = createMockItems();
-        worker.items = items;
-
-        expect(worker.items).toEqual(items);
-    });
-
     it("should process items using the provided callback", () => {
         const items = createMockItems();
         const mockCallback = vi.fn();
-        worker.items = items;
 
-        worker.process(mockCallback);
+        worker.process(items, mockCallback);
 
         expect(mockCallback).toHaveBeenCalledTimes(1);
         expect(mockCallback).toHaveBeenCalledWith(items);
     });
 
-    it('"should process items in series with the given chunk size', async () => {
+    it("should process items in series with the given chunk size", async () => {
         const items = createMockItems(20);
         const chunkSize = 5;
-        worker.items = items;
 
         const callbackFn = vi.fn();
 
@@ -51,7 +42,6 @@ describe("Worker", () => {
         }: CallbackParams<Item>): Promise<void> => {
             await callbackFn(item, allItems);
 
-            // Report error for items with even id
             if (item.id % 2 === 0) {
                 report.error({
                     title: `Errored item ${item}`
@@ -65,17 +55,14 @@ describe("Worker", () => {
             return;
         };
 
-        await worker.processInSeries(mockCallback, chunkSize);
+        await worker.processInSeries(items, mockCallback, chunkSize);
 
-        // Check that fn was called for each item
         expect(callbackFn).toHaveBeenCalledTimes(items.length);
 
-        // Check that fn was called with the correct items
         for (let i = 0; i < items.length; i++) {
             expect(callbackFn).toHaveBeenCalledWith(items[i], items);
         }
 
-        // Check the number of success and failure results
         expect(worker.results.length).toBe(items.length);
         const successResults = worker.results.filter(result => result.status === "success");
         const failureResults = worker.results.filter(result => result.status === "failure");

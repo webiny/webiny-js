@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import type { CallbackParams } from "@webiny/app-admin";
 import { makeDecoratable, useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
@@ -72,19 +72,14 @@ const useWorker = () => {
     const { bulkAction } = useCms();
     const { current: worker } = useRef(new Worker<CmsContentEntry>());
 
-    useEffect(() => {
-        worker.items = selected;
-    }, [selected.length]);
-
-    // Reset selected items in both useContentEntriesList and Worker
     const resetItems = useCallback(() => {
-        worker.items = [];
         setSelected([]);
     }, []);
 
     return {
         items: selected,
-        process: (callback: (items: CmsContentEntry[]) => void) => worker.process(callback),
+        process: (callback: (items: CmsContentEntry[]) => void) =>
+            worker.process(selected, callback),
         processInSeries: async (
             callback: ({
                 item,
@@ -92,7 +87,7 @@ const useWorker = () => {
                 report
             }: CallbackParams<CmsContentEntry>) => Promise<void>,
             chunkSize?: number
-        ) => worker.processInSeries(callback, chunkSize),
+        ) => worker.processInSeries(selected, callback, chunkSize),
         processInBulk: async ({ action, where: initialWhere, data }: ProcessInBulkParams) => {
             const where = merge(getWhere(), initialWhere);
             await bulkAction({ model, action, where, search, data });

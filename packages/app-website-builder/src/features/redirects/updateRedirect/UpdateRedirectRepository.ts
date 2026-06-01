@@ -1,34 +1,35 @@
-import type { IUpdateRedirectRepository } from "./IUpdateRedirectRepository.js";
-import type { IUpdateRedirectGateway } from "./IUpdateRedirectGateway.js";
-import type { RedirectDto } from "./RedirectDto.js";
-import { type IListCache, Redirect } from "~/domain/Redirect/index.js";
+import { runInAction } from "mobx";
+import { RedirectsListCache } from "~/features/redirects/shared/abstractions.js";
+import {
+    UpdateRedirectRepository as RepositoryAbstraction,
+    UpdateRedirectGateway,
+    type UpdateRedirectParams
+} from "./abstractions.js";
+import type { Redirect } from "~/domain/Redirect/Redirect.js";
 
-export class UpdateRedirectRepository implements IUpdateRedirectRepository {
-    private listCache: IListCache<Redirect>;
-    private gateway: IUpdateRedirectGateway;
+class UpdateRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private gateway: UpdateRedirectGateway.Interface,
+        private cache: RedirectsListCache.Interface
+    ) {}
 
-    constructor(listCache: IListCache<Redirect>, gateway: IUpdateRedirectGateway) {
-        this.listCache = listCache;
-        this.gateway = gateway;
-    }
+    async execute(params: UpdateRedirectParams): Promise<Redirect> {
+        const updated = await this.gateway.execute(params);
 
-    async execute(redirect: Redirect) {
-        const dto: RedirectDto = {
-            id: redirect.id,
-            redirectFrom: redirect.redirectFrom,
-            redirectTo: redirect.redirectTo,
-            redirectType: redirect.redirectType,
-            isEnabled: redirect.isEnabled
-        };
-
-        const result = await this.gateway.execute(dto);
-
-        this.listCache.updateItems(existingRedirect => {
-            if (existingRedirect.id === redirect.id) {
-                return Redirect.create(result);
-            }
-
-            return existingRedirect;
+        runInAction(() => {
+            this.cache.updateItems(existing => {
+                if (existing.id === params.id) {
+                    return updated;
+                }
+                return existing;
+            });
         });
+
+        return updated;
     }
 }
+
+export const UpdateRedirectRepository = RepositoryAbstraction.createImplementation({
+    implementation: UpdateRedirectRepositoryImpl,
+    dependencies: [UpdateRedirectGateway, RedirectsListCache]
+});

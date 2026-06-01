@@ -1,29 +1,30 @@
-import type { ICreateRedirectRepository } from "./ICreateRedirectRepository.js";
-import type { ICreateRedirectGateway } from "./ICreateRedirectGateway.js";
-import type { RedirectDto } from "./RedirectDto.js";
-import { type IListCache, Redirect } from "~/domain/Redirect/index.js";
+import { runInAction } from "mobx";
+import { RedirectsListCache } from "~/features/redirects/shared/abstractions.js";
+import {
+    CreateRedirectRepository as RepositoryAbstraction,
+    CreateRedirectGateway,
+    type CreateRedirectGatewayParams
+} from "./abstractions.js";
+import type { Redirect } from "~/domain/Redirect/Redirect.js";
 
-export class CreateRedirectRepository implements ICreateRedirectRepository {
-    private cache: IListCache<Redirect>;
-    private gateway: ICreateRedirectGateway;
+class CreateRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private gateway: CreateRedirectGateway.Interface,
+        private cache: RedirectsListCache.Interface
+    ) {}
 
-    constructor(cache: IListCache<Redirect>, gateway: ICreateRedirectGateway) {
-        this.cache = cache;
-        this.gateway = gateway;
-    }
+    async execute(params: CreateRedirectGatewayParams): Promise<Redirect> {
+        const redirect = await this.gateway.execute(params);
 
-    async execute(redirect: Redirect) {
-        const dto: RedirectDto = {
-            location: redirect.location,
-            redirectFrom: redirect.redirectFrom,
-            redirectTo: redirect.redirectTo,
-            redirectType: redirect.redirectType,
-            isEnabled: redirect.isEnabled
-        };
+        runInAction(() => {
+            this.cache.addItems([redirect]);
+        });
 
-        const result = await this.gateway.execute(dto);
-        const newRedirect = Redirect.create(result);
-        this.cache.addItems([newRedirect]);
-        return newRedirect;
+        return redirect;
     }
 }
+
+export const CreateRedirectRepository = RepositoryAbstraction.createImplementation({
+    implementation: CreateRedirectRepositoryImpl,
+    dependencies: [CreateRedirectGateway, RedirectsListCache]
+});
