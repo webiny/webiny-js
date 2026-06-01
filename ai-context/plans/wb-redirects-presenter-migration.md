@@ -10,15 +10,15 @@ The Redirects feature has ~75 files with massive boilerplate. This migration ado
 
 ## Key Reference Files
 
-| Pattern | Reference |
-|---|---|
-| List Presenter + embedded details | `app-file-manager/src/presentation/FileList/FileManagerPresenter.ts` |
-| Details Presenter (form, load, save) | `app-file-manager/src/presentation/FileDetails/FileDetailsPresenter.ts` |
-| Details UI (FormView + Drawer) | `app-file-manager/src/presentation/FileDetails/components/FileDetailsDrawer.tsx` |
-| DataSource | `app-file-manager/src/presentation/FileList/FileListDataSource.ts` |
-| Delete hook (useContainer + confirmation) | `app-file-manager/src/presentation/hooks/useDeleteFile.tsx` |
-| Move hook (useContainer + ACO dialog) | `app-file-manager/src/presentation/hooks/useMoveFileToFolder.ts` |
-| MainGraphQLClient gateway | `app-website-builder/src/features/pages/createPage/CreatePageGateway.ts` |
+| Pattern                                   | Reference                                                                        |
+| ----------------------------------------- | -------------------------------------------------------------------------------- |
+| List Presenter + embedded details         | `app-file-manager/src/presentation/FileList/FileManagerPresenter.ts`             |
+| Details Presenter (form, load, save)      | `app-file-manager/src/presentation/FileDetails/FileDetailsPresenter.ts`          |
+| Details UI (FormView + Drawer)            | `app-file-manager/src/presentation/FileDetails/components/FileDetailsDrawer.tsx` |
+| DataSource                                | `app-file-manager/src/presentation/FileList/FileListDataSource.ts`               |
+| Delete hook (useContainer + confirmation) | `app-file-manager/src/presentation/hooks/useDeleteFile.tsx`                      |
+| Move hook (useContainer + ACO dialog)     | `app-file-manager/src/presentation/hooks/useMoveFileToFolder.ts`                 |
+| MainGraphQLClient gateway                 | `app-website-builder/src/features/pages/createPage/CreatePageGateway.ts`         |
 
 ---
 
@@ -69,18 +69,22 @@ Interface: `execute(params: { id: string }): Promise<RedirectDto | undefined>`
 Each mutation: `abstractions.ts` + `XxxGateway.ts` + `XxxUseCase.ts` + `feature.ts`
 
 ### Create: `features/redirects/createRedirect/`
+
 - Gateway: `mutation CreateRedirect($data: WbRedirectCreateInput!) { ... }`, deps: `[MainGraphQLClient]`
 - UseCase: calls gateway, `cache.addItems([Redirect.create(result)])`, deps: `[CreateRedirectGateway, RedirectsListCache]`
 
 ### Delete: `features/redirects/deleteRedirect/`
+
 - Gateway: `mutation DeleteRedirect($id: ID!) { ... }`, deps: `[MainGraphQLClient]`
 - UseCase: calls gateway, `cache.removeItems(r => r.id === id)`, deps: `[DeleteRedirectGateway, RedirectsListCache]`
 
 ### Update: `features/redirects/updateRedirect/`
+
 - Gateway: `mutation UpdateRedirect($id: ID!, $data: WbRedirectUpdateInput!) { ... }`, deps: `[MainGraphQLClient]`
 - UseCase: calls gateway, `cache.updateItems(...)`, deps: `[UpdateRedirectGateway, RedirectsListCache]`
 
 ### Move: `features/redirects/moveRedirect/`
+
 - Gateway: `mutation MoveRedirect($id: ID!, $folderId: ID!) { ... }`, deps: `[MainGraphQLClient]`
 - UseCase: calls gateway, `cache.removeItems(r => r.id === id)`, deps: `[MoveRedirectGateway, RedirectsListCache]`
 
@@ -93,6 +97,7 @@ Two separate presenters — no mode branching. Each owns its form state and muta
 ### Create: `presentation/redirects/CreateRedirect/`
 
 **`abstractions.ts`**
+
 ```typescript
 interface ICreateRedirectViewModel {
     loading: string | null;   // "Creating...", null
@@ -111,10 +116,12 @@ CreateRedirectPresenter = createAbstraction<ICreateRedirectPresenter>(...)
 **`CreateRedirectPresenter.ts`**
 
 Constructor dependencies:
+
 - `CreateRedirectUseCase.Interface`
 - `FormModelFactory.Interface`
 
 **`init(folderId)`:** Stores `folderId`, builds form via `FormModelFactory.create()` with fields:
+
 - `redirectFrom` (text, required)
 - `redirectTo` (text, required)
 - `redirectType` (select, required, options: permanent/temporary, default "permanent")
@@ -127,6 +134,7 @@ Constructor dependencies:
 ### Edit: `presentation/redirects/EditRedirect/`
 
 **`abstractions.ts`**
+
 ```typescript
 interface IEditRedirectViewModel {
     redirect: RedirectDto | null;
@@ -146,6 +154,7 @@ EditRedirectPresenter = createAbstraction<IEditRedirectPresenter>(...)
 **`EditRedirectPresenter.ts`**
 
 Constructor dependencies:
+
 - `UpdateRedirectUseCase.Interface`
 - `GetRedirectUseCase.Interface`
 - `FormModelFactory.Interface`
@@ -163,7 +172,9 @@ Constructor dependencies:
 Create `presentation/redirects/RedirectList/`
 
 ### `RedirectListDataSource.ts`
+
 Implements `IDataSource<Redirect>`:
+
 - Constructor: `ListRedirectsUseCase.Interface`, `IListCache<Redirect>`, `GetDescendantFoldersUseCase.Interface?`
 - `rows` — computed from `cache.getItems()`
 - `query(params)` / `loadMore(params)` — calls use case, manages cache + meta
@@ -199,6 +210,7 @@ RedirectListPresenter = createAbstraction<IRedirectListPresenter>(...)
 ### `RedirectListPresenter.ts`
 
 Composes:
+
 - `ListPresenter.Interface<Redirect>`
 - `FolderTreePresenter.Interface`
 - `CreateRedirectPresenter.Interface` — embedded, like `fileDetailsPresenter` in `FileManagerPresenter`
@@ -208,6 +220,7 @@ Composes:
 - `GetDescendantFoldersUseCase.Interface`
 
 **Key pattern** (mirrors `FileManagerPresenter` showFileDetails/hideFileDetails):
+
 ```typescript
 private _createRedirect: ICreateRedirectPresenter | null = null;
 private _editRedirect: IEditRedirectPresenter | null = null;
@@ -236,9 +249,11 @@ editRedirect: this._editRedirect,
 `init()`, `dispose()`, `shouldShowFolders()` — same as previous plan.
 
 ### `RedirectListPresenterProvider.tsx`
+
 Context + `useRedirectListPresenter()` hook
 
 ### `feature.ts`
+
 `RedirectListPresenterFeature`
 
 ---
@@ -250,17 +265,19 @@ These are **simple hooks** — not part of any presenter. They resolve use cases
 ### `presentation/redirects/hooks/useDeleteRedirect.tsx`
 
 Following `useDeleteFile.tsx`:
+
 ```typescript
 const container = useContainer();
 const deleteRedirectUseCase = container.resolve(DeleteRedirectUseCase);
 const { showConfirmation } = useConfirmationDialog({ title, message });
 
-const openDeleteDialog = useCallback(() =>
+const openDeleteDialog = useCallback(
+  () =>
     showConfirmation(async () => {
-        await deleteRedirectUseCase.execute({ id: redirect.id });
-        showSnackbar("Redirect deleted successfully.");
+      await deleteRedirectUseCase.execute({ id: redirect.id });
+      showSnackbar("Redirect deleted successfully.");
     }),
-    [redirect]
+  [redirect]
 );
 return { openDeleteDialog };
 ```
@@ -268,20 +285,21 @@ return { openDeleteDialog };
 ### `presentation/redirects/hooks/useMoveRedirectToFolder.ts`
 
 Following `useMoveFileToFolder.ts`:
+
 ```typescript
 const container = useContainer();
 const moveRedirectUseCase = container.resolve(MoveRedirectUseCase);
 const { showDialog } = useMoveToFolderDialog();
 
 return useCallback(() => {
-    showDialog({
-        title: "Move redirect to a new location",
-        focusedFolderId: redirect.location.folderId,
-        async onAccept({ folder }) {
-            await moveRedirectUseCase.execute({ id: redirect.id, folderId: folder.id });
-            showSnackbar(`Redirect moved to "${folder.label}"!`);
-        }
-    });
+  showDialog({
+    title: "Move redirect to a new location",
+    focusedFolderId: redirect.location.folderId,
+    async onAccept({ folder }) {
+      await moveRedirectUseCase.execute({ id: redirect.id, folderId: folder.id });
+      showSnackbar(`Redirect moved to "${folder.label}"!`);
+    }
+  });
 }, [redirect.id]);
 ```
 
@@ -317,52 +335,66 @@ Reference: `app-file-manager/src/presentation/FileManager/FileManagerView.tsx`
 
 ### List components: `useDocumentList()` → `useRedirectListPresenter()`
 
-| Old | New |
-|---|---|
-| `vm.folderId` | `vm.folders.currentFolderId` |
-| `vm.data` (mixed) | `vm.list.rows` + `vm.folders.childFolders` |
-| `vm.selected` | `vm.list.selection.selectedIds` |
-| `vm.meta.totalCount` | `vm.list.pagination.totalCount` |
-| `vm.sorting` | `vm.list.sort` |
-| `vm.searchQuery` | `vm.list.search` |
-| `vm.isSearch` | `!vm.showFolders` |
-| `vm.isEmpty` | `vm.list.empty` |
-| `vm.isLoading` | `vm.list.pagination.loading` |
-| `vm.isLoadingMore` | `vm.list.pagination.loadingMore` |
-| `vm.isFilterVisible` | `vm.showingFilters` |
+| Old                  | New                                        |
+| -------------------- | ------------------------------------------ |
+| `vm.folderId`        | `vm.folders.currentFolderId`               |
+| `vm.data` (mixed)    | `vm.list.rows` + `vm.folders.childFolders` |
+| `vm.selected`        | `vm.list.selection.selectedIds`            |
+| `vm.meta.totalCount` | `vm.list.pagination.totalCount`            |
+| `vm.sorting`         | `vm.list.sort`                             |
+| `vm.searchQuery`     | `vm.list.search`                           |
+| `vm.isSearch`        | `!vm.showFolders`                          |
+| `vm.isEmpty`         | `vm.list.empty`                            |
+| `vm.isLoading`       | `vm.list.pagination.loading`               |
+| `vm.isLoadingMore`   | `vm.list.pagination.loadingMore`           |
+| `vm.isFilterVisible` | `vm.showingFilters`                        |
 
 ### Create dialog: presenter-driven
 
 A `CreateRedirectDialog` component (observer) reads from `vm.createRedirect`:
+
 ```tsx
 const { vm, actions } = useRedirectListPresenter();
 if (!vm.createRedirect) return null;
 
 <Dialog title="Create a Redirect" onClose={actions.hideCreateDialog}>
-    {vm.createRedirect.vm.loading && <OverlayLoader text={vm.createRedirect.vm.loading} />}
-    <FormView name="CreateRedirect" form={vm.createRedirect.vm.form} />
-    <Dialog.ConfirmAction text="Create" onClick={async () => {
-        const saved = await vm.createRedirect.save();
-        if (saved) { actions.hideCreateDialog(); actions.refresh(); }
-    }} />
-</Dialog>
+  {vm.createRedirect.vm.loading && <OverlayLoader text={vm.createRedirect.vm.loading} />}
+  <FormView name="CreateRedirect" form={vm.createRedirect.vm.form} />
+  <Dialog.ConfirmAction
+    text="Create"
+    onClick={async () => {
+      const saved = await vm.createRedirect.save();
+      if (saved) {
+        actions.hideCreateDialog();
+        actions.refresh();
+      }
+    }}
+  />
+</Dialog>;
 ```
 
 ### Edit dialog: presenter-driven
 
 A `EditRedirectDialog` component (observer) reads from `vm.editRedirect`:
+
 ```tsx
 const { vm, actions } = useRedirectListPresenter();
 if (!vm.editRedirect) return null;
 
 <Dialog title="Edit Redirect" onClose={actions.hideEditDialog}>
-    {vm.editRedirect.vm.loading && <OverlayLoader text={vm.editRedirect.vm.loading} />}
-    <FormView name="EditRedirect" form={vm.editRedirect.vm.form} />
-    <Dialog.ConfirmAction text="Save" onClick={async () => {
-        const saved = await vm.editRedirect.save();
-        if (saved) { actions.hideEditDialog(); actions.refresh(); }
-    }} />
-</Dialog>
+  {vm.editRedirect.vm.loading && <OverlayLoader text={vm.editRedirect.vm.loading} />}
+  <FormView name="EditRedirect" form={vm.editRedirect.vm.form} />
+  <Dialog.ConfirmAction
+    text="Save"
+    onClick={async () => {
+      const saved = await vm.editRedirect.save();
+      if (saved) {
+        actions.hideEditDialog();
+        actions.refresh();
+      }
+    }}
+  />
+</Dialog>;
 ```
 
 Reference: `FileDetailsDrawer.tsx`
@@ -370,6 +402,7 @@ Reference: `FileDetailsDrawer.tsx`
 ### Delete/Move: `useDeleteRedirectConfirmationDialog` / `useMoveRedirectToFolderDialog` → new hooks
 
 Table row actions resolve hooks directly:
+
 ```tsx
 const { redirect } = useRedirect();
 const { openDeleteDialog } = useDeleteRedirect({ redirect });
@@ -383,6 +416,7 @@ const openMoveDialog = useMoveRedirectToFolder(redirect);
 ## Phase 10: Delete Old Files
 
 ### Entire directories to delete:
+
 - `features/redirects/loadRedirects/` (24 files)
 - `features/redirects/selectRedirects/` (4 files)
 - `features/redirects/getRedirect/` (1 file — replaced by new feature)
@@ -392,6 +426,7 @@ const openMoveDialog = useMoveRedirectToFolder(redirect);
 - `features/redirects/moveRedirect/` (10 files)
 
 ### Individual files to delete:
+
 - `features/redirects/useGetRedirectGraphQLFields.ts`
 - `modules/redirects/RedirectsList/presenters/DocumentListPresenter.ts`
 - `modules/redirects/RedirectsList/presenters/DocumentListPresenterContext.tsx`
@@ -405,6 +440,7 @@ const openMoveDialog = useMoveRedirectToFolder(redirect);
 - `domain/Redirect/redirectsCache.ts` (replaced by DI-registered cache)
 
 ### Files to update:
+
 - `features/redirects/index.ts` — rewrite exports
 - `domain/Redirect/index.ts` — remove `redirectsCache` export
 - `Extension.tsx` — add `<RegisterFeature>` entries

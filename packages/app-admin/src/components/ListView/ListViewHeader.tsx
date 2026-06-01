@@ -17,46 +17,44 @@ export interface ListViewHeaderProps {
     actions?: React.ReactNode;
 }
 
-const SearchInput = observer(
-    (props: { placeholder?: string; id?: string; disabled?: boolean }) => {
-        const { list, actions } = useListView();
+const SearchInput = observer((props: { placeholder?: string; id?: string; disabled?: boolean }) => {
+    const { list, actions } = useListView();
 
-        return (
-            <DelayedOnChange
-                value={list.search}
-                onChange={value => {
-                    const searchQuery = value.trim();
+    return (
+        <DelayedOnChange
+            value={list.search}
+            onChange={value => {
+                const searchQuery = value.trim();
 
-                    if (searchQuery === list.search) {
-                        return;
-                    }
+                if (searchQuery === list.search) {
+                    return;
+                }
 
-                    if (!searchQuery) {
-                        actions.search.clear();
-                        return;
-                    }
+                if (!searchQuery) {
+                    actions.search.clear();
+                    return;
+                }
 
-                    actions.search.set(searchQuery);
-                }}
-            >
-                {({ value, onChange }) => (
-                    <Input
-                        id={props.id}
-                        value={value}
-                        onChange={e => onChange(e.target.value)}
-                        forwardEventOnChange={true}
-                        placeholder={props.placeholder ?? "Search..."}
-                        startIcon={<Icon icon={<SearchIcon />} label="Search" />}
-                        size={"md"}
-                        variant={"ghost"}
-                        className={"w-full"}
-                        disabled={props.disabled}
-                    />
-                )}
-            </DelayedOnChange>
-        );
-    }
-);
+                actions.search.set(searchQuery);
+            }}
+        >
+            {({ value, onChange }) => (
+                <Input
+                    id={props.id}
+                    value={value}
+                    onChange={e => onChange(e.target.value)}
+                    forwardEventOnChange={true}
+                    placeholder={props.placeholder ?? "Search..."}
+                    startIcon={<Icon icon={<SearchIcon />} label="Search" />}
+                    size={"md"}
+                    variant={"ghost"}
+                    className={"w-full"}
+                    disabled={props.disabled}
+                />
+            )}
+        </DelayedOnChange>
+    );
+});
 
 const FiltersToggleObserver = observer(() => {
     const { showingFilters, onToggleFilters } = useListView();

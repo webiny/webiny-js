@@ -46,22 +46,22 @@ This component goes in `@webiny/app-admin` and eliminates ~200 lines of boilerpl
 
 ### `ListView` (root)
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `list` | `IListViewModel<T>` | yes | View model from ListPresenter |
-| `actions` | `IListActions` | yes | Actions from ListPresenter |
-| `showingFilters` | `boolean` | no | Whether filter panel is visible (default: false) |
-| `onToggleFilters` | `() => void` | no | Toggle filter visibility |
-| `children` | `ReactNode` | yes | Compound sub-components |
+| Prop              | Type                | Required | Description                                      |
+| ----------------- | ------------------- | -------- | ------------------------------------------------ |
+| `list`            | `IListViewModel<T>` | yes      | View model from ListPresenter                    |
+| `actions`         | `IListActions`      | yes      | Actions from ListPresenter                       |
+| `showingFilters`  | `boolean`           | no       | Whether filter panel is visible (default: false) |
+| `onToggleFilters` | `() => void`        | no       | Toggle filter visibility                         |
+| `children`        | `ReactNode`         | yes      | Compound sub-components                          |
 
 ### `ListView.Sidebar`
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `namespace` | `string` | yes | SplitView persistence key (e.g., "wb/redirect/list") |
-| `title` | `string` | no | Sidebar heading (renders `<Heading>` + `<Separator>`) |
-| `span` | `number` | no | LeftPanel span (default: 2) |
-| `children` | `ReactNode` | yes | Sidebar content — use `<ListView.Sidebar.Section>` for vertical splits |
+| Prop        | Type        | Required | Description                                                            |
+| ----------- | ----------- | -------- | ---------------------------------------------------------------------- |
+| `namespace` | `string`    | yes      | SplitView persistence key (e.g., "wb/redirect/list")                   |
+| `title`     | `string`    | no       | Sidebar heading (renders `<Heading>` + `<Separator>`)                  |
+| `span`      | `number`    | no       | LeftPanel span (default: 2)                                            |
+| `children`  | `ReactNode` | yes      | Sidebar content — use `<ListView.Sidebar.Section>` for vertical splits |
 
 When `<ListView.Sidebar>` is present, the layout uses `SplitView` + `LeftPanel` + `RightPanel`. When absent, it renders a single-column layout. Detection is automatic.
 
@@ -71,14 +71,15 @@ The sidebar container is `flex flex-col h-main-content`. Children control their 
 
 A vertical section within the sidebar. Controls whether it shrinks to fit content or expands to fill remaining space.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `grow` | `boolean` | no | If true, section fills remaining space (`flex-1 min-h-0`). If false, section shrinks to fit content (`shrink-0`). Default: false. |
-| `maxHeight` | `string` | no | CSS max-height (e.g., `"66vh"`). Only applies when `grow` is false. |
-| `scrollable` | `boolean` | no | Wraps content in overflow-y-auto. Default: true. |
-| `children` | `ReactNode` | yes | Section content |
+| Prop         | Type        | Required | Description                                                                                                                       |
+| ------------ | ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `grow`       | `boolean`   | no       | If true, section fills remaining space (`flex-1 min-h-0`). If false, section shrinks to fit content (`shrink-0`). Default: false. |
+| `maxHeight`  | `string`    | no       | CSS max-height (e.g., `"66vh"`). Only applies when `grow` is false.                                                               |
+| `scrollable` | `boolean`   | no       | Wraps content in overflow-y-auto. Default: true.                                                                                  |
+| `children`   | `ReactNode` | yes      | Section content                                                                                                                   |
 
 **Redirects sidebar** (single section, fills all space):
+
 ```tsx
 <ListView.Sidebar namespace="wb/redirect/list" title="Redirects">
     <ListView.Sidebar.Section grow>
@@ -88,6 +89,7 @@ A vertical section within the sidebar. Controls whether it shrinks to fit conten
 ```
 
 **FileManager sidebar** (two sections, folders capped, tags fill remainder):
+
 ```tsx
 <ListView.Sidebar namespace="fm/file/list" title="File Manager">
     <ListView.Sidebar.Section maxHeight="66vh">
@@ -101,41 +103,42 @@ A vertical section within the sidebar. Controls whether it shrinks to fit conten
 ```
 
 **Rendered HTML structure:**
+
 ```html
 <div class="flex flex-col h-main-content">
-    <!-- title + separator (from sidebar title prop) -->
-    <div class="py-sm px-md"><h5>File Manager</h5></div>
-    <hr />
-    
-    <!-- Section 1: folders (shrink-0, capped height) -->
-    <div class="shrink-0 overflow-y-auto" style="max-height: 66vh">
-        <!-- FolderTree -->
-    </div>
-    
-    <hr />
-    
-    <!-- Section 2: tags (flex-1, fills remaining) -->
-    <div class="flex-1 overflow-y-auto min-h-0">
-        <!-- TagsList -->
-    </div>
+  <!-- title + separator (from sidebar title prop) -->
+  <div class="py-sm px-md"><h5>File Manager</h5></div>
+  <hr />
+
+  <!-- Section 1: folders (shrink-0, capped height) -->
+  <div class="shrink-0 overflow-y-auto" style="max-height: 66vh">
+    <!-- FolderTree -->
+  </div>
+
+  <hr />
+
+  <!-- Section 2: tags (flex-1, fills remaining) -->
+  <div class="flex-1 overflow-y-auto min-h-0">
+    <!-- TagsList -->
+  </div>
 </div>
 ```
 
 ### `ListView.Header.Title`
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `icon` | `ReactElement` | yes | Icon (HomeIcon, FolderIcon, etc.) |
-| `text` | `string` | no | Title text. Shows `<Skeleton>` when undefined. |
-| `after` | `ReactNode` | no | Extra content after title (e.g., folder context menu) |
+| Prop    | Type           | Required | Description                                           |
+| ------- | -------------- | -------- | ----------------------------------------------------- |
+| `icon`  | `ReactElement` | yes      | Icon (HomeIcon, FolderIcon, etc.)                     |
+| `text`  | `string`       | no       | Title text. Shows `<Skeleton>` when undefined.        |
+| `after` | `ReactNode`    | no       | Extra content after title (e.g., folder context menu) |
 
 ### `ListView.Header.Search`
 
 Observer component. Reads `list.search` from context, calls `actions.search.set()` / `actions.search.clear()`. Uses `DelayedOnChange` + `Input` with search icon.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `placeholder` | `string` | no | Default: "Search..." |
+| Prop          | Type     | Required | Description          |
+| ------------- | -------- | -------- | -------------------- |
+| `placeholder` | `string` | no       | Default: "Search..." |
 
 ### `ListView.Header.FiltersToggle`
 
@@ -149,41 +152,42 @@ Pass-through container. Renders children in `flex gap-sm`.
 
 Observer component. Reads `list.selection.selectedCount` from context. Shows grey bar with count label + action buttons + close (deselectAll) when `selectedCount > 0`. Hidden otherwise.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `itemLabel` | `string` | yes | Singular label ("redirect", "file", "page") |
-| `itemLabelPlural` | `string` | no | Plural form. Default: `itemLabel + "s"` |
-| `actions` | `BulkActionConfig[]` | yes | From browser config |
+| Prop              | Type                 | Required | Description                                 |
+| ----------------- | -------------------- | -------- | ------------------------------------------- |
+| `itemLabel`       | `string`             | yes      | Singular label ("redirect", "file", "page") |
+| `itemLabelPlural` | `string`             | no       | Plural form. Default: `itemLabel + "s"`     |
+| `actions`         | `BulkActionConfig[]` | yes      | From browser config                         |
 
 ### `ListView.Filters`
 
 Observer component. Reads `showingFilters` from context. Delegates to existing `<Filters>` component. Applies `filtersToWhere` converters on change, then calls `actions.filter.set()` for each key.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `filters` | `FilterConfig[]` | yes | From browser config |
-| `filtersToWhere` | `Converter[]` | no | Transform functions |
+| Prop             | Type             | Required | Description         |
+| ---------------- | ---------------- | -------- | ------------------- |
+| `filters`        | `FilterConfig[]` | yes      | From browser config |
+| `filtersToWhere` | `Converter[]`    | no       | Transform functions |
 
 ### `ListView.Content`
 
 Wraps children in `ScrollArea` with debounced scroll-to-loadMore. Calls `actions.loadMore()` when scroll position exceeds threshold.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `loadMoreThreshold` | `number` | no | 0-1, default: 0.8 |
-| `loadMoreDebounceMs` | `number` | no | Default: 200 |
+| Prop                 | Type     | Required | Description       |
+| -------------------- | -------- | -------- | ----------------- |
+| `loadMoreThreshold`  | `number` | no       | 0-1, default: 0.8 |
+| `loadMoreDebounceMs` | `number` | no       | Default: 200      |
 
 ### `ListView.Empty`
 
 Conditional wrapper. Reads `list.empty` and `list.emptyWithFilters` from context.
+
 - When empty with active search/filters: renders `searchEmpty`
 - When empty without filters: renders `children`
 - When not empty: renders nothing
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `searchEmpty` | `ReactNode` | no | Empty state during search/filter |
-| `children` | `ReactNode` | yes | Default empty state |
+| Prop          | Type        | Required | Description                      |
+| ------------- | ----------- | -------- | -------------------------------- |
+| `searchEmpty` | `ReactNode` | no       | Empty state during search/filter |
+| `children`    | `ReactNode` | yes      | Default empty state              |
 
 ### `ListView.BottomBar`
 
@@ -191,15 +195,15 @@ Sticky bar at bottom with `<Separator>` on top. Contains two sub-components:
 
 **`ListView.BottomBar.Meta`** — "Showing X out of Y items". Observer, reads from context.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `itemLabel` | `string` | yes | "redirect", "file", "page" |
+| Prop        | Type     | Required | Description                |
+| ----------- | -------- | -------- | -------------------------- |
+| `itemLabel` | `string` | yes      | "redirect", "file", "page" |
 
 **`ListView.BottomBar.Status`** — Loading spinner when `loadingMore` is true.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `loadingText` | `string` | no | Custom text. Default: "Loading more..." |
+| Prop          | Type     | Required | Description                             |
+| ------------- | -------- | -------- | --------------------------------------- |
+| `loadingText` | `string` | no       | Custom text. Default: "Loading more..." |
 
 ## Usage Examples
 
@@ -334,33 +338,31 @@ const FileManagerLayout = observer(() => {
 
 ```tsx
 const ApiKeyList = observer(() => {
-    const { presenter } = useFeature(ApiKeyListFeature);
+  const { presenter } = useFeature(ApiKeyListFeature);
 
-    return (
-        <ListView list={presenter.vm} actions={presenter.actions}>
-            <ListView.Header>
-                <ListView.Header.Title icon={<KeyIcon />} text="API Keys" />
-                <ListView.Header.Search />
-                <ListView.Header.Actions>
-                    <Button onClick={() => router.goToRoute(Routes.ApiKeys.Create)}>
-                        New API Key
-                    </Button>
-                </ListView.Header.Actions>
-            </ListView.Header>
+  return (
+    <ListView list={presenter.vm} actions={presenter.actions}>
+      <ListView.Header>
+        <ListView.Header.Title icon={<KeyIcon />} text="API Keys" />
+        <ListView.Header.Search />
+        <ListView.Header.Actions>
+          <Button onClick={() => router.goToRoute(Routes.ApiKeys.Create)}>New API Key</Button>
+        </ListView.Header.Actions>
+      </ListView.Header>
 
-            <ListView.Content>
-                <ListView.Empty>
-                    <EmptyView title="No API keys." action={<CreateButton />} />
-                </ListView.Empty>
-                <ApiKeyTable />
-            </ListView.Content>
+      <ListView.Content>
+        <ListView.Empty>
+          <EmptyView title="No API keys." action={<CreateButton />} />
+        </ListView.Empty>
+        <ApiKeyTable />
+      </ListView.Content>
 
-            <ListView.BottomBar>
-                <ListView.BottomBar.Meta itemLabel="API key" />
-                <ListView.BottomBar.Status />
-            </ListView.BottomBar>
-        </ListView>
-    );
+      <ListView.BottomBar>
+        <ListView.BottomBar.Meta itemLabel="API key" />
+        <ListView.BottomBar.Status />
+      </ListView.BottomBar>
+    </ListView>
+  );
 });
 ```
 
@@ -370,15 +372,15 @@ const ApiKeyList = observer(() => {
 
 ### Props
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `columns` | `ColumnConfig[]` | yes | From module's browser config |
-| `namespace` | `string` | yes | LocalStorage key for column visibility |
-| `nameColumnId` | `string` | no | Which column is the "name" column (default: "name") |
-| `folders` | `FolderDto[]` | no | Folder rows to prepend. Omit for no-folder views. |
-| `showFolders` | `boolean` | no | Whether to show folder rows. Default: true when `folders` is provided. |
-| `rowMapper` | `(entity: T) => RecordTableRow` | yes | Maps domain entity → ACO table row |
-| `onRowClick` | `(row: TableRow) => void` | no | Click handler for row (e.g., open editor) |
+| Prop           | Type                            | Required | Description                                                            |
+| -------------- | ------------------------------- | -------- | ---------------------------------------------------------------------- |
+| `columns`      | `ColumnConfig[]`                | yes      | From module's browser config                                           |
+| `namespace`    | `string`                        | yes      | LocalStorage key for column visibility                                 |
+| `nameColumnId` | `string`                        | no       | Which column is the "name" column (default: "name")                    |
+| `folders`      | `FolderDto[]`                   | no       | Folder rows to prepend. Omit for no-folder views.                      |
+| `showFolders`  | `boolean`                       | no       | Whether to show folder rows. Default: true when `folders` is provided. |
+| `rowMapper`    | `(entity: T) => RecordTableRow` | yes      | Maps domain entity → ACO table row                                     |
+| `onRowClick`   | `(row: TableRow) => void`       | no       | Click handler for row (e.g., open editor)                              |
 
 ### What it handles internally
 
@@ -421,6 +423,7 @@ const ApiKeyList = observer(() => {
 ### FolderDtoMapper.toTableRow
 
 The folder → table row mapping is always the same:
+
 ```typescript
 { id: folder.id, $type: "FOLDER", $selectable: false, data: FolderDtoMapper.toDTO(folder) }
 ```
@@ -477,9 +480,9 @@ They use the ACO table's `useTableRow()` hook, which provides `{ row }` where `r
 import React from "react";
 
 export const CellAuthor = () => {
-    // useTableRow from the closest Table's context — works with any ACO Table
-    const { row } = useTableRow();
-    return <>{row.data.createdBy?.displayName ?? ""}</>;
+  // useTableRow from the closest Table's context — works with any ACO Table
+  const { row } = useTableRow();
+  return <>{row.data.createdBy?.displayName ?? ""}</>;
 };
 ```
 
@@ -488,6 +491,7 @@ The `useTableRow` is created per-table via `createUseTableRow()` in the ACO conf
 ### CellActions — stays module-specific
 
 The actions cell (Edit, Delete, Move dropdown) is always module-specific because:
+
 - It wraps the row data in a module-specific provider (`RedirectProvider`, `FileProvider`)
 - It renders module-specific action configs (`browser.redirect.actions`, `browser.file.actions`)
 - Folder rows use `FolderProvider` + folder-specific actions

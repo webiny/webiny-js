@@ -2,7 +2,7 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { Dialog, OverlayLoader } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
-import {useRedirectListPresenter} from "~/presentation/redirects/RedirectList/index.js";
+import { useRedirectListPresenter } from "~/presentation/redirects/RedirectList/index.js";
 
 export const CreateRedirectDialog = observer(function CreateRedirectDialog() {
     const { vm, actions } = useRedirectListPresenter();

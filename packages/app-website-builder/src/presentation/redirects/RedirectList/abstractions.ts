@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IListViewModel } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { IListActions } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
+import type { IWorkerActions } from "@webiny/app-admin";
 import type { IFormVM } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { IFolderTreeViewModel } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import type { Redirect } from "~/domain/Redirect/Redirect.js";
@@ -77,6 +78,7 @@ export interface IFolderActions {
 }
 
 export interface IRedirectListActions extends IListActions {
+    worker: IWorkerActions<Redirect>;
     showFilters(): void;
     hideFilters(): void;
     showCreateDialog(folderId: string): void;

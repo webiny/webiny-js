@@ -1,4 +1,5 @@
 import { makeAutoObservable, reaction, computed } from "mobx";
+import { Worker } from "@webiny/app-admin";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
@@ -17,10 +18,12 @@ import type { Redirect } from "~/domain/Redirect/Redirect.js";
 import { EditRedirectPresenter } from "./abstractions.js";
 
 class RedirectListPresenterImpl implements IRedirectListPresenter {
+    public readonly actions: IRedirectListActions;
     private _showingFilters = false;
     private _disposeReaction: (() => void) | null = null;
     private _createRedirect: CreateRedirectPresenter.Interface | null = null;
     private _editRedirect: EditRedirectPresenter.Interface | null = null;
+    private _worker = new Worker<Redirect>();
 
     constructor(
         private listPresenter: ListPresenter.Interface<Redirect>,
@@ -48,8 +51,6 @@ class RedirectListPresenterImpl implements IRedirectListPresenter {
             showingFilters: this._showingFilters
         };
     }
-
-    readonly actions: IRedirectListActions;
 
     init(config?: IRedirectListInitConfig): void {
         const initialFolderId = config?.initialFolderId ?? "root";
@@ -113,7 +114,7 @@ class RedirectListPresenterImpl implements IRedirectListPresenter {
                 selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
                 isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
             },
-            worker: this.listPresenter.actions.worker,
+            worker: this.createWorkerActions(),
             loadMore: () => this.listPresenter.actions.loadMore(),
             refresh: () => this.listPresenter.actions.refresh(),
             showFilters: () => {
@@ -156,6 +157,27 @@ class RedirectListPresenterImpl implements IRedirectListPresenter {
                 submitOperation: () => this.folderTreePresenter.submitOperation(),
                 cancelOperation: () => this.folderTreePresenter.cancelOperation()
             }
+        };
+    }
+
+    private getSelectedRows(): Redirect[] {
+        const ids = this.listPresenter.vm.selection.selectedIds;
+        return this.listPresenter.vm.rows.filter(r => ids.has(r.id));
+    }
+
+    private createWorkerActions(): IRedirectListActions["worker"] {
+        const worker = this._worker;
+        return {
+            process: (callback: (items: Redirect[]) => void) => {
+                worker.process(this.getSelectedRows(), callback);
+            },
+            processInSeries: async (callback, chunkSize?) => {
+                await worker.processInSeries(this.getSelectedRows(), callback, chunkSize);
+            },
+            get results() {
+                return worker.results;
+            },
+            resetResults: () => worker.resetResults()
         };
     }
 

@@ -122,6 +122,7 @@ export const DocumentList = observer(() => {
     }, [folderId, actions]);
 
     const isSearch = !vm.showFolders;
+    const hasFolders = vm.showFolders && vm.folders.childFolders.length > 0;
 
     return (
         <>
@@ -176,13 +177,15 @@ export const DocumentList = observer(() => {
                 content={
                     <ListView.Content
                         empty={
-                            <RedirectEmpty
-                                isSearch={isSearch}
-                                canCreateContent={canCreateContent(folderId)}
-                                canCreateFolder={canCreateFolder(folderId)}
-                                onCreateDocument={onCreateDocument}
-                                onCreateFolder={onCreateFolder}
-                            />
+                            hasFolders ? undefined : (
+                                <RedirectEmpty
+                                    isSearch={isSearch}
+                                    canCreateContent={canCreateContent(folderId)}
+                                    canCreateFolder={canCreateFolder(folderId)}
+                                    onCreateDocument={onCreateDocument}
+                                    onCreateFolder={onCreateFolder}
+                                />
+                            )
                         }
                         searchEmpty={
                             <EmptyView

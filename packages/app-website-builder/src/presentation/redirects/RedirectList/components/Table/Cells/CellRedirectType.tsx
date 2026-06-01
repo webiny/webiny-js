@@ -1,5 +1,5 @@
 import React from "react";
-import {RedirectListConfig} from "~/presentation/redirects/RedirectList/index.js";
+import { RedirectListConfig } from "~/presentation/redirects/RedirectList/index.js";
 
 const { useTableRow, isFolderRow } = RedirectListConfig.Browser.Table.Column;
 
