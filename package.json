@@ -21,6 +21,8 @@
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "devDependencies": {
+    "@aws-sdk/client-ec2": "^3.1053.0",
+    "@aws-sdk/client-ssm": "^3.1053.0",
     "@babel/code-frame": "^7.29.0",
     "@commitlint/cli": "^21.0.1",
     "@commitlint/config-conventional": "^21.0.1",
@@ -86,6 +88,8 @@
     "add-webiny-package": "node scripts/addWebinyPackage.js",
     "awp": "yarn add-webiny-package",
     "build": "tsx scripts/buildPackages",
+    "build:lambda": "tsx scripts/buildOnLambda/cli.ts",
+    "build:ec2": "tsx scripts/buildOnEc2/cli.ts",
     "check": "tsx scripts/checkPackages",
     "build:api": "yarn webiny ws run build --scope='@webiny/api*' --scope='@webiny/handler*'",
     "build:apps": "yarn webiny ws run build --scope='@webiny/app*'",
