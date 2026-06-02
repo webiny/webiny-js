@@ -15,7 +15,7 @@ export interface WebhookSignPayloadHeaders {
     "webhook-signature": string;
 }
 
-export const createWebhookVerifyPayload = (secret: string | undefined) => {
+export const createVerifyWebhookPayload = (secret: string | undefined) => {
     if (!secret) {
         return async () => {
             throw new Error("Signing secret is not defined.");
