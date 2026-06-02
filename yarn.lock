@@ -14248,6 +14248,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     p-map: "npm:^7.0.4"
     p-retry: "npm:^8.0.0"
+    standardwebhooks: "npm:^1.0.0"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.7"
     zod: "npm:4.4.3"
