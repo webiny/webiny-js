@@ -33,6 +33,8 @@ import { WbPermissionsFeature } from "~/features/permissions/feature.js";
 import { ApiKeyInstallerFeature } from "~/features/installer/feature.js";
 import { NextjsGraphQLSchema } from "~/graphql/nextjs/NextjsGraphQLSchema.js";
 import { NextjsFeature } from "~/features/nextjs/feature.js";
+import { NuxtGraphQLSchema } from "~/graphql/nuxt/NuxtGraphQLSchema.js";
+import { NuxtFeature } from "~/features/nuxt/feature.js";
 import { ListDeletedPagesFeature } from "~/features/pages/ListDeletedPages/feature.js";
 import { TrashPageFeature } from "~/features/pages/TrashPage/feature.js";
 import { RestorePageFeature } from "~/features/pages/RestorePage/feature.js";
@@ -98,11 +100,13 @@ const createContext = () => {
             MovePageFeature.register(container);
             ApiKeyInstallerFeature.register(container);
             NextjsFeature.register(container);
+            NuxtFeature.register(container);
             WbWebhooksFeature.register(container);
             // TenantModelExtensionFeature.register(container);
 
             // Register GraphQL
             container.register(NextjsGraphQLSchema);
+            container.register(NuxtGraphQLSchema);
         },
         { name: "wb.createContext" }
     );
