@@ -1,7 +1,11 @@
-/**
+/*
  * This is a node only file, as it uses the "standardwebhooks" package which is not compatible with browsers.
  * NEVER import into UI or export alongside ui-facing code.
  */
+if (typeof process === "undefined" || typeof process.versions?.node === "undefined") {
+    throw new Error("@webiny/sdk/webhooks is only available in Node.js environments.");
+}
+
 import { Webhook } from "standardwebhooks";
 import { Result } from "~/Result.js";
 

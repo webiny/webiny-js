@@ -5,7 +5,14 @@ const cyan = "\x1b[36m";
 const reset = "\x1b[0m";
 const bold = "\x1b[1m";
 
-const whitelist = ["@webiny/cognito", "@webiny/auth0", "@webiny/okta", "@webiny/plugins"];
+const whitelist = [
+    "@webiny/cognito",
+    "@webiny/auth0",
+    "@webiny/okta",
+    "@webiny/plugins",
+    "@webiny/sdk",
+    "@webiny/stdlib"
+];
 
 export const createImportValidatorPlugin = () => {
     return {
