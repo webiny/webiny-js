@@ -26,7 +26,7 @@ interface OnChangeParams {
 }
 
 export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
-    const { data, setData, isPristine, contentModel } = useModelEditor();
+    const { data, setData, isPristine } = useModelEditor();
     const router = useRouter();
     const dialogs = useDialogs();
 
