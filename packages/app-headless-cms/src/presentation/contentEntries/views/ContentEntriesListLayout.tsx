@@ -13,13 +13,13 @@ import { ContentEntryFormView } from "./ContentEntryFormView.js";
 import { Table } from "./Table/Table.js";
 
 export const ContentEntriesListLayout = observer(() => {
-    const { vm } = useContentEntriesPresenter();
+    const presenter = useContentEntriesPresenter();
 
-    if (vm.loading || !vm.model) {
+    if (presenter.vm.loading || !presenter.vm.model) {
         return null;
     }
 
-    if (vm.showingEntry) {
+    if (presenter.vm.showingEntry) {
         return <ContentEntryFormView />;
     }
 
@@ -27,38 +27,40 @@ export const ContentEntriesListLayout = observer(() => {
 });
 
 const DocumentList = observer(() => {
-    const { vm, actions } = useContentEntriesPresenter();
+    const presenter = useContentEntriesPresenter();
     const { browser } = useContentEntryListConfig();
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
 
-    const folderId = vm.folders.currentFolderId ?? "root";
+    const folderId = presenter.foldersPresenter.vm.currentFolderId ?? "root";
     const isRoot = folderId === "root";
-    const isSearch = !vm.showFolders;
-    const hasFolders = vm.showFolders && vm.folders.childFolders.length > 0;
+    const hasFolders =
+        presenter.vm.showFolders && presenter.foldersPresenter.vm.childFolders.length > 0;
 
     const onCreateFolder = useCallback(() => {
         showCreateFolderDialog({ currentParentId: folderId });
     }, [folderId]);
 
     const onCreateEntry = useCallback(() => {
-        actions.createEntry();
-    }, [actions]);
+        presenter.createEntry();
+    }, [presenter]);
 
     return (
         <ListView
-            list={vm.list}
-            actions={actions}
-            namespace={`cms/${vm.model!.modelId}/list`}
-            showingFilters={vm.showingFilters}
+            list={presenter.listPresenter.vm}
+            actions={presenter.listPresenter.actions}
+            namespace={`cms/${presenter.vm.model!.modelId}/list`}
+            showingFilters={presenter.listPresenter.vm.showingFilters}
             onToggleFilters={() => {
-                vm.showingFilters ? actions.hideFilters() : actions.showFilters();
+                presenter.listPresenter.vm.showingFilters
+                    ? presenter.listPresenter.actions.filter.hide()
+                    : presenter.listPresenter.actions.filter.show();
             }}
             sidebar={
-                <ListView.Sidebar title={vm.model!.name}>
+                <ListView.Sidebar title={presenter.vm.model!.name}>
                     <ListView.Sidebar.Section grow>
                         <FolderTree
-                            vm={vm.folders}
-                            actions={actions.folders}
+                            vm={presenter.foldersPresenter.vm}
+                            actions={presenter.foldersPresenter}
                             folderActions={browser.folder.actions}
                             enableActions={true}
                             enableCreate={true}
@@ -73,7 +75,9 @@ const DocumentList = observer(() => {
                 <ListView.Header
                     title={{
                         icon: isRoot ? <HomeIcon /> : <FolderIcon />,
-                        text: isRoot ? vm.model!.name : vm.folders.currentFolderTitle
+                        text: isRoot
+                            ? presenter.vm.model!.name
+                            : presenter.foldersPresenter.vm.currentFolderTitle
                     }}
                     search
                     filtersToggle
@@ -107,19 +111,20 @@ const DocumentList = observer(() => {
                     empty={
                         hasFolders ? undefined : (
                             <EmptyView
-                                title={
-                                    isSearch
-                                        ? "No results found."
-                                        : "No entries yet. Create your first entry."
-                                }
+                                title={"No entries yet. Create your first entry."}
                                 action={
-                                    isSearch ? null : (
+                                    <>
+                                        <Button
+                                            variant={"secondary"}
+                                            onClick={onCreateFolder}
+                                            text={"New Folder"}
+                                        />
                                         <Button
                                             variant={"primary"}
                                             onClick={onCreateEntry}
                                             text={"New Entry"}
                                         />
-                                    )
+                                    </>
                                 }
                             />
                         )

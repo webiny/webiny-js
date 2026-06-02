@@ -7,26 +7,32 @@ import { useContentEntriesPresenter } from "../ContentEntriesPresenterProvider.j
 import { TableRowMapper, type TableRow } from "./TableRowMapper.js";
 
 export const Table = observer(() => {
-    const { vm } = useContentEntriesPresenter();
+    const presenter = useContentEntriesPresenter();
     const { browser } = useContentEntryListConfig();
 
     const tableProps = useListViewTableProps({
-        namespace: `cms/${vm.model!.modelId}/list`,
+        namespace: `cms/${presenter.vm.model!.modelId}/list`,
         nameColumnId: "name"
     });
 
     const data = useMemo<TableRow[]>(() => {
-        const entryRows = vm.list.rows.map(entry => TableRowMapper.fromEntry(entry));
+        const entryRows = presenter.listPresenter.vm.rows.map(entry =>
+            TableRowMapper.fromEntry(entry)
+        );
 
-        if (!vm.showFolders) {
+        if (!presenter.vm.showFolders) {
             return entryRows;
         }
 
-        const folderRows = (vm.folders.childFolders ?? []).map(f =>
+        const folderRows = (presenter.foldersPresenter.vm.childFolders ?? []).map(f =>
             TableRowMapper.fromFolder(f)
         );
         return [...folderRows, ...entryRows];
-    }, [vm.list.rows, vm.folders.childFolders, vm.showFolders]);
+    }, [
+        presenter.listPresenter.vm.rows,
+        presenter.foldersPresenter.vm.childFolders,
+        presenter.vm.showFolders
+    ]);
 
     const selected = useMemo<TableRow[]>(() => {
         return data.filter(row => tableProps.selectedIds.has(row.id));

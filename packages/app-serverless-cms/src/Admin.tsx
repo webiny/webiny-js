@@ -16,7 +16,7 @@ import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
 import { Websockets } from "@webiny/app-websockets";
 import { RecordLocking } from "@webiny/app-record-locking";
-import { TrashBinConfigs } from "@webiny/app-trash-bin";
+import { TrashBinConfigs } from "@webiny/app-admin/presentation/trashBin/index.js";
 import { AdvancedContentOrganisation } from "@webiny/app-aco";
 import { Extension as WebsiteBuilder } from "@webiny/app-website-builder/Extension.js";
 import { SchedulerConfigs } from "@webiny/app-scheduler";

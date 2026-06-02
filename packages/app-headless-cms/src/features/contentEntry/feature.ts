@@ -16,6 +16,7 @@ import { UpdateRevisionDescriptionFeature } from "./updateRevisionDescription/fe
 import { SingletonEntryFeature } from "./singletonEntry/feature.js";
 import { MoveEntryFeature } from "./moveEntry/feature.js";
 import { BulkActionFeature } from "./bulkAction/feature.js";
+import { CmsTrashBinFeature } from "./trashBin/feature.js";
 
 export const ContentEntryFeature = createFeature({
     name: "CmsContentEntry",
@@ -36,5 +37,6 @@ export const ContentEntryFeature = createFeature({
         SingletonEntryFeature.register(container);
         MoveEntryFeature.register(container);
         BulkActionFeature.register(container);
+        CmsTrashBinFeature.register(container);
     }
 });

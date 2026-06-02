@@ -14,6 +14,7 @@ import { SelectionController } from "./SelectionController.js";
 class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     private _sort: { field: string; direction: "ASC" | "DESC" } | null = null;
     private _filters: Record<string, unknown> = {};
+    private _initialFilterKeys: Set<string> = new Set();
     private _search = "";
     private _selection: SelectionController<TRow>;
     private _error: IListError | null = null;
@@ -25,6 +26,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     private _limit: number | undefined = undefined;
     private _initialized = false;
     private _loadingMore = false;
+    private _showingFilters = false;
 
     constructor() {
         this._selection = new SelectionController<TRow>(
@@ -43,7 +45,9 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
         const rows = ds ? ds.rows : [];
         const meta = ds ? ds.meta : { cursor: null, hasMoreItems: false, totalCount: 0 };
         const loading = ds ? ds.loading : false;
-        const hasFilters = Object.keys(this._filters).length > 0 || this._search.length > 0;
+        const hasUserFilters =
+            Object.keys(this._filters).some(k => !this._initialFilterKeys.has(k)) ||
+            this._search.length > 0;
 
         return {
             rows,
@@ -63,8 +67,9 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
                 selectedCount: this._selection.selectedCount,
                 allSelected: this._selection.allSelected
             },
+            showingFilters: this._showingFilters,
             empty: rows.length === 0 && !loading,
-            emptyWithFilters: rows.length === 0 && !loading && hasFilters,
+            emptyWithFilters: rows.length === 0 && !loading && hasUserFilters,
             error: this._error
         };
     }
@@ -116,6 +121,12 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             clearAll: () => {
                 this._filters = {};
                 this.requery();
+            },
+            show: () => {
+                this._showingFilters = true;
+            },
+            hide: () => {
+                this._showingFilters = false;
             }
         },
         selection: {
@@ -159,6 +170,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
         this._dataSource = config.dataSource;
         this._sort = config.initialSort ?? null;
         this._filters = config.initialFilters ?? {};
+        this._initialFilterKeys = new Set(Object.keys(this._filters));
         this._debounceMs = config.debounceMs ?? 300;
         this._limit = config.limit;
         this._search = "";

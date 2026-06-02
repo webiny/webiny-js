@@ -12,7 +12,7 @@ export const ActionUnpublish = observer(() => {
     const { model } = useModel();
     const { canUnpublish } = usePermission();
     const { unpublishEntryRevision } = useCms();
-    const { actions } = useContentEntriesPresenter();
+    const presenter = useContentEntriesPresenter();
     const { showSnackbar } = useSnackbar();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
@@ -71,7 +71,7 @@ export const ActionUnpublish = observer(() => {
                 });
 
                 worker.resetItems();
-                await actions.refresh();
+                await presenter.listPresenter.actions.refresh();
 
                 showResultsDialog({
                     results: worker.results,

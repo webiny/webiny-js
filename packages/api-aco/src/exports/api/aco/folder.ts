@@ -1,3 +1,5 @@
+export type { Folder } from "~/folder/folder.types.js";
+
 export {
     GetAncestorsRepository,
     GetAncestorsUseCase

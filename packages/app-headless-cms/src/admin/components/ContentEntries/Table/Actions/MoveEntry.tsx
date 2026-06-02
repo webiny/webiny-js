@@ -14,7 +14,7 @@ export const MoveEntry = () => {
     const { useCase: moveEntryUseCase } = useFeature(MoveEntryFeature) as {
         useCase: IMoveEntryUseCase;
     };
-    const { actions } = useContentEntriesPresenter();
+    const presenter = useContentEntriesPresenter();
     const { showSnackbar } = useSnackbar();
     const { showDialog } = useMoveToFolderDialog();
     const { OptionsMenuItem } = ContentEntryListConfig.Browser.Entry.Action;
@@ -32,7 +32,7 @@ export const MoveEntry = () => {
                     id: entry.id,
                     folderId: folder.id
                 });
-                await actions.refresh();
+                await presenter.listPresenter.actions.refresh();
                 showSnackbar(
                     `Entry "${entry.meta?.title || "unknown"}" was moved to "${folder.label}".`
                 );

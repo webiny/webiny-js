@@ -17,7 +17,7 @@ export const ActionMove = observer(() => {
     const { useCase: moveEntryUseCase } = useFeature(MoveEntryFeature) as {
         useCase: IMoveEntryUseCase;
     };
-    const { vm, actions } = useContentEntriesPresenter();
+    const presenter = useContentEntriesPresenter();
     const { showSnackbar } = useSnackbar();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
@@ -27,7 +27,7 @@ export const ActionMove = observer(() => {
     const { showDialog: showMoveDialog } = useMoveToFolderDialog();
 
     const entriesLabel = getEntriesLabel();
-    const currentFolderId = vm.folders.currentFolderId;
+    const currentFolderId = presenter.foldersPresenter.vm.currentFolderId;
 
     const openWorkerDialog = useCallback(
         (folder: NodeDto) => {
@@ -80,7 +80,7 @@ export const ActionMove = observer(() => {
                     });
 
                     worker.resetItems();
-                    await actions.refresh();
+                    await presenter.listPresenter.actions.refresh();
 
                     showResultsDialog({
                         results: worker.results,

@@ -4,13 +4,15 @@ import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abst
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import type { CmsContentEntry, CmsModel } from "~/types.js";
 import { ListEntriesUseCase } from "~/features/contentEntry/listEntries/abstractions.js";
+import { DeleteEntryUseCase } from "~/features/contentEntry/deleteEntry/abstractions.js";
+import { PublishEntryUseCase } from "~/features/contentEntry/publishEntry/abstractions.js";
+import { UnpublishEntryUseCase } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { BulkActionUseCase } from "~/features/contentEntry/bulkAction/abstractions.js";
 import { ContentEntriesCache } from "~/features/contentEntry/abstractions.js";
 import {
     ContentEntriesPresenter as Abstraction,
     type IContentEntriesPresenter,
     type IContentEntriesViewModel,
-    type IContentEntriesActions,
     type IContentEntriesInitConfig
 } from "./abstractions.js";
 import { ContentEntriesDataSource } from "./ContentEntriesDataSource.js";
@@ -18,24 +20,35 @@ import { ContentEntriesDataSource } from "./ContentEntriesDataSource.js";
 class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
     private _model: CmsModel | null = null;
     private _selectedEntryId: string | null = null;
-    private _showingFilters = false;
     private _loading = false;
     private _disposeReaction: IReactionDisposer | null = null;
     private _initConfig: IContentEntriesInitConfig | null = null;
 
     constructor(
-        private listPresenter: ListPresenter.Interface<CmsContentEntry>,
-        private folderTreePresenter: FolderTreePresenter.Interface,
+        private _listPresenter: ListPresenter.Interface<CmsContentEntry>,
+        private _foldersPresenter: FolderTreePresenter.Interface,
         private listEntriesUseCase: ListEntriesUseCase.Interface,
+        private deleteEntryUseCase: DeleteEntryUseCase.Interface,
+        private publishEntryUseCase: PublishEntryUseCase.Interface,
+        private unpublishEntryUseCase: UnpublishEntryUseCase.Interface,
         private bulkActionUseCase: BulkActionUseCase.Interface,
         private cache: ContentEntriesCache.Interface
     ) {
         makeAutoObservable<
             ContentEntriesPresenterImpl,
-            "_disposeReaction" | "listEntriesUseCase" | "bulkActionUseCase" | "cache"
+            | "_disposeReaction"
+            | "listEntriesUseCase"
+            | "deleteEntryUseCase"
+            | "publishEntryUseCase"
+            | "unpublishEntryUseCase"
+            | "bulkActionUseCase"
+            | "cache"
         >(this, {
             _disposeReaction: false,
             listEntriesUseCase: false,
+            deleteEntryUseCase: false,
+            publishEntryUseCase: false,
+            unpublishEntryUseCase: false,
             bulkActionUseCase: false,
             cache: false,
             vm: computed
@@ -43,102 +56,82 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
     }
 
     get vm(): IContentEntriesViewModel {
-        const hasSearch = this.listPresenter.vm.search.length > 0;
-        const hasFilters = Object.keys(this.listPresenter.vm.filters).some(k => k !== "folderId");
+        const hasSearch = this._listPresenter.vm.search.length > 0;
+        const hasFilters = Object.keys(this._listPresenter.vm.filters).some(k => k !== "folderId");
 
         return {
             model: this._model,
-            list: this.listPresenter.vm,
-            folders: this.folderTreePresenter.vm,
             selectedEntryId: this._selectedEntryId,
             showingEntry: this._selectedEntryId !== null,
             showFolders: !hasSearch && !hasFilters,
-            showingFilters: this._showingFilters,
             loading: this._loading
         };
     }
 
-    actions: IContentEntriesActions = {
-        search: {
-            set: (query: string) => this.listPresenter.actions.search.set(query),
-            clear: () => this.listPresenter.actions.search.clear()
-        },
-        sort: {
-            set: (field: string, direction: "ASC" | "DESC") =>
-                this.listPresenter.actions.sort.set(field, direction),
-            toggle: (field: string) => this.listPresenter.actions.sort.toggle(field)
-        },
-        filter: {
-            set: (key: string, value: unknown) => this.listPresenter.actions.filter.set(key, value),
-            clear: (key: string) => this.listPresenter.actions.filter.clear(key),
-            clearAll: () => this.listPresenter.actions.filter.clearAll()
-        },
-        selection: {
-            toggle: (id: string) => this.listPresenter.actions.selection.toggle(id),
-            selectRangeTo: (id: string) => this.listPresenter.actions.selection.selectRangeTo(id),
-            selectAll: () => this.listPresenter.actions.selection.selectAll(),
-            deselectAll: () => this.listPresenter.actions.selection.deselectAll(),
-            selectRows: (ids: string[]) => this.listPresenter.actions.selection.selectRows(ids),
-            isSelected: (id: string) => this.listPresenter.actions.selection.isSelected(id)
-        },
-        loadMore: () => this.listPresenter.actions.loadMore(),
-        refresh: () => this.listPresenter.actions.refresh(),
+    get listPresenter(): ListPresenter.Interface<CmsContentEntry> {
+        return this._listPresenter;
+    }
 
-        selectEntry: (id: string) => {
-            this._selectedEntryId = id;
-        },
-        deselectEntry: () => {
-            this._selectedEntryId = null;
-        },
-        createEntry: () => {
-            this._selectedEntryId = "new";
-        },
-        bulkAction: async (action: string, data?: Record<string, unknown>) => {
-            if (!this._model) {
-                return;
-            }
+    get foldersPresenter(): FolderTreePresenter.Interface {
+        return this._foldersPresenter;
+    }
 
-            const selectedIds = this.listPresenter.vm.selection.selectedIds;
-            const where: Record<string, unknown> = {
-                id_in: Array.from(selectedIds)
-            };
+    selectEntry(id: string): void {
+        this._selectedEntryId = id;
+    }
 
-            await this.bulkActionUseCase.execute({
-                model: this._model,
-                action,
-                where,
-                data
-            });
+    deselectEntry(): void {
+        this._selectedEntryId = null;
+    }
 
-            this.listPresenter.actions.selection.deselectAll();
-            await this.listPresenter.actions.refresh();
-        },
+    createEntry(): void {
+        this._selectedEntryId = "new";
+    }
 
-        showFilters: () => {
-            this._showingFilters = true;
-        },
-        hideFilters: () => {
-            this._showingFilters = false;
-        },
-
-        folders: {
-            selectFolder: (folderId: string | null) =>
-                this.folderTreePresenter.selectFolder(folderId),
-            createFolder: (parentFolderId?: string) =>
-                this.folderTreePresenter.createFolder(parentFolderId),
-            editFolder: (folderId: string) => this.folderTreePresenter.editFolder(folderId),
-            deleteFolder: (folderId: string) => this.folderTreePresenter.deleteFolder(folderId),
-            moveFolder: (folderId: string, targetParentId: string | null) =>
-                this.folderTreePresenter.moveFolder(folderId, targetParentId),
-            loadChildFolders: (parentIds: string[]) =>
-                this.folderTreePresenter.loadChildFolders(parentIds),
-            canManageStructure: (folderId: string) =>
-                this.folderTreePresenter.canManageStructure(folderId),
-            getAncestorIds: (folderId: string) => this.folderTreePresenter.getAncestorIds(folderId),
-            submitOperation: () => this.folderTreePresenter.submitOperation(),
-            cancelOperation: () => this.folderTreePresenter.cancelOperation()
+    async deleteEntry(id: string): Promise<void> {
+        if (!this._model) {
+            return;
         }
-    };
+        await this.deleteEntryUseCase.execute({ model: this._model, id });
+        await this._listPresenter.actions.refresh();
+    }
+
+    async publishEntry(id: string): Promise<void> {
+        if (!this._model) {
+            return;
+        }
+        await this.publishEntryUseCase.execute({ model: this._model, revisionId: id });
+        await this._listPresenter.actions.refresh();
+    }
+
+    async unpublishEntry(id: string): Promise<void> {
+        if (!this._model) {
+            return;
+        }
+        await this.unpublishEntryUseCase.execute({ model: this._model, revisionId: id });
+        await this._listPresenter.actions.refresh();
+    }
+
+    async bulkAction(action: string, data?: Record<string, unknown>): Promise<void> {
+        if (!this._model) {
+            return;
+        }
+
+        const selectedIds = this._listPresenter.vm.selection.selectedIds;
+        const where: Record<string, unknown> = {
+            id_in: Array.from(selectedIds)
+        };
+
+        await this.bulkActionUseCase.execute({
+            model: this._model,
+            action,
+            where,
+            data
+        });
+
+        this._listPresenter.actions.selection.deselectAll();
+        await this._listPresenter.actions.refresh();
+    }
 
     init(config: IContentEntriesInitConfig): void {
         this._loading = true;
@@ -154,7 +147,7 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
 
         const dataSource = new ContentEntriesDataSource(model, this.listEntriesUseCase, this.cache);
 
-        this.listPresenter.init({
+        this._listPresenter.init({
             dataSource,
             initialSort: { field: "savedOn", direction: "DESC" },
             initialFilters: { folderId: initialFolderId },
@@ -162,14 +155,14 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
         });
 
         if (initialFolderId !== "root") {
-            this.folderTreePresenter.selectFolder(initialFolderId);
+            this._foldersPresenter.selectFolder(initialFolderId);
         }
 
         this._disposeReaction = reaction(
-            () => this.folderTreePresenter.vm.currentFolderId,
+            () => this._foldersPresenter.vm.currentFolderId,
             folderId => {
                 const effectiveFolderId = folderId ?? "root";
-                this.listPresenter.actions.filter.set("folderId", effectiveFolderId);
+                this._listPresenter.actions.filter.set("folderId", effectiveFolderId);
             }
         );
     }
@@ -188,6 +181,9 @@ export const ContentEntriesPresenterImplementation = Abstraction.createImplement
         ListPresenter,
         FolderTreePresenter,
         ListEntriesUseCase,
+        DeleteEntryUseCase,
+        PublishEntryUseCase,
+        UnpublishEntryUseCase,
         BulkActionUseCase,
         ContentEntriesCache
     ]

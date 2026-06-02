@@ -2,15 +2,13 @@ import React from "react";
 import { ReactComponent as Publish } from "@webiny/icons/visibility.svg";
 import { ReactComponent as Unpublish } from "@webiny/icons/visibility_off.svg";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
-import { useCms, useEntry, useModel, usePermission } from "~/admin/hooks/index.js";
+import { useEntry, usePermission } from "~/admin/hooks/index.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 
 export const ChangeEntryStatus = () => {
     const { entry } = useEntry();
-    const { model } = useModel();
     const { canPublish, canUnpublish } = usePermission();
-    const { publishEntryRevision, unpublishEntryRevision } = useCms();
-    const { actions } = useContentEntriesPresenter();
+    const presenter = useContentEntriesPresenter();
     const { OptionsMenuItem } = ContentEntryListConfig.Browser.Entry.Action;
 
     if (entry.meta.status === "published" && canUnpublish("cms.contentEntry")) {
@@ -19,8 +17,7 @@ export const ChangeEntryStatus = () => {
                 icon={<Unpublish />}
                 label={"Unpublish"}
                 onAction={async () => {
-                    await unpublishEntryRevision({ model, id: entry.id });
-                    await actions.refresh();
+                    await presenter.unpublishEntry(entry.id);
                 }}
                 data-testid={"aco.actions.entry.unpublish"}
             />
@@ -36,8 +33,7 @@ export const ChangeEntryStatus = () => {
             icon={<Publish />}
             label={"Publish"}
             onAction={async () => {
-                await publishEntryRevision({ model, id: entry.id });
-                await actions.refresh();
+                await presenter.publishEntry(entry.id);
             }}
             data-testid={"aco.actions.entry.publish"}
         />

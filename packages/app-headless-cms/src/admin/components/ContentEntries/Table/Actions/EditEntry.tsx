@@ -7,7 +7,7 @@ import { useEntry, usePermission } from "~/admin/hooks/index.js";
 export const EditEntry = () => {
     const { entry } = useEntry();
     const { canEdit } = usePermission();
-    const { actions } = useContentEntriesPresenter();
+    const presenter = useContentEntriesPresenter();
     const { OptionsMenuItem } = ContentEntryListConfig.Browser.Entry.Action;
 
     if (!canEdit(entry, "cms.contentEntry")) {
@@ -18,7 +18,7 @@ export const EditEntry = () => {
         <OptionsMenuItem
             icon={<Edit />}
             label={"Edit"}
-            onAction={() => actions.selectEntry(entry.id)}
+            onAction={() => presenter.selectEntry(entry.id)}
             data-testid={"aco.actions.entry.edit"}
         />
     );

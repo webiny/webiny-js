@@ -26,6 +26,7 @@ import { SingletonEntryLayout } from "./SingletonEntryLayout.js";
 import type { IContentEntriesPresenter } from "../list/abstractions.js";
 import type { IContentEntryFormPresenter } from "../form/abstractions.js";
 import type { ISingletonEntryPresenter } from "../singleton/abstractions.js";
+import { OverlayLoader } from "@webiny/admin-ui";
 
 export interface ContentEntriesViewProps {
     modelId: string;
@@ -36,24 +37,10 @@ const ContentEntriesViewInner = ({ modelId, children }: ContentEntriesViewProps)
     const [model, setModel] = useState<CmsModel | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    let getModelUseCase: IGetModelUseCase;
-    let listPresenter: IContentEntriesPresenter;
-    let formPresenter: IContentEntryFormPresenter;
-    let singletonPresenter: ISingletonEntryPresenter;
-
-    try {
-        const getModelResult = useFeature(GetModelFeature) as { useCase: IGetModelUseCase };
-        getModelUseCase = getModelResult.useCase;
-        const listResult = useFeature(ContentEntriesPresenterFeature) as { presenter: IContentEntriesPresenter };
-        listPresenter = listResult.presenter;
-        const formResult = useFeature(ContentEntryFormPresenterFeature) as { presenter: IContentEntryFormPresenter };
-        formPresenter = formResult.presenter;
-        const singletonResult = useFeature(SingletonEntryPresenterFeature) as { presenter: ISingletonEntryPresenter };
-        singletonPresenter = singletonResult.presenter;
-    } catch (err) {
-        console.error("[ContentEntriesView] DI resolution failed:", err);
-        return <div>DI Error: {err instanceof Error ? err.message : String(err)}</div>;
-    }
+    const { useCase: getModelUseCase } = useFeature(GetModelFeature);
+    const { presenter: listPresenter } = useFeature(ContentEntriesPresenterFeature);
+    const { presenter: formPresenter } = useFeature(ContentEntryFormPresenterFeature);
+    const { presenter: singletonPresenter } = useFeature(SingletonEntryPresenterFeature);
 
     useEffect(() => {
         listPresenter.init({ modelId });
@@ -61,7 +48,6 @@ const ContentEntriesViewInner = ({ modelId, children }: ContentEntriesViewProps)
         getModelUseCase
             .execute({ modelId })
             .then(loadedModel => {
-                console.log("[ContentEntriesView] Model loaded:", loadedModel.modelId, loadedModel.name);
                 setModel(loadedModel);
 
                 if (loadedModel.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {
@@ -86,7 +72,7 @@ const ContentEntriesViewInner = ({ modelId, children }: ContentEntriesViewProps)
     }
 
     if (!model) {
-        return <div>Loading model...</div>;
+        return <OverlayLoader text={"Loading model..."} />;
     }
 
     if (model.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {

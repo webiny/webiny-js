@@ -12,7 +12,7 @@ import { Tooltip } from "@webiny/admin-ui";
 export const ActionDelete = observer(() => {
     const { model } = useModel();
     const { deleteEntry } = useCms();
-    const { actions } = useContentEntriesPresenter();
+    const presenter = useContentEntriesPresenter();
     const { showSnackbar } = useSnackbar();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
@@ -66,7 +66,7 @@ export const ActionDelete = observer(() => {
                 });
 
                 worker.resetItems();
-                await actions.refresh();
+                await presenter.listPresenter.actions.refresh();
 
                 showResultsDialog({
                     results: worker.results,

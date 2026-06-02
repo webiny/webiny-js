@@ -75,6 +75,7 @@ export interface IListViewModel<TRow> {
         selectedCount: number;
         allSelected: boolean;
     };
+    showingFilters: boolean;
     empty: boolean;
     emptyWithFilters: boolean;
     error: IListError | null;
@@ -97,6 +98,8 @@ export interface IListActions {
         set(key: string, value: unknown): void;
         clear(key: string): void;
         clearAll(): void;
+        show(): void;
+        hide(): void;
     };
     selection: {
         toggle(id: string): void;

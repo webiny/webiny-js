@@ -120,10 +120,6 @@ export const ContentEntriesModule = () => {
                 />
             </InternalContentEntryListConfig>
             <ContentEntryEditorConfig>
-                <ShowConfirmationOnPublish />
-                <ShowConfirmationOnUnpublish />
-                <ShowConfirmationOnDelete />
-                <ShowConfirmationOnDeleteRevision />
                 <IsModelPublishable>
                     <Actions.ButtonAction
                         name={"revisionSelector"}
@@ -143,6 +139,10 @@ export const ContentEntriesModule = () => {
                     />
                 </IsModelPublishable>
             </ContentEntryEditorConfig>
+            <ShowConfirmationOnPublish />
+            <ShowConfirmationOnUnpublish />
+            <ShowConfirmationOnDelete />
+            <ShowConfirmationOnDeleteRevision />
             <FullScreenContentEntry />
         </>
     );

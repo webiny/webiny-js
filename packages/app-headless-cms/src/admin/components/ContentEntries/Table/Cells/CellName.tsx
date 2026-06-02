@@ -17,7 +17,7 @@ interface FolderCellNameProps {
 }
 
 export const FolderCellName = ({ folder }: FolderCellNameProps) => {
-    const { actions } = useContentEntriesPresenter();
+    const presenter = useContentEntriesPresenter();
 
     let icon = <Folder />;
     if (folder.hasNonInheritedPermissions && folder.canManagePermissions) {
@@ -29,7 +29,7 @@ export const FolderCellName = ({ folder }: FolderCellNameProps) => {
             className={
                 "flex items-center gap-sm truncate cursor-pointer font-semibold hover:underline"
             }
-            onClick={() => actions.folders.selectFolder(folder.id)}
+            onClick={() => presenter.foldersPresenter.selectFolder(folder.id)}
         >
             <Icon
                 size={"sm"}
@@ -65,7 +65,7 @@ interface EntryCellNameProps {
 }
 
 export const EntryCellName = ({ entry }: EntryCellNameProps) => {
-    const { actions } = useContentEntriesPresenter();
+    const presenter = useContentEntriesPresenter();
     const { canEdit } = usePermission();
 
     if (!canEdit(entry, "cms.contentEntry")) {
@@ -75,7 +75,7 @@ export const EntryCellName = ({ entry }: EntryCellNameProps) => {
     return (
         <div
             className={"truncate cursor-pointer hover:underline"}
-            onClick={() => actions.selectEntry(entry.id)}
+            onClick={() => presenter.selectEntry(entry.id)}
         >
             <EntryCellRowTitle entry={entry} />
         </div>
