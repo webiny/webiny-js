@@ -97,7 +97,7 @@ export const FieldsSidebar = ({ onFieldDragStart, onCollapse }: FieldsSidebarPro
 
     return (
         <>
-            <div className={"flex items-center justify-between mb-md"}>
+            <div className={"flex items-center justify-between mb-md px-md py-md"}>
                 <Text as="div" size={"sm"} className={"font-semibold text-neutral-primary"}>
                     Fields
                 </Text>
@@ -110,7 +110,7 @@ export const FieldsSidebar = ({ onFieldDragStart, onCollapse }: FieldsSidebarPro
                     />
                 )}
             </div>
-            <div className={"flex flex-wrap gap-[6px]"}>
+            <div className={"flex flex-wrap gap-xs-plus py-sm px-md"}>
                 {fieldTypePlugins.map(fieldPlugin => (
                     <Field
                         key={fieldPlugin.field.type}

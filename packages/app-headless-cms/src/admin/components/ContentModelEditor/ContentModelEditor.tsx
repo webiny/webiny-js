@@ -91,12 +91,10 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                                     : "opacity-0 pointer-events-none")
                             }
                         >
-                            <div className={"px-md py-md w-[200px]"}>
-                                <FieldsSidebar
-                                    onFieldDragStart={() => setActiveTab("edit")}
-                                    onCollapse={() => setIsSidebarOpen(false)}
-                                />
-                            </div>
+                            <FieldsSidebar
+                                onFieldDragStart={() => setActiveTab("edit")}
+                                onCollapse={() => setIsSidebarOpen(false)}
+                            />
                         </div>
                         {/* Collapsed strip */}
                         <div
@@ -122,7 +120,12 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                             </span>
                         </div>
                     </div>
-                    <div className={"flex-1 fill-grid overflow-y-scroll h-[calc(100vh-98px)]"}>
+                    <div
+                        className={
+                            "flex-1 overflow-y-scroll h-[calc(100vh-98px)] " +
+                            (activeTab === "edit" ? "fill-grid" : "bg-neutral-subtle")
+                        }
+                    >
                         <div className={"px-xxl py-lg"}>
                             {activeTab === "edit" && (
                                 <div

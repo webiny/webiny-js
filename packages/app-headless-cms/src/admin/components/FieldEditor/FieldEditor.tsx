@@ -158,7 +158,7 @@ const Editor = () => {
                                 <div
                                     className={cn([
                                         "cursor-grab",
-                                        "absolute left-sm top-1/2 -translate-y-1/2 z-10",
+                                        "absolute left-[22px] top-1/2 -translate-y-1/2 z-10",
                                         "invisible group-hover:visible"
                                     ])}
                                     ref={element => {
