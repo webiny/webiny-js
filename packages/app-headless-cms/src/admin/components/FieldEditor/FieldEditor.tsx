@@ -149,17 +149,17 @@ const Editor = () => {
                         ) => (
                             <div
                                 className={cn([
-                                    "flex flex-column",
+                                    "group flex flex-column",
                                     "relative",
-                                    "mb-md last-of-type:mb-none",
-                                    "bg-neutral-dimmed",
+                                    "mb-sm last-of-type:mb-none",
                                     isDragging ? "opacity-30" : "opacity-100"
                                 ])}
                             >
                                 <div
                                     className={cn([
                                         "cursor-grab",
-                                        "absolute left-sm-plus top-sm-plus z-10"
+                                        "absolute left-sm top-1/2 -translate-y-1/2 z-10",
+                                        "invisible group-hover:visible"
                                     ])}
                                     ref={element => {
                                         drag(element);
@@ -168,7 +168,7 @@ const Editor = () => {
                                     <Icon
                                         icon={<DragIcon />}
                                         label={"Drag to move this row"}
-                                        color={"neutral-light"}
+                                        color={"neutral-strong"}
                                         size={"sm"}
                                     />
                                 </div>
@@ -211,7 +211,7 @@ const Editor = () => {
                                                         >
                                                             <div
                                                                 className={
-                                                                    "cursor-grab bg-neutral-base p-md shadow-sm rounded-xs"
+                                                                    "cursor-grab bg-neutral-base drop-shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-lg pl-md pr-sm py-sm"
                                                                 }
                                                             >
                                                                 <LayoutCell
@@ -277,7 +277,7 @@ const Editor = () => {
 
                                                             <div
                                                                 className={
-                                                                    "cursor-grab bg-neutral-base p-md shadow-sm rounded-xs"
+                                                                    "cursor-grab bg-neutral-base drop-shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-lg pl-md pr-sm py-sm"
                                                                 }
                                                             >
                                                                 <Field

@@ -3,7 +3,8 @@ import React from "react";
 import { plugins } from "@webiny/plugins";
 import Draggable from "../Draggable.js";
 import type { CmsModelFieldTypePlugin, CmsModelLayoutFieldTypePlugin } from "~/types.js";
-import { Icon, Text } from "@webiny/admin-ui";
+import { Icon, IconButton, Text } from "@webiny/admin-ui";
+import { ReactComponent as CollapseSidebarIcon } from "@webiny/icons/view_sidebar.svg";
 
 interface GridItemProps {
     testId: string;
@@ -20,7 +21,7 @@ const GridItem = ({ testId, label, icon, onDragStart, dragRef }: GridItemProps) 
             data-testid={testId}
             onDragStart={onDragStart}
             className={
-                "flex flex-col items-center justify-center gap-[8px] size-20 bg-neutral-subtle rounded-md cursor-grab hover:bg-neutral-dimmed transition-colors shrink-0"
+                "flex flex-col items-center justify-center gap-[8px] size-20 bg-neutral-subtle rounded-md cursor-grab shrink-0"
             }
         >
             <Icon icon={icon} label={label} size={"lg"} color={"neutral-strong"} />
@@ -82,9 +83,10 @@ const LayoutFieldItem = ({
 
 interface FieldsSidebarProps {
     onFieldDragStart: DragEventHandler;
+    onCollapse?: () => void;
 }
 
-export const FieldsSidebar = ({ onFieldDragStart }: FieldsSidebarProps) => {
+export const FieldsSidebar = ({ onFieldDragStart, onCollapse }: FieldsSidebarProps) => {
     const fieldTypePlugins = plugins
         .byType<CmsModelFieldTypePlugin>("cms-editor-field-type")
         .filter(p => !p.field.hideInAdmin);
@@ -95,13 +97,19 @@ export const FieldsSidebar = ({ onFieldDragStart }: FieldsSidebarProps) => {
 
     return (
         <>
-            <Text
-                as="div"
-                size={"md"}
-                className={"text-neutral-strong uppercase mt-0 mb-md font-semibold"}
-            >
-                Fields
-            </Text>
+            <div className={"flex items-center justify-between mb-md"}>
+                <Text as="div" size={"sm"} className={"font-semibold text-neutral-primary"}>
+                    Fields
+                </Text>
+                {onCollapse && (
+                    <IconButton
+                        variant={"ghost"}
+                        size={"xs"}
+                        icon={<CollapseSidebarIcon />}
+                        onClick={onCollapse}
+                    />
+                )}
+            </div>
             <div className={"flex flex-wrap gap-[6px]"}>
                 {fieldTypePlugins.map(fieldPlugin => (
                     <Field
@@ -115,8 +123,8 @@ export const FieldsSidebar = ({ onFieldDragStart }: FieldsSidebarProps) => {
                 <>
                     <Text
                         as="div"
-                        size={"md"}
-                        className={"text-neutral-strong uppercase my-md font-semibold"}
+                        size={"sm"}
+                        className={"font-semibold text-neutral-primary mt-md mb-md"}
                     >
                         Layout
                     </Text>

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { makeDecoratable, useDialogs, LeftPanel, RightPanel, SplitView } from "@webiny/app-admin";
+import { makeDecoratable, useDialogs } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { Heading, OverlayLoader, Text, TimeAgo } from "@webiny/admin-ui";
+import { IconButton, OverlayLoader, Tag, Text } from "@webiny/admin-ui";
+import { ReactComponent as ExpandSidebarIcon } from "@webiny/icons/view_sidebar.svg";
 import { FieldsSidebar } from "./FieldsSidebar.js";
 import { FieldEditor } from "../FieldEditor/index.js";
 import { PreviewTab } from "./PreviewTab.js";
@@ -58,6 +59,7 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
     }, []);
 
     const [activeTab, setActiveTab] = useState<string>("edit");
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     const onChange = ({ fields, layout }: OnChangeParams) => {
         setData(data => ({ ...data, fields, layout }));
@@ -73,32 +75,67 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
         <div className={"content-model-editor flex-1"}>
             <Header activeTab={activeTab} onTabChange={setActiveTab} />
             <div className={"w-full overflow-y-auto h-main-content"}>
-                <SplitView>
-                    <LeftPanel span={4} className={"bg-neutral-light"}>
-                        <div className={"px-lg py-md h-[calc(100vh-98px)] overflow-y-scroll"}>
-                            <FieldsSidebar
-                                onFieldDragStart={() => {
-                                    setActiveTab("edit");
-                                }}
-                            />
+                <div className={"flex h-full"}>
+                    <div
+                        className={
+                            "shrink-0 bg-neutral-base border-r border-neutral-dimmed overflow-hidden h-[calc(100vh-98px)] relative transition-[width] duration-200 ease-in-out"
+                        }
+                        style={{ width: isSidebarOpen ? 200 : 45 }}
+                    >
+                        {/* Expanded content */}
+                        <div
+                            className={
+                                "transition-opacity duration-150 " +
+                                (isSidebarOpen
+                                    ? "opacity-100 delay-75"
+                                    : "opacity-0 pointer-events-none")
+                            }
+                        >
+                            <div className={"px-md py-md w-[200px]"}>
+                                <FieldsSidebar
+                                    onFieldDragStart={() => setActiveTab("edit")}
+                                    onCollapse={() => setIsSidebarOpen(false)}
+                                />
+                            </div>
                         </div>
-                    </LeftPanel>
-                    <RightPanel span={8} className={"bg-neutral-base"}>
-                        <div className={"h-full overflow-y-scroll"}>
-                            {contentModel && (
-                                <div className={"px-xl pt-lg pb-md-extra"}>
-                                    <Heading level={4}>{contentModel.name}</Heading>
-                                    <Text size={"sm"} className={"text-neutral-muted"}>
-                                        {`Created by ${contentModel.createdBy.displayName}. Last modified: `}
-                                        <TimeAgo datetime={contentModel.savedOn} />.
-                                    </Text>
-                                </div>
-                            )}
+                        {/* Collapsed strip */}
+                        <div
+                            className={
+                                "absolute inset-0 flex flex-col items-center pt-md gap-md transition-opacity duration-150 " +
+                                (!isSidebarOpen
+                                    ? "opacity-100 delay-75"
+                                    : "opacity-0 pointer-events-none")
+                            }
+                        >
+                            <IconButton
+                                variant={"ghost"}
+                                size={"xs"}
+                                icon={<ExpandSidebarIcon />}
+                                onClick={() => setIsSidebarOpen(true)}
+                            />
+                            <span
+                                className={
+                                    "text-sm font-semibold text-neutral-primary [writing-mode:vertical-rl] rotate-180"
+                                }
+                            >
+                                Fields
+                            </span>
+                        </div>
+                    </div>
+                    <div className={"flex-1 fill-grid overflow-y-scroll h-[calc(100vh-98px)]"}>
+                        <div className={"px-xxl py-lg"}>
                             {activeTab === "edit" && (
                                 <div
                                     className={"relative mb-lg"}
                                     data-testid={"cms.editor.tab.edit"}
                                 >
+                                    <Text
+                                        as="div"
+                                        size={"sm"}
+                                        className={"font-semibold text-neutral-primary mb-md"}
+                                    >
+                                        Model editor
+                                    </Text>
                                     <FieldEditor
                                         fields={data.fields}
                                         layout={data.layout || []}
@@ -108,6 +145,9 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                             )}
                             {activeTab === "preview" && (
                                 <div data-testid={"cms.editor.tab.preview"}>
+                                    <div className={"mb-md"}>
+                                        <Tag content={"Preview"} variant={"warning"} />
+                                    </div>
                                     <ContentEntryEditorWithConfig>
                                         <ContentEntriesProvider contentModel={data}>
                                             <ContentEntryProvider readonly={true}>
@@ -118,8 +158,8 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                                 </div>
                             )}
                         </div>
-                    </RightPanel>
-                </SplitView>
+                    </div>
+                </div>
                 <DragPreview />
             </div>
         </div>
