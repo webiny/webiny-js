@@ -62,7 +62,7 @@ object@address__{hash8("object@street")}__number@number
 
 The 8-char SHA-256 hash is deterministic — same path always produces the same column name.
 
-### List of Objects
+### List-of-Objects Are Opaque Blobs
 
 Object fields with `list: true` are **NOT decomposed**. They are stored as a single JSON column containing the entire array:
 
@@ -71,7 +71,54 @@ Object fields with `list: true` are **NOT decomposed**. They are stored as a sin
 → JSON string in one column
 ```
 
-Querying individual elements within a list-of-objects requires JSONB operations (see [Dialect Differences — JSONB](./dialect-differences.md#jsonb-for-list-fields)).
+**This is a fundamental limitation.** A list-of-objects can't be flattened to columns because a single entry can have 0, 1, or N items in the list — you don't know how many column sets you'd need. It's a 1-to-many relationship.
+
+**The problem compounds with nesting.** Consider this model:
+
+```
+sections: object (list: true)
+  ├── title: text
+  ├── content: dynamicZone
+  │     ├── hero template:
+  │     │     └── heading: text
+  │     └── richBlock template:
+  │           └── items: object (list: true)
+  │                 ├── label: text
+  │                 └── value: number
+  └── order: number
+```
+
+The entire structure — object list → dynamic zone → templates → nested object lists — is serialized into **one JSON column** (`object@sections`):
+
+```json
+[
+  {
+    "title": "Intro",
+    "content": { "_templateId": "hero", "heading": "Welcome" },
+    "order": 1
+  },
+  {
+    "title": "Details",
+    "content": {
+      "_templateId": "richBlock",
+      "items": [{"label": "A", "value": 1}, {"label": "B", "value": 2}]
+    },
+    "order": 2
+  }
+]
+```
+
+**Nothing inside this blob is filterable or sortable in SQL.** Not `sections.title`, not `sections.content.heading`, not `sections.content.items.label` — none of it.
+
+### OpenSearch Parity Gap
+
+**OpenSearch can filter inside list-of-objects.** It indexes nested objects and supports nested queries, meaning a query like "find entries where any section's title contains 'Intro'" works in DDB+OS but is impossible in SQL without either:
+
+1. **JSONB queries** — dialect-specific, limited depth, poor performance at scale
+2. **Separate junction tables** — a normalized relational approach (one table per list-of-objects) that would enable full SQL querying but massively increases schema complexity and join overhead
+3. **Materialized search columns** — extract specific frequently-queried values into real columns at write time
+
+This is a **parity gap** between SQL and DDB+OS. Any content model that relies on filtering within list-of-objects will have reduced query capability in SQL mode.
 
 ### Null Object Collapse
 
