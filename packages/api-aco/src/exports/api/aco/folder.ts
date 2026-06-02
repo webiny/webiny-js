@@ -44,3 +44,5 @@ export {
 } from "~/features/folder/ListFolders/abstractions.js";
 
 export { FilterStorageOperations } from "~/features/folder/shared/abstractions.js";
+
+export type { Folder } from "~/folder/folder.types.js";
