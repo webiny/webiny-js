@@ -1,6 +1,6 @@
 import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { registerSqlStorageOperations } from "../../src/index.js";
-import { createCmsEntryFieldSortingPlugin } from "@webiny/db-utils/plugins/CmsEntryFieldSortingPlugin.js";
+import { createCmsEntryFieldSortingPlugin } from "@webiny/api-headless-cms-storage/plugins/CmsEntryFieldSortingPlugin.js";
 import knexLib from "knex";
 
 /* Create one shared knex instance so all handlers use the same in-memory database. */
