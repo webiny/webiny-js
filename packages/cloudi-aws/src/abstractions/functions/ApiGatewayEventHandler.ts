@@ -1,6 +1,7 @@
 import type { APIGatewayEvent, APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
 import type { Constructor, Dependencies } from "@webiny/di";
-import { CloudHandler, type ICloudHandler } from "../CloudHandler.js";
+import { CloudHandler } from "@cloudi/core";
+import type { ICloudHandler } from "@cloudi/core";
 
 export namespace ApiGatewayEventHandler {
     export type Interface = ICloudHandler<APIGatewayEvent, APIGatewayProxyResult>;

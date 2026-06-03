@@ -1,13 +1,12 @@
 {
-  "extends": "../../tsconfig.build.json",
-  "include": ["src"],
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "rootDir": "./src",
     "outDir": "./dist",
-    "declarationDir": "./dist",
+    "rootDir": "./src",
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"]
     }
-  }
+  },
+  "include": ["src/**/*", "__tests__/**/*"]
 }

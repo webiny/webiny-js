@@ -8,7 +8,7 @@ import {
     type APIGatewayEvent,
     type APIGatewayProxyResult
 } from "../index.js";
-import type { NextFunction } from "../types.js";
+import type { NextFunction } from "@cloudi/core";
 
 interface IUserService {
     listUsers(): Promise<Array<{ id: string; name: string; email: string }>>;

@@ -1,10 +1,6 @@
-import { createAbstraction } from "./createAbstraction.js";
+import { Abstraction } from "@webiny/di";
 
-/**
- * Abstraction for the AWS Lambda Event object.
- * This can be injected into services that need access to the raw Lambda event.
- */
-export const AwsLambdaEvent = createAbstraction<any>("AwsLambdaEvent");
+export const AwsLambdaEvent = new Abstraction<any>("AwsLambdaEvent");
 
 export namespace AwsLambdaEvent {
     export type Interface = any;

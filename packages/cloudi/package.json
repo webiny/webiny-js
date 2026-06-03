@@ -1,27 +1,18 @@
 {
-  "name": "@cloudi/aws",
+  "name": "@cloudi/core",
   "version": "0.1.0",
   "type": "module",
   "main": "index.js",
+  "description": "Cloud-agnostic handler chain for building cloud functions with Dependency Injection.",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "DI-enabled AWS Lambda functions. Write cloud functions using Dependency Injection.",
   "contributors": [
     "Webiny Team"
   ],
   "license": "MIT",
-  "keywords": [
-    "aws",
-    "lambda",
-    "dependency-injection",
-    "di",
-    "serverless"
-  ],
   "dependencies": {
-    "@cloudi/core": "0.1.0",
-    "@webiny/aws-sdk": "0.0.0",
     "@webiny/di": "^0.2.3"
   },
   "devDependencies": {

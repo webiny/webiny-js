@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { createEventHandler } from "~/createEventHandler.js";
-import type { NextFunction } from "~/types.js";
+import { createLambdaHandler } from "~/createLambdaHandler.js";
+import type { NextFunction } from "@cloudi/core";
 import {
     ApiGatewayEventHandler,
     SnsEventHandler,
@@ -44,10 +44,12 @@ describe("Middleware Pattern", () => {
             dependencies: []
         });
 
-        const handler = createEventHandler(container => {
-            container.register(Handler1);
-            container.register(Handler2);
-            container.register(Handler3);
+        const handler = createLambdaHandler({
+            root: container => {
+                container.register(Handler1);
+                container.register(Handler2);
+                container.register(Handler3);
+            }
         });
 
         await handler({ test: "event" });
@@ -73,8 +75,10 @@ describe("Middleware Pattern", () => {
             dependencies: []
         });
 
-        const handler = createEventHandler(container => {
-            container.register(ApiHandler);
+        const handler = createLambdaHandler({
+            root: container => {
+                container.register(ApiHandler);
+            }
         });
 
         const result = await handler({
@@ -119,9 +123,11 @@ describe("Middleware Pattern", () => {
             dependencies: []
         });
 
-        const handler = createEventHandler(container => {
-            container.register(ApiHandler);
-            container.register(SnsHandler);
+        const handler = createLambdaHandler({
+            root: container => {
+                container.register(ApiHandler);
+                container.register(SnsHandler);
+            }
         });
 
         const result = await handler({
@@ -142,12 +148,14 @@ describe("Middleware Pattern", () => {
             dependencies: []
         });
 
-        const handler = createEventHandler(container => {
-            container.register(ApiHandler);
+        const handler = createLambdaHandler({
+            root: container => {
+                container.register(ApiHandler);
+            }
         });
 
         await expect(handler({ unknownField: "value" })).rejects.toThrow(
-            "No registered function implementation handled this event"
+            "No registered handler claimed this event"
         );
     });
 });

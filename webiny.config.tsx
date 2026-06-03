@@ -22,7 +22,7 @@ export const Extensions = () => {
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
             <Infra.ProductionEnvironments environments={["prod", "staging"]} />
-            <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
+            <Infra.Core.Pulumi src={"/exoctensions/MyCorePulumiHandler.ts"} />
             <Infra.Vpc enabled={false} />
             <Infra.OpenSearch enabled={false} />
 

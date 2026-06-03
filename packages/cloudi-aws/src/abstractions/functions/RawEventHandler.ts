@@ -1,5 +1,6 @@
 import type { Constructor, Dependencies } from "@webiny/di";
-import { CloudHandler, type ICloudHandler } from "../CloudHandler.js";
+import { CloudHandler } from "@cloudi/core";
+import type { ICloudHandler } from "@cloudi/core";
 
 export namespace RawEventHandler {
     export type Interface<TEvent = any, TResult = any> = ICloudHandler<TEvent, TResult>;

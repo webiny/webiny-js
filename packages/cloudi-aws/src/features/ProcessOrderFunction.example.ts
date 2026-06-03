@@ -4,7 +4,7 @@
 
 import { Abstraction } from "@webiny/di";
 import { SnsEventHandler, type SNSEvent, type SnsResult } from "../index.js";
-import type { NextFunction } from "../types.js";
+import type { NextFunction } from "@cloudi/core";
 
 interface IOrderService {
     processOrder(orderId: string, data: any): Promise<void>;

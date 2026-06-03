@@ -1,12 +1,16 @@
-/**
- * @cloudi/aws - DI-enabled cloud (AWS Lambda) functions
- *
- * Write cloud (AWS Lambda) functions using Dependency Injection.
- */
-
-export { createEventHandler } from "./createEventHandler.js";
-export type { FunctionSetup, FunctionHandler, NextFunction } from "./types.js";
+export { createLambdaHandler } from "./createLambdaHandler.js";
+export type { CreateLambdaHandlerOptions } from "./createLambdaHandler.js";
 
 export * from "./abstractions/index.js";
+export * from "./adapters/ApiGatewayAdapter.js";
 
-export { Container, Abstraction } from "@webiny/di";
+// Re-export core for convenience
+export {
+    CloudHandler,
+    ErrorHandler,
+    NotFoundHandler,
+    isHttpRequest,
+    Container,
+    Abstraction
+} from "@cloudi/core";
+export type { IHttpRequest, IHttpResponse, NextFunction, HandlerSetup } from "@cloudi/core";
