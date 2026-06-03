@@ -629,9 +629,98 @@ git commit -m "feat(db-utils): add barrel exports"
 
 ---
 
+### Task 12: Move tests to db-utils
+
+**Files:**
+- Copy from: `packages/db-dynamodb/__tests__/features/ValueFilter/*.test.ts` (11 files)
+- Copy from: `packages/db-dynamodb/__tests__/features/FilterUtil/filterUtil.test.ts`
+- Copy from: `packages/db-dynamodb/__tests__/features/FilterUtil/createFilterUtil.ts`
+- Copy from: `packages/db-dynamodb/__tests__/__mocks/registry.ts`
+- Copy from: `packages/api-headless-cms-ddb/__tests__/operations/entry/filtering/getValue.test.ts`
+- Copy from: `packages/api-headless-cms-ddb/__tests__/plugins/dynamoDb/path/plainObject.test.ts`
+- Copy from: `packages/api-headless-cms-ddb/__tests__/plugins/dynamoDb/transformValue/datetime.test.ts`
+- Create: `packages/db-utils/__tests__/` directory structure
+
+Tests that stay in the DDB package (CMS-bound, import from db-utils instead):
+- `createFields.test.ts`, `createExpressions.test.ts`, `createFilters.test.ts`, `filter.test.ts`
+
+- [ ] **Step 1: Copy ValueFilter tests (11 files)**
+
+Copy `packages/db-dynamodb/__tests__/features/ValueFilter/` to `packages/db-utils/__tests__/valueFilter/`:
+- `eq.test.ts`, `contains.test.ts`, `startsWith.test.ts`, `fuzzy.test.ts`
+- `gt.test.ts`, `gte.test.ts`, `lt.test.ts`, `lte.test.ts`
+- `in.test.ts`, `andIn.test.ts`, `between.test.ts`
+
+These tests use a `createValueFilterRegistry()` helper that wires `ValueFilterFeature` into a DI container. Copy the mock helper from `packages/db-dynamodb/__tests__/__mocks/registry.ts` to `packages/db-utils/__tests__/__mocks/registry.ts`.
+
+Update imports: replace `@webiny/db-dynamodb/feature/ValueFilter/index.js` with local `~/valueFilter/index.js` or `@webiny/db-utils` paths.
+
+- [ ] **Step 2: Copy FilterUtil test**
+
+Copy `packages/db-dynamodb/__tests__/features/FilterUtil/filterUtil.test.ts` and `createFilterUtil.ts` to `packages/db-utils/__tests__/filtering/filterUtil.test.ts`.
+
+Update imports to reference `@webiny/db-utils` instead of `@webiny/db-dynamodb`.
+
+- [ ] **Step 3: Copy getValue test**
+
+Copy `packages/api-headless-cms-ddb/__tests__/operations/entry/filtering/getValue.test.ts` to `packages/db-utils/__tests__/filtering/getValue.test.ts`.
+
+Update import: `~/operations/entry/filtering/getValue` → `~/filtering/getValue`.
+
+Also copy any mock data files it depends on (check for entry mock imports).
+
+- [ ] **Step 4: Copy plainObject path plugin test**
+
+Copy `packages/api-headless-cms-ddb/__tests__/plugins/dynamoDb/path/plainObject.test.ts` to `packages/db-utils/__tests__/path/plainObject.test.ts`.
+
+Update import: `~/dynamoDb/path/plainObject` → `~/path/plainObject`.
+
+The test uses `CmsModelField` type from `@webiny/api-headless-cms/types` — this is a type-only import, which is fine since db-utils depends on `@webiny/api-headless-cms`.
+
+- [ ] **Step 5: Copy datetime transform test**
+
+Copy `packages/api-headless-cms-ddb/__tests__/plugins/dynamoDb/transformValue/datetime.test.ts` to `packages/db-utils/__tests__/transforms/datetime.test.ts`.
+
+Update import: `~/dynamoDb/transformValue/datetime` → `~/transforms/datetime`.
+
+Same `CmsModelField` type import — keep as-is.
+
+- [ ] **Step 6: Set up test infrastructure**
+
+Create `packages/db-utils/vitest.config.ts` (or equivalent) modeled after `packages/db-dynamodb`'s test config. Ensure `~/*` alias resolves to `./src/*` in tests.
+
+Add test scripts to `packages/db-utils/package.json`:
+```json
+"scripts": {
+    "test": "vitest run"
+}
+```
+
+- [ ] **Step 7: Run db-utils tests**
+
+```bash
+yarn test packages/db-utils 2>&1 | tail -50
+```
+
+Expected: ~146 tests passing:
+- 11 ValueFilter test files (~111 tests)
+- FilterUtil tests (16 tests)
+- getValue test (1 test)
+- plainObject test (2 tests)
+- datetime test (12 tests)
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add .
+git commit -m "test(db-utils): move ValueFilter, filtering, path, and transform tests"
+```
+
+---
+
 ## Phase 2: Repoint DDB + db-dynamodb Imports
 
-### Task 12: Update db-dynamodb to import ValueFilter from db-utils
+### Task 13: Update db-dynamodb to re-export ValueFilter from db-utils
 
 **Files:**
 - Modify: `packages/db-dynamodb/src/feature/ValueFilter/` — delete local copies, re-export from db-utils
@@ -677,7 +766,7 @@ git commit -m "refactor(db-dynamodb): re-export ValueFilter from db-utils"
 
 ---
 
-### Task 13: Update api-headless-cms-ddb to import from db-utils
+### Task 14: Update api-headless-cms-ddb to import from db-utils
 
 **Files:**
 - Modify: `packages/api-headless-cms-ddb/package.json`
@@ -794,7 +883,7 @@ git commit -m "refactor(api-headless-cms-ddb): import filtering from db-utils"
 
 ---
 
-### Task 14: Update external consumers + build all
+### Task 15: Update external consumers + build all
 
 **Files:**
 - Modify: `packages/webiny/src/api/db.ts` — re-export ValueFilter/ValueFilterRegistry from db-utils
@@ -836,7 +925,7 @@ git commit -m "refactor: update external consumers to use db-utils"
 
 ## Phase 3: Rewrite `@webiny/api-headless-cms-sql`
 
-### Task 15: Simplify TableNameResolver
+### Task 16: Simplify TableNameResolver
 
 **Files:**
 - Modify: `packages/api-headless-cms-sql/src/features/tableNameResolver/abstractions.ts`
@@ -918,7 +1007,7 @@ git commit -m "refactor(api-headless-cms-sql): simplify TableNameResolver for fi
 
 ---
 
-### Task 16: Create entry table schema manager
+### Task 17: Create entry table schema manager
 
 **Files:**
 - Create: `packages/api-headless-cms-sql/src/features/entryTableManager/abstractions.ts`
@@ -1092,7 +1181,7 @@ git commit -m "refactor(api-headless-cms-sql): replace EntrySchemaManager with f
 
 ---
 
-### Task 17: Rewrite entry types
+### Task 18: Rewrite entry types
 
 **Files:**
 - Rewrite: `packages/api-headless-cms-sql/src/operations/entry/types.ts`
@@ -1194,7 +1283,7 @@ git commit -m "refactor(api-headless-cms-sql): rewrite IEntryRow for fixed schem
 
 ---
 
-### Task 18: Rewrite entry mappers
+### Task 19: Rewrite entry mappers
 
 **Files:**
 - Rewrite: `packages/api-headless-cms-sql/src/operations/entry/mappers.ts`
@@ -1381,7 +1470,7 @@ git commit -m "refactor(api-headless-cms-sql): rewrite entry mappers for JSON va
 
 ---
 
-### Task 19: Rewrite point-read operations
+### Task 20: Rewrite point-read operations
 
 **Files:**
 - Modify: `packages/api-headless-cms-sql/src/operations/entry/index.ts`
@@ -1458,7 +1547,7 @@ git commit -m "refactor(api-headless-cms-sql): rewrite point-read entry operatio
 
 ---
 
-### Task 20: Rewrite list + get operations (with in-memory filtering)
+### Task 21: Rewrite list + get operations (with in-memory filtering)
 
 **Files:**
 - Modify: `packages/api-headless-cms-sql/src/operations/entry/index.ts`
@@ -1591,7 +1680,7 @@ git commit -m "refactor(api-headless-cms-sql): rewrite list+get with in-memory f
 
 ---
 
-### Task 21: Rewrite create + createRevisionFrom
+### Task 22: Rewrite create + createRevisionFrom
 
 **Files:**
 - Modify: `packages/api-headless-cms-sql/src/operations/entry/index.ts`
@@ -1649,7 +1738,7 @@ git commit -m "refactor(api-headless-cms-sql): rewrite create + createRevisionFr
 
 ---
 
-### Task 22: Rewrite update
+### Task 23: Rewrite update
 
 **Files:**
 - Modify: `packages/api-headless-cms-sql/src/operations/entry/index.ts`
@@ -1699,7 +1788,7 @@ git commit -m "refactor(api-headless-cms-sql): rewrite update operation"
 
 ---
 
-### Task 23: Rewrite publish + unpublish
+### Task 24: Rewrite publish + unpublish
 
 **Files:**
 - Modify: `packages/api-headless-cms-sql/src/operations/entry/index.ts`
@@ -1787,7 +1876,7 @@ git commit -m "refactor(api-headless-cms-sql): rewrite publish + unpublish"
 
 ---
 
-### Task 24: Rewrite delete operations
+### Task 25: Rewrite delete operations
 
 **Files:**
 - Modify: `packages/api-headless-cms-sql/src/operations/entry/index.ts`
@@ -1880,7 +1969,7 @@ git commit -m "refactor(api-headless-cms-sql): rewrite delete operations"
 
 ---
 
-### Task 25: Rewrite move + bin operations
+### Task 26: Rewrite move + bin operations
 
 **Files:**
 - Modify: `packages/api-headless-cms-sql/src/operations/entry/index.ts`
@@ -1995,7 +2084,7 @@ git commit -m "refactor(api-headless-cms-sql): rewrite move + bin operations"
 
 ---
 
-### Task 26: Rewrite getUniqueFieldValues
+### Task 27: Rewrite getUniqueFieldValues
 
 **Files:**
 - Modify: `packages/api-headless-cms-sql/src/operations/entry/index.ts`
@@ -2057,7 +2146,7 @@ git commit -m "refactor(api-headless-cms-sql): rewrite getUniqueFieldValues in-m
 
 ---
 
-### Task 27: Delete removed features + update DI wiring
+### Task 28: Delete removed features + update DI wiring
 
 **Files:**
 - Delete: `packages/api-headless-cms-sql/src/features/sqlOperator/` (entire directory)
@@ -2122,7 +2211,7 @@ git commit -m "refactor(api-headless-cms-sql): delete removed features and updat
 
 ---
 
-### Task 28: Update SQL package deps + test setup
+### Task 29: Update SQL package deps + test setup
 
 **Files:**
 - Modify: `packages/api-headless-cms-sql/package.json`
@@ -2185,7 +2274,7 @@ git commit -m "refactor(api-headless-cms-sql): update package deps and test setu
 
 ---
 
-### Task 29: Run tests and fix failures
+### Task 30: Run tests and fix failures
 
 **Files:** Various — depends on test results
 
@@ -2243,21 +2332,22 @@ git commit -m "fix(api-headless-cms-sql): fix test failures after storage rewrit
 | 9 | Move filter create plugins | 1 |
 | 10 | Move path plugins + rewrite datetime transform | 1 |
 | 11 | Create db-utils barrel exports + build | 1 |
-| 12 | Update db-dynamodb to import from db-utils | 2 |
-| 13 | Update api-headless-cms-ddb to import from db-utils | 2 |
-| 14 | Update external consumers + build all | 2 |
-| 15 | Simplify TableNameResolver | 3 |
-| 16 | Create entry table schema manager | 3 |
-| 17 | Rewrite entry types | 3 |
-| 18 | Rewrite entry mappers | 3 |
-| 19 | Rewrite point-read operations | 3 |
-| 20 | Rewrite list + get with in-memory filtering | 3 |
-| 21 | Rewrite create + createRevisionFrom | 3 |
-| 22 | Rewrite update | 3 |
-| 23 | Rewrite publish + unpublish | 3 |
-| 24 | Rewrite delete operations | 3 |
-| 25 | Rewrite move + bin operations | 3 |
-| 26 | Rewrite getUniqueFieldValues | 3 |
-| 27 | Delete removed features + update DI wiring | 3 |
-| 28 | Update SQL package deps + test setup | 3 |
-| 29 | Run tests and fix failures | 3 |
+| 12 | Move tests to db-utils (~146 tests) | 1 |
+| 13 | Update db-dynamodb to re-export from db-utils | 2 |
+| 14 | Update api-headless-cms-ddb to import from db-utils | 2 |
+| 15 | Update external consumers + build all | 2 |
+| 16 | Simplify TableNameResolver | 3 |
+| 17 | Create entry table schema manager | 3 |
+| 18 | Rewrite entry types | 3 |
+| 19 | Rewrite entry mappers | 3 |
+| 20 | Rewrite point-read operations | 3 |
+| 21 | Rewrite list + get with in-memory filtering | 3 |
+| 22 | Rewrite create + createRevisionFrom | 3 |
+| 23 | Rewrite update | 3 |
+| 24 | Rewrite publish + unpublish | 3 |
+| 25 | Rewrite delete operations | 3 |
+| 26 | Rewrite move + bin operations | 3 |
+| 27 | Rewrite getUniqueFieldValues | 3 |
+| 28 | Delete removed features + update DI wiring | 3 |
+| 29 | Update SQL package deps + test setup | 3 |
+| 30 | Run tests and fix failures | 3 |
