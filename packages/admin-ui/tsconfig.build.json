@@ -3,7 +3,8 @@
   "include": ["src"],
   "references": [
     { "path": "../react-composition/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" }
+    { "path": "../utils/tsconfig.build.json" },
+    { "path": "../project/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -15,7 +16,9 @@
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"]
     }
   }
 }

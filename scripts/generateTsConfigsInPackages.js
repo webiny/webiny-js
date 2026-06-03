@@ -43,19 +43,10 @@ async function output(target, content) {
             }
         }
 
-        /* All deps (production + dev + peer) — used for tsconfig.json which covers src + __tests__. */
+        // Get package dependencies that are registered as workspaces within the repo.
         const dependencies = Object.keys({
             ...wpObject.packageJson.dependencies,
             ...wpObject.packageJson.devDependencies,
-            ...wpObject.packageJson.peerDependencies
-        })
-            .filter(getPackage)
-            .filter(name => workspaces.find(pkg => pkg.packageJson.name === name).isTs)
-            .map(name => workspaces.find(pkg => pkg.packageJson.name === name));
-
-        /* Production-only deps — used for tsconfig.build.json references to avoid devDep cycles. */
-        const buildDependencies = Object.keys({
-            ...wpObject.packageJson.dependencies,
             ...wpObject.packageJson.peerDependencies
         })
             .filter(getPackage)
@@ -119,11 +110,11 @@ async function output(target, content) {
 
         await output(wpObject.tsConfigJsonPath, JSON.stringify(tsconfigJson));
 
-        /* Generate `tsconfig.build.json` using production-only deps to avoid devDep reference cycles. */
+        // Generate `tsconfig.build.json`
         const tsconfigBuildJson = {
             extends: "../../tsconfig.build.json",
             include: ["src"],
-            references: buildDependencies.map(dep => ({
+            references: dependencies.map(dep => ({
                 path: `${getRelativePath(
                     wpObject.packageFolder,
                     dep.packageFolder
@@ -136,11 +127,11 @@ async function output(target, content) {
                 paths: {
                     "~/*": ["./src/*"],
                     "~tests/*": ["./__tests__/*"],
-                    ...buildDependencies.reduce((acc, dep) => {
+                    ...dependencies.reduce((acc, dep) => {
                         const relPath = getRelativePath(wpObject.packageFolder, dep.packageFolder);
-                        /* Add export-based paths first (more specific). */
+                        // Add export-based paths first (more specific)
                         Object.assign(acc, generateExportPaths(dep, "src"));
-                        /* Add base paths (less specific, used as fallback). */
+                        // Add base paths (less specific, used as fallback)
                         acc[`${dep.name}/*`] = [`${relPath}/src/*`];
                         acc[`${dep.name}`] = [`${relPath}/src`];
                         return acc;
