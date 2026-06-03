@@ -8,7 +8,7 @@
   },
   "exports": {
     ".": "./index.js",
-    "./webhooks": "./methods/webhooks/verifyWebhookPayload.js"
+    "./*": "./*"
   },
   "dependencies": {
     "p-map": "^7.0.4",
