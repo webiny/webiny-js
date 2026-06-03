@@ -9,13 +9,7 @@
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../languages/tsconfig.build.json" },
-    { "path": "../tenant-manager/tsconfig.build.json" },
-    { "path": "../api-core-ddb/tsconfig.build.json" },
-    { "path": "../api-file-manager-s3/tsconfig.build.json" },
-    { "path": "../background-tasks/tsconfig.build.json" },
-    { "path": "../handler-aws/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../wcp/tsconfig.build.json" }
+    { "path": "../tenant-manager/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -41,21 +35,7 @@
       "@webiny/languages/*": ["../languages/src/*"],
       "@webiny/languages": ["../languages/src"],
       "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
-      "@webiny/tenant-manager": ["../tenant-manager/src"],
-      "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
-      "@webiny/api-core-ddb": ["../api-core-ddb/src"],
-      "@webiny/api-file-manager-s3/*": ["../api-file-manager-s3/src/*"],
-      "@webiny/api-file-manager-s3": ["../api-file-manager-s3/src"],
-      "@webiny/background-tasks/api": ["../background-tasks/src/api/index.js"],
-      "@webiny/background-tasks/admin/*": ["../background-tasks/src/admin/*"],
-      "@webiny/background-tasks/*": ["../background-tasks/src/*"],
-      "@webiny/background-tasks": ["../background-tasks/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/tenant-manager": ["../tenant-manager/src"]
     }
   }
 }

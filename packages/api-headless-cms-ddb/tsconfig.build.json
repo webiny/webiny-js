@@ -6,12 +6,12 @@
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../db-utils/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" }
+    { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -28,6 +28,8 @@
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/db-utils/*": ["../db-utils/src/*"],
+      "@webiny/db-utils": ["../db-utils/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/feature/api": ["../feature/src/api/index.js"],
@@ -39,9 +41,7 @@
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }

@@ -12,8 +12,7 @@
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
     { "path": "../project-aws/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" },
-    { "path": "../wcp/tsconfig.build.json" }
+    { "path": "../validation/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -45,9 +44,7 @@
       "@webiny/project-aws/*": ["../project-aws/src/*"],
       "@webiny/project-aws": ["../project-aws/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/validation": ["../validation/src"]
     }
   }
 }

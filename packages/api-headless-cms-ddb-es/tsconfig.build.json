@@ -12,14 +12,7 @@
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" },
-    { "path": "../api-core/tsconfig.build.json" },
-    { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
-    { "path": "../background-tasks/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-aws/tsconfig.build.json" },
-    { "path": "../handler-graphql/tsconfig.build.json" },
-    { "path": "../wcp/tsconfig.build.json" }
+    { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -51,23 +44,7 @@
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
-      "@webiny/api-core/*": ["../api-core/src/*"],
-      "@webiny/api-core": ["../api-core/src"],
-      "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
-      "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
-      "@webiny/background-tasks/api": ["../background-tasks/src/api/index.js"],
-      "@webiny/background-tasks/admin/*": ["../background-tasks/src/admin/*"],
-      "@webiny/background-tasks/*": ["../background-tasks/src/*"],
-      "@webiny/background-tasks": ["../background-tasks/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }

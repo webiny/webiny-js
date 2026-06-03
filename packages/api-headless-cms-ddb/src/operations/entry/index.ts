@@ -36,9 +36,10 @@ import {
 import type { PluginsContainer } from "@webiny/plugins";
 import { decodeCursor, encodeCursor } from "@webiny/utils";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
-import type { FilterItemFromStorage } from "./filtering/types.js";
-import { createFields } from "~/operations/entry/filtering/createFields.js";
-import { filter, sort } from "~/operations/entry/filtering/index.js";
+import type { FilterItemFromStorage } from "@webiny/db-utils";
+import { createFields } from "@webiny/db-utils";
+import { filter, sort } from "@webiny/db-utils";
+import { ValueFilterRegistry } from "@webiny/db-utils";
 import type { CmsEntryStorageOperations, IEntryEntity } from "~/types.js";
 import {
     isDeletedEntryMetaField,
@@ -1074,6 +1075,9 @@ export const createEntriesStorageOperations = (
                 return entry as CmsEntry<T>;
             })
         );
+        /* Resolve the registry once. */
+        const valueFilterRegistry = container.resolve(ValueFilterRegistry);
+
         /**
          * Filter the read items via the code.
          * It will build the filters out of the where input and transform the values it is using.
@@ -1087,7 +1091,7 @@ export const createEntriesStorageOperations = (
                 term: search,
                 fields: fields || []
             },
-            container
+            valueFilterRegistry
         });
 
         const totalCount = filteredItems.length;

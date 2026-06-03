@@ -3,8 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../lexical-editor/tsconfig.build.json" },
-    { "path": "../lexical-theme/tsconfig.build.json" },
-    { "path": "../react-composition/tsconfig.build.json" }
+    { "path": "../lexical-theme/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -16,9 +15,7 @@
       "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
       "@webiny/lexical-editor": ["../lexical-editor/src"],
       "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],
-      "@webiny/lexical-theme": ["../lexical-theme/src"],
-      "@webiny/react-composition/*": ["../react-composition/src/*"],
-      "@webiny/react-composition": ["../react-composition/src"]
+      "@webiny/lexical-theme": ["../lexical-theme/src"]
     }
   }
 }

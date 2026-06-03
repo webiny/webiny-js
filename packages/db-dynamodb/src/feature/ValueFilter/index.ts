@@ -1,3 +1,3 @@
-export { ValueFilter } from "./abstractions/ValueFilter.js";
-export { ValueFilterRegistry } from "./abstractions/ValueFilterRegistry.js";
-export { ValueFilterFeature } from "./feature.js";
+export { ValueFilter } from "@webiny/db-utils";
+export { ValueFilterRegistry } from "@webiny/db-utils";
+export { ValueFilterFeature } from "@webiny/db-utils";

@@ -1,15 +1,18 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createEntries } from "./mocks/entry.model";
-import { createExpressions, Expression } from "~/operations/entry/filtering/createExpressions";
+import {
+    createExpressions,
+    type Expression,
+    createFields,
+    filter,
+    ValueFilterRegistry,
+    type Field
+} from "@webiny/db-utils";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModel } from "@webiny/api-headless-cms/types";
-import { Field } from "~/operations/entry/filtering/types";
 import { createPluginsContainer } from "../../helpers/pluginsContainer";
 import { createModel } from "../../helpers/createModel";
-import { createFields } from "~/operations/entry/filtering/createFields";
-import { filter } from "~/operations/entry/filtering";
 import { getSearchableFields } from "@webiny/api-headless-cms/crud/contentEntry/searchableFields";
-import { Container } from "@webiny/di";
 import { GraphQLFeature } from "@webiny/api-headless-cms/features/graphql/index.js";
 import { createTestContainer } from "../../helpers/createTestContainer";
 
@@ -17,13 +20,15 @@ describe("filtering cms ddb", () => {
     let plugins: PluginsContainer;
     let model: CmsModel;
     let fields: Record<string, Field>;
-    let container: Container;
+    let valueFilterRegistry: ValueFilterRegistry.Interface;
+    let container: ReturnType<typeof createTestContainer>;
 
     beforeEach(() => {
         plugins = createPluginsContainer();
         model = createModel();
         container = createTestContainer();
         GraphQLFeature.register(container);
+        valueFilterRegistry = container.resolve(ValueFilterRegistry);
         fields = createFields({
             plugins,
             fields: model.fields
@@ -57,7 +62,7 @@ describe("filtering cms ddb", () => {
 
             const createExpressionsParams = {
                 plugins,
-                container,
+                valueFilterRegistry,
                 where: {
                     createdOn_gte: createdOn.toISOString()
                 },
@@ -94,7 +99,7 @@ describe("filtering cms ddb", () => {
                 items: records,
                 where: createExpressionsParams.where,
                 plugins,
-                container,
+                valueFilterRegistry,
                 fields
             });
 
@@ -115,7 +120,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
-            container,
+            valueFilterRegistry,
             fields
         });
 
@@ -145,7 +150,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
-            container,
+            valueFilterRegistry,
             fields
         });
 
@@ -178,7 +183,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
-            container,
+            valueFilterRegistry,
             fields
         });
 
@@ -217,7 +222,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
-            container,
+            valueFilterRegistry,
             fields
         });
 
@@ -239,7 +244,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
-            container,
+            valueFilterRegistry,
             fields
         });
 
@@ -278,7 +283,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
-            container,
+            valueFilterRegistry,
             fields
         });
 
@@ -317,7 +322,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
-            container,
+            valueFilterRegistry,
             fields
         });
 
@@ -356,7 +361,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
-            container,
+            valueFilterRegistry,
             fields
         });
 
@@ -374,7 +379,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
-            container,
+            valueFilterRegistry,
             fields
         });
 
@@ -396,7 +401,7 @@ describe("filtering cms ddb", () => {
             items: records,
             where: {},
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             fullTextSearch: {
                 term: "yellow",
@@ -412,7 +417,7 @@ describe("filtering cms ddb", () => {
             items: records,
             where: {},
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             fullTextSearch: {
                 term: "white",
@@ -428,7 +433,7 @@ describe("filtering cms ddb", () => {
             items: records,
             where: {},
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             fullTextSearch: {
                 term: "grey",
@@ -444,7 +449,7 @@ describe("filtering cms ddb", () => {
             items: records,
             where: {},
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             fullTextSearch: {
                 term: "red",

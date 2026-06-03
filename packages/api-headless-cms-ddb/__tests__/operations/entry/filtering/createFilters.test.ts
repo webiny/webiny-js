@@ -1,10 +1,14 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { createExpressions, Expression } from "~/operations/entry/filtering/createExpressions";
+import {
+    createExpressions,
+    type Expression,
+    createFields,
+    ValueFilterRegistry,
+    type Field
+} from "@webiny/db-utils";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { createModel } from "../../helpers/createModel";
-import { createFields } from "~/operations/entry/filtering/createFields";
-import { Field } from "~/operations/entry/filtering/types";
 import { createPluginsContainer } from "../../helpers/pluginsContainer";
 import { createTestContainer } from "../../helpers/createTestContainer";
 
@@ -12,11 +16,12 @@ describe("create filters from where conditions", () => {
     let plugins: PluginsContainer;
     let model: CmsModel;
     let fields: Record<string, Field>;
-    let container: ReturnType<typeof createTestContainer>;
+    let valueFilterRegistry: ValueFilterRegistry.Interface;
 
     beforeEach(() => {
         plugins = createPluginsContainer();
-        container = createTestContainer();
+        const container = createTestContainer();
+        valueFilterRegistry = container.resolve(ValueFilterRegistry);
         model = createModel();
         fields = createFields({
             plugins,
@@ -27,7 +32,7 @@ describe("create filters from where conditions", () => {
     it("it should create simple filter by system field", () => {
         const result = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 id: "someId"
@@ -58,7 +63,7 @@ describe("create filters from where conditions", () => {
     it("should create simple filter by content field", () => {
         const result = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 values: {
@@ -97,7 +102,7 @@ describe("create filters from where conditions", () => {
     it("should create simple, non-nested, filters", async () => {
         const result = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 id_gte: 500,
@@ -207,7 +212,7 @@ describe("create filters from where conditions", () => {
     it("should create complex nested filters", async () => {
         const result = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 values: {

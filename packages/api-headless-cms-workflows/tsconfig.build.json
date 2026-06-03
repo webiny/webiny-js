@@ -7,10 +7,7 @@
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../api-workflows/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
-    { "path": "../feature/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../testing/tsconfig.build.json" },
-    { "path": "../wcp/tsconfig.build.json" }
+    { "path": "../feature/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -32,13 +29,7 @@
       "@webiny/feature/api": ["../feature/src/api/index.js"],
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
-      "@webiny/feature": ["../feature/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
-      "@webiny/testing/*": ["../testing/src/*"],
-      "@webiny/testing": ["../testing/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/feature": ["../feature/src"]
     }
   }
 }

@@ -12,10 +12,7 @@
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
-    { "path": "../project-aws/tsconfig.build.json" },
-    { "path": "../handler-aws/tsconfig.build.json" },
-    { "path": "../handler-graphql/tsconfig.build.json" },
-    { "path": "../wcp/tsconfig.build.json" }
+    { "path": "../project-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -47,13 +44,7 @@
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
       "@webiny/project-aws/*": ["../project-aws/src/*"],
-      "@webiny/project-aws": ["../project-aws/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/project-aws": ["../project-aws/src"]
     }
   }
 }

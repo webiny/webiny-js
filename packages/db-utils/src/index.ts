@@ -8,6 +8,9 @@ export { filter } from "./filtering/filter.js";
 export { sort } from "./filtering/sort.js";
 export { createFields } from "./filtering/fields/createFields.js";
 export { createFilterCreatePlugins } from "./filtering/plugins/index.js";
+export { createExpressions } from "./filtering/expressions/createExpressions.js";
+export type { Expression, ExpressionCondition } from "./filtering/expressions/createExpressions.js";
+export { getValue } from "./filtering/getValue.js";
 
 /* Plugin base classes. */
 export { CmsEntryFieldFilterPlugin } from "./plugins/CmsEntryFieldFilterPlugin.js";
@@ -24,3 +27,4 @@ export { createDatetimeTransformValuePlugin } from "./transforms/datetime.js";
 
 /* Types. */
 export type { Field } from "./filtering/fields/types.js";
+export type { FilterItemFromStorage } from "./filtering/fields/types.js";

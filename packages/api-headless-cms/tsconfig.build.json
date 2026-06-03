@@ -13,11 +13,7 @@
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" },
-    { "path": "../aws-sdk/tsconfig.build.json" },
-    { "path": "../db-dynamodb/tsconfig.build.json" },
-    { "path": "../sdk/tsconfig.build.json" },
-    { "path": "../wcp/tsconfig.build.json" }
+    { "path": "../validation/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -51,15 +47,7 @@
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"],
-      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
-      "@webiny/aws-sdk": ["../aws-sdk/src"],
-      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/sdk/*": ["../sdk/src/*"],
-      "@webiny/sdk": ["../sdk/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/validation": ["../validation/src"]
     }
   }
 }

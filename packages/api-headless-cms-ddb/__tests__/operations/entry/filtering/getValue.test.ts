@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getValue } from "~/operations/entry/filtering/getValue";
+import { getValue } from "@webiny/db-utils";
 import { createEntry } from "./mocks/entry.noModel";
 
 describe("value via object-path", () => {
