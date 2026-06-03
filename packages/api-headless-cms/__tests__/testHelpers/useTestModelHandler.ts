@@ -12,8 +12,7 @@ import type {
     IPublishTestEntryMutationVariables,
     IRepublishTestEntryMutationVariables,
     IUnpublishTestEntryMutationVariables,
-    IUpdateTestEntryMutationVariables,
-    IUpdateTestEntryRevisionDescriptionMutationVariables
+    IUpdateTestEntryMutationVariables
 } from "./useTestModelHandler/manageGql";
 import * as manageGql from "./useTestModelHandler/manageGql";
 import type {
@@ -252,19 +251,6 @@ export const useTestModelHandler = (params: UseTestModelHandlerParams) => {
                     .invoke({
                         body: {
                             query: manageGql.UNPUBLISH_TEST_ENTRY,
-                            variables: params.variables
-                        },
-                        headers: params.headers
-                    })
-                    .then(extractGqlResponseData);
-            },
-            async updateTestEntryRevisionDescription(
-                params: IMutationParams<IUpdateTestEntryRevisionDescriptionMutationVariables>
-            ) {
-                return manageGqlHandler
-                    .invoke({
-                        body: {
-                            query: manageGql.UPDATE_TEST_ENTRY_REVISION_DESCRIPTION,
                             variables: params.variables
                         },
                         headers: params.headers

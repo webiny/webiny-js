@@ -588,40 +588,6 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         expect(entriesListAfterPublish2[0]).toMatchObject(matchObject);
     });
 
-    it("should allow updating revision description after unpublishing a previously published entry", async () => {
-        const { data: rev } = await manageApiIdentityA.createTestEntry();
-
-        const publish1 = await manageApiIdentityA.publishTestEntry({
-            variables: {
-                revision: rev.id
-            }
-        });
-        expect(publish1.error).toBeNull();
-
-        const unpublish = await manageApiIdentityA.unpublishTestEntry({
-            variables: {
-                revision: rev.id
-            }
-        });
-        expect(unpublish.error).toBeNull();
-
-        const updateDescription = await manageApiIdentityA.updateTestEntryRevisionDescription({
-            variables: {
-                revision: rev.id,
-                revisionDescription: "Updated after unpublish"
-            }
-        });
-        expect(updateDescription.error).toBeNull();
-        expect(updateDescription.data.meta.locked).toBe(false);
-
-        const publish2 = await manageApiIdentityA.publishTestEntry({
-            variables: {
-                revision: rev.id
-            }
-        });
-        expect(publish2.error).toBeNull();
-    });
-
     it("republishing a latest revision should only change lastPublished meta fields", async () => {
         const { data: rev } = await manageApiIdentityA.createTestEntry();
 

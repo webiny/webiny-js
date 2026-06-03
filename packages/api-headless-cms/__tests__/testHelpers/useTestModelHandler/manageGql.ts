@@ -347,17 +347,3 @@ export const UNPUBLISH_TEST_ENTRY = /* GraphQL */ `
         }
     }
 `;
-
-export interface IUpdateTestEntryRevisionDescriptionMutationVariables {
-    revision: string;
-    revisionDescription: string | undefined;
-}
-
-export const UPDATE_TEST_ENTRY_REVISION_DESCRIPTION = /* GraphQL */ `
-    mutation UpdateTestEntryRevisionDescription($revision: ID!, $revisionDescription: String) {
-        updateTestEntryRevisionDescription: updateTestEntryRevisionDescription(revision: $revision, revisionDescription: $revisionDescription) {
-            data ${fields}
-            error ${errorFields}
-        }
-    }
-`;
