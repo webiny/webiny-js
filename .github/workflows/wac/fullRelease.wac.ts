@@ -2,7 +2,7 @@ import { createWorkflow } from "github-actions-wac";
 import { createJob } from "./jobs/index.js";
 
 const VERSION = "${{ github.event.inputs.version }}";
-const BASE_REF = "${{ github.event.inputs.sourceTag }}";
+const SOURCE_TAG = "${{ github.event.inputs.sourceTag }}";
 
 export const fullRelease = createWorkflow({
     name: `🚀 Full Release`,
@@ -44,7 +44,7 @@ export const fullRelease = createWorkflow({
                     name: "Checkout source tag",
                     uses: "actions/checkout@v5",
                     with: {
-                        ref: BASE_REF,
+                        ref: SOURCE_TAG,
                         "fetch-depth": 0,
                         token: "${{ secrets.GH_TOKEN }}"
                     }
@@ -57,7 +57,7 @@ export const fullRelease = createWorkflow({
                     name: "Open pull request",
                     id: "pr",
                     env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
-                    run: `PR_URL=$(gh pr create --title "📦  Release ${VERSION}" --body "Release ${VERSION}\n\n**Docs PR:** https://github.com/webiny/docs.webiny.com/pulls?q=Release+${VERSION}" --base ${BASE_REF} --head release/${VERSION}) && echo "pr-url=$PR_URL" >> $GITHUB_OUTPUT`
+                    run: `PR_URL=$(gh pr create --title "📦  Release ${VERSION}" --body "Release ${VERSION}\n\n**Docs PR:** https://github.com/webiny/docs.webiny.com/pulls?q=Release+${VERSION}" --base next --head release/${VERSION}) && echo "pr-url=$PR_URL" >> $GITHUB_OUTPUT`
                 },
                 {
                     name: "Notify Slack - Release PR Created",

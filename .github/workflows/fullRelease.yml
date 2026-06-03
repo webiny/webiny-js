@@ -56,8 +56,7 @@ jobs:
 
           **Docs PR:**
           https://github.com/webiny/docs.webiny.com/pulls?q=Release+${{
-          github.event.inputs.version }}" --base ${{
-          github.event.inputs.sourceTag }} --head release/${{
+          github.event.inputs.version }}" --base next --head release/${{
           github.event.inputs.version }}) && echo "pr-url=$PR_URL" >>
           $GITHUB_OUTPUT
       - name: Notify Slack - Release PR Created
