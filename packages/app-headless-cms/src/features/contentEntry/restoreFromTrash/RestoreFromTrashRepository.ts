@@ -2,19 +2,20 @@ import {
     RestoreFromTrashRepository as RepositoryAbstraction,
     RestoreFromTrashGateway
 } from "./abstractions.js";
-import { ContentEntriesCache } from "~/features/contentEntry/abstractions.js";
+import { ContentEntriesCacheProvider } from "~/features/contentEntry/abstractions.js";
 import type { IRestoreFromTrashParams } from "./abstractions.js";
 
 class RestoreFromTrashRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private cache: ContentEntriesCache.Interface,
+        private cacheProvider: ContentEntriesCacheProvider.Interface,
         private gateway: RestoreFromTrashGateway.Interface
     ) {}
 
     async execute(params: IRestoreFromTrashParams) {
         const entry = await this.gateway.execute(params);
 
-        this.cache.addItems([entry]);
+        const cache = this.cacheProvider.get(params.model.modelId);
+        cache.addItems([entry]);
 
         return entry;
     }
@@ -22,5 +23,5 @@ class RestoreFromTrashRepositoryImpl implements RepositoryAbstraction.Interface 
 
 export const RestoreFromTrashRepository = RepositoryAbstraction.createImplementation({
     implementation: RestoreFromTrashRepositoryImpl,
-    dependencies: [ContentEntriesCache, RestoreFromTrashGateway]
+    dependencies: [ContentEntriesCacheProvider, RestoreFromTrashGateway]
 });

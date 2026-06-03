@@ -11,6 +11,7 @@ import type { IListEntriesUseCase } from "~/features/contentEntry/listEntries/ab
 export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
     private _meta: IDataSourceMeta = { cursor: null, hasMoreItems: false, totalCount: 0 };
     private _loading = false;
+    private _matcher: (item: CmsContentEntry) => boolean = () => true;
 
     constructor(
         private model: CmsModel,
@@ -25,7 +26,7 @@ export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
     }
 
     get rows(): CmsContentEntry[] {
-        return this.cache.getItems();
+        return this.cache.getItems().filter(this._matcher);
     }
 
     get meta(): IDataSourceMeta {
@@ -38,7 +39,7 @@ export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
 
     async query(params: IDataSourceQuery): Promise<void> {
         this._loading = true;
-        this.cache.clear();
+        this._matcher = this.buildMatcher(params);
 
         try {
             const result = await this.listEntriesUseCase.execute({
@@ -93,6 +94,29 @@ export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
                 this._loading = false;
             });
         }
+    }
+
+    private buildMatcher(params: IDataSourceQuery): (item: CmsContentEntry) => boolean {
+        const filters = params.filters ?? {};
+        const folderId = filters.folderId as string | undefined;
+        const status = filters.status as string | undefined;
+
+        return (item: CmsContentEntry) => {
+            const itemFolderId = item.wbyAco_location?.folderId;
+            if (folderId && folderId !== "root") {
+                if (itemFolderId !== folderId) {
+                    return false;
+                }
+            } else {
+                if (itemFolderId && itemFolderId !== "root") {
+                    return false;
+                }
+            }
+            if (status && item.meta.status !== status) {
+                return false;
+            }
+            return true;
+        };
     }
 
     private buildWhere(params: IDataSourceQuery): Record<string, unknown> | undefined {

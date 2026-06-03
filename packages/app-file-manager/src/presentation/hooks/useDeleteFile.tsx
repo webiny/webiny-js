@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Text } from "@webiny/admin-ui";
-import { useNamedConfirmationDialog, useSnackbar } from "@webiny/app-admin";
+import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { useContainer } from "@webiny/app";
 import { DeleteFileUseCase } from "~/features/deleteFile/abstractions.js";
 import type { FileItem } from "~/domain/types.js";
@@ -18,7 +18,7 @@ export const useDeleteFile = ({ onDelete, file }: UseDeleteFileParams) => {
     const deleteFileUseCase = container.resolve(DeleteFileUseCase);
     const { showSnackbar } = useSnackbar();
 
-    const { showConfirmation } = useNamedConfirmationDialog({
+    const { showConfirmation } = useConfirmationDialog({
         title: t`Delete file`,
         loading: "Deleting file...",
         message: file && (

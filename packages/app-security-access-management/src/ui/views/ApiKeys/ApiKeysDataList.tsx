@@ -9,7 +9,7 @@ import { useQuery, useMutation } from "@apollo/react-hooks";
 import * as GQL from "./graphql.js";
 import { deserializeSorters } from "../utils.js";
 import type { ApiKey } from "~/types.js";
-import { useNamedConfirmationDialog, useRouter, SearchUI } from "@webiny/app-admin";
+import { useConfirmationDialog, useRouter, SearchUI } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 
 const t = i18n.ns("app-security/admin/roles/data-list");
@@ -41,7 +41,7 @@ export const ApiKeysDataList = ({ activeId }: ApiKeysDataListProps) => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorter);
     const toast = useToast();
-    const { showConfirmation } = useNamedConfirmationDialog({
+    const { showConfirmation } = useConfirmationDialog({
         dataTestId: "default-data-list.delete-dialog"
     });
 

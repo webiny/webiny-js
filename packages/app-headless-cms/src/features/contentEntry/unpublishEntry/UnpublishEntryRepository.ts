@@ -2,24 +2,20 @@ import {
     UnpublishEntryRepository as RepositoryAbstraction,
     UnpublishEntryGateway
 } from "./abstractions.js";
-import { ContentEntriesCache } from "~/features/contentEntry/abstractions.js";
+import { ContentEntriesCacheProvider } from "~/features/contentEntry/abstractions.js";
 import type { IUnpublishEntryParams } from "./abstractions.js";
 
 class UnpublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private cache: ContentEntriesCache.Interface,
+        private cacheProvider: ContentEntriesCacheProvider.Interface,
         private gateway: UnpublishEntryGateway.Interface
     ) {}
 
     async execute(params: IUnpublishEntryParams) {
         const entry = await this.gateway.execute(params);
 
-        this.cache.updateItems(item => {
-            if (item.id === entry.id) {
-                return entry;
-            }
-            return item;
-        });
+        const cache = this.cacheProvider.get(params.model.modelId);
+        cache.addItems([entry]);
 
         return entry;
     }
@@ -27,5 +23,5 @@ class UnpublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const UnpublishEntryRepository = RepositoryAbstraction.createImplementation({
     implementation: UnpublishEntryRepositoryImpl,
-    dependencies: [ContentEntriesCache, UnpublishEntryGateway]
+    dependencies: [ContentEntriesCacheProvider, UnpublishEntryGateway]
 });

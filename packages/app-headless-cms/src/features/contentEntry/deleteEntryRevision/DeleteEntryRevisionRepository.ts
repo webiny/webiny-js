@@ -2,19 +2,20 @@ import {
     DeleteEntryRevisionRepository as RepositoryAbstraction,
     DeleteEntryRevisionGateway
 } from "./abstractions.js";
-import { ContentEntriesCache } from "~/features/contentEntry/abstractions.js";
+import { ContentEntriesCacheProvider } from "~/features/contentEntry/abstractions.js";
 import type { IDeleteEntryRevisionParams } from "./abstractions.js";
 
 class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private cache: ContentEntriesCache.Interface,
+        private cacheProvider: ContentEntriesCacheProvider.Interface,
         private gateway: DeleteEntryRevisionGateway.Interface
     ) {}
 
     async execute(params: IDeleteEntryRevisionParams) {
         const result = await this.gateway.execute(params);
 
-        this.cache.removeItems(item => item.id === params.revisionId);
+        const cache = this.cacheProvider.get(params.model.modelId);
+        cache.removeItems(item => item.id === params.revisionId);
 
         return result;
     }
@@ -22,5 +23,5 @@ class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interfa
 
 export const DeleteEntryRevisionRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteEntryRevisionRepositoryImpl,
-    dependencies: [ContentEntriesCache, DeleteEntryRevisionGateway]
+    dependencies: [ContentEntriesCacheProvider, DeleteEntryRevisionGateway]
 });

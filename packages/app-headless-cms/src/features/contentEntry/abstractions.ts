@@ -1,13 +1,17 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IListCache } from "@webiny/app-admin/features/listCache/index.js";
-import type { CmsContentEntry } from "~/types.js";
-import type { CmsModel } from "~/types.js";
+import type { CmsContentEntry, CmsModel } from "~/types.js";
 
-export const ContentEntriesCache =
-    createAbstraction<IListCache<CmsContentEntry>>("ContentEntriesCache");
+export interface IContentEntriesCacheProvider {
+    get(modelId: string): IListCache<CmsContentEntry>;
+}
 
-export namespace ContentEntriesCache {
-    export type Interface = IListCache<CmsContentEntry>;
+export const ContentEntriesCacheProvider = createAbstraction<IContentEntriesCacheProvider>(
+    "ContentEntriesCacheProvider"
+);
+
+export namespace ContentEntriesCacheProvider {
+    export type Interface = IContentEntriesCacheProvider;
 }
 
 export interface ICmsModelAccessor {

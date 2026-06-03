@@ -12,6 +12,11 @@ import { SingletonContentEntryModule } from "~/admin/views/contentEntries/Single
 import { RoutesConfig } from "./admin/RoutesConfig.js";
 import { CmsSecurityPermission } from "~/admin/plugins/permissionRenderer/index.js";
 import { CmsPermissionsFeature } from "~/features/permissions/feature.js";
+import { CmsGraphQLClientFeature } from "~/features/graphQLClient/feature.js";
+import { ModelFeature } from "~/features/model/feature.js";
+import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.js";
+import { CmsFormModelFeature } from "~/features/formModel/feature.js";
+import { ContentEntryFeature } from "~/features/contentEntry/feature.js";
 
 interface HeadlessCMSProvider {
     children: React.ReactNode;
@@ -67,6 +72,11 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
     return (
         <Fragment>
             <RegisterFeature feature={CmsPermissionsFeature} />
+            <RegisterFeature feature={CmsGraphQLClientFeature} />
+            <RegisterFeature feature={ModelFeature} />
+            <RegisterFeature feature={FormModelFeature} />
+            <RegisterFeature feature={CmsFormModelFeature} />
+            <RegisterFeature feature={ContentEntryFeature} />
             <RoutesConfig />
             <ContentEntriesModule />
             <SingletonContentEntryModule />

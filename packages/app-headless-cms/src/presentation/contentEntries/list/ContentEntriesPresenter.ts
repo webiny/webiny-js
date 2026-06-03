@@ -10,7 +10,7 @@ import { PublishEntryUseCase } from "~/features/contentEntry/publishEntry/abstra
 import { UnpublishEntryUseCase } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { BulkActionUseCase } from "~/features/contentEntry/bulkAction/abstractions.js";
 import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
-import { ContentEntriesCache } from "~/features/contentEntry/abstractions.js";
+import { ContentEntriesCacheProvider } from "~/features/contentEntry/abstractions.js";
 import {
     ContentEntriesPresenter as Abstraction,
     type IContentEntriesPresenter,
@@ -40,7 +40,7 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
         private unpublishEntryUseCase: UnpublishEntryUseCase.Interface,
         private bulkActionUseCase: BulkActionUseCase.Interface,
         private updateRevisionDescriptionUseCase: UpdateRevisionDescriptionUseCase.Interface,
-        private cache: ContentEntriesCache.Interface
+        private cacheProvider: ContentEntriesCacheProvider.Interface
     ) {
         makeAutoObservable<
             ContentEntriesPresenterImpl,
@@ -52,7 +52,7 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
             | "unpublishEntryUseCase"
             | "bulkActionUseCase"
             | "updateRevisionDescriptionUseCase"
-            | "cache"
+            | "cacheProvider"
         >(this, {
             _disposeReaction: false,
             confirmation: false,
@@ -62,7 +62,7 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
             unpublishEntryUseCase: false,
             bulkActionUseCase: false,
             updateRevisionDescriptionUseCase: false,
-            cache: false,
+            cacheProvider: false,
             vm: computed
         });
     }
@@ -100,24 +100,31 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
         this._selectedEntryId = "new";
     }
 
-    async deleteEntry(id: string): Promise<void> {
+    async deleteEntry(id: string): Promise<boolean> {
         if (!this._model) {
-            return;
+            return false;
         }
         const model = this._model;
-        await this.confirmation.confirm(TRASH_ENTRY_DIALOG, { entryId: id }, () => {
-            return this.deleteEntryUseCase.execute({ model, id });
-        });
+        const result = await this.confirmation.confirm(TRASH_ENTRY_DIALOG, { entryId: id }, () =>
+            this.deleteEntryUseCase.execute({ model, id })
+        );
+        return result !== false;
     }
 
-    async publishEntry(id: string): Promise<void> {
+    async publishEntry(id: string): Promise<boolean> {
         if (!this._model) {
-            return;
+            return false;
         }
+        const cache = this.cacheProvider.get(this._model.modelId);
+        const entry = cache.getItem(item => item.id === id);
+        if (!entry) {
+            return false;
+        }
+
         const model = this._model;
-        await this.confirmation.confirm<{ revisionDescription: string }>(
+        const result = await this.confirmation.confirm<{ revisionDescription: string }>(
             PUBLISH_ENTRY_DIALOG,
-            { entryId: id },
+            { entry },
             async data => {
                 if (data.revisionDescription) {
                     await this.updateRevisionDescriptionUseCase.execute({
@@ -129,16 +136,20 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
                 await this.publishEntryUseCase.execute({ model, revisionId: id });
             }
         );
+        return result !== false;
     }
 
-    async unpublishEntry(id: string): Promise<void> {
+    async unpublishEntry(id: string): Promise<boolean> {
         if (!this._model) {
-            return;
+            return false;
         }
         const model = this._model;
-        await this.confirmation.confirm(UNPUBLISH_ENTRY_DIALOG, { entryId: id }, () => {
-            return this.unpublishEntryUseCase.execute({ model, revisionId: id });
-        });
+        const result = await this.confirmation.confirm(
+            UNPUBLISH_ENTRY_DIALOG,
+            { entryId: id },
+            () => this.unpublishEntryUseCase.execute({ model, revisionId: id })
+        );
+        return result !== false;
     }
 
     async bulkAction(action: string, data?: Record<string, unknown>): Promise<void> {
@@ -174,7 +185,8 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
 
         const initialFolderId = this._initConfig?.initialFolderId ?? "root";
 
-        const dataSource = new ContentEntriesDataSource(model, this.listEntriesUseCase, this.cache);
+        const cache = this.cacheProvider.get(model.modelId);
+        const dataSource = new ContentEntriesDataSource(model, this.listEntriesUseCase, cache);
 
         this._listPresenter.init({
             dataSource,
@@ -216,6 +228,6 @@ export const ContentEntriesPresenterImplementation = Abstraction.createImplement
         UnpublishEntryUseCase,
         BulkActionUseCase,
         UpdateRevisionDescriptionUseCase,
-        ContentEntriesCache
+        ContentEntriesCacheProvider
     ]
 });

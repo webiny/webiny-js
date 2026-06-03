@@ -1,15 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { DialogsProvider } from "@webiny/app-admin";
-import { ListPresenterFeature } from "@webiny/app-admin/presentation/listPresenter/index.js";
 import { FoldersFeature } from "@webiny/app-aco/features/folders/feature.js";
 import { FolderTreePresenterFeature } from "@webiny/app-aco/presentation/folderTree/feature.js";
-import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.js";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
-import { ContentEntryFeature } from "~/features/contentEntry/feature.js";
-import { CmsGraphQLClientFeature } from "~/features/graphQLClient/feature.js";
-import { CmsFormModelFeature } from "~/features/formModel/feature.js";
-import { ModelFeature } from "~/features/model/feature.js";
+import { CmsModelAccessor as CmsModelAccessorImplementation } from "~/features/contentEntry/CmsModelAccessor.js";
 import { GetModelFeature } from "~/features/model/getModel/feature.js";
 import type { CmsModel } from "~/types.js";
 import { ContentEntriesPresenterFeature } from "../list/feature.js";
@@ -102,14 +97,9 @@ export const ContentEntriesView = ({ modelId, children }: ContentEntriesViewProp
     const scopedContainer = useMemo(() => {
         const child = container.createChildContainer();
 
-        CmsGraphQLClientFeature.register(child);
-        FormModelFeature.register(child);
-        CmsFormModelFeature.register(child);
-        ListPresenterFeature.register(child);
         FoldersFeature.register(child, { type: "cms" });
         FolderTreePresenterFeature.register(child);
-        ContentEntryFeature.register(child);
-        ModelFeature.register(child);
+        child.register(CmsModelAccessorImplementation).inSingletonScope();
         ContentEntriesPresenterFeature.register(child);
         ContentEntryFormPresenterFeature.register(child);
         SingletonEntryPresenterFeature.register(child);

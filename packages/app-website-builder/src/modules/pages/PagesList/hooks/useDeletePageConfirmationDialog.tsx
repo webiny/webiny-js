@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useDeletePage } from "~/features/pages/index.js";
-import { useNamedConfirmationDialog, useSnackbar } from "@webiny/app-admin";
+import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import type { PageDto } from "~/domain/Page/index.js";
 
 interface UseDeletePageConfirmationDialogProps {
@@ -11,7 +11,7 @@ export const useDeletePageConfirmationDialog = ({ page }: UseDeletePageConfirmat
     const { deletePage } = useDeletePage();
     const { showSnackbar } = useSnackbar();
 
-    const { showConfirmation } = useNamedConfirmationDialog({
+    const { showConfirmation } = useConfirmationDialog({
         title: "Delete page",
         message: (
             <p>

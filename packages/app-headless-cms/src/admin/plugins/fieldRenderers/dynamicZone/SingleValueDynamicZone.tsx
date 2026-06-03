@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
-import { makeDecoratable, useNamedConfirmationDialog } from "@webiny/app-admin";
+import { makeDecoratable, useConfirmationDialog } from "@webiny/app-admin";
 import { Accordion, Tooltip } from "@webiny/admin-ui";
 import { AddTemplateButton } from "./AddTemplate.js";
 import { TemplateIcon } from "./TemplateIcon.js";
@@ -86,7 +86,7 @@ export const SingleValueDynamicZone = ({
     const rules = useFieldEffectiveRules(field);
     const disabled = !rules.canEdit || rules.disabled;
 
-    const { showConfirmation } = useNamedConfirmationDialog({
+    const { showConfirmation } = useConfirmationDialog({
         message: `Are you sure you want to remove this item? This action is not reversible.`,
         acceptLabel: `Yes, I'm sure!`,
         cancelLabel: `No, leave it.`

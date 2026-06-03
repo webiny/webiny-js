@@ -32,7 +32,6 @@ export const MoveEntry = () => {
                     id: entry.id,
                     folderId: folder.id
                 });
-                await presenter.listPresenter.actions.refresh();
                 showSnackbar(
                     `Entry "${entry.meta?.title || "unknown"}" was moved to "${folder.label}".`
                 );

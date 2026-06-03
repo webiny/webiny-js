@@ -24,7 +24,7 @@ import {
     CanEditField,
     ParentValueIndexProvider
 } from "~/admin/components/ModelFieldProvider/index.js";
-import { useNamedConfirmationDialog } from "@webiny/app-admin";
+import { useConfirmationDialog } from "@webiny/app-admin";
 import { Accordion, Tooltip } from "@webiny/admin-ui";
 
 type GetBind = CmsModelFieldRendererProps["getBind"];
@@ -198,7 +198,7 @@ interface MultiValueDynamicZoneProps {
 }
 
 export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
-    const { showConfirmation } = useNamedConfirmationDialog({
+    const { showConfirmation } = useConfirmationDialog({
         message: `Are you sure you want to delete this item? This action is not reversible.`,
         acceptLabel: `Yes, I'm sure!`,
         cancelLabel: `No, leave it.`

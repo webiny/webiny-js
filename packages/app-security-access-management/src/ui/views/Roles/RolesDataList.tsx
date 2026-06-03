@@ -3,7 +3,7 @@ import orderBy from "lodash/orderBy.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { List, DataList, DataListModal, DeleteIcon } from "@webiny/admin-ui";
 
-import { useRouter, SearchUI, useSnackbar, useNamedConfirmationDialog } from "@webiny/app-admin";
+import { useRouter, SearchUI, useSnackbar, useConfirmationDialog } from "@webiny/app-admin";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import type { ListRolesResponse } from "./graphql.js";
 import { LIST_ROLES, DELETE_ROLE } from "./graphql.js";
@@ -43,7 +43,7 @@ export const RolesDataList = ({ activeId }: RolesDataListProps) => {
     const [sort, setSort] = useState(SORTERS[0].sorter);
     const { goToRoute } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const { showConfirmation } = useNamedConfirmationDialog({
+    const { showConfirmation } = useConfirmationDialog({
         dataTestId: "default-data-list.delete-dialog"
     });
 

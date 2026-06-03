@@ -20,7 +20,7 @@ import {
     Text,
     TimeAgo
 } from "@webiny/admin-ui";
-import { useNamedConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as StopCircleIcon } from "@webiny/icons/stop_circle.svg";
@@ -74,12 +74,12 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
         [presenter]
     );
 
-    const { showConfirmation: showDeleteConfirmation } = useNamedConfirmationDialog({
+    const { showConfirmation: showDeleteConfirmation } = useConfirmationDialog({
         title: "Delete Task",
         message: "Are you sure you want to delete this task?"
     });
 
-    const { showConfirmation: showAbortConfirmation } = useNamedConfirmationDialog({
+    const { showConfirmation: showAbortConfirmation } = useConfirmationDialog({
         title: "Abort Task",
         message: "Are you sure you want to abort this running task?"
     });

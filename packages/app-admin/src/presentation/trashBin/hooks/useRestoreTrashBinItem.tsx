@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useNamedConfirmationDialog } from "~/index.js";
+import { useConfirmationDialog } from "~/index.js";
 import type { TrashBinItem } from "../abstractions.js";
 import { useTrashBinPresenter } from "./useTrashBinPresenter.js";
 import { useToast } from "@webiny/admin-ui";
@@ -12,7 +12,7 @@ export const useRestoreTrashBinItem = ({ item }: UseRestoreItemParams) => {
     const { actions, onItemAfterRestore } = useTrashBinPresenter();
     const toast = useToast();
 
-    const { showConfirmation } = useNamedConfirmationDialog({
+    const { showConfirmation } = useConfirmationDialog({
         title: "Restore item",
         message: (
             <p>

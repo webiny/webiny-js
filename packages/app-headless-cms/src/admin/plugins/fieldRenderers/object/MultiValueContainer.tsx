@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import { Grid } from "@webiny/admin-ui";
-import { useNamedConfirmationDialog } from "@webiny/app-admin";
+import { useConfirmationDialog } from "@webiny/app-admin";
 import type {
     BindComponentRenderProp,
     CmsModelFieldRendererProps
@@ -38,7 +38,7 @@ export const MultiValueContainer = (props: MultiValueContainerProps) => {
     const rules = useFieldEffectiveRules(field);
     const disabled = !rules.canEdit || rules.disabled;
 
-    const { showConfirmation } = useNamedConfirmationDialog({
+    const { showConfirmation } = useConfirmationDialog({
         message: `Are you sure you want to delete this item? This action is not reversible.`,
         acceptLabel: `Yes, I'm sure!`,
         cancelLabel: `No, leave it.`

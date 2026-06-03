@@ -14,7 +14,7 @@ import {
     TimeAgo
 } from "@webiny/admin-ui";
 import { useToast } from "@webiny/admin-ui";
-import { useNamedConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import { HasPermission } from "~/admin/presentation/security/HasPermission.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as Edit } from "@webiny/icons/edit.svg";
@@ -36,7 +36,7 @@ export const WebhookListContent = observer(function WebhookListContent({
     const { goToRoute } = useRouter();
     const toast = useToast();
 
-    const { showConfirmation: showDeleteConfirmation } = useNamedConfirmationDialog({
+    const { showConfirmation: showDeleteConfirmation } = useConfirmationDialog({
         title: "Delete Webhook",
         message: "Are you sure you want to delete this webhook?"
     });

@@ -2,19 +2,20 @@ import {
     CreateRevisionFromRepository as RepositoryAbstraction,
     CreateRevisionFromGateway
 } from "./abstractions.js";
-import { ContentEntriesCache } from "~/features/contentEntry/abstractions.js";
+import { ContentEntriesCacheProvider } from "~/features/contentEntry/abstractions.js";
 import type { ICreateRevisionFromParams } from "./abstractions.js";
 
 class CreateRevisionFromRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private cache: ContentEntriesCache.Interface,
+        private cacheProvider: ContentEntriesCacheProvider.Interface,
         private gateway: CreateRevisionFromGateway.Interface
     ) {}
 
     async execute(params: ICreateRevisionFromParams) {
         const entry = await this.gateway.execute(params);
 
-        this.cache.addItems([entry]);
+        const cache = this.cacheProvider.get(params.model.modelId);
+        cache.addItems([entry]);
 
         return entry;
     }
@@ -22,5 +23,5 @@ class CreateRevisionFromRepositoryImpl implements RepositoryAbstraction.Interfac
 
 export const CreateRevisionFromRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateRevisionFromRepositoryImpl,
-    dependencies: [ContentEntriesCache, CreateRevisionFromGateway]
+    dependencies: [ContentEntriesCacheProvider, CreateRevisionFromGateway]
 });

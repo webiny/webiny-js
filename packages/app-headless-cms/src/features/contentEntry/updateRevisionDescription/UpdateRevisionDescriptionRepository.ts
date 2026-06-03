@@ -2,24 +2,20 @@ import {
     UpdateRevisionDescriptionRepository as RepositoryAbstraction,
     UpdateRevisionDescriptionGateway
 } from "./abstractions.js";
-import { ContentEntriesCache } from "~/features/contentEntry/abstractions.js";
+import { ContentEntriesCacheProvider } from "~/features/contentEntry/abstractions.js";
 import type { IUpdateRevisionDescriptionParams } from "./abstractions.js";
 
 class UpdateRevisionDescriptionRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private cache: ContentEntriesCache.Interface,
+        private cacheProvider: ContentEntriesCacheProvider.Interface,
         private gateway: UpdateRevisionDescriptionGateway.Interface
     ) {}
 
     async execute(params: IUpdateRevisionDescriptionParams) {
         const entry = await this.gateway.execute(params);
 
-        this.cache.updateItems(item => {
-            if (item.id === entry.id) {
-                return entry;
-            }
-            return item;
-        });
+        const cache = this.cacheProvider.get(params.model.modelId);
+        cache.addItems([entry]);
 
         return entry;
     }
@@ -27,5 +23,5 @@ class UpdateRevisionDescriptionRepositoryImpl implements RepositoryAbstraction.I
 
 export const UpdateRevisionDescriptionRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdateRevisionDescriptionRepositoryImpl,
-    dependencies: [ContentEntriesCache, UpdateRevisionDescriptionGateway]
+    dependencies: [ContentEntriesCacheProvider, UpdateRevisionDescriptionGateway]
 });

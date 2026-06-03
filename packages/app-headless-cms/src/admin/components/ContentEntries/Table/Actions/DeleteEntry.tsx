@@ -13,10 +13,12 @@ export const DeleteEntry = () => {
     const { OptionsMenuItem } = ContentEntryListConfig.Browser.Entry.Action;
 
     const handleDelete = async () => {
-        await presenter.deleteEntry(entry.entryId);
-        toast.showSuccessToast({
-            title: `${entry.meta.title} was trashed successfully!`
-        });
+        const success = await presenter.deleteEntry(entry.entryId);
+        if (success) {
+            toast.showSuccessToast({
+                title: `${entry.meta.title} was trashed successfully!`
+            });
+        }
     };
 
     if (!canDelete(entry, "cms.contentEntry")) {

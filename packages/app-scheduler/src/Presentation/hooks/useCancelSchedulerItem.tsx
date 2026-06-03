@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useNamedConfirmationDialog, useSnackbar } from "@webiny/app-admin";
+import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { useScheduler } from "./useScheduler.js";
 import type { SchedulerEntry } from "~/types.js";
 
@@ -11,7 +11,7 @@ export const useCancelSchedulerItem = ({ item }: UseCancelScheduleItemParams) =>
     const { cancelItem } = useScheduler();
     const { showSnackbar } = useSnackbar();
 
-    const { showConfirmation } = useNamedConfirmationDialog({
+    const { showConfirmation } = useConfirmationDialog({
         title: "Cancel scheduled action?",
         message: (
             <p>

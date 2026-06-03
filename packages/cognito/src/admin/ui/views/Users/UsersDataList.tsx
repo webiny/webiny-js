@@ -6,7 +6,7 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { useSecurity } from "@webiny/app-admin";
 import { List, DataList, DataListModal, DeleteIcon } from "@webiny/admin-ui";
-import { useRouter, useSnackbar, useNamedConfirmationDialog, SearchUI } from "@webiny/app-admin";
+import { useRouter, useSnackbar, useConfirmationDialog, SearchUI } from "@webiny/app-admin";
 import { DELETE_USER, LIST_USERS } from "./graphql.js";
 import { deserializeSorters } from "../utils.js";
 import { Routes } from "~/admin/routes.js";
@@ -43,7 +43,7 @@ const UsersDataList = () => {
     const { identity } = useSecurity();
     const { goToRoute } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const { showConfirmation } = useNamedConfirmationDialog({
+    const { showConfirmation } = useConfirmationDialog({
         dataTestId: "default-data-list.delete-dialog",
         title: "Delete user",
         message: "Are you sure you want to delete this user? This action cannot be undone."

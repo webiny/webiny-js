@@ -4,7 +4,9 @@ import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstracti
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { CmsContentEntry, CmsContentEntryRevision, CmsModel } from "~/types.js";
 
-import type { PublishEntryDialogData } from "~/admin/components/Dialogs/PublishEntryConfirmDialog.js";
+interface PublishEntryDialogData {
+    revisionDescription: string;
+}
 
 export const PUBLISH_ENTRY_DIALOG = "publish-entry";
 export const DELETE_REVISION_DIALOG = "delete-revision";
