@@ -151,7 +151,7 @@ const Editor = () => {
                                 className={cn([
                                     "group flex flex-column",
                                     "relative",
-                                    "mb-sm last-of-type:mb-none",
+                                    "mb-sm-extra last-of-type:mb-none",
                                     isDragging ? "opacity-30" : "opacity-100"
                                 ])}
                             >

@@ -202,7 +202,7 @@ const Field = (props: FieldProps) => {
                         </span>
                         <Text size={"sm"} className={"text-neutral-muted truncate"}>
                             {fieldPlugin.field.label}
-                            {info && <span className={"lowercase"}> ({info})</span>}
+                            {info && <span> / {info}</span>}
                         </Text>
                     </div>
                 </div>
@@ -210,20 +210,30 @@ const Field = (props: FieldProps) => {
                     {fieldInformationRenderer
                         ? fieldInformationRenderer({ model, field })
                         : defaultInformationRenderer()}
-                    {canEdit ? (
-                        <IconButton
-                            data-testid={"cms.editor.edit-field"}
-                            icon={<EditIcon />}
-                            onClick={() => onEdit(field)}
-                            variant={"ghost"}
-                            size={"xs"}
-                        />
-                    ) : null}
                     <DropdownMenu
                         trigger={
-                            <IconButton icon={<MoreVerticalIcon />} variant={"ghost"} size={"xs"} />
+                            <IconButton icon={<MoreVerticalIcon />} variant={"ghost"} size={"sm"} />
                         }
                     >
+                        <DropdownMenu.Item
+                            onClick={() => onEdit(field)}
+                            text={t`Edit`}
+                            icon={
+                                <DropdownMenu.Item.Icon
+                                    element={<EditIcon />}
+                                    label={t`Edit field`}
+                                />
+                            }
+                        />
+                        {/*{canEdit ? (*/}
+                        {/*    <IconButton*/}
+                        {/*        data-testid={"cms.editor.edit-field"}*/}
+                        {/*        icon={<EditIcon />}*/}
+                        {/*        onClick={() => onEdit(field)}*/}
+                        {/*        variant={"ghost"}*/}
+                        {/*        size={"xs"}*/}
+                        {/*    />*/}
+                        {/*) : null}*/}
                         {editorFieldOptionPlugins.map(pl =>
                             React.cloneElement(pl.render(), { key: pl.name })
                         )}
