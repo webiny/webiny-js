@@ -13640,6 +13640,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/db-utils@workspace:packages/db-utils"
   dependencies:
+    "@webiny/api": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -13648,6 +13649,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     date-fns: "npm:^2.30.0"
     dot-prop: "npm:^9.0.0"
+    fuse.js: "npm:7.3.0"
     lodash: "npm:^4.17.21"
     typescript: "npm:6.0.3"
   languageName: unknown
