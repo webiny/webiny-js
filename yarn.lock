@@ -13643,6 +13643,7 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.0.1"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
@@ -13652,6 +13653,7 @@ __metadata:
     fuse.js: "npm:7.3.0"
     lodash: "npm:^4.17.21"
     typescript: "npm:6.0.3"
+    vitest: "npm:^4.1.7"
   languageName: unknown
   linkType: soft
 
