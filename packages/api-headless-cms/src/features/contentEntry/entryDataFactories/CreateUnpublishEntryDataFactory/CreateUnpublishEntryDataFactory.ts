@@ -21,6 +21,7 @@ class CreateUnpublishEntryDataFactoryImpl implements ICreateUnpublishEntryDataFa
 
         const entry: CmsEntry<TValues> = {
             ...originalEntry,
+            locked: false,
             status: STATUS_UNPUBLISHED,
             savedOn: getDate(currentDateTime),
             modifiedOn: getDate(currentDateTime),
