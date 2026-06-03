@@ -33,7 +33,10 @@ export const createGroupsStorageOperations = (
     const get = async (getParams: CmsGroupStorageOperationsGetParams): Promise<CmsGroup | null> => {
         await ensureSchema();
 
-        const row = await query().where("id", getParams.id).first();
+        const row = await query()
+            .where("id", getParams.id)
+            .where("tenant", getParams.tenant)
+            .first();
 
         if (!row) {
             return null;
@@ -58,9 +61,21 @@ export const createGroupsStorageOperations = (
             }
         }
 
-        /* Filter by tenant if provided. */
+        /* Apply where conditions for known group columns. */
         if (where.tenant) {
             qb.where("tenant", where.tenant);
+        }
+        if (where.id) {
+            qb.where("id", where.id);
+        }
+        if (where.slug) {
+            qb.where("slug", where.slug);
+        }
+        if (where.isPlugin !== undefined) {
+            qb.where("isPlugin", where.isPlugin);
+        }
+        if (where.isPrivate !== undefined) {
+            qb.where("isPrivate", where.isPrivate);
         }
 
         const rows = await qb.select<IGroupRow[]>([...GROUP_COLUMNS]);

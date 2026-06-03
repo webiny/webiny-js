@@ -19,8 +19,9 @@ beforeEach(async () => {
         await knex.schema.dropTableIfExists(name);
     }
 
-    /* Bump entry table manager version so the initialized flag resets. */
+    /* Bump schema manager versions so the initialized flags reset. */
     globalThis.__entryTableManagerVersion = (globalThis.__entryTableManagerVersion || 0) + 1;
+    globalThis.__schemaManagerVersion = (globalThis.__schemaManagerVersion || 0) + 1;
 });
 
 afterAll(async () => {

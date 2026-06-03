@@ -95,29 +95,17 @@ export const createEntriesStorageOperations = (
         return knex<IEntryRow>(entryTableManager.getTableName());
     };
 
-    /* Converts a row to a CmsEntry, applying storage key conversion. */
+    /*
+     * Converts a row to a CmsEntry.
+     *
+     * Unlike the DDB implementation, SQL stores values with field IDs (not storage IDs),
+     * so no key conversion is needed. The CMS layer's storageEntry already uses field IDs.
+     */
     const convertFromStorage = <T extends CmsEntryValues = CmsEntryValues>(
         row: IEntryRow,
-        model: CmsModel
+        _model: CmsModel
     ): CmsEntry<T> => {
-        const entry = rowToEntry(row) as CmsEntry<T>;
-
-        /* Apply storage key conversion if available. */
-        const storageModel = model as StorageOperationsCmsModel<T>;
-
-        if (storageModel.convertValueKeyFromStorage) {
-            const values = storageModel.convertValueKeyFromStorage({
-                fields: model.fields,
-                values: entry.values
-            });
-
-            return {
-                ...entry,
-                values
-            };
-        }
-
-        return entry;
+        return rowToEntry(row) as CmsEntry<T>;
     };
 
     /* Shared list implementation used by both list and get operations. */
@@ -187,16 +175,7 @@ export const createEntriesStorageOperations = (
             rows.map(async row => {
                 const entry = rowToEntry(row) as CmsStorageEntry;
 
-                /* Apply storage key conversion if available. */
-                const storageModel = model as StorageOperationsCmsModel;
-
-                if (storageModel.convertValueKeyFromStorage) {
-                    entry.values = storageModel.convertValueKeyFromStorage({
-                        fields: model.fields,
-                        values: entry.values
-                    });
-                }
-
+                /* Apply fromStorage transforms (e.g., decompress rich text). */
                 for (const field of model.fields) {
                     entry.values[field.fieldId] = await fromStorage(
                         field,
@@ -264,19 +243,26 @@ export const createEntriesStorageOperations = (
         getByIds: async (model, { ids }) => {
             await entryTableManager.ensureTable();
 
+            const idList = ids as string[];
+
             const rows: IEntryRow[] = await query()
                 .where("tenant", model.tenant)
                 .andWhere("modelId", model.modelId)
-                .whereIn("id", ids as string[]);
+                .whereIn("id", idList);
 
-            return rows.map(row => convertFromStorage(row, model));
+            /* Preserve input order. */
+            const entries = rows.map(row => convertFromStorage(row, model));
+            const byId = new Map(entries.map(e => [e.id, e]));
+
+            return idList.map(id => byId.get(id)).filter(Boolean) as typeof entries;
         },
 
         /* 2. getPublishedByIds */
         getPublishedByIds: async (model, { ids }) => {
             await entryTableManager.ensureTable();
 
-            const entryIds = (ids as string[]).map(extractEntryId);
+            const idList = ids as string[];
+            const entryIds = idList.map(extractEntryId);
 
             const rows: IEntryRow[] = await query()
                 .where("tenant", model.tenant)
@@ -284,14 +270,19 @@ export const createEntriesStorageOperations = (
                 .whereIn("entryId", entryIds)
                 .andWhere("isPublished", true);
 
-            return rows.map(row => convertFromStorage(row, model));
+            /* Preserve input order by entryId. */
+            const entries = rows.map(row => convertFromStorage(row, model));
+            const byEntryId = new Map(entries.map(e => [e.entryId, e]));
+
+            return entryIds.map(eid => byEntryId.get(eid)).filter(Boolean) as typeof entries;
         },
 
         /* 3. getLatestByIds */
         getLatestByIds: async (model, { ids }) => {
             await entryTableManager.ensureTable();
 
-            const entryIds = (ids as string[]).map(extractEntryId);
+            const idList = ids as string[];
+            const entryIds = idList.map(extractEntryId);
 
             const rows: IEntryRow[] = await query()
                 .where("tenant", model.tenant)
@@ -299,7 +290,11 @@ export const createEntriesStorageOperations = (
                 .whereIn("entryId", entryIds)
                 .andWhere("isLatest", true);
 
-            return rows.map(row => convertFromStorage(row, model));
+            /* Preserve input order by entryId. */
+            const entries = rows.map(row => convertFromStorage(row, model));
+            const byEntryId = new Map(entries.map(e => [e.entryId, e]));
+
+            return entryIds.map(eid => byEntryId.get(eid)).filter(Boolean) as typeof entries;
         },
 
         /* 4. getRevisions */
@@ -428,6 +423,8 @@ export const createEntriesStorageOperations = (
         createRevisionFrom: async (model, { entry, storageEntry }) => {
             await entryTableManager.ensureTable();
 
+            const isPublished = entry.status === "published";
+
             /* Mark old latest as no longer latest. */
             await query()
                 .where("tenant", model.tenant)
@@ -435,10 +432,19 @@ export const createEntriesStorageOperations = (
                 .andWhere("isLatest", true)
                 .update({ isLatest: false });
 
+            /* If new revision is published, unpublish previously published revision. */
+            if (isPublished) {
+                await query()
+                    .where("tenant", model.tenant)
+                    .andWhere("entryId", entry.entryId)
+                    .andWhere("isPublished", true)
+                    .update({ isPublished: false, status: "unpublished" });
+            }
+
             /* Insert the new revision as latest. */
             const row = entryToRow(storageEntry as CmsStorageEntry, model, {
                 isLatest: true,
-                isPublished: false
+                isPublished
             });
 
             await query().insert(row);
@@ -466,13 +472,24 @@ export const createEntriesStorageOperations = (
 
             await query().where("tenant", model.tenant).andWhere("id", storageEntry.id).update(row);
 
-            /* Sync entry-level meta to ALL revisions. */
+            /* Sync entry-level meta to the latest revision (not all revisions). */
             const entryLevelMeta = getEntryLevelMeta(row);
 
-            await query()
-                .where("tenant", model.tenant)
-                .andWhere("entryId", entry.entryId)
-                .update(entryLevelMeta);
+            if (!isLatest) {
+                /* Find the latest revision and update its entry-level meta. */
+                const latestRow = await query()
+                    .where("tenant", model.tenant)
+                    .andWhere("entryId", entry.entryId)
+                    .andWhere("isLatest", true)
+                    .first();
+
+                if (latestRow) {
+                    await query()
+                        .where("tenant", model.tenant)
+                        .andWhere("id", latestRow.id)
+                        .update(entryLevelMeta);
+                }
+            }
 
             return entry;
         },
@@ -504,17 +521,27 @@ export const createEntriesStorageOperations = (
 
             await query().where("tenant", model.tenant).andWhere("id", storageEntry.id).update(row);
 
-            /* Step 4: Update ALL rows for entryId: live + entry-level meta. */
-            const entryLevelMeta = getEntryLevelMeta(row);
-            const liveValue = JSON.stringify({ version: entry.version });
+            /* Step 4: If publishing a non-latest revision, update latest revision's entry-level meta + live. */
+            if (!isLatest) {
+                const entryLevelMeta = getEntryLevelMeta(row);
+                const liveValue = JSON.stringify({ version: entry.version });
 
-            await query()
-                .where("tenant", model.tenant)
-                .andWhere("entryId", entry.entryId)
-                .update({
-                    ...entryLevelMeta,
-                    live: liveValue
-                });
+                const latestRow = await query()
+                    .where("tenant", model.tenant)
+                    .andWhere("entryId", entry.entryId)
+                    .andWhere("isLatest", true)
+                    .first();
+
+                if (latestRow) {
+                    await query()
+                        .where("tenant", model.tenant)
+                        .andWhere("id", latestRow.id)
+                        .update({
+                            ...entryLevelMeta,
+                            live: liveValue
+                        });
+                }
+            }
 
             return entry;
         },
@@ -538,16 +565,25 @@ export const createEntriesStorageOperations = (
 
             await query().where("tenant", model.tenant).andWhere("id", storageEntry.id).update(row);
 
-            /* Update ALL rows for entryId: live=null + entry-level meta. */
-            const entryLevelMeta = getEntryLevelMeta(row);
+            /* If unpublishing a non-latest revision, update latest revision's entry-level meta + live=null. */
+            if (!isLatest) {
+                const entryLevelMeta = getEntryLevelMeta(row);
+                const latestRow = await query()
+                    .where("tenant", model.tenant)
+                    .andWhere("entryId", entry.entryId)
+                    .andWhere("isLatest", true)
+                    .first();
 
-            await query()
-                .where("tenant", model.tenant)
-                .andWhere("entryId", entry.entryId)
-                .update({
-                    ...entryLevelMeta,
-                    live: null
-                });
+                if (latestRow) {
+                    await query()
+                        .where("tenant", model.tenant)
+                        .andWhere("id", latestRow.id)
+                        .update({
+                            ...entryLevelMeta,
+                            live: null
+                        });
+                }
+            }
 
             return entry;
         },
@@ -581,16 +617,15 @@ export const createEntriesStorageOperations = (
                 : null;
             const locationFolderId = storageEntry.location?.folderId ?? null;
 
+            /* Mark all rows as deleted. Preserve isPublished for restore. */
             await query()
                 .where("tenant", model.tenant)
                 .andWhere("entryId", entry.entryId)
                 .update({
                     wbyDeleted: true,
-                    isPublished: false,
                     binOriginalFolderId: storageEntry.binOriginalFolderId ?? null,
                     location_folderId: locationFolderId,
                     location: locationJson,
-                    live: null,
                     ...entryLevelMeta
                 });
         },
@@ -599,7 +634,7 @@ export const createEntriesStorageOperations = (
         restoreFromBin: async (model, { entry, storageEntry }) => {
             await entryTableManager.ensureTable();
 
-            /* Build entry-level meta from storageEntry row. */
+            /* Build restored meta from storageEntry. */
             const storageRow = entryToRow(storageEntry as CmsStorageEntry, model, {
                 isLatest: false,
                 isPublished: false
@@ -611,7 +646,7 @@ export const createEntriesStorageOperations = (
                 : null;
             const locationFolderId = storageEntry.location?.folderId ?? null;
 
-            /* Update all rows: restore from bin. */
+            /* Update all rows: restore from bin. Preserve isLatest/isPublished. */
             await query()
                 .where("tenant", model.tenant)
                 .andWhere("entryId", entry.entryId)
@@ -622,26 +657,6 @@ export const createEntriesStorageOperations = (
                     location: locationJson,
                     ...entryLevelMeta
                 });
-
-            /* Clear all isLatest flags. */
-            await query()
-                .where("tenant", model.tenant)
-                .andWhere("entryId", entry.entryId)
-                .update({ isLatest: false });
-
-            /* Find highest version and set isLatest=true. */
-            const maxVersionRow = await query()
-                .where("tenant", model.tenant)
-                .andWhere("entryId", entry.entryId)
-                .orderBy("version", "desc")
-                .first();
-
-            if (maxVersionRow) {
-                await query()
-                    .where("tenant", model.tenant)
-                    .andWhere("id", maxVersionRow.id)
-                    .update({ isLatest: true });
-            }
 
             return entry;
         },
@@ -700,7 +715,10 @@ export const createEntriesStorageOperations = (
         deleteMultipleEntries: async (model, { entries }) => {
             await entryTableManager.ensureTable();
 
-            await query().where("tenant", model.tenant).whereIn("entryId", entries).delete();
+            /* Extract entryId from composite IDs (e.g., "abc#0001" → "abc"). */
+            const entryIds = entries.map(extractEntryId);
+
+            await query().where("tenant", model.tenant).whereIn("entryId", entryIds).delete();
         },
 
         /* 22. getUniqueFieldValues */

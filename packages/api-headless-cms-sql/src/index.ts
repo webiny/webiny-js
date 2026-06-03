@@ -17,7 +17,13 @@ import { TableNameResolverConfig } from "~/features/tableNameResolver/abstractio
 import type { Knex } from "knex";
 import { TableNameResolverFeature } from "~/features/tableNameResolver/feature.js";
 import { KnexInstanceFeature } from "~/features/knexInstance/feature.js";
-import { ValueFilterFeature } from "@webiny/db-utils";
+import {
+    ValueFilterFeature,
+    createFilterCreatePlugins,
+    createPlainObjectPathPlugin,
+    createLocationFolderIdPathPlugin,
+    createDatetimeTransformValuePlugin
+} from "@webiny/db-utils";
 
 const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
     const { container, plugins } = params;
@@ -27,6 +33,14 @@ const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
     const groupSchemaManager = container.resolve(GroupSchemaManager);
     const modelSchemaManager = container.resolve(ModelSchemaManager);
     const entryTableManager = container.resolve(EntryTableManager);
+
+    /* Register filter create plugins and field path plugins for in-memory filtering. */
+    plugins.register([
+        createFilterCreatePlugins(),
+        createPlainObjectPathPlugin(),
+        createLocationFolderIdPathPlugin(),
+        createDatetimeTransformValuePlugin()
+    ]);
 
     const groups = createGroupsStorageOperations(knex, tableNameResolver, groupSchemaManager);
 

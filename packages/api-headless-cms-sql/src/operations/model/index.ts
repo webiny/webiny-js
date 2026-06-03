@@ -34,7 +34,10 @@ export const createModelsStorageOperations = (
     ): Promise<StorageCmsModel | null> => {
         await ensureSchema();
 
-        const row = await query().where("modelId", getParams.modelId).first();
+        const row = await query()
+            .where("modelId", getParams.modelId)
+            .where("tenant", getParams.tenant)
+            .first();
 
         if (!row) {
             return null;
@@ -44,11 +47,25 @@ export const createModelsStorageOperations = (
     };
 
     const list = async (
-        _listParams: CmsModelStorageOperationsListParams
+        listParams: CmsModelStorageOperationsListParams
     ): Promise<StorageCmsModel[]> => {
         await ensureSchema();
 
-        const rows = await query().select<IModelRow[]>();
+        const { where } = listParams;
+        const qb = query();
+
+        /* Apply where conditions for known model columns. */
+        if (where.tenant) {
+            qb.where("tenant", where.tenant);
+        }
+        if (where.modelId) {
+            qb.where("modelId", where.modelId);
+        }
+
+        /* Default sort by modelId ascending (alphabetical), matching DDB sort key behavior. */
+        qb.orderBy("modelId", "asc");
+
+        const rows = await qb.select<IModelRow[]>();
 
         return rows.map(rowToModel);
     };
