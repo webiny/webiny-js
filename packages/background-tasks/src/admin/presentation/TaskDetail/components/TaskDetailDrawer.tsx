@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { Button, Drawer, Grid, Heading, Separator, Tag, Text, TimeAgo } from "@webiny/admin-ui";
 import { CodeEditor } from "@webiny/admin-ui";
-import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
+import { useNamedConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import { ReactComponent as StopCircleIcon } from "@webiny/icons/stop_circle.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as ExpandMoreIcon } from "@webiny/icons/expand_more.svg";
@@ -228,12 +228,12 @@ const TaskDetailDrawerInner = observer(function TaskDetailDrawerInner({
 
     const { vm } = presenter;
 
-    const { showConfirmation: showAbortConfirmation } = useConfirmationDialog({
+    const { showConfirmation: showAbortConfirmation } = useNamedConfirmationDialog({
         title: "Abort Task",
         message: "Are you sure you want to abort this running task?"
     });
 
-    const { showConfirmation: showDeleteConfirmation } = useConfirmationDialog({
+    const { showConfirmation: showDeleteConfirmation } = useNamedConfirmationDialog({
         title: "Delete Task",
         message: "Are you sure you want to delete this task?"
     });

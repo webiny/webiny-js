@@ -6,7 +6,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/expand_less.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/expand_more.svg";
 import { Accordion } from "@webiny/admin-ui";
-import { useConfirmationDialog } from "@webiny/app-admin";
+import { useNamedConfirmationDialog } from "@webiny/app-admin";
 import {
     pullValueAtIndex,
     pushValueAtIndex,
@@ -42,7 +42,7 @@ export const DynamicZoneTemplate = ({
     onChange,
     open
 }: DynamicZoneTemplateProps) => {
-    const { showConfirmation } = useConfirmationDialog({
+    const { showConfirmation } = useNamedConfirmationDialog({
         title: "Delete content template",
         message: "Are you sure you want to delete this content template?",
         acceptLabel: "Yes, I'm sure!"

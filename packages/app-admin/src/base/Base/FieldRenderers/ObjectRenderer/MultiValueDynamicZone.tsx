@@ -7,7 +7,7 @@ import { ReactComponent as ArrowUpIcon } from "@webiny/icons/expand_less.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/expand_more.svg";
 import { ReactComponent as HorizontalRuleIcon } from "@webiny/icons/horizontal_rule.svg";
 import type { IObjectFieldItemVM, IObjectFieldVM } from "~/features/formModel/index.js";
-import { useConfirmationDialog } from "~/hooks/useConfirmationDialog.js";
+import { useNamedConfirmationDialog } from "~/hooks/useNamedConfirmationDialog.js";
 import { NestedLayout } from "./ObjectFieldComponents.js";
 import { AddTemplateButton } from "./TemplatePicker.js";
 
@@ -85,7 +85,7 @@ interface TemplatedListItemProps {
 
 const TemplatedListItem = observer(
     ({ item, index, total, templates, disabled }: TemplatedListItemProps) => {
-        const { showConfirmation } = useConfirmationDialog({
+        const { showConfirmation } = useNamedConfirmationDialog({
             title: "Delete item",
             message: "Are you sure you want to delete this item? This action is not reversible.",
             acceptLabel: "Yes, I'm sure!",

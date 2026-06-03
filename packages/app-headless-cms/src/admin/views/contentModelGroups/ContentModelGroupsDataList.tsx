@@ -5,7 +5,7 @@ import dotProp from "dot-prop-immutable";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { DataList, DataListModal, List, DeleteIcon } from "@webiny/admin-ui";
-import { useSnackbar, useRouter, useConfirmationDialog, SearchUI } from "@webiny/app-admin";
+import { useSnackbar, useRouter, useNamedConfirmationDialog, SearchUI } from "@webiny/app-admin";
 import { Button, Select, Tooltip } from "@webiny/admin-ui";
 import { useApolloClient, useQuery } from "../../hooks/index.js";
 import * as GQL from "./graphql.js";
@@ -51,7 +51,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
     const client = useApolloClient();
     const listQuery = useQuery(GQL.LIST_CONTENT_MODEL_GROUPS);
 
-    const { showConfirmation } = useConfirmationDialog({
+    const { showConfirmation } = useNamedConfirmationDialog({
         dataTestId: "cms.contentModelGroup.list-item.delete-dialog"
     });
     const { canDelete } = usePermission();

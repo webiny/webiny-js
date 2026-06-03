@@ -1,7 +1,13 @@
 import { computed, makeAutoObservable, runInAction } from "mobx";
 import type { IFormModel } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
+import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { CmsContentEntry, CmsContentEntryRevision, CmsModel } from "~/types.js";
+
+import type { PublishEntryDialogData } from "~/admin/components/Dialogs/PublishEntryConfirmDialog.js";
+
+export const PUBLISH_ENTRY_DIALOG = "publish-entry";
+export const DELETE_REVISION_DIALOG = "delete-revision";
 import { GetEntryUseCase } from "~/features/contentEntry/getEntry/abstractions.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/createEntry/abstractions.js";
 import { UpdateEntryUseCase } from "~/features/contentEntry/updateEntry/abstractions.js";
@@ -32,6 +38,7 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
     constructor(
         private formModelFactory: FormModelFactory.Interface,
         private cmsFormModelBuilder: CmsFormModelBuilder.Interface,
+        private confirmation: Confirmation.Interface,
         private getEntryUseCase: GetEntryUseCase.Interface,
         private createEntryUseCase: CreateEntryUseCase.Interface,
         private updateEntryUseCase: UpdateEntryUseCase.Interface,
@@ -47,6 +54,7 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
             ContentEntryFormPresenterImpl,
             | "formModelFactory"
             | "cmsFormModelBuilder"
+            | "confirmation"
             | "getEntryUseCase"
             | "createEntryUseCase"
             | "updateEntryUseCase"
@@ -60,6 +68,7 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
         >(this, {
             formModelFactory: false,
             cmsFormModelBuilder: false,
+            confirmation: false,
             getEntryUseCase: false,
             createEntryUseCase: false,
             updateEntryUseCase: false,
@@ -152,9 +161,26 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
                 return false;
             }
 
+            const result = await this.confirmation.confirm<PublishEntryDialogData>(
+                PUBLISH_ENTRY_DIALOG,
+                { entryId: this._entry.id }
+            );
+
+            if (result === false) {
+                return false;
+            }
+
             this._loading = "Publishing...";
 
             try {
+                if (result.revisionDescription) {
+                    await this.updateRevisionDescriptionUseCase.execute({
+                        model: this._model,
+                        id: this._entry.id,
+                        revisionDescription: result.revisionDescription
+                    });
+                }
+
                 const entry = await this.publishEntryUseCase.execute({
                     model: this._model,
                     revisionId: this._entry.id
@@ -237,13 +263,21 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
                 return false;
             }
 
+            const model = this._model;
+            const revisionId = this._entry.id;
+
+            const confirmed = await this.confirmation.confirm(DELETE_REVISION_DIALOG, {
+                revisionId
+            });
+
+            if (!confirmed) {
+                return false;
+            }
+
             this._loading = "Deleting revision...";
 
             try {
-                await this.deleteEntryRevisionUseCase.execute({
-                    model: this._model,
-                    revisionId: this._entry.id
-                });
+                await this.deleteEntryRevisionUseCase.execute({ model, revisionId });
 
                 await this.loadRevisions();
 
@@ -407,6 +441,7 @@ export const ContentEntryFormPresenterImplementation = Abstraction.createImpleme
     dependencies: [
         FormModelFactory,
         CmsFormModelBuilder,
+        Confirmation,
         GetEntryUseCase,
         CreateEntryUseCase,
         UpdateEntryUseCase,

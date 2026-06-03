@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { usePublishPage } from "~/features/pages/index.js";
-import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
+import { useNamedConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import type { PageDto } from "~/domain/Page/index.js";
 
 interface UsePublishPageConfirmationDialogProps {
@@ -13,7 +13,7 @@ export const usePublishPageConfirmationDialog = ({
     const { publishPage } = usePublishPage();
     const { showSnackbar } = useSnackbar();
 
-    const { showConfirmation } = useConfirmationDialog({
+    const { showConfirmation } = useNamedConfirmationDialog({
         title: "Publish page",
         message: (
             <p>

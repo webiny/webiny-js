@@ -2,6 +2,7 @@ import { createFeature } from "@webiny/feature/admin";
 import { ContentEntriesCache } from "./abstractions.js";
 import type { CmsContentEntry } from "~/types.js";
 import { ListCache } from "~/features/ListCache.js";
+import { CmsModelAccessor } from "./CmsModelAccessor.js";
 import { GetEntryFeature } from "./getEntry/feature.js";
 import { ListEntriesFeature } from "./listEntries/feature.js";
 import { CreateEntryFeature } from "./createEntry/feature.js";
@@ -22,6 +23,7 @@ export const ContentEntryFeature = createFeature({
     name: "CmsContentEntry",
     register(container) {
         container.registerInstance(ContentEntriesCache, new ListCache<CmsContentEntry>());
+        container.register(CmsModelAccessor).inSingletonScope();
 
         GetEntryFeature.register(container);
         ListEntriesFeature.register(container);

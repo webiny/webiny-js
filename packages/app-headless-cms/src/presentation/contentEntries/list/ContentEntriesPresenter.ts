@@ -2,12 +2,14 @@ import { computed, makeAutoObservable, reaction } from "mobx";
 import type { IReactionDisposer } from "mobx";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { CmsContentEntry, CmsModel } from "~/types.js";
 import { ListEntriesUseCase } from "~/features/contentEntry/listEntries/abstractions.js";
 import { DeleteEntryUseCase } from "~/features/contentEntry/deleteEntry/abstractions.js";
 import { PublishEntryUseCase } from "~/features/contentEntry/publishEntry/abstractions.js";
 import { UnpublishEntryUseCase } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { BulkActionUseCase } from "~/features/contentEntry/bulkAction/abstractions.js";
+import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
 import { ContentEntriesCache } from "~/features/contentEntry/abstractions.js";
 import {
     ContentEntriesPresenter as Abstraction,
@@ -16,6 +18,10 @@ import {
     type IContentEntriesInitConfig
 } from "./abstractions.js";
 import { ContentEntriesDataSource } from "./ContentEntriesDataSource.js";
+
+export const TRASH_ENTRY_DIALOG = "trash-entry";
+export const PUBLISH_ENTRY_DIALOG = "publish-entry";
+export const UNPUBLISH_ENTRY_DIALOG = "unpublish-entry";
 
 class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
     private _model: CmsModel | null = null;
@@ -27,29 +33,35 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
     constructor(
         private _listPresenter: ListPresenter.Interface<CmsContentEntry>,
         private _foldersPresenter: FolderTreePresenter.Interface,
+        private confirmation: Confirmation.Interface,
         private listEntriesUseCase: ListEntriesUseCase.Interface,
         private deleteEntryUseCase: DeleteEntryUseCase.Interface,
         private publishEntryUseCase: PublishEntryUseCase.Interface,
         private unpublishEntryUseCase: UnpublishEntryUseCase.Interface,
         private bulkActionUseCase: BulkActionUseCase.Interface,
+        private updateRevisionDescriptionUseCase: UpdateRevisionDescriptionUseCase.Interface,
         private cache: ContentEntriesCache.Interface
     ) {
         makeAutoObservable<
             ContentEntriesPresenterImpl,
             | "_disposeReaction"
+            | "confirmation"
             | "listEntriesUseCase"
             | "deleteEntryUseCase"
             | "publishEntryUseCase"
             | "unpublishEntryUseCase"
             | "bulkActionUseCase"
+            | "updateRevisionDescriptionUseCase"
             | "cache"
         >(this, {
             _disposeReaction: false,
+            confirmation: false,
             listEntriesUseCase: false,
             deleteEntryUseCase: false,
             publishEntryUseCase: false,
             unpublishEntryUseCase: false,
             bulkActionUseCase: false,
+            updateRevisionDescriptionUseCase: false,
             cache: false,
             vm: computed
         });
@@ -92,24 +104,41 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
         if (!this._model) {
             return;
         }
-        await this.deleteEntryUseCase.execute({ model: this._model, id });
-        await this._listPresenter.actions.refresh();
+        const model = this._model;
+        await this.confirmation.confirm(TRASH_ENTRY_DIALOG, { entryId: id }, () => {
+            return this.deleteEntryUseCase.execute({ model, id });
+        });
     }
 
     async publishEntry(id: string): Promise<void> {
         if (!this._model) {
             return;
         }
-        await this.publishEntryUseCase.execute({ model: this._model, revisionId: id });
-        await this._listPresenter.actions.refresh();
+        const model = this._model;
+        await this.confirmation.confirm<{ revisionDescription: string }>(
+            PUBLISH_ENTRY_DIALOG,
+            { entryId: id },
+            async data => {
+                if (data.revisionDescription) {
+                    await this.updateRevisionDescriptionUseCase.execute({
+                        model,
+                        id,
+                        revisionDescription: data.revisionDescription
+                    });
+                }
+                await this.publishEntryUseCase.execute({ model, revisionId: id });
+            }
+        );
     }
 
     async unpublishEntry(id: string): Promise<void> {
         if (!this._model) {
             return;
         }
-        await this.unpublishEntryUseCase.execute({ model: this._model, revisionId: id });
-        await this._listPresenter.actions.refresh();
+        const model = this._model;
+        await this.confirmation.confirm(UNPUBLISH_ENTRY_DIALOG, { entryId: id }, () => {
+            return this.unpublishEntryUseCase.execute({ model, revisionId: id });
+        });
     }
 
     async bulkAction(action: string, data?: Record<string, unknown>): Promise<void> {
@@ -180,11 +209,13 @@ export const ContentEntriesPresenterImplementation = Abstraction.createImplement
     dependencies: [
         ListPresenter,
         FolderTreePresenter,
+        Confirmation,
         ListEntriesUseCase,
         DeleteEntryUseCase,
         PublishEntryUseCase,
         UnpublishEntryUseCase,
         BulkActionUseCase,
+        UpdateRevisionDescriptionUseCase,
         ContentEntriesCache
     ]
 });

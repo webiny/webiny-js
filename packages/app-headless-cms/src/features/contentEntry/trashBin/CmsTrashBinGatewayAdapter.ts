@@ -15,39 +15,25 @@ import {
     TrashBinRestoreGateway,
     TrashBinBulkActionGateway
 } from "@webiny/app-admin/presentation/trashBin/abstractions.js";
-import type { CmsModel } from "~/types.js";
-import type { ICmsTrashBinListGateway } from "./abstractions.js";
-import type { ICmsTrashBinDeleteGateway } from "./abstractions.js";
-import type { ICmsTrashBinRestoreGateway } from "./abstractions.js";
-import type { ICmsTrashBinBulkActionGateway } from "./abstractions.js";
-import type { ICmsTrashBinItemMapper } from "./abstractions.js";
-import {
-    CmsTrashBinListGateway,
-    CmsTrashBinDeleteGateway,
-    CmsTrashBinRestoreGateway,
-    CmsTrashBinBulkActionGateway,
-    CmsTrashBinItemMapper
-} from "./abstractions.js";
+import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
+import { ListDeletedEntriesUseCase } from "~/features/contentEntry/listDeletedEntries/abstractions.js";
+import { RestoreFromTrashUseCase } from "~/features/contentEntry/restoreFromTrash/abstractions.js";
+import { PermanentlyDeleteEntryUseCase } from "~/features/contentEntry/permanentlyDeleteEntry/abstractions.js";
+import { BulkActionUseCase } from "~/features/contentEntry/bulkAction/abstractions.js";
+import { CmsTrashBinItemMapper, type ICmsTrashBinItemMapper } from "./abstractions.js";
 
 class CmsTrashBinListGatewayAdapterImpl implements ITrashBinListGateway {
-    private _model: CmsModel | null = null;
-
     constructor(
-        private cmsListGateway: ICmsTrashBinListGateway,
-        private itemMapper: ICmsTrashBinItemMapper
+        private listDeletedEntriesUseCase: ListDeletedEntriesUseCase.Interface,
+        private itemMapper: ICmsTrashBinItemMapper,
+        private modelAccessor: CmsModelAccessor.Interface
     ) {}
 
-    setModel(model: CmsModel) {
-        this._model = model;
-    }
-
     async execute(params: ITrashBinListGatewayParams): Promise<ITrashBinListGatewayResult> {
-        if (!this._model) {
-            throw new Error("CMS model not set on trash bin list gateway adapter.");
-        }
+        const model = this.modelAccessor.getModel();
 
-        const result = await this.cmsListGateway.execute({
-            model: this._model,
+        const result = await this.listDeletedEntriesUseCase.execute({
+            model,
             where: params.where,
             sort: params.sort,
             limit: params.limit,
@@ -57,82 +43,67 @@ class CmsTrashBinListGatewayAdapterImpl implements ITrashBinListGateway {
 
         return {
             data: result.data.map(entry => this.itemMapper.toItem(entry)),
-            meta: result.meta
+            meta: {
+                cursor: result.meta.cursor,
+                hasMoreItems: result.meta.hasMoreItems,
+                totalCount: result.meta.totalCount
+            }
         };
     }
 }
 
 export const CmsTrashBinListGatewayAdapter = TrashBinListGateway.createImplementation({
     implementation: CmsTrashBinListGatewayAdapterImpl,
-    dependencies: [CmsTrashBinListGateway, CmsTrashBinItemMapper]
+    dependencies: [ListDeletedEntriesUseCase, CmsTrashBinItemMapper, CmsModelAccessor]
 });
 
 class CmsTrashBinDeleteGatewayAdapterImpl implements ITrashBinDeleteGateway {
-    private _model: CmsModel | null = null;
-
-    constructor(private cmsDeleteGateway: ICmsTrashBinDeleteGateway) {}
-
-    setModel(model: CmsModel) {
-        this._model = model;
-    }
+    constructor(
+        private permanentlyDeleteUseCase: PermanentlyDeleteEntryUseCase.Interface,
+        private modelAccessor: CmsModelAccessor.Interface
+    ) {}
 
     async execute(id: string): Promise<boolean> {
-        if (!this._model) {
-            throw new Error("CMS model not set on trash bin delete gateway adapter.");
-        }
-
-        return this.cmsDeleteGateway.execute({ model: this._model, id });
+        const model = this.modelAccessor.getModel();
+        return this.permanentlyDeleteUseCase.execute({ model, id });
     }
 }
 
 export const CmsTrashBinDeleteGatewayAdapter = TrashBinDeleteGateway.createImplementation({
     implementation: CmsTrashBinDeleteGatewayAdapterImpl,
-    dependencies: [CmsTrashBinDeleteGateway]
+    dependencies: [PermanentlyDeleteEntryUseCase, CmsModelAccessor]
 });
 
 class CmsTrashBinRestoreGatewayAdapterImpl implements ITrashBinRestoreGateway {
-    private _model: CmsModel | null = null;
-
     constructor(
-        private cmsRestoreGateway: ICmsTrashBinRestoreGateway,
-        private itemMapper: ICmsTrashBinItemMapper
+        private restoreFromTrashUseCase: RestoreFromTrashUseCase.Interface,
+        private itemMapper: ICmsTrashBinItemMapper,
+        private modelAccessor: CmsModelAccessor.Interface
     ) {}
 
-    setModel(model: CmsModel) {
-        this._model = model;
-    }
-
     async execute(id: string): Promise<TrashBinItem> {
-        if (!this._model) {
-            throw new Error("CMS model not set on trash bin restore gateway adapter.");
-        }
-
-        const entry = await this.cmsRestoreGateway.execute({ model: this._model, id });
+        const model = this.modelAccessor.getModel();
+        const entry = await this.restoreFromTrashUseCase.execute({ model, id });
         return this.itemMapper.toItem(entry);
     }
 }
 
 export const CmsTrashBinRestoreGatewayAdapter = TrashBinRestoreGateway.createImplementation({
     implementation: CmsTrashBinRestoreGatewayAdapterImpl,
-    dependencies: [CmsTrashBinRestoreGateway, CmsTrashBinItemMapper]
+    dependencies: [RestoreFromTrashUseCase, CmsTrashBinItemMapper, CmsModelAccessor]
 });
 
 class CmsTrashBinBulkActionGatewayAdapterImpl implements ITrashBinBulkActionGateway {
-    private _model: CmsModel | null = null;
-
-    constructor(private cmsBulkActionGateway: ICmsTrashBinBulkActionGateway) {}
-
-    setModel(model: CmsModel) {
-        this._model = model;
-    }
+    constructor(
+        private bulkActionUseCase: BulkActionUseCase.Interface,
+        private modelAccessor: CmsModelAccessor.Interface
+    ) {}
 
     async execute(params: ITrashBinBulkActionParams): Promise<ITrashBinBulkActionResult> {
-        if (!this._model) {
-            throw new Error("CMS model not set on trash bin bulk action gateway adapter.");
-        }
+        const model = this.modelAccessor.getModel();
 
-        return this.cmsBulkActionGateway.execute({
-            model: this._model,
+        return this.bulkActionUseCase.execute({
+            model,
             action: params.action,
             where: params.where,
             search: params.search
@@ -142,5 +113,5 @@ class CmsTrashBinBulkActionGatewayAdapterImpl implements ITrashBinBulkActionGate
 
 export const CmsTrashBinBulkActionGatewayAdapter = TrashBinBulkActionGateway.createImplementation({
     implementation: CmsTrashBinBulkActionGatewayAdapterImpl,
-    dependencies: [CmsTrashBinBulkActionGateway]
+    dependencies: [BulkActionUseCase, CmsModelAccessor]
 });

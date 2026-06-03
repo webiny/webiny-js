@@ -2,8 +2,8 @@ import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsContentEntry, CmsErrorResponse } from "~/types.js";
 import { createRestoreFromBinMutation } from "@webiny/app-headless-cms-common";
 import {
-    CmsTrashBinRestoreGateway as GatewayAbstraction,
-    type ICmsTrashBinRestoreGatewayParams
+    RestoreFromTrashGateway as GatewayAbstraction,
+    type IRestoreFromTrashParams
 } from "./abstractions.js";
 
 interface RestoreEntryResponse {
@@ -13,10 +13,10 @@ interface RestoreEntryResponse {
     };
 }
 
-class CmsTrashBinRestoreGatewayImpl implements GatewayAbstraction.Interface {
+class RestoreFromTrashGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: CmsGraphQLClient.Interface) {}
 
-    async execute({ model, id }: ICmsTrashBinRestoreGatewayParams): Promise<CmsContentEntry> {
+    async execute({ model, id }: IRestoreFromTrashParams): Promise<CmsContentEntry> {
         const mutation = createRestoreFromBinMutation(model);
 
         const response = await this.client.execute<RestoreEntryResponse>({
@@ -34,7 +34,7 @@ class CmsTrashBinRestoreGatewayImpl implements GatewayAbstraction.Interface {
     }
 }
 
-export const CmsTrashBinRestoreGateway = GatewayAbstraction.createImplementation({
-    implementation: CmsTrashBinRestoreGatewayImpl,
+export const RestoreFromTrashGateway = GatewayAbstraction.createImplementation({
+    implementation: RestoreFromTrashGatewayImpl,
     dependencies: [CmsGraphQLClient]
 });

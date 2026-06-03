@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useConfirmationDialog } from "@webiny/app-admin";
+import { useNamedConfirmationDialog } from "@webiny/app-admin";
 import { useCancelDelete } from "~/admin/views/contentModels/fullDelete/useCancelDelete.js";
 import { Button, Text } from "@webiny/admin-ui";
 
@@ -13,7 +13,7 @@ export interface IModelOverlayProps {
 
 const CancelDelete = ({ model }: IModelOverlayProps) => {
     const { cancel } = useCancelDelete({ model });
-    const { showConfirmation } = useConfirmationDialog({
+    const { showConfirmation } = useNamedConfirmationDialog({
         title: "Stop the model and entries delete process?",
         message: "Are you sure you want to stop the model and entries delete process?",
         acceptLabel: "Yes, I am sure.",

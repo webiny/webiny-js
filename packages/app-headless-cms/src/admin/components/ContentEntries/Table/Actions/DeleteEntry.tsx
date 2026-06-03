@@ -1,17 +1,22 @@
 import React from "react";
 import { ReactComponent as Delete } from "@webiny/icons/delete.svg";
+import { useToast } from "@webiny/admin-ui";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { useEntry, usePermission } from "~/admin/hooks/index.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 
 export const DeleteEntry = () => {
     const { entry } = useEntry();
+    const toast = useToast();
     const { canDelete } = usePermission();
     const presenter = useContentEntriesPresenter();
     const { OptionsMenuItem } = ContentEntryListConfig.Browser.Entry.Action;
 
     const handleDelete = async () => {
         await presenter.deleteEntry(entry.entryId);
+        toast.showSuccessToast({
+            title: `${entry.meta.title} was trashed successfully!`
+        });
     };
 
     if (!canDelete(entry, "cms.contentEntry")) {

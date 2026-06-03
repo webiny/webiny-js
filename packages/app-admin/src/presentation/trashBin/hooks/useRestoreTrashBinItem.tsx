@@ -1,7 +1,8 @@
 import React, { useCallback } from "react";
-import { useConfirmationDialog, useSnackbar } from "~/index.js";
+import { useNamedConfirmationDialog } from "~/index.js";
 import type { TrashBinItem } from "../abstractions.js";
 import { useTrashBinPresenter } from "./useTrashBinPresenter.js";
+import { useToast } from "@webiny/admin-ui";
 
 interface UseRestoreItemParams {
     item: TrashBinItem;
@@ -9,9 +10,9 @@ interface UseRestoreItemParams {
 
 export const useRestoreTrashBinItem = ({ item }: UseRestoreItemParams) => {
     const { actions, onItemAfterRestore } = useTrashBinPresenter();
-    const { showSnackbar } = useSnackbar();
+    const toast = useToast();
 
-    const { showConfirmation } = useConfirmationDialog({
+    const { showConfirmation } = useNamedConfirmationDialog({
         title: "Restore item",
         message: (
             <p>
@@ -27,17 +28,18 @@ export const useRestoreTrashBinItem = ({ item }: UseRestoreItemParams) => {
             showConfirmation(async () => {
                 try {
                     await actions.restoreItem(item.id);
-                    await actions.refresh();
-                    showSnackbar(`${item.title} was restored successfully!`);
+                    toast.showSuccessToast({ title: `${item.title} was restored successfully!` });
 
                     if (onItemAfterRestore) {
                         await onItemAfterRestore(item);
                     }
                 } catch (ex: any) {
-                    showSnackbar(ex.message || `Error while restoring ${item.title}`);
+                    toast.showWarningToast({
+                        title: ex.message || `Error while restoring ${item.title}`
+                    });
                 }
             }),
-        [item, actions, onItemAfterRestore, showConfirmation, showSnackbar]
+        [item, actions, onItemAfterRestore]
     );
 
     return { openDialogRestoreItem };

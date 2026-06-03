@@ -16,6 +16,7 @@ import { TelemetryFeature } from "~/features/telemetry/feature.js";
 import { ErrorOverlayNetworkErrorHandler } from "~/errors/ErrorOverlayNetworkErrorHandler.js";
 import { ToolsFeature } from "~/features/tools/feature.js";
 import { TextToLexicalToolFeature } from "~/presentation/textToLexicalTool/feature.js";
+import { ConfirmationFeature } from "~/features/confirmation/feature.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 
@@ -67,6 +68,8 @@ export function createRootContainer() {
     ToolsFeature.register(container);
 
     TextToLexicalToolFeature.register(container);
+
+    ConfirmationFeature.register(container);
 
     return container;
 }

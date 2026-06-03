@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import debounce from "lodash/debounce.js";
 import { observer } from "mobx-react-lite";
 import { Accordion, Scrollbar, Skeleton, Text } from "@webiny/admin-ui";
-import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
+import { useNamedConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import { DeliveryAccordionRow } from "./DeliveryAccordionRow.js";
 import { DeliveryBottomInfoBar } from "./DeliveryBottomInfoBar.js";
 import type { IWebhookDeliveriesPagePresenter } from "../abstractions.js";
@@ -31,7 +31,7 @@ export const DeliveryList = observer(({ presenter }: DeliveryListProps) => {
     const { vm } = presenter;
     const expanded = useExpandedState();
 
-    const { showConfirmation: showResendConfirmation } = useConfirmationDialog({
+    const { showConfirmation: showResendConfirmation } = useNamedConfirmationDialog({
         title: "Resend Delivery",
         message: "Are you sure you want to resend this delivery?"
     });

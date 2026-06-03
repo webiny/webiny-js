@@ -78,7 +78,6 @@ export const BulkActionsRestoreItems = observer(() => {
                 });
 
                 worker.resetItems();
-                await actions.refresh();
 
                 showResultsDialog({
                     results: worker.results,

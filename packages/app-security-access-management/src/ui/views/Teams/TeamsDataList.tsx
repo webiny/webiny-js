@@ -5,7 +5,7 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { List, DataList, DataListModal, DeleteIcon } from "@webiny/admin-ui";
 
-import { useRouter, useSnackbar, useConfirmationDialog, SearchUI } from "@webiny/app-admin";
+import { useRouter, useSnackbar, useNamedConfirmationDialog, SearchUI } from "@webiny/app-admin";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import type { ListTeamsResponse } from "./graphql.js";
 import { LIST_TEAMS, DELETE_TEAM } from "./graphql.js";
@@ -43,7 +43,7 @@ export const TeamsDataList = ({ activeId }: TeamsDataListProps) => {
     const [sort, setSort] = useState(SORTERS[0].sorter);
     const { goToRoute } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const { showConfirmation } = useConfirmationDialog({
+    const { showConfirmation } = useNamedConfirmationDialog({
         dataTestId: "default-data-list.delete-dialog"
     });
 

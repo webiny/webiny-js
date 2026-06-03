@@ -12,7 +12,7 @@ import type {
     CmsLayoutField,
     CmsEditorFieldsLayout
 } from "@webiny/app-headless-cms-common/types/model.js";
-import { useConfirmationDialog, useDialogs } from "@webiny/app-admin";
+import { useNamedConfirmationDialog, useDialogs } from "@webiny/app-admin";
 import { Grid } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
@@ -206,7 +206,7 @@ const TabItem = ({
     const { fieldOptions } = useModelEditor();
     const dialogs = useDialogs();
 
-    const { showConfirmation } = useConfirmationDialog({
+    const { showConfirmation } = useNamedConfirmationDialog({
         title: "Delete tab",
         message: `Are you sure you want to delete the tab "${tab.label}"? Fields inside this tab will be removed.`,
         acceptLabel: "Yes, delete tab"
@@ -361,7 +361,7 @@ export const TabsLayoutEditor = ({ field, onUpdate, onDelete }: TabsLayoutEditor
     const { showDialog } = useDialogs();
     const newTabId = useRef<string | undefined>(undefined);
 
-    const { showConfirmation: showDeleteConfirmation } = useConfirmationDialog({
+    const { showConfirmation: showDeleteConfirmation } = useNamedConfirmationDialog({
         title: "Delete tabs",
         message:
             "Are you sure you want to delete this tabs element? All fields inside the tabs will be removed.",

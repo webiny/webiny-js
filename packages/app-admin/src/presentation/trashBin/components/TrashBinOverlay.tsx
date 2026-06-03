@@ -118,13 +118,7 @@ const BottomBar = observer(() => {
 });
 
 const TrashBinOverlayContent = observer(
-    ({
-        onExited,
-        presenter
-    }: {
-        onExited: () => void;
-        presenter: ITrashBinPresenter;
-    }) => {
+    ({ onExited, presenter }: { onExited: () => void; presenter: ITrashBinPresenter }) => {
         const onTableScroll = useMemo(
             () =>
                 debounce(async (scrollFrame: { top: number }) => {

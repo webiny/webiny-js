@@ -33,16 +33,23 @@ import {
     CellStatus
 } from "~/admin/components/ContentEntries/Table/Cells/index.js";
 import { Ref } from "~/admin/components/ContentEntries/Filters/RefFieldRenderer/index.js";
-import { ShowConfirmationOnDelete } from "~/admin/components/Decorators/ShowConfirmationOnDelete.js";
-import { ShowConfirmationOnPublish } from "~/admin/components/Decorators/ShowConfirmationOnPublish.js";
-import { ShowConfirmationOnUnpublish } from "~/admin/components/Decorators/ShowConfirmationOnUnpublish.js";
-import { ShowConfirmationOnDeleteRevision } from "~/admin/components/Decorators/ShowConfirmationOnDeleteRevision.js";
+import { PublishEntryConfirmDialog } from "~/admin/components/Dialogs/PublishEntryConfirmDialog.js";
+import { UnpublishEntryConfirmDialog } from "~/admin/components/Dialogs/UnpublishEntryConfirmDialog.js";
+import { DeleteRevisionConfirmDialog } from "~/admin/components/Dialogs/DeleteRevisionConfirmDialog.js";
 import { FullScreenContentEntry } from "~/admin/views/contentEntries/ContentEntry/FullScreenContentEntry/index.js";
 import { ShowRevisionList } from "~/admin/components/ContentEntryForm/Header/ShowRevisionsList/index.js";
 import { AdvancedSearchConfigs } from "@webiny/app-aco/components/AdvancedSearch/AdvancedSearchConfigs";
 import { IsModelPublishable } from "~/admin/components/IsModelPublishable.js";
 import { ContentFormOptionsMenu } from "~/admin/components/ContentEntryForm/Header/ContentFormOptionsMenu/index.js";
 import { RevisionSelector } from "~/admin/components/ContentEntryForm/Header/index.js";
+import { AdminConfig } from "@webiny/app-admin";
+import { TrashEntryConfirmDialog } from "~/admin/components/Dialogs/TrashEntryConfirmDialog.js";
+import {
+    TRASH_ENTRY_DIALOG,
+    PUBLISH_ENTRY_DIALOG,
+    UNPUBLISH_ENTRY_DIALOG
+} from "~/presentation/contentEntries/list/ContentEntriesPresenter.js";
+import { DELETE_REVISION_DIALOG } from "~/presentation/contentEntries/form/ContentEntryFormPresenter.js";
 
 const { Browser } = InternalContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
@@ -50,6 +57,24 @@ const { Actions } = ContentEntryEditorConfig;
 export const ContentEntriesModule = () => {
     return (
         <>
+            <AdminConfig>
+                <AdminConfig.Dialog
+                    name={TRASH_ENTRY_DIALOG}
+                    element={<TrashEntryConfirmDialog />}
+                />
+                <AdminConfig.Dialog
+                    name={PUBLISH_ENTRY_DIALOG}
+                    element={<PublishEntryConfirmDialog />}
+                />
+                <AdminConfig.Dialog
+                    name={UNPUBLISH_ENTRY_DIALOG}
+                    element={<UnpublishEntryConfirmDialog />}
+                />
+                <AdminConfig.Dialog
+                    name={DELETE_REVISION_DIALOG}
+                    element={<DeleteRevisionConfirmDialog />}
+                />
+            </AdminConfig>
             <InternalContentEntryListConfig>
                 <AdvancedSearchConfigs />
                 <IsModelPublishable>
@@ -139,10 +164,6 @@ export const ContentEntriesModule = () => {
                     />
                 </IsModelPublishable>
             </ContentEntryEditorConfig>
-            <ShowConfirmationOnPublish />
-            <ShowConfirmationOnUnpublish />
-            <ShowConfirmationOnDelete />
-            <ShowConfirmationOnDeleteRevision />
             <FullScreenContentEntry />
         </>
     );

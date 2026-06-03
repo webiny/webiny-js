@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { DialogsProvider } from "@webiny/app-admin";
 import { ListPresenterFeature } from "@webiny/app-admin/presentation/listPresenter/index.js";
@@ -12,7 +11,6 @@ import { CmsGraphQLClientFeature } from "~/features/graphQLClient/feature.js";
 import { CmsFormModelFeature } from "~/features/formModel/feature.js";
 import { ModelFeature } from "~/features/model/feature.js";
 import { GetModelFeature } from "~/features/model/getModel/feature.js";
-import type { IGetModelUseCase } from "~/features/model/getModel/abstractions.js";
 import type { CmsModel } from "~/types.js";
 import { ContentEntriesPresenterFeature } from "../list/feature.js";
 import { ContentEntryFormPresenterFeature } from "../form/feature.js";
@@ -23,10 +21,8 @@ import { ContentEntryListWithConfig } from "~/admin/config/contentEntries/list/C
 import { ModelProvider } from "~/admin/components/ModelProvider/index.js";
 import { ContentEntriesListLayout } from "./ContentEntriesListLayout.js";
 import { SingletonEntryLayout } from "./SingletonEntryLayout.js";
-import type { IContentEntriesPresenter } from "../list/abstractions.js";
-import type { IContentEntryFormPresenter } from "../form/abstractions.js";
-import type { ISingletonEntryPresenter } from "../singleton/abstractions.js";
 import { OverlayLoader } from "@webiny/admin-ui";
+import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
 
 export interface ContentEntriesViewProps {
     modelId: string;
@@ -36,6 +32,7 @@ export interface ContentEntriesViewProps {
 const ContentEntriesViewInner = ({ modelId, children }: ContentEntriesViewProps) => {
     const [model, setModel] = useState<CmsModel | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const container = useContainer();
 
     const { useCase: getModelUseCase } = useFeature(GetModelFeature);
     const { presenter: listPresenter } = useFeature(ContentEntriesPresenterFeature);
@@ -49,8 +46,9 @@ const ContentEntriesViewInner = ({ modelId, children }: ContentEntriesViewProps)
             .execute({ modelId })
             .then(loadedModel => {
                 setModel(loadedModel);
+                container.resolve(CmsModelAccessor).setModel(loadedModel);
 
-                if (loadedModel.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {
+                if (loadedModel.tags.includes(CMS_MODEL_SINGLETON_TAG)) {
                     singletonPresenter.init({ model: loadedModel });
                 } else {
                     listPresenter.setModel(loadedModel);

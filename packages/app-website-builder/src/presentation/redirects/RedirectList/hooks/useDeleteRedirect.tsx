@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { Text } from "@webiny/admin-ui";
-import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
+import { useNamedConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { useContainer } from "@webiny/app";
 import { DeleteRedirectUseCase } from "~/features/redirects/deleteRedirect/abstractions.js";
 import type { RedirectDto } from "~/domain/Redirect/RedirectDto.js";
@@ -15,7 +15,7 @@ export const useDeleteRedirect = ({ redirect, onDelete }: UseDeleteRedirectParam
     const deleteRedirectUseCase = container.resolve(DeleteRedirectUseCase);
     const { showSnackbar } = useSnackbar();
 
-    const { showConfirmation } = useConfirmationDialog({
+    const { showConfirmation } = useNamedConfirmationDialog({
         title: "Delete redirect",
         loading: "Deleting redirect...",
         message: (

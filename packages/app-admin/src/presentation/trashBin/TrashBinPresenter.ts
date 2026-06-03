@@ -76,6 +76,9 @@ class TrashBinPresenterImpl implements ITrashBinPresenter {
 
         restoreItem: async (id: string) => {
             await this.restoreGateway.execute(id);
+            if (this._dataSource) {
+                this._dataSource.removeItem(id);
+            }
         },
 
         deleteItem: async (id: string) => {

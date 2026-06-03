@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Alert, Button, Text } from "@webiny/admin-ui";
 import type { IRecordLockingError, IRecordLockingIdentity } from "~/types.js";
-import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
+import { useNamedConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { useContentEntriesList } from "@webiny/app-headless-cms";
 import { useRecordLocking, usePermission } from "~/hooks/index.js";
 
@@ -34,7 +34,7 @@ export const LockedRecordForceUnlock = (props: ILockedRecordForceUnlockProps) =>
     const { unlockEntryForce } = useRecordLocking();
 
     const { navigateTo } = useContentEntriesList();
-    const { showConfirmation: showForceUnlockConfirmation } = useConfirmationDialog({
+    const { showConfirmation: showForceUnlockConfirmation } = useNamedConfirmationDialog({
         title: "Force unlock the entry",
         message: <ErrorMessage {...props} />
     });

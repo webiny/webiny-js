@@ -2,8 +2,8 @@ import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsErrorResponse } from "~/types.js";
 import { createDeleteMutation } from "@webiny/app-headless-cms-common";
 import {
-    CmsTrashBinDeleteGateway as GatewayAbstraction,
-    type ICmsTrashBinDeleteGatewayParams
+    PermanentlyDeleteEntryGateway as GatewayAbstraction,
+    type IPermanentlyDeleteEntryParams
 } from "./abstractions.js";
 
 interface DeleteEntryResponse {
@@ -13,10 +13,10 @@ interface DeleteEntryResponse {
     };
 }
 
-class CmsTrashBinDeleteGatewayImpl implements GatewayAbstraction.Interface {
+class PermanentlyDeleteEntryGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: CmsGraphQLClient.Interface) {}
 
-    async execute({ model, id }: ICmsTrashBinDeleteGatewayParams): Promise<boolean> {
+    async execute({ model, id }: IPermanentlyDeleteEntryParams): Promise<boolean> {
         const mutation = createDeleteMutation(model);
 
         const response = await this.client.execute<DeleteEntryResponse>({
@@ -34,7 +34,7 @@ class CmsTrashBinDeleteGatewayImpl implements GatewayAbstraction.Interface {
     }
 }
 
-export const CmsTrashBinDeleteGateway = GatewayAbstraction.createImplementation({
-    implementation: CmsTrashBinDeleteGatewayImpl,
+export const PermanentlyDeleteEntryGateway = GatewayAbstraction.createImplementation({
+    implementation: PermanentlyDeleteEntryGatewayImpl,
     dependencies: [CmsGraphQLClient]
 });

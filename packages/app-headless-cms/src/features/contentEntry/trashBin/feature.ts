@@ -1,10 +1,8 @@
 import { createFeature } from "@webiny/feature/admin";
 import { TrashBinFeature } from "@webiny/app-admin/presentation/trashBin/feature.js";
-import { ListPresenterFeature } from "@webiny/app-admin/presentation/listPresenter/feature.js";
-import { CmsTrashBinListGateway } from "./CmsTrashBinListGateway.js";
-import { CmsTrashBinDeleteGateway } from "./CmsTrashBinDeleteGateway.js";
-import { CmsTrashBinRestoreGateway } from "./CmsTrashBinRestoreGateway.js";
-import { CmsTrashBinBulkActionGateway } from "./CmsTrashBinBulkActionGateway.js";
+import { ListDeletedEntriesFeature } from "~/features/contentEntry/listDeletedEntries/feature.js";
+import { RestoreFromTrashFeature } from "~/features/contentEntry/restoreFromTrash/feature.js";
+import { PermanentlyDeleteEntryFeature } from "~/features/contentEntry/permanentlyDeleteEntry/feature.js";
 import { CmsTrashBinItemMapper } from "./CmsTrashBinItemMapper.js";
 import {
     CmsTrashBinListGatewayAdapter,
@@ -16,10 +14,10 @@ import {
 export const CmsTrashBinFeature = createFeature({
     name: "CmsContentEntry/TrashBin",
     register(container) {
-        container.register(CmsTrashBinListGateway).inSingletonScope();
-        container.register(CmsTrashBinDeleteGateway).inSingletonScope();
-        container.register(CmsTrashBinRestoreGateway).inSingletonScope();
-        container.register(CmsTrashBinBulkActionGateway).inSingletonScope();
+        ListDeletedEntriesFeature.register(container);
+        RestoreFromTrashFeature.register(container);
+        PermanentlyDeleteEntryFeature.register(container);
+
         container.register(CmsTrashBinItemMapper).inSingletonScope();
 
         container.register(CmsTrashBinListGatewayAdapter).inSingletonScope();

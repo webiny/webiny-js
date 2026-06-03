@@ -1,7 +1,8 @@
 import React, { useCallback } from "react";
-import { useConfirmationDialog, useSnackbar } from "~/index.js";
+import { useConfirmationDialog } from "~/index.js";
 import type { TrashBinItem } from "../abstractions.js";
 import { useTrashBinPresenter } from "./useTrashBinPresenter.js";
+import { useToast } from "@webiny/admin-ui";
 
 interface UseDeleteItemParams {
     item: TrashBinItem;
@@ -9,7 +10,7 @@ interface UseDeleteItemParams {
 
 export const useDeleteTrashBinItem = ({ item }: UseDeleteItemParams) => {
     const { actions } = useTrashBinPresenter();
-    const { showSnackbar } = useSnackbar();
+    const toast = useToast();
 
     const { showConfirmation } = useConfirmationDialog({
         title: "Delete item",
@@ -27,12 +28,14 @@ export const useDeleteTrashBinItem = ({ item }: UseDeleteItemParams) => {
             showConfirmation(async () => {
                 try {
                     await actions.deleteItem(item.id);
-                    showSnackbar(`${item.title} was deleted successfully!`);
+                    toast.showSuccessToast({ title: `${item.title} was deleted successfully!` });
                 } catch (ex: any) {
-                    showSnackbar(ex.message || `Error while deleting ${item.title}`);
+                    toast.showWarningToast({
+                        title: ex.message || `Error while deleting ${item.title}`
+                    });
                 }
             }),
-        [item, actions, showConfirmation, showSnackbar]
+        [item, actions]
     );
 
     return { openDialogDeleteItem };

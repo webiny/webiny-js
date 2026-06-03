@@ -4,7 +4,7 @@ import { Accordion, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as HorizontalRuleIcon } from "@webiny/icons/horizontal_rule.svg";
 import type { IObjectFieldVM } from "~/features/formModel/index.js";
-import { useConfirmationDialog } from "~/hooks/useConfirmationDialog.js";
+import { useNamedConfirmationDialog } from "~/hooks/useNamedConfirmationDialog.js";
 import { NestedLayout } from "./ObjectFieldComponents.js";
 import { AddTemplateButton } from "./TemplatePicker.js";
 
@@ -20,7 +20,7 @@ export const SingleValueDynamicZone = observer(
                 ? field.availableTemplates.find(t => t.id === field.activeTemplateId)
                 : undefined;
 
-        const { showConfirmation } = useConfirmationDialog({
+        const { showConfirmation } = useNamedConfirmationDialog({
             title: "Remove template",
             message: "Are you sure you want to remove this item? This action is not reversible.",
             acceptLabel: "Yes, I'm sure!",

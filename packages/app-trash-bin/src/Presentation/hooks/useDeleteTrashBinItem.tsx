@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
+import { useNamedConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import type { TrashBinItemDTO } from "~/Domain/index.js";
 import { useTrashBin } from "./useTrashBin.js";
 
@@ -11,7 +11,7 @@ export const useDeleteTrashBinItem = ({ item }: UseDeleteItemParams) => {
     const { deleteItem } = useTrashBin();
     const { showSnackbar } = useSnackbar();
 
-    const { showConfirmation } = useConfirmationDialog({
+    const { showConfirmation } = useNamedConfirmationDialog({
         title: "Delete item",
         message: (
             <p>
