@@ -2,9 +2,16 @@ import React, { useState, useEffect } from "react";
 import { makeDecoratable, useDialogs } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { IconButton, OverlayLoader, Tag, Text } from "@webiny/admin-ui";
-import { ReactComponent as ExpandSidebarIcon } from "@webiny/icons/view_sidebar.svg";
+import { IconButton, OverlayLoader, SegmentedControlPrimitive, Tag, Text } from "@webiny/admin-ui";
+import { ReactComponent as ExpandSidebarIcon } from "@webiny/icons/left_panel_open.svg";
+import { ReactComponent as ViewCompactAltIcon } from "@webiny/icons/view_compact_alt.svg";
+import { ReactComponent as ViewDayIcon } from "@webiny/icons/view_day.svg";
 import { FieldsSidebar } from "./FieldsSidebar.js";
+
+const VIEW_ITEMS = [
+    { id: "compact", value: "compact", label: "", icon: <ViewCompactAltIcon /> },
+    { id: "full", value: "full", label: "", icon: <ViewDayIcon /> }
+];
 import { FieldEditor } from "../FieldEditor/index.js";
 import { PreviewTab } from "./PreviewTab.js";
 import Header from "./Header.js";
@@ -60,6 +67,7 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
 
     const [activeTab, setActiveTab] = useState<string>("edit");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [activeView, setActiveView] = useState("compact");
 
     const onChange = ({ fields, layout }: OnChangeParams) => {
         setData(data => ({ ...data, fields, layout }));
@@ -113,7 +121,7 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                             />
                             <span
                                 className={
-                                    "text-sm font-semibold text-neutral-primary [writing-mode:vertical-rl] rotate-180"
+                                    "text-sm font-semibold text-neutral-strong [writing-mode:vertical-rl]"
                                 }
                             >
                                 Fields
@@ -126,40 +134,65 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                             (activeTab === "edit" ? "fill-grid" : "bg-neutral-subtle")
                         }
                     >
-                        <div className={"px-xxl py-lg"}>
-                            {activeTab === "edit" && (
-                                <div
-                                    className={"relative mb-lg"}
-                                    data-testid={"cms.editor.tab.edit"}
-                                >
+                        <div
+                            className={
+                                "sticky top-0 left-0 z-10 p-md flex items-center justify-between"
+                            }
+                        >
+                            <div>
+                                {activeTab === "edit" && (
                                     <Text
                                         as="div"
                                         size={"sm"}
-                                        className={"font-semibold text-neutral-primary mb-md"}
+                                        className={"font-semibold text-neutral-primary"}
                                     >
                                         Model editor
                                     </Text>
-                                    <FieldEditor
-                                        fields={data.fields}
-                                        layout={data.layout || []}
-                                        onChange={onChange}
-                                    />
-                                </div>
-                            )}
-                            {activeTab === "preview" && (
-                                <div data-testid={"cms.editor.tab.preview"}>
-                                    <div className={"mb-md"}>
-                                        <Tag content={"Preview"} variant={"warning"} />
+                                )}
+                                {activeTab === "preview" && (
+                                    <Tag content={"Preview"} variant={"warning"} />
+                                )}
+                            </div>
+                            <SegmentedControlPrimitive
+                                variant={"light"}
+                                value={activeView}
+                                onChange={setActiveView}
+                                items={VIEW_ITEMS}
+                            />
+                        </div>
+                        <div className={"pb-lg"}>
+                            <div
+                                className={"px-xxl transition-[width] duration-200 ease-in-out"}
+                                style={{
+                                    width: activeView === "compact" ? "704px" : "100%",
+                                    marginLeft: "auto",
+                                    marginRight: "auto"
+                                }}
+                            >
+                                {activeTab === "edit" && (
+                                    <div className={"relative"} data-testid={"cms.editor.tab.edit"}>
+                                        <FieldEditor
+                                            fields={data.fields}
+                                            layout={data.layout || []}
+                                            onChange={onChange}
+                                        />
                                     </div>
-                                    <ContentEntryEditorWithConfig>
-                                        <ContentEntriesProvider contentModel={data}>
-                                            <ContentEntryProvider readonly={true}>
-                                                <PreviewTab activeTab={true} />
-                                            </ContentEntryProvider>
-                                        </ContentEntriesProvider>
-                                    </ContentEntryEditorWithConfig>
-                                </div>
-                            )}
+                                )}
+                                {activeTab === "preview" && (
+                                    <div
+                                        className={"bg-neutral-base px-xxl py-lg"}
+                                        data-testid={"cms.editor.tab.preview"}
+                                    >
+                                        <ContentEntryEditorWithConfig>
+                                            <ContentEntriesProvider contentModel={data}>
+                                                <ContentEntryProvider readonly={true}>
+                                                    <PreviewTab activeTab={true} />
+                                                </ContentEntryProvider>
+                                            </ContentEntriesProvider>
+                                        </ContentEntryEditorWithConfig>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

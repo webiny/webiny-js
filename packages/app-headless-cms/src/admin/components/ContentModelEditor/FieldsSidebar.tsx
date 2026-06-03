@@ -3,8 +3,10 @@ import React from "react";
 import { plugins } from "@webiny/plugins";
 import Draggable from "../Draggable.js";
 import type { CmsModelFieldTypePlugin, CmsModelLayoutFieldTypePlugin } from "~/types.js";
-import { Icon, IconButton, Text } from "@webiny/admin-ui";
-import { ReactComponent as CollapseSidebarIcon } from "@webiny/icons/view_sidebar.svg";
+import { Icon, IconButton } from "@webiny/admin-ui";
+import { SectionHeader } from "./SectionHeader.js";
+import { FieldsGrid } from "./FieldsGrid.js";
+import { ReactComponent as CollapseSidebarIcon } from "@webiny/icons/right_panel_open.svg";
 
 interface GridItemProps {
     testId: string;
@@ -97,20 +99,20 @@ export const FieldsSidebar = ({ onFieldDragStart, onCollapse }: FieldsSidebarPro
 
     return (
         <>
-            <div className={"flex items-center justify-between mb-md px-md py-md"}>
-                <Text as="div" size={"sm"} className={"font-semibold text-neutral-primary"}>
-                    Fields
-                </Text>
-                {onCollapse && (
-                    <IconButton
-                        variant={"ghost"}
-                        size={"xs"}
-                        icon={<CollapseSidebarIcon />}
-                        onClick={onCollapse}
-                    />
-                )}
-            </div>
-            <div className={"flex flex-wrap gap-xs-plus py-sm px-md"}>
+            <SectionHeader
+                title={"Fields"}
+                action={
+                    onCollapse && (
+                        <IconButton
+                            variant={"ghost"}
+                            size={"xs"}
+                            icon={<CollapseSidebarIcon />}
+                            onClick={onCollapse}
+                        />
+                    )
+                }
+            />
+            <FieldsGrid>
                 {fieldTypePlugins.map(fieldPlugin => (
                     <Field
                         key={fieldPlugin.field.type}
@@ -118,17 +120,11 @@ export const FieldsSidebar = ({ onFieldDragStart, onCollapse }: FieldsSidebarPro
                         onFieldDragStart={onFieldDragStart}
                     />
                 ))}
-            </div>
+            </FieldsGrid>
             {layoutFieldPlugins.length > 0 && (
                 <>
-                    <Text
-                        as="div"
-                        size={"sm"}
-                        className={"font-semibold text-neutral-primary mt-md mb-md"}
-                    >
-                        Layout
-                    </Text>
-                    <div className={"flex flex-wrap gap-[6px]"}>
+                    <SectionHeader title={"Layout"} />
+                    <FieldsGrid>
                         {layoutFieldPlugins.map(lp => (
                             <LayoutFieldItem
                                 key={lp.field.type}
@@ -136,7 +132,7 @@ export const FieldsSidebar = ({ onFieldDragStart, onCollapse }: FieldsSidebarPro
                                 onFieldDragStart={onFieldDragStart}
                             />
                         ))}
-                    </div>
+                    </FieldsGrid>
                 </>
             )}
         </>
