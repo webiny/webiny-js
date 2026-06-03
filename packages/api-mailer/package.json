@@ -24,7 +24,7 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "email-addresses": "^5.0.0",
-    "nodemailer": "^8.0.8",
+    "nodemailer": "^8.0.10",
     "zod": "4.4.3"
   },
   "devDependencies": {

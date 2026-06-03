@@ -21,7 +21,7 @@
     "execa": "^5.1.1",
     "find-up": "^8.0.0",
     "fs-extra": "^11.3.5",
-    "inquirer": "^13.4.3",
+    "inquirer": "^14.0.1",
     "js-yaml": "^4.1.1",
     "listr2": "^10.2.1",
     "load-json-file": "^7.0.1",
