@@ -168,7 +168,7 @@ const Field = (props: FieldProps) => {
             if (!fieldTypeName) {
                 return null;
             }
-            return <Tag content={capitalize(fieldTypeName)} variant={"neutral-base"} />;
+            return <Tag content={capitalize(fieldTypeName)} variant={"neutral-light"} />;
         };
 
         fn.displayName = "FieldTypeRenderer";
@@ -190,7 +190,7 @@ const Field = (props: FieldProps) => {
                         icon={fieldPlugin.field.icon as React.ReactElement}
                         label={fieldPlugin.field.label}
                         size={"md"}
-                        color={"neutral-strong"}
+                        color={"neutral-light"}
                     />
                     <div className={"flex flex-col gap-xxs min-w-0"}>
                         <span

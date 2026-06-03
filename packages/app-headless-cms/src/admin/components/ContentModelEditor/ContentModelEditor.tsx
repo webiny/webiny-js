@@ -86,7 +86,7 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                 <div className={"flex h-full"}>
                     <div
                         className={
-                            "shrink-0 bg-neutral-base border-r border-neutral-dimmed overflow-hidden h-[calc(100vh-98px)] relative transition-[width] duration-200 ease-in-out"
+                            "shrink-0 bg-neutral-base border-r border-neutral-dimmed overflow-hidden h-main-content relative transition-[width] duration-200 ease-in-out"
                         }
                         style={{ width: isSidebarOpen ? 200 : 45 }}
                     >
@@ -130,7 +130,7 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                     </div>
                     <div
                         className={
-                            "flex-1 overflow-y-scroll h-[calc(100vh-98px)] " +
+                            "flex-1 overflow-y-scroll h-main-content " +
                             (activeTab === "edit" ? "fill-grid" : "bg-neutral-subtle")
                         }
                     >
@@ -162,9 +162,9 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                         </div>
                         <div className={"pb-lg"}>
                             <div
-                                className={"px-xxl transition-[width] duration-200 ease-in-out"}
+                                className={" transition-[width] duration-200 ease-in-out"}
                                 style={{
-                                    width: activeView === "compact" ? "704px" : "100%",
+                                    width: activeView === "compact" ? "704px" : "90%",
                                     marginLeft: "auto",
                                     marginRight: "auto"
                                 }}

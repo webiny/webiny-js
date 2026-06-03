@@ -202,7 +202,7 @@ const Editor = () => {
                                                             }}
                                                             className={cn([
                                                                 "relative",
-                                                                "flex-1 basis-full",
+                                                                "flex-1 min-w-0",
                                                                 "mx-sm"
                                                             ])}
                                                         >
@@ -242,7 +242,7 @@ const Editor = () => {
                                                         <div
                                                             className={cn([
                                                                 "relative",
-                                                                "flex-1 basis-full",
+                                                                "flex-1 min-w-0",
                                                                 "mx-sm"
                                                             ])}
                                                             ref={element => {
