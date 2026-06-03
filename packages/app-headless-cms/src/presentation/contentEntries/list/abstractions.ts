@@ -27,6 +27,7 @@ export interface IContentEntriesPresenter {
     deleteEntry(id: string): Promise<boolean>;
     publishEntry(id: string): Promise<boolean>;
     unpublishEntry(id: string): Promise<boolean>;
+    moveEntry(id: string, folderId: string): Promise<boolean>;
     bulkAction(action: string, data?: Record<string, unknown>): Promise<void>;
 
     init(config: IContentEntriesInitConfig): void;

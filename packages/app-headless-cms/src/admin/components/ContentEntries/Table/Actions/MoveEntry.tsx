@@ -1,21 +1,16 @@
 import React, { useCallback } from "react";
 import { ReactComponent as Move } from "@webiny/icons/exit_to_app.svg";
 import { useMoveToFolderDialog } from "@webiny/app-aco";
-import { useSnackbar, useFeature } from "@webiny/app-admin";
+import { useToast } from "@webiny/admin-ui";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
-import { useEntry, useModel } from "~/admin/hooks/index.js";
-import { MoveEntryFeature } from "~/features/contentEntry/moveEntry/feature.js";
-import type { IMoveEntryUseCase } from "~/features/contentEntry/moveEntry/abstractions.js";
+import { useEntry } from "~/admin/hooks/index.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 
 export const MoveEntry = () => {
     const { entry } = useEntry();
-    const { model } = useModel();
-    const { useCase: moveEntryUseCase } = useFeature(MoveEntryFeature) as {
-        useCase: IMoveEntryUseCase;
-    };
     const presenter = useContentEntriesPresenter();
-    const { showSnackbar } = useSnackbar();
+    const toast = useToast();
+
     const { showDialog } = useMoveToFolderDialog();
     const { OptionsMenuItem } = ContentEntryListConfig.Browser.Entry.Action;
 
@@ -27,14 +22,12 @@ export const MoveEntry = () => {
             acceptLabel: "Move entry",
             focusedFolderId: entry.wbyAco_location?.folderId,
             async onAccept({ folder }) {
-                await moveEntryUseCase.execute({
-                    model,
-                    id: entry.id,
-                    folderId: folder.id
-                });
-                showSnackbar(
-                    `Entry "${entry.meta?.title || "unknown"}" was moved to "${folder.label}".`
-                );
+                const success = await presenter.moveEntry(entry.id, folder.id);
+                if (success) {
+                    toast.showSuccessToast({
+                        title: `Entry "${entry.meta?.title || "unknown"}" was moved to "${folder.label}".`
+                    });
+                }
             }
         });
     }, [entry.id]);
