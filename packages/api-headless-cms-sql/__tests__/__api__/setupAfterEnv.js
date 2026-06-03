@@ -19,9 +19,11 @@ beforeEach(async () => {
         await knex.schema.dropTableIfExists(name);
     }
 
-    /* Bump schema manager versions so the initialized flags reset. */
-    globalThis.__entryTableManagerVersion = (globalThis.__entryTableManagerVersion || 0) + 1;
-    globalThis.__schemaManagerVersion = (globalThis.__schemaManagerVersion || 0) + 1;
+    /* Reset all schema managers so they re-check table existence. */
+    const managers = globalThis.__sqlTableManagers || [];
+    for (const manager of managers) {
+        manager.reset();
+    }
 });
 
 afterAll(async () => {

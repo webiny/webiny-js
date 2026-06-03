@@ -1,9 +1,8 @@
-import { type Plugin, PluginsContainer } from "@webiny/plugins/types.js";
+import { PluginsContainer } from "@webiny/plugins/types.js";
 import type {
     CmsContext,
     CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
     CmsModel,
-    CmsModelField,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
@@ -13,30 +12,6 @@ import type { ITable } from "@webiny/db-dynamodb";
 export type { CmsContext };
 
 export type { IGroupEntity, IModelEntity, IEntryEntity };
-
-interface CmsFieldFilterValueTransformParams {
-    /**
-     * A field which value we are transforming.
-     */
-    field: Partial<CmsModelField> &
-        Pick<CmsModelField, "id" | "storageId" | "fieldId" | "settings">;
-    value: any;
-}
-
-export interface CmsFieldFilterValueTransformPlugin extends Plugin {
-    /**
-     * A plugin type.
-     */
-    type: "cms-field-filter-value-transform";
-    /**
-     * A field type this plugin is for.
-     */
-    fieldType: string;
-    /**
-     * Transform method which expect field definition and value to transform.
-     */
-    transform: (params: CmsFieldFilterValueTransformParams) => any;
-}
 
 export enum ENTITIES {
     GROUPS = "CmsGroups",

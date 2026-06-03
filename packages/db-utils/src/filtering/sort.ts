@@ -29,7 +29,7 @@ export const sort = <T extends CmsEntryValues = CmsEntryValues>(
         sort.push("savedOn_DESC");
     } else if (sort.length > 1) {
         throw new WebinyError(
-            "Sorting is limited to a single field on DynamoDB only system.",
+            "Sorting is limited to a single field.",
             "SORT_MULTIPLE_FIELDS_ERROR",
             {
                 sort

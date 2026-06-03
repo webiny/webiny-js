@@ -6,23 +6,21 @@ class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
     private readonly knex: KnexInstance.Interface;
     private readonly tableName: string;
     private initialized = false;
-    private lastVersion = 0;
 
     constructor(knex: KnexInstance.Interface, tableNameResolver: TableNameResolver.Interface) {
         this.knex = knex;
         this.tableName = tableNameResolver.resolve("entries");
+
+        const g = globalThis as Record<string, unknown>;
+        const managers = (g.__sqlTableManagers ??= []) as EntryTableManagerAbstraction.Interface[];
+        managers.push(this);
+    }
+
+    public reset(): void {
+        this.initialized = false;
     }
 
     public async ensureTable(): Promise<void> {
-        /* Check if globalThis version changed (test reset mechanism). */
-        const currentVersion =
-            ((globalThis as Record<string, unknown>).__entryTableManagerVersion as number) || 0;
-
-        if (currentVersion !== this.lastVersion) {
-            this.initialized = false;
-            this.lastVersion = currentVersion;
-        }
-
         if (this.initialized) {
             return;
         }

@@ -25,6 +25,13 @@ export { createPlainObjectPathPlugin } from "./path/plainObject.js";
 export { createLocationFolderIdPathPlugin } from "./path/locationFolderId.js";
 export { createDatetimeTransformValuePlugin } from "./transforms/datetime.js";
 
+/* CMS storage helpers. */
+export {
+    createStorageModelAccessor,
+    createStorageTransformCallable,
+    aggregateUniqueFieldValues
+} from "./cms/storageHelpers.js";
+
 /* Types. */
 export type { Field } from "./filtering/fields/types.js";
 export type { FilterItemFromStorage } from "./filtering/fields/types.js";

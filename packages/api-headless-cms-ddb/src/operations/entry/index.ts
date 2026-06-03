@@ -17,7 +17,6 @@ import type {
     CmsEntryStorageOperationsPublishParams,
     CmsEntryStorageOperationsRestoreFromBinParams,
     CmsEntryStorageOperationsUnpublishParams,
-    CmsEntryUniqueValue,
     CmsEntryValues,
     CmsModel,
     CmsStorageEntry,
@@ -35,11 +34,15 @@ import {
 } from "~/operations/entry/keys.js";
 import type { PluginsContainer } from "@webiny/plugins";
 import { decodeCursor, encodeCursor } from "@webiny/utils";
-import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
-import type { FilterItemFromStorage } from "@webiny/db-utils";
-import { createFields } from "@webiny/db-utils";
-import { filter, sort } from "@webiny/db-utils";
-import { ValueFilterRegistry } from "@webiny/db-utils";
+import {
+    createFields,
+    filter,
+    sort,
+    ValueFilterRegistry,
+    createStorageModelAccessor,
+    createStorageTransformCallable,
+    aggregateUniqueFieldValues
+} from "@webiny/db-utils";
 import type { CmsEntryStorageOperations, IEntryEntity } from "~/types.js";
 import {
     isDeletedEntryMetaField,
@@ -47,7 +50,6 @@ import {
     isRestoredEntryMetaField,
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants.js";
-import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 import { StorageTransformRegistry } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
@@ -98,51 +100,11 @@ export const createEntriesStorageOperations = (
 
     const storageTransformRegistry = container.resolve(StorageTransformRegistry);
 
-    let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
-    const getStorageOperationsCmsModelPlugin = () => {
-        if (storageOperationsCmsModelPlugin) {
-            return storageOperationsCmsModelPlugin;
-        }
-        storageOperationsCmsModelPlugin = plugins.oneByType<StorageOperationsCmsModelPlugin>(
-            StorageOperationsCmsModelPlugin.type
-        );
-        return storageOperationsCmsModelPlugin;
-    };
-
-    const getStorageOperationsModel = <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel
-    ): StorageOperationsCmsModel<T> => {
-        const plugin = getStorageOperationsCmsModelPlugin();
-        return plugin.getModel<T>(model);
-    };
+    const { getModel: getStorageOperationsModel } = createStorageModelAccessor(plugins);
 
     const dataLoaders = new DataLoadersHandler({
         entity
     });
-
-    const createStorageTransformCallable = (
-        model: StorageOperationsCmsModel
-    ): FilterItemFromStorage => {
-        return (field, value) => {
-            const fieldType = getBaseFieldType(field);
-
-            const storageTransform = storageTransformRegistry.get(fieldType);
-            if (!storageTransform) {
-                return value;
-            }
-            return storageTransform.fromStorage({
-                model,
-                field,
-                value,
-                getStorageTransform(fieldType: string) {
-                    return (
-                        storageTransformRegistry.get(fieldType) ||
-                        storageTransformRegistry.get("*")!
-                    );
-                }
-            });
-        };
-    };
 
     const create: CmsEntryStorageOperations["create"] = async (initialModel, params) => {
         const { entry, storageEntry: initialStorageEntry } = params;
@@ -1052,7 +1014,7 @@ export const createEntriesStorageOperations = (
             fields: model.fields
         });
 
-        const fromStorage = createStorageTransformCallable(model);
+        const fromStorage = createStorageTransformCallable(storageTransformRegistry, model);
         /**
          * Let's transform records from storage ones to regular ones, so we do not need to do it later.
          *
@@ -1418,27 +1380,7 @@ export const createEntriesStorageOperations = (
             limit: MAX_LIST_LIMIT
         });
 
-        const result: Record<string, CmsEntryUniqueValue> = {};
-        for (const item of items) {
-            const fieldValue = item.values[field.fieldId] as string[] | string | undefined;
-            if (!fieldValue) {
-                continue;
-            }
-            const values = Array.isArray(fieldValue) ? fieldValue : [fieldValue];
-            if (values.length === 0) {
-                continue;
-            }
-            for (const value of values) {
-                result[value] = {
-                    value,
-                    count: (result[value]?.count || 0) + 1
-                };
-            }
-        }
-
-        return Object.values(result)
-            .sort((a, b) => (a.value > b.value ? 1 : b.value > a.value ? -1 : 0))
-            .sort((a, b) => b.count - a.count);
+        return aggregateUniqueFieldValues(items, field.fieldId);
     };
 
     return {

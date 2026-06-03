@@ -11,6 +11,7 @@
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -40,6 +41,8 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

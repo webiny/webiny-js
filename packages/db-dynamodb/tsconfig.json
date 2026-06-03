@@ -8,9 +8,9 @@
     { "path": "../db-utils" },
     { "path": "../error" },
     { "path": "../feature" },
+    { "path": "../handler" },
     { "path": "../plugins" },
-    { "path": "../utils" },
-    { "path": "../handler" }
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -33,12 +33,12 @@
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }

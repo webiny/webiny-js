@@ -35,6 +35,7 @@
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-db": "0.0.0",
+    "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "dataloader": "^2.2.3"
   },
@@ -42,7 +43,6 @@
     "@types/jsonpack": "^1.1.6",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^1.0.1",
-    "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "jest-dynalite": "^3.6.1",
     "typescript": "6.0.3",
