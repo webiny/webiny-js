@@ -34,10 +34,11 @@ packages/db-utils/src/
 │   └── feature.ts                   -- DI registration
 ├── filtering/
 │   ├── filter.ts                    -- run expression tree against records
-│   ├── sort.ts                      -- in-memory sort (lodash sortBy)
+│   ├── sort.ts                      -- in-memory sort (lodash sortBy, single-field only)
 │   ├── fullTextSearch.ts            -- term matching across fields
 │   ├── getValue.ts                  -- recursive dot-path value extraction
 │   ├── transform.ts                 -- value transformation wrapper
+│   ├── mapPlugins.ts                -- generic plugin-container utility (maps plugins by key)
 │   ├── expressions/
 │   │   ├── createExpressions.ts     -- compile where input into expression tree
 │   │   ├── where.ts                 -- parse "field_not_in" into { fieldId, op, negate }
@@ -62,7 +63,7 @@ packages/db-utils/src/
 │   ├── plainObject.ts
 │   └── locationFolderId.ts
 └── transforms/
-    └── datetime.ts                  -- self-contained date/time parsing
+    └── datetime.ts                  -- self-contained date/time parsing (both datetime + time branches)
 ```
 
 **Origin of each file group:**
@@ -79,7 +80,17 @@ packages/db-utils/src/
 
 - `ValueFilter` and `ValueFilterRegistry` abstractions move from `@webiny/db-dynamodb` to `@webiny/db-utils`.
 - `filter.ts`, `createExpressions.ts`, `fullTextSearch.ts`, and `FieldFilterPlugin.ts` import these abstractions from `@webiny/db-utils` instead of `@webiny/db-dynamodb`.
-- `datetime.ts` transform is rewritten with inline date parsing logic (no `TimeTransformPlugin`/`DateTimeTransformPlugin` imports).
+- `datetime.ts` transform is rewritten with inline date/time parsing logic — contains both `datetime` (via `date-fns/parseISO`) and `time` (integer math) branches. No `TimeTransformPlugin`/`DateTimeTransformPlugin` imports.
+
+**Signature changes for extraction:**
+
+- `filter()` currently takes `container: CmsContext["container"]` and resolves `ValueFilterRegistry` via DI. After extraction, `filter()` accepts `valueFilterRegistry: ValueFilterRegistry.Interface` directly as a parameter — callers resolve it from their own container before calling.
+- `createExpressions()` same change — receives `valueFilterRegistry` as a param instead of resolving from container.
+- `sort()` enforces single-field sorting (same as DDB). Multi-field sort is not supported.
+
+**DI wiring requirement:**
+
+Both `api-headless-cms-ddb` and `api-headless-cms-sql` must register the `ValueFilterFeature` from `@webiny/db-utils` in their DI container so that the `ValueFilterRegistry` is available for resolution. The SQL package's `registerSqlStorageOperations()` must include this feature registration.
 
 ---
 
@@ -130,8 +141,10 @@ No flattened identity columns (`_id`, `_displayName`, `_type`) — those were on
 
 #### Entry Mappers
 
-**`entryToRow(entry, options: { isLatest, isPublished })`**
+**`entryToRow(entry, model, options: { isLatest, isPublished })`**
 - Spread all system/meta fields directly.
+- Write `modelId` from `model.modelId` (not from entry — entry may not carry it).
+- Write `tenant` from `model.tenant`.
 - `JSON.stringify(values)` into the `values` column.
 - `JSON.stringify` identity objects, location, meta, system, live.
 - Set `isLatest` and `isPublished` from options.
@@ -142,6 +155,10 @@ No flattened identity columns (`_id`, `_displayName`, `_type`) — those were on
 - Return typed `CmsStorageEntry`.
 
 No field column iteration, no hash-based column naming, no null-object collapsing.
+
+#### `get` Operation
+
+Works like `list` with `limit=1`. Loads matching rows based on `where.isLatest` / `where.isPublished`, applies in-memory filtering from the `where` clause, optionally sorts, and returns the first match or `null`.
 
 #### List Operation
 
@@ -162,7 +179,7 @@ After loading rows:
 
 #### Write Operations
 
-Same flag-flipping logic as the current SQL implementation. No changes to the write flow, only simplified mappers:
+Same flag-flipping logic as the current SQL implementation. Simplified mappers — entry-level meta propagation uses only the JSON blob columns (e.g. `modifiedBy`, `savedBy`), not the removed `_id`/`_displayName`/`_type` variants. `ENTRY_LEVEL_META_FIELDS` must be updated accordingly.
 
 | Operation | SQL Queries |
 |---|---|
@@ -181,6 +198,19 @@ Same flag-flipping logic as the current SQL implementation. No changes to the wr
 #### `getUniqueFieldValues`
 
 Load all matching entries (latest/published), parse `values` JSON, extract the target field, aggregate in memory. Same approach as DDB.
+
+#### Retained Features
+
+The following existing features are kept (with simplified usage):
+
+- `features/knexInstance/` — KnexInstance abstraction and factory registration
+- `features/tableNameResolver/` — TableNameResolver (updated for new table naming: `{prefix}webiny_cms_entries{suffix}` etc.)
+- `features/groupSchemaManager/` — fixed `CREATE TABLE IF NOT EXISTS` for groups table
+- `features/modelSchemaManager/` — fixed `CREATE TABLE IF NOT EXISTS` for models table
+- `operations/group/` — group CRUD (simple SQL, mostly unchanged)
+- `operations/model/` — model CRUD (simple SQL, mostly unchanged)
+
+A new `EntryTableManager` (or similar) replaces `EntrySchemaManager` — just `CREATE TABLE IF NOT EXISTS` with the fixed column set, no ALTER TABLE or schema diffing.
 
 #### Deleted Code
 
