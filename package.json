@@ -56,7 +56,7 @@
     "github-actions-wac": "^2.0.0",
     "graphql": "^16.14.0",
     "husky": "^9.1.7",
-    "inquirer": "^14.0.1",
+    "inquirer": "^14.0.2",
     "jest-extended": "^7.0.0",
     "lexical": "^0.45.0",
     "load-json-file": "^7.0.1",

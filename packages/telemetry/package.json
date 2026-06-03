@@ -9,6 +9,7 @@
     "ci-info": "^4.4.0",
     "jsesc": "^3.1.0",
     "load-json-file": "^7.0.1",
+    "posthog-js": "^1.376.5",
     "strip-ansi": "^7.2.0"
   },
   "publishConfig": {
