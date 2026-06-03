@@ -2707,17 +2707,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudi/aws@workspace:packages/cloudi-aws":
+"@cloudi/aws@npm:0.1.0, @cloudi/aws@workspace:packages/cloudi-aws":
   version: 0.0.0-use.local
   resolution: "@cloudi/aws@workspace:packages/cloudi-aws"
   dependencies:
     "@cloudi/core": "npm:0.1.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^0.2.3"
+    "@webiny/di": "npm:^1.0.1"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
+  peerDependencies:
+    "@webiny/di": ">=0.2.3"
   languageName: unknown
   linkType: soft
 
@@ -2726,23 +2728,27 @@ __metadata:
   resolution: "@cloudi/core@workspace:packages/cloudi"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^0.2.3"
+    "@webiny/di": "npm:^1.0.1"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
+  peerDependencies:
+    "@webiny/di": ">=0.2.3"
   languageName: unknown
   linkType: soft
 
-"@cloudi/node@workspace:packages/cloudi-node":
+"@cloudi/node@npm:0.1.0, @cloudi/node@workspace:packages/cloudi-node":
   version: 0.0.0-use.local
   resolution: "@cloudi/node@workspace:packages/cloudi-node"
   dependencies:
     "@cloudi/core": "npm:0.1.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^0.2.3"
+    "@webiny/di": "npm:^1.0.1"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
+  peerDependencies:
+    "@webiny/di": ">=0.2.3"
   languageName: unknown
   linkType: soft
 
@@ -14026,6 +14032,17 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/ev-test@workspace:packages/ev-test":
+  version: 0.0.0-use.local
+  resolution: "@webiny/ev-test@workspace:packages/ev-test"
+  dependencies:
+    "@cloudi/aws": "npm:0.1.0"
+    "@cloudi/core": "npm:0.1.0"
+    "@cloudi/node": "npm:0.1.0"
+    "@webiny/di": "npm:^0.2.3"
   languageName: unknown
   linkType: soft
 

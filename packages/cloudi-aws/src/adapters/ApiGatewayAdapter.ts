@@ -26,6 +26,16 @@ function toHttpRequest(event: APIGatewayProxyEvent): IHttpRequest {
 
 function toApiGatewayResult(response: IHttpResponse): APIGatewayProxyResult {
     const { body } = response;
+
+    if (Buffer.isBuffer(body) || body instanceof Uint8Array) {
+        return {
+            statusCode: response.statusCode,
+            headers: response.headers,
+            body: Buffer.from(body).toString("base64"),
+            isBase64Encoded: true
+        };
+    }
+
     return {
         statusCode: response.statusCode,
         headers: response.headers,
@@ -40,7 +50,9 @@ function toApiGatewayResult(response: IHttpResponse): APIGatewayProxyResult {
 
 class ApiGatewayAdapterImpl implements CloudHandler.Interface {
     async execute(event: any, next: NextFunction): Promise<any> {
-        if (!isApiGatewayEvent(event)) return next();
+        if (!isApiGatewayEvent(event)) {
+            return next();
+        }
         const request = toHttpRequest(event);
         const response: IHttpResponse = await next(request);
         return toApiGatewayResult(response);
