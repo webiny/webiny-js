@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/db-utils",
+  "name": "@webiny/api-headless-cms-storage",
   "version": "0.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -7,16 +7,20 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/db-utils"
+    "directory": "packages/api-headless-cms-storage"
   },
   "dependencies": {
+    "@webiny/api": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/db-utils": "0.0.0",
     "@webiny/error": "0.0.0",
-    "@webiny/feature": "0.0.0",
-    "fuse.js": "7.3.0"
+    "@webiny/plugins": "0.0.0",
+    "date-fns": "^4.3.0",
+    "dot-prop": "^10.1.0",
+    "lodash": "^4.18.1"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.0.1",
     "@webiny/project-utils": "0.0.0",
     "typescript": "6.0.3",
     "vitest": "^4.1.7"

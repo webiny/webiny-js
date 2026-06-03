@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import type { Field } from "./fields/types.js";
 import { getValue } from "./getValue.js";
-import { ValueFilter } from "../valueFilter/abstractions/ValueFilter.js";
+import { ValueFilter } from "@webiny/db-utils";
 
 interface Params {
     term?: string;

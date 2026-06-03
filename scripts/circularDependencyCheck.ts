@@ -1,10 +1,6 @@
 #!/usr/bin/env node
 import { resolve, join, dirname, relative } from "path";
-import {
-    getPackage,
-    getPackages,
-    PROJECT_ROOT
-} from "./utils/getPackages.js";
+import { getPackage, getPackages, PROJECT_ROOT } from "./utils/getPackages.js";
 import chalk from "chalk";
 
 const { cyan, gray, green, red, yellow } = chalk;
@@ -34,9 +30,10 @@ const buildGraph = (): Map<string, PackageNode> => {
         const tsConfig = pkg.tsConfigBuildJson || pkg.tsConfigJson;
         if (tsConfig?.references) {
             for (const ref of tsConfig.references) {
-                const refPath = resolve(
-                    join(pkg.packageFolder, dirname(ref.path))
-                ).replace(/\\/g, "/");
+                const refPath = resolve(join(pkg.packageFolder, dirname(ref.path))).replace(
+                    /\\/g,
+                    "/"
+                );
 
                 const refPkg = getPackage(refPath);
                 if (refPkg) {
@@ -140,7 +137,9 @@ const run = () => {
 
     const packageJsonCycles = deduplicateCycles(findCycles(packageJsonGraph));
     if (packageJsonCycles.length > 0) {
-        console.log(red(`Found ${packageJsonCycles.length} circular dependency chain(s) in package.json:`));
+        console.log(
+            red(`Found ${packageJsonCycles.length} circular dependency chain(s) in package.json:`)
+        );
         console.log();
         for (const cycle of packageJsonCycles) {
             totalCycles++;
@@ -154,7 +153,9 @@ const run = () => {
     const tsConfigCycles = deduplicateCycles(findCycles(tsConfigGraph));
     if (tsConfigCycles.length > 0) {
         console.log(
-            red(`Found ${tsConfigCycles.length} circular dependency chain(s) in tsconfig references:`)
+            red(
+                `Found ${tsConfigCycles.length} circular dependency chain(s) in tsconfig references:`
+            )
         );
         console.log();
         for (const cycle of tsConfigCycles) {

@@ -11,7 +11,7 @@ import type { Expression, ExpressionCondition, Filter } from "./expressions/crea
 import { createExpressions } from "./expressions/createExpressions.js";
 import { transformValue } from "./transform.js";
 import { getValue } from "./getValue.js";
-import { ValueFilterRegistry } from "../valueFilter/abstractions/ValueFilterRegistry.js";
+import { ValueFilterRegistry } from "@webiny/db-utils";
 
 interface ExecuteFilterParams {
     value: any;

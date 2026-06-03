@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins";
 import type { Field } from "~/filtering/fields/types.js";
 import type { ICmsFieldFilterValueTransformPlugin } from "./CmsFieldFilterValueTransformPlugin.js";
-import { ValueFilterRegistry } from "~/valueFilter/abstractions/ValueFilterRegistry.js";
+import { ValueFilterRegistry } from "@webiny/db-utils";
 
 /*
  * This plugin is used to create the filter.

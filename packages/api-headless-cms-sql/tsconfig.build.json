@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../api-headless-cms-storage/tsconfig.build.json" },
     { "path": "../db-utils/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
@@ -18,6 +19,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-headless-cms-storage/*": ["../api-headless-cms-storage/src/*"],
+      "@webiny/api-headless-cms-storage": ["../api-headless-cms-storage/src"],
       "@webiny/db-utils/*": ["../db-utils/src/*"],
       "@webiny/db-utils": ["../db-utils/src"],
       "@webiny/feature/api": ["../feature/src/api/index.js"],

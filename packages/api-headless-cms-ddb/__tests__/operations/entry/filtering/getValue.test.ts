@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getValue } from "@webiny/db-utils";
+import { getValue } from "@webiny/api-headless-cms-storage";
 import { createEntry } from "./mocks/entry.noModel";
 
 describe("value via object-path", () => {

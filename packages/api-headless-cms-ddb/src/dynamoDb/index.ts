@@ -1,6 +1,6 @@
-import { createPlainObjectPathPlugin } from "@webiny/db-utils";
-import { createLocationFolderIdPathPlugin } from "@webiny/db-utils";
-import { createDatetimeTransformValuePlugin } from "@webiny/db-utils";
+import { createPlainObjectPathPlugin } from "@webiny/api-headless-cms-storage";
+import { createLocationFolderIdPathPlugin } from "@webiny/api-headless-cms-storage";
+import { createDatetimeTransformValuePlugin } from "@webiny/api-headless-cms-storage";
 
 export default () => [
     createPlainObjectPathPlugin(),

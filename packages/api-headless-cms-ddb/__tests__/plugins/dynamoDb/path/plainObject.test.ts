@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
-import { createPlainObjectPathPlugin } from "@webiny/db-utils";
+import { createPlainObjectPathPlugin } from "@webiny/api-headless-cms-storage";
 
 describe("dynamodb path plain object", () => {
     it("should get the plain object path", () => {

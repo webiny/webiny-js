@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-headless-cms" },
+    { "path": "../api-headless-cms-storage" },
     { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
     { "path": "../db-utils" },
@@ -25,6 +26,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-headless-cms-storage/*": ["../api-headless-cms-storage/src/*"],
+      "@webiny/api-headless-cms-storage": ["../api-headless-cms-storage/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],

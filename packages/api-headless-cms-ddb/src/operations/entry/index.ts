@@ -34,15 +34,15 @@ import {
 } from "~/operations/entry/keys.js";
 import type { PluginsContainer } from "@webiny/plugins";
 import { decodeCursor, encodeCursor } from "@webiny/utils";
+import { ValueFilterRegistry } from "@webiny/db-utils";
 import {
     createFields,
     filter,
     sort,
-    ValueFilterRegistry,
     createStorageModelAccessor,
     createStorageTransformCallable,
     aggregateUniqueFieldValues
-} from "@webiny/db-utils";
+} from "@webiny/api-headless-cms-storage";
 import type { CmsEntryStorageOperations, IEntryEntity } from "~/types.js";
 import {
     isDeletedEntryMetaField,

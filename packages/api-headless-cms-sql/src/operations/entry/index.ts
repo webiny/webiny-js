@@ -15,15 +15,15 @@ import type { IEntryRow } from "./types.js";
 import { entryToRow, rowToEntry, getEntryLevelMeta } from "./mappers.js";
 import { StorageTransformRegistry } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import { decodeCursor, encodeCursor } from "@webiny/utils";
+import { ValueFilterRegistry } from "@webiny/db-utils";
 import {
     createFields,
     filter,
     sort,
-    ValueFilterRegistry,
     createStorageModelAccessor,
     createStorageTransformCallable,
     aggregateUniqueFieldValues
-} from "@webiny/db-utils";
+} from "@webiny/api-headless-cms-storage";
 
 interface CreateEntriesStorageOperationsParams {
     knex: KnexInstance.Interface;

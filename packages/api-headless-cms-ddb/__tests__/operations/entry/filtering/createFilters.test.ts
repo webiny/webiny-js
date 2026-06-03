@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { ValueFilterRegistry } from "@webiny/db-utils";
 import {
     createExpressions,
     type Expression,
     createFields,
-    ValueFilterRegistry,
     type Field
-} from "@webiny/db-utils";
+} from "@webiny/api-headless-cms-storage";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { createModel } from "../../helpers/createModel";

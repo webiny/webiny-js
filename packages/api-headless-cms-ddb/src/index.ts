@@ -8,7 +8,7 @@ import { createEntryEntity } from "~/definitions/entry.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createModelsStorageOperations } from "~/operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
-import { createFilterCreatePlugins } from "@webiny/db-utils";
+import { createFilterCreatePlugins } from "@webiny/api-headless-cms-storage";
 import { createTable } from "~/definitions/table.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";

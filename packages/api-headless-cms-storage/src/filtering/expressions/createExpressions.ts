@@ -9,8 +9,7 @@ import { transformValue } from "../transform.js";
 import { CmsEntryFieldFilterPlugin } from "../../plugins/CmsEntryFieldFilterPlugin.js";
 import { getWhereValues } from "../values.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
-import { ValueFilter } from "../../valueFilter/abstractions/ValueFilter.js";
-import { ValueFilterRegistry } from "../../valueFilter/abstractions/ValueFilterRegistry.js";
+import { ValueFilter, ValueFilterRegistry } from "@webiny/db-utils";
 
 interface CreateExpressionParams {
     where: Partial<CmsEntryListWhere>;

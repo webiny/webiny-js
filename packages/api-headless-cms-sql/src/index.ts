@@ -17,13 +17,13 @@ import { TableNameResolverConfig } from "~/features/tableNameResolver/abstractio
 import type { Knex } from "knex";
 import { TableNameResolverFeature } from "~/features/tableNameResolver/feature.js";
 import { KnexInstanceFeature } from "~/features/knexInstance/feature.js";
+import { ValueFilterFeature } from "@webiny/db-utils";
 import {
-    ValueFilterFeature,
     createFilterCreatePlugins,
     createPlainObjectPathPlugin,
     createLocationFolderIdPathPlugin,
     createDatetimeTransformValuePlugin
-} from "@webiny/db-utils";
+} from "@webiny/api-headless-cms-storage";
 
 const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
     const { container, plugins } = params;

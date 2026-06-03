@@ -3,5 +3,8 @@ export {
     CmsEntryFieldSortingPlugin,
     CmsEntryFieldFilterPlugin,
     CmsFieldFilterValueTransformPlugin
-} from "@webiny/db-utils";
-export type { CreatePathCallable, CmsEntryFieldFilterPluginCreateResponse } from "@webiny/db-utils";
+} from "@webiny/api-headless-cms-storage";
+export type {
+    CreatePathCallable,
+    CmsEntryFieldFilterPluginCreateResponse
+} from "@webiny/api-headless-cms-storage";
