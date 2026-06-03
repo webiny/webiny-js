@@ -15,10 +15,10 @@
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/plugins": "0.0.0",
-    "date-fns": "^2.30.0",
-    "dot-prop": "^9.0.0",
+    "date-fns": "^4.3.0",
+    "dot-prop": "^10.1.0",
     "fuse.js": "7.3.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.18.1"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
