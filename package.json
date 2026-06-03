@@ -91,6 +91,7 @@
     "build:apps": "yarn webiny ws run build --scope='@webiny/app*'",
     "build:full": "yarn build --build-overrides='{\"tsConfig\":{\"compilerOptions\":{\"skipLibCheck\":false}}}'",
     "check-package-dependencies": "node scripts/checkPackageNodeModules.js",
+    "check-circular-deps": "tsx scripts/circularDependencyCheck.ts",
     "check-ts-configs": "node scripts/checkTsConfigs.js",
     "ci-workflows:build": "yarn ghawac build",
     "ci-workflows:watch": "yarn ghawac watch",
