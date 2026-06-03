@@ -4,23 +4,17 @@ import {
 } from "./abstractions.js";
 
 class TableNameResolverImpl implements TableNameResolverAbstraction.Interface {
-    private readonly prefix: string | null;
+    private readonly prefix: string;
+    private readonly suffix: string;
 
     constructor(private readonly config: TableNameResolverConfig.Interface) {
-        this.prefix = config.tableNamePrefix ? this.sanitize(config.tableNamePrefix) : null;
+        this.prefix = config.tableNamePrefix ? `${this.sanitize(config.tableNamePrefix)}_` : "";
+        this.suffix = config.tableNameSuffix ? `_${this.sanitize(config.tableNameSuffix)}` : "";
     }
 
-    public resolve(tenant: string, entityName: string): string {
-        const sanitizedEntity = this.sanitize(entityName);
-        const base = this.prefix ? `${this.prefix}_cms` : "cms";
-
-        if (this.config.sharedTables) {
-            return `${base}_${sanitizedEntity}`;
-        }
-
-        const sanitizedTenant = this.sanitize(tenant);
-
-        return `${base}_${sanitizedTenant}_${sanitizedEntity}`;
+    public resolve(entityName: string): string {
+        const sanitized = this.sanitize(entityName);
+        return `${this.prefix}webiny_cms_${sanitized}${this.suffix}`;
     }
 
     private sanitize(value: string): string {

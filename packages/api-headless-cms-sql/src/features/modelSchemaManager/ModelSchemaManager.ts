@@ -1,46 +1,16 @@
-import type { IColumnDefinition } from "~/features/fieldTypeMapper/abstractions.js";
 import { ModelSchemaManager as ModelSchemaManagerAbstraction } from "./abstractions.js";
-import { SchemaRegistry } from "~/features/schemaRegistry/abstractions.js";
 import { KnexInstance } from "~/features/knexInstance/abstractions.js";
-import { applyColumnDefinitions } from "~/features/entrySchemaManager/columnBuilder.js";
-
-const MODEL_TABLE_COLUMNS: IColumnDefinition[] = [
-    { name: "modelId", type: "varchar", nullable: false, primaryKey: true },
-    { name: "tenant", type: "varchar", nullable: false },
-    { name: "name", type: "varchar", nullable: false },
-    { name: "singularApiName", type: "varchar", nullable: false },
-    { name: "pluralApiName", type: "varchar", nullable: false },
-    { name: "group", type: "varchar", nullable: false },
-    { name: "icon", type: "text", nullable: true },
-    { name: "description", type: "text", nullable: true },
-    { name: "fields", type: "text", nullable: false },
-    { name: "layout", type: "text", nullable: false },
-    { name: "tags", type: "text", nullable: true },
-    { name: "titleFieldId", type: "varchar", nullable: false },
-    { name: "descriptionFieldId", type: "varchar", nullable: true },
-    { name: "imageFieldId", type: "varchar", nullable: true },
-    { name: "isPrivate", type: "boolean", nullable: false, defaultValue: false },
-    { name: "isPlugin", type: "boolean", nullable: false, defaultValue: false },
-    { name: "authorization", type: "text", nullable: true },
-    { name: "createdBy_id", type: "varchar", nullable: true },
-    { name: "createdBy_displayName", type: "varchar", nullable: true },
-    { name: "createdBy_type", type: "varchar", nullable: true },
-    { name: "createdBy", type: "text", nullable: true },
-    { name: "createdOn", type: "varchar", nullable: true },
-    { name: "savedOn", type: "varchar", nullable: true }
-];
 
 class ModelSchemaManagerImpl implements ModelSchemaManagerAbstraction.Interface {
     private readonly knex: KnexInstance.Interface;
-    private readonly registry: SchemaRegistry.Interface;
+    private readonly verified = new Set<string>();
 
-    constructor(knex: KnexInstance.Interface, registry: SchemaRegistry.Interface) {
+    constructor(knex: KnexInstance.Interface) {
         this.knex = knex;
-        this.registry = registry;
     }
 
     public async ensure(tableName: string): Promise<void> {
-        if (this.registry.isVerified(tableName)) {
+        if (this.verified.has(tableName)) {
             return;
         }
 
@@ -48,15 +18,37 @@ class ModelSchemaManagerImpl implements ModelSchemaManagerAbstraction.Interface 
 
         if (!exists) {
             await this.knex.schema.createTable(tableName, table => {
-                applyColumnDefinitions(table, MODEL_TABLE_COLUMNS);
+                table.text("modelId").primary().notNullable();
+                table.text("tenant").notNullable();
+                table.text("name").notNullable();
+                table.text("singularApiName").notNullable();
+                table.text("pluralApiName").notNullable();
+                table.text("group").notNullable();
+                table.text("icon");
+                table.text("description");
+                table.text("fields").notNullable();
+                table.text("layout").notNullable();
+                table.text("tags");
+                table.text("titleFieldId").notNullable();
+                table.text("descriptionFieldId");
+                table.text("imageFieldId");
+                table.boolean("isPrivate").notNullable().defaultTo(false);
+                table.boolean("isPlugin").notNullable().defaultTo(false);
+                table.text("authorization");
+                table.text("createdBy_id");
+                table.text("createdBy_displayName");
+                table.text("createdBy_type");
+                table.text("createdBy");
+                table.text("createdOn");
+                table.text("savedOn");
             });
         }
 
-        this.registry.markVerified(tableName);
+        this.verified.add(tableName);
     }
 }
 
 export const ModelSchemaManager = ModelSchemaManagerAbstraction.createImplementation({
     implementation: ModelSchemaManagerImpl,
-    dependencies: [KnexInstance, SchemaRegistry]
+    dependencies: [KnexInstance]
 });

@@ -14,31 +14,26 @@ import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js"
 import { GroupSchemaManager } from "~/features/groupSchemaManager/abstractions.js";
 import { groupToRow } from "./mappers.js";
 import { rowToGroup } from "./mappers.js";
-import { parseSortField } from "~/utils/parseSortField.js";
-
-const GROUPS_ENTITY = "groups";
 
 export const createGroupsStorageOperations = (
     knex: KnexInstance.Interface,
     tableNameResolver: TableNameResolver.Interface,
     groupSchemaManager: GroupSchemaManager.Interface
 ): CmsGroupStorageOperations => {
-    const ensureSchema = async (tenant: string) => {
-        const name = tableNameResolver.resolve(tenant, GROUPS_ENTITY);
+    const tableName = tableNameResolver.resolve("groups");
 
-        await groupSchemaManager.ensure(name);
+    const ensureSchema = async () => {
+        await groupSchemaManager.ensure(tableName);
     };
 
-    const query = (tenant: string) => {
-        const name = tableNameResolver.resolve(tenant, GROUPS_ENTITY);
-
-        return knex<IGroupRow>(name);
+    const query = () => {
+        return knex<IGroupRow>(tableName);
     };
 
     const get = async (getParams: CmsGroupStorageOperationsGetParams): Promise<CmsGroup | null> => {
-        await ensureSchema(getParams.tenant);
+        await ensureSchema();
 
-        const row = await query(getParams.tenant).where("id", getParams.id).first();
+        const row = await query().where("id", getParams.id).first();
 
         if (!row) {
             return null;
@@ -50,15 +45,22 @@ export const createGroupsStorageOperations = (
     const list = async (listParams: CmsGroupStorageOperationsListParams): Promise<CmsGroup[]> => {
         const { where, sort } = listParams;
 
-        await ensureSchema(where.tenant);
+        await ensureSchema();
 
-        const qb = query(where.tenant);
+        const qb = query();
 
         if (sort && sort.length > 0) {
             for (const sortField of sort) {
-                const [field, direction] = parseSortField(sortField);
+                const parts = sortField.split("_");
+                const direction = parts.pop()?.toLowerCase() === "asc" ? "asc" : "desc";
+                const field = parts.join("_");
                 qb.orderBy(field, direction);
             }
+        }
+
+        /* Filter by tenant if provided. */
+        if (where.tenant) {
+            qb.where("tenant", where.tenant);
         }
 
         const rows = await qb.select<IGroupRow[]>([...GROUP_COLUMNS]);
@@ -69,20 +71,20 @@ export const createGroupsStorageOperations = (
     const create = async (createParams: CmsGroupStorageOperationsCreateParams): Promise<void> => {
         const row = groupToRow(createParams.group);
 
-        await ensureSchema(createParams.group.tenant);
-        await query(createParams.group.tenant).insert(row);
+        await ensureSchema();
+        await query().insert(row);
     };
 
     const update = async (updateParams: CmsGroupStorageOperationsUpdateParams): Promise<void> => {
         const row = groupToRow(updateParams.group);
 
-        await ensureSchema(updateParams.group.tenant);
-        await query(updateParams.group.tenant).where("id", updateParams.group.id).update(row);
+        await ensureSchema();
+        await query().where("id", updateParams.group.id).update(row);
     };
 
     const del = async (deleteParams: CmsGroupStorageOperationsDeleteParams): Promise<void> => {
-        await ensureSchema(deleteParams.group.tenant);
-        await query(deleteParams.group.tenant).where("id", deleteParams.group.id).delete();
+        await ensureSchema();
+        await query().where("id", deleteParams.group.id).delete();
     };
 
     return {

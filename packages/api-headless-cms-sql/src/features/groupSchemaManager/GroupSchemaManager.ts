@@ -1,37 +1,16 @@
-import type { IColumnDefinition } from "~/features/fieldTypeMapper/abstractions.js";
 import { GroupSchemaManager as GroupSchemaManagerAbstraction } from "./abstractions.js";
-import { SchemaRegistry } from "~/features/schemaRegistry/abstractions.js";
 import { KnexInstance } from "~/features/knexInstance/abstractions.js";
-import { applyColumnDefinitions } from "~/features/entrySchemaManager/columnBuilder.js";
-
-const GROUP_TABLE_COLUMNS: IColumnDefinition[] = [
-    { name: "id", type: "varchar", nullable: false, primaryKey: true },
-    { name: "name", type: "varchar", nullable: false },
-    { name: "slug", type: "varchar", nullable: false },
-    { name: "tenant", type: "varchar", nullable: false },
-    { name: "description", type: "text", nullable: true },
-    { name: "icon", type: "text", nullable: true },
-    { name: "createdBy_id", type: "varchar", nullable: true },
-    { name: "createdBy_displayName", type: "varchar", nullable: true },
-    { name: "createdBy_type", type: "varchar", nullable: true },
-    { name: "createdBy", type: "text", nullable: true },
-    { name: "createdOn", type: "varchar", nullable: true },
-    { name: "savedOn", type: "varchar", nullable: true },
-    { name: "isPrivate", type: "boolean", nullable: false, defaultValue: false },
-    { name: "isPlugin", type: "boolean", nullable: false, defaultValue: false }
-];
 
 class GroupSchemaManagerImpl implements GroupSchemaManagerAbstraction.Interface {
     private readonly knex: KnexInstance.Interface;
-    private readonly registry: SchemaRegistry.Interface;
+    private readonly verified = new Set<string>();
 
-    constructor(knex: KnexInstance.Interface, registry: SchemaRegistry.Interface) {
+    constructor(knex: KnexInstance.Interface) {
         this.knex = knex;
-        this.registry = registry;
     }
 
     public async ensure(tableName: string): Promise<void> {
-        if (this.registry.isVerified(tableName)) {
+        if (this.verified.has(tableName)) {
             return;
         }
 
@@ -39,15 +18,28 @@ class GroupSchemaManagerImpl implements GroupSchemaManagerAbstraction.Interface 
 
         if (!exists) {
             await this.knex.schema.createTable(tableName, table => {
-                applyColumnDefinitions(table, GROUP_TABLE_COLUMNS);
+                table.text("id").primary().notNullable();
+                table.text("name").notNullable();
+                table.text("slug").notNullable();
+                table.text("tenant").notNullable();
+                table.text("description");
+                table.text("icon");
+                table.text("createdBy_id");
+                table.text("createdBy_displayName");
+                table.text("createdBy_type");
+                table.text("createdBy");
+                table.text("createdOn");
+                table.text("savedOn");
+                table.boolean("isPrivate").notNullable().defaultTo(false);
+                table.boolean("isPlugin").notNullable().defaultTo(false);
             });
         }
 
-        this.registry.markVerified(tableName);
+        this.verified.add(tableName);
     }
 }
 
 export const GroupSchemaManager = GroupSchemaManagerAbstraction.createImplementation({
     implementation: GroupSchemaManagerImpl,
-    dependencies: [KnexInstance, SchemaRegistry]
+    dependencies: [KnexInstance]
 });

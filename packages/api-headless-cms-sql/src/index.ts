@@ -5,55 +5,38 @@ import { createEntriesStorageOperations } from "~/operations/entry/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
-import { SchemaRegistryFeature } from "~/features/schemaRegistry/feature.js";
-import { FieldTypeMapperFeature } from "~/features/fieldTypeMapper/feature.js";
 import { GroupSchemaManagerFeature } from "~/features/groupSchemaManager/feature.js";
 import { ModelSchemaManagerFeature } from "~/features/modelSchemaManager/feature.js";
-import { EntrySchemaManagerFeature } from "~/features/entrySchemaManager/feature.js";
-import { SqlOperatorFeature } from "~/features/sqlOperator/feature.js";
-import { SqlEntryFilterFeature } from "~/features/sqlEntryFilter/feature.js";
+import { EntryTableManagerFeature } from "~/features/entryTableManager/feature.js";
 import { GroupSchemaManager } from "~/features/groupSchemaManager/abstractions.js";
 import { ModelSchemaManager } from "~/features/modelSchemaManager/abstractions.js";
-import { EntrySchemaManager } from "~/features/entrySchemaManager/abstractions.js";
-import { SqlOperatorRegistry } from "~/features/sqlOperator/abstractions/index.js";
-import { SqlEntryFilterRegistry } from "~/features/sqlEntryFilter/abstractions/index.js";
+import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
 import { KnexInstance } from "~/features/knexInstance/abstractions.js";
-import {
-    TableNameResolver,
-    TableNameResolverConfig
-} from "~/features/tableNameResolver/abstractions.js";
+import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js";
+import { TableNameResolverConfig } from "~/features/tableNameResolver/abstractions.js";
 import type { Knex } from "knex";
 import { TableNameResolverFeature } from "~/features/tableNameResolver/feature.js";
 import { KnexInstanceFeature } from "~/features/knexInstance/feature.js";
+import { ValueFilterFeature } from "@webiny/db-utils";
 
 const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
-    const { container } = params;
+    const { container, plugins } = params;
 
     const knex = container.resolve(KnexInstance);
     const tableNameResolver = container.resolve(TableNameResolver);
-    const tableNameResolverConfig = container.resolve(TableNameResolverConfig);
     const groupSchemaManager = container.resolve(GroupSchemaManager);
     const modelSchemaManager = container.resolve(ModelSchemaManager);
-    const entrySchemaManager = container.resolve(EntrySchemaManager);
-    const operatorRegistry = container.resolve(SqlOperatorRegistry);
-    const filterRegistry = container.resolve(SqlEntryFilterRegistry);
+    const entryTableManager = container.resolve(EntryTableManager);
 
     const groups = createGroupsStorageOperations(knex, tableNameResolver, groupSchemaManager);
 
-    const models = createModelsStorageOperations(
-        knex,
-        tableNameResolver,
-        modelSchemaManager,
-        entrySchemaManager
-    );
+    const models = createModelsStorageOperations(knex, tableNameResolver, modelSchemaManager);
 
     const entries = createEntriesStorageOperations({
         knex,
-        tableNameResolver,
-        entrySchemaManager,
-        operatorRegistry,
-        filterRegistry,
-        sharedTables: tableNameResolverConfig.sharedTables
+        entryTableManager,
+        container,
+        plugins
     });
 
     return {
@@ -70,6 +53,7 @@ const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
 interface ISqlStorageOperationsConfig {
     knex: Knex;
     tableNamePrefix?: string;
+    tableNameSuffix?: string;
 }
 
 class SqlStorageOperationsFactoryImpl implements StorageOperationsFactoryAbstraction.Interface {
@@ -90,18 +74,16 @@ export const registerSqlStorageOperations = (config: ISqlStorageOperationsConfig
 
             container.registerInstance(TableNameResolverConfig, {
                 sharedTables,
-                tableNamePrefix: config.tableNamePrefix
+                tableNamePrefix: config.tableNamePrefix,
+                tableNameSuffix: config.tableNameSuffix
             });
 
             KnexInstanceFeature.register(container, config.knex);
             TableNameResolverFeature.register(container);
-            SchemaRegistryFeature.register(container);
-            FieldTypeMapperFeature.register(container);
+            ValueFilterFeature.register(container);
             GroupSchemaManagerFeature.register(container);
             ModelSchemaManagerFeature.register(container);
-            EntrySchemaManagerFeature.register(container);
-            SqlOperatorFeature.register(container);
-            SqlEntryFilterFeature.register(container);
+            EntryTableManagerFeature.register(container);
 
             container.registerFactory(StorageOperationsFactoryAbstraction, () => {
                 return new SqlStorageOperationsFactoryImpl();
