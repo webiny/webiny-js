@@ -2,38 +2,8 @@ import React from "react";
 import type { IsVisibleCallable } from "../Droppable.js";
 import { Droppable } from "../Droppable.js";
 import type { DragSource } from "~/types.js";
-import { cn } from "@webiny/admin-ui";
-
-interface OuterDivVerticalProps {
-    isOver: boolean;
-    last?: boolean;
-    isDragging?: boolean;
-}
-
-const OuterDivVertical = ({ isOver, last, isDragging }: OuterDivVerticalProps) => (
-    <div
-        className={cn(
-            "absolute top-0 h-full w-[30%] z-10 bg-transparent",
-            last ? "text-right -right-sm" : "text-left -left-sm"
-        )}
-    >
-        <div
-            className={cn(
-                "absolute w-md h-full z-3 border-dashed border-sm hidden",
-                isOver ? "border-accent-default" : "border-success-default",
-                last ? "-right-sm" : "-left-sm",
-                isDragging && "block"
-            )}
-        >
-            <div
-                className={cn(
-                    "w-full h-full opacity-50",
-                    isOver ? "bg-primary-muted" : "bg-success-muted"
-                )}
-            />
-        </div>
-    </div>
-);
+import { Icon } from "@webiny/admin-ui";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 
 interface VerticalProps {
     depth?: number;
@@ -51,7 +21,6 @@ const Vertical = ({ depth, last, onDrop, isVisible }: VerticalProps) => {
                         drop(element);
                     }}
                     style={{
-                        /* For dropzone debugging: border: "1px solid blue",*/
                         width: "30%",
                         maxWidth: "100px",
                         height: "100%",
@@ -61,7 +30,23 @@ const Vertical = ({ depth, last, onDrop, isVisible }: VerticalProps) => {
                         zIndex: isDragging ? 1000 + (depth || 0) : -1
                     }}
                 >
-                    <OuterDivVertical isOver={isOver} isDragging={isDragging} last={last} />
+                    {isDragging && (
+                        <div
+                            className={
+                                "absolute top-0 h-full flex items-center " +
+                                (last ? "right-0" : "left-0")
+                            }
+                        >
+                            <div
+                                className={
+                                    "h-full w-sm-extra rounded-xs p-xxs transition-colors relative flex items-center justify-center " +
+                                    (isOver ? "bg-warning-muted" : "bg-[#feebb8]")
+                                }
+                            >
+                                <Icon icon={<AddIcon />} label="Add" size="xs" color="accent" />
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </Droppable>

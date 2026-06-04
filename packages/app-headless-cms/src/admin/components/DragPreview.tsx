@@ -56,8 +56,7 @@ const getDragInfo = (item: DragSource | null): { label: string; icon?: React.Rea
     }
 
     if (item.type === "row") {
-        const first = item.fields?.[0];
-        return { label: first ? first.label : "Row" };
+        return { label: "Row" };
     }
 
     return { label: "Field" };

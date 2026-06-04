@@ -148,7 +148,7 @@ const Editor = () => {
                             } /* RowContainer start - includes drag handle, drop zones and the Row itself. */
                         ) => (
                             <div
-                                className={`group flex flex-column relative mb-sm-extra last-of-type:mb-none ${isDragging ? "opacity-30" : "opacity-100"}`}
+                                className={`group flex flex-column relative mb-sm-extra last-of-type:mb-none ${isDragging ? "opacity-50" : "opacity-100"}`}
                             >
                                 <div
                                     className={
