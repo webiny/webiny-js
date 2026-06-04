@@ -14,7 +14,7 @@ import type { CmsEditorFieldsLayout, CmsModelField, DragSource } from "~/types.j
 import type { CmsLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
 import { isLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
-import { Icon } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -152,17 +152,16 @@ const Editor = () => {
                             >
                                 <div
                                     className={
-                                        "cursor-grab absolute left-[22px] top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible"
+                                        "cursor-grab absolute left-[0] top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible"
                                     }
                                     ref={element => {
                                         drag(element);
                                     }}
                                 >
-                                    <Icon
+                                    <IconButton
                                         icon={<DragIcon />}
-                                        label={"Drag to move this row"}
-                                        color={"neutral-strong"}
-                                        size={"sm"}
+                                        variant={"secondary"}
+                                        size={"xs"}
                                     />
                                 </div>
                                 <Horizontal
