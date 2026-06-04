@@ -27740,9 +27740,9 @@ __metadata:
   linkType: hard
 
 "undici-types@npm:^7.21.0":
-  version: 7.26.0
-  resolution: "undici-types@npm:7.26.0"
-  checksum: 10/37fd886d9177f396d91ba9c70cab9b4b4174c926897345811434f41f4033b291582f1faf6810c0ac2833572bb64f753b1dc9fb2981b1bddc3d0a9c2212c1335c
+  version: 7.27.0
+  resolution: "undici-types@npm:7.27.0"
+  checksum: 10/a986d66d90db440f2a3e00ff1205f08b56689f64cb62a2cf406499a24a7f89dcfa72ede40150eedbfc6bdbc3676467b7a61b011ff5c89b053622e33656c708b9
   languageName: node
   linkType: hard
 
@@ -27761,9 +27761,9 @@ __metadata:
   linkType: hard
 
 "undici@npm:^7.19.0, undici@npm:^7.25.0":
-  version: 7.26.0
-  resolution: "undici@npm:7.26.0"
-  checksum: 10/c55b8f8e378dce6e645853faf0834d66b9f470c6ee1430c6e2b7971d831de36081f7e2e21ac1fc11297657d7c856241b0bf746b2a24f1277f8d156df9c181ba7
+  version: 7.27.0
+  resolution: "undici@npm:7.27.0"
+  checksum: 10/7b6a56a03983f6421b1c61dffcd69cbd3e7708a75c4bafdd2a5156536f95979f4b95dcd9508ea1a6af6fce2c3398a7c86606542cc9d1c8c11c06ec76cabbcf7a
   languageName: node
   linkType: hard
 
