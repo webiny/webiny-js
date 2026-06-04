@@ -65,7 +65,7 @@
     "storybook": "^10.4.1",
     "storybook-react-rsbuild": "^3.3.4",
     "typescript": "6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.8"
   },
   "publishConfig": {
     "access": "public"

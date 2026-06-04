@@ -37,7 +37,7 @@
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.8"
   },
   "webiny": {
     "publishFrom": "dist"
