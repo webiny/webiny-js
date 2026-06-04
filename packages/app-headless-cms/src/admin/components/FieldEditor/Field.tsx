@@ -215,25 +215,18 @@ const Field = (props: FieldProps) => {
                             <IconButton icon={<MoreVerticalIcon />} variant={"ghost"} size={"sm"} />
                         }
                     >
-                        <DropdownMenu.Item
-                            onClick={() => onEdit(field)}
-                            text={t`Edit`}
-                            icon={
-                                <DropdownMenu.Item.Icon
-                                    element={<EditIcon />}
-                                    label={t`Edit field`}
-                                />
-                            }
-                        />
-                        {/*{canEdit ? (*/}
-                        {/*    <IconButton*/}
-                        {/*        data-testid={"cms.editor.edit-field"}*/}
-                        {/*        icon={<EditIcon />}*/}
-                        {/*        onClick={() => onEdit(field)}*/}
-                        {/*        variant={"ghost"}*/}
-                        {/*        size={"xs"}*/}
-                        {/*    />*/}
-                        {/*) : null}*/}
+                        {canEdit && (
+                            <DropdownMenu.Item
+                                onClick={() => onEdit(field)}
+                                text={t`Edit`}
+                                icon={
+                                    <DropdownMenu.Item.Icon
+                                        element={<EditIcon />}
+                                        label={t`Edit field`}
+                                    />
+                                }
+                            />
+                        )}
                         {editorFieldOptionPlugins.map(pl =>
                             React.cloneElement(pl.render(), { key: pl.name })
                         )}
