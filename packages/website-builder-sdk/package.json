@@ -31,7 +31,7 @@
     "@types/is-hotkey": "^0.1.10",
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.8"
   },
   "publishConfig": {
     "access": "public"
