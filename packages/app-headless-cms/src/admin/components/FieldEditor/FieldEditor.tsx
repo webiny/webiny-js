@@ -200,11 +200,9 @@ const Editor = () => {
                                                             ref={element => {
                                                                 drag(element);
                                                             }}
-                                                            className={cn([
-                                                                "relative",
-                                                                "flex-1 min-w-0",
-                                                                "mx-sm"
-                                                            ])}
+                                                            className={
+                                                                "relative flex-1 min-w-0 mx-sm"
+                                                            }
                                                         >
                                                             <div
                                                                 className={
@@ -240,11 +238,9 @@ const Editor = () => {
                                                 >
                                                     {({ drag }) => (
                                                         <div
-                                                            className={cn([
-                                                                "relative",
-                                                                "flex-1 min-w-0",
-                                                                "mx-sm"
-                                                            ])}
+                                                            className={
+                                                                "relative flex-1 min-w-0 mx-sm"
+                                                            }
                                                             ref={element => {
                                                                 drag(element);
                                                             }}

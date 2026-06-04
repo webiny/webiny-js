@@ -2,6 +2,7 @@ import * as React from "react";
 import type { ConnectDropTarget } from "react-dnd";
 import { useDrop } from "react-dnd";
 import type { DragSource } from "~/types.js";
+import { notifyDropZoneOver } from "./dropZoneOverState.js";
 
 export interface DroppableChildrenFunctionParams {
     isDragging: boolean;
@@ -58,6 +59,11 @@ const DroppableComponent = (props: DroppableProps) => {
             }
         }
     });
+
+    React.useEffect(() => {
+        notifyDropZoneOver(isOver);
+        return () => notifyDropZoneOver(false);
+    }, [isOver]);
 
     if (item && !isVisible(item)) {
         return null;
