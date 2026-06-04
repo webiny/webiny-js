@@ -11,6 +11,7 @@ import { SidebarFooter } from "~/admin/components/ContentEntries/SidebarFooter/S
 import { useContentEntriesPresenter } from "./ContentEntriesPresenterProvider.js";
 import { ContentEntryFormView } from "./ContentEntryFormView.js";
 import { Table } from "./Table/Table.js";
+import { CmsAdvancedSearch } from "./CmsAdvancedSearch.js";
 
 export const ContentEntriesListLayout = observer(() => {
     const presenter = useContentEntriesPresenter();
@@ -104,7 +105,9 @@ const DocumentList = observer(() => {
                 <ListView.Filters
                     filters={browser.filters}
                     filtersToWhere={browser.filtersToWhere}
-                />
+                >
+                    <CmsAdvancedSearch />
+                </ListView.Filters>
             }
             content={
                 <ListView.Content

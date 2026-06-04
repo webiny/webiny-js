@@ -100,6 +100,8 @@ class RedirectListPresenterImpl implements IRedirectListPresenter {
                 toggle: (field: string) => this.listPresenter.actions.sort.toggle(field)
             },
             filter: {
+                show: () => this.listPresenter.actions.filter.show(),
+                hide: () => this.listPresenter.actions.filter.hide(),
                 set: (key: string, value: unknown) =>
                     this.listPresenter.actions.filter.set(key, value),
                 clear: (key: string) => this.listPresenter.actions.filter.clear(key),

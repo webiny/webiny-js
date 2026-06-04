@@ -4,29 +4,52 @@ import type {
     IDataSourceMeta,
     IDataSourceQuery
 } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
+import { QueryMatcher } from "@webiny/app-admin/presentation/listPresenter/QueryMatcher.js";
 import type { IListCache } from "@webiny/app-admin/features/listCache/index.js";
+import type { IGetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import type { CmsContentEntry, CmsModel } from "~/types.js";
 import type { IListEntriesUseCase } from "~/features/contentEntry/listEntries/abstractions.js";
 
 export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
     private _meta: IDataSourceMeta = { cursor: null, hasMoreItems: false, totalCount: 0 };
     private _loading = false;
-    private _matcher: (item: CmsContentEntry) => boolean = () => true;
+    private queryMatcher = new QueryMatcher<CmsContentEntry>({
+        keyField: "entryId",
+        localFilters: {
+            folderId: (item, value) => {
+                const folderId = value as string;
+                const itemFolderId = item.wbyAco_location?.folderId;
+                if (folderId && folderId !== "root") {
+                    return itemFolderId === folderId;
+                }
+                return !itemFolderId || itemFolderId === "root";
+            },
+            status: (item, value) => {
+                return item.meta.status === value;
+            }
+        }
+    });
 
     constructor(
         private model: CmsModel,
         private listEntriesUseCase: IListEntriesUseCase,
-        private cache: IListCache<CmsContentEntry>
+        private cache: IListCache<CmsContentEntry>,
+        private getDescendantFoldersUseCase?: IGetDescendantFoldersUseCase
     ) {
-        makeAutoObservable<ContentEntriesDataSource, "model" | "listEntriesUseCase">(this, {
+        makeAutoObservable<
+            ContentEntriesDataSource,
+            "model" | "listEntriesUseCase" | "getDescendantFoldersUseCase" | "queryMatcher"
+        >(this, {
             model: false,
             listEntriesUseCase: false,
+            getDescendantFoldersUseCase: false,
+            queryMatcher: false,
             rows: true
         });
     }
 
     get rows(): CmsContentEntry[] {
-        return this.cache.getItems().filter(this._matcher);
+        return this.cache.getItems().filter(this.queryMatcher.matcher);
     }
 
     get meta(): IDataSourceMeta {
@@ -39,7 +62,6 @@ export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
 
     async query(params: IDataSourceQuery): Promise<void> {
         this._loading = true;
-        this._matcher = this.buildMatcher(params);
 
         try {
             const result = await this.listEntriesUseCase.execute({
@@ -52,6 +74,10 @@ export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
             });
 
             runInAction(() => {
+                this.queryMatcher.updateFromQuery(
+                    params,
+                    result.data.map(e => e.entryId)
+                );
                 this._meta = {
                     cursor: result.meta.cursor,
                     hasMoreItems: result.meta.hasMoreItems,
@@ -83,6 +109,7 @@ export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
             });
 
             runInAction(() => {
+                this.queryMatcher.appendResultKeys(result.data.map(e => e.entryId));
                 this._meta = {
                     cursor: result.meta.cursor,
                     hasMoreItems: result.meta.hasMoreItems,
@@ -96,35 +123,20 @@ export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
         }
     }
 
-    private buildMatcher(params: IDataSourceQuery): (item: CmsContentEntry) => boolean {
-        const filters = params.filters ?? {};
-        const folderId = filters.folderId as string | undefined;
-        const status = filters.status as string | undefined;
-
-        return (item: CmsContentEntry) => {
-            const itemFolderId = item.wbyAco_location?.folderId;
-            if (folderId && folderId !== "root") {
-                if (itemFolderId !== folderId) {
-                    return false;
-                }
-            } else {
-                if (itemFolderId && itemFolderId !== "root") {
-                    return false;
-                }
-            }
-            if (status && item.meta.status !== status) {
-                return false;
-            }
-            return true;
-        };
-    }
-
     private buildWhere(params: IDataSourceQuery): Record<string, unknown> | undefined {
         const where: Record<string, unknown> = {};
         const filters = params.filters ?? {};
+        const folderId = (filters.folderId as string | undefined) || "root";
+        const isRoot = folderId === "root";
 
-        if (filters.folderId && filters.folderId !== "root") {
-            where["wbyAco_location"] = { folderId: filters.folderId };
+        if (params.search && isRoot) {
+            // Search from root: no folder filter — search all folders.
+        } else if (params.search && this.getDescendantFoldersUseCase) {
+            const descendants = this.getDescendantFoldersUseCase.execute(folderId);
+            const folderIds = descendants.map(f => f.id);
+            where["wbyAco_location"] = { folderId_in: folderIds };
+        } else {
+            where["wbyAco_location"] = { folderId };
         }
 
         if (filters.status) {

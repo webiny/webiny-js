@@ -2,6 +2,7 @@ import { computed, makeAutoObservable, reaction } from "mobx";
 import type { IReactionDisposer } from "mobx";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { CmsContentEntry, CmsModel } from "~/types.js";
 import { ListEntriesUseCase } from "~/features/contentEntry/listEntries/abstractions.js";
@@ -42,7 +43,8 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
         private moveEntryUseCase: MoveEntryUseCase.Interface,
         private bulkActionUseCase: BulkActionUseCase.Interface,
         private updateRevisionDescriptionUseCase: UpdateRevisionDescriptionUseCase.Interface,
-        private cacheProvider: ContentEntriesCacheProvider.Interface
+        private cacheProvider: ContentEntriesCacheProvider.Interface,
+        private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface
     ) {
         makeAutoObservable<
             ContentEntriesPresenterImpl,
@@ -56,6 +58,7 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
             | "bulkActionUseCase"
             | "updateRevisionDescriptionUseCase"
             | "cacheProvider"
+            | "getDescendantFoldersUseCase"
         >(this, {
             _disposeReaction: false,
             confirmation: false,
@@ -67,6 +70,7 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
             bulkActionUseCase: false,
             updateRevisionDescriptionUseCase: false,
             cacheProvider: false,
+            getDescendantFoldersUseCase: false,
             vm: computed
         });
     }
@@ -198,7 +202,12 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
         const initialFolderId = this._initConfig?.initialFolderId ?? "root";
 
         const cache = this.cacheProvider.get(model.modelId);
-        const dataSource = new ContentEntriesDataSource(model, this.listEntriesUseCase, cache);
+        const dataSource = new ContentEntriesDataSource(
+            model,
+            this.listEntriesUseCase,
+            cache,
+            this.getDescendantFoldersUseCase
+        );
 
         this._listPresenter.init({
             dataSource,
@@ -241,6 +250,7 @@ export const ContentEntriesPresenterImplementation = Abstraction.createImplement
         MoveEntryUseCase,
         BulkActionUseCase,
         UpdateRevisionDescriptionUseCase,
-        ContentEntriesCacheProvider
+        ContentEntriesCacheProvider,
+        GetDescendantFoldersUseCase
     ]
 });

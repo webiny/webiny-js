@@ -14,9 +14,10 @@ type FiltersToWhereConverter = (data: Record<string, any>) => Record<string, any
 export interface ListViewFiltersProps {
     filters: Filter[];
     filtersToWhere?: FiltersToWhereConverter[];
+    children?: React.ReactNode;
 }
 
-const ListViewFilters = observer(({ filters, filtersToWhere }: ListViewFiltersProps) => {
+const ListViewFilters = observer(({ filters, filtersToWhere, children }: ListViewFiltersProps) => {
     const { showingFilters, actions } = useListView();
 
     const applyFilters: FiltersOnSubmit = data => {
@@ -34,7 +35,11 @@ const ListViewFilters = observer(({ filters, filtersToWhere }: ListViewFiltersPr
         }
     };
 
-    return <Filters filters={filters} show={showingFilters} onChange={applyFilters} />;
+    return (
+        <Filters filters={filters} show={showingFilters} onChange={applyFilters}>
+            {children}
+        </Filters>
+    );
 });
 
 export { ListViewFilters };
