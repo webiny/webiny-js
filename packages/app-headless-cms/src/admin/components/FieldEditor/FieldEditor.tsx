@@ -14,7 +14,7 @@ import type { CmsEditorFieldsLayout, CmsModelField, DragSource } from "~/types.j
 import type { CmsLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
 import { isLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
-import { cn, Icon } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -148,19 +148,12 @@ const Editor = () => {
                             } /* RowContainer start - includes drag handle, drop zones and the Row itself. */
                         ) => (
                             <div
-                                className={cn([
-                                    "group flex flex-column",
-                                    "relative",
-                                    "mb-sm-extra last-of-type:mb-none",
-                                    isDragging ? "opacity-30" : "opacity-100"
-                                ])}
+                                className={`group flex flex-column relative mb-sm-extra last-of-type:mb-none ${isDragging ? "opacity-30" : "opacity-100"}`}
                             >
                                 <div
-                                    className={cn([
-                                        "cursor-grab",
-                                        "absolute left-[22px] top-1/2 -translate-y-1/2 z-10",
-                                        "invisible group-hover:visible"
-                                    ])}
+                                    className={
+                                        "cursor-grab absolute left-[22px] top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible"
+                                    }
                                     ref={element => {
                                         drag(element);
                                     }}
@@ -179,7 +172,7 @@ const Editor = () => {
                                 />
                                 {/* Row start - includes field drop zones and fields */}
                                 <div
-                                    className={cn(["w-full flex justify-between", ""])}
+                                    className={"w-full flex justify-between"}
                                     data-testid={"cms.editor.field-row"}
                                 >
                                     {row.map((cell, fieldIndex) => {
