@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import type { DragLayerMonitor } from "react-dnd";
 import { useDragLayer } from "react-dnd";
 import { DragCursor } from "@webiny/admin-ui";
-import { subscribeToDropZoneOver } from "./dropZoneOverState.js";
+import { dropZoneOverState } from "./dropZoneOverState.js";
 import { getDragInfo } from "./getDragInfo.js";
 import type { DragSource } from "~/types.js";
 
@@ -37,7 +37,7 @@ const DragPreview = () => {
     }, [isDragging]);
 
     useEffect(() => {
-        return subscribeToDropZoneOver(setIsOverSlot);
+        return dropZoneOverState.subscribe(setIsOverSlot);
     }, []);
 
     useEffect(() => {

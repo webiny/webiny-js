@@ -1,17 +1,21 @@
 type Subscriber = (isOver: boolean) => void;
 
-const subscribers = new Set<Subscriber>();
-let activeCount = 0;
+class DropZoneOverState {
+    private subscribers = new Set<Subscriber>();
+    private activeCount = 0;
 
-export const notifyDropZoneOver = (isOver: boolean) => {
-    activeCount = isOver ? activeCount + 1 : Math.max(0, activeCount - 1);
-    const state = activeCount > 0;
-    subscribers.forEach(fn => fn(state));
-};
+    notify(isOver: boolean) {
+        this.activeCount = isOver ? this.activeCount + 1 : Math.max(0, this.activeCount - 1);
+        const state = this.activeCount > 0;
+        this.subscribers.forEach(fn => fn(state));
+    }
 
-export const subscribeToDropZoneOver = (fn: Subscriber) => {
-    subscribers.add(fn);
-    return () => {
-        subscribers.delete(fn);
-    };
-};
+    subscribe(fn: Subscriber) {
+        this.subscribers.add(fn);
+        return () => {
+            this.subscribers.delete(fn);
+        };
+    }
+}
+
+export const dropZoneOverState = new DropZoneOverState();
