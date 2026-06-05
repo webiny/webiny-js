@@ -171,7 +171,7 @@ const Editor = () => {
                                 />
                                 {/* Row start - includes field drop zones and fields */}
                                 <div
-                                    className={"w-full flex justify-between"}
+                                    className={"w-full flex justify-between gap-x-sm-extra"}
                                     data-testid={"cms.editor.field-row"}
                                 >
                                     {row.map((cell, fieldIndex) => {
@@ -192,9 +192,7 @@ const Editor = () => {
                                                             ref={element => {
                                                                 drag(element);
                                                             }}
-                                                            className={
-                                                                "relative flex-1 min-w-0 mx-sm"
-                                                            }
+                                                            className={"relative flex-1 min-w-0"}
                                                         >
                                                             <div
                                                                 className={
@@ -230,9 +228,7 @@ const Editor = () => {
                                                 >
                                                     {({ drag }) => (
                                                         <div
-                                                            className={
-                                                                "relative flex-1 min-w-0 mx-sm"
-                                                            }
+                                                            className={"relative flex-1 min-w-0"}
                                                             ref={element => {
                                                                 drag(element);
                                                             }}

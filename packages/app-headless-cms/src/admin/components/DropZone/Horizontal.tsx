@@ -22,10 +22,10 @@ const Horizontal = ({ last, onDrop, isVisible, ...rest }: HorizontalProps) => {
                     }}
                     data-testid={rest["data-testid"]}
                     style={{
-                        height: "16px",
+                        height: "12px",
                         width: "100%",
                         position: "absolute",
-                        [last ? "bottom" : "top"]: 0,
+                        [last ? "bottom" : "top"]: -12,
                         left: 0,
                         zIndex: isDragging ? 1000 : -1
                     }}

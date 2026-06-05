@@ -43,7 +43,12 @@ const Vertical = ({ depth, last, onDrop, isVisible }: VerticalProps) => {
                                     (isOver ? "bg-warning-muted" : "bg-[#feebb8]")
                                 }
                             >
-                                <Icon icon={<AddIcon />} label="Add" size="xs" color="accent" />
+                                <Icon
+                                    icon={<AddIcon />}
+                                    label="Add"
+                                    size="xs"
+                                    className={"fill-warning-600"}
+                                />
                             </div>
                         </div>
                     )}
