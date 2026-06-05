@@ -21,14 +21,7 @@ const Horizontal = ({ last, onDrop, isVisible, ...rest }: HorizontalProps) => {
                         drop(element);
                     }}
                     data-testid={rest["data-testid"]}
-                    style={{
-                        height: "12px",
-                        width: "100%",
-                        position: "absolute",
-                        [last ? "bottom" : "top"]: -12,
-                        left: 0,
-                        zIndex: isDragging ? 1000 : -1
-                    }}
+                    className={`h-sm-extra w-full absolute left-0 ${last ? "-bottom-sm-extra" : "-top-sm-extra"} ${isDragging ? "z-[1000]" : "-z-[1]"}`}
                 >
                     {isDragging && (
                         <div

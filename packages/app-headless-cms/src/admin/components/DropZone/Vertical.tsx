@@ -20,15 +20,8 @@ const Vertical = ({ depth, last, onDrop, isVisible }: VerticalProps) => {
                     ref={element => {
                         drop(element);
                     }}
-                    style={{
-                        width: "30%",
-                        maxWidth: "100px",
-                        height: "100%",
-                        position: "absolute",
-                        top: 0,
-                        [last ? "right" : "left"]: 0,
-                        zIndex: isDragging ? 1000 + (depth || 0) : -1
-                    }}
+                    className={`w-sm-extra h-full absolute top-0 ${last ? "right-0" : "left-0"}`}
+                    style={{ zIndex: isDragging ? 1000 + (depth || 0) : -1 }}
                 >
                     {isDragging && (
                         <div
