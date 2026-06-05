@@ -2,6 +2,7 @@ import { createWorkflow } from "github-actions-wac";
 import { createJob } from "./jobs/index.js";
 
 const VERSION = "${{ github.event.inputs.version }}";
+const SOURCE_TAG = "${{ github.event.inputs.sourceTag }}";
 
 export const fullRelease = createWorkflow({
     name: `🚀 Full Release`,
@@ -11,6 +12,12 @@ export const fullRelease = createWorkflow({
                 version: {
                     description: "Release version (e.g. 6.3.0)",
                     required: true,
+                    type: "string"
+                },
+                sourceTag: {
+                    description: "Git tag or branch to branch off from",
+                    required: false,
+                    default: "next",
                     type: "string"
                 }
             }
@@ -34,10 +41,10 @@ export const fullRelease = createWorkflow({
                     run: 'git config --global user.name "webiny-bot"'
                 },
                 {
-                    name: "Checkout next",
+                    name: "Checkout source tag",
                     uses: "actions/checkout@v5",
                     with: {
-                        ref: "next",
+                        ref: SOURCE_TAG,
                         "fetch-depth": 0,
                         token: "${{ secrets.GH_TOKEN }}"
                     }

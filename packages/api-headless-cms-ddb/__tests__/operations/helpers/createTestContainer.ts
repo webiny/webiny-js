@@ -1,5 +1,5 @@
 import { Container } from "@webiny/di";
-import { ValueFilterFeature } from "@webiny/db-dynamodb/feature/ValueFilter/index.js";
+import { ValueFilterFeature } from "@webiny/db-utils";
 
 export const createTestContainer = () => {
     const container = new Container();

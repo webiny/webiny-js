@@ -4,14 +4,16 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-headless-cms" },
+    { "path": "../api-headless-cms-storage" },
     { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
+    { "path": "../db-utils" },
     { "path": "../error" },
     { "path": "../feature" },
     { "path": "../handler" },
     { "path": "../handler-db" },
-    { "path": "../utils" },
-    { "path": "../plugins" }
+    { "path": "../plugins" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -24,10 +26,14 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-headless-cms-storage/*": ["../api-headless-cms-storage/src/*"],
+      "@webiny/api-headless-cms-storage": ["../api-headless-cms-storage/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/db-utils/*": ["../db-utils/src/*"],
+      "@webiny/db-utils": ["../db-utils/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/feature/api": ["../feature/src/api/index.js"],
@@ -38,10 +44,10 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }

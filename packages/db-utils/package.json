@@ -1,0 +1,24 @@
+{
+  "name": "@webiny/db-utils",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/db-utils"
+  },
+  "dependencies": {
+    "@webiny/error": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "fuse.js": "7.4.0"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "^1.0.1",
+    "@webiny/project-utils": "0.0.0",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.8"
+  }
+}

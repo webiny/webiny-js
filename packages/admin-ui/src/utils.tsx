@@ -7,10 +7,8 @@ export { makeDecoratable } from "@webiny/react-composition";
 
 const twMerge = extendTailwindMerge({
     override: {
-        theme: {
-            borderWidth: ["sm", "md", "none"]
-        },
         classGroups: {
+            "border-w": ["border-w-sm", "border-w-md", "border-w-none"],
             "border-color": [
                 "border-transparent",
                 "border-white",
@@ -65,38 +63,11 @@ const twMerge = extendTailwindMerge({
     },
     extend: {
         theme: {
-            padding: [
-                "lg",
-                "md",
-                "md-extra",
-                "none",
-                "sm",
-                "sm-extra",
-                "sm-plus",
-                "xl",
-                "xs",
-                "xs-plus",
-                "xxl",
-                "xxs"
-            ],
-            margin: [
-                "lg",
-                "md",
-                "md-plus",
-                "none",
-                "sm",
-                "sm-extra",
-                "sm-plus",
-                "xl",
-                "xs",
-                "xs-plus",
-                "xxl",
-                "xxs"
-            ],
             spacing: [
                 "3xl",
                 "lg",
                 "md",
+                "md-extra",
                 "md-plus",
                 "none",
                 "sm",

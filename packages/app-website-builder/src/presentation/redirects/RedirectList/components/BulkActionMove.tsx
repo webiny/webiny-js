@@ -1,0 +1,93 @@
+import React, { useCallback, useMemo } from "react";
+import { ReactComponent as MoveIcon } from "@webiny/icons/exit_to_app.svg";
+import { type NodeDto, Tooltip } from "@webiny/admin-ui";
+import { useMoveToFolderDialog } from "@webiny/app-aco";
+import { observer } from "mobx-react-lite";
+import { ROOT_FOLDER } from "~/constants.js";
+import { useContainer } from "@webiny/app";
+import { MoveRedirectUseCase } from "~/features/redirects/moveRedirect/abstractions.js";
+import { RedirectListConfig } from "../configs/RedirectListConfig.js";
+import { useRedirectListPresenter } from "./RedirectListPresenterProvider.js";
+import { getRedirectsLabel } from "./getRedirectsLabel.js";
+
+const { useButtons, useDialog } = RedirectListConfig.Browser.BulkAction;
+
+export const BulkActionMove = observer(() => {
+    const { ButtonDefault } = useButtons();
+    const { vm, actions } = useRedirectListPresenter();
+
+    const { showConfirmationDialog, showResultsDialog } = useDialog();
+    const { showDialog: showMoveDialog } = useMoveToFolderDialog();
+
+    const container = useContainer();
+    const moveRedirectUseCase = container.resolve(MoveRedirectUseCase);
+    const currentFolderId = vm.folders.currentFolderId;
+
+    const redirectsLabel = useMemo(() => {
+        return getRedirectsLabel(vm.list.selection.selectedCount);
+    }, [vm.list.selection.selectedCount]);
+
+    const openWorkerDialog = useCallback(
+        (folder: NodeDto) => {
+            showConfirmationDialog({
+                title: "Move redirects",
+                message: `You are about to move ${redirectsLabel} to ${folder.label}. Are you sure you want to continue?`,
+                loadingLabel: `Processing ${redirectsLabel}...`,
+                execute: async () => {
+                    await actions.worker.processInSeries(async ({ item, report }) => {
+                        try {
+                            await moveRedirectUseCase.execute({
+                                id: item.id,
+                                folderId: folder.id
+                            });
+
+                            report.success({
+                                title: item.redirectFrom,
+                                message: "Redirect successfully moved."
+                            });
+                        } catch (e) {
+                            report.error({
+                                title: item.redirectFrom,
+                                message: e.message
+                            });
+                        }
+                    });
+
+                    actions.selection.deselectAll();
+
+                    showResultsDialog({
+                        results: actions.worker.results,
+                        title: "Move redirects",
+                        message: "Finished moving redirects! See full report below:",
+                        onCancel: actions.worker.resetResults
+                    });
+                }
+            });
+        },
+        [redirectsLabel]
+    );
+
+    const openMoveDialog = () =>
+        showMoveDialog({
+            title: "Select folder",
+            message: "Select a new location for selected redirects:",
+            loadingLabel: `Processing ${redirectsLabel}...`,
+            acceptLabel: `Move`,
+            focusedFolderId: currentFolderId || ROOT_FOLDER,
+            async onAccept({ folder }) {
+                openWorkerDialog(folder);
+            }
+        });
+
+    return (
+        <Tooltip
+            side={"bottom"}
+            content={`Move ${redirectsLabel}`}
+            trigger={
+                <ButtonDefault icon={<MoveIcon />} onAction={openMoveDialog} size={"sm"}>
+                    {`Move`}
+                </ButtonDefault>
+            }
+        />
+    );
+});

@@ -332,7 +332,7 @@ export const pullRequests = createWorkflow({
         aiFixStaticAnalysis: createJob({
             name: "AI Fix Static Analysis",
             needs: ["constants", "staticCodeAnalysis"],
-            if: "failure() && needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true' && needs.constants.outputs.skip-ai-fix != 'true'",
+            if: "failure() && github.event.pull_request.user.login == 'adrians5j' && needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true' && needs.constants.outputs.skip-ai-fix != 'true'",
             permissions: { contents: "write" },
             checkout: { path: DIR_WEBINY_JS },
             env: { ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}" },

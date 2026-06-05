@@ -1,9 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { createFields } from "~/operations/entry/filtering/createFields";
+import { createFields, type Field } from "@webiny/api-headless-cms-storage";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { createModel } from "../../helpers/createModel";
-import { Field } from "~/operations/entry/filtering/types";
 import { createPluginsContainer } from "../../helpers/pluginsContainer";
 import { expectedSystemFields } from "./mocks/expectedSystemFields.js";
 

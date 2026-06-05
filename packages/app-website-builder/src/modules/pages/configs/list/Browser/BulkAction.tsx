@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import type { CallbackParams } from "@webiny/app-admin";
 import { useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
@@ -59,28 +59,21 @@ const useWorker = () => {
         return pages.map(page => PageDtoMapper.toDTO(page));
     }, [vm.selected]);
 
-    useEffect(() => {
-        worker.items = items;
-    }, [items.length]);
-
-    // Reset selected items in both useDocumentList and Worker
     const resetItems = useCallback(() => {
-        worker.items = [];
         selectPages([]);
     }, []);
 
-    // Reset results in Worker
     const resetResults = useCallback(async () => {
         worker.resetResults();
     }, []);
 
     return {
         items,
-        process: (callback: (pages: PageDto[]) => void) => worker.process(callback),
+        process: (callback: (pages: PageDto[]) => void) => worker.process(items, callback),
         processInSeries: async (
             callback: ({ item, allItems, report }: CallbackParams<PageDto>) => Promise<void>,
             chunkSize?: number
-        ) => worker.processInSeries(callback, chunkSize),
+        ) => worker.processInSeries(items, callback, chunkSize),
         resetItems: resetItems,
         results: worker.results,
         resetResults
