@@ -76,13 +76,14 @@ export const StarterKitConfigDialog = ({ open, onClose }: Props) => {
         <Dialog
             open={open}
             size={"xl"}
+            bodyPadding={false}
             onOpenChange={onClose}
             title={"Configure Starter Kit"}
             actions={<Dialog.CancelAction text={"Close"} />}
             showCloseButton={true}
             dismissible={true}
         >
-            <Tabs tabs={tabs} size={"md"} spacing={"sm"} />
+            <Tabs tabs={tabs} size={"md"} spacing={"lg"} separator={true} />
         </Dialog>
     );
 };

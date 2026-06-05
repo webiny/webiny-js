@@ -17,13 +17,13 @@ class NuxtConfigImpl implements Abstraction.Interface {
         const domains = await this.getDomains();
 
         const envVars = [
-            `NUXT_PUBLIC_WEBSITE_BUILDER_API_KEY={API_TOKEN}`,
-            `NUXT_PUBLIC_WEBSITE_BUILDER_API_HOST={API_HOST}`,
-            `NUXT_PUBLIC_WEBSITE_BUILDER_API_TENANT={TENANT_ID}`
+            `WEBINY_API_KEY={API_TOKEN}`,
+            `WEBINY_API_HOST={API_HOST}`,
+            `WEBINY_API_TENANT={TENANT_ID}`
         ];
 
         if (domains.adminHost) {
-            envVars.push(`NUXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST={ADMIN_HOST}`);
+            envVars.push(`WEBINY_ADMIN_HOST={ADMIN_HOST}`);
         }
 
         const builder = new MarkdownContentBuilder();
