@@ -69,7 +69,7 @@ async function buildWithSafeReplace(options, distDir) {
 
     const stagingOptions = { ...options, outputDir: stagingDir };
 
-    await babelCompile(stagingOptions);
+    await rslibCompile(stagingOptions);
     await tsCompile(stagingOptions);
 
     stagingOptions.logs !== false && console.log("Copying meta files...");

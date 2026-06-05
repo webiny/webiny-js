@@ -10,7 +10,7 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import { useModelEditor } from "~/admin/hooks/index.js";
 import { useModelFieldEditor } from "~/admin/components/FieldEditor/useModelFieldEditor.js";
 import { useSnackbar } from "@webiny/app-admin";
-import { IconButton, Heading, Text, DropdownMenu, Tag } from "@webiny/admin-ui";
+import { Icon, IconButton, Text, DropdownMenu, Tag } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/components/editor/field");
 
@@ -168,7 +168,7 @@ const Field = (props: FieldProps) => {
             if (!fieldTypeName) {
                 return null;
             }
-            return <Tag content={capitalize(fieldTypeName)} variant={"neutral-base"} />;
+            return <Tag content={capitalize(fieldTypeName)} variant={"neutral-light"} />;
         };
 
         fn.displayName = "FieldTypeRenderer";
@@ -184,32 +184,49 @@ const Field = (props: FieldProps) => {
 
     return (
         <Fragment>
-            <div className={"flex justify-between align-center"}>
-                <div>
-                    <Heading level={6}>{field.label}</Heading>
-                    <Text size={"sm"} className={"text-neutral-strong"}>
-                        {fieldPlugin.field.label}
-                        {info && <span className={"lowercase"}> ({info})</span>}
-                    </Text>
+            <div className={"flex items-center justify-between gap-sm-extra"}>
+                <div className={"flex items-center gap-sm-extra flex-1 min-w-0"}>
+                    <Icon
+                        icon={fieldPlugin.field.icon as React.ReactElement}
+                        label={fieldPlugin.field.label}
+                        size={"md"}
+                        color={"neutral-light"}
+                    />
+                    <div className={"flex flex-col gap-xxs min-w-0"}>
+                        <span
+                            className={
+                                "text-md font-semibold text-neutral-primary truncate leading-5"
+                            }
+                        >
+                            {field.label}
+                        </span>
+                        <Text size={"sm"} className={"text-neutral-muted truncate"}>
+                            {fieldPlugin.field.label}
+                            {info && <span> / {info}</span>}
+                        </Text>
+                    </div>
                 </div>
-                <div className={"flex items-center justify-end gap-sm"}>
+                <div className={"flex items-center justify-end gap-xs shrink-0"}>
                     {fieldInformationRenderer
                         ? fieldInformationRenderer({ model, field })
                         : defaultInformationRenderer()}
-                    {canEdit ? (
-                        <IconButton
-                            data-testid={"cms.editor.edit-field"}
-                            icon={<EditIcon />}
-                            onClick={() => onEdit(field)}
-                            variant={"ghost"}
-                            size={"sm"}
-                        />
-                    ) : null}
                     <DropdownMenu
                         trigger={
                             <IconButton icon={<MoreVerticalIcon />} variant={"ghost"} size={"sm"} />
                         }
                     >
+                        {canEdit && (
+                            <DropdownMenu.Item
+                                onClick={() => onEdit(field)}
+                                text={t`Edit`}
+                                icon={
+                                    <DropdownMenu.Item.Icon
+                                        element={<EditIcon />}
+                                        label={t`Edit field`}
+                                    />
+                                }
+                            />
+                        )}
                         {editorFieldOptionPlugins.map(pl =>
                             React.cloneElement(pl.render(), { key: pl.name })
                         )}
