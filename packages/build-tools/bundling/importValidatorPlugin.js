@@ -11,7 +11,10 @@ const whitelist = [
     "@webiny/okta",
     "@webiny/plugins",
     "@webiny/sdk",
-    "@webiny/stdlib"
+    "@webiny/stdlib",
+    "@webiny/lexical-converter",
+    "@webiny/lexical-nodes",
+    "@webiny/lexical-theme"
 ];
 
 export const createImportValidatorPlugin = () => {
