@@ -12,6 +12,8 @@ export const SelectInputRenderer = ({
     const input = props.input as SelectInput;
     return (
         <Select
+            size={"md"}
+            variant={"secondary"}
             value={value}
             onChange={newValue => {
                 onChange(({ value }) => {
