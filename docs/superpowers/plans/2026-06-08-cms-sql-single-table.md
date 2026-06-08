@@ -169,6 +169,8 @@ This is the largest task. Rewrite all 22 operations in `operations/entry/index.t
 - Operations that updated flat columns (`status`, `live`, `location`, `binOriginalFolderId`) now patch the `data` blob via load-patch-save.
 - Entry-level meta syncs to ALL siblings (not just latest).
 - Batched `CASE/WHEN` UPDATE for sibling sync.
+- `create` and `createRevisionFrom` explicitly enforce `isLatest=true` on the entry before calling `entryToRow()`.
+- `update`, `publish`, `unpublish` read the current row's `isLatest`/`isPublished` from DB before building the `data` blob, ensuring indexed columns and blob stay in sync.
 
 - [ ] **Step 1: Replace the entire operations file**
 
@@ -584,7 +586,12 @@ export const createEntriesStorageOperations = (
         create: async (model, { entry, storageEntry }) => {
             await entryTableManager.ensureTable();
 
-            const row = entryToRow(storageEntry as CmsStorageEntry);
+            /* Enforce invariant: newly created entries are always latest. */
+            const se = storageEntry as CmsStorageEntry;
+            se.isLatest = true;
+            se.isPublished = se.status === "published";
+
+            const row = entryToRow(se);
 
             await query().insert(row);
 
@@ -635,7 +642,12 @@ export const createEntriesStorageOperations = (
                 }
             }
 
-            const row = entryToRow(storageEntry as CmsStorageEntry);
+            /* Enforce invariant: new revision is always latest. */
+            const se = storageEntry as CmsStorageEntry;
+            se.isLatest = true;
+            se.isPublished = isPublished;
+
+            const row = entryToRow(se);
 
             await query().insert(row);
 
@@ -645,9 +657,15 @@ export const createEntriesStorageOperations = (
         update: async (model, { entry, storageEntry }) => {
             await entryTableManager.ensureTable();
 
-            const row = entryToRow(storageEntry as CmsStorageEntry);
+            /* Read current DB flags so the data blob stays in sync with indexed columns. */
+            const existing = await query().where("id", storageEntry.id).first();
+            const se = storageEntry as CmsStorageEntry;
+            se.isLatest = existing?.isLatest ?? se.isLatest;
+            se.isPublished = existing?.isPublished ?? se.isPublished;
 
-            /* Preserve existing isLatest/isPublished flags. */
+            const row = entryToRow(se);
+
+            /* Strip flags from column update — they are already correct in DB. */
             const { isLatest: _il, isPublished: _ip, ...rowWithoutFlags } = row;
 
             await query()
@@ -656,7 +674,7 @@ export const createEntriesStorageOperations = (
                 .update(rowWithoutFlags);
 
             /* Sync entry-level meta to all siblings. */
-            await syncSiblings(storageEntry as CmsEntry);
+            await syncSiblings(se as CmsEntry);
 
             return entry;
         },
@@ -683,8 +701,13 @@ export const createEntriesStorageOperations = (
                     });
             }
 
-            /* Step 2: Update target — preserve isLatest, set isPublished=true. */
-            const row = entryToRow(storageEntry as CmsStorageEntry);
+            /* Step 2: Read current isLatest from DB so the data blob stays in sync. */
+            const existing = await query().where("id", storageEntry.id).first();
+            const se = storageEntry as CmsStorageEntry;
+            se.isLatest = existing?.isLatest ?? se.isLatest;
+            se.isPublished = true;
+
+            const row = entryToRow(se);
             const { isLatest: _il, ...rowWithoutIsLatest } = row;
 
             await query()
@@ -695,7 +718,7 @@ export const createEntriesStorageOperations = (
             /* Step 3: Sync entry-level meta + live to all siblings. */
             const liveValue = { version: entry.version };
 
-            await syncSiblings(storageEntry as CmsEntry, (sibling) => {
+            await syncSiblings(se as CmsEntry, (sibling) => {
                 sibling.live = liveValue;
             });
 
@@ -705,7 +728,13 @@ export const createEntriesStorageOperations = (
         unpublish: async (model, { entry, storageEntry }) => {
             await entryTableManager.ensureTable();
 
-            const row = entryToRow(storageEntry as CmsStorageEntry);
+            /* Read current isLatest from DB so the data blob stays in sync. */
+            const existing = await query().where("id", storageEntry.id).first();
+            const se = storageEntry as CmsStorageEntry;
+            se.isLatest = existing?.isLatest ?? se.isLatest;
+            se.isPublished = false;
+
+            const row = entryToRow(se);
             const { isLatest: _il, ...rowWithoutIsLatest } = row;
 
             await query()
@@ -714,7 +743,7 @@ export const createEntriesStorageOperations = (
                 .update(rowWithoutIsLatest);
 
             /* Sync entry-level meta + live=null to all siblings. */
-            await syncSiblings(storageEntry as CmsEntry, (sibling) => {
+            await syncSiblings(se as CmsEntry, (sibling) => {
                 sibling.live = null;
             });
 
@@ -887,11 +916,22 @@ git commit -m "refactor(api-headless-cms-sql): rewrite all 22 entry operations f
 
 ---
 
-### Task 4: Run pre-commit checks
+### Task 4: Verify index.ts and run pre-commit checks
 
-**Files:** None modified in this task — validation only.
+**Files:**
+- Verify: `packages/api-headless-cms-sql/src/index.ts`
 
-- [ ] **Step 1: Run the full pre-commit checklist**
+- [ ] **Step 1: Verify index.ts needs no changes**
+
+Read `packages/api-headless-cms-sql/src/index.ts`. Confirm:
+- No references to deleted features (entrySchemaManager, fieldTypeMapper, schemaRegistry, sqlOperator, sqlEntryFilter).
+- `createLocationFolderIdPathPlugin` is still registered — this is fine, it patches in-memory filter paths, not DB columns.
+- `EntryTableManagerFeature` is still registered — correct, the table manager still exists (simplified).
+- No other imports or registrations reference the old column-per-field design.
+
+If any stale references exist, remove them.
+
+- [ ] **Step 2: Run the full pre-commit checklist**
 
 ```bash
 git add .
