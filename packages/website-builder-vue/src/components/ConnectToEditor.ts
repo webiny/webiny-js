@@ -1,4 +1,4 @@
-import { defineComponent, ref, onMounted, h, type PropType } from "vue";
+import { defineComponent, shallowRef, onMounted, h, type PropType } from "vue";
 import { contentSdk, type Component, type Document } from "@webiny/website-builder-sdk";
 import { DocumentStoreProvider } from "./DocumentStoreProvider.js";
 import { ElementRenderer } from "./ElementRenderer.js";
@@ -22,7 +22,7 @@ export const ConnectToEditor = defineComponent({
     },
 
     setup(props) {
-        const data = ref<Document | null>(null);
+        const data = shallowRef<Document | null>(null);
 
         onMounted(() => {
             const path = props.document?.properties?.path ?? window.location.pathname;
