@@ -3,6 +3,7 @@ const ERROR = /* GraphQL */ `
         message
         code
         data
+        stack
     }
 `;
 
@@ -54,6 +55,7 @@ export const DELETE_WEBHOOK = /* GraphQL */ `
                     message
                     code
                     data
+                    stack
                 }
             }
         }

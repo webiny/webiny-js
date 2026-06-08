@@ -37,7 +37,7 @@
     "@webiny/utils": "0.0.0",
     "deep-equal": "^2.2.3",
     "lodash": "^4.18.1",
-    "mobx": "^6.15.4",
+    "mobx": "^6.16.0",
     "mobx-react-lite": "^4.1.1",
     "object-merge-advanced": "^14.1.3",
     "object-sizeof": "^2.6.5",

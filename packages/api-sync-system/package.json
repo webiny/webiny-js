@@ -23,7 +23,7 @@
     "@webiny/utils": "0.0.0",
     "bytes": "^3.1.2",
     "lodash": "^4.18.1",
-    "semver": "^7.8.1",
+    "semver": "^7.8.2",
     "zod": "4.4.3"
   },
   "devDependencies": {
