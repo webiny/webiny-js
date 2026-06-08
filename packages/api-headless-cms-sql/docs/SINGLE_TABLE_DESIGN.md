@@ -8,6 +8,27 @@ The current implementation maps CMS entry fields to individual SQL columns. This
 
 The new design stores the full entry as a JSON blob in a single `data` column, with a small set of indexed columns for the few SQL-level filters that actually run.
 
+## Record Model
+
+Every row in the table is a revision. There are no separate "latest" or "published" records like in DynamoDB. Instead, `isLatest` and `isPublished` are boolean tags on the revision row that currently holds that role.
+
+**Lifecycle example:**
+
+| Action | Rows in table |
+|---|---|
+| Create entry | Rev 1: `isLatest=true, isPublished=false` |
+| Publish rev 1 | Rev 1: `isLatest=true, isPublished=true` |
+| Create rev 2 | Rev 1: `isLatest=false, isPublished=true` / Rev 2: `isLatest=true, isPublished=false` |
+| Publish rev 2 | Rev 1: `isLatest=false, isPublished=false` / Rev 2: `isLatest=true, isPublished=true` |
+| Create rev 3 | Rev 1: flags unchanged / Rev 2: `isLatest=false, isPublished=true` / Rev 3: `isLatest=true, isPublished=false` |
+
+Key points:
+- Every row is always a revision. The flags add meaning, they don't exclude a row from being a revision.
+- At most one row per entry has `isLatest = true`. At most one has `isPublished = true`. A single row can have both (e.g., rev 1000 can be latest AND published — it just means the most recent revision is also the published one).
+- `isLatest` and `isPublished` are never used to distinguish record types. They are tags that get toggled when publish/unpublish/createRevision operations run.
+
+**Contrast with DynamoDB:** DDB stores separate L (latest) and P (published) records as full copies of the revision data, alongside the revision records. This means DDB has 2-3 records per revision state. The SQL design has exactly one row per revision, with boolean flags instead of record duplication.
+
 ## Schema
 
 One table: `webiny_cms_entries`.
@@ -82,7 +103,7 @@ All operations use the same SQL-level filters they use today. The only columns r
 
 **getByIds / getPublishedByIds / getLatestByIds**: Query by `id IN (...)` or `entryId IN (...)` + `isPublished = true`. Parse data. Same as today.
 
-**getRevisions**: Query by `(tenant, modelId, entryId)` ordered by `version DESC`. Parse data. Same as today.
+**getRevisions**: `WHERE entryId = ? ORDER BY version DESC`. Returns ALL rows for the entry — every row is a revision regardless of its `isLatest`/`isPublished` flags.
 
 **getRevisionById / getPublishedRevisionByEntryId / getLatestRevisionByEntryId / getPreviousRevision**: Single-row lookups by indexed columns. Parse data.
 
