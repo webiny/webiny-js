@@ -1,4 +1,5 @@
 import { computed, makeAutoObservable, runInAction } from "mobx";
+import { z } from "zod";
 import type { Webhook } from "~/admin/shared/types.js";
 import type { WebhookEvent } from "~/admin/shared/types.js";
 import {
@@ -59,7 +60,11 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     private buildForm(): IFormModel {
         return this.formModelFactory.create({
             fields: fields => ({
-                name: fields.text().label("Name").required("Name is required"),
+                name: fields
+                    .text()
+                    .label("Name")
+                    .required("Name is required")
+                    .schema(z.string().min(8, "Name must be at least 8 characters")),
                 slug: fields
                     .text()
                     .label("Slug")
