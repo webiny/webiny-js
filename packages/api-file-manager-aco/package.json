@@ -38,7 +38,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "graphql": "^16.14.0",
+    "graphql": "^16.14.1",
     "typescript": "6.0.3",
     "vitest": "^4.1.8"
   },
