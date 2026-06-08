@@ -33,28 +33,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ai-sdk/gateway@npm:3.0.124":
-  version: 3.0.124
-  resolution: "@ai-sdk/gateway@npm:3.0.124"
+"@ai-sdk/gateway@npm:3.0.125":
+  version: 3.0.125
+  resolution: "@ai-sdk/gateway@npm:3.0.125"
   dependencies:
     "@ai-sdk/provider": "npm:3.0.10"
     "@ai-sdk/provider-utils": "npm:4.0.27"
     "@vercel/oidc": "npm:3.2.0"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10/1b790b8d078846a2da1ecebe61f0504e0a1d8930ca4f1f4a0893779a045469d8e5e2566fb498f7144709d8d14d3c1b97e0ba4e773d6707f34e848c414d91600e
+  checksum: 10/49ce9b6a408c0495a6b9d8739202dc7554324fc0a1dd31bb51ab59e420058699cdc01c88148641a0638b4ed47df63f5be696c8bcbd343a42f26254589f4f1d1b
   languageName: node
   linkType: hard
 
-"@ai-sdk/openai@npm:^3.0.67":
-  version: 3.0.67
-  resolution: "@ai-sdk/openai@npm:3.0.67"
+"@ai-sdk/openai@npm:^3.0.68":
+  version: 3.0.68
+  resolution: "@ai-sdk/openai@npm:3.0.68"
   dependencies:
     "@ai-sdk/provider": "npm:3.0.10"
     "@ai-sdk/provider-utils": "npm:4.0.27"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10/b600dc7759498e7aebefa36b0bae5e1097dd32279465f4311d0980865e4cce1753bcb6e6112b5974eceb93e9d824dca47ae25506fd3af555fa2963b7d0abc6f8
+  checksum: 10/75e0147f1591d8ec574ffa811785e4bf691aa899d21c564a1b7b63390cbad77314f4c7aae6803e1f779dcb3315e3b24588d5e85a4b74c862ef1e845ccb87055d
   languageName: node
   linkType: hard
 
@@ -8482,20 +8482,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rsbuild/plugin-type-check@npm:^1.3.4, @rsbuild/plugin-type-check@npm:^1.3.5":
-  version: 1.3.5
-  resolution: "@rsbuild/plugin-type-check@npm:1.3.5"
+"@rsbuild/plugin-type-check@npm:^1.3.4, @rsbuild/plugin-type-check@npm:^1.3.6":
+  version: 1.3.6
+  resolution: "@rsbuild/plugin-type-check@npm:1.3.6"
   dependencies:
     deepmerge: "npm:^4.3.1"
     json5: "npm:^2.2.3"
     reduce-configs: "npm:^1.1.2"
-    ts-checker-rspack-plugin: "npm:^1.3.0"
+    ts-checker-rspack-plugin: "npm:^1.3.1"
   peerDependencies:
-    "@rsbuild/core": ^1.0.0 || ^2.0.0-0
+    "@rsbuild/core": ^1.0.0 || ^2.0.0
   peerDependenciesMeta:
     "@rsbuild/core":
       optional: true
-  checksum: 10/1ed39aaa2a9eb19dd9cc30b22ebef9307c42a733f80b59c8daaa16dce317c77bba826c8b89b9387d2f5922f652f4577ceab7d7f0878ccc28bd46391cfcc02a28
+  checksum: 10/d43b56b79584f9f9187c570a875ead74811a122772f96c98e5594f8d9444c84d4311dce53b7edfcd8a18c99713597d0c7f3bef894e465961ce1af989436a7683
   languageName: node
   linkType: hard
 
@@ -8766,10 +8766,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/lite-tapable@npm:^1.1.0":
-  version: 1.1.1
-  resolution: "@rspack/lite-tapable@npm:1.1.1"
-  checksum: 10/e063adf20a34f83f4491026c45c49e15f7ab15c2d8a2990145a7f5bd5fe33804a8f495805950fde340962cfe8e2f82e3c03ad083e30b65b32773010c6c484281
+"@rspack/lite-tapable@npm:^1.1.1":
+  version: 1.1.2
+  resolution: "@rspack/lite-tapable@npm:1.1.2"
+  checksum: 10/3c2893308641c6e5aed919b061e704920162a0cb4f2e635b410d3e45a50c20b57d600b6445143c518a1d3d66b8d53b5d194601db5da356460c8d05eade30a70a
   languageName: node
   linkType: hard
 
@@ -11363,7 +11363,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    ai: "npm:^6.0.196"
+    ai: "npm:^6.0.197"
     front-matter: "npm:^4.0.2"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.16.0"
@@ -11490,7 +11490,7 @@ __metadata:
   resolution: "@webiny/api-core@workspace:packages/api-core"
   dependencies:
     "@ai-sdk/anthropic": "npm:^3.0.81"
-    "@ai-sdk/openai": "npm:^3.0.67"
+    "@ai-sdk/openai": "npm:^3.0.68"
     "@types/jsonwebtoken": "npm:^9.0.10"
     "@webiny/api": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -11507,7 +11507,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    ai: "npm:^6.0.196"
+    ai: "npm:^6.0.197"
     dataloader: "npm:^2.2.3"
     jest-dynalite: "npm:^3.6.1"
     jose: "npm:^6.2.3"
@@ -13132,7 +13132,7 @@ __metadata:
     "@rsbuild/plugin-react": "npm:^2.0.1"
     "@rsbuild/plugin-sass": "npm:^1.5.3"
     "@rsbuild/plugin-svgr": "npm:^2.0.3"
-    "@rsbuild/plugin-type-check": "npm:^1.3.5"
+    "@rsbuild/plugin-type-check": "npm:^1.3.6"
     "@rsdoctor/rspack-plugin": "npm:^1.5.12"
     "@rslib/core": "npm:^0.22.0"
     "@rspack/core": "npm:^2.0.6"
@@ -14455,17 +14455,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ai@npm:^6.0.196":
-  version: 6.0.196
-  resolution: "ai@npm:6.0.196"
+"ai@npm:^6.0.197":
+  version: 6.0.197
+  resolution: "ai@npm:6.0.197"
   dependencies:
-    "@ai-sdk/gateway": "npm:3.0.124"
+    "@ai-sdk/gateway": "npm:3.0.125"
     "@ai-sdk/provider": "npm:3.0.10"
     "@ai-sdk/provider-utils": "npm:4.0.27"
     "@opentelemetry/api": "npm:^1.9.0"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10/2dc09179be8a1b185d782c6ccdcf760f1b860c2c1c269a01aa8038c42df04bd453f952a6e6cc3263c4f3c4c8bb2f571a189f6c049376729f29c6dd056de13843
+  checksum: 10/deff463b973206064eaf7b089734112cca0fb663e7d96eeb0500191838255db71a5c7b87ca15d0c02ab4849a5c6215f3689759e172b8b9d4f90f1b399ea7a84b
   languageName: node
   linkType: hard
 
@@ -15460,9 +15460,9 @@ __metadata:
   linkType: hard
 
 "browserslist-load-config@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "browserslist-load-config@npm:1.0.2"
-  checksum: 10/84e01cd2f3b9991623be221be7d665277aee27361e09858182c927e76d2a33b8fce6641f8ffd52b9aaf45f6c60e1c7994b14e3b760a04b2653ac5e0b4311d7ef
+  version: 1.0.3
+  resolution: "browserslist-load-config@npm:1.0.3"
+  checksum: 10/3e981e30c09e802ff881f04a992cbbe40004b3086d7f5ae1d0c04ae3d00dc49d2068f3f79ce6bec4f73f77998451cd03d83b2f677e4ef116ef0dcfafd976b8c1
   languageName: node
   linkType: hard
 
@@ -17501,9 +17501,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.328":
-  version: 1.5.367
-  resolution: "electron-to-chromium@npm:1.5.367"
-  checksum: 10/7041090564a1be7616fe003280a03b5e4fd2a668707863e699635b71ce0fa79640f76d82fc0736c667a99c28962e33f10d29222f659160343f35c7b045482d37
+  version: 1.5.368
+  resolution: "electron-to-chromium@npm:1.5.368"
+  checksum: 10/2a046854c08256f9b8f7e6615ef71c36a32c1b438fc1048caa1553929d7e9c518a135066d4a226ea2394d42fb336ef01a09fe5270dd72702a1b9fab33d45a53d
   languageName: node
   linkType: hard
 
@@ -21712,7 +21712,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"memfs@npm:^4.57.2":
+"memfs@npm:^4.57.3":
   version: 4.57.6
   resolution: "memfs@npm:4.57.6"
   dependencies:
@@ -25369,24 +25369,24 @@ __metadata:
   linkType: hard
 
 "rsbuild-plugin-html-minifier-terser@npm:^1.1.3":
-  version: 1.1.4
-  resolution: "rsbuild-plugin-html-minifier-terser@npm:1.1.4"
+  version: 1.1.5
+  resolution: "rsbuild-plugin-html-minifier-terser@npm:1.1.5"
   dependencies:
     "@types/html-minifier-terser": "npm:^7.0.2"
     html-minifier-terser: "npm:^7.2.0"
   peerDependencies:
-    "@rsbuild/core": ^1.0.0 || ^2.0.0-0
+    "@rsbuild/core": ^1.0.0 || ^2.0.0
   peerDependenciesMeta:
     "@rsbuild/core":
       optional: true
-  checksum: 10/b26c97a166e93629c4d66a9b67e5963e7a209915f2d4990637a2867da84945892bdddef038a53709151577650dd5e39ee2a850d2d6413833c5f6ba5100750e63
+  checksum: 10/c7bff7201e894e6faec6377acc391e3d823850ddfcbda325f88b3431926b3907315d3b67c7feca36a8ebb96b00e5cab6bc6d81b156489f9e353d96cee57a5a9b
   languageName: node
   linkType: hard
 
 "rslog@npm:^2.1.1":
-  version: 2.1.2
-  resolution: "rslog@npm:2.1.2"
-  checksum: 10/6ef969f40d25095dc071f26a54ad00ad92a375bfef7e4a354972035933df0a515d0baf20601b7222c716e741b3c472f1f42d8bab95c5d1c3360fab7a1682ca5b
+  version: 2.1.3
+  resolution: "rslog@npm:2.1.3"
+  checksum: 10/2d64dc30e425665854619be879c58bf37bf6d76f7556d5cf41f97f221dd0ec0f4c43e0b733e14c536b8967878f8c9e1f717ddcb0de23239aa83cc9c3e96051f2
   languageName: node
   linkType: hard
 
@@ -26711,13 +26711,13 @@ __metadata:
   linkType: hard
 
 "streamx@npm:^2.15.0":
-  version: 2.26.0
-  resolution: "streamx@npm:2.26.0"
+  version: 2.27.0
+  resolution: "streamx@npm:2.27.0"
   dependencies:
     events-universal: "npm:^1.0.0"
     fast-fifo: "npm:^1.3.2"
     text-decoder: "npm:^1.1.0"
-  checksum: 10/77cdc5f2e0b8d85a1c6850db0f895c5fb1a4412fc4be285896451f9c51bd5e493af511ad6d4a1e2a76f0da2636b1a84f6a79a646467e29fbe7cc5d05eee72683
+  checksum: 10/db3c97c60ef6e1f8b521ce9f232a21ba486dc48359f40026f4dee66889a0f8226020d2d47217901670f5a930cb03f18953fa75bb5820e89b84eabd99545acedb
   languageName: node
   linkType: hard
 
@@ -27502,21 +27502,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-checker-rspack-plugin@npm:^1.3.0":
-  version: 1.3.1
-  resolution: "ts-checker-rspack-plugin@npm:1.3.1"
+"ts-checker-rspack-plugin@npm:^1.3.1":
+  version: 1.3.2
+  resolution: "ts-checker-rspack-plugin@npm:1.3.2"
   dependencies:
-    "@rspack/lite-tapable": "npm:^1.1.0"
+    "@rspack/lite-tapable": "npm:^1.1.1"
     chokidar: "npm:^3.6.0"
-    memfs: "npm:^4.57.2"
+    memfs: "npm:^4.57.3"
     picocolors: "npm:^1.1.1"
   peerDependencies:
-    "@rspack/core": ^1.0.0 || ^2.0.0-0
+    "@rspack/core": ^1.0.0 || ^2.0.0
     typescript: ">=3.8.0"
   peerDependenciesMeta:
     "@rspack/core":
       optional: true
-  checksum: 10/fedeff71e0aa45dfa41b4b854e94a035930f412b99d13767bf3389b2a4ed5e1ff1f35d253e8fe98410f910cf47524189f6e5660c75ee4f075624b44ec0e1270d
+  checksum: 10/0a7b7b1f882c080e09573cc2f96ea74ce4c5b3164912ac28191558ceed1bc215b66a50aed11a1db5a37325d50a0f26406df07e928f53a508c8b32fb3d06d504b
   languageName: node
   linkType: hard
 
