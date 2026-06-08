@@ -71,7 +71,7 @@ export const ActionUnpublish = observer(() => {
                 });
 
                 worker.resetItems();
-                await presenter.listPresenter.actions.refresh();
+                await presenter.list.actions.refresh();
 
                 showResultsDialog({
                     results: worker.results,

@@ -16,7 +16,7 @@ export const Table = observer(() => {
     });
 
     const data = useMemo<TableRow[]>(() => {
-        const entryRows = presenter.listPresenter.vm.rows.map(entry =>
+        const entryRows = presenter.list.vm.rows.map(entry =>
             TableRowMapper.fromEntry(entry)
         );
 
@@ -24,13 +24,13 @@ export const Table = observer(() => {
             return entryRows;
         }
 
-        const folderRows = (presenter.foldersPresenter.vm.childFolders ?? []).map(f =>
+        const folderRows = (presenter.folders.vm.childFolders ?? []).map(f =>
             TableRowMapper.fromFolder(f)
         );
         return [...folderRows, ...entryRows];
     }, [
-        presenter.listPresenter.vm.rows,
-        presenter.foldersPresenter.vm.childFolders,
+        presenter.list.vm.rows,
+        presenter.folders.vm.childFolders,
         presenter.vm.showFolders
     ]);
 

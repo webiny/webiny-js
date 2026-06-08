@@ -43,13 +43,13 @@ export const CmsAdvancedSearch = observer(() => {
     const onApplyFilter = useCallback(
         (data: FilterDTO | null) => {
             if (!data || !Object.keys(data).length) {
-                presenter.listPresenter.actions.filter.clearAll();
+                presenter.list.actions.filter.clearAll();
                 return;
             }
 
             const where = wrapUserFields(GraphQLInputMapper.toGraphQL(data));
             for (const [key, value] of Object.entries(where)) {
-                presenter.listPresenter.actions.filter.set(key, value);
+                presenter.list.actions.filter.set(key, value);
             }
         },
         [presenter]

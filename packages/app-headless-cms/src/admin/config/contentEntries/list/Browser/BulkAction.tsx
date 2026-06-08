@@ -75,7 +75,7 @@ const useWorker = () => {
     const { current: worker } = useRef(new Worker<CmsContentEntry>());
 
     const selectedIds = Array.from(list.selection.selectedIds);
-    const selected = presenter.listPresenter.vm.rows.filter(row =>
+    const selected = presenter.list.vm.rows.filter(row =>
         list.selection.selectedIds.has(row.id)
     );
     const isSelectedAll = list.selection.allSelected;

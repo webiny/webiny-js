@@ -18,8 +18,8 @@ export interface IContentEntriesViewModel {
 
 export interface IContentEntriesPresenter {
     readonly vm: IContentEntriesViewModel;
-    readonly listPresenter: IListPresenter<CmsContentEntry>;
-    readonly foldersPresenter: IFolderTreePresenter;
+    readonly list: IListPresenter<CmsContentEntry>;
+    readonly folders: IFolderTreePresenter;
 
     selectEntry(id: string): void;
     deselectEntry(): void;

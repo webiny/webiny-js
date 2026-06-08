@@ -29,7 +29,7 @@ export const FolderCellName = ({ folder }: FolderCellNameProps) => {
             className={
                 "flex items-center gap-sm truncate cursor-pointer font-semibold hover:underline"
             }
-            onClick={() => presenter.foldersPresenter.selectFolder(folder.id)}
+            onClick={() => presenter.folders.selectFolder(folder.id)}
         >
             <Icon
                 size={"sm"}

@@ -76,7 +76,8 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
     }
 
     get vm(): IContentEntriesViewModel {
-        const hasSearch = this._listPresenter.vm.search.length > 0;
+        const appliedQuery = this._listPresenter.vm.appliedQuery;
+        const hasSearch = !!appliedQuery?.search;
         const hasFilters = Object.keys(this._listPresenter.vm.filters).some(k => k !== "folderId");
 
         return {
@@ -88,11 +89,11 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
         };
     }
 
-    get listPresenter(): ListPresenter.Interface<CmsContentEntry> {
+    get list(): ListPresenter.Interface<CmsContentEntry> {
         return this._listPresenter;
     }
 
-    get foldersPresenter(): FolderTreePresenter.Interface {
+    get folders(): FolderTreePresenter.Interface {
         return this._foldersPresenter;
     }
 

@@ -27,7 +27,7 @@ export const ActionMove = observer(() => {
     const { showDialog: showMoveDialog } = useMoveToFolderDialog();
 
     const entriesLabel = getEntriesLabel();
-    const currentFolderId = presenter.foldersPresenter.vm.currentFolderId;
+    const currentFolderId = presenter.folders.vm.currentFolderId;
 
     const openWorkerDialog = useCallback(
         (folder: NodeDto) => {
@@ -80,7 +80,7 @@ export const ActionMove = observer(() => {
                     });
 
                     worker.resetItems();
-                    await presenter.listPresenter.actions.refresh();
+                    await presenter.list.actions.refresh();
 
                     showResultsDialog({
                         results: worker.results,

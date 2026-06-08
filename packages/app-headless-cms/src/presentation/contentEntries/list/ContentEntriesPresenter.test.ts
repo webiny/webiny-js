@@ -199,7 +199,7 @@ async function initPresenter(
     t.presenter.setModel(MODEL);
 
     await vi.waitFor(() => {
-        expect(t.presenter.listPresenter.vm.pagination.loading).toBe(false);
+        expect(t.presenter.list.vm.pagination.loading).toBe(false);
     });
 }
 
@@ -216,8 +216,8 @@ describe("ContentEntriesPresenter", () => {
 
             await initPresenter(t, { data: entries });
 
-            expect(t.presenter.listPresenter.vm.rows).toHaveLength(2);
-            expect(t.presenter.listPresenter.vm.rows.map(r => r.entryId)).toEqual([
+            expect(t.presenter.list.vm.rows).toHaveLength(2);
+            expect(t.presenter.list.vm.rows.map(r => r.entryId)).toEqual([
                 "entry-1",
                 "entry-2"
             ]);
@@ -261,10 +261,10 @@ describe("ContentEntriesPresenter", () => {
             t.foldersPresenter.selectFolder("folder-a");
 
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.rows).toHaveLength(2);
+                expect(t.presenter.list.vm.rows).toHaveLength(2);
             });
 
-            expect(t.presenter.listPresenter.vm.rows.map(r => r.entryId)).toEqual([
+            expect(t.presenter.list.vm.rows.map(r => r.entryId)).toEqual([
                 "folder-1",
                 "folder-2"
             ]);
@@ -283,8 +283,8 @@ describe("ContentEntriesPresenter", () => {
             t.foldersPresenter.selectFolder("folder-a");
 
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.rows).toHaveLength(1);
-                expect(t.presenter.listPresenter.vm.rows[0].entryId).toBe("folder-1");
+                expect(t.presenter.list.vm.rows).toHaveLength(1);
+                expect(t.presenter.list.vm.rows[0].entryId).toBe("folder-1");
             });
 
             t.listEntriesGateway.execute.mockResolvedValueOnce({
@@ -295,8 +295,8 @@ describe("ContentEntriesPresenter", () => {
             t.foldersPresenter.selectFolder(null);
 
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.rows).toHaveLength(1);
-                expect(t.presenter.listPresenter.vm.rows[0].entryId).toBe("root-1");
+                expect(t.presenter.list.vm.rows).toHaveLength(1);
+                expect(t.presenter.list.vm.rows[0].entryId).toBe("root-1");
             });
         });
 
@@ -311,7 +311,7 @@ describe("ContentEntriesPresenter", () => {
 
             t.foldersPresenter.selectFolder("folder-a");
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.rows).toHaveLength(1);
+                expect(t.presenter.list.vm.rows).toHaveLength(1);
             });
 
             t.listEntriesGateway.execute.mockResolvedValueOnce({
@@ -321,8 +321,8 @@ describe("ContentEntriesPresenter", () => {
 
             t.foldersPresenter.selectFolder(null);
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.rows).toHaveLength(1);
-                expect(t.presenter.listPresenter.vm.rows[0].entryId).toBe("root-1");
+                expect(t.presenter.list.vm.rows).toHaveLength(1);
+                expect(t.presenter.list.vm.rows[0].entryId).toBe("root-1");
             });
         });
     });
@@ -338,13 +338,13 @@ describe("ContentEntriesPresenter", () => {
                 meta: { cursor: null, hasMoreItems: false, totalCount: 1 }
             });
 
-            t.presenter.listPresenter.actions.search.set("entry-1");
+            t.presenter.list.actions.search.set("entry-1");
 
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.rows).toHaveLength(1);
+                expect(t.presenter.list.vm.rows).toHaveLength(1);
             });
 
-            expect(t.presenter.listPresenter.vm.rows[0].entryId).toBe("entry-1");
+            expect(t.presenter.list.vm.rows[0].entryId).toBe("entry-1");
         });
 
         it("should include entries from subfolders when searching from root", async () => {
@@ -359,10 +359,10 @@ describe("ContentEntriesPresenter", () => {
                 meta: { cursor: null, hasMoreItems: false, totalCount: 2 }
             });
 
-            t.presenter.listPresenter.actions.search.set("test");
+            t.presenter.list.actions.search.set("test");
 
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.rows).toHaveLength(2);
+                expect(t.presenter.list.vm.rows).toHaveLength(2);
             });
         });
 
@@ -377,7 +377,7 @@ describe("ContentEntriesPresenter", () => {
             t.presenter.setModel(MODEL);
 
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.pagination.loading).toBe(false);
+                expect(t.presenter.list.vm.pagination.loading).toBe(false);
             });
 
             t.getDescendantFolders.mockReturnValue([
@@ -395,10 +395,10 @@ describe("ContentEntriesPresenter", () => {
                 meta: { cursor: null, hasMoreItems: false, totalCount: 3 }
             });
 
-            t.presenter.listPresenter.actions.search.set("test");
+            t.presenter.list.actions.search.set("test");
 
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.rows).toHaveLength(3);
+                expect(t.presenter.list.vm.rows).toHaveLength(3);
             });
 
             expect(t.getDescendantFolders).toHaveBeenCalledWith("folder-a");
@@ -422,10 +422,10 @@ describe("ContentEntriesPresenter", () => {
                 meta: { cursor: null, hasMoreItems: false, totalCount: 1 }
             });
 
-            t.presenter.listPresenter.actions.search.set("entry-1");
+            t.presenter.list.actions.search.set("entry-1");
 
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.rows).toHaveLength(1);
+                expect(t.presenter.list.vm.rows).toHaveLength(1);
             });
 
             t.listEntriesGateway.execute.mockResolvedValueOnce({
@@ -433,10 +433,10 @@ describe("ContentEntriesPresenter", () => {
                 meta: { cursor: null, hasMoreItems: false, totalCount: 2 }
             });
 
-            t.presenter.listPresenter.actions.search.clear();
+            t.presenter.list.actions.search.clear();
 
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.rows).toHaveLength(2);
+                expect(t.presenter.list.vm.rows).toHaveLength(2);
             });
         });
     });
@@ -468,11 +468,11 @@ describe("ContentEntriesPresenter", () => {
                 meta: { cursor: null, hasMoreItems: false, totalCount: 1 }
             });
 
-            t.presenter.listPresenter.actions.filter.set("status", "published");
+            t.presenter.list.actions.filter.set("status", "published");
 
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.rows).toHaveLength(1);
-                expect(t.presenter.listPresenter.vm.rows[0].entryId).toBe("published-1");
+                expect(t.presenter.list.vm.rows).toHaveLength(1);
+                expect(t.presenter.list.vm.rows[0].entryId).toBe("published-1");
             });
         });
     });
@@ -487,8 +487,8 @@ describe("ContentEntriesPresenter", () => {
             await t.presenter.moveEntry("entry-1#0001", "folder-b");
 
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.rows).toHaveLength(1);
-                expect(t.presenter.listPresenter.vm.rows[0].entryId).toBe("entry-2");
+                expect(t.presenter.list.vm.rows).toHaveLength(1);
+                expect(t.presenter.list.vm.rows[0].entryId).toBe("entry-2");
             });
         });
     });
@@ -503,8 +503,8 @@ describe("ContentEntriesPresenter", () => {
             await t.presenter.deleteEntry("entry-1#0001");
 
             await vi.waitFor(() => {
-                expect(t.presenter.listPresenter.vm.rows).toHaveLength(1);
-                expect(t.presenter.listPresenter.vm.rows[0].entryId).toBe("entry-2");
+                expect(t.presenter.list.vm.rows).toHaveLength(1);
+                expect(t.presenter.list.vm.rows[0].entryId).toBe("entry-2");
             });
         });
     });
@@ -547,7 +547,7 @@ describe("ContentEntriesPresenter", () => {
                 meta: { cursor: null, hasMoreItems: false, totalCount: 0 }
             });
 
-            t.presenter.listPresenter.actions.search.set("test");
+            t.presenter.list.actions.search.set("test");
 
             await vi.waitFor(() => {
                 expect(t.presenter.vm.showFolders).toBe(false);

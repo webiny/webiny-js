@@ -32,10 +32,10 @@ const DocumentList = observer(() => {
     const { browser } = useContentEntryListConfig();
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
 
-    const folderId = presenter.foldersPresenter.vm.currentFolderId ?? "root";
+    const folderId = presenter.folders.vm.currentFolderId ?? "root";
     const isRoot = folderId === "root";
     const hasFolders =
-        presenter.vm.showFolders && presenter.foldersPresenter.vm.childFolders.length > 0;
+        presenter.vm.showFolders && presenter.folders.vm.childFolders.length > 0;
 
     const onCreateFolder = useCallback(() => {
         showCreateFolderDialog({ currentParentId: folderId });
@@ -47,21 +47,21 @@ const DocumentList = observer(() => {
 
     return (
         <ListView
-            list={presenter.listPresenter.vm}
-            actions={presenter.listPresenter.actions}
+            list={presenter.list.vm}
+            actions={presenter.list.actions}
             namespace={`cms/${presenter.vm.model!.modelId}/list`}
-            showingFilters={presenter.listPresenter.vm.showingFilters}
+            showingFilters={presenter.list.vm.showingFilters}
             onToggleFilters={() => {
-                presenter.listPresenter.vm.showingFilters
-                    ? presenter.listPresenter.actions.filter.hide()
-                    : presenter.listPresenter.actions.filter.show();
+                presenter.list.vm.showingFilters
+                    ? presenter.list.actions.filter.hide()
+                    : presenter.list.actions.filter.show();
             }}
             sidebar={
                 <ListView.Sidebar title={presenter.vm.model!.name}>
                     <ListView.Sidebar.Section grow>
                         <FolderTree
-                            vm={presenter.foldersPresenter.vm}
-                            actions={presenter.foldersPresenter}
+                            vm={presenter.folders.vm}
+                            actions={presenter.folders}
                             folderActions={browser.folder.actions}
                             enableActions={true}
                             enableCreate={true}
@@ -78,7 +78,7 @@ const DocumentList = observer(() => {
                         icon: isRoot ? <HomeIcon /> : <FolderIcon />,
                         text: isRoot
                             ? presenter.vm.model!.name
-                            : presenter.foldersPresenter.vm.currentFolderTitle
+                            : presenter.folders.vm.currentFolderTitle
                     }}
                     search
                     filtersToggle
