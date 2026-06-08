@@ -39,7 +39,7 @@ class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
     }
 
     private async createTable(): Promise<void> {
-        await this.knex.schema.createTable(this.tableName, (table) => {
+        await this.knex.schema.createTable(this.tableName, table => {
             table.text("id").primary();
             table.text("entryId").notNullable();
             table.text("modelId").notNullable();

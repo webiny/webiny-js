@@ -32,10 +32,7 @@ export const rowToEntry = <T extends CmsEntryValues = CmsEntryValues>(
  * Syncs all *On and *By fields except immutable ones (createdOn, createdBy)
  * and revision-level ones (revisionCreatedOn, revisionModifiedBy, etc.).
  */
-export const mergeEntryLevelMeta = (
-    source: CmsEntry,
-    target: CmsEntry
-): CmsEntry => {
+export const mergeEntryLevelMeta = (source: CmsEntry, target: CmsEntry): CmsEntry => {
     const result = structuredClone(target);
 
     for (const field of Object.keys(source)) {
@@ -43,7 +40,9 @@ export const mergeEntryLevelMeta = (
             continue;
         }
         if ((field.endsWith("On") || field.endsWith("By")) && !field.startsWith("revision")) {
-            (result as unknown as Record<string, unknown>)[field] = (source as unknown as Record<string, unknown>)[field];
+            (result as unknown as Record<string, unknown>)[field] = (
+                source as unknown as Record<string, unknown>
+            )[field];
         }
     }
 

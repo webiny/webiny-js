@@ -64,9 +64,7 @@ export const createEntriesStorageOperations = (
         entry: CmsEntry,
         extraPatch?: (sibling: CmsEntry) => void
     ): Promise<void> => {
-        const siblings = await query()
-            .where("entryId", entry.entryId)
-            .whereNot("id", entry.id);
+        const siblings = await query().where("entryId", entry.entryId).whereNot("id", entry.id);
 
         if (siblings.length === 0) {
             return;
@@ -104,9 +102,7 @@ export const createEntriesStorageOperations = (
         patch: (entry: CmsEntry) => void,
         columnUpdates?: Partial<IEntryRow>
     ): Promise<void> => {
-        const rows = await query()
-            .where("tenant", tenant)
-            .where("entryId", entryId);
+        const rows = await query().where("tenant", tenant).where("entryId", entryId);
 
         if (rows.length === 0) {
             return;
@@ -126,10 +122,7 @@ export const createEntriesStorageOperations = (
             ...columnUpdates
         };
 
-        await query()
-            .where("tenant", tenant)
-            .where("entryId", entryId)
-            .update(update);
+        await query().where("tenant", tenant).where("entryId", entryId).update(update);
     };
 
     const listEntries = async <T extends CmsEntryValues = CmsEntryValues>(
@@ -158,9 +151,7 @@ export const createEntriesStorageOperations = (
         const limit =
             initialLimit <= 0 || initialLimit >= MAX_LIST_LIMIT ? MAX_LIST_LIMIT : initialLimit;
 
-        const qb = query()
-            .where("tenant", model.tenant)
-            .andWhere("modelId", model.modelId);
+        const qb = query().where("tenant", model.tenant).andWhere("modelId", model.modelId);
 
         if (initialWhere.entryId) {
             qb.andWhere("entryId", initialWhere.entryId);
@@ -190,7 +181,7 @@ export const createEntriesStorageOperations = (
         const fromStorage = createStorageTransformCallable(storageTransformRegistry, model);
 
         const records = await Promise.all(
-            rows.map(async (row) => {
+            rows.map(async row => {
                 const entry = rowToEntry(row) as CmsStorageEntry;
 
                 for (const field of model.fields) {
@@ -263,10 +254,10 @@ export const createEntriesStorageOperations = (
                 .andWhere("modelId", model.modelId)
                 .whereIn("id", idList);
 
-            const entries = rows.map((row) => rowToEntry(row));
-            const byId = new Map(entries.map((e) => [e.id, e]));
+            const entries = rows.map(row => rowToEntry(row));
+            const byId = new Map(entries.map(e => [e.id, e]));
 
-            return idList.map((id) => byId.get(id)).filter(Boolean) as typeof entries;
+            return idList.map(id => byId.get(id)).filter(Boolean) as typeof entries;
         },
 
         getPublishedByIds: async (model, { ids }) => {
@@ -281,10 +272,10 @@ export const createEntriesStorageOperations = (
                 .whereIn("entryId", entryIds)
                 .andWhere("isPublished", true);
 
-            const entries = rows.map((row) => rowToEntry(row));
-            const byEntryId = new Map(entries.map((e) => [e.entryId, e]));
+            const entries = rows.map(row => rowToEntry(row));
+            const byEntryId = new Map(entries.map(e => [e.entryId, e]));
 
-            return entryIds.map((eid) => byEntryId.get(eid)).filter(Boolean) as typeof entries;
+            return entryIds.map(eid => byEntryId.get(eid)).filter(Boolean) as typeof entries;
         },
 
         getLatestByIds: async (model, { ids }) => {
@@ -299,10 +290,10 @@ export const createEntriesStorageOperations = (
                 .whereIn("entryId", entryIds)
                 .andWhere("isLatest", true);
 
-            const entries = rows.map((row) => rowToEntry(row));
-            const byEntryId = new Map(entries.map((e) => [e.entryId, e]));
+            const entries = rows.map(row => rowToEntry(row));
+            const byEntryId = new Map(entries.map(e => [e.entryId, e]));
 
-            return entryIds.map((eid) => byEntryId.get(eid)).filter(Boolean) as typeof entries;
+            return entryIds.map(eid => byEntryId.get(eid)).filter(Boolean) as typeof entries;
         },
 
         getRevisions: async (model, { id }) => {
@@ -316,7 +307,7 @@ export const createEntriesStorageOperations = (
                 .where("entryId", entryId)
                 .orderBy("version", "desc");
 
-            return rows.map((row) => rowToEntry(row));
+            return rows.map(row => rowToEntry(row));
         },
 
         getRevisionById: async (model, { id }) => {
@@ -539,7 +530,7 @@ export const createEntriesStorageOperations = (
             /* Step 3: Sync entry-level meta + live to all siblings. */
             const liveValue = { version: entry.version };
 
-            await syncSiblings(se as CmsEntry, (sibling) => {
+            await syncSiblings(se as CmsEntry, sibling => {
                 sibling.live = liveValue;
             });
 
@@ -564,7 +555,7 @@ export const createEntriesStorageOperations = (
                 .update(rowWithoutIsLatest);
 
             /* Sync entry-level meta + live=null to all siblings. */
-            await syncSiblings(se as CmsEntry, (sibling) => {
+            await syncSiblings(se as CmsEntry, sibling => {
                 sibling.live = null;
             });
 
@@ -576,7 +567,7 @@ export const createEntriesStorageOperations = (
 
             const entryId = extractEntryId(id);
 
-            await patchAllRevisions(entryId, model.tenant, (parsed) => {
+            await patchAllRevisions(entryId, model.tenant, parsed => {
                 parsed.location = { folderId };
             });
         },
@@ -587,7 +578,7 @@ export const createEntriesStorageOperations = (
             await patchAllRevisions(
                 entry.entryId,
                 model.tenant,
-                (parsed) => {
+                parsed => {
                     const p = parsed as unknown as Record<string, unknown>;
                     p["wbyDeleted"] = true;
                     p["binOriginalFolderId"] = storageEntry.binOriginalFolderId ?? null;
@@ -617,7 +608,7 @@ export const createEntriesStorageOperations = (
             await patchAllRevisions(
                 entry.entryId,
                 model.tenant,
-                (parsed) => {
+                parsed => {
                     const p = parsed as unknown as Record<string, unknown>;
                     p["wbyDeleted"] = false;
                     p["binOriginalFolderId"] = null;
@@ -648,20 +639,13 @@ export const createEntriesStorageOperations = (
 
             const wasPublished = storageEntry.status === "published";
 
-            await query()
-                .where("tenant", model.tenant)
-                .andWhere("id", storageEntry.id)
-                .delete();
+            await query().where("tenant", model.tenant).andWhere("id", storageEntry.id).delete();
 
             /* If deleted row was published: clear live on all remaining rows. */
             if (wasPublished) {
-                await patchAllRevisions(
-                    storageEntry.entryId,
-                    model.tenant,
-                    (parsed) => {
-                        parsed.live = null;
-                    }
-                );
+                await patchAllRevisions(storageEntry.entryId, model.tenant, parsed => {
+                    parsed.live = null;
+                });
             }
 
             /* If latestStorageEntry is provided: promote it as latest. */
@@ -687,10 +671,7 @@ export const createEntriesStorageOperations = (
 
             const entryId = extractEntryId(entry.id);
 
-            await query()
-                .where("tenant", model.tenant)
-                .andWhere("entryId", entryId)
-                .delete();
+            await query().where("tenant", model.tenant).andWhere("entryId", entryId).delete();
         },
 
         deleteMultipleEntries: async (model, { entries }) => {
@@ -698,16 +679,13 @@ export const createEntriesStorageOperations = (
 
             const entryIds = entries.map(extractEntryId);
 
-            await query()
-                .where("tenant", model.tenant)
-                .whereIn("entryId", entryIds)
-                .delete();
+            await query().where("tenant", model.tenant).whereIn("entryId", entryIds).delete();
         },
 
         getUniqueFieldValues: async (model, params) => {
             const { where, fieldId } = params;
 
-            const field = model.fields.find((f) => f.fieldId === fieldId);
+            const field = model.fields.find(f => f.fieldId === fieldId);
 
             if (!field) {
                 return [];
