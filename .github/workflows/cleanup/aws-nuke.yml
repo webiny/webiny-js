@@ -20,6 +20,7 @@ accounts:
       IAMRole:
         - "GitHubActionsWebinyJs"
         - "GitHubActionsWebinyJsAdminAccess"
+        - "scheduler-invoke-api-destination"
       IAMUser:
         - "webiny-ci"
       IAMUserPolicyAttachment:
@@ -45,6 +46,12 @@ accounts:
       Route53HostedZone:
         - property: Name
           value: "ci.webiny.com."
+      EventsConnection:
+        - "github-workflow-dispatch"
+      EventsApiDestination:
+        - "deploy-e2e-dispatch"
+      EventsRule:
+        - "daily-deploy-e2e"
 
 resource-types:
   excludes:
