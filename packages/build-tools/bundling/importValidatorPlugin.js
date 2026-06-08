@@ -10,6 +10,8 @@ const whitelist = [
     "@webiny/auth0",
     "@webiny/okta",
     "@webiny/plugins",
+    "@webiny/sdk",
+    "@webiny/stdlib",
     "@webiny/lexical-converter",
     "@webiny/lexical-nodes",
     "@webiny/lexical-theme"
