@@ -47,9 +47,20 @@ export const createGroupsStorageOperations = (
 
         await ensureSchema();
 
-        const qb = query()
-            // We always need to filter by tenant.
-            .where("tenant", where.tenant);
+        const qb = query().where("tenant", where.tenant);
+
+        if (where.id) {
+            qb.andWhere("id", where.id);
+        }
+        if (where.slug) {
+            qb.andWhere("slug", where.slug);
+        }
+        if (where.isPlugin !== undefined) {
+            qb.andWhere("isPlugin", where.isPlugin);
+        }
+        if (where.isPrivate !== undefined) {
+            qb.andWhere("isPrivate", where.isPrivate);
+        }
 
         if (sort?.length) {
             for (const sortField of sort) {

@@ -57,39 +57,36 @@ export const createEntriesStorageOperations = (
     };
 
     /*
-     * Syncs entry-level meta to all sibling revisions using a batched CASE/WHEN UPDATE.
+     * Syncs entry-level meta to the latest revision only.
      * Also patches additional fields (e.g., live) if provided.
      */
-    const syncSiblings = async (
-        entry: CmsEntry,
-        extraPatch?: (sibling: CmsEntry) => void
+    const syncToLatest = async (
+        entry: CmsStorageEntry,
+        extraPatch?: (latest: CmsEntry) => void
     ): Promise<void> => {
-        const siblings = await query().where("entryId", entry.entryId).whereNot("id", entry.id);
-
-        if (siblings.length === 0) {
+        if (entry.isLatest) {
             return;
         }
 
-        const cases: Array<{ id: string; data: string }> = siblings.map((row: IEntryRow) => {
-            const sibling = JSON.parse(row.data);
-            const merged = mergeEntryLevelMeta(entry, sibling);
+        const latestRow = await query()
+            .where("entryId", entry.entryId)
+            .andWhere("isLatest", true)
+            .first();
 
-            if (extraPatch) {
-                extraPatch(merged);
-            }
+        if (!latestRow) {
+            return;
+        }
 
-            return { id: row.id, data: JSON.stringify(merged) };
-        });
+        const latest = JSON.parse(latestRow.data);
+        const merged = mergeEntryLevelMeta(entry, latest);
+
+        if (extraPatch) {
+            extraPatch(merged);
+        }
 
         await query()
-            .where("entryId", entry.entryId)
-            .whereNot("id", entry.id)
-            .update({
-                data: knex.raw(
-                    `CASE id ${cases.map(() => "WHEN ? THEN ?").join(" ")} END`,
-                    cases.flatMap((c: { id: string; data: string }) => [c.id, c.data])
-                )
-            });
+            .where("id", latestRow.id)
+            .update({ data: JSON.stringify(merged) });
     };
 
     /*
@@ -485,8 +482,8 @@ export const createEntriesStorageOperations = (
                 .andWhere("id", storageEntry.id)
                 .update(rowWithoutFlags);
 
-            /* Sync entry-level meta to all siblings. */
-            await syncSiblings(se as CmsEntry);
+            /* Sync entry-level meta to the latest revision. */
+            await syncToLatest(se);
 
             return entry;
         },
@@ -527,11 +524,11 @@ export const createEntriesStorageOperations = (
                 .andWhere("id", storageEntry.id)
                 .update(rowWithoutIsLatest);
 
-            /* Step 3: Sync entry-level meta + live to all siblings. */
+            /* Step 3: Sync entry-level meta + live to the latest revision. */
             const liveValue = { version: entry.version };
 
-            await syncSiblings(se as CmsEntry, sibling => {
-                sibling.live = liveValue;
+            await syncToLatest(se, latest => {
+                latest.live = liveValue;
             });
 
             return entry;
@@ -554,9 +551,9 @@ export const createEntriesStorageOperations = (
                 .andWhere("id", storageEntry.id)
                 .update(rowWithoutIsLatest);
 
-            /* Sync entry-level meta + live=null to all siblings. */
-            await syncSiblings(se as CmsEntry, sibling => {
-                sibling.live = null;
+            /* Sync entry-level meta + live=null to the latest revision. */
+            await syncToLatest(se, latest => {
+                latest.live = null;
             });
 
             return entry;
