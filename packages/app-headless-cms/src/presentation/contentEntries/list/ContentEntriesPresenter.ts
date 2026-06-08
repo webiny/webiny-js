@@ -10,7 +10,6 @@ import { DeleteEntryUseCase } from "~/features/contentEntry/deleteEntry/abstract
 import { PublishEntryUseCase } from "~/features/contentEntry/publishEntry/abstractions.js";
 import { UnpublishEntryUseCase } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { MoveEntryUseCase } from "~/features/contentEntry/moveEntry/abstractions.js";
-import { BulkActionUseCase } from "~/features/contentEntry/bulkAction/abstractions.js";
 import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
 import { ContentEntriesCacheProvider } from "~/features/contentEntry/abstractions.js";
 import {
@@ -41,7 +40,6 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
         private publishEntryUseCase: PublishEntryUseCase.Interface,
         private unpublishEntryUseCase: UnpublishEntryUseCase.Interface,
         private moveEntryUseCase: MoveEntryUseCase.Interface,
-        private bulkActionUseCase: BulkActionUseCase.Interface,
         private updateRevisionDescriptionUseCase: UpdateRevisionDescriptionUseCase.Interface,
         private cacheProvider: ContentEntriesCacheProvider.Interface,
         private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface
@@ -55,7 +53,6 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
             | "publishEntryUseCase"
             | "unpublishEntryUseCase"
             | "moveEntryUseCase"
-            | "bulkActionUseCase"
             | "updateRevisionDescriptionUseCase"
             | "cacheProvider"
             | "getDescendantFoldersUseCase"
@@ -67,7 +64,6 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
             publishEntryUseCase: false,
             unpublishEntryUseCase: false,
             moveEntryUseCase: false,
-            bulkActionUseCase: false,
             updateRevisionDescriptionUseCase: false,
             cacheProvider: false,
             getDescendantFoldersUseCase: false,
@@ -169,27 +165,6 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
         return true;
     }
 
-    async bulkAction(action: string, data?: Record<string, unknown>): Promise<void> {
-        if (!this._model) {
-            return;
-        }
-
-        const selectedIds = this._listPresenter.vm.selection.selectedIds;
-        const where: Record<string, unknown> = {
-            id_in: Array.from(selectedIds)
-        };
-
-        await this.bulkActionUseCase.execute({
-            model: this._model,
-            action,
-            where,
-            data
-        });
-
-        this._listPresenter.actions.selection.deselectAll();
-        await this._listPresenter.actions.refresh();
-    }
-
     init(config: IContentEntriesInitConfig): void {
         this._loading = true;
         this._model = null;
@@ -249,7 +224,6 @@ export const ContentEntriesPresenterImplementation = Abstraction.createImplement
         PublishEntryUseCase,
         UnpublishEntryUseCase,
         MoveEntryUseCase,
-        BulkActionUseCase,
         UpdateRevisionDescriptionUseCase,
         ContentEntriesCacheProvider,
         GetDescendantFoldersUseCase

@@ -15,14 +15,12 @@ import { DeleteEntryFeature } from "~/features/contentEntry/deleteEntry/feature.
 import { PublishEntryFeature } from "~/features/contentEntry/publishEntry/feature.js";
 import { UnpublishEntryFeature } from "~/features/contentEntry/unpublishEntry/feature.js";
 import { MoveEntryFeature } from "~/features/contentEntry/moveEntry/feature.js";
-import { BulkActionFeature } from "~/features/contentEntry/bulkAction/feature.js";
 import { UpdateRevisionDescriptionFeature } from "~/features/contentEntry/updateRevisionDescription/feature.js";
 import { ListEntriesGateway } from "~/features/contentEntry/listEntries/abstractions.js";
 import { DeleteEntryGateway } from "~/features/contentEntry/deleteEntry/abstractions.js";
 import { PublishEntryGateway } from "~/features/contentEntry/publishEntry/abstractions.js";
 import { UnpublishEntryGateway } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { MoveEntryGateway } from "~/features/contentEntry/moveEntry/abstractions.js";
-import { BulkActionGateway } from "~/features/contentEntry/bulkAction/abstractions.js";
 import { UpdateRevisionDescriptionGateway } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
 import { ContentEntriesPresenter } from "./abstractions.js";
 import { ContentEntriesPresenterImplementation } from "./ContentEntriesPresenter.js";
@@ -154,7 +152,6 @@ function setup(): TestSetup {
     PublishEntryFeature.register(container);
     UnpublishEntryFeature.register(container);
     MoveEntryFeature.register(container);
-    BulkActionFeature.register(container);
     UpdateRevisionDescriptionFeature.register(container);
 
     const listEntriesGateway = { execute: vi.fn() };
@@ -166,7 +163,6 @@ function setup(): TestSetup {
     container.registerInstance(DeleteEntryGateway, deleteEntryGateway);
     container.registerInstance(PublishEntryGateway, { execute: vi.fn() });
     container.registerInstance(UnpublishEntryGateway, { execute: vi.fn() });
-    container.registerInstance(BulkActionGateway, { execute: vi.fn() });
     container.registerInstance(UpdateRevisionDescriptionGateway, { execute: vi.fn() });
 
     container.register(ContentEntriesPresenterImplementation).inSingletonScope();
@@ -217,10 +213,7 @@ describe("ContentEntriesPresenter", () => {
             await initPresenter(t, { data: entries });
 
             expect(t.presenter.list.vm.rows).toHaveLength(2);
-            expect(t.presenter.list.vm.rows.map(r => r.entryId)).toEqual([
-                "entry-1",
-                "entry-2"
-            ]);
+            expect(t.presenter.list.vm.rows.map(r => r.entryId)).toEqual(["entry-1", "entry-2"]);
         });
 
         it("should send folderId=root in the gateway query", async () => {
@@ -264,10 +257,7 @@ describe("ContentEntriesPresenter", () => {
                 expect(t.presenter.list.vm.rows).toHaveLength(2);
             });
 
-            expect(t.presenter.list.vm.rows.map(r => r.entryId)).toEqual([
-                "folder-1",
-                "folder-2"
-            ]);
+            expect(t.presenter.list.vm.rows.map(r => r.entryId)).toEqual(["folder-1", "folder-2"]);
         });
 
         it("should show only root entries when navigating back to root", async () => {

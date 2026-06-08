@@ -10,6 +10,12 @@ import type { CmsModel } from "~/types.js";
 import { ContentEntriesPresenterFeature } from "../list/feature.js";
 import { ContentEntryFormPresenterFeature } from "../form/feature.js";
 import { SingletonEntryPresenterFeature } from "../singleton/feature.js";
+import {
+    BulkPublishFeature,
+    BulkUnpublishFeature,
+    BulkDeleteFeature,
+    BulkMoveFeature
+} from "../bulkActions/feature.js";
 import { ContentEntriesPresenterProvider } from "./ContentEntriesPresenterProvider.js";
 import { ContentEntryFormPresenterProvider } from "./ContentEntryFormPresenterProvider.js";
 import { ContentEntryListWithConfig } from "~/admin/config/contentEntries/list/ContentEntryListConfig.js";
@@ -103,6 +109,10 @@ export const ContentEntriesView = ({ modelId, children }: ContentEntriesViewProp
         ContentEntriesPresenterFeature.register(child);
         ContentEntryFormPresenterFeature.register(child);
         SingletonEntryPresenterFeature.register(child);
+        BulkPublishFeature.register(child);
+        BulkUnpublishFeature.register(child);
+        BulkDeleteFeature.register(child);
+        BulkMoveFeature.register(child);
 
         return child;
     }, []);
