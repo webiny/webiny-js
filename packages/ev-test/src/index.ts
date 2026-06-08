@@ -1,5 +1,11 @@
-import { ErrorHandler, NotFoundHandler } from "@cloudi/core";
-import { createNodeServer, NodeHttpAdapter } from "@cloudi/node";
+import {
+    ErrorHandler,
+    NotFoundHandler,
+    HttpRouterHandler,
+    HttpFeature
+} from "@webiny/event-handler";
+import { createNodeServer } from "@webiny/event-handler-node";
+import { NodeHttpEventType, NodeHttpTranslator } from "@webiny/event-handler-node";
 import { tenantContext } from "./context/TenantContext.js";
 import { tenantInitializer } from "./handlers/TenantInitializer.js";
 import { helloHandler } from "./handlers/HelloHandler.js";
@@ -9,14 +15,25 @@ import { greetService } from "./services/GreetService.js";
 
 const server = createNodeServer({
     root: container => {
-        container.register(greetService);
+        // Event type detection
+        container.register(NodeHttpEventType);
 
-        container.register(NodeHttpAdapter);
-        container.register(ErrorHandler);
-        container.register(tenantInitializer);
+        // HTTP infrastructure (HttpRouter + SecureHeadersDecorator)
+        HttpFeature.register(container);
+
+        // Routes (resolved by HttpRouter)
         container.register(helloHandler);
         container.register(echoHandler);
         container.register(filesHandler);
+
+        // Services
+        container.register(greetService);
+
+        // HttpEventHandler chain (runs for Node HTTP events)
+        container.register(NodeHttpTranslator); // first — translates IncomingMessage → IHttpRequest
+        container.register(ErrorHandler);
+        container.register(tenantInitializer);
+        container.register(HttpRouterHandler);
         container.register(NotFoundHandler);
     },
     request: container => {

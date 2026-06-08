@@ -3,12 +3,8 @@
  */
 
 import { Abstraction } from "@webiny/di";
-import {
-    ApiGatewayEventHandler,
-    type APIGatewayEvent,
-    type APIGatewayProxyResult
-} from "../index.js";
-import type { NextFunction } from "@cloudi/core";
+import { HttpEventHandler, type APIGatewayEvent, type APIGatewayProxyResult } from "../index.js";
+import type { NextFunction, EventContext } from "@webiny/event-handler";
 
 interface IUserService {
     listUsers(): Promise<Array<{ id: string; name: string; email: string }>>;
@@ -22,18 +18,21 @@ interface ILoggerService {
 declare const UserService: Abstraction<IUserService>;
 declare const LoggerService: Abstraction<ILoggerService>;
 
-class ListUsersHandler implements ApiGatewayEventHandler.Interface {
+class ListUsersHandler implements HttpEventHandler.Interface {
     constructor(
         private userService: IUserService,
         private logger: ILoggerService
     ) {}
 
-    async execute(event: APIGatewayEvent, next: NextFunction): Promise<APIGatewayProxyResult> {
-        if (event.httpMethod !== "GET" || !event.path.startsWith("/users")) {
+    async execute(
+        ctx: EventContext<APIGatewayEvent>,
+        next: NextFunction
+    ): Promise<APIGatewayProxyResult> {
+        if (ctx.event.httpMethod !== "GET" || !ctx.event.path.startsWith("/users")) {
             return next();
         }
 
-        this.logger.info("Handling list users request", { path: event.path });
+        this.logger.info("Handling list users request", { path: ctx.event.path });
 
         try {
             const users = await this.userService.listUsers();
@@ -53,7 +52,7 @@ class ListUsersHandler implements ApiGatewayEventHandler.Interface {
     }
 }
 
-export const listUsersHandler = ApiGatewayEventHandler.createImplementation({
+export const listUsersHandler = HttpEventHandler.createImplementation({
     implementation: ListUsersHandler,
     dependencies: [UserService, LoggerService]
 });

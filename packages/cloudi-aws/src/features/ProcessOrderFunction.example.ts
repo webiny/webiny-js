@@ -4,7 +4,7 @@
 
 import { Abstraction } from "@webiny/di";
 import { SnsEventHandler, type SNSEvent, type SnsResult } from "../index.js";
-import type { NextFunction } from "@cloudi/core";
+import type { NextFunction, EventContext } from "@webiny/event-handler";
 
 interface IOrderService {
     processOrder(orderId: string, data: any): Promise<void>;
@@ -24,16 +24,16 @@ class ProcessOrderHandler implements SnsEventHandler.Interface {
         private logger: ILoggerService
     ) {}
 
-    async execute(event: SNSEvent, next: NextFunction): Promise<SnsResult> {
-        if (!Array.isArray(event.Records) || event.Records[0]?.EventSource !== "aws:sns") {
+    async execute(ctx: EventContext<SNSEvent>, next: NextFunction): Promise<SnsResult> {
+        if (!Array.isArray(ctx.event.Records) || ctx.event.Records[0]?.EventSource !== "aws:sns") {
             return next();
         }
 
-        this.logger.info("Processing SNS event", { recordCount: event.Records.length });
+        this.logger.info("Processing SNS event", { recordCount: ctx.event.Records.length });
         let processed = 0;
 
         try {
-            for (const record of event.Records) {
+            for (const record of ctx.event.Records) {
                 const message = JSON.parse(record.Sns.Message);
                 await this.orderService.processOrder(message.orderId, message);
                 processed++;

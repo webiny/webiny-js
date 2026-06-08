@@ -7,13 +7,13 @@
  */
 
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import { CloudHandler } from "@cloudi/core";
-import type { NextFunction } from "@cloudi/core";
+import { HttpRoute } from "@webiny/event-handler";
+import type { NextFunction } from "@webiny/event-handler";
 
 const s3 = new S3Client({});
 const BUCKET = "my-bucket";
 
-class FilesHandlerImpl implements CloudHandler.Interface {
+class FilesHandlerImpl implements HttpRoute.Interface {
     private matches(event: any): boolean {
         return event?.method === "GET" && event?.path?.startsWith("/files");
     }

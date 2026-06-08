@@ -1,6 +1,6 @@
 import http from "node:http";
-import { createHandler } from "@cloudi/core";
-import type { HandlerSetup, IHttpResponse } from "@cloudi/core";
+import { createHandler } from "@webiny/event-handler";
+import type { HandlerSetup, IHttpResponse } from "@webiny/event-handler";
 
 export interface CreateNodeServerOptions {
     root: HandlerSetup;

@@ -1,21 +1,16 @@
-import { CloudHandler } from "@cloudi/core";
-import type { IHttpRequest, NextFunction } from "@cloudi/core";
+import { HttpRoute } from "@webiny/event-handler";
+import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler";
 import { GreetService } from "../services/GreetService.js";
 import type { IGreetService } from "../services/GreetService.js";
 
-class HelloHandlerImpl implements CloudHandler.Interface {
+class HelloHandlerImpl implements HttpRoute.Interface {
+    readonly method = "GET";
+    readonly path = "/hello";
+
     constructor(private svc: IGreetService) {}
 
-    private matches(event: any): boolean {
-        return event?.method === "GET" && event?.path?.startsWith("/hello");
-    }
-
-    async execute(event: any, next: NextFunction) {
-        if (!this.matches(event)) {
-            return next();
-        }
-        const req = event as IHttpRequest;
-        const name = req.query["name"] || "world";
+    async handle(request: IHttpRequest): Promise<IHttpResponse> {
+        const name = request.query["name"] || "world";
         return {
             statusCode: 200,
             headers: { "Content-Type": "application/json" },
@@ -24,7 +19,7 @@ class HelloHandlerImpl implements CloudHandler.Interface {
     }
 }
 
-export const helloHandler = CloudHandler.createImplementation({
+export const helloHandler = HttpRoute.createImplementation({
     implementation: HelloHandlerImpl,
     dependencies: [GreetService]
 });

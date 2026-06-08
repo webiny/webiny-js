@@ -1,7 +1,6 @@
 import type { SQSEvent, SQSRecord } from "@webiny/aws-sdk/types/index.js";
-import type { Constructor, Dependencies } from "@webiny/di";
-import { CloudHandler } from "@cloudi/core";
-import type { ICloudHandler } from "@cloudi/core";
+import { Abstraction } from "@webiny/di";
+import type { IEventHandler } from "@webiny/event-handler";
 
 export interface SqsResult {
     success: boolean;
@@ -9,15 +8,12 @@ export interface SqsResult {
     message?: string;
 }
 
-export namespace SqsEventHandler {
-    export type Interface = ICloudHandler<SQSEvent, SqsResult>;
+export interface ISqsEventHandler extends IEventHandler<SQSEvent, SqsResult> {}
 
-    export function createImplementation<I extends Constructor<Interface>>(params: {
-        implementation: I;
-        dependencies: Dependencies<I>;
-    }) {
-        return CloudHandler.createImplementation(params as any);
-    }
+export const SqsEventHandler = new Abstraction<ISqsEventHandler>("SqsEventHandler");
+
+export namespace SqsEventHandler {
+    export type Interface = ISqsEventHandler;
 }
 
 export type { SQSEvent, SQSRecord };

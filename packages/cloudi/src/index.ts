@@ -4,4 +4,5 @@ export type { CreateHandlerOptions } from "./createHandler.js";
 export type { NextFunction, HandlerSetup } from "./types.js";
 export * from "./abstractions/index.js";
 export * from "./handlers/index.js";
+export * from "./features/HttpFeature.js";
 export { Container, Abstraction } from "@webiny/di";

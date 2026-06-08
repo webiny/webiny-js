@@ -1,5 +1,5 @@
 {
-  "name": "@cloudi/node",
+  "name": "@webiny/event-handler-node",
   "version": "0.1.0",
   "type": "module",
   "main": "index.js",
@@ -13,7 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@cloudi/core": "0.1.0"
+    "@webiny/event-handler": "0.1.0"
   },
   "peerDependencies": {
     "@webiny/di": ">=0.2.3"

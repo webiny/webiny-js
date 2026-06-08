@@ -1,5 +1,5 @@
 {
-  "name": "@cloudi/core",
+  "name": "@webiny/event-handler",
   "version": "0.1.0",
   "type": "module",
   "main": "index.js",
@@ -12,6 +12,9 @@
     "Webiny Team"
   ],
   "license": "MIT",
+  "dependencies": {
+    "@webiny/feature": "0.0.0"
+  },
   "peerDependencies": {
     "@webiny/di": ">=0.2.3"
   },

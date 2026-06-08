@@ -1,23 +1,13 @@
 import type { S3Event, S3EventRecord } from "@webiny/aws-sdk/types/index.js";
-import type { Constructor, Dependencies } from "@webiny/di";
-import { CloudHandler } from "@cloudi/core";
-import type { ICloudHandler } from "@cloudi/core";
+import { Abstraction } from "@webiny/di";
+import type { IEventHandler } from "@webiny/event-handler";
 
-export interface S3Result {
-    success: boolean;
-    processedRecords?: number;
-    message?: string;
-}
+export interface IS3EventHandler extends IEventHandler<S3Event, void> {}
+
+export const S3EventHandler = new Abstraction<IS3EventHandler>("S3EventHandler");
 
 export namespace S3EventHandler {
-    export type Interface = ICloudHandler<S3Event, S3Result>;
-
-    export function createImplementation<I extends Constructor<Interface>>(params: {
-        implementation: I;
-        dependencies: Dependencies<I>;
-    }) {
-        return CloudHandler.createImplementation(params as any);
-    }
+    export type Interface = IS3EventHandler;
 }
 
 export type { S3Event, S3EventRecord };

@@ -1,17 +1,17 @@
-import { CloudHandler } from "@cloudi/core";
-import type { NextFunction } from "@cloudi/core";
+import { HttpEventHandler } from "@webiny/event-handler";
+import type { EventContext, NextFunction } from "@webiny/event-handler";
 import { TenantContext } from "../context/TenantContext.js";
 import type { ITenantContext } from "../context/TenantContext.js";
 
-class TenantInitializerImpl implements CloudHandler.Interface {
+class TenantInitializerImpl implements HttpEventHandler.Interface {
     constructor(private ctx: ITenantContext) {}
 
-    async execute(event: any, next: NextFunction) {
-        if (!event?.headers) {
+    async execute(ctx: EventContext, next: NextFunction) {
+        if (!ctx.event?.headers) {
             return next();
         }
 
-        const tenantId = event.headers["x-tenant"];
+        const tenantId = ctx.event.headers["x-tenant"];
         if (!tenantId) {
             return {
                 statusCode: 400,
@@ -25,7 +25,7 @@ class TenantInitializerImpl implements CloudHandler.Interface {
     }
 }
 
-export const tenantInitializer = CloudHandler.createImplementation({
+export const tenantInitializer = HttpEventHandler.createImplementation({
     implementation: TenantInitializerImpl,
     dependencies: [TenantContext]
 });

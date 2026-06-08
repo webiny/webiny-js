@@ -1,7 +1,6 @@
 import type { SNSEvent, SNSEventRecord } from "@webiny/aws-sdk/types/index.js";
-import type { Constructor, Dependencies } from "@webiny/di";
-import { CloudHandler } from "@cloudi/core";
-import type { ICloudHandler } from "@cloudi/core";
+import { Abstraction } from "@webiny/di";
+import type { IEventHandler } from "@webiny/event-handler";
 
 export interface SnsResult {
     success: boolean;
@@ -9,15 +8,12 @@ export interface SnsResult {
     message?: string;
 }
 
-export namespace SnsEventHandler {
-    export type Interface = ICloudHandler<SNSEvent, SnsResult>;
+export interface ISnsEventHandler extends IEventHandler<SNSEvent, SnsResult> {}
 
-    export function createImplementation<I extends Constructor<Interface>>(params: {
-        implementation: I;
-        dependencies: Dependencies<I>;
-    }) {
-        return CloudHandler.createImplementation(params as any);
-    }
+export const SnsEventHandler = new Abstraction<ISnsEventHandler>("SnsEventHandler");
+
+export namespace SnsEventHandler {
+    export type Interface = ISnsEventHandler;
 }
 
 export type { SNSEvent, SNSEventRecord };

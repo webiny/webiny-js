@@ -1,6 +1,6 @@
 import { Container } from "@webiny/di";
-import { CloudHandler, executeChain } from "@cloudi/core";
-import type { HandlerSetup } from "@cloudi/core";
+import { EventType, executeChain } from "@webiny/event-handler";
+import type { HandlerSetup } from "@webiny/event-handler";
 import { AwsLambdaEvent } from "./abstractions/AwsLambdaEvent.js";
 import { AwsLambdaContext } from "./abstractions/AwsLambdaContext.js";
 import type { Context } from "@webiny/aws-sdk/types/index.js";
@@ -30,7 +30,16 @@ export function createLambdaHandler(options: CreateLambdaHandlerOptions) {
             await options.request(child);
         }
 
-        const handlers = child.resolveAll(CloudHandler);
+        const eventTypes = child.resolveAll(EventType);
+        const matched = eventTypes.find(et => et.canHandle(event));
+
+        if (!matched) {
+            throw new Error("No event type matched the incoming event");
+        }
+
+        const abstraction = matched.getHandlerAbstraction();
+        const handlers = child.resolveAll(abstraction);
+
         return executeChain(handlers, event);
     };
 }

@@ -1,13 +1,14 @@
-import { CloudHandler } from "../abstractions/CloudHandler.js";
+import { HttpEventHandler } from "../abstractions/EventHandler.js";
 import { isHttpRequest } from "../abstractions/IHttp.js";
+import type { EventContext } from "../abstractions/EventHandler.js";
 import type { NextFunction } from "../types.js";
 
-class ErrorHandlerImpl implements CloudHandler.Interface {
-    async execute(event: any, next: NextFunction): Promise<any> {
+class ErrorHandlerImpl implements HttpEventHandler.Interface {
+    async execute(ctx: EventContext, next: NextFunction): Promise<any> {
         try {
             return await next();
         } catch (err) {
-            if (isHttpRequest(event)) {
+            if (isHttpRequest(ctx.event)) {
                 return {
                     statusCode: 500,
                     headers: { "Content-Type": "application/json" },
@@ -19,7 +20,7 @@ class ErrorHandlerImpl implements CloudHandler.Interface {
     }
 }
 
-export const ErrorHandler = CloudHandler.createImplementation({
+export const ErrorHandler = HttpEventHandler.createImplementation({
     implementation: ErrorHandlerImpl,
     dependencies: []
 });

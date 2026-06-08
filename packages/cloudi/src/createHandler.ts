@@ -1,5 +1,5 @@
 import { Container } from "@webiny/di";
-import { CloudHandler } from "./abstractions/CloudHandler.js";
+import { EventType } from "./abstractions/EventType.js";
 import { executeChain } from "./chain.js";
 import type { HandlerSetup } from "./types.js";
 
@@ -23,7 +23,16 @@ export function createHandler(options: CreateHandlerOptions) {
             await options.request(child);
         }
 
-        const handlers = child.resolveAll(CloudHandler);
+        const eventTypes = child.resolveAll(EventType);
+        const matched = eventTypes.find(et => et.canHandle(event));
+
+        if (!matched) {
+            throw new Error("No event type matched the incoming event");
+        }
+
+        const abstraction = matched.getHandlerAbstraction();
+        const handlers = child.resolveAll(abstraction);
+
         return executeChain(handlers, event);
     };
 }

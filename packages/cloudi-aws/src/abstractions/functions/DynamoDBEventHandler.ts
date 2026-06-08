@@ -1,7 +1,6 @@
 import type { DynamoDBStreamEvent, DynamoDBRecord } from "@webiny/aws-sdk/types/index.js";
-import type { Constructor, Dependencies } from "@webiny/di";
-import { CloudHandler } from "@cloudi/core";
-import type { ICloudHandler } from "@cloudi/core";
+import { Abstraction } from "@webiny/di";
+import type { IEventHandler } from "@webiny/event-handler";
 
 export interface DynamoDBResult {
     success: boolean;
@@ -9,15 +8,12 @@ export interface DynamoDBResult {
     message?: string;
 }
 
-export namespace DynamoDBEventHandler {
-    export type Interface = ICloudHandler<DynamoDBStreamEvent, DynamoDBResult>;
+export interface IDynamoDBEventHandler extends IEventHandler<DynamoDBStreamEvent, DynamoDBResult> {}
 
-    export function createImplementation<I extends Constructor<Interface>>(params: {
-        implementation: I;
-        dependencies: Dependencies<I>;
-    }) {
-        return CloudHandler.createImplementation(params as any);
-    }
+export const DynamoDBEventHandler = new Abstraction<IDynamoDBEventHandler>("DynamoDBEventHandler");
+
+export namespace DynamoDBEventHandler {
+    export type Interface = IDynamoDBEventHandler;
 }
 
 export type { DynamoDBStreamEvent, DynamoDBRecord };

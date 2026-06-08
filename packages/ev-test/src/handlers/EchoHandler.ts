@@ -1,28 +1,24 @@
-import { CloudHandler } from "@cloudi/core";
-import type { NextFunction } from "@cloudi/core";
+import { HttpRoute } from "@webiny/event-handler";
+import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler";
 import { TenantContext } from "../context/TenantContext.js";
 import type { ITenantContext } from "../context/TenantContext.js";
 
-class EchoHandlerImpl implements CloudHandler.Interface {
+class EchoHandlerImpl implements HttpRoute.Interface {
+    readonly method = "POST";
+    readonly path = "/echo";
+
     constructor(private tenantCtx: ITenantContext) {}
 
-    private matches(event: any): boolean {
-        return event?.method === "POST" && event?.path === "/echo";
-    }
-
-    async execute(event: any, next: NextFunction) {
-        if (!this.matches(event)) {
-            return next();
-        }
+    async handle(request: IHttpRequest): Promise<IHttpResponse> {
         return {
             statusCode: 200,
             headers: { "Content-Type": "application/json" },
-            body: { tenant: this.tenantCtx.require().id, echo: event.body }
+            body: { tenant: this.tenantCtx.require().id, echo: request.body }
         };
     }
 }
 
-export const echoHandler = CloudHandler.createImplementation({
+export const echoHandler = HttpRoute.createImplementation({
     implementation: EchoHandlerImpl,
     dependencies: [TenantContext]
 });

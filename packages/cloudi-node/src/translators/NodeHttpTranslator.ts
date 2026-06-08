@@ -1,6 +1,6 @@
 import { IncomingMessage } from "node:http";
-import { CloudHandler } from "@cloudi/core";
-import type { IHttpRequest, NextFunction } from "@cloudi/core";
+import { HttpEventHandler } from "@webiny/event-handler";
+import type { EventContext, IHttpRequest, NextFunction } from "@webiny/event-handler";
 
 async function readBody(req: IncomingMessage): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -9,7 +9,9 @@ async function readBody(req: IncomingMessage): Promise<any> {
             raw += chunk;
         });
         req.on("end", () => {
-            if (!raw) return resolve(undefined);
+            if (!raw) {
+                return resolve(undefined);
+            }
             const ct = (req.headers["content-type"] || "").toLowerCase();
             if (ct.includes("application/json")) {
                 try {
@@ -27,7 +29,9 @@ async function readBody(req: IncomingMessage): Promise<any> {
 
 function parseQuery(url: string): Record<string, string> {
     const idx = url.indexOf("?");
-    if (idx === -1) return {};
+    if (idx === -1) {
+        return {};
+    }
     const result: Record<string, string> = {};
     new URLSearchParams(url.slice(idx + 1)).forEach((v, k) => {
         result[k] = v;
@@ -35,26 +39,26 @@ function parseQuery(url: string): Record<string, string> {
     return result;
 }
 
-class NodeHttpAdapterImpl implements CloudHandler.Interface {
-    async execute(event: any, next: NextFunction): Promise<any> {
-        if (!(event instanceof IncomingMessage)) return next();
-
-        const url = event.url || "/";
+class NodeHttpTranslatorImpl implements HttpEventHandler.Interface {
+    async execute(ctx: EventContext<IncomingMessage>, next: NextFunction): Promise<any> {
+        const url = ctx.event.url || "/";
         const qIdx = url.indexOf("?");
 
         const request: IHttpRequest = {
-            method: event.method || "GET",
+            method: ctx.event.method || "GET",
             path: qIdx === -1 ? url : url.slice(0, qIdx),
-            headers: event.headers as Record<string, string>,
+            headers: ctx.event.headers as Record<string, string>,
             query: parseQuery(url),
-            body: await readBody(event)
+            pathParameters: {},
+            body: await readBody(ctx.event)
         };
 
-        return next(request);
+        const httpCtx: EventContext<IHttpRequest> = { event: request, metadata: ctx.metadata };
+        return next(httpCtx);
     }
 }
 
-export const NodeHttpAdapter = CloudHandler.createImplementation({
-    implementation: NodeHttpAdapterImpl,
+export const NodeHttpTranslator = HttpEventHandler.createImplementation({
+    implementation: NodeHttpTranslatorImpl,
     dependencies: []
 });

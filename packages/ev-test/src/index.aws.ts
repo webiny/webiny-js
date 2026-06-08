@@ -1,5 +1,14 @@
-import { ErrorHandler, NotFoundHandler } from "@cloudi/core";
-import { createLambdaHandler, ApiGatewayAdapter } from "@cloudi/aws";
+import {
+    ErrorHandler,
+    NotFoundHandler,
+    HttpRouterHandler,
+    HttpFeature
+} from "@webiny/event-handler";
+import {
+    createLambdaHandler,
+    ApiGatewayEventType,
+    ApiGatewayTranslator
+} from "@webiny/event-handler-aws";
 import { tenantContext } from "./context/TenantContext.js";
 import { tenantInitializer } from "./handlers/TenantInitializer.js";
 import { helloHandler } from "./handlers/HelloHandler.js";
@@ -9,14 +18,25 @@ import { greetService } from "./services/GreetService.js";
 
 export const handler = createLambdaHandler({
     root: container => {
-        container.register(greetService);
+        // Event type detection
+        container.register(ApiGatewayEventType);
 
-        container.register(ApiGatewayAdapter); // translates APIGatewayProxyEvent → IHttpRequest
-        container.register(ErrorHandler);
-        container.register(tenantInitializer);
+        // HTTP infrastructure
+        HttpFeature.register(container);
+
+        // Routes
         container.register(helloHandler);
         container.register(echoHandler);
-        container.register(filesHandler); // returns Buffer → adapter sets isBase64Encoded
+        container.register(filesHandler);
+
+        // Services
+        container.register(greetService);
+
+        // HttpEventHandler chain (runs for API Gateway events)
+        container.register(ApiGatewayTranslator); // first — translates APIGatewayProxyEvent → IHttpRequest
+        container.register(ErrorHandler);
+        container.register(tenantInitializer);
+        container.register(HttpRouterHandler);
         container.register(NotFoundHandler);
     },
     request: container => {

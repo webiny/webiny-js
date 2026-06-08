@@ -1,22 +1,24 @@
 import { describe, it, expect } from "vitest";
 import { createLambdaHandler } from "~/createLambdaHandler.js";
-import type { NextFunction } from "@cloudi/core";
+import type { EventContext, NextFunction } from "@webiny/event-handler";
 import {
-    ApiGatewayEventHandler,
     SnsEventHandler,
+    SnsEventType,
+    ApiGatewayEventType,
+    ApiGatewayTranslator,
     type APIGatewayEvent,
-    type APIGatewayProxyResult,
     type SNSEvent,
     type SnsResult
 } from "~/index.js";
+import { HttpEventHandler } from "@webiny/event-handler";
 
 describe("Middleware Pattern", () => {
     it("should call handlers in registration order", async () => {
         const logs: string[] = [];
 
-        const Handler1 = ApiGatewayEventHandler.createImplementation({
+        const Handler1 = HttpEventHandler.createImplementation({
             implementation: class {
-                async execute(_event: any, next: NextFunction) {
+                async execute(_ctx: EventContext, next: NextFunction) {
                     logs.push("Handler1");
                     return next();
                 }
@@ -24,9 +26,9 @@ describe("Middleware Pattern", () => {
             dependencies: []
         });
 
-        const Handler2 = ApiGatewayEventHandler.createImplementation({
+        const Handler2 = HttpEventHandler.createImplementation({
             implementation: class {
-                async execute(_event: any, next: NextFunction) {
+                async execute(_ctx: EventContext, next: NextFunction) {
                     logs.push("Handler2");
                     return next();
                 }
@@ -34,9 +36,9 @@ describe("Middleware Pattern", () => {
             dependencies: []
         });
 
-        const Handler3 = ApiGatewayEventHandler.createImplementation({
+        const Handler3 = HttpEventHandler.createImplementation({
             implementation: class {
-                async execute(_event: any, _next: NextFunction) {
+                async execute(_ctx: EventContext, _next: NextFunction) {
                     logs.push("Handler3");
                     return { statusCode: 200, headers: {}, body: "" };
                 }
@@ -46,25 +48,33 @@ describe("Middleware Pattern", () => {
 
         const handler = createLambdaHandler({
             root: container => {
+                container.register(ApiGatewayEventType);
+                container.register(ApiGatewayTranslator);
                 container.register(Handler1);
                 container.register(Handler2);
                 container.register(Handler3);
             }
         });
 
-        await handler({ test: "event" });
+        await handler({
+            httpMethod: "GET",
+            path: "/test",
+            headers: {},
+            requestContext: { requestId: "test" } as any,
+            body: null,
+            isBase64Encoded: false
+        } as APIGatewayEvent);
 
         expect(logs).toEqual(["Handler1", "Handler2", "Handler3"]);
     });
 
     it("should return result from the first handler that handles the event", async () => {
-        const ApiHandler = ApiGatewayEventHandler.createImplementation({
-            implementation: class implements ApiGatewayEventHandler.Interface {
-                async execute(
-                    event: APIGatewayEvent,
-                    next: NextFunction
-                ): Promise<APIGatewayProxyResult> {
-                    if (!event.httpMethod) return next();
+        const ApiHandler = HttpEventHandler.createImplementation({
+            implementation: class {
+                async execute(ctx: EventContext, next: NextFunction): Promise<any> {
+                    if (ctx.event?.method !== "GET") {
+                        return next();
+                    }
                     return {
                         statusCode: 200,
                         headers: {},
@@ -77,6 +87,8 @@ describe("Middleware Pattern", () => {
 
         const handler = createLambdaHandler({
             root: container => {
+                container.register(ApiGatewayEventType);
+                container.register(ApiGatewayTranslator);
                 container.register(ApiHandler);
             }
         });
@@ -85,39 +97,22 @@ describe("Middleware Pattern", () => {
             httpMethod: "GET",
             path: "/test",
             headers: {},
-            requestContext: {} as any,
+            requestContext: { requestId: "test" } as any,
             body: null,
             isBase64Encoded: false
         } as APIGatewayEvent);
 
-        expect(result).toEqual({
-            statusCode: 200,
-            headers: {},
-            body: JSON.stringify({ handler: "api-gateway" })
-        });
+        expect(result.statusCode).toBe(200);
     });
 
-    it("should route through mixed handler types via next()", async () => {
-        const ApiHandler = ApiGatewayEventHandler.createImplementation({
-            implementation: class {
-                async execute(event: any, next: NextFunction) {
-                    if (!event.httpMethod) return next();
-                    return { statusCode: 200, headers: {}, body: "" };
-                }
-            },
-            dependencies: []
-        });
-
+    it("should route SNS events to SNS handlers only", async () => {
         const SnsHandler = SnsEventHandler.createImplementation({
             implementation: class implements SnsEventHandler.Interface {
-                async execute(event: SNSEvent, next: NextFunction): Promise<SnsResult> {
-                    if (
-                        !Array.isArray(event.Records) ||
-                        event.Records[0]?.EventSource !== "aws:sns"
-                    ) {
-                        return next();
-                    }
-                    return { success: true, processedRecords: event.Records.length };
+                async execute(
+                    ctx: EventContext<SNSEvent>,
+                    _next: NextFunction
+                ): Promise<SnsResult> {
+                    return { success: true, processedRecords: ctx.event.Records.length };
                 }
             },
             dependencies: []
@@ -125,7 +120,7 @@ describe("Middleware Pattern", () => {
 
         const handler = createLambdaHandler({
             root: container => {
-                container.register(ApiHandler);
+                container.register(SnsEventType);
                 container.register(SnsHandler);
             }
         });
@@ -137,25 +132,16 @@ describe("Middleware Pattern", () => {
         expect(result).toEqual({ success: true, processedRecords: 1 });
     });
 
-    it("should throw when no handler claims the event", async () => {
-        const ApiHandler = ApiGatewayEventHandler.createImplementation({
-            implementation: class {
-                async execute(event: any, next: NextFunction) {
-                    if (!event.httpMethod) return next();
-                    return { statusCode: 200, headers: {}, body: "" };
-                }
-            },
-            dependencies: []
-        });
-
+    it("should throw when no event type matches", async () => {
         const handler = createLambdaHandler({
             root: container => {
-                container.register(ApiHandler);
+                container.register(ApiGatewayEventType);
+                container.register(ApiGatewayTranslator);
             }
         });
 
         await expect(handler({ unknownField: "value" })).rejects.toThrow(
-            "No registered handler claimed this event"
+            "No event type matched the incoming event"
         );
     });
 });

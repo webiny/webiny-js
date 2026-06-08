@@ -1,5 +1,5 @@
 {
-  "name": "@cloudi/aws",
+  "name": "@webiny/event-handler-aws",
   "version": "0.1.0",
   "type": "module",
   "main": "index.js",
@@ -20,8 +20,8 @@
     "serverless"
   ],
   "dependencies": {
-    "@cloudi/core": "0.1.0",
-    "@webiny/aws-sdk": "0.0.0"
+    "@webiny/aws-sdk": "0.0.0",
+    "@webiny/event-handler": "0.1.0"
   },
   "peerDependencies": {
     "@webiny/di": ">=0.2.3"

@@ -2707,51 +2707,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudi/aws@npm:0.1.0, @cloudi/aws@workspace:packages/cloudi-aws":
-  version: 0.0.0-use.local
-  resolution: "@cloudi/aws@workspace:packages/cloudi-aws"
-  dependencies:
-    "@cloudi/core": "npm:0.1.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  peerDependencies:
-    "@webiny/di": ">=0.2.3"
-  languageName: unknown
-  linkType: soft
-
-"@cloudi/core@npm:0.1.0, @cloudi/core@workspace:packages/cloudi":
-  version: 0.0.0-use.local
-  resolution: "@cloudi/core@workspace:packages/cloudi"
-  dependencies:
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  peerDependencies:
-    "@webiny/di": ">=0.2.3"
-  languageName: unknown
-  linkType: soft
-
-"@cloudi/node@npm:0.1.0, @cloudi/node@workspace:packages/cloudi-node":
-  version: 0.0.0-use.local
-  resolution: "@cloudi/node@workspace:packages/cloudi-node"
-  dependencies:
-    "@cloudi/core": "npm:0.1.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  peerDependencies:
-    "@webiny/di": ">=0.2.3"
-  languageName: unknown
-  linkType: soft
-
 "@colors/colors@npm:1.5.0":
   version: 1.5.0
   resolution: "@colors/colors@npm:1.5.0"
@@ -14039,10 +13994,56 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/ev-test@workspace:packages/ev-test"
   dependencies:
-    "@cloudi/aws": "npm:0.1.0"
-    "@cloudi/core": "npm:0.1.0"
-    "@cloudi/node": "npm:0.1.0"
     "@webiny/di": "npm:^0.2.3"
+    "@webiny/event-handler": "npm:0.1.0"
+    "@webiny/event-handler-aws": "npm:0.1.0"
+    "@webiny/event-handler-node": "npm:0.1.0"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/event-handler-aws@npm:0.1.0, @webiny/event-handler-aws@workspace:packages/cloudi-aws":
+  version: 0.0.0-use.local
+  resolution: "@webiny/event-handler-aws@workspace:packages/cloudi-aws"
+  dependencies:
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.0.1"
+    "@webiny/event-handler": "npm:0.1.0"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.9.3"
+    vitest: "npm:^3.2.4"
+  peerDependencies:
+    "@webiny/di": ">=0.2.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/event-handler-node@npm:0.1.0, @webiny/event-handler-node@workspace:packages/cloudi-node":
+  version: 0.0.0-use.local
+  resolution: "@webiny/event-handler-node@workspace:packages/cloudi-node"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.0.1"
+    "@webiny/event-handler": "npm:0.1.0"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.9.3"
+    vitest: "npm:^3.2.4"
+  peerDependencies:
+    "@webiny/di": ">=0.2.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/event-handler@npm:0.1.0, @webiny/event-handler@workspace:packages/cloudi":
+  version: 0.0.0-use.local
+  resolution: "@webiny/event-handler@workspace:packages/cloudi"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.0.1"
+    "@webiny/feature": "npm:0.0.0"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.9.3"
+    vitest: "npm:^3.2.4"
+  peerDependencies:
+    "@webiny/di": ">=0.2.3"
   languageName: unknown
   linkType: soft
 

@@ -1,17 +1,10 @@
 import type { APIGatewayEvent, APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
-import type { Constructor, Dependencies } from "@webiny/di";
-import { CloudHandler } from "@cloudi/core";
-import type { ICloudHandler } from "@cloudi/core";
+import type { IEventHandler } from "@webiny/event-handler";
 
+// API Gateway handlers register under HttpEventHandler from @cloudi/core.
+// This namespace provides the typed interface for type-safe implementations.
 export namespace ApiGatewayEventHandler {
-    export type Interface = ICloudHandler<APIGatewayEvent, APIGatewayProxyResult>;
-
-    export function createImplementation<I extends Constructor<Interface>>(params: {
-        implementation: I;
-        dependencies: Dependencies<I>;
-    }) {
-        return CloudHandler.createImplementation(params as any);
-    }
+    export type Interface = IEventHandler<APIGatewayEvent, APIGatewayProxyResult>;
 }
 
 export type { APIGatewayEvent, APIGatewayProxyResult };

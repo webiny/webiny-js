@@ -1,25 +1,26 @@
 import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
-import type { Constructor, Dependencies } from "@webiny/di";
-import { CloudHandler } from "@cloudi/core";
-import type { ICloudHandler } from "@cloudi/core";
+import { Abstraction } from "@webiny/di";
+import type { IEventHandler } from "@webiny/event-handler";
 
 export interface EventBridgeResult {
     success: boolean;
     message?: string;
 }
 
+export interface IEventBridgeEventHandler extends IEventHandler<
+    EventBridgeEvent<string, any>,
+    EventBridgeResult
+> {}
+
+export const EventBridgeEventHandler = new Abstraction<IEventBridgeEventHandler>(
+    "EventBridgeEventHandler"
+);
+
 export namespace EventBridgeEventHandler {
-    export type Interface<TDetailType extends string = string, TDetail = any> = ICloudHandler<
+    export type Interface<TDetailType extends string = string, TDetail = any> = IEventHandler<
         EventBridgeEvent<TDetailType, TDetail>,
         EventBridgeResult
     >;
-
-    export function createImplementation<I extends Constructor<Interface>>(params: {
-        implementation: I;
-        dependencies: Dependencies<I>;
-    }) {
-        return CloudHandler.createImplementation(params as any);
-    }
 }
 
 export type { EventBridgeEvent };

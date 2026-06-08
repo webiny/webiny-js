@@ -1,22 +1,24 @@
-import type { ICloudHandler } from "./abstractions/CloudHandler.js";
+import type { IEventHandler, EventContext } from "./abstractions/EventHandler.js";
 
-export function executeChain(handlers: ICloudHandler[], event: any): Promise<any> {
+export function executeChain(handlers: IEventHandler[], event: any): Promise<any> {
     if (handlers.length === 0) {
         throw new Error("No handlers registered in container");
     }
 
-    let chain = (_ev: any): Promise<any> => {
+    const initialCtx: EventContext = { event, metadata: {} };
+
+    let chain = (_ctx: EventContext): Promise<any> => {
         throw new Error("No registered handler claimed this event");
     };
 
     for (let i = handlers.length - 1; i >= 0; i--) {
         const handler = handlers[i];
         const nextChain = chain;
-        chain = (ev: any) => {
-            const next = (newEvent?: any) => nextChain(newEvent ?? ev);
-            return handler.execute(ev, next);
+        chain = (ctx: EventContext) => {
+            const next = (newCtx?: EventContext) => nextChain(newCtx ?? ctx);
+            return handler.execute(ctx, next);
         };
     }
 
-    return chain(event);
+    return chain(initialCtx);
 }

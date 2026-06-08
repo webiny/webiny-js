@@ -1,10 +1,11 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
-import { CloudHandler } from "@cloudi/core";
-import type { IHttpRequest, IHttpResponse, NextFunction } from "@cloudi/core";
-
-function isApiGatewayEvent(event: any): event is APIGatewayProxyEvent {
-    return !!(event?.httpMethod && event?.requestContext?.requestId);
-}
+import { HttpEventHandler } from "@webiny/event-handler";
+import type {
+    EventContext,
+    IHttpRequest,
+    IHttpResponse,
+    NextFunction
+} from "@webiny/event-handler";
 
 function toHttpRequest(event: APIGatewayProxyEvent): IHttpRequest {
     let body: any;
@@ -20,6 +21,7 @@ function toHttpRequest(event: APIGatewayProxyEvent): IHttpRequest {
         path: event.path,
         headers: (event.headers as Record<string, string>) || {},
         query: (event.queryStringParameters as Record<string, string>) || {},
+        pathParameters: (event.pathParameters as Record<string, string>) || {},
         body
     };
 }
@@ -48,18 +50,16 @@ function toApiGatewayResult(response: IHttpResponse): APIGatewayProxyResult {
     };
 }
 
-class ApiGatewayAdapterImpl implements CloudHandler.Interface {
-    async execute(event: any, next: NextFunction): Promise<any> {
-        if (!isApiGatewayEvent(event)) {
-            return next();
-        }
-        const request = toHttpRequest(event);
-        const response: IHttpResponse = await next(request);
+class ApiGatewayTranslatorImpl implements HttpEventHandler.Interface {
+    async execute(ctx: EventContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
+        const request = toHttpRequest(ctx.event);
+        const httpCtx: EventContext<IHttpRequest> = { event: request, metadata: ctx.metadata };
+        const response: IHttpResponse = await next(httpCtx);
         return toApiGatewayResult(response);
     }
 }
 
-export const ApiGatewayAdapter = CloudHandler.createImplementation({
-    implementation: ApiGatewayAdapterImpl,
+export const ApiGatewayTranslator = HttpEventHandler.createImplementation({
+    implementation: ApiGatewayTranslatorImpl,
     dependencies: []
 });
