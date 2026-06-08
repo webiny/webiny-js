@@ -6,11 +6,7 @@ This folder is for your Lambda function implementations.
 
 ```typescript
 // features/ListUsersFunction.ts
-import { 
-  ApiGatewayFunction,
-  type APIGatewayEvent, 
-  type APIGatewayProxyResult 
-} from "@cloudi/aws";
+import { ApiGatewayFunction, type APIGatewayEvent, type APIGatewayProxyResult } from "@cloudi/aws";
 import type { UserService } from "~/abstractions";
 import type { LoggerService } from "~/abstractions";
 
@@ -22,10 +18,10 @@ export class ListUsersFunctionImpl implements ApiGatewayFunction.Interface {
 
   async execute(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
     this.logger.info("Listing users");
-    
+
     try {
       const users = await this.userService.listUsers();
-      
+
       return {
         statusCode: 200,
         headers: { "Content-Type": "application/json" },
@@ -33,7 +29,7 @@ export class ListUsersFunctionImpl implements ApiGatewayFunction.Interface {
       };
     } catch (error) {
       this.logger.error("Failed to list users", error);
-      
+
       return {
         statusCode: 500,
         headers: { "Content-Type": "application/json" },
@@ -58,11 +54,11 @@ import { createFunction } from "@cloudi/aws";
 import { ListUsersFunction } from "~/features/ListUsersFunction";
 import { ConsoleLogger, DynamoDbUserService } from "~/services";
 
-export const handler = createFunction(async (container) => {
+export const handler = createFunction(async container => {
   // Register services
   container.register(ConsoleLogger).inSingletonScope();
   container.register(DynamoDbUserService).inSingletonScope();
-  
+
   // Register the function implementation
   // Auto-detects this handles API Gateway events
   container.register(ListUsersFunction).inSingletonScope();
@@ -78,16 +74,16 @@ import { ListUsersFunction } from "~/features/ListUsersFunction";
 import { ProcessOrderFunction } from "~/features/ProcessOrderFunction";
 import { ConsoleLogger, DynamoDbUserService, OrderService } from "~/services";
 
-export const handler = createFunction(async (container) => {
+export const handler = createFunction(async container => {
   // Register services
   container.register(ConsoleLogger).inSingletonScope();
   container.register(DynamoDbUserService).inSingletonScope();
   container.register(OrderService).inSingletonScope();
-  
+
   // Register multiple handlers
   // The function auto-detects which one to execute based on the event!
-  container.register(ListUsersFunction).inSingletonScope();      // API Gateway
-  container.register(ProcessOrderFunction).inSingletonScope();   // SNS
+  container.register(ListUsersFunction).inSingletonScope(); // API Gateway
+  container.register(ProcessOrderFunction).inSingletonScope(); // SNS
 });
 
 // Deploy with multiple triggers - same code handles all events!
@@ -103,7 +99,7 @@ export class ConsoleLoggerImpl implements LoggerService.Interface {
   info(message: string, ...args: any[]): void {
     console.log(message, ...args);
   }
-  
+
   error(message: string, ...args: any[]): void {
     console.error(message, ...args);
   }
@@ -131,4 +127,3 @@ export const ConsoleLogger = LoggerService.createImplementation({
 2. **Export** using `FunctionType.createImplementation()` with capital letter
 3. **Register** using `container.register(Implementation).inSingletonScope()`
 4. **Auto-detect** - Handler automatically executes the right implementation based on AWS event type
-

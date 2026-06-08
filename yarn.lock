@@ -14001,9 +14001,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/event-handler-aws@npm:0.1.0, @webiny/event-handler-aws@workspace:packages/cloudi-aws":
+"@webiny/event-handler-aws@npm:0.1.0, @webiny/event-handler-aws@workspace:packages/event-handler-aws":
   version: 0.0.0-use.local
-  resolution: "@webiny/event-handler-aws@workspace:packages/cloudi-aws"
+  resolution: "@webiny/event-handler-aws@workspace:packages/event-handler-aws"
   dependencies:
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -14017,9 +14017,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/event-handler-node@npm:0.1.0, @webiny/event-handler-node@workspace:packages/cloudi-node":
+"@webiny/event-handler-node@npm:0.1.0, @webiny/event-handler-node@workspace:packages/event-handler-node":
   version: 0.0.0-use.local
-  resolution: "@webiny/event-handler-node@workspace:packages/cloudi-node"
+  resolution: "@webiny/event-handler-node@workspace:packages/event-handler-node"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
@@ -14032,9 +14032,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/event-handler@npm:0.1.0, @webiny/event-handler@workspace:packages/cloudi":
+"@webiny/event-handler@npm:0.1.0, @webiny/event-handler@workspace:packages/event-handler":
   version: 0.0.0-use.local
-  resolution: "@webiny/event-handler@workspace:packages/cloudi"
+  resolution: "@webiny/event-handler@workspace:packages/event-handler"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
