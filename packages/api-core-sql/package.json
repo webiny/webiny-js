@@ -1,0 +1,40 @@
+{
+  "name": "@webiny/api-core-sql",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "keywords": [
+    "@webiny/api-core",
+    "storage-operations",
+    "sql",
+    "knex",
+    "sau:sql"
+  ],
+  "description": "SQL-specific dependencies for @webiny/api-core.",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-core": "0.0.0",
+    "@webiny/error": "0.0.0",
+    "knex": "^3.2.10"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "better-sqlite3": "^12.10.0",
+    "typescript": "6.0.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}
