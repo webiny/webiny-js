@@ -63,8 +63,7 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                 name: fields
                     .text()
                     .label("Name")
-                    .required("Name is required")
-                    .schema(z.string().min(8, "Name must be at least 8 characters")),
+                    .required("Name is required"),
                 slug: fields
                     .text()
                     .label("Slug")

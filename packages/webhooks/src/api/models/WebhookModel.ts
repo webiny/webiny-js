@@ -15,8 +15,7 @@ class WebhookModelFactory implements ModelFactory.Interface {
             name: fields
                 .text()
                 .label("Name")
-                .required()
-                .minLength(8, "Name must be at least 8 characters long."),
+                .required(),
             slug: fields
                 .text()
                 .label("Slug")
