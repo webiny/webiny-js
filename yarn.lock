@@ -11459,6 +11459,7 @@ __metadata:
     better-sqlite3: "npm:^12.10.0"
     knex: "npm:^3.2.10"
     typescript: "npm:6.0.3"
+    vitest: "npm:^4.1.8"
   languageName: unknown
   linkType: soft
 
