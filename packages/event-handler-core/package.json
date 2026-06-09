@@ -17,7 +17,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/api-core": "0.0.0",
     "@webiny/feature": "0.0.0"
   },
   "peerDependencies": {

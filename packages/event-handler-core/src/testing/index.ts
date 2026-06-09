@@ -32,14 +32,16 @@ export interface CreateTestHandlerOptions {
  */
 export function createTestHandler(options: CreateTestHandlerOptions) {
     const invoke = createHandler({
-        root: container => {
+        root: async container => {
             container.register(TestHttpEventType);
-            options.root(container);
+            await options.root(container);
         },
         request: options.request
     });
 
-    return async (request: Partial<IHttpRequest> & { method: string; path: string }): Promise<IHttpResponse> => {
+    return async (
+        request: Partial<IHttpRequest> & { method: string; path: string }
+    ): Promise<IHttpResponse> => {
         return invoke({
             method: request.method,
             path: request.path,

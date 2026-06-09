@@ -12240,6 +12240,7 @@ __metadata:
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/event-handler-core": "npm:0.1.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/feature-flags": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -14022,7 +14023,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/event-handler-core@workspace:packages/event-handler-core"
   dependencies:
-    "@webiny/api-core": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
     "@webiny/feature": "npm:0.0.0"

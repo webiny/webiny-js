@@ -14,13 +14,18 @@ import { EncryptionFeature } from "~/features/encryption/feature.js";
 import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
 import { MaskerFeature } from "~/features/masker/feature.js";
 import { AiFeature } from "~/features/ai/feature.js";
+import { WcpFeature } from "~/features/wcp/WcpFeature.js";
+import { NullLicense } from "@webiny/wcp";
 import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/NullWebhookDispatcher.js";
 import { WebhookProviderFeature } from "~/features/webhooks/index.js";
+import { ApiCoreContextEnhancer } from "~/graphql/ApiCoreContextEnhancer.js";
+import { ApiCoreSchemaFactory } from "~/graphql/ApiCoreSchemaFactory.js";
 
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
     register(container: Container, config: ApiCoreStorageOperations) {
         // Register features
+        WcpFeature.register(container, (config as any).wcpLicense ?? new NullLicense());
         MaskerFeature.register(container);
         AiFeature.register(container);
         LoggerFeature.register(container);
@@ -36,5 +41,7 @@ export const ApiCoreFeature = createFeature({
         IdpAuthenticatorFeature.register(container);
         container.register(NullWebhookDispatcher).inSingletonScope();
         WebhookProviderFeature.register(container);
+        container.register(ApiCoreContextEnhancer);
+        container.register(ApiCoreSchemaFactory);
     }
 });

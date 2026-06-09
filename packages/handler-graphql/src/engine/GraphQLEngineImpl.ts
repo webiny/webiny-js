@@ -4,17 +4,20 @@ import { mergeResolvers } from "@graphql-tools/merge";
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { GraphQLEngine } from "./abstractions.js";
+import { GraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
 import { GraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 import { ResolverDecoration } from "~/ResolverDecoration.js";
 import { createRequestBody } from "~/createRequestBody.js";
 import type { IGraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
+import type { IGraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
 import type { GraphQLRequestBody } from "~/types.js";
 import type { GraphQLSchema } from "graphql";
 
 class GraphQLEngineImplClass implements GraphQLEngine.Interface {
     constructor(
         private composer: IGraphQLSchemaComposer,
-        private container: Container
+        private container: Container,
+        private enhancers: IGraphQLContextEnhancer[]
     ) {}
 
     async execute(body: any): Promise<any> {
@@ -41,13 +44,21 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         return this.executeOne(parsed, schema);
     }
 
+    private buildContextValue(): Record<string, any> {
+        const ctx: Record<string, any> = { container: this.container };
+        for (const enhancer of this.enhancers) {
+            enhancer.enhance(ctx);
+        }
+        return ctx;
+    }
+
     private async executeOne(body: GraphQLRequestBody, schema: GraphQLSchema): Promise<any> {
         const { query, variables, operationName } = body;
         return graphql({
             schema,
             source: query,
             rootValue: {},
-            contextValue: { container: this.container },
+            contextValue: this.buildContextValue(),
             variableValues: variables ?? undefined,
             operationName: operationName ?? undefined
         });
@@ -56,5 +67,9 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
 
 export const GraphQLEngineImpl = GraphQLEngine.createImplementation({
     implementation: GraphQLEngineImplClass,
-    dependencies: [GraphQLSchemaComposer, RequestContainer]
+    dependencies: [
+        GraphQLSchemaComposer,
+        RequestContainer,
+        [GraphQLContextEnhancer, { multiple: true }]
+    ]
 });

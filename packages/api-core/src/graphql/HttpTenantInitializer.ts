@@ -1,13 +1,13 @@
-import { HttpEventHandler } from "../abstractions/EventHandler.js";
-import { isHttpRequest } from "../abstractions/IHttp.js";
-import { HttpTenantIdExtractor } from "../extractors/HttpTenantIdExtractor.js";
-import type { EventContext } from "../abstractions/EventHandler.js";
-import type { NextFunction } from "../types.js";
-import type { IHttpTenantIdExtractor } from "../extractors/HttpTenantIdExtractor.js";
-import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
-import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
-import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
+import { HttpEventHandler, HttpTenantIdExtractor, isHttpRequest } from "@webiny/event-handler-core";
+import type {
+    EventContext,
+    NextFunction,
+    IHttpTenantIdExtractor
+} from "@webiny/event-handler-core";
+import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/abstractions.js";
+import { TenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
+import type { IGetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/abstractions.js";
+import type { ITenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
 
 class HttpTenantInitializerImpl implements HttpEventHandler.Interface {
     constructor(
