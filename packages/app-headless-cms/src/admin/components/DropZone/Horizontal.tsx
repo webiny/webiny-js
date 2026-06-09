@@ -2,37 +2,8 @@ import React from "react";
 import type { IsVisibleCallable } from "../Droppable.js";
 import { Droppable } from "../Droppable.js";
 import type { DragSource } from "~/types.js";
-import { cn } from "@webiny/admin-ui";
-
-interface OuterDivProps {
-    isOver: boolean;
-    isDragging: boolean;
-    last: boolean;
-}
-
-const OuterDiv = ({ isOver, isDragging, last }: OuterDivProps) => (
-    <div
-        className={cn(
-            "absolute w-full z-10 bg-transparent flex justify-center",
-            last ? "-bottom-md" : "-top-md"
-        )}
-    >
-        <div
-            className={cn(
-                "h-md w-full z-3 border-dashed border-sm hidden",
-                isOver ? "border-accent-default" : "border-success-default",
-                isDragging && "block"
-            )}
-        >
-            <div
-                className={cn(
-                    "w-full h-full opacity-50",
-                    isOver ? "bg-primary-muted" : "bg-success-muted"
-                )}
-            />
-        </div>
-    </div>
-);
+import { Icon } from "@webiny/admin-ui";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 
 interface HorizontalProps {
     onDrop(item: DragSource): void;
@@ -50,17 +21,24 @@ const Horizontal = ({ last, onDrop, isVisible, ...rest }: HorizontalProps) => {
                         drop(element);
                     }}
                     data-testid={rest["data-testid"]}
-                    style={{
-                        /* For dropzone debugging: border: "1px solid blue",*/
-                        height: "16px",
-                        width: "100%",
-                        position: "absolute",
-                        [last ? "bottom" : "top"]: 0,
-                        left: 0,
-                        zIndex: isDragging ? 1000 : -1
-                    }}
+                    className={`h-sm-extra w-full absolute left-0 ${last ? "-bottom-sm-extra" : "-top-sm-extra"} ${isDragging ? "z-[1000]" : "-z-[1]"}`}
                 >
-                    <OuterDiv isOver={isOver} isDragging={isDragging} last={last ?? false} />
+                    {isDragging && (
+                        <div
+                            className={
+                                "absolute w-full flex items-center " + (last ? "bottom-0" : "top-0")
+                            }
+                        >
+                            <div
+                                className={
+                                    "w-full h-sm-extra rounded-xs p-xxs transition-colors relative flex items-center justify-center " +
+                                    (isOver ? "bg-primary" : "bg-[#fdc5b4]")
+                                }
+                            >
+                                <Icon icon={<AddIcon />} label="Add" size="xs" color="accent" />
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </Droppable>

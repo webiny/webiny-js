@@ -2,6 +2,7 @@ import * as React from "react";
 import type { ConnectDropTarget } from "react-dnd";
 import { useDrop } from "react-dnd";
 import type { DragSource } from "~/types.js";
+import { dropZoneOverState } from "./dropZoneOverState.js";
 
 export interface DroppableChildrenFunctionParams {
     isDragging: boolean;
@@ -58,6 +59,21 @@ const DroppableComponent = (props: DroppableProps) => {
             }
         }
     });
+
+    const prevIsOverRef = React.useRef(false);
+    React.useEffect(() => {
+        if (isOver === prevIsOverRef.current) {
+            return;
+        }
+        dropZoneOverState.notify(isOver);
+        prevIsOverRef.current = isOver;
+        return () => {
+            if (prevIsOverRef.current) {
+                dropZoneOverState.notify(false);
+                prevIsOverRef.current = false;
+            }
+        };
+    }, [isOver]);
 
     if (item && !isVisible(item)) {
         return null;

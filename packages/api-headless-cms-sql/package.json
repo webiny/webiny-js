@@ -1,0 +1,47 @@
+{
+  "name": "@webiny/api-headless-cms-sql",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "keywords": [
+    "@webiny/api-headless-cms",
+    "storage-operations",
+    "sql",
+    "postgresql",
+    "knex",
+    "cms:sql"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-headless-cms-sql"
+  },
+  "description": "SQL storage operations for Headless CMS API.",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-headless-cms-storage": "0.0.0",
+    "@webiny/db-utils": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "knex": "^3.2.10"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "better-sqlite3": "^12.10.0",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.8"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

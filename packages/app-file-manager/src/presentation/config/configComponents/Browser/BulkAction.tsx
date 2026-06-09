@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import type { CallbackParams } from "@webiny/app-admin";
 import { useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
@@ -55,22 +55,17 @@ const useWorker = () => {
 
     const selected = vm.list.rows.filter(f => vm.list.selection.selectedIds.has(f.id));
 
-    useEffect(() => {
-        worker.items = selected;
-    }, [selected.length]);
-
     const resetItems = useCallback(() => {
-        worker.items = [];
         actions.selection.deselectAll();
     }, []);
 
     return {
         items: selected,
-        process: (callback: (items: FileItem[]) => void) => worker.process(callback),
+        process: (callback: (items: FileItem[]) => void) => worker.process(selected, callback),
         processInSeries: async (
             callback: ({ item, allItems, report }: CallbackParams<FileItem>) => Promise<void>,
             chunkSize?: number
-        ) => worker.processInSeries(callback, chunkSize),
+        ) => worker.processInSeries(selected, callback, chunkSize),
         resetItems: resetItems,
         results: worker.results
     };

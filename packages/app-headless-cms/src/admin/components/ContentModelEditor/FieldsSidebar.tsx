@@ -3,48 +3,28 @@ import React from "react";
 import { plugins } from "@webiny/plugins";
 import Draggable from "../Draggable.js";
 import type { CmsModelFieldTypePlugin, CmsModelLayoutFieldTypePlugin } from "~/types.js";
-import { Heading, Icon, Text } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
+import { GridItem } from "./GridItem.js";
+import { SectionHeader } from "./SectionHeader.js";
+import { FieldsGrid } from "./FieldsGrid.js";
+import { ReactComponent as CollapseSidebarIcon } from "@webiny/icons/right_panel_open.svg";
 
 interface FieldProps {
     onFieldDragStart: DragEventHandler;
     fieldType: CmsModelFieldTypePlugin["field"];
 }
 
-const Field = (props: FieldProps) => {
-    const {
-        onFieldDragStart,
-        fieldType: { type, label, icon, description }
-    } = props;
+const Field = ({ onFieldDragStart, fieldType: { type, label, icon } }: FieldProps) => {
     return (
         <Draggable beginDrag={{ type: "newField", fieldType: type }}>
             {({ drag }) => (
-                <div
-                    ref={element => {
-                        drag(element);
-                    }}
-                    data-testid={`cms-editor-fields-field-${type}`}
+                <GridItem
+                    testId={`cms-editor-fields-field-${type}`}
+                    label={label}
+                    icon={icon as React.ReactElement}
                     onDragStart={onFieldDragStart}
-                    className={
-                        "bg-neutral-base rounded-sm mb-sm py-sm px-md cursor-grab last-of-type:mb-none hover:opacity-80 transition-opacity"
-                    }
-                >
-                    <div className={"flex items-center gap-md"}>
-                        <div>
-                            <Icon
-                                icon={icon as React.ReactElement}
-                                label={label}
-                                size={"md"}
-                                color={"neutral-light"}
-                            />
-                        </div>
-                        <div>
-                            <Heading level={6}>{label}</Heading>
-                            <Text size={"sm"} className={"text-neutral-strong"}>
-                                {description}
-                            </Text>
-                        </div>
-                    </div>
-                </div>
+                    dragRef={element => drag(element)}
+                />
             )}
         </Draggable>
     );
@@ -55,36 +35,20 @@ interface LayoutFieldItemProps {
     layoutField: CmsModelLayoutFieldTypePlugin["field"];
 }
 
-const LayoutFieldItem = (props: LayoutFieldItemProps) => {
-    const {
-        onFieldDragStart,
-        layoutField: { type, label, icon, description }
-    } = props;
+const LayoutFieldItem = ({
+    onFieldDragStart,
+    layoutField: { type, label, icon }
+}: LayoutFieldItemProps) => {
     return (
         <Draggable beginDrag={{ type: "newLayoutField", layoutFieldType: type }}>
             {({ drag }) => (
-                <div
-                    ref={element => {
-                        drag(element);
-                    }}
-                    data-testid={`cms-editor-fields-layout-field-${type}`}
+                <GridItem
+                    testId={`cms-editor-fields-layout-field-${type}`}
+                    label={label}
+                    icon={icon as React.ReactElement}
                     onDragStart={onFieldDragStart}
-                    className={
-                        "bg-neutral-base rounded-sm mb-sm py-sm px-md cursor-grab last-of-type:mb-none hover:opacity-80 transition-opacity"
-                    }
-                >
-                    <div className={"flex items-center gap-md"}>
-                        <div>
-                            <Icon icon={icon} label={label} size={"md"} color={"neutral-light"} />
-                        </div>
-                        <div>
-                            <Heading level={6}>{label}</Heading>
-                            <Text size={"sm"} className={"text-neutral-strong"}>
-                                {description}
-                            </Text>
-                        </div>
-                    </div>
-                </div>
+                    dragRef={element => drag(element)}
+                />
             )}
         </Draggable>
     );
@@ -92,10 +56,11 @@ const LayoutFieldItem = (props: LayoutFieldItemProps) => {
 
 interface FieldsSidebarProps {
     onFieldDragStart: DragEventHandler;
+    onCollapse?: () => void;
 }
 
-export const FieldsSidebar = ({ onFieldDragStart }: FieldsSidebarProps) => {
-    const fieldTypePlugin = plugins
+export const FieldsSidebar = ({ onFieldDragStart, onCollapse }: FieldsSidebarProps) => {
+    const fieldTypePlugins = plugins
         .byType<CmsModelFieldTypePlugin>("cms-editor-field-type")
         .filter(p => !p.field.hideInAdmin);
 
@@ -105,36 +70,40 @@ export const FieldsSidebar = ({ onFieldDragStart }: FieldsSidebarProps) => {
 
     return (
         <>
-            <Text
-                as="div"
-                size={"md"}
-                className={"text-neutral-strong uppercase mt-0 mb-md font-semibold"}
-            >
-                Fields
-            </Text>
-            {fieldTypePlugin.map(fieldPlugin => (
-                <Field
-                    key={fieldPlugin.field.type}
-                    fieldType={fieldPlugin.field}
-                    onFieldDragStart={onFieldDragStart}
-                />
-            ))}
+            <SectionHeader
+                title={"Fields"}
+                action={
+                    onCollapse && (
+                        <IconButton
+                            variant={"ghost"}
+                            size={"xs"}
+                            icon={<CollapseSidebarIcon />}
+                            onClick={onCollapse}
+                        />
+                    )
+                }
+            />
+            <FieldsGrid>
+                {fieldTypePlugins.map(fieldPlugin => (
+                    <Field
+                        key={fieldPlugin.field.type}
+                        fieldType={fieldPlugin.field}
+                        onFieldDragStart={onFieldDragStart}
+                    />
+                ))}
+            </FieldsGrid>
             {layoutFieldPlugins.length > 0 && (
                 <>
-                    <Text
-                        as="div"
-                        size={"md"}
-                        className={"text-neutral-strong uppercase my-md font-semibold"}
-                    >
-                        Layout
-                    </Text>
-                    {layoutFieldPlugins.map(lp => (
-                        <LayoutFieldItem
-                            key={lp.field.type}
-                            layoutField={lp.field}
-                            onFieldDragStart={onFieldDragStart}
-                        />
-                    ))}
+                    <SectionHeader title={"Layout"} />
+                    <FieldsGrid>
+                        {layoutFieldPlugins.map(lp => (
+                            <LayoutFieldItem
+                                key={lp.field.type}
+                                layoutField={lp.field}
+                                onFieldDragStart={onFieldDragStart}
+                            />
+                        ))}
+                    </FieldsGrid>
                 </>
             )}
         </>

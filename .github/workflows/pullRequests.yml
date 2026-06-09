@@ -281,7 +281,8 @@ jobs:
       - constants
       - staticCodeAnalysis
     if: >-
-      failure() && needs.staticCodeAnalysis.result == 'failure' &&
+      failure() && github.event.pull_request.user.login == 'adrians5j' &&
+      needs.staticCodeAnalysis.result == 'failure' &&
       needs.constants.outputs.is-fork-pr != 'true' &&
       needs.constants.outputs.skip-ai-fix != 'true'
     permissions:

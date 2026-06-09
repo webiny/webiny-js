@@ -1,0 +1,30 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api/tsconfig.build.json" },
+    { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../db-utils/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/db-utils/*": ["../db-utils/src/*"],
+      "@webiny/db-utils": ["../db-utils/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
+    }
+  }
+}

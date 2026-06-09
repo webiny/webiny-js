@@ -70,12 +70,20 @@ export class Release {
         const versionedPackages = versionPackages(version);
         this.logger.info("Versioned %s packages", versionedPackages.length);
 
+        // Fetch the current latest version BEFORE publishing, so the changelog
+        // can diff against the previous release (not the one we're about to push).
+        let previousLatest: string | undefined;
+        try {
+            const distTags = await this.fetchDistTags();
+            previousLatest = distTags["latest"];
+        } catch (err: any) {
+            this.logger.warning("Could not fetch dist-tags: %s", err.message);
+        }
+
         if (this.dryRun) {
             this.logger.info("Dry run — skipping publish, GitHub release, and git reset.");
 
             try {
-                const distTags = await this.fetchDistTags();
-                const previousLatest = distTags["latest"];
                 const fromRef = previousLatest ? `v${previousLatest}` : "HEAD~10";
                 const changelog = await new Changelog(process.cwd()).generate(fromRef, "HEAD");
                 this.logger.log("Changelog preview:\n\n%s\n", changelog);
@@ -104,7 +112,7 @@ export class Release {
         );
 
         if (this.createGithubRelease.isEnabled()) {
-            await this.createRelease(version);
+            await this.createRelease(version, previousLatest);
         }
 
         if (this.resetAllChanges) {
@@ -134,7 +142,7 @@ export class Release {
         return fetchNpmDistTags();
     }
 
-    private async createRelease(version: string) {
+    private async createRelease(version: string, previousLatest: string | undefined) {
         const versionTag = `v${version}`;
 
         await execa("git", ["tag", versionTag, "-m", versionTag]);
@@ -142,8 +150,6 @@ export class Release {
         this.logger.info("Created Git tag %s", versionTag);
 
         try {
-            const distTags = await this.fetchDistTags();
-            const previousLatest = distTags["latest"];
             const fromRef = previousLatest ? `v${previousLatest}` : versionTag;
 
             const changelog = await new Changelog(process.cwd()).generate(fromRef, versionTag);

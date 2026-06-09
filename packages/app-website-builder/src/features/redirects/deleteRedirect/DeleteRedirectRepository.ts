@@ -1,27 +1,27 @@
-import type { IMetaRepository } from "@webiny/app-utils";
-import type { IDeleteRedirectRepository } from "~/features/redirects/deleteRedirect/IDeleteRedirectRepository.js";
-import type { IDeleteRedirectGateway } from "~/features/redirects/deleteRedirect/IDeleteRedirectGateway.js";
-import type { Redirect } from "~/domain/Redirect/index.js";
-import { type IListCache } from "~/domain/Redirect/index.js";
+import { runInAction } from "mobx";
+import { RedirectsListCache } from "~/features/redirects/shared/abstractions.js";
+import {
+    DeleteRedirectRepository as RepositoryAbstraction,
+    DeleteRedirectGateway,
+    type DeleteRedirectParams
+} from "./abstractions.js";
 
-export class DeleteRedirectRepository implements IDeleteRedirectRepository {
-    private cache: IListCache<Redirect>;
-    private meta: IMetaRepository;
-    private gateway: IDeleteRedirectGateway;
-
+class DeleteRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        cache: IListCache<Redirect>,
-        meta: IMetaRepository,
-        gateway: IDeleteRedirectGateway
-    ) {
-        this.cache = cache;
-        this.meta = meta;
-        this.gateway = gateway;
-    }
+        private gateway: DeleteRedirectGateway.Interface,
+        private cache: RedirectsListCache.Interface
+    ) {}
 
-    async execute(redirect: Redirect) {
-        await this.gateway.execute(redirect.id);
-        this.cache.removeItems(p => p.id === redirect.id);
-        await this.meta.decreaseTotalCount();
+    async execute(params: DeleteRedirectParams): Promise<void> {
+        await this.gateway.execute(params);
+
+        runInAction(() => {
+            this.cache.removeItems(r => r.id === params.id);
+        });
     }
 }
+
+export const DeleteRedirectRepository = RepositoryAbstraction.createImplementation({
+    implementation: DeleteRedirectRepositoryImpl,
+    dependencies: [DeleteRedirectGateway, RedirectsListCache]
+});

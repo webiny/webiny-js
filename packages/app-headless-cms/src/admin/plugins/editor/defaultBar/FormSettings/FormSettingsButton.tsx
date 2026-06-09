@@ -16,7 +16,7 @@ const FormSettingsButton = () => {
                 side={"bottom"}
                 trigger={<IconButton onClick={open} icon={<SettingsIcon />} variant={"ghost"} />}
             />
-            {opened && <FormSettings onExited={close} />}
+            <FormSettings open={opened} onClose={close} />
         </>
     );
 };

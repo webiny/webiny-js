@@ -19,16 +19,16 @@
   "dependencies": {
     "@webiny/website-builder-sdk": "0.0.0",
     "deep-equal": "^2.2.3",
-    "mobx": "^6.15.3",
+    "mobx": "^6.16.0",
     "mobx-react-lite": "^4.1.1",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@types/react": "18.3.29",
+    "@types/react": "18.3.31",
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.8"
   },
   "publishConfig": {
     "access": "public"

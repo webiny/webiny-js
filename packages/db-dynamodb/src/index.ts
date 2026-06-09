@@ -1,6 +1,6 @@
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { default as DynamoDbDriver } from "./DynamoDbDriver.js";
-import { ValueFilterFeature } from "~/feature/ValueFilter/index.js";
+import { ValueFilterFeature } from "@webiny/db-utils";
 import { FilterUtilFeature } from "~/feature/FilterUtil/index.js";
 
 export * from "./utils/index.js";
