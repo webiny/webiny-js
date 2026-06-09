@@ -1,8 +1,8 @@
 import type { Knex } from "knex";
 import type {
     ListTenantsParams,
-    Tenant,
-    TenancyStorageOperations
+    TenancyStorageOperations,
+    Tenant
 } from "@webiny/api-core/types/tenancy.js";
 import WebinyError from "@webiny/error";
 import type { TableManager } from "~/TableManager.js";
@@ -69,14 +69,16 @@ export const createStorageOperations = (
             await ensureTable();
 
             try {
-                const rows = await query().whereIn("id", ids as string[]);
+                const rows = await query().whereIn("id", ids);
 
                 return rows.map(rowToTenant);
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not get tenants by IDs.",
                     code: "GET_TENANTS_BY_IDS_ERROR",
-                    data: { ids }
+                    data: {
+                        ids
+                    }
                 });
             }
         },
