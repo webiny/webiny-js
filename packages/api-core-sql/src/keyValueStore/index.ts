@@ -57,6 +57,7 @@ export const createStorageOperations = (
                 }
 
                 if (row.expiresAt && new Date(row.expiresAt) <= new Date()) {
+                    await query().where("scopedKey", scopedKey).delete();
                     return null;
                 }
 

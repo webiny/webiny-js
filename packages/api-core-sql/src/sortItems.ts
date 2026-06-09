@@ -3,12 +3,15 @@ export const sortItems = <T>(items: T[], sort?: string[]): T[] => {
         return items;
     }
 
-    const parsed = sort.filter(Boolean).map(s => {
-        const parts = s.split("_");
-        const direction = parts.pop()?.toUpperCase() === "ASC" ? 1 : -1;
-        const field = parts.join("_");
-        return { field, direction };
-    });
+    const parsed = sort
+        .filter(Boolean)
+        .map(s => {
+            const parts = s.split("_");
+            const direction = parts.pop()?.toUpperCase() === "ASC" ? 1 : -1;
+            const field = parts.join("_");
+            return { field, direction };
+        })
+        .filter(({ field }) => field.length > 0);
 
     if (parsed.length === 0) {
         return items;

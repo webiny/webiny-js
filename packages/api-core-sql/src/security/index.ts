@@ -121,20 +121,18 @@ export const createStorageOperations = (
             await ensureRolesTable();
 
             try {
-                const rows = await rolesQuery().where("tenant", tenant);
-                let items = rows.map(row => JSON.parse(row.data) as StorageRole);
-
-                items = sortItems(items, sort);
+                const qb = rolesQuery().where("tenant", tenant);
 
                 if (Array.isArray(id_in)) {
-                    return items.filter(item => id_in.includes(item.id));
+                    qb.whereIn("id", id_in);
+                } else if (Array.isArray(slug_in)) {
+                    qb.whereIn("slug", slug_in);
                 }
 
-                if (Array.isArray(slug_in)) {
-                    return items.filter(item => slug_in.includes(item.slug));
-                }
+                const rows = await qb;
+                const items = rows.map(row => JSON.parse(row.data) as StorageRole);
 
-                return items;
+                return sortItems(items, sort);
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not list roles.",
@@ -229,20 +227,18 @@ export const createStorageOperations = (
             await ensureTeamsTable();
 
             try {
-                const rows = await teamsQuery().where("tenant", tenant);
-                let items = rows.map(row => JSON.parse(row.data) as StorageTeam);
-
-                items = sortItems(items, sort);
+                const qb = teamsQuery().where("tenant", tenant);
 
                 if (Array.isArray(id_in)) {
-                    return items.filter(item => id_in.includes(item.id));
+                    qb.whereIn("id", id_in);
+                } else if (Array.isArray(slug_in)) {
+                    qb.whereIn("slug", slug_in);
                 }
 
-                if (Array.isArray(slug_in)) {
-                    return items.filter(item => slug_in.includes(item.slug));
-                }
+                const rows = await qb;
+                const items = rows.map(row => JSON.parse(row.data) as StorageTeam);
 
-                return items;
+                return sortItems(items, sort);
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not list teams.",
