@@ -5,7 +5,8 @@ import { SecureHeadersDecorator } from "../decorators/SecureHeadersDecorator.js"
 export const HttpFeature = createFeature({
     name: "Http",
     register(container) {
-        container.register(HttpRouterImpl).inSingletonScope();
+        // Transient so per-request routes (e.g. GraphQLRoute) resolve from child container
+        container.register(HttpRouterImpl);
         container.registerDecorator(SecureHeadersDecorator);
     }
 });

@@ -1,5 +1,6 @@
 import { Container } from "@webiny/di";
 import { EventType } from "./abstractions/EventType.js";
+import { RequestContainer } from "./abstractions/RequestContainer.js";
 import { executeChain } from "./chain.js";
 import type { HandlerSetup } from "./types.js";
 
@@ -18,6 +19,7 @@ export function createHandler(options: CreateHandlerOptions) {
         }
 
         const child = rootContainer.createChildContainer();
+        child.registerInstance(RequestContainer, child);
 
         if (options.request) {
             await options.request(child);

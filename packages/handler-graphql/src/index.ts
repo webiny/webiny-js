@@ -13,3 +13,4 @@ export * from "./ResolverDecoration.js";
 export default (options: HandlerGraphQLOptions = {}): Plugin[] => {
     return createGraphQLHandler(options);
 };
+export * from "./engine/index.js";

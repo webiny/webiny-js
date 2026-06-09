@@ -1,5 +1,5 @@
 import { Container } from "@webiny/di";
-import { EventType, executeChain } from "@webiny/event-handler-core";
+import { EventType, executeChain, RequestContainer } from "@webiny/event-handler-core";
 import type { HandlerSetup } from "@webiny/event-handler-core";
 import { AwsLambdaEvent } from "./abstractions/AwsLambdaEvent.js";
 import { AwsLambdaContext } from "./abstractions/AwsLambdaContext.js";
@@ -20,6 +20,7 @@ export function createLambdaHandler(options: CreateLambdaHandlerOptions) {
         }
 
         const child = rootContainer.createChildContainer();
+        child.registerInstance(RequestContainer, child);
 
         child.registerInstance(AwsLambdaEvent, event);
         if (context) {

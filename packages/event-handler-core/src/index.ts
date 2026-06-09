@@ -8,3 +8,4 @@ export * from "./features/HttpFeature.js";
 export { Container, Abstraction } from "@webiny/di";
 export * from "./extractors/index.js";
 export * from "./decorators/SecureHeadersDecorator.js";
+export { RequestContainer } from "./abstractions/RequestContainer.js";
