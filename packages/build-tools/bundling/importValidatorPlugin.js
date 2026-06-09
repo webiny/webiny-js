@@ -73,8 +73,8 @@ export const createImportValidatorPlugin = () => {
 
                                         const error = new Error(
                                             `${red}Direct imports of @webiny/* packages are not allowed. Import from "webiny" package instead.${reset}\n\n` +
-                                            `${bold}Location:${reset} ${cyan}${issuer.replace(process.cwd(), "")}${reset}\n` +
-                                            `${bold}Import:${reset} ${yellow}${request}${reset}\n`
+                                                `${bold}Location:${reset} ${cyan}${issuer.replace(process.cwd(), "")}${reset}\n` +
+                                                `${bold}Import:${reset} ${yellow}${request}${reset}\n`
                                         );
                                         error.name = "ExtensionsImportError";
                                         error.hideStack = true;
