@@ -11,9 +11,14 @@ export const sendEvent = async ({ event, version, properties }) => {
         return;
     }
 
-    // The WTS client reads the machine id from `~/.webiny/config` (user.id field)
-    // via the same path globalConfig writes to. No need to pass user explicitly.
-    const wts = new WTS({ source: "cli" });
+    // Use the canonical Webiny machine id — the top-level `id` field in
+    // `~/.webiny/config`, owned by @webiny/global-config. The admin app
+    // (REACT_APP_WEBINY_TELEMETRY_USER_ID) and the website install/finish alias
+    // both key off this same id, so passing it here keeps CLI, admin, and
+    // website events on a single PostHog person. Without it, the WTS client
+    // falls back to its own `user.id` field, which is a different UUID and
+    // fragments funnels across surfaces.
+    const wts = new WTS({ source: "cli", distinctId: globalConfig.get("id") });
 
     const wcpProperties = {};
     const [wcpOrgId, wcpProjectId] = getWcpOrgProjectId();

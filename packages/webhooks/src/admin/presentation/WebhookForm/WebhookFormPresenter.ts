@@ -1,4 +1,5 @@
 import { computed, makeAutoObservable, runInAction } from "mobx";
+import { z } from "zod";
 import type { Webhook } from "~/admin/shared/types.js";
 import type { WebhookEvent } from "~/admin/shared/types.js";
 import {
@@ -71,7 +72,8 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                             .toLowerCase()
                             .replace(/[^a-z0-9\s-]/g, "")
                             .replace(/\s+/g, "-");
-                    }),
+                    })
+                    .schema(z.string().min(3, "Slug must be at least 3 characters long")),
                 endpointUrl: fields
                     .text()
                     .label("Endpoint URL")
