@@ -1,6 +1,6 @@
 import { Container } from "@webiny/di";
-import { EventType, executeChain } from "@webiny/event-handler";
-import type { HandlerSetup } from "@webiny/event-handler";
+import { EventType, executeChain } from "@webiny/event-handler-core";
+import type { HandlerSetup } from "@webiny/event-handler-core";
 import { AwsLambdaEvent } from "./abstractions/AwsLambdaEvent.js";
 import { AwsLambdaContext } from "./abstractions/AwsLambdaContext.js";
 import type { Context } from "@webiny/aws-sdk/types/index.js";

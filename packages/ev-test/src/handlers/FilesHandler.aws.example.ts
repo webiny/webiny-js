@@ -7,8 +7,8 @@
  */
 
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import { HttpRoute } from "@webiny/event-handler";
-import type { NextFunction } from "@webiny/event-handler";
+import { HttpRoute } from "@webiny/event-handler-core";
+import type { NextFunction } from "@webiny/event-handler-core";
 
 const s3 = new S3Client({});
 const BUCKET = "my-bucket";

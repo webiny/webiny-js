@@ -15,11 +15,11 @@ export {
     isHttpRequest,
     Container,
     Abstraction
-} from "@webiny/event-handler";
+} from "@webiny/event-handler-core";
 export type {
     IHttpRequest,
     IHttpResponse,
     NextFunction,
     HandlerSetup,
     EventContext
-} from "@webiny/event-handler";
+} from "@webiny/event-handler-core";

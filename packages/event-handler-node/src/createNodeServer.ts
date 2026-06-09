@@ -1,6 +1,6 @@
 import http from "node:http";
-import { createHandler } from "@webiny/event-handler";
-import type { HandlerSetup, IHttpResponse } from "@webiny/event-handler";
+import { createHandler } from "@webiny/event-handler-core";
+import type { HandlerSetup, IHttpResponse } from "@webiny/event-handler-core";
 
 export interface CreateNodeServerOptions {
     root: HandlerSetup;

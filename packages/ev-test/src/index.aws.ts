@@ -3,7 +3,7 @@ import {
     NotFoundHandler,
     HttpRouterHandler,
     HttpFeature
-} from "@webiny/event-handler";
+} from "@webiny/event-handler-core";
 import {
     createLambdaHandler,
     ApiGatewayEventType,

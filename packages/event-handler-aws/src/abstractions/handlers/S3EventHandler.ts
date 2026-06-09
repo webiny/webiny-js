@@ -1,6 +1,6 @@
 import type { S3Event, S3EventRecord } from "@webiny/aws-sdk/types/index.js";
 import { Abstraction } from "@webiny/di";
-import type { IEventHandler } from "@webiny/event-handler";
+import type { IEventHandler } from "@webiny/event-handler-core";
 
 export interface IS3EventHandler extends IEventHandler<S3Event, void> {}
 

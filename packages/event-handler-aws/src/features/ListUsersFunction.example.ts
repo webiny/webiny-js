@@ -4,7 +4,7 @@
 
 import { Abstraction } from "@webiny/di";
 import { HttpEventHandler, type APIGatewayEvent, type APIGatewayProxyResult } from "../index.js";
-import type { NextFunction, EventContext } from "@webiny/event-handler";
+import type { NextFunction, EventContext } from "@webiny/event-handler-core";
 
 interface IUserService {
     listUsers(): Promise<Array<{ id: string; name: string; email: string }>>;

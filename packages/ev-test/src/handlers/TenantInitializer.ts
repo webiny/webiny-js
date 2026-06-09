@@ -1,5 +1,5 @@
-import { HttpEventHandler } from "@webiny/event-handler";
-import type { EventContext, NextFunction } from "@webiny/event-handler";
+import { HttpEventHandler } from "@webiny/event-handler-core";
+import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { TenantContext } from "../context/TenantContext.js";
 import type { ITenantContext } from "../context/TenantContext.js";
 

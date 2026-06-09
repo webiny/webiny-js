@@ -1,7 +1,7 @@
 import type { SNSEvent } from "@webiny/aws-sdk/types/index.js";
-import { EventType } from "@webiny/event-handler";
-import { SnsEventHandler } from "../abstractions/functions/SnsEventHandler.js";
-import type { IEventType } from "@webiny/event-handler";
+import { EventType } from "@webiny/event-handler-core";
+import { SnsEventHandler } from "../abstractions/handlers/SnsEventHandler.js";
+import type { IEventType } from "@webiny/event-handler-core";
 
 class SnsEventTypeImpl implements IEventType<SNSEvent> {
     canHandle(event: any): event is SNSEvent {

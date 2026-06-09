@@ -1,11 +1,11 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
-import { HttpEventHandler } from "@webiny/event-handler";
+import { HttpEventHandler } from "@webiny/event-handler-core";
 import type {
     EventContext,
     IHttpRequest,
     IHttpResponse,
     NextFunction
-} from "@webiny/event-handler";
+} from "@webiny/event-handler-core";
 
 function toHttpRequest(event: APIGatewayProxyEvent): IHttpRequest {
     let body: any;

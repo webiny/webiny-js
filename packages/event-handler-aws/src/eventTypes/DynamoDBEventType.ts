@@ -1,7 +1,7 @@
 import type { DynamoDBStreamEvent } from "@webiny/aws-sdk/types/index.js";
-import { EventType } from "@webiny/event-handler";
-import { DynamoDBEventHandler } from "../abstractions/functions/DynamoDBEventHandler.js";
-import type { IEventType } from "@webiny/event-handler";
+import { EventType } from "@webiny/event-handler-core";
+import { DynamoDBEventHandler } from "../abstractions/handlers/DynamoDBEventHandler.js";
+import type { IEventType } from "@webiny/event-handler-core";
 
 class DynamoDBEventTypeImpl implements IEventType<DynamoDBStreamEvent> {
     canHandle(event: any): event is DynamoDBStreamEvent {

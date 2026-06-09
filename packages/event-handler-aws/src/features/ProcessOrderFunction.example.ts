@@ -4,7 +4,7 @@
 
 import { Abstraction } from "@webiny/di";
 import { SnsEventHandler, type SNSEvent, type SnsResult } from "../index.js";
-import type { NextFunction, EventContext } from "@webiny/event-handler";
+import type { NextFunction, EventContext } from "@webiny/event-handler-core";
 
 interface IOrderService {
     processOrder(orderId: string, data: any): Promise<void>;

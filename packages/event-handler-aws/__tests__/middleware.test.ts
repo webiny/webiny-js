@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createLambdaHandler } from "~/createLambdaHandler.js";
-import type { EventContext, NextFunction } from "@webiny/event-handler";
+import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import {
     SnsEventHandler,
     SnsEventType,
@@ -10,7 +10,7 @@ import {
     type SNSEvent,
     type SnsResult
 } from "~/index.js";
-import { HttpEventHandler } from "@webiny/event-handler";
+import { HttpEventHandler } from "@webiny/event-handler-core";
 
 describe("Middleware Pattern", () => {
     it("should call handlers in registration order", async () => {

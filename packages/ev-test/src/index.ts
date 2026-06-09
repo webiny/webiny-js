@@ -3,7 +3,7 @@ import {
     NotFoundHandler,
     HttpRouterHandler,
     HttpFeature
-} from "@webiny/event-handler";
+} from "@webiny/event-handler-core";
 import { createNodeServer } from "@webiny/event-handler-node";
 import { NodeHttpEventType, NodeHttpTranslator } from "@webiny/event-handler-node";
 import { tenantContext } from "./context/TenantContext.js";

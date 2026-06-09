@@ -1,6 +1,6 @@
 import { IncomingMessage } from "node:http";
-import { HttpEventHandler } from "@webiny/event-handler";
-import type { EventContext, IHttpRequest, NextFunction } from "@webiny/event-handler";
+import { HttpEventHandler } from "@webiny/event-handler-core";
+import type { EventContext, IHttpRequest, NextFunction } from "@webiny/event-handler-core";
 
 async function readBody(req: IncomingMessage): Promise<any> {
     return new Promise((resolve, reject) => {

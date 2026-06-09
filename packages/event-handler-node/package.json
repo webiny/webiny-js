@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "type": "module",
   "main": "index.js",
-  "description": "Node.js HTTP adapter for @cloudi/core.",
+  "description": "Node.js HTTP adapter for @webiny/event-handler.",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -13,7 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/event-handler": "0.1.0"
+    "@webiny/event-handler-core": "0.1.0"
   },
   "peerDependencies": {
     "@webiny/di": ">=0.2.3"

@@ -1,5 +1,5 @@
-import { HttpRoute } from "@webiny/event-handler";
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler";
+import { HttpRoute } from "@webiny/event-handler-core";
+import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { GreetService } from "../services/GreetService.js";
 import type { IGreetService } from "../services/GreetService.js";
 
