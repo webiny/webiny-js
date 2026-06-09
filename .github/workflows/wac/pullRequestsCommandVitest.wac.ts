@@ -46,6 +46,8 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     const env: Record<string, string> = { AWS_REGION };
 
     if (storageOps) {
+        env["WEBINY_STORAGE"] = storageOps.id;
+
         if (storageOps.id === "ddb-os,ddb") {
             env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
             env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
@@ -97,10 +99,9 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
                 ...installBuildSteps,
-                ...withCommonParams(
-                    [{ name: "Run tests", run: "yarn test ${{ matrix.testCommand.cmd }}" }],
-                    { "working-directory": DIR_WEBINY_JS }
-                )
+                ...withCommonParams([{ name: "Run tests", run: "${{ matrix.testCommand.cmd }}" }], {
+                    "working-directory": DIR_WEBINY_JS
+                })
             ]
         })
     };
