@@ -12,7 +12,7 @@
   "dependencies": {
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "fuse.js": "7.4.1"
+    "fuse.js": "7.4.2"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

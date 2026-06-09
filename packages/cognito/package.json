@@ -36,7 +36,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@types/react": "18.3.30",
+    "@types/react": "18.3.31",
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",

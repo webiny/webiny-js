@@ -9,8 +9,8 @@
     "webiny": "latest"
   },
   "devDependencies": {
-    "@types/node": "^24.13.0",
-    "@types/react": "18.3.30",
+    "@types/node": "^24.13.1",
+    "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
     "typescript": "6.0.3"
   },

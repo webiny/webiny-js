@@ -24,7 +24,7 @@
     "@iconify/json": "^2.2.483",
     "@lexical/utils": "^0.45.0",
     "@svgr/webpack": "^8.1.0",
-    "@types/react": "18.3.30",
+    "@types/react": "18.3.31",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/di": "^1.0.1",

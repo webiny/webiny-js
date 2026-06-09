@@ -40,11 +40,11 @@
     "@lexical/utils": "^0.45.0",
     "@octokit/rest": "^22.0.1",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^24.13.0",
-    "@types/react": "18.3.30",
+    "@types/node": "^24.13.1",
+    "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
     "@vitest/coverage-v8": "^4.1.8",
-    "@webiny/stdlib": "^0.0.5",
+    "@webiny/stdlib": "^0.0.7",
     "adio": "^3.0.1",
     "chalk": "^5.6.2",
     "cross-env": "^10.1.0",
@@ -179,7 +179,7 @@
     }
   },
   "resolutions": {
-    "@types/react": "18.3.30",
+    "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
     "react": "18.3.1",
     "react-dom": "18.3.1",
