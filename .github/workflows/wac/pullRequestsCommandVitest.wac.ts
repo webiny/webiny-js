@@ -14,10 +14,16 @@ import {
     runNodeScript
 } from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
-import { DdbStorageOps, DdbOsStorageOps, type AbstractStorageOps } from "./storageOps/index.js";
+import {
+    DdbStorageOps,
+    DdbOsStorageOps,
+    SqlStorageOps,
+    type AbstractStorageOps
+} from "./storageOps/index.js";
 
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
+const sqlStorageOps = new SqlStorageOps();
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ needs.baseBranch.outputs.base-branch }}";
@@ -194,6 +200,7 @@ export const pullRequestsCommandVitest = createWorkflow({
         }),
         ...createVitestTestsJobs(),
         ...createVitestTestsJobs(ddbStorageOps),
-        ...createVitestTestsJobs(ddbOsStorageOps)
+        ...createVitestTestsJobs(ddbOsStorageOps),
+        ...createVitestTestsJobs(sqlStorageOps)
     }
 });

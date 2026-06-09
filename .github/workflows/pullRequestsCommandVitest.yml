@@ -354,3 +354,77 @@ jobs:
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
     permissions:
       id-token: write
+  vitest-sql-constants:
+    needs:
+      - build
+    name: Vitest (SQL) - Constants
+    outputs:
+      vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - uses: actions/checkout@v5
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - id: list-vitest-test-commands
+        name: List Vitest Test Commands
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "vitest-test-commands=$(node
+          .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
+          '["sql,ddb"]')" >> "$GITHUB_OUTPUT"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  vitest-sql-run:
+    needs:
+      - constants
+      - vitest-sql-constants
+    name: ${{ matrix.testCommand.title }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        node:
+          - 24
+        testCommand: >-
+          ${{ fromJSON(needs.vitest-sql-constants.outputs.vitest-test-commands)
+          }}
+    runs-on: ${{ matrix.os }}
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_REGION: eu-central-1
+      WEBINY_STORAGE: sql,ddb
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - uses: actions/checkout@v5
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: gh pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - uses: actions/cache@v5
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v5
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Build packages
+        run: yarn build
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Run tests
+        run: ${{ matrix.testCommand.cmd }}
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
