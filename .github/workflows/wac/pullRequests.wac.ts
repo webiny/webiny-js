@@ -19,8 +19,6 @@ import { AbstractStorageOps, DdbOsStorageOps, DdbStorageOps } from "./storageOps
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ github.base_ref }}";
 
-// Skip all jobs for release/x.y.z → next PRs (handled by a dedicated release workflow).
-const NOT_RELEASE_PR = "!startsWith(github.head_ref, 'release/')";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
@@ -126,13 +124,13 @@ export const pullRequests = createWorkflow({
     jobs: {
         validateCommits: createJob({
             name: "Validate commit messages",
-            if: `github.base_ref != 'dev' && ${NOT_RELEASE_PR}`,
+            if: "github.base_ref != 'dev'",
             steps: [{ uses: "webiny/action-conventional-commits@v1.4.2" }]
         }),
         // Don't allow "feat" commits to be merged into "dev" branch.
         validateCommitsDev: createJob({
             name: "Validate commit messages (dev branch, 'feat' commits not allowed)",
-            if: `github.base_ref == 'dev' && ${NOT_RELEASE_PR}`,
+            if: "github.base_ref == 'dev'",
             steps: [
                 {
                     uses: "webiny/action-conventional-commits@v1.4.2",
@@ -146,7 +144,6 @@ export const pullRequests = createWorkflow({
         }),
         constants: createJob({
             name: "Create constants",
-            if: NOT_RELEASE_PR,
             outputs: {
                 "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
                 "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}",
@@ -232,7 +229,6 @@ export const pullRequests = createWorkflow({
         buildProject: createJob({
             needs: ["constants", "build"],
             name: "Build project (core, api, admin)",
-            if: NOT_RELEASE_PR,
             env: {
                 WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}"
             },
@@ -310,7 +306,6 @@ export const pullRequests = createWorkflow({
         }),
         staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
-            if: NOT_RELEASE_PR,
             "runs-on": BUILD_PACKAGES_RUNNER,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
