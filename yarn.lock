@@ -11448,6 +11448,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-core-sql@workspace:packages/api-core-sql":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-core-sql@workspace:packages/api-core-sql"
+  dependencies:
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    better-sqlite3: "npm:^12.10.0"
+    knex: "npm:^3.2.10"
+    typescript: "npm:6.0.3"
+    vitest: "npm:^4.1.8"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-core@npm:0.0.0, @webiny/api-core@workspace:packages/api-core":
   version: 0.0.0-use.local
   resolution: "@webiny/api-core@workspace:packages/api-core"
@@ -13343,9 +13358,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/global-config@workspace:packages/global-config"
   dependencies:
+    "@webiny/stdlib": "npm:^0.0.7"
     ci-info: "npm:^4.4.0"
     load-json-file: "npm:^7.0.1"
-    uuid: "npm:^14.0.0"
     write-json-file: "npm:^7.0.0"
   languageName: unknown
   linkType: soft
@@ -16506,6 +16521,7 @@ __metadata:
     "@types/validate-npm-package-name": "npm:^4.0.2"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/mcp": "npm:0.0.0"
+    "@webiny/stdlib": "npm:^0.0.7"
     "@webiny/system-requirements": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^5.6.2"
@@ -16520,7 +16536,6 @@ __metadata:
     os: "npm:0.1.2"
     rimraf: "npm:^6.1.3"
     type-fest: "npm:^5.7.0"
-    uuid: "npm:^14.0.0"
     validate-npm-package-name: "npm:^8.0.0"
     vitest: "npm:^4.1.8"
     write-json-file: "npm:^7.0.0"
@@ -28063,15 +28078,6 @@ __metadata:
   bin:
     uuid: dist/esm/bin/uuid
   checksum: 10/16411d3dc12a08d6691616c09a75e66a7f900ba1beef6628a76fe0602f82fae2ee537b564d0b7bc95c24f58d059ca9b58c75a1e806118efb50e17822ff00ddd2
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^14.0.0":
-  version: 14.0.0
-  resolution: "uuid@npm:14.0.0"
-  bin:
-    uuid: dist-node/bin/uuid
-  checksum: 10/8ee9b98f9650e25555515f7a28d3c3ae9364e72f7bb19b9e08b681bc135338beba5509b2830f6ae1cfaba4d45401da0d16d4d109b977097bc3d6ba0c5583341b
   languageName: node
   linkType: hard
 
