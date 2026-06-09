@@ -1,6 +1,8 @@
 import type { Knex } from "knex";
-import type { IKeyValueStorageOperations } from "@webiny/api-core/features/keyValueStore/abstractions.js";
-import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type {
+    IKeyValueStorageOperations,
+    IKeyValueStoreSetOptions
+} from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import { WebinyError } from "@webiny/error";
 import type { TableManager } from "~/TableManager.js";
 
@@ -88,13 +90,7 @@ export const createStorageOperations = (
                     expiresAt
                 };
 
-                const existing = await query().where("scopedKey", scopedKey).first();
-
-                if (existing) {
-                    await query().where("scopedKey", scopedKey).update(row);
-                } else {
-                    await query().insert(row);
-                }
+                await query().insert(row).onConflict("scopedKey").merge();
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not set key-value record.",

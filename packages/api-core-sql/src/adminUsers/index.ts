@@ -99,9 +99,15 @@ export const createStorageOperations = (
             try {
                 const rows = await query().where("tenant", where.tenant);
 
-                const items = rows.map(row => rowToUser<TUser>(row));
+                let items = rows.map(row => rowToUser<TUser>(row));
 
-                return sortItems(items, sort);
+                items = sortItems(items, sort);
+
+                if (Array.isArray(where.id_in)) {
+                    return items.filter(item => where.id_in!.includes(item.id));
+                }
+
+                return items;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not list users.",
