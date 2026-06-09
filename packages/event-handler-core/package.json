@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "type": "module",
   "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./testing": "./testing/index.js"
+  },
   "description": "Cloud-agnostic handler chain for building cloud functions with Dependency Injection.",
   "repository": {
     "type": "git",
