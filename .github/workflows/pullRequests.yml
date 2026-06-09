@@ -10,7 +10,7 @@ concurrency:
 jobs:
   validateCommits:
     name: Validate commit messages
-    if: github.base_ref != 'dev' && !startsWith(github.head_ref, 'release/')
+    if: github.base_ref != 'dev'
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -23,7 +23,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   validateCommitsDev:
     name: Validate commit messages (dev branch, 'feat' commits not allowed)
-    if: github.base_ref == 'dev' && !startsWith(github.head_ref, 'release/')
+    if: github.base_ref == 'dev'
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -38,7 +38,6 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   constants:
     name: Create constants
-    if: '!startsWith(github.head_ref, ''release/'')'
     outputs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
@@ -134,7 +133,6 @@ jobs:
       - constants
       - build
     name: Build project (core, api, admin)
-    if: '!startsWith(github.head_ref, ''release/'')'
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -253,7 +251,6 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
-    if: '!startsWith(github.head_ref, ''release/'')'
     runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@v5
