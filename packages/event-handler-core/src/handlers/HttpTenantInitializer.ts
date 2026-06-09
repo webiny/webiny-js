@@ -1,16 +1,19 @@
 import { HttpEventHandler } from "../abstractions/EventHandler.js";
 import { isHttpRequest } from "../abstractions/IHttp.js";
+import { HttpTenantIdExtractor } from "../extractors/HttpTenantIdExtractor.js";
 import type { EventContext } from "../abstractions/EventHandler.js";
 import type { NextFunction } from "../types.js";
+import type { IHttpTenantIdExtractor } from "../extractors/HttpTenantIdExtractor.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
 import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 
-class TenantInitializerImpl implements HttpEventHandler.Interface {
+class HttpTenantInitializerImpl implements HttpEventHandler.Interface {
     constructor(
         private tenantContext: ITenantContext,
-        private getTenantById: IGetTenantByIdUseCase
+        private getTenantById: IGetTenantByIdUseCase,
+        private extractor: IHttpTenantIdExtractor
     ) {}
 
     async execute(ctx: EventContext, next: NextFunction): Promise<any> {
@@ -18,12 +21,12 @@ class TenantInitializerImpl implements HttpEventHandler.Interface {
             return next();
         }
 
-        const tenantId = ctx.event.headers["x-tenant"];
+        const tenantId = this.extractor.extract(ctx.event);
         if (!tenantId) {
             return {
                 statusCode: 400,
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ error: "Missing x-tenant header" })
+                body: JSON.stringify({ error: "Missing tenant ID" })
             };
         }
 
@@ -41,7 +44,7 @@ class TenantInitializerImpl implements HttpEventHandler.Interface {
     }
 }
 
-export const TenantInitializer = HttpEventHandler.createImplementation({
-    implementation: TenantInitializerImpl,
-    dependencies: [TenantContext, GetTenantByIdUseCase]
+export const HttpTenantInitializer = HttpEventHandler.createImplementation({
+    implementation: HttpTenantInitializerImpl,
+    dependencies: [TenantContext, GetTenantByIdUseCase, HttpTenantIdExtractor]
 });

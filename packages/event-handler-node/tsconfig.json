@@ -1,12 +1,16 @@
 {
   "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [{ "path": "../event-handler-core" }],
   "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
-    "rootDir": "./src",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
-      "~tests/*": ["./__tests__/*"]
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"]
     }
-  },
-  "include": ["src/**/*", "__tests__/**/*"]
+  }
 }

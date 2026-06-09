@@ -1,3 +1,4 @@
+// Translator: converts between transport-specific format and IHttpRequest/IHttpResponse. Not an Adapter (which implies interface compatibility).
 import { IncomingMessage } from "node:http";
 import { HttpEventHandler } from "@webiny/event-handler-core";
 import type { EventContext, IHttpRequest, NextFunction } from "@webiny/event-handler-core";

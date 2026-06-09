@@ -4,7 +4,7 @@ import {
     HttpRouterHandler,
     HttpFeature
 } from "@webiny/event-handler-core";
-import { createNodeServer } from "@webiny/event-handler-node";
+import { createNodeHandler } from "@webiny/event-handler-node";
 import { NodeHttpEventType, NodeHttpTranslator } from "@webiny/event-handler-node";
 import { tenantContext } from "./context/TenantContext.js";
 import { tenantInitializer } from "./handlers/TenantInitializer.js";
@@ -13,7 +13,7 @@ import { echoHandler } from "./handlers/EchoHandler.js";
 import { filesHandler } from "./handlers/FilesHandler.js";
 import { greetService } from "./services/GreetService.js";
 
-const server = createNodeServer({
+const server = createNodeHandler({
     root: container => {
         // Event type detection
         container.register(NodeHttpEventType);

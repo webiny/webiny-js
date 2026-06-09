@@ -2,12 +2,12 @@ import http from "node:http";
 import { createHandler } from "@webiny/event-handler-core";
 import type { HandlerSetup, IHttpResponse } from "@webiny/event-handler-core";
 
-export interface CreateNodeServerOptions {
+export interface CreateNodeHandlerOptions {
     root: HandlerSetup;
     request?: HandlerSetup;
 }
 
-export function createNodeServer(options: CreateNodeServerOptions): http.Server {
+export function createNodeHandler(options: CreateNodeHandlerOptions): http.Server {
     const handle = createHandler(options);
 
     return http.createServer(async (req, res) => {

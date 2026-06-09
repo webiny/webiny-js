@@ -2,7 +2,7 @@ export { createLambdaHandler } from "./createLambdaHandler.js";
 export type { CreateLambdaHandlerOptions } from "./createLambdaHandler.js";
 
 export * from "./abstractions/index.js";
-export * from "./adapters/ApiGatewayTranslator.js";
+export * from "./translators/ApiGatewayTranslator.js";
 export * from "./eventTypes/index.js";
 
 export {
@@ -23,5 +23,8 @@ export type {
     HandlerSetup,
     EventContext
 } from "@webiny/event-handler-core";
-export * from "./adapters/FunctionUrlTranslator.js";
-export * from "./adapters/AwsHttpTranslator.js";
+export * from "./translators/FunctionUrlTranslator.js";
+export * from "./translators/AwsHttpTranslator.js";
+export * from "./extractors/index.js";
+export * from "./handlers/index.js";
+export * from "./features/S3Feature.js";

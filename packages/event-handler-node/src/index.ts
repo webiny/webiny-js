@@ -1,4 +1,4 @@
-export { createNodeServer } from "./createNodeServer.js";
-export type { CreateNodeServerOptions } from "./createNodeServer.js";
+export { createNodeHandler } from "./createNodeHandler.js";
+export type { CreateNodeHandlerOptions } from "./createNodeHandler.js";
 export * from "./translators/NodeHttpTranslator.js";
 export * from "./eventTypes/NodeHttpEventType.js";

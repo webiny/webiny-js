@@ -6,7 +6,7 @@
  * logic leaks into the handler.
  */
 
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, GetObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { HttpRoute } from "@webiny/event-handler-core";
 import type { NextFunction } from "@webiny/event-handler-core";
 

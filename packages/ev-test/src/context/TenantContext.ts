@@ -24,7 +24,7 @@ class TenantContextImpl implements ITenantContext {
     }
 
     require() {
-        if (!this.tenant) throw new Error("Tenant not set");
+        if (!this.tenant) { throw new Error("Tenant not set"); }
         return this.tenant;
     }
 }

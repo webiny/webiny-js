@@ -179,7 +179,7 @@ class EventDispatcherImpl implements Abstraction.Interface {
   async dispatch<TEvent, TResult>(event: TEvent): Promise<TResult> {
     // Step 1: Find matching event type (cheap, no DI resolution)
     const eventType = this.eventTypes.find(type => type.canHandle(event));
-    
+
     if (!eventType) {
       throw new NoHandlerFoundError("No event type matched the incoming event");
     }
@@ -191,9 +191,7 @@ class EventDispatcherImpl implements Abstraction.Interface {
     const handlers = this.container.resolveAll(handlerAbstraction);
 
     if (handlers.length === 0) {
-      throw new NoHandlerFoundError(
-        `No handlers registered for ${handlerAbstraction.toString()}`
-      );
+      throw new NoHandlerFoundError(`No handlers registered for ${handlerAbstraction.toString()}`);
     }
 
     // Step 4: Create initial context
@@ -220,10 +218,10 @@ class EventDispatcherImpl implements Abstraction.Interface {
 
       const handler = handlers[index];
       index--;
-      
+
       // Use provided context or initial context
       const currentContext = context || initialContext;
-      
+
       return handler.handle(currentContext, next);
     };
 
@@ -397,7 +395,7 @@ class GraphQLRoute implements HttpRoute.Interface {
 
   async handle(request: IHttpRequest): Promise<IHttpResponse> {
     const result = await this.graphqlEngine.execute(request.body);
-    
+
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
@@ -427,10 +425,10 @@ class FilesRoute implements HttpRoute.Interface {
   async handle(request: IHttpRequest): Promise<IHttpResponse> {
     const key = request.path.replace("/files/", "");
     const file = await this.storage.get(key);
-    
+
     return {
       statusCode: 200,
-      headers: { 
+      headers: {
         "Content-Type": file.contentType,
         "Cache-Control": "public, max-age=31536000"
       },
@@ -497,10 +495,7 @@ class SecureHeadersDecorator implements HttpRouter.Interface {
     };
   }
 
-  private addSecurityHeaders(
-    request: IHttpRequest,
-    response: IHttpResponse
-  ): IHttpResponse {
+  private addSecurityHeaders(request: IHttpRequest, response: IHttpResponse): IHttpResponse {
     return {
       ...response,
       headers: {
@@ -508,7 +503,7 @@ class SecureHeadersDecorator implements HttpRouter.Interface {
         "access-control-allow-origin": request.headers["origin"] || "*",
         "access-control-allow-credentials": "true",
         "x-tenant": request.headers["x-tenant"] || "root",
-        "vary": "origin"
+        vary: "origin"
       }
     };
   }
@@ -536,10 +531,10 @@ export const HttpFeature = createFeature({
   register(container) {
     // Register router
     container.register(HttpRouterImpl).inSingletonScope();
-    
+
     // Register decorators (order: last registered runs first)
     container.registerDecorator(SecureHeadersDecoratorImpl);
-    
+
     // Register routes
     container.register(GraphQLRouteImpl);
     container.register(FilesRouteImpl);
@@ -685,7 +680,7 @@ class LoadTenantUseCase implements Abstraction.Interface {
 
   async execute(tenantId: string): Promise<Result<Tenant, Abstraction.Error>> {
     const result = await this.repository.get(tenantId);
-    
+
     if (result.isFail()) {
       return Result.fail(result.error);
     }
@@ -717,7 +712,7 @@ export const LoadTenantUseCaseImpl = Abstraction.createImplementation({
 export class HttpTenantIdExtractor {
   extract(request: IHttpRequest): string | undefined {
     // Option 1: From header
-    const headerTenant = request.headers['x-tenant'] || request.headers['X-Tenant'];
+    const headerTenant = request.headers["x-tenant"] || request.headers["X-Tenant"];
     if (headerTenant) {
       return headerTenant;
     }
@@ -725,7 +720,7 @@ export class HttpTenantIdExtractor {
     // Option 2: From subdomain
     const host = request.headers.Host || request.headers.host || "";
     const parts = host.split(".");
-    
+
     // Example: tenant123.api.example.com -> tenant123
     if (parts.length >= 3) {
       const subdomain = parts[0];
@@ -759,7 +754,7 @@ class TenantInitializerDecorator implements HttpRouter.Interface {
   async route(request: IHttpRequest): Promise<IHttpResponse> {
     // Extract tenant ID from request
     const tenantId = this.extractor.extract(request);
-    
+
     if (!tenantId) {
       return {
         statusCode: 400,
@@ -770,7 +765,7 @@ class TenantInitializerDecorator implements HttpRouter.Interface {
 
     // Load tenant from database
     const result = await this.loadTenant.execute(tenantId);
-    
+
     if (result.isFail()) {
       return {
         statusCode: 404,
@@ -810,12 +805,12 @@ export const HttpFeature = createFeature({
   register(container) {
     // Register router
     container.register(HttpRouterImpl).inSingletonScope();
-    
+
     // Register decorators (order: last registered runs first)
     // Execution: SecureHeaders → TenantInitializer → HttpRouter
     container.registerDecorator(SecureHeadersDecoratorImpl);
     container.registerDecorator(TenantInitializerDecoratorImpl);
-    
+
     // Register routes
     container.register(GraphQLRouteImpl);
     container.register(FilesRouteImpl);
@@ -839,13 +834,13 @@ export const TenancyFeature = createFeature({
   register(container) {
     // Register tenant context as singleton (per-request container)
     container.register(TenantContextImpl).inSingletonScope();
-    
+
     // Register use case
     container.register(LoadTenantUseCaseImpl);
-    
+
     // Register repository
     container.register(TenantsRepositoryImpl).inSingletonScope();
-    
+
     // Register extractor
     container.registerInstance(HttpTenantIdExtractor, new HttpTenantIdExtractor());
   }
@@ -920,11 +915,7 @@ import type { APIGatewayProxyEvent } from "aws-lambda";
 class ApiGatewayEventType implements EventType.Interface<APIGatewayProxyEvent> {
   canHandle(event: any): event is APIGatewayProxyEvent {
     // Lightweight check - no dependencies resolved
-    return !!(
-      event.httpMethod &&
-      event.path &&
-      event.requestContext?.requestId
-    );
+    return !!(event.httpMethod && event.path && event.requestContext?.requestId);
   }
 
   getHandlerAbstraction() {
@@ -947,17 +938,18 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import type { IEventHandler, NextFunction } from "@webiny/core/features/events";
 
-export interface IApiGatewayEventHandler 
-  extends IEventHandler<APIGatewayProxyEvent, APIGatewayProxyResult> {
+export interface IApiGatewayEventHandler extends IEventHandler<
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult
+> {
   handle(
     context: EventContext<APIGatewayProxyEvent>,
     next: NextFunction<APIGatewayProxyEvent, APIGatewayProxyResult>
   ): Promise<APIGatewayProxyResult>;
 }
 
-export const ApiGatewayEventHandler = createAbstraction<IApiGatewayEventHandler>(
-  "ApiGatewayEventHandler"
-);
+export const ApiGatewayEventHandler =
+  createAbstraction<IApiGatewayEventHandler>("ApiGatewayEventHandler");
 
 export namespace ApiGatewayEventHandler {
   export type Interface = IApiGatewayEventHandler;
@@ -995,7 +987,7 @@ class HttpRouterHandler implements ApiGatewayEventHandler.Interface {
 
     try {
       const response = await this.router.route(request);
-      
+
       return {
         statusCode: response.statusCode,
         headers: response.headers,
@@ -1003,12 +995,12 @@ class HttpRouterHandler implements ApiGatewayEventHandler.Interface {
       };
     } catch (error) {
       console.error("HTTP routing error:", error);
-      
+
       return {
         statusCode: 500,
         headers: {},
-        body: JSON.stringify({ 
-          error: error.message || "Internal server error" 
+        body: JSON.stringify({
+          error: error.message || "Internal server error"
         })
       };
     }
@@ -1054,10 +1046,7 @@ import type { S3Event } from "aws-lambda";
 class S3EventType implements EventType.Interface<S3Event> {
   canHandle(event: any): event is S3Event {
     // Lightweight check
-    return !!(
-      event.Records &&
-      event.Records[0]?.eventSource === "aws:s3"
-    );
+    return !!(event.Records && event.Records[0]?.eventSource === "aws:s3");
   }
 
   getHandlerAbstraction() {
@@ -1091,22 +1080,19 @@ class S3EventHandler implements HandlerAbstraction.Interface {
     private imageProcessor: ImageProcessor.Interface
   ) {}
 
-  async handle(
-    context: EventContext<S3Event>,
-    next: NextFunction<S3Event, void>
-  ): Promise<void> {
+  async handle(context: EventContext<S3Event>, next: NextFunction<S3Event, void>): Promise<void> {
     const event = context.event;
 
     // Extract tenant ID from S3 bucket name
     const tenantId = this.extractor.extract(event);
-    
+
     if (!tenantId) {
       throw new Error("Cannot determine tenant from S3 event");
     }
 
     // Load tenant from database
     const result = await this.loadTenant.execute(tenantId);
-    
+
     if (result.isFail()) {
       throw new Error(`Tenant not found: ${tenantId}`);
     }
@@ -1118,9 +1104,9 @@ class S3EventHandler implements HandlerAbstraction.Interface {
     for (const record of event.Records) {
       const bucket = record.s3.bucket.name;
       const key = decodeURIComponent(record.s3.object.key.replace(/\+/g, " "));
-      
+
       console.log(`Processing S3 object: ${bucket}/${key} for tenant ${tenantId}`);
-      
+
       // Use case can now access tenant via TenantContext
       await this.imageProcessor.process(bucket, key);
     }
@@ -1213,7 +1199,7 @@ export const AwsFeature = createFeature({
     // Register all AWS event features
     ApiGatewayFeature.register(container);
     S3Feature.register(container);
-    
+
     // Add more AWS features as needed:
     // SqsFeature.register(container);
     // SnsFeature.register(container);
@@ -1254,10 +1240,10 @@ export const createHandler = () => {
   return async (event: any) => {
     // Create child container for this request (isolates TenantContext)
     const requestContainer = baseContainer.createChildContainer();
-    
+
     // Resolve dispatcher for this request
     const dispatcher = requestContainer.resolve(EventDispatcher);
-    
+
     // Dispatch event (will auto-detect type and route)
     return dispatcher.dispatch(event);
   };
@@ -1311,6 +1297,7 @@ export const handler = async (event: any) => {
 ### Phase 1: Infrastructure Setup (Week 1)
 
 **Tasks:**
+
 1. Create package structure (`packages/core`, `packages/aws`)
 2. Implement core event system
    - `EventDispatcher`
@@ -1320,6 +1307,7 @@ export const handler = async (event: any) => {
 4. Write unit tests for event dispatcher
 
 **Success Criteria:**
+
 - Event dispatcher can match events to handlers
 - Middleware chain executes in correct order
 - Tests pass
@@ -1327,6 +1315,7 @@ export const handler = async (event: any) => {
 ### Phase 2: HTTP System (Week 2)
 
 **Tasks:**
+
 1. Implement HTTP abstractions
 2. Create `HttpRouter`
 3. Build decorators (SecureHeaders, TenantInitializer)
@@ -1334,6 +1323,7 @@ export const handler = async (event: any) => {
 5. Write integration tests
 
 **Success Criteria:**
+
 - Routes can be registered and matched
 - Decorators wrap router correctly
 - OPTIONS requests handled properly
@@ -1341,6 +1331,7 @@ export const handler = async (event: any) => {
 ### Phase 3: Tenant Context (Week 3)
 
 **Tasks:**
+
 1. Implement `TenantContext`
 2. Create `LoadTenant` use case
 3. Build tenant ID extractors
@@ -1348,6 +1339,7 @@ export const handler = async (event: any) => {
 5. Test tenant isolation
 
 **Success Criteria:**
+
 - Tenant loaded from request
 - Use cases can access tenant context
 - Per-request isolation works
@@ -1355,6 +1347,7 @@ export const handler = async (event: any) => {
 ### Phase 4: AWS Adapters (Week 4)
 
 **Tasks:**
+
 1. Create API Gateway adapter
 2. Create S3 event handler
 3. Build tenant extractors for each event type
@@ -1362,6 +1355,7 @@ export const handler = async (event: any) => {
 5. Add SQS, SNS handlers as needed
 
 **Success Criteria:**
+
 - API Gateway events route to HTTP system
 - S3 events processed with tenant context
 - All AWS event types supported
@@ -1369,6 +1363,7 @@ export const handler = async (event: any) => {
 ### Phase 5: Migration & Cleanup (Week 5-6)
 
 **Tasks:**
+
 1. Migrate existing routes to new system
 2. Remove old fastify-based infrastructure
 3. Update tests
@@ -1376,6 +1371,7 @@ export const handler = async (event: any) => {
 5. Documentation
 
 **Success Criteria:**
+
 - All routes migrated
 - Old code removed
 - Performance acceptable
@@ -1388,6 +1384,7 @@ export const handler = async (event: any) => {
 ### Unit Tests
 
 **Event Dispatcher:**
+
 ```typescript
 describe("EventDispatcher", () => {
   it("should match event to correct handler", async () => {
@@ -1405,6 +1402,7 @@ describe("EventDispatcher", () => {
 ```
 
 **HTTP Router:**
+
 ```typescript
 describe("HttpRouter", () => {
   it("should match exact path", async () => {
@@ -1422,6 +1420,7 @@ describe("HttpRouter", () => {
 ```
 
 **Tenant Context:**
+
 ```typescript
 describe("TenantContext", () => {
   it("should set and get tenant", () => {
@@ -1441,44 +1440,46 @@ describe("TenantContext", () => {
 ### Integration Tests
 
 **HTTP Flow:**
+
 ```typescript
 describe("HTTP Request Flow", () => {
   it("should process full request with decorators", async () => {
     const container = new Container();
     HttpFeature.register(container);
     TenancyFeature.register(container);
-    
+
     const dispatcher = container.resolve(EventDispatcher);
-    
+
     const event = createMockApiGatewayEvent({
       method: "POST",
       path: "/graphql",
       headers: { "x-tenant": "test-tenant" }
     });
-    
+
     const result = await dispatcher.dispatch(event);
-    
+
     expect(result.statusCode).toBe(200);
   });
 });
 ```
 
 **Tenant Isolation:**
+
 ```typescript
 describe("Tenant Isolation", () => {
   it("should isolate tenants across requests", async () => {
     const baseContainer = new Container();
     HttpFeature.register(baseContainer);
-    
+
     // Request 1
     const container1 = baseContainer.createChildContainer();
     const context1 = container1.resolve(TenantContext);
     context1.set({ id: "tenant-1", ... });
-    
+
     // Request 2
     const container2 = baseContainer.createChildContainer();
     const context2 = container2.resolve(TenantContext);
-    
+
     expect(context2.get()).toBeUndefined();
   });
 });
@@ -1524,7 +1525,7 @@ class CreatePageUseCase implements CreatePage.Interface {
   async execute(input: CreatePageInput): Promise<Result<Page, CreatePage.Error>> {
     // Get tenant - available because decorator initialized it
     const tenant = this.tenantContext.requireTenant();
-    
+
     const page = {
       id: generateId(),
       tenantId: tenant.id, // Use for data isolation
@@ -1535,15 +1536,13 @@ class CreatePageUseCase implements CreatePage.Interface {
     };
 
     const result = await this.repository.create(page);
-    
+
     if (result.isFail()) {
       return Result.fail(result.error);
     }
 
     // Publish domain event
-    await this.eventPublisher.publish(
-      new PageCreatedEvent({ page: result.value })
-    );
+    await this.eventPublisher.publish(new PageCreatedEvent({ page: result.value }));
 
     return Result.ok(result.value);
   }
@@ -1593,4 +1592,4 @@ export const CreatePageUseCaseImpl = CreatePage.createImplementation({
 
 ---
 
-*This is a living document. Update as the implementation evolves.*
+_This is a living document. Update as the implementation evolves._

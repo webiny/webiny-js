@@ -6,3 +6,4 @@ export * from "./abstractions/index.js";
 export * from "./handlers/index.js";
 export * from "./features/HttpFeature.js";
 export { Container, Abstraction } from "@webiny/di";
+export * from "./extractors/index.js";

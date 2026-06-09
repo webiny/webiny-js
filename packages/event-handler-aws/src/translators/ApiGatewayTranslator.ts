@@ -1,3 +1,4 @@
+// Translator: converts between transport-specific format and IHttpRequest/IHttpResponse. Not an Adapter (which implies interface compatibility).
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
 import { HttpEventHandler } from "@webiny/event-handler-core";
 import type {
