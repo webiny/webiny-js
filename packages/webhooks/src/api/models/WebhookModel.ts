@@ -12,10 +12,7 @@ class WebhookModelFactory implements ModelFactory.Interface {
             .tags(["$publishing:false", "$hidden:true"]);
 
         model.fields(fields => ({
-            name: fields
-                .text()
-                .label("Name")
-                .required(),
+            name: fields.text().label("Name").required(),
             slug: fields
                 .text()
                 .label("Slug")
