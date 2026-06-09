@@ -3,18 +3,8 @@ import { Container } from "@webiny/di";
 import { HttpRouter } from "~/abstractions/IHttp.js";
 import { HttpRouterImpl } from "~/handlers/HttpRouterImpl.js";
 import { SecureHeadersDecorator } from "~/handlers/SecureHeadersDecorator.js";
+import { HttpRoute } from "~/abstractions/IHttp.js";
 import type { IHttpRequest, IHttpRoute, IHttpResponse } from "~/abstractions/IHttp.js";
-
-function makeRouterWithDecorator(routes: IHttpRoute[]): HttpRouter.Interface {
-    const container = new Container();
-    const { HttpRoute } = require("@webiny/event-handler-core/abstractions/IHttp.js");
-    for (const route of routes) {
-        container.registerInstance(HttpRoute, route);
-    }
-    container.register(HttpRouterImpl).inSingletonScope();
-    container.registerDecorator(SecureHeadersDecorator);
-    return container.resolve(HttpRouter);
-}
 
 const req = (method: string, path: string, origin?: string): IHttpRequest => ({
     method,
@@ -40,7 +30,6 @@ describe("SecureHeadersDecorator", () => {
 
     it("should add CORS headers to normal responses", async () => {
         const container = new Container();
-        const { HttpRoute } = await import("~/abstractions/IHttp.js");
 
         const route: IHttpRoute = {
             method: "GET",

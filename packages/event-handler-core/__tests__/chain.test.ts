@@ -3,7 +3,9 @@ import { executeChain } from "~/chain.js";
 import type { EventContext, IEventHandler } from "~/abstractions/EventHandler.js";
 import type { NextFunction } from "~/types.js";
 
-const makeHandler = (fn: (ctx: EventContext, next: NextFunction) => Promise<any>): IEventHandler => ({
+const makeHandler = (
+    fn: (ctx: EventContext, next: NextFunction) => Promise<any>
+): IEventHandler => ({
     execute: fn
 });
 
@@ -12,9 +14,18 @@ describe("executeChain", () => {
         const log: string[] = [];
 
         const handlers = [
-            makeHandler(async (_ctx, next) => { log.push("1"); return next(); }),
-            makeHandler(async (_ctx, next) => { log.push("2"); return next(); }),
-            makeHandler(async (_ctx, _next) => { log.push("3"); return "done"; })
+            makeHandler(async (_ctx, next) => {
+                log.push("1");
+                return next();
+            }),
+            makeHandler(async (_ctx, next) => {
+                log.push("2");
+                return next();
+            }),
+            makeHandler(async (_ctx, _next) => {
+                log.push("3");
+                return "done";
+            })
         ];
 
         await executeChain(handlers, {});
@@ -51,9 +62,7 @@ describe("executeChain", () => {
     });
 
     it("should throw when no handler claims the event", async () => {
-        const handlers = [
-            makeHandler(async (_ctx, next) => next())
-        ];
+        const handlers = [makeHandler(async (_ctx, next) => next())];
 
         await expect(executeChain(handlers, {})).rejects.toThrow(
             "No registered handler claimed this event"

@@ -25,7 +25,9 @@ describe("ErrorHandler", () => {
         const handlers = [
             ...resolveErrorHandler(),
             {
-                execute: async () => { throw new Error("boom"); }
+                execute: async () => {
+                    throw new Error("boom");
+                }
             }
         ];
 
@@ -38,7 +40,9 @@ describe("ErrorHandler", () => {
         const handlers = [
             ...resolveErrorHandler(),
             {
-                execute: async () => { throw new Error("s3 boom"); }
+                execute: async () => {
+                    throw new Error("s3 boom");
+                }
             }
         ];
 

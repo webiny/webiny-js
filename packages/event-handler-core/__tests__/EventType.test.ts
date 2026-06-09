@@ -16,8 +16,12 @@ describe("EventType dispatch", () => {
     it("should route to correct handler based on canHandle", async () => {
         const httpType = EventType.createImplementation({
             implementation: class {
-                canHandle(e: any): e is any { return !!e.method; }
-                getHandlerAbstraction() { return HttpEventHandler; }
+                canHandle(e: any): e is any {
+                    return !!e.method;
+                }
+                getHandlerAbstraction() {
+                    return HttpEventHandler;
+                }
             },
             dependencies: []
         });
@@ -38,15 +42,26 @@ describe("EventType dispatch", () => {
             }
         });
 
-        const result = await invoke({ method: "GET", path: "/test", headers: {}, query: {}, pathParameters: {}, body: undefined });
+        const result = await invoke({
+            method: "GET",
+            path: "/test",
+            headers: {},
+            query: {},
+            pathParameters: {},
+            body: undefined
+        });
         expect(result.handled).toBe(true);
     });
 
     it("should throw when no event type matches", async () => {
         const httpType = EventType.createImplementation({
             implementation: class {
-                canHandle(e: any): e is any { return !!e.method; }
-                getHandlerAbstraction() { return HttpEventHandler; }
+                canHandle(e: any): e is any {
+                    return !!e.method;
+                }
+                getHandlerAbstraction() {
+                    return HttpEventHandler;
+                }
             },
             dependencies: []
         });
@@ -68,30 +83,42 @@ describe("EventType dispatch", () => {
 
         const httpType = EventType.createImplementation({
             implementation: class {
-                canHandle(e: any): e is any { return !!e.method; }
-                getHandlerAbstraction() { return HttpEventHandler; }
+                canHandle(e: any): e is any {
+                    return !!e.method;
+                }
+                getHandlerAbstraction() {
+                    return HttpEventHandler;
+                }
             },
             dependencies: []
         });
 
         const otherType = EventType.createImplementation({
             implementation: class {
-                canHandle(e: any): e is any { return !!e.Records; }
-                getHandlerAbstraction() { return OtherHandler; }
+                canHandle(e: any): e is any {
+                    return !!e.Records;
+                }
+                getHandlerAbstraction() {
+                    return OtherHandler;
+                }
             },
             dependencies: []
         });
 
         const httpHandler = HttpEventHandler.createImplementation({
             implementation: class implements IEventHandler {
-                async execute(_ctx: EventContext, _next: NextFunction) { return "http"; }
+                async execute(_ctx: EventContext, _next: NextFunction) {
+                    return "http";
+                }
             },
             dependencies: []
         });
 
         const otherHandler = OtherHandler.createImplementation({
             implementation: class implements IEventHandler {
-                async execute(_ctx: EventContext, _next: NextFunction) { return "other"; }
+                async execute(_ctx: EventContext, _next: NextFunction) {
+                    return "other";
+                }
             },
             dependencies: []
         });
@@ -105,7 +132,16 @@ describe("EventType dispatch", () => {
             }
         });
 
-        expect(await invoke({ method: "GET", path: "/", headers: {}, query: {}, pathParameters: {}, body: undefined })).toBe("http");
+        expect(
+            await invoke({
+                method: "GET",
+                path: "/",
+                headers: {},
+                query: {},
+                pathParameters: {},
+                body: undefined
+            })
+        ).toBe("http");
         expect(await invoke({ Records: [{}] })).toBe("other");
     });
 });
