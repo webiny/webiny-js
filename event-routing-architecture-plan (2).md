@@ -150,7 +150,7 @@ export namespace EventType {
 // Event Dispatcher (Orchestrates event routing)
 // ============================================================================
 
-export interface IEventDispatcher {
+export interface IEventDispatcher {a je
   dispatch<TEvent, TResult>(event: TEvent): Promise<TResult>;
 }
 

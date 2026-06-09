@@ -23,3 +23,5 @@ export type {
     HandlerSetup,
     EventContext
 } from "@webiny/event-handler-core";
+export * from "./adapters/FunctionUrlTranslator.js";
+export * from "./adapters/AwsHttpTranslator.js";
