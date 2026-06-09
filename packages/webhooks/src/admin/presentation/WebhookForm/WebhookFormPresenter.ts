@@ -60,10 +60,7 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     private buildForm(): IFormModel {
         return this.formModelFactory.create({
             fields: fields => ({
-                name: fields
-                    .text()
-                    .label("Name")
-                    .required("Name is required"),
+                name: fields.text().label("Name").required("Name is required"),
                 slug: fields
                     .text()
                     .label("Slug")
@@ -75,7 +72,8 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                             .toLowerCase()
                             .replace(/[^a-z0-9\s-]/g, "")
                             .replace(/\s+/g, "-");
-                    }),
+                    })
+                    .schema(z.string().min(3, "Slug must be at least 3 characters long")),
                 endpointUrl: fields
                     .text()
                     .label("Endpoint URL")
