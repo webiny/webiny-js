@@ -31,8 +31,8 @@ export const createStorageOperations = (
             table.text("scopedKey").primary().notNullable();
             table.text("key").notNullable();
             table.text("scope").notNullable();
-            table.text("value");
-            table.integer("expiresAt");
+            table.text("value").notNullable();
+            table.bigInteger("expiresAt");
         });
     };
 

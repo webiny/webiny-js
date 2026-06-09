@@ -103,8 +103,10 @@ export const createStorageOperations = (
 
                 items = sortItems(items, sort);
 
-                if (Array.isArray(where.id_in)) {
-                    return items.filter(item => where.id_in!.includes(item.id));
+                const { id_in } = where;
+
+                if (Array.isArray(id_in)) {
+                    return items.filter(item => id_in.includes(item.id));
                 }
 
                 return items;
