@@ -13,7 +13,7 @@ interface IKeyValueRow {
     key: string;
     scope: string;
     value: string;
-    expiresAt: number | null;
+    expiresAt: Date | null;
 }
 
 interface CreateStorageOperationsParams {
@@ -32,7 +32,7 @@ export const createStorageOperations = (
             table.text("key").notNullable();
             table.text("scope").notNullable();
             table.text("value").notNullable();
-            table.bigInteger("expiresAt");
+            table.datetime("expiresAt");
         });
     };
 
@@ -56,7 +56,7 @@ export const createStorageOperations = (
                     return null;
                 }
 
-                if (row.expiresAt && row.expiresAt <= Math.floor(Date.now() / 1000)) {
+                if (row.expiresAt && new Date(row.expiresAt) <= new Date()) {
                     return null;
                 }
 
@@ -78,9 +78,7 @@ export const createStorageOperations = (
 
             try {
                 const scopedKey = createScopedKey(key, scope);
-                const expiresAt = options?.expiresAt
-                    ? Math.floor(options.expiresAt.getTime() / 1000)
-                    : null;
+                const expiresAt = options?.expiresAt ?? null;
 
                 const row: IKeyValueRow = {
                     scopedKey,
