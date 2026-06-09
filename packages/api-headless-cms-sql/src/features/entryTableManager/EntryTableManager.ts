@@ -45,64 +45,11 @@ class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
             table.text("modelId").notNullable();
             table.text("tenant").notNullable();
             table.integer("version").notNullable();
-            table.text("status").notNullable();
-            table.boolean("locked").defaultTo(false);
             table.boolean("isLatest").defaultTo(false);
             table.boolean("isPublished").defaultTo(false);
             table.boolean("wbyDeleted").defaultTo(false);
-            table.text("binOriginalFolderId");
+            table.text("data").notNullable();
 
-            /* Location fields. */
-            table.text("location");
-            table.text("location_folderId");
-
-            /* Revision-level date fields. */
-            table.text("revisionCreatedOn");
-            table.text("revisionModifiedOn");
-            table.text("revisionSavedOn");
-            table.text("revisionDeletedOn");
-            table.text("revisionRestoredOn");
-            table.text("revisionFirstPublishedOn");
-            table.text("revisionLastPublishedOn");
-
-            /* Revision-level identity fields (JSON blobs). */
-            table.text("revisionCreatedBy");
-            table.text("revisionModifiedBy");
-            table.text("revisionSavedBy");
-            table.text("revisionDeletedBy");
-            table.text("revisionRestoredBy");
-            table.text("revisionFirstPublishedBy");
-            table.text("revisionLastPublishedBy");
-
-            /* Entry-level date fields. */
-            table.text("createdOn");
-            table.text("modifiedOn");
-            table.text("savedOn");
-            table.text("deletedOn");
-            table.text("restoredOn");
-            table.text("firstPublishedOn");
-            table.text("lastPublishedOn");
-
-            /* Entry-level identity fields (JSON blobs). */
-            table.text("createdBy");
-            table.text("modifiedBy");
-            table.text("savedBy");
-            table.text("deletedBy");
-            table.text("restoredBy");
-            table.text("firstPublishedBy");
-            table.text("lastPublishedBy");
-
-            /* Misc meta columns. */
-            table.text("meta");
-            table.text("system");
-            table.text("live");
-            table.text("revisionDescription");
-            table.bigInteger("expiresAt");
-
-            /* Values blob. */
-            table.text("values");
-
-            /* Composite indexes. */
             table.index(["tenant", "modelId", "isLatest"]);
             table.index(["tenant", "modelId", "isPublished"]);
             table.index(["tenant", "modelId", "entryId"]);

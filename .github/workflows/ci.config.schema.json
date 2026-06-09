@@ -20,7 +20,7 @@
           "description": "Choose storage operation modes",
           "items": {
             "type": "string",
-            "enum": ["ddb", "ddb-os,ddb"]
+            "enum": ["ddb", "ddb-os,ddb", "sql,ddb"]
           },
           "uniqueItems": true
         }

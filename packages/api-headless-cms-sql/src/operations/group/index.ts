@@ -30,13 +30,10 @@ export const createGroupsStorageOperations = (
         return knex<IGroupRow>(tableName);
     };
 
-    const get = async (getParams: CmsGroupStorageOperationsGetParams): Promise<CmsGroup | null> => {
+    const get = async (params: CmsGroupStorageOperationsGetParams): Promise<CmsGroup | null> => {
         await ensureSchema();
 
-        const row = await query()
-            .where("id", getParams.id)
-            .where("tenant", getParams.tenant)
-            .first();
+        const row = await query().where("id", params.id).where("tenant", params.tenant).first();
 
         if (!row) {
             return null;
@@ -45,14 +42,27 @@ export const createGroupsStorageOperations = (
         return rowToGroup(row);
     };
 
-    const list = async (listParams: CmsGroupStorageOperationsListParams): Promise<CmsGroup[]> => {
-        const { where, sort } = listParams;
+    const list = async (params: CmsGroupStorageOperationsListParams): Promise<CmsGroup[]> => {
+        const { where, sort } = params;
 
         await ensureSchema();
 
-        const qb = query();
+        const qb = query().where("tenant", where.tenant);
 
-        if (sort && sort.length > 0) {
+        if (where.id) {
+            qb.andWhere("id", where.id);
+        }
+        if (where.slug) {
+            qb.andWhere("slug", where.slug);
+        }
+        if (where.isPlugin !== undefined) {
+            qb.andWhere("isPlugin", where.isPlugin);
+        }
+        if (where.isPrivate !== undefined) {
+            qb.andWhere("isPrivate", where.isPrivate);
+        }
+
+        if (sort?.length) {
             for (const sortField of sort) {
                 const parts = sortField.split("_");
                 const direction = parts.pop()?.toLowerCase() === "asc" ? "asc" : "desc";
@@ -61,45 +71,28 @@ export const createGroupsStorageOperations = (
             }
         }
 
-        /* Apply where conditions for known group columns. */
-        if (where.tenant) {
-            qb.where("tenant", where.tenant);
-        }
-        if (where.id) {
-            qb.where("id", where.id);
-        }
-        if (where.slug) {
-            qb.where("slug", where.slug);
-        }
-        if (where.isPlugin !== undefined) {
-            qb.where("isPlugin", where.isPlugin);
-        }
-        if (where.isPrivate !== undefined) {
-            qb.where("isPrivate", where.isPrivate);
-        }
-
         const rows = await qb.select<IGroupRow[]>([...GROUP_COLUMNS]);
 
         return rows.map(rowToGroup);
     };
 
-    const create = async (createParams: CmsGroupStorageOperationsCreateParams): Promise<void> => {
-        const row = groupToRow(createParams.group);
+    const create = async (params: CmsGroupStorageOperationsCreateParams): Promise<void> => {
+        const row = groupToRow(params.group);
 
         await ensureSchema();
         await query().insert(row);
     };
 
-    const update = async (updateParams: CmsGroupStorageOperationsUpdateParams): Promise<void> => {
-        const row = groupToRow(updateParams.group);
+    const update = async (params: CmsGroupStorageOperationsUpdateParams): Promise<void> => {
+        const row = groupToRow(params.group);
 
         await ensureSchema();
-        await query().where("id", updateParams.group.id).update(row);
+        await query().where("id", params.group.id).update(row);
     };
 
-    const del = async (deleteParams: CmsGroupStorageOperationsDeleteParams): Promise<void> => {
+    const deleteGroup = async (params: CmsGroupStorageOperationsDeleteParams): Promise<void> => {
         await ensureSchema();
-        await query().where("id", deleteParams.group.id).delete();
+        await query().where("id", params.group.id).delete();
     };
 
     return {
@@ -107,6 +100,6 @@ export const createGroupsStorageOperations = (
         list,
         create,
         update,
-        delete: del
+        delete: deleteGroup
     };
 };

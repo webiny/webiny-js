@@ -11,8 +11,7 @@ import type { IModelRow } from "./types.js";
 import { KnexInstance } from "~/features/knexInstance/abstractions.js";
 import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js";
 import { ModelSchemaManager } from "~/features/modelSchemaManager/abstractions.js";
-import { modelToRow } from "./mappers.js";
-import { rowToModel } from "./mappers.js";
+import { modelToRow, rowToModel } from "./mappers.js";
 
 export const createModelsStorageOperations = (
     knex: KnexInstance.Interface,
@@ -30,13 +29,13 @@ export const createModelsStorageOperations = (
     };
 
     const get = async (
-        getParams: CmsModelStorageOperationsGetParams
+        params: CmsModelStorageOperationsGetParams
     ): Promise<StorageCmsModel | null> => {
         await ensureSchema();
 
         const row = await query()
-            .where("modelId", getParams.modelId)
-            .where("tenant", getParams.tenant)
+            .where("modelId", params.modelId)
+            .where("tenant", params.tenant)
             .first();
 
         if (!row) {
@@ -47,20 +46,14 @@ export const createModelsStorageOperations = (
     };
 
     const list = async (
-        listParams: CmsModelStorageOperationsListParams
+        params: CmsModelStorageOperationsListParams
     ): Promise<StorageCmsModel[]> => {
         await ensureSchema();
 
-        const { where } = listParams;
-        const qb = query();
-
-        /* Apply where conditions for known model columns. */
-        if (where.tenant) {
-            qb.where("tenant", where.tenant);
-        }
-        if (where.modelId) {
-            qb.where("modelId", where.modelId);
-        }
+        const { where } = params;
+        const qb = query()
+            // We always need to filter by tenant.
+            .where("tenant", where.tenant);
 
         /* Default sort by modelId ascending (alphabetical), matching DDB sort key behavior. */
         qb.orderBy("modelId", "asc");
@@ -71,9 +64,9 @@ export const createModelsStorageOperations = (
     };
 
     const create = async (
-        createParams: CmsModelStorageOperationsCreateParams
+        params: CmsModelStorageOperationsCreateParams
     ): Promise<StorageCmsModel> => {
-        const model = createParams.model;
+        const model = params.model;
         const row = modelToRow(model);
 
         await ensureSchema();
@@ -83,9 +76,9 @@ export const createModelsStorageOperations = (
     };
 
     const update = async (
-        updateParams: CmsModelStorageOperationsUpdateParams
+        params: CmsModelStorageOperationsUpdateParams
     ): Promise<StorageCmsModel> => {
-        const model = updateParams.model;
+        const model = params.model;
         const row = modelToRow(model);
 
         await ensureSchema();
@@ -94,11 +87,9 @@ export const createModelsStorageOperations = (
         return model;
     };
 
-    const del = async (deleteParams: CmsModelStorageOperationsDeleteParams): Promise<void> => {
-        const model = deleteParams.model;
-
+    const deleteModel = async (params: CmsModelStorageOperationsDeleteParams): Promise<void> => {
         await ensureSchema();
-        await query().where("modelId", model.modelId).delete();
+        await query().where("modelId", params.model.modelId).delete();
     };
 
     return {
@@ -106,6 +97,6 @@ export const createModelsStorageOperations = (
         list,
         create,
         update,
-        delete: del
+        delete: deleteModel
     };
 };
