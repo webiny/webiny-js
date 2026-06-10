@@ -2,6 +2,7 @@ import React from "react";
 import { makeDecoratable, withStaticProps } from "~/utils.js";
 import { SidebarMenuItemIcon, type SidebarMenuItemIconProps } from "./SidebarMenuItemIcon.js";
 import { SidebarMenuItemAction, type SidebarMenuItemActionProps } from "./SidebarMenuItemAction.js";
+import { SidebarMenuItemBadge, type SidebarMenuItemBadgeProps } from "./SidebarMenuItemBadge.js";
 import { SidebarMenuSubItem } from "./SidebarMenuSubItem.js";
 import { useSidebarMenu } from "./SidebarMenuProvider.js";
 import { SidebarMenuRootItem } from "~/Sidebar/components/items/SidebarMenuRootItem.js";
@@ -20,6 +21,7 @@ export interface SidebarMenuItemBaseProps {
     disabled?: boolean;
     pinnable?: boolean;
     pinnedIcon?: React.ReactNode;
+    badge?: React.ReactNode;
 }
 
 type SidebarMenuItemButtonProps = SidebarMenuItemBaseProps & {
@@ -47,7 +49,8 @@ const DecoratableSidebarMenuItem = makeDecoratable("SidebarMenuItem", SidebarMen
 
 const SidebarMenuItem = withStaticProps(DecoratableSidebarMenuItem, {
     Icon: SidebarMenuItemIcon,
-    Action: SidebarMenuItemAction
+    Action: SidebarMenuItemAction,
+    Badge: SidebarMenuItemBadge
 });
 
 export {
@@ -57,5 +60,6 @@ export {
     type SidebarMenuItemLinkProps,
     type SidebarMenuItemGroupProps,
     type SidebarMenuItemIconProps,
-    type SidebarMenuItemActionProps
+    type SidebarMenuItemActionProps,
+    type SidebarMenuItemBadgeProps
 };

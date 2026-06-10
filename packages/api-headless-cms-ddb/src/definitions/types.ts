@@ -66,6 +66,10 @@ export interface IEntryEntityAttributesData {
     system?: ICmsEntrySystem;
     live: ICmsEntryLive | null;
     revisionDescription: string | undefined;
+    /**
+     * A timestamp of when the entry should be automatically deleted from the database.
+     */
+    expiresAt: number | null;
 }
 
 export type IEntryEntityAttributes = IStandardEntityAttributes<IEntryEntityAttributesData>;

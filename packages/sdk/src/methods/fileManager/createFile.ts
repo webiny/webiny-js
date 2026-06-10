@@ -8,6 +8,7 @@ import { executeGraphQL } from "../executeGraphQL.js";
 import { ApiError } from "../../errors.js";
 import { getPresignedPostPayload } from "./getPresignedPostPayload.js";
 import { uploadToS3 } from "./utils/uploadToS3.js";
+import { getImageMetadata } from "./utils/getImageMetadata.js";
 import { uploadLargeFile } from "./utils/uploadLargeFile.js";
 
 export interface CreateFileData {
@@ -124,12 +125,18 @@ async function uploadSmallFile(
     // 2. Upload to S3.
     await uploadToS3(file, presignedResult.value.data, { onProgress, signal });
 
-    // 3. Create file record with S3 key from presigned response.
+    // 3. Extract image metadata (dimensions) if applicable.
+    const imageMetadata = data.type?.startsWith("image/")
+        ? await getImageMetadata(file)
+        : undefined;
+
+    // 4. Create file record with S3 key from presigned response.
     const fileMetadata: CreateFileData = {
         ...data,
         id: presignedResult.value.file.id,
         key: presignedResult.value.file.key,
-        size: presignedResult.value.file.size
+        size: presignedResult.value.file.size,
+        ...(imageMetadata ? { metadata: imageMetadata } : {})
     };
 
     return createFileRecord(config, fetchFn, fileMetadata, fields);
@@ -162,12 +169,18 @@ async function uploadLargeFileWrapper(
             { onProgress, signal, chunkSize: 50, parallelUploads: 5 }
         );
 
+        // Extract image metadata (dimensions) if applicable.
+        const imageMetadata = data.type?.startsWith("image/")
+            ? await getImageMetadata(file)
+            : undefined;
+
         // Create file record with uploaded metadata.
         const fileMetadata: CreateFileData = {
             ...data,
             id: uploadedFile.id,
             key: uploadedFile.key,
-            size: uploadedFile.size
+            size: uploadedFile.size,
+            ...(imageMetadata ? { metadata: imageMetadata } : {})
         };
 
         return createFileRecord(config, fetchFn, fileMetadata, fields);

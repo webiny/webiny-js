@@ -19,16 +19,15 @@
     "watch": "node ../cli/bin.js run watch"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "devDependencies": {
     "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "graphql": "^16.14.0",
+    "graphql": "^16.14.1",
     "typescript": "6.0.3",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.8"
   },
   "dependencies": {
     "@webiny/api": "0.0.0",
@@ -50,5 +49,8 @@
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "zod": "4.4.3"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

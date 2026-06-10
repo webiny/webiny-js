@@ -8,13 +8,12 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@webiny/stdlib": "^0.0.7",
     "ci-info": "^4.4.0",
     "load-json-file": "^7.0.1",
-    "uuid": "^14.0.0",
     "write-json-file": "^7.0.0"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "."
+    "access": "public"
   }
 }

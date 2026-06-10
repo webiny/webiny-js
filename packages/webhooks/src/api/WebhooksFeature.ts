@@ -1,6 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { WebhookModel } from "./models/WebhookModel.js";
 import { WebhookDeliveryModel } from "./models/WebhookDeliveryModel.js";
+import { WebhookSettingsModel } from "./models/WebhookSettingsModel.js";
 import { WebhookCrudSchema } from "./graphql/WebhookCrudSchema.js";
 import { WebhookDeliverySchema } from "./graphql/WebhookDeliverySchema.js";
 import { WebhookEventSchema } from "./graphql/WebhookEventSchema.js";
@@ -19,9 +20,13 @@ import { TriggerWebhookFeature } from "./features/TriggerWebhook/feature.js";
 import { ListAvailableWebhookEventsFeature } from "./features/ListAvailableWebhookEvents/feature.js";
 import { WebhookPermissionsFeature } from "./features/WebhookPermissions/feature.js";
 import { WebhookSignPayloadFeature } from "./features/WebhookSignPayload/feature.js";
+import { WebhookDeliverFeature } from "./features/WebhookDeliver/feature.js";
 import { WebhookDispatcherFeature } from "./features/WebhookDispatcher/feature.js";
 import { SendWebhookTaskFeature } from "./features/SendWebhookTask/feature.js";
 import { WebhooksTransformerFeature } from "./features/Transformers/feature.js";
+import { GetWebhookSettingsFeature } from "./features/GetWebhookSettings/feature.js";
+import { UpdateWebhookSettingsFeature } from "./features/UpdateWebhookSettings/feature.js";
+import { WebhookSettingsSchema } from "./graphql/WebhookSettingsSchema.js";
 
 export const WebhooksFeature = createFeature({
     name: "WebhookManagement",
@@ -29,6 +34,7 @@ export const WebhooksFeature = createFeature({
         // CMS models.
         container.register(WebhookModel);
         container.register(WebhookDeliveryModel);
+        container.register(WebhookSettingsModel);
 
         // Transformers
         WebhooksTransformerFeature.register(container);
@@ -38,10 +44,12 @@ export const WebhooksFeature = createFeature({
         container.register(WebhookDeliverySchema);
         container.register(WebhookEventSchema);
         container.register(WebhookTriggerSchema);
+        container.register(WebhookSettingsSchema);
 
         // Core implementations.
         WebhookPermissionsFeature.register(container);
         WebhookSignPayloadFeature.register(container);
+        WebhookDeliverFeature.register(container);
         WebhookDispatcherFeature.register(container);
         SendWebhookTaskFeature.register(container);
 
@@ -62,5 +70,9 @@ export const WebhooksFeature = createFeature({
         // Trigger + events.
         TriggerWebhookFeature.register(container);
         ListAvailableWebhookEventsFeature.register(container);
+
+        // Settings.
+        GetWebhookSettingsFeature.register(container);
+        UpdateWebhookSettingsFeature.register(container);
     }
 });

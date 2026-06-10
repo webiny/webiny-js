@@ -1435,8 +1435,10 @@ describe("FormModel", () => {
 
                 expect(valid).toBe(false);
                 expect(form.errors.length).toBeGreaterThan(0);
-                // The object field itself reports the error
-                expect(form.errors.some(e => e.path === "address")).toBe(true);
+                // Parent object is filtered out when children have errors
+                expect(form.errors.some(e => e.path === "address")).toBe(false);
+                expect(form.errors.some(e => e.path === "address.street")).toBe(true);
+                expect(form.errors.some(e => e.path === "address.city")).toBe(true);
             });
 
             it("should pass validation when children are valid", async () => {

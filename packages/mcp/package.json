@@ -17,8 +17,7 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
@@ -30,10 +29,13 @@
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
     "execa": "^5.1.1",
-    "tsx": "4.21.0",
+    "tsx": "4.22.4",
     "typescript": "6.0.3"
   },
   "scripts": {
     "prepublishOnly": "bash ./prepublishOnly.sh"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

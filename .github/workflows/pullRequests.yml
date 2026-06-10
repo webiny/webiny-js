@@ -10,7 +10,7 @@ concurrency:
 jobs:
   validateCommits:
     name: Validate commit messages
-    if: github.base_ref != 'dev' && !startsWith(github.head_ref, 'release/')
+    if: github.base_ref != 'dev'
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -23,7 +23,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   validateCommitsDev:
     name: Validate commit messages (dev branch, 'feat' commits not allowed)
-    if: github.base_ref == 'dev' && !startsWith(github.head_ref, 'release/')
+    if: github.base_ref == 'dev'
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -38,13 +38,13 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   constants:
     name: Create constants
-    if: '!startsWith(github.head_ref, ''release/'')'
     outputs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
       is-fork-pr: ${{ steps.is-fork-pr.outputs.is-fork-pr }}
       changed-packages: ${{ steps.detect-changed-packages.outputs.changed-packages }}
       latest-webiny-version: ${{ steps.latest-webiny-version.outputs.latest-webiny-version }}
+      skip-ai-fix: ${{ steps.skip-ai-fix-check.outputs.skip-ai-fix }}
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -86,6 +86,12 @@ jobs:
         run: >-
           echo "latest-webiny-version=$(npm view @webiny/cli version)" >>
           "$GITHUB_OUTPUT"
+      - name: Check if AI fix should be skipped
+        id: skip-ai-fix-check
+        run: >-
+          echo "skip-ai-fix=$(if git log -1 --format=%B ${{
+          github.event.pull_request.head.sha }} | grep -q '\[skip-ai\]'; then
+          echo 'true'; else echo 'false'; fi)" >> "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -127,7 +133,6 @@ jobs:
       - constants
       - build
     name: Build project (core, api, admin)
-    if: '!startsWith(github.head_ref, ''release/'')'
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -246,7 +251,6 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
-    if: '!startsWith(github.head_ref, ''release/'')'
     runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@v5
@@ -274,8 +278,10 @@ jobs:
       - constants
       - staticCodeAnalysis
     if: >-
-      failure() && needs.staticCodeAnalysis.result == 'failure' &&
-      needs.constants.outputs.is-fork-pr != 'true'
+      failure() && github.event.pull_request.user.login == 'adrians5j' &&
+      needs.staticCodeAnalysis.result == 'failure' &&
+      needs.constants.outputs.is-fork-pr != 'true' &&
+      needs.constants.outputs.skip-ai-fix != 'true'
     permissions:
       contents: write
     env:
@@ -322,7 +328,7 @@ jobs:
       - name: Commit fixes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'chore: ai fix static analysis'
+          commit_message: 'chore: ai fix static analysis [skip-ai]'
           repository: ${{ github.base_ref }}
     runs-on: ubuntu-latest
   vitest-constants:

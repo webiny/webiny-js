@@ -6,8 +6,9 @@ import { StorageTransformRegistry } from "~/features/storage/abstractions/Storag
 import { createObjectMockModel } from "./object/model";
 import type { CmsModelField } from "~/types";
 import { entryToStorageTransform } from "~/utils/entryStorage";
-
 import { StorageTransform } from "~/features/storage/abstractions/StorageTransform.js";
+import { EncryptionFeature } from "@webiny/api-core/features/encryption/feature.js";
+import { BuildParamsFeature } from "@webiny/api-core/features/buildParams/feature.js";
 
 class TextWithDefaultTransform implements StorageTransform.Interface {
     public readonly fieldType = "text-with-default";
@@ -29,6 +30,8 @@ const TextWithDefaultStorageTransform = StorageTransform.createImplementation({
 const diContainer = new Container();
 CompressionFeature.register(diContainer);
 StorageFeature.register(diContainer);
+BuildParamsFeature.register(diContainer);
+EncryptionFeature.register(diContainer);
 diContainer.register(TextWithDefaultStorageTransform);
 const registry = diContainer.resolve(StorageTransformRegistry);
 const objectTransform = registry.get("object")!;

@@ -3,7 +3,8 @@ import type { Webhook } from "~/api/domain/Webhook.js";
 import type {
     WebhookModelNotFoundError,
     WebhookPersistenceError,
-    WebhookNotAuthorizedError
+    WebhookNotAuthorizedError,
+    WebhookValidationError
 } from "~/api/domain/errors.js";
 import type {
     DateStringInterfaceGenerator,
@@ -38,7 +39,11 @@ export interface IListMeta {
     totalCount: number;
 }
 
-type IError = WebhookModelNotFoundError | WebhookPersistenceError | WebhookNotAuthorizedError;
+type IError =
+    | WebhookModelNotFoundError
+    | WebhookPersistenceError
+    | WebhookNotAuthorizedError
+    | WebhookValidationError;
 
 export interface IListWebhooksOutput {
     items: Webhook[];

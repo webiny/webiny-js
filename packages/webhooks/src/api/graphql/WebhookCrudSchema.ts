@@ -32,6 +32,7 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
                 code: String
                 message: String
                 data: JSON
+                stack: String
             }
 
             type WebhookListMeta {
@@ -48,7 +49,7 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
                 description: String
                 enabled: Boolean!
                 events: [String!]!
-                signingSecret: String!
+                signingSecret: String
                 createdOn: DateTime
                 modifiedOn: DateTime
             }
@@ -76,7 +77,6 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
 
             input UpdateWebhookInput {
                 name: String
-                slug: String
                 endpointUrl: String
                 description: String
                 enabled: Boolean

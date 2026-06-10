@@ -8,7 +8,7 @@ export interface ICreateDeliveryInput {
     eventType: string;
     status: WebhookDeliveryStatus;
     payload: GenericRecord;
-    expiresAt: string;
+    expiresAt: Date;
 }
 
 type IError = WebhookPersistenceError | WebhookModelNotFoundError;

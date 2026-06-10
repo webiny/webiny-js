@@ -4,15 +4,15 @@ import { type IUpdateFlpTaskInput } from "~/types.js";
 import { UpdateFlpUseCase } from "~/features/flp/UpdateFlp/index.js";
 
 class UpdateFlpTaskImpl implements TaskDefinition.Interface<IUpdateFlpTaskInput> {
-    id = UPDATE_FLP_TASK_ID;
-    title = "ACO - Update FLP record";
-    description =
+    public readonly id = UPDATE_FLP_TASK_ID;
+    public readonly title = "ACO - Update FLP record";
+    public readonly description =
         "Synchronizes the FLP catalog by updating the FLP record and its descendants based on the provided folder.";
-    databaseLogs = false;
+    public readonly databaseLogs = false;
+    public readonly isPrivate = true;
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
 
-    selfCleanup = ["onSuccess" as const, "onAbort" as const];
-
-    constructor(private updateFlp: UpdateFlpUseCase.Interface) {}
+    public constructor(private updateFlp: UpdateFlpUseCase.Interface) {}
 
     async run({ input, controller }: TaskDefinition.RunParams<IUpdateFlpTaskInput>) {
         try {

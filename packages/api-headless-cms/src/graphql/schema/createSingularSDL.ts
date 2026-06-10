@@ -70,6 +70,8 @@ export const createSingularSDL: CreateSingularSDL = ({
             ${onByMetaGqlFields}
             values: ${singularName}Values
             live: CmsEntryLive
+            
+            revisionDescription: String
         }
 
         ${fields.map(f => f.typeDefs).join("\n")}

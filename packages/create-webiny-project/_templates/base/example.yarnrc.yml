@@ -1,0 +1,10 @@
+approvedGitRepositories:
+  - "https://github.com/webiny/webiny-upgrades-v6"
+compressionLevel: mixed
+nodeLinker: node-modules
+enableScripts: false
+npmMinimalAgeGate: 3d
+npmPreapprovedPackages:
+  - "@webiny/*"
+  - "webiny"
+  - "wts-client"

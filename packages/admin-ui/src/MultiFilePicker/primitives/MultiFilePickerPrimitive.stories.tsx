@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { MultiFilePickerPrimitive, type FileItemDto } from "./MultiFilePickerPrimitive.js";
 
 const getRandomNumber = (min: number, max: number): number =>

@@ -3,14 +3,15 @@ import {
     ListWebhooksUseCase as UseCaseAbstraction,
     ListWebhooksRepository
 } from "./abstractions.js";
+import { ListWebhooksInputSchema } from "./schema.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
-import { WebhookNotAuthorizedError } from "~/api/domain/errors.js";
+import { WebhookNotAuthorizedError, WebhookValidationError } from "~/api/domain/errors.js";
 import type { IListWebhooksInput } from "./abstractions.js";
 
 class ListWebhooksUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private permissions: WebhookPermissions.Interface,
-        private repository: ListWebhooksRepository.Interface
+        private readonly permissions: WebhookPermissions.Interface,
+        private readonly repository: ListWebhooksRepository.Interface
     ) {}
 
     async execute(
@@ -19,6 +20,12 @@ class ListWebhooksUseCaseImpl implements UseCaseAbstraction.Interface {
         if (!(await this.permissions.canRead("webhook"))) {
             return Result.fail(new WebhookNotAuthorizedError());
         }
+
+        const parsed = ListWebhooksInputSchema.safeParse(input ?? {});
+        if (!parsed.success) {
+            return Result.fail(new WebhookValidationError(parsed.error));
+        }
+
         return this.repository.execute(input);
     }
 }

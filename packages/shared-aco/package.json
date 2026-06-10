@@ -18,11 +18,13 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

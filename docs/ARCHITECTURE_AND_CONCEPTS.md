@@ -26,7 +26,7 @@ Packages written in TS always extend the base `tsconfig.json` (for IDE) and `tsc
 
 The main tool used to run and manage our monorepo is [yarn](https://yarnpkg.com/). There is an [in-depth article about managing a monorepo](https://doppelmutzi.github.io/monorepo-lerna-yarn-workspaces/) with Lerna and different package managers, so take a look at it if you're interested.
 
-We let `yarn` manage the workspaces and we use `lerna` to publish packages and run commands across workspaces. In `monorepo` lingo, a `workspace` is a single package.
+We let `yarn` manage the workspaces and we use a custom release script to version and publish packages. In `monorepo` lingo, a `workspace` is a single package.
 
 > IMPORTANT: It's VERY important that you understand how `yarn` links workspaces before moving on with this document, so make sure you read this article: https://classic.yarnpkg.com/en/docs/workspaces/.
 
@@ -61,7 +61,7 @@ This code WILL FAIL. But why? `@webiny/plugins` will be resolved to `node_module
 
 We solved it by creating a small tool (located at `/packages/project-utils/workspaces/linkWorkspaces.js`) that will relink packages exactly how we want them to be linked.
 
-In our packages, we configure the desired target directory in the `package.json` file, using the `publishConfig.directory`. We're being consistent with `lerna` which uses [that same configuration](https://github.com/lerna/lerna/tree/master/commands/publish#publishconfigdirectory) to determine which folder to use when publishing packages to `npm`.
+In our packages, we configure the desired target directory in the `package.json` file, using the `webiny.publishFrom`, to determine which folder to use when publishing packages to `npm`.
 
 If you open `<webiny-js>/package.json`, you'll find a `postinstall` script. That script is executed each time `yarn` installs dependencies and is done doing its magic. This gives us the chance to relink packages exactly how we want them to be.
 

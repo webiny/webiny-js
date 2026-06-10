@@ -7,6 +7,7 @@ export * from "./feature.js";
 export * from "./fields/FieldBuilder.js";
 export * from "./fields/abstractions.js";
 export * from "./models/abstractions.js";
+export { TextFieldSubTypes, TextFieldTypes } from "./fields/TextFieldType.js";
 
 // Import all field types to ensure their module augmentations are applied
 // These imports have side effects that add methods to IFieldBuilderRegistry

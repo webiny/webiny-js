@@ -1,17 +1,18 @@
-import type { IMoveRedirectRepository } from "~/features/redirects/moveRedirect/IMoveRedirectRepository.js";
-import type {
-    IMoveRedirectUseCase,
-    MoveRedirectParams
-} from "~/features/redirects/moveRedirect/IMoveRedirectUseCase.js";
+import {
+    MoveRedirectUseCase as UseCaseAbstraction,
+    MoveRedirectRepository,
+    type MoveRedirectParams
+} from "./abstractions.js";
 
-export class MoveRedirectUseCase implements IMoveRedirectUseCase {
-    private repository: IMoveRedirectRepository;
+class MoveRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: MoveRedirectRepository.Interface) {}
 
-    constructor(repository: IMoveRedirectRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: MoveRedirectParams) {
-        await this.repository.execute(params.id, params.folderId);
+    async execute(params: MoveRedirectParams): Promise<void> {
+        return this.repository.execute(params);
     }
 }
+
+export const MoveRedirectUseCase = UseCaseAbstraction.createImplementation({
+    implementation: MoveRedirectUseCaseImpl,
+    dependencies: [MoveRedirectRepository]
+});

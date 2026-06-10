@@ -42,6 +42,7 @@ jobs:
     name: Get PR branch
     outputs:
       pr-branch: ${{ steps.pr-branch.outputs.pr-branch }}
+      release-version: ${{ steps.release-version.outputs.release-version }}
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -54,6 +55,17 @@ jobs:
           echo "pr-branch=$(gh pr view ${{ github.event.issue.number }} --repo
           ${{ github.repository }} --json headRefName -q .headRefName)" >>
           $GITHUB_OUTPUT
+      - name: Parse release version from branch name
+        id: release-version
+        run: >-
+          BRANCH="${{ steps.pr-branch.outputs.pr-branch }}"
+
+          VERSION="${BRANCH#release/}"
+
+          if [ "$VERSION" = "$BRANCH" ]; then echo "Branch does not match
+          release/* pattern" && exit 1; fi
+
+          echo "release-version=$VERSION" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -158,7 +170,9 @@ jobs:
         run: >-
           set -o pipefail
 
-          yarn release --type=beta --tag=beta 2>&1 | tee /tmp/release-output.txt
+          yarn release --type=beta --tag=beta --version=${{
+          needs.prBranch.outputs.release-version }} 2>&1 | tee
+          /tmp/release-output.txt
 
           BETA_VERSION=$(grep -oE '[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+'
           /tmp/release-output.txt | tail -1)
@@ -197,7 +211,6 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      LATEST_VERSION: ${{ vars.LATEST_VERSION }}
       SLACK_RELEASE_CHANNEL_WEBHOOK: ${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}
     steps:
       - uses: actions/setup-node@v5
@@ -236,13 +249,12 @@ jobs:
         run: >-
           set -o pipefail
 
-          yarn release --type=latest --sourceTag=beta --createGithubRelease=true
+          yarn release --type=latest --version=${{
+          needs.prBranch.outputs.release-version }} --createGithubRelease=latest
           2>&1 | tee /tmp/release-output.txt
 
-          LATEST_VERSION=$(grep -oE '[0-9]+\.[0-9]+\.[0-9]+'
-          /tmp/release-output.txt | tail -1)
-
-          echo "latest-version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "latest-version=${{ needs.prBranch.outputs.release-version }}" >>
+          $GITHUB_OUTPUT
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
       - name: Notify Slack - Latest Release
         env:

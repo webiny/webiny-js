@@ -13,7 +13,7 @@ const SCOPE = "sidebar";
 
 const BaseSidebar = makeDecoratable("SidebarScopedLayout", () => {
     return (
-        <div className={"w-[300px] flex-none"}>
+        <div className={"w-[var(--wb-spacing-sidebar)] flex-none"}>
             <Layout />
         </div>
     );

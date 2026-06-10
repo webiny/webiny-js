@@ -12,6 +12,12 @@ export interface OutputErrors {
     [key: string]: OutputError;
 }
 
+export interface ValidationIssue {
+    field: string;
+    code: string;
+    message: string;
+}
+
 const createValidationErrorData = (error: ZodError) => {
     return {
         invalidFields: error.issues.reduce<OutputErrors>((collection, issue) => {
@@ -45,4 +51,12 @@ export const createZodError = (error: ZodError) => {
         code: "VALIDATION_FAILED_INVALID_FIELDS",
         data: createValidationErrorData(error)
     });
+};
+
+export const parseZodError = (error: ZodError): ValidationIssue[] => {
+    return error.issues.map(issue => ({
+        field: issue.path.join("."),
+        code: issue.code,
+        message: issue.message
+    }));
 };

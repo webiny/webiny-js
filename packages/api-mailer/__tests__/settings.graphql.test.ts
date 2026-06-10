@@ -45,7 +45,8 @@ describe("Mailer Settings GraphQL", () => {
                         data: {
                             from: "from@dummy-host.webiny",
                             host: "dummy-host.webiny",
-                            port: 25,
+                            port: 587,
+                            secure: false,
                             replyTo: "replyTo@dummy-host.webiny",
                             user: "user",
                             source: "storage"
@@ -65,7 +66,8 @@ describe("Mailer Settings GraphQL", () => {
                         data: {
                             from: "from@dummy-host.webiny",
                             host: "dummy-host.webiny",
-                            port: 25,
+                            port: 587,
+                            secure: false,
                             replyTo: "replyTo@dummy-host.webiny",
                             user: "user",
                             source: "storage"
@@ -94,7 +96,8 @@ describe("Mailer Settings GraphQL", () => {
                     saveSettings: {
                         data: {
                             host: "dummy-host2.webiny",
-                            port: 25,
+                            port: 587,
+                            secure: false,
                             user: "user2",
                             from: "from2@dummy-host.webiny",
                             replyTo: "replyTo2@dummy-host.webiny",
@@ -122,7 +125,8 @@ describe("Mailer Settings GraphQL", () => {
                     saveSettings: {
                         data: {
                             host: "dummy-host3.webiny",
-                            port: 25,
+                            port: 587,
+                            secure: false,
                             user: "user3",
                             from: "from3@dummy-host.webiny",
                             replyTo: "replyTo3@dummy-host.webiny",

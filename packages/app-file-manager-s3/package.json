@@ -24,8 +24,10 @@
     "typescript": "6.0.3"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
+  "webiny": {
+    "publishFrom": "dist"
+  }
 }

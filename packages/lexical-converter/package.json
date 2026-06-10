@@ -7,19 +7,21 @@
     "./*": "./*"
   },
   "dependencies": {
-    "@lexical/headless": "^0.44.0",
-    "@lexical/html": "^0.44.0",
+    "@lexical/headless": "^0.45.0",
+    "@lexical/html": "^0.45.0",
     "@webiny/lexical-nodes": "0.0.0",
     "cheerio": "^1.2.0",
-    "lexical": "^0.44.0"
+    "lexical": "^0.45.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "jsdom": "^29.1.1",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.8"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

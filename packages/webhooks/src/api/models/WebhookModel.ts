@@ -12,11 +12,7 @@ class WebhookModelFactory implements ModelFactory.Interface {
             .tags(["$publishing:false", "$hidden:true"]);
 
         model.fields(fields => ({
-            name: fields
-                .text()
-                .label("Name")
-                .required()
-                .minLength(8, "Name must be at least 8 characters long."),
+            name: fields.text().label("Name").required(),
             slug: fields
                 .text()
                 .label("Slug")
@@ -50,10 +46,9 @@ class WebhookModelFactory implements ModelFactory.Interface {
                 .listMinLength(1, "At least one event must be selected."),
             signingSecret: fields
                 .text()
+                .encrypt()
                 .label("Signing Secret")
-                .required()
                 .description("Signing secret - will be encrypted in the database.")
-                .minLength(16, "Signing secret must be at least 16 characters long.")
         }));
 
         return [model];

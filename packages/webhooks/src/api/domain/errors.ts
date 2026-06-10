@@ -1,4 +1,7 @@
 import { BaseError } from "@webiny/feature/api";
+import type { ZodError } from "zod";
+import { parseZodError } from "@webiny/utils";
+import type { ValidationIssue } from "@webiny/utils";
 
 export class WebhookNotFoundError extends BaseError {
     override readonly code = "WEBHOOK_NOT_FOUND" as const;
@@ -16,11 +19,20 @@ export class WebhookDeliveryNotFoundError extends BaseError {
     }
 }
 
-export class WebhookValidationError extends BaseError {
+interface WebhookValidationErrorData {
+    issues: ValidationIssue[];
+}
+
+export class WebhookValidationError extends BaseError<WebhookValidationErrorData> {
     override readonly code = "WEBHOOK_VALIDATION_ERROR" as const;
 
-    constructor(message: string) {
-        super({ message });
+    constructor(error: string | ZodError) {
+        if (typeof error === "string") {
+            super({ message: error, data: { issues: [] } });
+        } else {
+            const issues = parseZodError(error);
+            super({ message: "Validation failed.", data: { issues } });
+        }
     }
 }
 

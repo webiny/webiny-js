@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const { getPackages } = require("./utils/getPackages");
-const { hashElement } = require("folder-hash");
+const { WorkspaceGraph } = require("./utils/WorkspaceGraph.js");
+const { hashFolderAsync } = require("@webiny/stdlib/node");
 const fs = require("fs-extra");
 const execa = require("execa");
 const path = require("path");
@@ -126,11 +127,7 @@ async function build() {
         }
     }
 
-    // Building all packages - we're respecting the dependency graph.
-    // Note: lists only packages in "packages" folder (check `lerna.json` config).
-    const rawPackagesList = await execa("lerna", ["list", "--toposort", "--graph", "--all"]).then(
-        ({ stdout }) => JSON.parse(stdout)
-    );
+    const rawPackagesList = new WorkspaceGraph().toposort();
 
     const packagesList = {};
     for (const packageName in rawPackagesList) {
@@ -284,9 +281,9 @@ function getPackageCacheFolderPath(workspacePackage) {
 }
 
 async function getPackageSourceHash(workspacePackage) {
-    const { hash } = await hashElement(workspacePackage.packageFolder, {
-        folders: { exclude: ["dist", "lib"] },
-        files: { exclude: ["tsconfig.build.tsbuildinfo"] }
+    const { hash } = await hashFolderAsync(workspacePackage.packageFolder, {
+        excludeFolders: ["dist", "lib"],
+        excludeFiles: ["tsconfig.build.tsbuildinfo"]
     });
 
     return hash;

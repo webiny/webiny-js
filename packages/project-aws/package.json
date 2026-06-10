@@ -14,13 +14,12 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.30.0",
-    "@pulumi/pulumi": "^3.241.0",
-    "@pulumi/random": "^4.20.0",
+    "@pulumi/aws": "^7.32.0",
+    "@pulumi/pulumi": "^3.245.0",
+    "@pulumi/random": "^4.21.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-layers": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
@@ -45,7 +44,7 @@
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.8"
   },
   "adio": {
     "ignoreDirs": [
@@ -56,5 +55,8 @@
         "cloudfront"
       ]
     }
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

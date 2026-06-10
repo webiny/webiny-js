@@ -5,9 +5,9 @@ import type {
     CmsModel,
     CmsModelField
 } from "~/types/index.js";
-import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 import { StorageTransform, StorageTransformRegistry } from "~/features/storage/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 
 export interface GetStorageTransformFactory {
     (context: Pick<CmsContext, "container">): (fieldType: string) => StorageTransform.Interface;
@@ -32,7 +32,13 @@ export const getStorageTransformFactory: GetStorageTransformFactory = context =>
         const fieldType = getBaseFieldType({
             type
         });
-        return result[fieldType] || defaultStorageTransform;
+        // first we check the exact type, then the base type, and if nothing is found, we return the default storage transform.
+        if (result[type]) {
+            return result[type];
+        } else if (fieldType !== type && result[fieldType]) {
+            return result[fieldType];
+        }
+        return defaultStorageTransform;
     };
 };
 
@@ -64,8 +70,7 @@ const entryStorageTransform = async <T extends CmsEntryValues = CmsEntryValues>(
         .map(async field => {
             const key = field.fieldId as keyof T;
             const value = entry.values[key];
-            const baseType = getBaseFieldType(field);
-            const storageTransform = getStorageTransform(baseType);
+            const storageTransform = getStorageTransform(field.type);
             const transformed = await storageTransform[operation]({
                 model,
                 field,
@@ -131,8 +136,7 @@ export const entryFieldFromStorageTransform = async <T = any>(
     const { context, model, field, value } = params;
     const getStorageTransform = getStorageTransformFactory(context);
 
-    const baseType = getBaseFieldType(field);
-    const storageTransform = getStorageTransform(baseType);
+    const storageTransform = getStorageTransform(field.type);
 
     return storageTransform.fromStorage({
         model,

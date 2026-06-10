@@ -21,6 +21,7 @@ const common = {
 
 export const saveValidation = zod.object({
     ...common,
+    secure: zod.boolean().optional().describe("Use TLS/SSL"),
     password: password
         .nullish()
         .optional()

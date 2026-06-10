@@ -18,8 +18,7 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "dependencies": {
     "@webiny/api": "0.0.0",
@@ -35,15 +34,18 @@
   "devDependencies": {
     "@webiny/api-core-ddb": "0.0.0",
     "@webiny/api-file-manager-s3": "0.0.0",
+    "@webiny/background-tasks": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "@webiny/tasks": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "graphql": "^16.14.0",
+    "graphql": "^16.14.1",
     "rimraf": "^6.1.3",
     "typescript": "6.0.3",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.8"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

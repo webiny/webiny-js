@@ -9,7 +9,9 @@ import { getBuildMeta } from "./getBuildMeta";
 import { buildPackage } from "./buildSinglePackage";
 import { getHardwareInfo } from "./getHardwareInfo";
 import execa from "execa";
+import notifier from "node-notifier";
 
+import path from "path";
 import { hideBin } from "yargs/helpers";
 import { PackageBuildError } from "./PackageBuildError";
 import { queueMetaWrite } from "./writeMetaQueue";
@@ -18,10 +20,17 @@ const argv = yargs(hideBin(process.argv)).parse();
 
 const { green, red } = chalk;
 
+const projectFolder = path.basename(process.cwd());
+
+const sendNotification = (title: string, message: string) => {
+    notifier.notify({ title, message });
+};
+
 interface BuildOptions {
     p?: string | string[];
     debug?: boolean;
     cache?: boolean;
+    rebuildDependents?: boolean;
     buildOverrides?: string;
     safeReplace?: boolean;
 }
@@ -52,7 +61,8 @@ export const buildPackages = async () => {
 
     const { batches, packagesNoCache, allPackages } = await getBatches({
         cache: options.cache ?? true,
-        packagesWhitelist
+        packagesWhitelist,
+        rebuildDependents: options.rebuildDependents
     });
 
     if (!packagesNoCache.length) {
@@ -72,7 +82,13 @@ export const buildPackages = async () => {
 
     if (allPackages.length === 1) {
         const [pkg] = allPackages;
-        await buildPackage(pkg, options.buildOverrides, "inherit", options.safeReplace);
+        try {
+            await buildPackage(pkg, options.buildOverrides, "inherit", options.safeReplace);
+            sendNotification(`Webiny Build (${projectFolder})`, "Build completed successfully");
+        } catch (err) {
+            sendNotification(`Webiny Build (${projectFolder})`, "Build failed");
+            throw err;
+        }
     } else {
         const start = Date.now();
 
@@ -174,10 +190,18 @@ export const buildPackages = async () => {
                 console.log();
             });
 
+            sendNotification(
+                `Webiny Build (${projectFolder})`,
+                `Build failed after ${duration} seconds`
+            );
             console.log(`Build failed in ${red(duration)} seconds.`);
             process.exit(1);
         }
 
+        sendNotification(
+            `Webiny Build (${projectFolder})`,
+            `Build finished in ${duration} seconds`
+        );
         console.log(`\nBuild finished in ${green(duration)} seconds.`);
     }
 };

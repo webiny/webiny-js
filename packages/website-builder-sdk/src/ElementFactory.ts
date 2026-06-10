@@ -273,7 +273,10 @@ export class ElementFactory {
     private getComponentManifest(componentName: string): ComponentManifest {
         const manifest = this.components[componentName];
         if (!manifest) {
-            throw new Error(`Component "${componentName}" not registered.`);
+            const registered = Object.keys(this.components).join(", ");
+            throw new Error(
+                `Component "${componentName}" not registered. Registered components: ${registered}`
+            );
         }
 
         return manifest;

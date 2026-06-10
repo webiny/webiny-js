@@ -12,38 +12,40 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@webiny/admin-ui": "*",
-    "@webiny/api-core": "*",
-    "@webiny/app": "*",
-    "@webiny/app-admin": "*",
-    "@webiny/aws-sdk": "*",
+    "@webiny/admin-ui": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/app": "0.0.0",
+    "@webiny/app-admin": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
     "@webiny/di": "^1.0.1",
-    "@webiny/feature": "*",
-    "@webiny/form": "*",
-    "@webiny/handler-graphql": "*",
-    "@webiny/icons": "*",
-    "@webiny/project": "*",
-    "@webiny/project-aws": "*",
-    "@webiny/validation": "*",
+    "@webiny/feature": "0.0.0",
+    "@webiny/form": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
+    "@webiny/icons": "0.0.0",
+    "@webiny/project": "0.0.0",
+    "@webiny/project-aws": "0.0.0",
+    "@webiny/validation": "0.0.0",
     "aws-amplify": "^6.17.0",
-    "graphql": "^16.14.0",
+    "graphql": "^16.14.1",
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.18.1",
-    "mobx": "^6.15.3",
+    "mobx": "^6.16.0",
     "mobx-react-lite": "^4.1.1",
     "react": "18.3.1",
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@types/react": "18.3.28",
-    "@webiny/build-tools": "*",
-    "@webiny/project-utils": "*",
-    "@webiny/wcp": "*",
-    "vitest": "^4.1.6"
+    "@types/react": "18.3.31",
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "@webiny/wcp": "0.0.0",
+    "vitest": "^4.1.8"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

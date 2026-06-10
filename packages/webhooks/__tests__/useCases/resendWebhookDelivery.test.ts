@@ -4,6 +4,7 @@ import { CreateWebhookUseCase } from "~/api/features/CreateWebhook/abstractions.
 import { TriggerWebhookUseCase } from "~/api/features/TriggerWebhook/abstractions.js";
 import { ResendWebhookDeliveryUseCase } from "~/api/features/ResendWebhookDelivery/abstractions.js";
 import { ListWebhookDeliveriesUseCase } from "~/api/features/ListWebhookDeliveries/abstractions.js";
+import { UpdateWebhookSettingsUseCase } from "~/api/features/UpdateWebhookSettings/abstractions.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
 
 describe("ResendWebhookDeliveryUseCase", () => {
@@ -86,5 +87,18 @@ describe("ResendWebhookDeliveryUseCase", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("WEBHOOK_NOT_AUTHORIZED");
+    });
+
+    it("uses deliveryRetentionDays from settings when resending", async () => {
+        const context = await handler.handle();
+        const updateSettings = context.container.resolve(UpdateWebhookSettingsUseCase);
+        const resendUseCase = context.container.resolve(ResendWebhookDeliveryUseCase);
+
+        await updateSettings.execute({ deliveryRetentionDays: 1 });
+
+        const { delivery } = await createWebhookAndTrigger(context);
+
+        const result = await resendUseCase.execute(delivery.id);
+        expect(result.isOk()).toBe(true);
     });
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { TimeAgo } from "./TimeAgo.js";
 
 const meta: Meta<typeof TimeAgo> = {

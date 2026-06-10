@@ -24,7 +24,7 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "email-addresses": "^5.0.0",
-    "nodemailer": "^8.0.7",
+    "nodemailer": "^8.0.10",
     "zod": "4.4.3"
   },
   "devDependencies": {
@@ -36,15 +36,17 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-db": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "graphql": "^16.14.0",
+    "graphql": "^16.14.1",
     "jest-dynalite": "^3.6.1",
     "rimraf": "^6.1.3",
     "typescript": "6.0.3",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.8"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
+  "webiny": {
+    "publishFrom": "dist"
+  }
 }

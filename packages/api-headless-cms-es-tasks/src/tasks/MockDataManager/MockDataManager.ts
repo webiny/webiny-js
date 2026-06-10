@@ -1,4 +1,4 @@
-import { TaskDataStatus } from "@webiny/tasks";
+import { TaskDataStatus } from "@webiny/background-tasks/api";
 import type {
     IMockDataManagerInput,
     IMockDataManagerOutput

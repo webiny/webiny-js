@@ -15,21 +15,21 @@
   "dependencies": {
     "@webiny/build-tools": "0.0.0",
     "@webiny/mcp": "0.0.0",
+    "@webiny/stdlib": "^0.0.7",
     "@webiny/system-requirements": "0.0.0",
     "@webiny/telemetry": "0.0.0",
     "chalk": "^5.6.2",
     "execa": "^5.1.1",
     "find-up": "^8.0.0",
     "fs-extra": "^11.3.5",
-    "inquirer": "^13.4.3",
-    "js-yaml": "^4.1.1",
+    "inquirer": "^14.0.2",
+    "js-yaml": "^4.2.0",
     "listr2": "^10.2.1",
     "load-json-file": "^7.0.1",
     "ora": "9.4.0",
     "os": "0.1.2",
     "rimraf": "^6.1.3",
-    "type-fest": "^5.6.0",
-    "uuid": "^14.0.0",
+    "type-fest": "^5.7.0",
     "validate-npm-package-name": "^8.0.0",
     "write-json-file": "^7.0.0",
     "yargs": "^18.0.0",
@@ -37,16 +37,19 @@
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
-    "@types/validate-npm-package-name": "^4.0.2"
+    "@types/validate-npm-package-name": "^4.0.2",
+    "vitest": "^4.1.8"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
   "adio": {
     "ignoreDirs": [
       "_templates"
     ]
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

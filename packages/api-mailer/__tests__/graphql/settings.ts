@@ -5,6 +5,7 @@ export const GET_SETTINGS_QUERY = `
                 data {
                     host
                     port
+                    secure
                     user
                     from
                     replyTo
@@ -27,6 +28,7 @@ export const SAVE_SETTINGS_MUTATION = `
                 data {
                     host
                     port
+                    secure
                     user
                     from
                     replyTo

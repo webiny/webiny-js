@@ -1,6 +1,6 @@
 import os from "os";
 import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import { uuid as uuidv4 } from "@webiny/stdlib";
 import { loadJsonFileSync } from "load-json-file";
 import { writeJsonFileSync } from "write-json-file";
 import { isCI } from "ci-info";

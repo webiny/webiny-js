@@ -17,7 +17,9 @@ export const useResponsiveContainer = (viewportManager: ViewportManager) => {
 
     const updateContainerWidth = useCallback(() => {
         const uiWidth = editor.getEditorState().read().uiReservedSpace.width;
-        setContainerWidth(document.body.clientWidth - uiWidth);
+        // Subtract horizontal padding (2 × 24 px from p-6 on PreviewContainer) so preview-body
+        // fits inside the padded container without overflowing the flex layout.
+        setContainerWidth(document.body.clientWidth - uiWidth - 48);
     }, [editor]);
 
     useEffect(() => {

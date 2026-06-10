@@ -14,7 +14,7 @@ export interface ICreateWebhookInput {
     description?: string;
     enabled?: boolean;
     events: string[];
-    signingSecret: string;
+    signingSecret?: string;
 }
 
 type IError =

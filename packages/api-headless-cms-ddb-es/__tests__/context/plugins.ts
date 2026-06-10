@@ -7,7 +7,7 @@ import type { ContextPlugin } from "@webiny/api";
 import type { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { createBackgroundTaskContext } from "@webiny/tasks";
+import { createBackgroundTaskContext } from "@webiny/background-tasks/api";
 import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ApiKey } from "@webiny/api-core/types/security";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";

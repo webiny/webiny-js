@@ -38,6 +38,7 @@ export const FileInputRenderer = ({
             onChange={onFileChange}
             render={({ showFileManager }) => (
                 <FilePicker
+                    variant={"secondary"}
                     label={label}
                     description={input.description}
                     type="compact"

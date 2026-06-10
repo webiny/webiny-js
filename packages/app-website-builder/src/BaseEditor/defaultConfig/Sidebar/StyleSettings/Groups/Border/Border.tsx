@@ -6,7 +6,7 @@ import { BorderColor } from "./BorderColor.js";
 
 export const BorderControl = ({ elementId }: { elementId: string }) => {
     return (
-        <div className="flex flex-col gap-sm w-full">
+        <div className="flex flex-col gap-md w-full">
             <BorderWidth elementId={elementId} />
             <BorderRadius elementId={elementId} />
             <BorderStyle elementId={elementId} />

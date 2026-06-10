@@ -1,21 +1,24 @@
 import { Result } from "@webiny/feature/api";
 import { ResendWebhookDeliveryUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { ResendWebhookDeliveryInputSchema } from "./schema.js";
 import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
+import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
-import { WebhookNotAuthorizedError } from "~/api/domain/errors.js";
+import { WebhookNotAuthorizedError, WebhookValidationError } from "~/api/domain/errors.js";
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
-import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/api/domain/constants.js";
+import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";
 import type { IWebhookPayload } from "~/api/features/SendWebhookTask/types.js";
 
 class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private permissions: WebhookPermissions.Interface,
-        private getDeliveryRepository: GetWebhookDeliveryRepository.Interface,
-        private getWebhookRepository: GetWebhookRepository.Interface,
-        private createDeliveryRepository: CreateWebhookDeliveryRepository.Interface,
-        private taskService: TaskService.Interface
+        private readonly permissions: WebhookPermissions.Interface,
+        private readonly getDeliveryRepository: GetWebhookDeliveryRepository.Interface,
+        private readonly getWebhookRepository: GetWebhookRepository.Interface,
+        private readonly createDeliveryRepository: CreateWebhookDeliveryRepository.Interface,
+        private readonly taskService: TaskService.Interface,
+        private readonly getSettingsRepository: GetWebhookSettingsRepository.Interface
     ) {}
 
     async execute(deliveryId: string): Promise<Result<boolean, UseCaseAbstraction.Error>> {
@@ -23,7 +26,12 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new WebhookNotAuthorizedError());
         }
 
-        const deliveryResult = await this.getDeliveryRepository.execute(deliveryId);
+        const parsed = ResendWebhookDeliveryInputSchema.safeParse({ deliveryId });
+        if (!parsed.success) {
+            return Result.fail(new WebhookValidationError(parsed.error));
+        }
+
+        const deliveryResult = await this.getDeliveryRepository.execute(parsed.data.deliveryId);
         if (deliveryResult.isFail()) {
             return Result.fail(deliveryResult.error);
         }
@@ -38,9 +46,12 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
         const originalPayload = delivery.payload as IWebhookPayload | null;
         const data = originalPayload?.data ?? {};
 
-        const expiresAt = new Date(
-            Date.now() + WEBHOOK_DELIVERY_RETENTION_DAYS * 24 * 60 * 60 * 1000
-        ).toISOString();
+        const settingsResult = await this.getSettingsRepository.execute();
+        const retentionDays = settingsResult.isOk()
+            ? (settingsResult.value.deliveryRetentionDays ?? WEBHOOK_DELIVERY_MAX_RETENTION_DAYS)
+            : WEBHOOK_DELIVERY_MAX_RETENTION_DAYS;
+
+        const expiresAt = new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000);
 
         const newDeliveryResult = await this.createDeliveryRepository.execute({
             webhookId: delivery.webhookId,
@@ -75,6 +86,7 @@ export const ResendWebhookDeliveryUseCase = UseCaseAbstraction.createImplementat
         GetWebhookDeliveryRepository,
         GetWebhookRepository,
         CreateWebhookDeliveryRepository,
-        TaskService
+        TaskService,
+        GetWebhookSettingsRepository
     ]
 });

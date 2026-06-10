@@ -1,28 +1,18 @@
-import pRetry from "p-retry";
-import semver from "semver";
 import execa from "execa";
-import { loadJsonFileSync } from "load-json-file";
-import { writeJsonFileSync } from "write-json-file";
 import { Octokit } from "@octokit/rest";
 import { Changelog } from "./Changelog";
-
-export type MostRecentVersionFunction = (mostRecentVersion: string) => string | string[];
+import { GithubRelease } from "./GithubRelease";
+import { versionPackages } from "./versionPackages";
+import { publishPackages } from "./publishPackages";
+import { fetchNpmDistTags } from "./fetchNpmVersion";
 
 export class Release {
-    /**
-     * NPM dist-tag to publish.
-     */
     distTag: string | undefined = undefined;
-    /**
-     * NPM dist-tag to publish from.
-     * This tag will be used to detect the version that needs to be published.
-     */
-    sourceTag: string = "beta";
-    version: string | string[] | MostRecentVersionFunction | null | undefined = undefined;
+    version: string | undefined = undefined;
+    preid: string | undefined = undefined;
     resetAllChanges = true;
-    mostRecentVersion: undefined | string = undefined;
-    createGithubRelease: string | boolean = false;
-    npmTags: Record<string, any> = [];
+    dryRun = false;
+    createGithubRelease: GithubRelease = GithubRelease.from(false);
     logger: any;
 
     constructor(logger: any) {
@@ -33,221 +23,156 @@ export class Release {
         this.logger = logger;
     }
 
-    /**
-     * NPM dist-tag to publish.
-     * @param tag
-     */
     setTag(tag: string) {
         this.distTag = tag;
     }
 
-    setSourceTag(tag: string) {
-        if (typeof tag !== "string" || tag === "") {
-            return;
-        }
-
-        this.sourceTag = tag;
-    }
-
-    /**
-     * A parameter passed to `lerna version` to generate version.
-     * Examples:
-     * Latest: --conventional-graduate
-     * Beta: --conventional-prerelease --preid beta
-     * Unstable: 0.0.0-unstable.b7124ae31d
-     * @param version String | String[] | Function
-     */
-    setVersion(version: string | string[] | MostRecentVersionFunction) {
+    setVersion(version: string) {
         this.version = version;
     }
 
-    /**
-     * @param {boolean|string} flag Boolean or "latest" to mark release as "latest" on Github
-     */
-    setCreateGithubRelease(flag: boolean | string) {
-        this.createGithubRelease = flag;
+    setPreid(preid: string) {
+        this.preid = preid;
+    }
+
+    setCreateGithubRelease(flag: unknown) {
+        this.createGithubRelease = GithubRelease.from(flag);
     }
 
     setResetAllChanges(reset: boolean) {
         this.resetAllChanges = reset;
     }
 
-    async versionPackages() {
-        this.__validateConfig();
+    setDryRun(dryRun: boolean) {
+        this.dryRun = dryRun;
+    }
 
-        this.logger.info("Attempting to release tag %s", this.distTag);
-
-        // Generate `lerna.json` using `example.lerna.json`.
-        {
-            // Determine current version
-            this.npmTags = await this.__getTags();
-            this.mostRecentVersion = this.__getMostRecentVersion(
-                [
-                    this.npmTags["latest"],
-                    this.npmTags[this.distTag === "latest" ? this.sourceTag : this.distTag!]
-                ].filter(Boolean)
-            );
-
-            this.logger.info("Most recent version is %s", this.mostRecentVersion);
-            const lernaJSON = this.__loadLernaJson("example.lerna.json");
-            lernaJSON.version = this.mostRecentVersion;
-
-            writeJsonFileSync("lerna.json", lernaJSON);
-            this.logger.info("Lerna config was written to %s", "lerna.json");
+    async computeVersion(): Promise<string> {
+        if (!this.version) {
+            throw Error(`"--version" is required for this release type.`);
         }
-
-        // Run `lerna` to version packages
-        let version: string[] = [];
-        if (typeof this.version === "function") {
-            const calculatedVersion = this.version(this.mostRecentVersion!);
-            if (Array.isArray(calculatedVersion)) {
-                version = calculatedVersion;
-            } else {
-                version = [calculatedVersion];
-            }
-        } else {
-            if (Array.isArray(this.version)) {
-                version = this.version;
-            } else {
-                version = [this.version!];
-            }
-        }
-
-        if (!Array.isArray(version)) {
-            version = [version];
-        }
-
-        const lernaVersionArgs = [
-            "lerna",
-            "version",
-            ...version,
-            "--force-publish=*",
-            "--no-changelog",
-            "--no-git-tag-version",
-            "--no-push",
-            "--yes"
-        ];
-
-        this.logger.debug(lernaVersionArgs.join(" "));
-        await execa("yarn", lernaVersionArgs, { stdio: "inherit" });
-        this.logger.info("Packages versioning completed");
-
-        // Read the new version
-        const lernaJSON = this.__loadLernaJson("lerna.json");
-        return { version: lernaJSON.version, tag: this.distTag };
+        return this.version;
     }
 
     async execute() {
-        await this.versionPackages();
+        this.validateConfig();
 
-        // Run `lerna` to publish packages
-        const lernaPublishArgs = [
-            "lerna",
-            "publish",
-            "from-package",
-            "--dist-tag",
-            this.distTag!,
-            "--yes"
-        ];
+        const version = await this.computeVersion();
+        this.logger.info("Computed version: %s", version);
+        this.logger.info("Dist-tag: %s", this.distTag);
 
-        this.logger.debug(lernaPublishArgs.join(" "));
+        // Run root prepublishOnly.
+        this.logger.info("Running prepublishOnly...");
+        await execa("yarn", ["prepublishOnly"], { stdio: "inherit" });
+
+        // Rewrite versions in dist/package.json files.
+        this.logger.info("Rewriting package versions to %s", version);
+        const versionedPackages = versionPackages(version);
+        this.logger.info("Versioned %s packages", versionedPackages.length);
+
+        // Fetch the current latest version BEFORE publishing, so the changelog
+        // can diff against the previous release (not the one we're about to push).
+        let previousLatest: string | undefined;
         try {
-            await execa("yarn", lernaPublishArgs, { stdio: "inherit" });
-        } catch (err) {
-            this.logger.debug("Failed to publish packages to NPM!", err);
-            this.logger.info("Retrying publishing...");
-            // Rerun `lerna publish` ignoring lifecycle scripts, as packages are already built and ready to go.
-            await execa("yarn", [...lernaPublishArgs, "--ignore-scripts"], { stdio: "inherit" });
+            const distTags = await this.fetchDistTags();
+            previousLatest = distTags["latest"];
+        } catch (err: any) {
+            this.logger.warning("Could not fetch dist-tags: %s", err.message);
         }
 
-        this.logger.info(`Packages were published to NPM under %s dist-tag`, this.distTag);
+        if (this.dryRun) {
+            this.logger.info("Dry run — skipping publish, GitHub release, and git reset.");
 
-        if (this.createGithubRelease !== false) {
-            // Generate changelog, tag commit, and create Github release.
-            const lernaJSON = this.__loadLernaJson("lerna.json");
-            const versionTag = `v${lernaJSON.version}`;
-
-            // Create the tag
-            await execa("git", ["tag", versionTag, "-m", versionTag]);
-            await execa("git", ["push", "origin", versionTag]);
-            this.logger.info("Created Git tag %s", versionTag);
-
-            // Changelog and Github release.
             try {
-                const changelog = await this.__getChangelog(lernaJSON.version);
-                this.logger.log("Changelog:\n\n%s\n\n", changelog);
-
-                const { data: release } = await this.__createGithubRelease(versionTag, changelog);
-                this.logger.info("Created Github release: %s", release.html_url);
-            } catch (err) {
-                this.logger.warning("Failed to create a Github release: %s", err.message);
-                this.logger.log(err);
+                const fromRef = previousLatest ? `v${previousLatest}` : "HEAD~10";
+                const changelog = await new Changelog(process.cwd()).generate(fromRef, "HEAD");
+                this.logger.log("Changelog preview:\n\n%s\n", changelog);
+            } catch (err: any) {
+                this.logger.warning("Could not generate changelog preview: %s", err.message);
             }
+
+            return { version, tag: this.distTag };
         }
 
-        // Reset all changes made during versioning.
+        // Publish all packages.
+        const results = await publishPackages({
+            distTag: this.distTag!,
+            logger: this.logger
+        });
+
+        const failures = results.filter(r => !r.success);
+        if (failures.length > 0) {
+            throw Error(`Failed to publish ${failures.length} package(s). See logs above.`);
+        }
+
+        this.logger.info(
+            "Packages were published to NPM under %s dist-tag, with version %s",
+            this.distTag,
+            version
+        );
+
+        if (this.createGithubRelease.isEnabled()) {
+            await this.createRelease(version, previousLatest);
+        }
+
         if (this.resetAllChanges) {
             await execa("git", ["reset", "--hard", "HEAD"]);
         }
 
         this.logger.success("Release process has finished successfully!");
+        return { version, tag: this.distTag };
     }
 
-    __validateConfig() {
-        if (this.createGithubRelease && !process.env.GH_TOKEN) {
-            // throw Error("GH_TOKEN environment variable is not set.");
+    async printVersion() {
+        const version = await this.computeVersion();
+        console.log(version);
+    }
+
+    protected validateConfig() {
+        if (!this.dryRun && this.createGithubRelease.isEnabled() && !process.env.GH_TOKEN) {
+            throw Error("GH_TOKEN environment variable is not set.");
         }
 
-        if (!this.version) {
-            throw Error(
-                `Versioning is not configured! Use "setVersion" to configure lerna versioning.`
-            );
+        if (!this.distTag) {
+            throw Error("Dist-tag is not configured. Use setTag() to configure.");
         }
     }
 
-    async __getTags() {
-        const { stdout: npmRegistry } = await execa("npm", ["config", "get", "registry"]);
-        this.logger.debug("Using NPM registry at %s", npmRegistry);
-        const getVersion = async () => {
-            const res = await fetch(`${npmRegistry.replace(/\/$/, "")}/@webiny/cli`);
-            const json = await res.json();
-
-            return json["dist-tags"];
-        };
-
-        return pRetry(getVersion, { retries: 5 });
+    protected async fetchDistTags(): Promise<Record<string, string>> {
+        return fetchNpmDistTags();
     }
 
-    __getMostRecentVersion(versions: string[]) {
-        return semver.sort(versions).pop()?.toString();
-    }
+    private async createRelease(version: string, previousLatest: string | undefined) {
+        const versionTag = `v${version}`;
 
-    async __getChangelog(currentlyPublishedVersion: string) {
-        const from = `v${this.npmTags["latest"]}`;
-        const to = `v${currentlyPublishedVersion}`;
+        await execa("git", ["tag", versionTag, "-m", versionTag]);
+        await execa("git", ["push", "origin", versionTag]);
+        this.logger.info("Created Git tag %s", versionTag);
 
-        this.logger.info(`Generating changelog ${from}..${to}`);
-        return new Changelog(process.cwd()).generate(from, to);
-    }
+        try {
+            const fromRef = previousLatest ? `v${previousLatest}` : versionTag;
 
-    async __createGithubRelease(tag: string, changelog: string) {
-        const client = new Octokit({
-            auth: `token ${process.env.GH_TOKEN}`
-        });
+            const changelog = await new Changelog(process.cwd()).generate(fromRef, versionTag);
+            this.logger.log("Changelog:\n\n%s\n\n", changelog);
 
-        return client.repos.createRelease({
-            owner: "webiny",
-            repo: "webiny-js",
-            tag_name: tag,
-            name: tag,
-            body: changelog,
-            prerelease: false,
-            // `make_latest` is of type `string`
-            make_latest: this.createGithubRelease === "latest" ? "true" : "false"
-        });
-    }
+            const client = new Octokit({
+                auth: process.env.GH_TOKEN
+            });
 
-    __loadLernaJson(filename: string) {
-        return loadJsonFileSync<Record<string, any>>(filename);
+            const { data: release } = await client.repos.createRelease({
+                owner: "webiny",
+                repo: "webiny-js",
+                tag_name: versionTag,
+                name: versionTag,
+                body: changelog,
+                prerelease: false,
+                make_latest: this.createGithubRelease.isLatest() ? "true" : "false"
+            });
+
+            this.logger.info("Created Github release: %s", release.html_url);
+        } catch (err: any) {
+            this.logger.warning("Failed to create a Github release: %s", err.message);
+            this.logger.log(err);
+        }
     }
 }

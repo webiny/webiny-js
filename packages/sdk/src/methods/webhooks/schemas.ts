@@ -28,7 +28,6 @@ export const createWebhookSchema = z.object({
 export const updateWebhookSchema = z.object({
     id,
     name: z.string().min(1).optional(),
-    slug: z.string().optional(),
     endpointUrl: z.string().url("endpointUrl must be a valid URL").optional(),
     description: z.string().optional(),
     enabled: z.boolean().optional(),
@@ -44,7 +43,13 @@ export const getWebhookDeliverySchema = z.object({
 });
 
 export const listWebhookDeliveriesSchema = z.object({
-    webhookId: z.string().min(1, "webhookId is required"),
+    where: z
+        .object({
+            webhookId_eq: z.string().optional(),
+            eventType_in: z.array(z.string()).optional(),
+            status_in: z.array(z.string()).optional()
+        })
+        .optional(),
     limit: z.number().int().positive().optional(),
     after: z.string().optional()
 });

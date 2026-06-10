@@ -19,16 +19,18 @@ export interface WebhookDelivery {
     status: string;
     payload: unknown;
     requestHeaders: unknown;
+    responseHeaders: unknown | null;
     responseTime: number | null;
     responseStatus: number | null;
     responseBody: string | null;
-    expiresAt: string | null;
-    createdOn: string | null;
+    createdOn: string;
 }
 
 export interface WebhookEvent {
     app: string;
+    appLabel: string;
     entity: string;
+    entityLabel: string;
     eventName: string;
     label: string;
 }

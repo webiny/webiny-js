@@ -14,6 +14,7 @@ export class SmtpConfig {
         const baseConfig: SmtpTransportConfig = {
             host: settings.host,
             port: settings.port,
+            secure: settings.secure,
             auth: {
                 user: settings.user,
                 pass: settings.password

@@ -48,6 +48,7 @@ const EditorDialog = (props: EditorDialogProps) => {
             data-hover-manager={"ignore"}
             title={`Edit ${props.input.label}`}
             dismissible={false}
+            scrollable={false}
             showCloseButton={false}
             actions={
                 <>

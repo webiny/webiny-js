@@ -19,9 +19,6 @@ import { AbstractStorageOps, DdbOsStorageOps, DdbStorageOps } from "./storageOps
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ github.base_ref }}";
 
-// Skip all jobs for release/x.y.z → next PRs (handled by a dedicated release workflow).
-const NOT_RELEASE_PR = "!startsWith(github.head_ref, 'release/')";
-
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
@@ -126,13 +123,13 @@ export const pullRequests = createWorkflow({
     jobs: {
         validateCommits: createJob({
             name: "Validate commit messages",
-            if: `github.base_ref != 'dev' && ${NOT_RELEASE_PR}`,
+            if: "github.base_ref != 'dev'",
             steps: [{ uses: "webiny/action-conventional-commits@v1.4.2" }]
         }),
         // Don't allow "feat" commits to be merged into "dev" branch.
         validateCommitsDev: createJob({
             name: "Validate commit messages (dev branch, 'feat' commits not allowed)",
-            if: `github.base_ref == 'dev' && ${NOT_RELEASE_PR}`,
+            if: "github.base_ref == 'dev'",
             steps: [
                 {
                     uses: "webiny/action-conventional-commits@v1.4.2",
@@ -146,14 +143,14 @@ export const pullRequests = createWorkflow({
         }),
         constants: createJob({
             name: "Create constants",
-            if: NOT_RELEASE_PR,
             outputs: {
                 "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
                 "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}",
                 "is-fork-pr": "${{ steps.is-fork-pr.outputs.is-fork-pr }}",
                 "changed-packages": "${{ steps.detect-changed-packages.outputs.changed-packages }}",
                 "latest-webiny-version":
-                    "${{ steps.latest-webiny-version.outputs.latest-webiny-version }}"
+                    "${{ steps.latest-webiny-version.outputs.latest-webiny-version }}",
+                "skip-ai-fix": "${{ steps.skip-ai-fix-check.outputs.skip-ai-fix }}"
             },
             steps: [
                 {
@@ -202,6 +199,14 @@ export const pullRequests = createWorkflow({
                     name: "Get latest Webiny version on NPM",
                     id: "latest-webiny-version",
                     run: addToOutputs("latest-webiny-version", "$(npm view @webiny/cli version)")
+                },
+                {
+                    name: "Check if AI fix should be skipped",
+                    id: "skip-ai-fix-check",
+                    run: addToOutputs(
+                        "skip-ai-fix",
+                        "$(if git log -1 --format=%B ${{ github.event.pull_request.head.sha }} | grep -q '\\[skip-ai\\]'; then echo 'true'; else echo 'false'; fi)"
+                    )
                 }
             ]
         }),
@@ -223,7 +228,6 @@ export const pullRequests = createWorkflow({
         buildProject: createJob({
             needs: ["constants", "build"],
             name: "Build project (core, api, admin)",
-            if: NOT_RELEASE_PR,
             env: {
                 WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}"
             },
@@ -301,7 +305,6 @@ export const pullRequests = createWorkflow({
         }),
         staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
-            if: NOT_RELEASE_PR,
             "runs-on": BUILD_PACKAGES_RUNNER,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
@@ -323,7 +326,7 @@ export const pullRequests = createWorkflow({
         aiFixStaticAnalysis: createJob({
             name: "AI Fix Static Analysis",
             needs: ["constants", "staticCodeAnalysis"],
-            if: "failure() && needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true'",
+            if: "failure() && github.event.pull_request.user.login == 'adrians5j' && needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true' && needs.constants.outputs.skip-ai-fix != 'true'",
             permissions: { contents: "write" },
             checkout: { path: DIR_WEBINY_JS },
             env: { ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}" },
@@ -377,7 +380,7 @@ export const pullRequests = createWorkflow({
                     name: "Commit fixes",
                     uses: "stefanzweifel/git-auto-commit-action@v5",
                     with: {
-                        commit_message: "chore: ai fix static analysis",
+                        commit_message: "chore: ai fix static analysis [skip-ai]",
                         repository: DIR_WEBINY_JS
                     }
                 }

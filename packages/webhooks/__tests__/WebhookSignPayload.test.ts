@@ -49,4 +49,19 @@ describe("WebhookSignPayload", () => {
 
         expect(h1["webhook-signature"]).not.toBe(h2["webhook-signature"]);
     });
+
+    it("signs with a plain-text secret that is not base64-encoded", async () => {
+        const container = new Container();
+        WebhookSignPayloadFeature.register(container);
+
+        const signer = container.resolve(WebhookSignPayload);
+
+        const timestamp = new Date("2024-01-01T00:00:00Z");
+        const rawBody = '{"event":"cms.entry.article.created","data":{"id":"abc123"}}';
+
+        const headers = await signer.sign("msg_plain", timestamp, rawBody, "my signing secret!");
+
+        expect(headers["webhook-id"]).toBe("msg_plain");
+        expect(headers["webhook-signature"]).toMatch(/^v1,/);
+    });
 });

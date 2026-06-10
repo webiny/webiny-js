@@ -2,7 +2,9 @@ import { createAbstraction } from "@webiny/feature/api";
 
 export interface IWebhookFactoryDefinition {
     app: string;
+    appLabel: string;
     entity: string;
+    entityLabel: string;
     eventName: string;
     label: string;
 }

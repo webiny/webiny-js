@@ -78,7 +78,7 @@ interface GridProps
     children:
         | null
         | React.ReactElement<ColumnProps, typeof Column>
-        | Array<React.ReactElement<ColumnProps, typeof Column>>;
+        | Array<React.ReactElement<ColumnProps, typeof Column> | null>;
 }
 
 const GridBase = ({ gap, children, className, ...props }: GridProps) => {

@@ -1,5 +1,7 @@
 import React from "react";
-import { Accordion, Grid } from "@webiny/admin-ui";
+import { Grid } from "@webiny/admin-ui";
+import { ReactComponent as BackgroundIcon } from "@webiny/icons/bento.svg";
+import { StyleAccordion } from "../StyleAccordion.js";
 import { BackgroundImage } from "./Background/BackgroundImage.js";
 import { BackgroundColor } from "./Background/BackgroundColor.js";
 import { BackgroundPosition } from "./Background/BackgroundPosition.js";
@@ -11,8 +13,8 @@ interface BackgroundProps {
 
 export const Background = ({ elementId }: BackgroundProps) => {
     return (
-        <Accordion.Item title={"Background"} description={"Set color and image background"}>
-            <Grid>
+        <StyleAccordion.Item title={"Background"} icon={<BackgroundIcon />}>
+            <Grid gap={"small"}>
                 <Grid.Column span={12}>
                     <BackgroundColor elementId={elementId} />
                 </Grid.Column>
@@ -26,6 +28,6 @@ export const Background = ({ elementId }: BackgroundProps) => {
                     <BackgroundScaling elementId={elementId} />
                 </Grid.Column>
             </Grid>
-        </Accordion.Item>
+        </StyleAccordion.Item>
     );
 };

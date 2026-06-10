@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react";
 import { Widget } from "./Widget.js";
 import { Button } from "~/Button/index.js";
 import { List } from "~/List/index.js";

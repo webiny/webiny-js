@@ -23,6 +23,8 @@ export const TextareaInputRenderer = ({
 
     return (
         <Textarea
+            size={"md"}
+            variant={"secondary"}
             value={value || ""}
             onChange={previewValue}
             onBlur={e => commitValue(e.currentTarget.value)}

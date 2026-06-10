@@ -1,6 +1,6 @@
 import React from "react";
 import type { FileManagerFileItem, FileManagerOnChange } from "@webiny/app-admin";
-import { FileManagerRenderer as BaseFileManagerRenderer } from "@webiny/app-admin";
+import { FileManager } from "@webiny/app-admin";
 import type { FmFile } from "~/features/shared/types.js";
 import { FileManagerView } from "./FileManagerView.js";
 
@@ -18,7 +18,7 @@ const formatFileItem = (file: FmFile): FileManagerFileItem => {
     };
 };
 
-export const FileManagerRendererDecorator = BaseFileManagerRenderer.createDecorator(() => {
+export const FileManagerRendererDecorator = FileManager.Renderer.createDecorator(() => {
     return function FileManagerRendererImpl(props) {
         const { onChange, onClose, multiple, accept, scope, overlay = true } = props;
 

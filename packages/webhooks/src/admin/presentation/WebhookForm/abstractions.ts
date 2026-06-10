@@ -1,6 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { Webhook } from "~/admin/shared/types.js";
-import type { WebhookEvent } from "~/admin/shared/types.js";
 import type { IFormVM } from "@webiny/app-admin/features/formModel/abstractions.js";
 
 export interface IWebhookFormViewModel {
@@ -8,28 +7,18 @@ export interface IWebhookFormViewModel {
     saving: boolean;
     isNew: boolean;
     webhook: Webhook | null;
-    showDeliveries: boolean;
-    availableEvents: WebhookEvent[];
     permissions: {
         canEdit: boolean;
         canDelete: boolean;
     };
     form: IFormVM;
-    selectedEvents: string[];
-}
-
-export interface IWebhookFormActions {
-    save(): Promise<void>;
-    deleteWebhook(): Promise<void>;
-    openDeliveries(): void;
-    closeDeliveries(): void;
-    toggleEvent(eventName: string): void;
 }
 
 export interface IWebhookFormPresenter {
     vm: IWebhookFormViewModel;
-    actions: IWebhookFormActions;
     init(id: string): void;
+    save(): Promise<boolean>;
+    deleteWebhook(): Promise<void>;
 }
 
 export const WebhookFormPresenter =
@@ -38,5 +27,4 @@ export const WebhookFormPresenter =
 export namespace WebhookFormPresenter {
     export type Interface = IWebhookFormPresenter;
     export type ViewModel = IWebhookFormViewModel;
-    export type Actions = IWebhookFormActions;
 }

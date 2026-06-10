@@ -13,11 +13,13 @@
     "@material-design-icons/svg": "^0.14.15"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "scripts": {
     "build": "yarn webiny run build"
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
+  "webiny": {
+    "publishFrom": "dist"
+  }
 }
