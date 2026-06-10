@@ -13,10 +13,9 @@ class AuthTriggerHandlerImpl implements HttpEventHandler.Interface {
 
     async execute(ctx: EventContext, next: NextFunction): Promise<any> {
         const headers = ctx.event?.headers ?? {};
-        if (!headers["authorization"]) {
-            const identity = await this.authCtx.authenticate("");
-            this.identityCtx.setIdentity(identity);
-        }
+        const token = headers["authorization"] ?? "";
+        const identity = await this.authCtx.authenticate(token);
+        this.identityCtx.setIdentity(identity);
         return next();
     }
 }

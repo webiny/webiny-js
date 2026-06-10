@@ -1,27 +1,29 @@
-import { createContextPlugin } from "@webiny/api";
+import type { Container } from "@webiny/di";
+import { Authorizer } from "~/features/security/authorization/Authorizer/abstractions.js";
+import type { IAuthorizer } from "~/features/security/authorization/Authorizer/abstractions.js";
+import type { Identity } from "~/features/security/IdentityContext/Identity.js";
 import type { SecurityPermission } from "~/types/security.js";
-import type { ApiCoreContext } from "~/types/core.js";
 
 export interface Config {
     identityType?: string;
 }
 
-export default (config: Config) => {
-    return createContextPlugin<ApiCoreContext>(({ security }) => {
-        security.addAuthorizer(async () => {
-            const identityType = config.identityType || "api-key";
+class ApiKeyAuthorizerImpl implements IAuthorizer {
+    constructor(private identityType: string) {}
 
-            const identity = security.getIdentity();
+    async authorize(identity: Identity): Promise<SecurityPermission[] | null> {
+        if (!identity || identity.type !== this.identityType) {
+            return null;
+        }
+        const permissions = (identity as any).permissions;
+        if (!Array.isArray(permissions)) {
+            return [];
+        }
+        return permissions as SecurityPermission[];
+    }
+}
 
-            if (!identity || identity.type !== identityType) {
-                return null;
-            }
-            // We can expect `permissions` to exist on the identity, because api-key authentication
-            // plugin sets them on the identity instance to avoid loading them from DB here.
-            if (Array.isArray(identity.permissions) === false) {
-                return [];
-            }
-            return identity.permissions as SecurityPermission[];
-        });
-    });
-};
+export default ({ identityType = "api-key" }: Config = {}) =>
+    (_container: Container) => {
+        _container.registerFactory(Authorizer, () => new ApiKeyAuthorizerImpl(identityType));
+    };

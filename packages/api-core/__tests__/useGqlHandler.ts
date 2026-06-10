@@ -9,6 +9,8 @@ import {
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { loadWcpLicense } from "~/legacy/wcp/context.js";
+import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
 import { TestAuthenticator } from "./mocks/TestAuthenticator.js";
 import { TestAuthorizer } from "./mocks/TestAuthorizer.js";
@@ -45,6 +47,7 @@ import { LOGIN } from "./graphql/login";
 
 type UseGqlHandlerParams = {
     plugins?: any[];
+    wcpLicense?: DecryptedWcpProjectLicense;
 };
 
 export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
@@ -67,7 +70,11 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
         request: async container => {
             // ApiCoreFeature in child container — TenantContext, IdentityContext etc.
             // registered here become per-request singletons automatically
-            ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
+            const wcpLicense = await loadWcpLicense(opts.wcpLicense);
+            ApiCoreFeature.register(container, {
+                ...apiCoreStorage.storageOperations,
+                wcpLicense
+            });
             GraphQLEngineFeature.register(container);
 
             for (const plugin of opts.plugins ?? []) {
@@ -92,11 +99,13 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
         const response = await handler({
             method: httpMethod,
             path,
-            headers: {
-                "x-tenant": "root",
-                "content-type": "application/json",
-                ...headers
-            },
+            headers: Object.fromEntries(
+                Object.entries({
+                    "x-tenant": "root",
+                    "content-type": "application/json",
+                    ...headers
+                }).map(([k, v]) => [k.toLowerCase(), v])
+            ),
             query: {},
             pathParameters: {},
             body,

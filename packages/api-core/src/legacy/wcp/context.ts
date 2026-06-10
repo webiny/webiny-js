@@ -16,7 +16,9 @@ const cachedLicense: CachedWcpProjectLicense = {
     license: new NullLicense()
 };
 
-async function loadLicense(testProjectLicense?: DecryptedWcpProjectLicense): Promise<ILicense> {
+export async function loadWcpLicense(
+    testProjectLicense?: DecryptedWcpProjectLicense
+): Promise<ILicense> {
     if (testProjectLicense) {
         cachedLicense.license = License.fromLicenseDto(testProjectLicense);
     } else if (wcpProjectEnvironment) {
@@ -51,7 +53,7 @@ export interface CreateWcpContextParams {
 
 export const createWcpContext = (params: CreateWcpContextParams = {}) => {
     const plugin = createRegisterExtensionPlugin(async context => {
-        const license = await loadLicense(params.testProjectLicense);
+        const license = await loadWcpLicense(params.testProjectLicense);
 
         WcpFeature.register(context.container, license);
 

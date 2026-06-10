@@ -25,7 +25,7 @@ export const ApiCoreFeature = createFeature({
     name: "ApiCore",
     register(container: Container, config: ApiCoreStorageOperations) {
         // Register features
-        WcpFeature.register(container, (config as any).wcpLicense ?? new NullLicense());
+        WcpFeature.register(container, config.wcpLicense ?? new NullLicense());
         MaskerFeature.register(container);
         AiFeature.register(container);
         LoggerFeature.register(container);
