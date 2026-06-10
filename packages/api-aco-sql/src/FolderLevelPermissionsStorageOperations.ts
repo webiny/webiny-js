@@ -194,6 +194,10 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         }
     }
 
+    public reset(): void {
+        this.tableCreated = false;
+    }
+
     private async ensureTable(): Promise<void> {
         if (this.tableCreated) {
             return;
