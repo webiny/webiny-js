@@ -100,6 +100,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             dataSource,
             initialSort: { field: "savedOn", direction: "DESC" },
             initialFilters: { folderId: initialFolderId },
+            initialSearch: config.initialSearch,
             limit: 50,
             itemLabel: { singular: "entry", plural: "entries" }
         });

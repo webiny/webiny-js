@@ -179,7 +179,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
         this._debounceMs = config.debounceMs ?? 300;
         this._limit = config.limit;
         this._itemLabel = config.itemLabel ?? { singular: "item", plural: "items" };
-        this._search = "";
+        this._search = config.initialSearch ?? "";
         this._appliedQuery = null;
         this._selection.reset();
         this._initialized = true;

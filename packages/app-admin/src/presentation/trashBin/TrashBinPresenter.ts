@@ -91,7 +91,7 @@ class TrashBinPresenterImpl implements ITrashBinPresenter {
         bulkRestore: async (params?) => {
             const selectedIds = Array.from(this.listPresenter.vm.selection.selectedIds);
             await this.bulkActionGateway.execute({
-                action: "restore",
+                action: "Restore",
                 where: params?.where ?? { id_in: selectedIds },
                 search: params?.search
             });
@@ -102,7 +102,7 @@ class TrashBinPresenterImpl implements ITrashBinPresenter {
         bulkDelete: async (params?) => {
             const selectedIds = Array.from(this.listPresenter.vm.selection.selectedIds);
             await this.bulkActionGateway.execute({
-                action: "delete",
+                action: "Delete",
                 where: params?.where ?? { id_in: selectedIds },
                 search: params?.search
             });

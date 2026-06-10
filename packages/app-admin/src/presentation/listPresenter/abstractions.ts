@@ -39,6 +39,7 @@ export interface IListPresenterConfig<TRow> {
     dataSource: IDataSource<TRow>;
     initialSort?: { field: string; direction: "ASC" | "DESC" };
     initialFilters?: Record<string, unknown>;
+    initialSearch?: string;
     debounceMs?: number;
     limit?: number;
     itemLabel?: { singular: string; plural: string };
