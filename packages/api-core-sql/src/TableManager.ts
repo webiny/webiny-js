@@ -2,15 +2,18 @@ import type { Knex } from "knex";
 
 interface ITableManager {
     reset(): void;
+    resolve(tableName: string): string;
     ensure(tableName: string, creator: (table: Knex.CreateTableBuilder) => void): Promise<void>;
 }
 
 export class TableManager implements ITableManager {
     private readonly knex: Knex;
+    private readonly prefix: string;
     private readonly verified = new Set<string>();
 
-    constructor(knex: Knex) {
+    constructor(knex: Knex, prefix: string = "") {
         this.knex = knex;
+        this.prefix = prefix ? `${prefix}_` : "";
 
         const g = globalThis as Record<string, unknown>;
         const managers = (g.__sqlTableManagers ??= []) as ITableManager[];
@@ -21,20 +24,26 @@ export class TableManager implements ITableManager {
         this.verified.clear();
     }
 
+    public resolve(tableName: string): string {
+        return `${this.prefix}${tableName}`;
+    }
+
     public async ensure(
         tableName: string,
         creator: (table: Knex.CreateTableBuilder) => void
     ): Promise<void> {
-        if (this.verified.has(tableName)) {
+        const resolved = this.resolve(tableName);
+
+        if (this.verified.has(resolved)) {
             return;
         }
 
-        const exists = await this.knex.schema.hasTable(tableName);
+        const exists = await this.knex.schema.hasTable(resolved);
 
         if (!exists) {
-            await this.knex.schema.createTable(tableName, creator);
+            await this.knex.schema.createTable(resolved, creator);
         }
 
-        this.verified.add(tableName);
+        this.verified.add(resolved);
     }
 }

@@ -83,9 +83,9 @@ export const createStorageOperations = (
         });
     };
 
-    const rolesQuery = () => knex<IRoleRow>(ROLES_TABLE);
-    const teamsQuery = () => knex<ITeamRow>(TEAMS_TABLE);
-    const apiKeysQuery = () => knex<IApiKeyRow>(API_KEYS_TABLE);
+    const rolesQuery = () => knex<IRoleRow>(tableManager.resolve(ROLES_TABLE));
+    const teamsQuery = () => knex<ITeamRow>(tableManager.resolve(TEAMS_TABLE));
+    const apiKeysQuery = () => knex<IApiKeyRow>(tableManager.resolve(API_KEYS_TABLE));
 
     return {
         /* Roles */

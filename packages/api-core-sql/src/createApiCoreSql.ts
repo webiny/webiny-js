@@ -8,10 +8,14 @@ import { TableManager } from "./TableManager.js";
 
 interface CreateApiCoreSqlParams {
     knex: Knex;
+    tableNamePrefix?: string;
 }
 
-export const createApiCoreSql = ({ knex }: CreateApiCoreSqlParams): ApiCoreStorageOperations => {
-    const tableManager = new TableManager(knex);
+export const createApiCoreSql = ({
+    knex,
+    tableNamePrefix
+}: CreateApiCoreSqlParams): ApiCoreStorageOperations => {
+    const tableManager = new TableManager(knex, tableNamePrefix);
 
     return {
         usersStorageOperations: createUsersStorageOperations({

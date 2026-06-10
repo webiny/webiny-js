@@ -54,7 +54,7 @@ export const createStorageOperations = (
     };
 
     const query = () => {
-        return knex<IAdminUserRow>(TABLE_NAME);
+        return knex<IAdminUserRow>(tableManager.resolve(TABLE_NAME));
     };
 
     return {

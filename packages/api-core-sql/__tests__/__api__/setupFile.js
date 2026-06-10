@@ -1,5 +1,6 @@
 import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { createApiCoreSql } from "~/createApiCoreSql.js";
+import { getSqlTablePrefix } from "~/getSqlTablePrefix.js";
 import knexLib from "knex";
 
 const knex = knexLib({
@@ -12,9 +13,11 @@ const knex = knexLib({
 
 global.__testKnex = knex;
 
+const tableNamePrefix = getSqlTablePrefix();
+
 setStorageOps("apiCore", () => {
     return {
-        storageOperations: createApiCoreSql({ knex }),
+        storageOperations: createApiCoreSql({ knex, tableNamePrefix }),
         plugins: []
     };
 });

@@ -14,9 +14,11 @@ const knex = knexLib({
 
 global.__testKnex = knex;
 
+const tableNamePrefix = process.env.SQL_TABLE_PREFIX || process.env.WEBINY_SQL_TABLE_PREFIX || "";
+
 setStorageOps("cms", () => {
     const plugins = [
-        ...registerSqlStorageOperations({ knex }),
+        ...registerSqlStorageOperations({ knex, tableNamePrefix }),
         createCmsEntryFieldSortingPlugin({
             canUse: params => {
                 const { fieldId } = params;
