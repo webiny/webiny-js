@@ -3,7 +3,7 @@ import { useGqlHandler } from "../useGqlHandler";
 import { PARALLEL_QUERY, withoutAuthorizationFactory } from "../graphql/parallelQueries";
 
 describe("Security Parallel Queries", () => {
-    const { install, invoke } = useGqlHandler({ schemaFactories: [withoutAuthorizationFactory] });
+    const { install, invoke } = useGqlHandler({ plugins: [withoutAuthorizationFactory] });
 
     beforeEach(async () => {
         await install.install();

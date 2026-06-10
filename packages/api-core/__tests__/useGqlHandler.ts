@@ -49,7 +49,6 @@ import { LOGIN } from "./graphql/login";
 
 type UseGqlHandlerParams = {
     plugins?: any[];
-    schemaFactories?: any[];
 };
 
 export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
@@ -59,13 +58,8 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
         root: async container => {
             ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
 
-            // Register any extra GraphQL schema factories
-            for (const factory of opts.schemaFactories ?? []) {
-                container.register(factory);
-            }
-
-            // Apply any ContextPlugin instances from opts.plugins
-            // Provide a rich context so plugins can access security, tenancy, wcp, container
+            // Apply plugins — ContextPlugin instances get the legacy context applied,
+            // everything else is registered directly in the DI container
             const pluginContext = {
                 container,
                 security: new SecurityLegacyContext(container),
@@ -75,6 +69,8 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             for (const plugin of opts.plugins ?? []) {
                 if (plugin instanceof ContextPlugin) {
                     await plugin.apply(pluginContext as any);
+                } else {
+                    container.register(plugin);
                 }
             }
 
