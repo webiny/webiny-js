@@ -1,5 +1,5 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import type { SecurityContext } from "~/types";
+import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.public.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 
 export const PARALLEL_QUERY = /* GraphQL */ `
     query ParallelQueries {
@@ -19,31 +19,50 @@ export const PARALLEL_QUERY = /* GraphQL */ `
     }
 `;
 
-export const withoutAuthorizationPlugin = new GraphQLSchemaPlugin<SecurityContext>({
-    typeDefs: /* GraphQL*/ `
-        extend type Query {
-            withoutAuthorization: String!
-            withAuthorization: String!
-        }
-    `,
-    resolvers: {
-        Query: {
-            withoutAuthorization(_, args, context) {
-                return context.security.withoutAuthorization(async () => {
+class ParallelQueriesSchemaFactoryImpl {
+    async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
+        builder.addTypeDefs(/* GraphQL */ `
+            extend type Query {
+                withoutAuthorization: String!
+                withAuthorization: String!
+            }
+        `);
+
+        builder.addResolver({
+            path: "Query.withoutAuthorization",
+            dependencies: [],
+            resolver:
+                () =>
+                ({ context }: any) =>
+                    context.security.withoutAuthorization(async () => {
+                        const permissions =
+                            await context.security.getPermissions("security.apiKey");
+                        if (!permissions.length) {
+                            return "NOT_AUTHORIZED";
+                        }
+                        return "YOUR DATA!";
+                    })
+        });
+
+        builder.addResolver({
+            path: "Query.withAuthorization",
+            dependencies: [],
+            resolver:
+                () =>
+                async ({ context }: any) => {
                     const permissions = await context.security.getPermissions("security.apiKey");
                     if (!permissions.length) {
                         return "NOT_AUTHORIZED";
                     }
-                    return "YOUR DATA!";
-                });
-            },
-            async withAuthorization(_, args, context) {
-                const permissions = await context.security.getPermissions("security.apiKey");
-                if (!permissions.length) {
-                    return "NOT_AUTHORIZED";
+                    return "AUTHORIZED";
                 }
-                return "AUTHORIZED";
-            }
-        }
+        });
+
+        return builder;
     }
+}
+
+export const withoutAuthorizationFactory = GraphQLSchemaFactory.createImplementation({
+    implementation: ParallelQueriesSchemaFactoryImpl,
+    dependencies: []
 });

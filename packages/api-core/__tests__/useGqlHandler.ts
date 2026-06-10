@@ -7,9 +7,6 @@ import {
     HttpTenantIdExtractorImpl
 } from "@webiny/event-handler-core";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.public.js";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
 import { LegacyContext as SecurityLegacyContext } from "~/legacy/security/LegacyContext.js";
 import { LegacyContext as TenancyLegacyContext } from "~/legacy/tenancy/LegacyContext.js";
@@ -50,39 +47,9 @@ import {
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import { LOGIN } from "./graphql/login";
 
-class ExtraSchemaFactory {
-    constructor(private plugins: GraphQLSchemaPlugin[]) {}
-
-    async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
-        for (const plugin of this.plugins) {
-            const schema = plugin.schema;
-            if (schema.typeDefs) {
-                builder.addTypeDefs(schema.typeDefs);
-            }
-            if (schema.resolvers) {
-                for (const [type, resolvers] of Object.entries(
-                    schema.resolvers as Record<string, any>
-                )) {
-                    for (const [field, fn] of Object.entries(resolvers as Record<string, any>)) {
-                        const oldFn = fn as (...args: any[]) => any;
-                        builder.addResolver({
-                            path: `${type}.${field}`,
-                            dependencies: [],
-                            resolver:
-                                () =>
-                                ({ parent, args, context, info }: any) =>
-                                    oldFn(parent, args, context, info)
-                        });
-                    }
-                }
-            }
-        }
-        return builder;
-    }
-}
-
 type UseGqlHandlerParams = {
     plugins?: any[];
+    schemaFactories?: any[];
 };
 
 export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
@@ -92,15 +59,9 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
         root: async container => {
             ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
 
-            // Register any GraphQLSchemaPlugin instances from opts.plugins as a schema factory
-            const schemaPlugins = (opts.plugins ?? []).filter(
-                p => p instanceof GraphQLSchemaPlugin
-            ) as GraphQLSchemaPlugin[];
-            if (schemaPlugins.length > 0) {
-                container.registerFactory(
-                    GraphQLSchemaFactory,
-                    () => new ExtraSchemaFactory(schemaPlugins)
-                );
+            // Register any extra GraphQL schema factories
+            for (const factory of opts.schemaFactories ?? []) {
+                container.register(factory);
             }
 
             // Apply any ContextPlugin instances from opts.plugins

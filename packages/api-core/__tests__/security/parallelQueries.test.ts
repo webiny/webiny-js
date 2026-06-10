@@ -1,9 +1,9 @@
 import { describe, test, expect, beforeEach } from "vitest";
 import { useGqlHandler } from "../useGqlHandler";
-import { PARALLEL_QUERY, withoutAuthorizationPlugin } from "../graphql/parallelQueries";
+import { PARALLEL_QUERY, withoutAuthorizationFactory } from "../graphql/parallelQueries";
 
 describe("Security Parallel Queries", () => {
-    const { install, invoke } = useGqlHandler({ plugins: [withoutAuthorizationPlugin] });
+    const { install, invoke } = useGqlHandler({ schemaFactories: [withoutAuthorizationFactory] });
 
     beforeEach(async () => {
         await install.install();
