@@ -36,7 +36,6 @@
     "lodash": "^4.18.1"
   },
   "devDependencies": {
-    "@webiny/api-core-ddb": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
