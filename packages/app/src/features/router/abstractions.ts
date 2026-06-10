@@ -27,6 +27,7 @@ export interface IRouterPresenter {
         ...args: RouteParamsArgs<TParams>
     ): string;
     setRouteParams<T extends Record<string, any>>(cb: (params: T) => T): void;
+    replaceRouteParams<T extends Record<string, any>>(cb: (params: T) => T): void;
     addTransitionGuard(config: RouteTransitionGuardConfig): GuardDisposer;
     isTransitionBlocked(): boolean;
     unblockTransition(): void;
@@ -59,6 +60,11 @@ export interface IRouterRepository {
     getCurrentRoute(): Route<any> | undefined;
 
     goToRoute<TParams extends RouteParamsDefinition | undefined>(
+        route: Route<TParams>,
+        params: TParams extends RouteParamsDefinition ? RouteParamsInfer<TParams> : undefined
+    ): void;
+
+    replaceRoute<TParams extends RouteParamsDefinition | undefined>(
         route: Route<TParams>,
         params: TParams extends RouteParamsDefinition ? RouteParamsInfer<TParams> : undefined
     ): void;
@@ -101,7 +107,9 @@ export type TransitionController = {
 interface IRouterGateway {
     setRoutes(routes: RouteDefinition[]): void;
     goToRoute(name: string, params?: { [k: string]: any }): void;
+    replaceRoute(name: string, params?: { [k: string]: any }): void;
     pushState(url: string): void;
+    replaceState(url: string): void;
     addGuard(config: RouteTransitionGuardConfig): GuardDisposer;
     destroy(): void;
 }

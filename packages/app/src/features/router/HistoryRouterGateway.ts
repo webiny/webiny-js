@@ -47,6 +47,17 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
         this.history.push(RouteUrl.fromPattern(route.path, params, baseUrl));
     }
 
+    replaceRoute(name: string, params: z.ZodTypeAny): void {
+        const route = this.router.findRoute(name);
+        if (!route) {
+            console.warn(`Route "${name}" not found.`);
+            return;
+        }
+
+        const baseUrl = this.router.getBaseUrl();
+        this.history.replace(RouteUrl.fromPattern(route.path, params, baseUrl));
+    }
+
     setRoutes(routes: RouteDefinition[]) {
         this.router.setRoutes(routes);
 
@@ -65,6 +76,10 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
 
     pushState(url: string): void {
         this.history.push(url);
+    }
+
+    replaceState(url: string): void {
+        this.history.replace(url);
     }
 
     private async resolvePathname(pathname: string, queryParams?: Record<string, unknown>) {

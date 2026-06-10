@@ -3,18 +3,15 @@ import { observer } from "mobx-react-lite";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
-import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 import { BulkDeleteFeature } from "~/presentation/contentEntries/bulkActions/feature.js";
-import { BulkActionButton } from "@webiny/app-admin/components/BulkActions/index.js";
-
-const { useDialog } = ContentEntryListConfig.Browser.BulkAction;
+import { BulkActionButton, useBulkActionDialog } from "@webiny/app-admin/components/BulkActions/index.js";
 
 export const ActionDelete = observer(() => {
     const toast = useToast();
     const presenter = useContentEntriesPresenter();
+    const { showConfirmationDialog, showResultsDialog } = useBulkActionDialog();
     const { presenter: bulkDelete } = useFeature(BulkDeleteFeature);
-    const { showConfirmationDialog, showResultsDialog } = useDialog();
 
     const selection = presenter.list.vm.selection;
     const selectedItems = presenter.list.vm.rows.filter(row => {

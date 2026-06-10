@@ -58,6 +58,13 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
         this.gateway.goToRoute(route.name, params);
     }
 
+    replaceRoute<TParams extends RouteParamsDefinition | undefined>(
+        route: Route<TParams>,
+        params: TParams extends RouteParamsDefinition ? RouteParamsInfer<TParams> : undefined
+    ): void {
+        this.gateway.replaceRoute(route.name, params);
+    }
+
     addGuard(config: RouteTransitionGuardConfig): GuardDisposer {
         const gatewayGuard: RouteTransitionGuardConfig = {
             guard: () => {
@@ -144,10 +151,7 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
                 : matchedRoute.params;
 
         runInAction(() => {
-            Object.assign(this.currentRoute, {
-                ...matchedRoute,
-                params
-            });
+            this.currentRoute = { ...matchedRoute, params };
         });
     }
 

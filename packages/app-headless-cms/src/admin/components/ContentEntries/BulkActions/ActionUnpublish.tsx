@@ -1,10 +1,9 @@
 import React from "react";
-import { ReactComponent as UnpublishIcon } from "@webiny/icons/visibility_off.svg";
 import { observer } from "mobx-react-lite";
-import { Tooltip } from "@webiny/admin-ui";
+import { ReactComponent as UnpublishIcon } from "@webiny/icons/visibility_off.svg";
 import { useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
-import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
+import { BulkActionButton, useBulkActionDialog } from "@webiny/app-admin/components/BulkActions/index.js";
 import { usePermission } from "~/admin/hooks/index.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 import { BulkUnpublishFeature } from "~/presentation/contentEntries/bulkActions/feature.js";
@@ -14,27 +13,23 @@ export const ActionUnpublish = observer(() => {
     const presenter = useContentEntriesPresenter();
     const { presenter: bulkUnpublish } = useFeature(BulkUnpublishFeature);
     const toast = useToast();
+    const { showConfirmationDialog, showResultsDialog } = useBulkActionDialog();
 
-    const { useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
-    const { ButtonDefault } = useButtons();
-    const { showConfirmationDialog, showResultsDialog } = useDialog();
-
-    const entriesLabel = presenter.list.vm.selection.label;
-    const allSelected = presenter.list.vm.selection.allSelected;
+    const selection = presenter.list.vm.selection;
     const selectedItems = presenter.list.vm.rows.filter(row => {
-        return presenter.list.vm.selection.selectedIds.has(row.id);
+        return selection.selectedIds.has(row.id);
     });
 
     const openUnpublishEntriesDialog = () => {
         showConfirmationDialog({
             title: "Unpublish entries",
-            message: `You are about to unpublish ${entriesLabel}. Are you sure you want to continue?`,
-            loadingLabel: `Processing ${entriesLabel}`,
+            message: `You are about to unpublish ${selection.label}. Are you sure you want to continue?`,
+            loadingLabel: `Processing ${selection.label}`,
             execute: async () => {
-                await bulkUnpublish.execute(selectedItems, allSelected);
+                await bulkUnpublish.execute(selectedItems, selection.allSelected);
                 presenter.list.actions.selection.deselectAll();
 
-                if (allSelected) {
+                if (selection.allSelected) {
                     toast.showSuccessToast({
                         title: "Entries will be unpublished in the background",
                         description:
@@ -60,18 +55,11 @@ export const ActionUnpublish = observer(() => {
     }
 
     return (
-        <Tooltip
-            side={"bottom"}
-            content={`Unpublish ${entriesLabel}`}
-            trigger={
-                <ButtonDefault
-                    icon={<UnpublishIcon />}
-                    onAction={openUnpublishEntriesDialog}
-                    size={"sm"}
-                >
-                    {"Unpublish"}
-                </ButtonDefault>
-            }
+        <BulkActionButton
+            text="Unpublish"
+            tooltipContent={`Unpublish ${selection.label}`}
+            icon={<UnpublishIcon />}
+            onClick={openUnpublishEntriesDialog}
         />
     );
 });
