@@ -25,7 +25,7 @@
     "@webiny/api": "0.0.0",
     "@webiny/di": "^1.0.1",
     "@webiny/error": "0.0.0",
-    "@webiny/event-handler-core": "0.1.0",
+    "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/plugins": "0.0.0",
