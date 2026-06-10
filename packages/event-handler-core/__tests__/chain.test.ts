@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { executeChain } from "~/events/chain.js";
-import type { EventContext, IEventHandler } from "~/events/EventHandler.js";
-import type { NextFunction } from "~/events/types.js";
+import { executeChain } from "~/features/events/chain.js";
+import type { EventContext, IEventHandler } from "~/features/events/EventHandler.js";
+import type { NextFunction } from "~/features/events/types.js";
 
 const makeHandler = (
     fn: (ctx: EventContext, next: NextFunction) => Promise<any>

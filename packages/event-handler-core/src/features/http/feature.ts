@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
-import { HttpRouterImpl } from "~/http/HttpRouter.js";
-import { SecureHeadersDecorator } from "~/http/decorators/SecureHeadersDecorator.js";
+import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
+import { SecureHeadersDecorator } from "~/features/http/decorators/SecureHeadersDecorator.js";
 
 export const HttpFeature = createFeature({
     name: "Http",

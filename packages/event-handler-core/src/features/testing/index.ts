@@ -1,8 +1,8 @@
-import { HttpEventHandler } from "~/events/EventHandler.js";
-import { EventType } from "~/events/EventType.js";
-import { isHttpRequest } from "~/http/abstractions.js";
-import { createHandler } from "~/events/createHandler.js";
-import type { HandlerSetup, IHttpRequest, IHttpResponse } from "../index.js";
+import { HttpEventHandler } from "~/features/events/EventHandler.js";
+import { EventType } from "~/features/events/EventType.js";
+import { isHttpRequest } from "~/features/http/abstractions.js";
+import { createHandler } from "~/features/events/createHandler.js";
+import type { HandlerSetup, IHttpRequest, IHttpResponse } from "~/index.js";
 
 /**
  * EventType that recognizes IHttpRequest directly — no transport translation needed.

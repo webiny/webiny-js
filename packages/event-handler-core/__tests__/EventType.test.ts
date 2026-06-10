@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
-import { HttpEventHandler } from "~/events/EventHandler.js";
-import { EventType } from "~/events/EventType.js";
-import type { IEventType } from "~/events/EventType.js";
-import type { IEventHandler, EventContext } from "~/events/EventHandler.js";
-import type { NextFunction } from "~/events/types.js";
-import { createHandler } from "~/events/createHandler.js";
+import { HttpEventHandler } from "~/features/events/EventHandler.js";
+import { EventType } from "~/features/events/EventType.js";
+import type { IEventType } from "~/features/events/EventType.js";
+import type { IEventHandler, EventContext } from "~/features/events/EventHandler.js";
+import type { NextFunction } from "~/features/events/types.js";
+import { createHandler } from "~/features/events/createHandler.js";
 
 const makeEventType = (canHandle: (e: any) => boolean): IEventType => ({
     canHandle: (e): e is any => canHandle(e),

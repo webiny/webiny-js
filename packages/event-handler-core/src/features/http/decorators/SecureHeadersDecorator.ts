@@ -1,5 +1,5 @@
-import { HttpRouter } from "~/http/abstractions.js";
-import type { IHttpRouter, IHttpRequest, IHttpResponse } from "~/http/abstractions.js";
+import { HttpRouter } from "~/features/http/abstractions.js";
+import type { IHttpRouter, IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 
 const ALLOWED_HEADERS = [
     "accept",

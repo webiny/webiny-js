@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { executeChain } from "~/events/chain.js";
-import { ErrorHandler } from "~/http/handlers/ErrorHandler.js";
+import { executeChain } from "~/features/events/chain.js";
+import { ErrorHandler } from "~/features/http/handlers/ErrorHandler.js";
 import { Container } from "@webiny/di";
-import { HttpEventHandler } from "~/events/EventHandler.js";
-import type { IHttpRequest } from "~/http/abstractions.js";
+import { HttpEventHandler } from "~/features/events/EventHandler.js";
+import type { IHttpRequest } from "~/features/http/abstractions.js";
 
 const httpRequest: IHttpRequest = {
     method: "GET",

@@ -1,4 +1,4 @@
-import type { IEventHandler, EventContext } from "~/events/EventHandler.js";
+import type { IEventHandler, EventContext } from "~/features/events/EventHandler.js";
 
 export function executeChain(handlers: IEventHandler[], event: any): Promise<any> {
     if (handlers.length === 0) {
