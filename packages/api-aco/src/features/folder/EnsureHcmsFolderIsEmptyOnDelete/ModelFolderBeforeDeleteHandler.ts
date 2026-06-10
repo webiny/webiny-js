@@ -37,6 +37,10 @@ class ModelFolderBeforeDeleteHandlerImpl implements FolderBeforeDeleteEventHandl
                 },
                 limit: 1
             });
+            if (result.isFail()) {
+                console.error(result.error.message);
+                return true;
+            }
 
             const { entries } = result.value;
 

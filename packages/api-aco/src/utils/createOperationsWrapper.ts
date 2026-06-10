@@ -1,8 +1,11 @@
-import type { CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations.js";
+import type { HeadlessCms } from "@webiny/api-headless-cms/types/index.js";
+import type { Security } from "@webiny/api-core/types/security.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
 
-interface CreateOperationsWrapperParams extends CreateAcoStorageOperationsParams {
+interface CreateOperationsWrapperParams {
+    cms: HeadlessCms;
+    security: Security;
     modelName: string;
 }
 

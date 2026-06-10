@@ -33,7 +33,10 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
              * - update the FLP records for the found folder and all its descendants.
              */
             if (input.folderId) {
-                const result = await this.getFolder.execute(input.folderId!);
+                const result = await this.getFolder.execute(input.folderId);
+                if (result.isFail()) {
+                    return controller.response.error(result.error);
+                }
                 const folder = result.value;
 
                 await controller.task.trigger<IUpdateFlpTaskInput>({
@@ -75,6 +78,16 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
                             parentId: null
                         }
                     });
+                    if (result.isFail()) {
+                        await controller.logger.error({
+                            message: `Failed to list root folders for type ${folderType}`,
+                            data: {
+                                type: folderType,
+                                error: result.error
+                            }
+                        });
+                        continue;
+                    }
 
                     const { folders } = result.value;
 
@@ -113,6 +126,9 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
                         parentId: null
                     }
                 });
+                if (result.isFail()) {
+                    return controller.response.error(result.error);
+                }
 
                 const { folders } = result.value;
 

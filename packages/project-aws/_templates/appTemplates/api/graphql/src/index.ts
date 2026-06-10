@@ -12,10 +12,12 @@ import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-
 import { registerDynamoDbStorageOperations } from "@webiny/api-headless-cms-ddb";
 import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
 import { createAco } from "@webiny/api-aco";
+import { registerAcoDdbStorageOperations } from "@webiny/api-aco-ddb";
 import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
 import securityPlugins from "./security";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
 import { createAuditLogs } from "@webiny/api-audit-logs";
+import { registerAuditLogsDdbStorageOperations } from "@webiny/api-audit-logs-ddb";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
 import { createWebsockets } from "@webiny/api-websockets";
 import { createRecordLocking } from "@webiny/api-record-locking";
@@ -60,10 +62,14 @@ export const handler = createHandler({
         createFileManagerAco(),
         createAssetDelivery(),
         createFileManagerS3(),
-        createAco({ documentClient }),
+        registerAcoDdbStorageOperations({ documentClient }),
+        createAco(),
         createWorkflows(),
         createHeadlessCmsWorkflows(),
         createWebsiteBuilderWorkflows(),
+        registerAuditLogsDdbStorageOperations({
+            documentClient,
+        }),
         createAuditLogs(),
         createAcoHcmsContext(),
         createHcmsTasks(),

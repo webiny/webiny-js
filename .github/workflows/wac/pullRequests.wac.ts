@@ -14,7 +14,12 @@ import {
     createYarnCacheSteps,
     withCommonParams
 } from "./steps/index.js";
-import { AbstractStorageOps, DdbOsStorageOps, DdbStorageOps } from "./storageOps/index.js";
+import {
+    AbstractStorageOps,
+    DdbOsStorageOps,
+    DdbStorageOps,
+    SqlStorageOps
+} from "./storageOps/index.js";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ github.base_ref }}";
@@ -26,6 +31,7 @@ const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBI
 
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
+const sqlStorageOps = new SqlStorageOps();
 
 const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     const jobNames = {
@@ -388,6 +394,7 @@ export const pullRequests = createWorkflow({
         }),
         ...createVitestTestsJobs(),
         ...createVitestTestsJobs(ddbStorageOps),
-        ...createVitestTestsJobs(ddbOsStorageOps)
+        ...createVitestTestsJobs(ddbOsStorageOps),
+        ...createVitestTestsJobs(sqlStorageOps)
     }
 });

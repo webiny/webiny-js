@@ -584,3 +584,88 @@ jobs:
         working-directory: ${{ github.base_ref }}
     permissions:
       id-token: write
+  vitest-sql-constants:
+    needs:
+      - constants
+      - build
+    name: Vitest (SQL) - Constants
+    outputs:
+      vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - uses: actions/checkout@v5
+        with:
+          path: ${{ github.base_ref }}
+      - id: list-vitest-test-commands
+        name: List Vitest Test Commands
+        working-directory: ${{ github.base_ref }}
+        run: >-
+          echo "vitest-test-commands=$(node
+          .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
+          '["sql,ddb", ${{ needs.constants.outputs.changed-packages }}]')" >>
+          "$GITHUB_OUTPUT"
+      - name: Packages to test with Vitest
+        id: list-packages
+        run: >-
+          echo '${{ steps.list-vitest-test-commands.outputs.vitest-test-commands
+          }}'
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  vitest-sql-run:
+    needs:
+      - constants
+      - build
+      - vitest-sql-constants
+    name: ${{ matrix.testCommand.title }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        node:
+          - 24
+        testCommand: >-
+          ${{ fromJSON(needs.vitest-sql-constants.outputs.vitest-test-commands)
+          }}
+    runs-on: ${{ matrix.os }}
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_REGION: eu-central-1
+      WEBINY_STORAGE: sql,ddb
+    if: needs.vitest-sql-constants.outputs.vitest-test-commands != '[]'
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
+      - uses: actions/checkout@v5
+        with:
+          path: ${{ github.base_ref }}
+      - uses: actions/cache@v5
+        with:
+          path: ${{ github.base_ref }}/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v5
+        with:
+          path: ${{ github.base_ref }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
+      - name: Build packages
+        run: yarn build
+        working-directory: ${{ github.base_ref }}
+      - name: Run tests
+        run: ${{ matrix.testCommand.cmd }}
+        working-directory: ${{ github.base_ref }}
+    permissions:
+      id-token: write

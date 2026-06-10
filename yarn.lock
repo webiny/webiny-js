@@ -11340,19 +11340,50 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-aco-ddb@workspace:packages/api-aco-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-aco-ddb@workspace:packages/api-aco-ddb"
+  dependencies:
+    "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:6.0.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-aco-sql@workspace:packages/api-aco-sql":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-aco-sql@workspace:packages/api-aco-sql"
+  dependencies:
+    "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    better-sqlite3: "npm:^12.10.0"
+    knex: "npm:^3.2.10"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:6.0.3"
+    vitest: "npm:^4.1.8"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-aco@npm:0.0.0, @webiny/api-aco@workspace:packages/api-aco":
   version: 0.0.0-use.local
   resolution: "@webiny/api-aco@workspace:packages/api-aco"
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
@@ -11373,6 +11404,41 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-audit-logs-ddb@workspace:packages/api-audit-logs-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-audit-logs-ddb@workspace:packages/api-audit-logs-ddb"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:6.0.3"
+    zod: "npm:4.4.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-audit-logs-sql@workspace:packages/api-audit-logs-sql":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-audit-logs-sql@workspace:packages/api-audit-logs-sql"
+  dependencies:
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-core-sql": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    better-sqlite3: "npm:^12.10.0"
+    knex: "npm:^3.2.10"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:6.0.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-audit-logs@npm:0.0.0, @webiny/api-audit-logs@workspace:packages/api-audit-logs":
   version: 0.0.0-use.local
   resolution: "@webiny/api-audit-logs@workspace:packages/api-audit-logs"
@@ -11384,10 +11450,8 @@ __metadata:
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/common-audit-logs": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -11448,7 +11512,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-core-sql@workspace:packages/api-core-sql":
+"@webiny/api-core-sql@npm:0.0.0, @webiny/api-core-sql@workspace:packages/api-core-sql":
   version: 0.0.0-use.local
   resolution: "@webiny/api-core-sql@workspace:packages/api-core-sql"
   dependencies:

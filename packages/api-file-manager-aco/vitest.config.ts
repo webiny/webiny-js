@@ -5,7 +5,8 @@ export default async () => {
     const presets = await getPresets(
         ["@webiny/api-core", "storage-operations"],
         ["@webiny/api-headless-cms", "storage-operations"],
-        ["@webiny/api-file-manager", "storage-operations"]
+        ["@webiny/api-file-manager", "storage-operations"],
+        ["@webiny/api-aco", "storage-operations"]
     );
 
     return createTestConfig({ path: import.meta.dirname, presets });
