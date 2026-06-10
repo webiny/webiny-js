@@ -17,7 +17,7 @@ const TenantName = ({ tenant }: TenantNameProps) => {
     const { getLink } = useRouter();
 
     const url = getLink(Routes.ContentEntries.List, {
-        modelId: presenter.vm.model?.modelId ?? "",
+        modelId: presenter.vm.model.modelId,
         folderId: presenter.folders.vm.currentFolderId ?? undefined,
         id: tenant.id
     });

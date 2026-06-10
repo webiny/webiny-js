@@ -28,10 +28,12 @@ Durable decisions that apply across all phases:
 All content entry Gateway/Repository/UseCase features under `packages/app-headless-cms/src/features/contentEntry/`. Each feature has: `abstractions.ts`, Gateway implementation, Repository implementation, UseCase implementation, `feature.ts`.
 
 Shared infrastructure:
+
 - `ContentEntriesListCache` — singleton `ListCache<ContentEntry>` shared across all CRUD features
 - `ContentEntryFieldsProvider` — derives GraphQL field selection strings from a `CmsModel` definition
 
 CRUD features (each updates the shared cache appropriately):
+
 - `getEntry` — fetches single entry, updates cache item
 - `listEntries` — paginated list, populates cache
 - `createEntry` — creates entry, adds to cache
@@ -43,10 +45,12 @@ CRUD features (each updates the shared cache appropriately):
 - `listRevisions` — lists revisions of an entry (standalone, no shared cache)
 
 Singleton features (no shared cache):
+
 - `getSingletonEntry` — fetches singleton entry
 - `updateSingletonEntry` — updates singleton entry
 
 Bulk action features (batch cache operations):
+
 - `bulkPublish` — publishes multiple entries, batch cache status update
 - `bulkUnpublish` — unpublishes multiple entries, batch cache status update
 - `bulkMove` — moves entries to folder, batch cache location update
@@ -87,6 +91,7 @@ The mapping layer that converts any `CmsModel` into a `FormModelConfig` for `For
 **CmsRefFieldType** — new `IFieldTypeFactory` for reference fields. Stores ref config (allowed models) in `rendererSettings`. Value shape: `{ id, modelId }` or array.
 
 **Reference field renderers** — 6 renderers ported from CMS plugin format to `createFieldRenderer()`:
+
 - Autocomplete single/multi
 - Simple (radio/checkbox) single/multi
 - Detailed (card) single/multi
@@ -118,6 +123,7 @@ The mapping layer that converts any `CmsModel` into a `FormModelConfig` for `For
 MobX-based presenters that compose features and expose observable ViewModels. No React, no routes, no UI — pure state machines.
 
 **ContentEntriesPresenter** (list):
+
 - Composes `ListPresenter<ContentEntry>` (from `app-admin`) + `FolderTreePresenter` (from `app-aco`)
 - `ContentEntriesDataSource` implements `IDataSource<ContentEntry>`, bridges ListPresenter's query interface to `ListEntriesUseCase`. Handles CMS-specific where-clause building (folder filtering, search, sort).
 - Init: `presenter.init({ modelId, initialFolderId? })` — loads model, sets up data source, initializes child presenters
@@ -127,6 +133,7 @@ MobX-based presenters that compose features and expose observable ViewModels. No
 - Dispose: cleans up MobX reactions
 
 **ContentEntryFormPresenter** (form):
+
 - Owned by the list presenter (or standalone for direct entry editing)
 - Loads or creates entry via UseCases
 - Constructs FormModel from CmsModel via `CmsFormModelBuilder`, populates with entry data
@@ -136,6 +143,7 @@ MobX-based presenters that compose features and expose observable ViewModels. No
 - Navigation guard support
 
 **SingletonEntryPresenter**:
+
 - Simplified form presenter — no revisions, no create/delete
 - Auto-loads singleton entry on init
 - VM: `{ loading, saving, form (IFormVM), canSave, isDirty }`
@@ -170,6 +178,7 @@ MobX-based presenters that compose features and expose observable ViewModels. No
 React observer components that mount presenters and render UI. This is where the scoped DI container is created, features are registered, and the presenter lifecycle is managed.
 
 **ContentEntriesView**:
+
 - Accepts `modelId` prop (+ optional `urlSync` adapter)
 - Creates scoped child container via `useContainer().createChildContainer()`
 - Registers all features: SharedCacheFeature, FoldersFeature, FolderTreePresenterFeature, all CRUD features, bulk features, ContentEntriesPresenterFeature
@@ -179,20 +188,24 @@ React observer components that mount presenters and render UI. This is where the
 - Reads from `ContentEntryListConfig` / `ContentEntryEditorConfig` for configurable components (table columns, actions, filters, etc.)
 
 **ContentEntryFormView**:
+
 - Renders `<FormView form={vm.form} />` from `app-admin`
 - Header/action bar driven by presenter VM (save, publish, unpublish, delete buttons)
 - Tab switching: Content tab (FormView) / Revisions tab (revision list)
 - Revision selector in header
 
 **SingletonEntryView**:
+
 - Simplified form view — no tabs, no revision management
 - Save button from presenter VM
 
 **URL sync adapter** (for default CMS route):
+
 - Thin bidirectional bridge: presenter `selectedEntryId` ↔ URL `entryId` param, presenter `folderId` ↔ URL `folderId` param
 - Not used when mounting on custom routes
 
 **Configurable component integration**:
+
 - `ContentEntryListConfig` provides table columns, bulk actions, filters, folder actions, entry actions
 - `ContentEntryEditorConfig` provides header actions, validation indicators
 - Views read from config context and render accordingly
@@ -227,22 +240,26 @@ The config-registered table cells, entry actions, and bulk actions in `ContentEn
 **Components to migrate:**
 
 Table cells (`admin/components/ContentEntries/Table/Cells/`):
+
 - `CellName` — uses `useNavigateFolder`, `useContentEntriesList` (for `getEntryEditUrl`)
 - Other cells (`CellAuthor`, `CellCreated`, `CellModified`, `CellStatus`, `CellLive`, `CellActions`) — check each for old hook usage
 
 Table entry actions (`admin/components/ContentEntries/Table/Actions/`):
+
 - `EditEntry` — uses `useContentEntriesList`
 - `ChangeEntryStatus` — uses `useContentEntry`
 - `DeleteEntry` — uses `useContentEntry`
 - `MoveEntry` — likely uses `useRecords` / `useMoveToFolderDialog`
 
 Bulk actions (`admin/components/ContentEntries/BulkActions/`):
+
 - `ActionPublish` — uses `useRecords` (`updateRecordInCache`)
 - `ActionUnpublish` — uses `useRecords` (`updateRecordInCache`)
 - `ActionMove` — uses `useRecords` (`moveRecord`), `useNavigateFolder`, `useMoveToFolderDialog`
 - `ActionDelete` — uses `useRecords` (`removeRecordFromCache`)
 
 **Migration strategy:**
+
 - Replace `useRecords().updateRecordInCache` / `removeRecordFromCache` / `moveRecord` with presenter actions (cache is now managed by the feature layer automatically)
 - Replace `useNavigateFolder()` with `useContentEntriesPresenter().actions.folders.selectFolder`
 - Replace `useContentEntriesList()` with `useContentEntriesPresenter()`
@@ -272,6 +289,7 @@ Bulk actions (`admin/components/ContentEntries/BulkActions/`):
 Remove all old code that has been replaced by the new architecture. Verify no regressions.
 
 Files to delete:
+
 - Old context providers: `ContentEntryContext.tsx`, `SingletonContentEntryContext.tsx`, `ContentEntriesContext.tsx`
 - Old hooks: `useContentEntriesList.tsx`, `useContentEntry.ts`, `useSingletonContentEntry.ts`
 - Old form stack: `ContentEntryFormProvider.tsx`, `DefaultLayout.tsx`
@@ -279,6 +297,7 @@ Files to delete:
 - Apollo wrapper hooks: `useApolloClient.ts`, `useQuery.ts`, `useMutation.ts` (if no other consumers remain)
 
 Files to keep with updated imports:
+
 - `ContentEntriesModule.tsx` — configurable component registrations
 - Config system (`ContentEntryListConfig`, `ContentEntryEditorConfig`)
 - `FullScreenContentEntry` — rewired to form presenter

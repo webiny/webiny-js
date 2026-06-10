@@ -3,7 +3,9 @@ import { ConfirmationDialog } from "@webiny/app-admin/components/ConfirmationDia
 import { useNamedConfirmationDialog } from "@webiny/app-admin";
 
 export const DeleteRevisionConfirmDialog = () => {
-    const { onConfirm, onCancel, closeDialog } = useNamedConfirmationDialog<{ revisionId: string }>();
+    const { onConfirm, onCancel, closeDialog } = useNamedConfirmationDialog<{
+        revisionId: string;
+    }>();
 
     return (
         <ConfirmationDialog

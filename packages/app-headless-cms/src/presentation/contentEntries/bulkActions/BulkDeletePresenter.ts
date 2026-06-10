@@ -29,7 +29,6 @@ class BulkDeletePresenterImpl implements Abstraction.Interface {
         });
     }
 
-
     private async deleteItem(item: CmsContentEntry, report: Report): Promise<void> {
         const model = this.modelAccessor.getModel();
         const { id } = parseIdentifier(item.id);

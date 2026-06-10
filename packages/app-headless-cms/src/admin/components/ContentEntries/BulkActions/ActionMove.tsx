@@ -5,7 +5,10 @@ import { useMoveToFolderDialog } from "@webiny/app-aco";
 import type { NodeDto } from "@webiny/admin-ui";
 import { useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
-import { BulkActionButton, useBulkActionDialog } from "@webiny/app-admin/components/BulkActions/index.js";
+import {
+    BulkActionButton,
+    useBulkActionDialog
+} from "@webiny/app-admin/components/BulkActions/index.js";
 import { ROOT_FOLDER } from "~/admin/constants.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 import { BulkMoveFeature } from "~/presentation/contentEntries/bulkActions/feature.js";

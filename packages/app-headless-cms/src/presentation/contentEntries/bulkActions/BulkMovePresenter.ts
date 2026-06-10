@@ -28,7 +28,6 @@ class BulkMovePresenterImpl implements Abstraction.Interface {
         });
     }
 
-
     private async moveItem(item: CmsContentEntry, report: Report, folderId: string): Promise<void> {
         const model = this.modelAccessor.getModel();
         await this.moveEntryUseCase.execute({ model, id: item.id, folderId });

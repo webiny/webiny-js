@@ -166,7 +166,11 @@ const TrashBinOverlayContent = observer(
         return (
             <OverlayLayout
                 onExited={onExited}
-                barLeft={<Heading level={5} className={"text-neutral-primary"}>{title}</Heading>}
+                barLeft={
+                    <Heading level={5} className={"text-neutral-primary"}>
+                        {title}
+                    </Heading>
+                }
                 barMiddle={<SearchInput />}
             >
                 <BulkActionsBar />

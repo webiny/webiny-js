@@ -15,7 +15,12 @@ interface ModelLoaderProps {
     syncToUrl?: boolean;
 }
 
-export const ModelLoader = ({ modelId, initialFolderId, initialSearch, syncToUrl }: ModelLoaderProps) => {
+export const ModelLoader = ({
+    modelId,
+    initialFolderId,
+    initialSearch,
+    syncToUrl
+}: ModelLoaderProps) => {
     const [model, setModel] = useState<CmsModel | null>(null);
     const [error, setError] = useState<string | null>(null);
     const container = useContainer();

@@ -36,7 +36,7 @@ function wrapUserFields(where: Record<string, unknown>): Record<string, unknown>
 export const CmsAdvancedSearch = observer(() => {
     const presenter = useContentEntriesPresenter();
     const { browser } = useContentEntryListConfig();
-    const model = presenter.vm.model!;
+    const model = presenter.vm.model;
     const fields = useMemo(() => FieldsMapper.toRaw(model), [model]);
     const repository = useFilterRepository(`cms:${model.modelId}`);
 

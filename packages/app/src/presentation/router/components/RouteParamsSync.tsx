@@ -43,18 +43,21 @@ export function RouteParamsSync<TParams extends RouteParamsDefinition | undefine
     const fields = buildFields(fieldBuilder);
 
     // URL → State: apply route params to presenter state on browser navigation.
-    useEffect(() => {
-        syncingFromUrl.current = true;
+    useEffect(
+        () => {
+            syncingFromUrl.current = true;
 
-        for (const field of fields) {
-            const urlValue = (route.params as Record<string, unknown>)[field.param];
-            field.write(urlValue);
-        }
+            for (const field of fields) {
+                const urlValue = (route.params as Record<string, unknown>)[field.param];
+                field.write(urlValue);
+            }
 
-        queueMicrotask(() => {
-            syncingFromUrl.current = false;
-        });
-    }, fields.map(f => (route.params as Record<string, unknown>)[f.param]));
+            queueMicrotask(() => {
+                syncingFromUrl.current = false;
+            });
+        },
+        fields.map(f => (route.params as Record<string, unknown>)[f.param])
+    );
 
     // State → URL: when MobX observable values change, update route params.
     useEffect(() => {

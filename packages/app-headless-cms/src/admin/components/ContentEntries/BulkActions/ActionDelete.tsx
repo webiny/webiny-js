@@ -5,7 +5,10 @@ import { useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 import { BulkDeleteFeature } from "~/presentation/contentEntries/bulkActions/feature.js";
-import { BulkActionButton, useBulkActionDialog } from "@webiny/app-admin/components/BulkActions/index.js";
+import {
+    BulkActionButton,
+    useBulkActionDialog
+} from "@webiny/app-admin/components/BulkActions/index.js";
 
 export const ActionDelete = observer(() => {
     const toast = useToast();

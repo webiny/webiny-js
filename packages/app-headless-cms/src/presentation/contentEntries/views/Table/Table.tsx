@@ -11,14 +11,12 @@ export const Table = observer(() => {
     const { browser } = useContentEntryListConfig();
 
     const tableProps = useListViewTableProps({
-        namespace: `cms/${presenter.vm.model!.modelId}/list`,
+        namespace: `cms/${presenter.vm.model.modelId}/list`,
         nameColumnId: "name"
     });
 
     const data = useMemo<TableRow[]>(() => {
-        const entryRows = presenter.list.vm.rows.map(entry =>
-            TableRowMapper.fromEntry(entry)
-        );
+        const entryRows = presenter.list.vm.rows.map(entry => TableRowMapper.fromEntry(entry));
 
         if (!presenter.vm.showFolders) {
             return entryRows;
@@ -28,11 +26,7 @@ export const Table = observer(() => {
             TableRowMapper.fromFolder(f)
         );
         return [...folderRows, ...entryRows];
-    }, [
-        presenter.list.vm.rows,
-        presenter.folders.vm.childFolders,
-        presenter.vm.showFolders
-    ]);
+    }, [presenter.list.vm.rows, presenter.folders.vm.childFolders, presenter.vm.showFolders]);
 
     const selected = useMemo<TableRow[]>(() => {
         return data.filter(row => tableProps.selectedIds.has(row.id));

@@ -46,7 +46,11 @@ export const RouteParamsSync = ({ modelId }: RouteParamsSyncProps) => {
                     write: value => {
                         if (value && presenter.vm.selectedEntryId !== value) {
                             presenter.selectEntry(value);
-                        } else if (!value && presenter.vm.selectedEntryId !== null && presenter.vm.selectedEntryId !== "new") {
+                        } else if (
+                            !value &&
+                            presenter.vm.selectedEntryId !== null &&
+                            presenter.vm.selectedEntryId !== "new"
+                        ) {
                             presenter.deselectEntry();
                         }
                     }

@@ -16,10 +16,6 @@ import { CmsAdvancedSearch } from "./CmsAdvancedSearch.js";
 export const ContentEntriesListLayout = observer(() => {
     const presenter = useContentEntriesPresenter();
 
-    if (!presenter.vm.model) {
-        return null;
-    }
-
     if (presenter.vm.showingEntry) {
         return <ContentEntryFormView />;
     }
@@ -34,8 +30,7 @@ const DocumentList = observer(() => {
 
     const folderId = presenter.folders.vm.currentFolderId ?? "root";
     const isRoot = folderId === "root";
-    const hasFolders =
-        presenter.vm.showFolders && presenter.folders.vm.childFolders.length > 0;
+    const hasFolders = presenter.vm.showFolders && presenter.folders.vm.childFolders.length > 0;
 
     const onCreateFolder = useCallback(() => {
         showCreateFolderDialog({ currentParentId: folderId });
@@ -49,7 +44,7 @@ const DocumentList = observer(() => {
         <ListView
             list={presenter.list.vm}
             actions={presenter.list.actions}
-            namespace={`cms/${presenter.vm.model!.modelId}/list`}
+            namespace={`cms/${presenter.vm.model.modelId}/list`}
             showingFilters={presenter.list.vm.showingFilters}
             onToggleFilters={() => {
                 presenter.list.vm.showingFilters
@@ -57,7 +52,7 @@ const DocumentList = observer(() => {
                     : presenter.list.actions.filter.show();
             }}
             sidebar={
-                <ListView.Sidebar title={presenter.vm.model!.name}>
+                <ListView.Sidebar title={presenter.vm.model.name}>
                     <ListView.Sidebar.Section grow>
                         <FolderTree
                             vm={presenter.folders.vm}
@@ -76,9 +71,7 @@ const DocumentList = observer(() => {
                 <ListView.Header
                     title={{
                         icon: isRoot ? <HomeIcon /> : <FolderIcon />,
-                        text: isRoot
-                            ? "Home"
-                            : presenter.folders.vm.currentFolderTitle
+                        text: isRoot ? "Home" : presenter.folders.vm.currentFolderTitle
                     }}
                     search
                     filtersToggle
@@ -98,14 +91,9 @@ const DocumentList = observer(() => {
                     }
                 />
             }
-            bulkActions={
-                <ListView.BulkActions itemLabel="entry" actions={browser.bulkActions} />
-            }
+            bulkActions={<ListView.BulkActions itemLabel="entry" actions={browser.bulkActions} />}
             filters={
-                <ListView.Filters
-                    filters={browser.filters}
-                    filtersToWhere={browser.filtersToWhere}
-                >
+                <ListView.Filters filters={browser.filters} filtersToWhere={browser.filtersToWhere}>
                     <CmsAdvancedSearch />
                 </ListView.Filters>
             }

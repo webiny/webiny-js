@@ -5,6 +5,7 @@
 The current `@webiny/app-trash-bin` package reinvents list management (12 use cases, 11 controllers, 6 repositories) that `ListPresenter` already handles generically. The goal is to rebuild TrashBin as a lean presentation feature in `app-admin` using the existing DI/feature patterns, then wire CMS to use it. Website Builder stays on the old package for now.
 
 The TrashBin reduces to:
+
 - `ListPresenter<TrashBinItem>` + `IDataSource` for listing
 - Restore, delete, bulk action gateways (abstractions in app-admin, CMS implementations)
 - An overlay component composing `ListView` + `OverlayLayout`, with configurable columns/actions
@@ -47,6 +48,7 @@ Follow the pattern from `listPresenter/abstractions.ts`: interface + `createAbst
 ### 1.2 TrashBinDataSource (`presentation/trashBin/TrashBinDataSource.ts`)
 
 Implements `IDataSource<TrashBinItem>`. Bridges the `TrashBinListGateway` + `TrashBinItemMapper` to `IDataSource`:
+
 - `query(params)` → calls list gateway, maps results through item mapper, stores rows + meta
 - `loadMore(params)` → same with cursor
 - MobX observables for `rows`, `meta`, `loading`
@@ -57,6 +59,7 @@ Follow the `ContentEntriesDataSource` pattern exactly.
 ### 1.3 TrashBinPresenter (`presentation/trashBin/TrashBinPresenter.ts`)
 
 MobX presenter composing `ListPresenter<TrashBinItem>`:
+
 - **All dependencies injected via DI constructor**: `ListPresenter`, `TrashBinListGateway`, `TrashBinDeleteGateway`, `TrashBinRestoreGateway`, `TrashBinBulkActionGateway`, `TrashBinItemMapper`
 - `init(config: { title, nameColumnId, initialSort? })` — creates `TrashBinDataSource` (using the injected list gateway + item mapper), calls `listPresenter.init({ dataSource })`
 - `dispose()` — cleanup
@@ -92,6 +95,7 @@ export const TrashBinFeature = createFeature({
 Structure in `presentation/trashBin/`:
 
 **`TrashBinOverlay.tsx`** — the main overlay component:
+
 - Wraps `OverlayLayout` (for modal shell) containing a `ListView` (for list UI)
 - Passes `presenter.vm.list` and `presenter.actions` to ListView
 - ListView.Header: title + search
@@ -100,23 +104,28 @@ Structure in `presentation/trashBin/`:
 - ListView.BottomBar: meta + loading status
 
 **`TrashBinTable.tsx`** — custom table rendering:
+
 - Uses `DataTable` from `@webiny/admin-ui` (or ACO Table)
 - Defines columns: name, author (createdBy), deleted by, deleted on, actions
 - Wires sorting/selection via `useListViewTableProps()`
 
 **Only genuinely new cell components** (port from app-trash-bin, these have trash-bin-specific rendering):
+
 - `cells/CellDeletedBy.tsx` — renders deletedBy user info
 - `cells/CellDeletedOn.tsx` — renders deletedOn date
 
 **Only genuinely new action components**:
+
 - `actions/RestoreItemAction.tsx` — restore button per row
 - `actions/DeleteItemAction.tsx` — permanent delete button per row
 
 **Config system** (port from app-trash-bin — this IS genuinely new, ListView doesn't have configurable columns):
+
 - `configs/TrashBinListConfig.tsx` — `createConfigurableComponent` based config for columns/actions
 - `configs/Browser/` — Column, Sorting, BulkAction, EntryAction config primitives
 
 **`TrashBinConfigs.tsx`** — default column/action config (registered in Admin.tsx):
+
 - Registers standard columns (name, createdBy, deletedBy, deletedOn, actions)
 - Registers standard bulk actions (restore, delete)
 - Registers standard entry actions (restore, delete)
@@ -124,6 +133,7 @@ Structure in `presentation/trashBin/`:
 **`useTrashBin.tsx`** — context hook providing presenter vm + actions to descendant components
 
 **NOT ported** (already provided by ListView):
+
 - SearchInput → ListView.Header has built-in search
 - BulkActions shell → ListView.BulkActions
 - BottomInfoBar, ListMeta, ListStatus → ListView.BottomBar
@@ -146,27 +156,33 @@ Create DI-based gateway implementations. Each uses `CmsGraphQLClient` (not Apoll
 **`abstractions.ts`** — CMS-specific params/result types + abstraction re-exports
 
 **`CmsTrashBinListGateway.ts`**:
+
 - Depends on: `CmsGraphQLClient`
 - `execute(params)` → calls `client.execute()` with `createListQuery(model, fields, true)`
 - Takes `model` in params (like `ListEntriesGateway` pattern)
 - Filters fields to: text, number, boolean, file, long-text, ref, datetime
 
 **`CmsTrashBinDeleteGateway.ts`**:
+
 - Depends on: `CmsGraphQLClient`
 - `execute(params: { model, id })` → `createDeleteMutation(model)` with `permanently: true`
 
 **`CmsTrashBinRestoreGateway.ts`**:
+
 - Depends on: `CmsGraphQLClient`
 - `execute(params: { model, id })` → `createRestoreFromBinMutation(model)`
 
 **`CmsTrashBinBulkActionGateway.ts`**:
+
 - Depends on: `CmsGraphQLClient`
 - `execute(params: { model, action, where?, search? })` → `createBulkActionMutation(model)`
 
 **`CmsTrashBinItemMapper.ts`**:
+
 - Maps `CmsContentEntry` → `TrashBinItem` (id=entryId, title=meta.title, etc.)
 
 **`CmsTrashBinDataSource.ts`**:
+
 - Extends the generic `TrashBinDataSource` concept but holds `CmsModel`
 - Calls `CmsTrashBinListGateway` with model in params
 - Maps results through `CmsTrashBinItemMapper`
@@ -191,11 +207,13 @@ export const CmsTrashBinFeature = createFeature({
 ### 2.3 Register in ContentEntryFeature
 
 File: `packages/app-headless-cms/src/features/contentEntry/feature.ts`
+
 - Add `CmsTrashBinFeature.register(container)` alongside existing sub-features
 
 ### 2.4 CMS TrashBin Presenter Wrapper
 
 A thin CMS-specific component or hook that:
+
 1. Resolves `TrashBinPresenter` from DI via `useFeature(TrashBinFeature)` — all gateways + mapper are already injected via constructor
 2. On mount, calls `presenter.init({ title: "Trash - {model.name}", nameColumnId: model.titleFieldId })` — config only, no dependencies
 3. On unmount, calls `presenter.dispose()`
@@ -213,6 +231,7 @@ Note: The CMS list gateway needs the `CmsModel` to build queries. The gateway's 
 File: `packages/app-headless-cms/src/presentation/contentEntries/views/ContentEntriesView.tsx`
 
 Add to scoped container setup:
+
 ```typescript
 CmsTrashBinFeature.register(child);
 ```
@@ -224,6 +243,7 @@ CmsTrashBinFeature.register(child);
 File: `packages/app-headless-cms/src/admin/components/ContentEntries/SidebarFooter/SidebarFooter.tsx`
 
 Uncomment and update:
+
 - Import the new `TrashBinOverlay` from `@webiny/app-admin/presentation/trashBin/`
 - Import `TrashBinButton` (port from existing or inline)
 - Use `useState` for open/close
@@ -234,10 +254,13 @@ Uncomment and update:
 File: `packages/app-serverless-cms/src/Admin.tsx`
 
 Change:
+
 ```typescript
 import { TrashBinConfigs } from "@webiny/app-trash-bin";
 ```
+
 To:
+
 ```typescript
 import { TrashBinConfigs } from "@webiny/app-admin/presentation/trashBin/index.js";
 ```
@@ -260,21 +283,21 @@ Delete entire directory: `packages/app-headless-cms/src/admin/components/Content
 
 ## Critical Existing Code to Reuse
 
-| What | Where |
-|------|-------|
-| `ListPresenter` + `IDataSource` | `app-admin/src/presentation/listPresenter/` |
-| `ListView` + `OverlayLayout` | `app-admin/src/components/` |
-| `useListViewTableProps()` | `app-admin/src/components/ListView/` |
-| `createAbstraction`, `createFeature` | `@webiny/feature/admin` |
-| `CmsGraphQLClient` | `app-headless-cms/src/features/graphQLClient/` |
-| `createListQuery(model, fields, deleted)` | `@webiny/app-headless-cms-common` |
-| `createDeleteMutation(model)` | `@webiny/app-headless-cms-common` |
-| `createRestoreFromBinMutation(model)` | `@webiny/app-headless-cms-common` |
-| `createBulkActionMutation(model)` | `@webiny/app-headless-cms-common` |
-| `ContentEntriesDataSource` pattern | `app-headless-cms/src/presentation/contentEntries/list/` |
-| `ContentEntriesPresenter` pattern | `app-headless-cms/src/presentation/contentEntries/list/` |
-| Existing trash bin cell/action components | `app-trash-bin/src/Presentation/` (port only unique ones) |
-| Existing CMS gateway adapters | `app-headless-cms/src/admin/components/ContentEntries/TrashBin/adapters/` (reference for logic) |
+| What                                      | Where                                                                                           |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `ListPresenter` + `IDataSource`           | `app-admin/src/presentation/listPresenter/`                                                     |
+| `ListView` + `OverlayLayout`              | `app-admin/src/components/`                                                                     |
+| `useListViewTableProps()`                 | `app-admin/src/components/ListView/`                                                            |
+| `createAbstraction`, `createFeature`      | `@webiny/feature/admin`                                                                         |
+| `CmsGraphQLClient`                        | `app-headless-cms/src/features/graphQLClient/`                                                  |
+| `createListQuery(model, fields, deleted)` | `@webiny/app-headless-cms-common`                                                               |
+| `createDeleteMutation(model)`             | `@webiny/app-headless-cms-common`                                                               |
+| `createRestoreFromBinMutation(model)`     | `@webiny/app-headless-cms-common`                                                               |
+| `createBulkActionMutation(model)`         | `@webiny/app-headless-cms-common`                                                               |
+| `ContentEntriesDataSource` pattern        | `app-headless-cms/src/presentation/contentEntries/list/`                                        |
+| `ContentEntriesPresenter` pattern         | `app-headless-cms/src/presentation/contentEntries/list/`                                        |
+| Existing trash bin cell/action components | `app-trash-bin/src/Presentation/` (port only unique ones)                                       |
+| Existing CMS gateway adapters             | `app-headless-cms/src/admin/components/ContentEntries/TrashBin/adapters/` (reference for logic) |
 
 ## Verification
 

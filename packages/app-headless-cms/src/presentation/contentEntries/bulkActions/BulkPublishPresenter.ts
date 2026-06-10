@@ -28,7 +28,6 @@ class BulkPublishPresenterImpl implements Abstraction.Interface {
         });
     }
 
-
     private async publishItem(item: CmsContentEntry, report: Report): Promise<void> {
         const model = this.modelAccessor.getModel();
         await this.publishEntryUseCase.execute({ model, revisionId: item.id });

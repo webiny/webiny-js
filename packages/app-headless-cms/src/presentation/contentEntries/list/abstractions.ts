@@ -4,14 +4,13 @@ import type { IFolderTreePresenter } from "@webiny/app-aco/presentation/folderTr
 import type { CmsContentEntry, CmsModel } from "~/types.js";
 
 export interface IContentEntriesInitConfig {
-    model: CmsModel;
     initialFolderId?: string;
     initialSearch?: string;
     filterNames?: string[];
 }
 
 export interface IContentEntriesViewModel {
-    model: CmsModel | null;
+    model: CmsModel;
     selectedEntryId: string | null;
     showingEntry: boolean;
     showFolders: boolean;
@@ -30,7 +29,7 @@ export interface IContentEntriesPresenter {
     unpublishEntry(id: string): Promise<boolean>;
     moveEntry(id: string, folderId: string): Promise<boolean>;
 
-    init(config: IContentEntriesInitConfig): void;
+    init(config?: IContentEntriesInitConfig): void;
     dispose(): void;
 }
 

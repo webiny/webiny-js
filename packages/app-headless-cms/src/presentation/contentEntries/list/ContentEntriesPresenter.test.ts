@@ -10,6 +10,8 @@ import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/ge
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { CmsContentEntry, CmsModel } from "~/types.js";
 import { ContentEntriesCacheProviderImplementation } from "~/features/contentEntry/ContentEntriesCacheProvider.js";
+import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
+import { CmsModelAccessor as CmsModelAccessorImpl } from "~/features/contentEntry/CmsModelAccessor.js";
 import { ListEntriesFeature } from "~/features/contentEntry/listEntries/feature.js";
 import { DeleteEntryFeature } from "~/features/contentEntry/deleteEntry/feature.js";
 import { PublishEntryFeature } from "~/features/contentEntry/publishEntry/feature.js";
@@ -146,6 +148,8 @@ function setup(): TestSetup {
     });
 
     container.register(ContentEntriesCacheProviderImplementation).inSingletonScope();
+    container.register(CmsModelAccessorImpl).inSingletonScope();
+    container.resolve(CmsModelAccessor).setModel(MODEL);
 
     ListEntriesFeature.register(container);
     DeleteEntryFeature.register(container);
@@ -191,7 +195,7 @@ async function initPresenter(
         }
     });
 
-    t.presenter.init({ model: MODEL });
+    t.presenter.init();
 
     await vi.waitFor(() => {
         expect(t.presenter.list.vm.pagination.loading).toBe(false);
@@ -361,7 +365,7 @@ describe("ContentEntriesPresenter", () => {
                 meta: { cursor: null, hasMoreItems: false, totalCount: 1 }
             });
 
-            t.presenter.init({ model: MODEL, initialFolderId: "folder-a" });
+            t.presenter.init({ initialFolderId: "folder-a" });
 
             await vi.waitFor(() => {
                 expect(t.presenter.list.vm.pagination.loading).toBe(false);
@@ -502,7 +506,7 @@ describe("ContentEntriesPresenter", () => {
                 data: [],
                 meta: { cursor: null, hasMoreItems: false, totalCount: 0 }
             });
-            t.presenter.init({ model: MODEL });
+            t.presenter.init();
             expect(t.presenter.vm.model).toStrictEqual(MODEL);
         });
 

@@ -55,7 +55,6 @@ interface ListViewInitProps {
 }
 
 const ListViewInit = ({
-    model,
     listPresenter,
     initialFolderId,
     initialSearch,
@@ -65,12 +64,12 @@ const ListViewInit = ({
 
     useEffect(() => {
         const filterNames = browser.filters.map(f => f.name);
-        listPresenter.init({ model, filterNames, initialFolderId, initialSearch });
+        listPresenter.init({ filterNames, initialFolderId, initialSearch });
 
         return () => {
             listPresenter.dispose();
         };
-    }, [model]);
+    }, []);
 
     return <>{children}</>;
 };

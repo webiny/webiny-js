@@ -19,11 +19,6 @@ const ContentReviewsMenuItem = () => {
     const client = useApolloClient();
 
     const model = presenter.vm.model;
-
-    if (!model) {
-        return null;
-    }
-
     const app = createAppName(model);
 
     return (

@@ -3,7 +3,10 @@ import { observer } from "mobx-react-lite";
 import { useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
 import { ReactComponent as PublishIcon } from "@webiny/icons/visibility.svg";
-import { BulkActionButton, useBulkActionDialog } from "@webiny/app-admin/components/BulkActions/index.js";
+import {
+    BulkActionButton,
+    useBulkActionDialog
+} from "@webiny/app-admin/components/BulkActions/index.js";
 import { usePermission } from "~/admin/hooks/index.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 import { BulkPublishFeature } from "~/presentation/contentEntries/bulkActions/feature.js";

@@ -4,14 +4,17 @@ import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abst
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
-import type { CmsContentEntry, CmsModel } from "~/types.js";
+import type { CmsContentEntry } from "~/types.js";
 import { ListEntriesUseCase } from "~/features/contentEntry/listEntries/abstractions.js";
 import { DeleteEntryUseCase } from "~/features/contentEntry/deleteEntry/abstractions.js";
 import { PublishEntryUseCase } from "~/features/contentEntry/publishEntry/abstractions.js";
 import { UnpublishEntryUseCase } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { MoveEntryUseCase } from "~/features/contentEntry/moveEntry/abstractions.js";
 import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
-import { ContentEntriesCacheProvider } from "~/features/contentEntry/abstractions.js";
+import {
+    ContentEntriesCacheProvider,
+    CmsModelAccessor
+} from "~/features/contentEntry/abstractions.js";
 import {
     ContentEntriesPresenter as Abstraction,
     type IContentEntriesViewModel
@@ -23,15 +26,14 @@ export const PUBLISH_ENTRY_DIALOG = "publish-entry";
 export const UNPUBLISH_ENTRY_DIALOG = "unpublish-entry";
 
 class ContentEntriesPresenterImpl implements Abstraction.Interface {
-    private _model: CmsModel | null = null;
     private _selectedEntryId: string | null = null;
     private _disposeReaction: IReactionDisposer | null = null;
-    private _initConfig: Abstraction.InitConfig | null = null;
 
     constructor(
         private _listPresenter: ListPresenter.Interface<CmsContentEntry>,
         private _foldersPresenter: FolderTreePresenter.Interface,
         private confirmation: Confirmation.Interface,
+        private modelAccessor: CmsModelAccessor.Interface,
         private listEntriesUseCase: ListEntriesUseCase.Interface,
         private deleteEntryUseCase: DeleteEntryUseCase.Interface,
         private publishEntryUseCase: PublishEntryUseCase.Interface,
@@ -45,6 +47,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             ContentEntriesPresenterImpl,
             | "_disposeReaction"
             | "confirmation"
+            | "modelAccessor"
             | "listEntriesUseCase"
             | "deleteEntryUseCase"
             | "publishEntryUseCase"
@@ -56,6 +59,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
         >(this, {
             _disposeReaction: false,
             confirmation: false,
+            modelAccessor: false,
             listEntriesUseCase: false,
             deleteEntryUseCase: false,
             publishEntryUseCase: false,
@@ -68,28 +72,29 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
         });
     }
 
+    private get model() {
+        return this.modelAccessor.getModel();
+    }
+
     get vm(): IContentEntriesViewModel {
         const appliedQuery = this._listPresenter.vm.appliedQuery;
         const hasSearch = !!appliedQuery?.search;
         const hasFilters = Object.keys(this._listPresenter.vm.filters).some(k => k !== "folderId");
 
         return {
-            model: this._model,
+            model: this.model,
             selectedEntryId: this._selectedEntryId,
             showingEntry: this._selectedEntryId !== null,
             showFolders: !hasSearch && !hasFilters
         };
     }
 
-    init(config: Abstraction.InitConfig): void {
-        this._model = config.model;
-        this._initConfig = config;
+    init(config: Abstraction.InitConfig = {}): void {
+        const initialFolderId = config.initialFolderId ?? "root";
 
-        const initialFolderId = this._initConfig?.initialFolderId ?? "root";
-
-        const cache = this.cacheProvider.get(this._model.modelId);
+        const cache = this.cacheProvider.get(this.model.modelId);
         const dataSource = new ContentEntriesDataSource(
-            this._model,
+            this.model,
             this.listEntriesUseCase,
             cache,
             this.getDescendantFoldersUseCase,
@@ -139,10 +144,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
     }
 
     async deleteEntry(id: string): Promise<boolean> {
-        if (!this._model) {
-            return false;
-        }
-        const model = this._model;
+        const model = this.model;
         const result = await this.confirmation.confirm(TRASH_ENTRY_DIALOG, { entryId: id }, () =>
             this.deleteEntryUseCase.execute({ model, id })
         );
@@ -150,16 +152,13 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
     }
 
     async publishEntry(id: string): Promise<boolean> {
-        if (!this._model) {
-            return false;
-        }
-        const cache = this.cacheProvider.get(this._model.modelId);
+        const model = this.model;
+        const cache = this.cacheProvider.get(model.modelId);
         const entry = cache.getItem(item => item.id === id);
         if (!entry) {
             return false;
         }
 
-        const model = this._model;
         const result = await this.confirmation.confirm<{ revisionDescription: string }>(
             PUBLISH_ENTRY_DIALOG,
             { entry },
@@ -178,10 +177,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
     }
 
     async unpublishEntry(id: string): Promise<boolean> {
-        if (!this._model) {
-            return false;
-        }
-        const model = this._model;
+        const model = this.model;
         const result = await this.confirmation.confirm(
             UNPUBLISH_ENTRY_DIALOG,
             { entryId: id },
@@ -191,10 +187,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
     }
 
     async moveEntry(id: string, folderId: string): Promise<boolean> {
-        if (!this._model) {
-            return false;
-        }
-        await this.moveEntryUseCase.execute({ model: this._model, id, folderId });
+        await this.moveEntryUseCase.execute({ model: this.model, id, folderId });
         return true;
     }
 
@@ -212,6 +205,7 @@ export const ContentEntriesPresenterImplementation = Abstraction.createImplement
         ListPresenter,
         FolderTreePresenter,
         Confirmation,
+        CmsModelAccessor,
         ListEntriesUseCase,
         DeleteEntryUseCase,
         PublishEntryUseCase,

@@ -28,7 +28,6 @@ class BulkUnpublishPresenterImpl implements Abstraction.Interface {
         });
     }
 
-
     private async unpublishItem(item: CmsContentEntry, report: Report): Promise<void> {
         const model = this.modelAccessor.getModel();
         await this.unpublishEntryUseCase.execute({ model, revisionId: item.id });

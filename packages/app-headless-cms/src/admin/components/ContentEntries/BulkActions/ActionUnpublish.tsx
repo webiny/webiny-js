@@ -3,7 +3,10 @@ import { observer } from "mobx-react-lite";
 import { ReactComponent as UnpublishIcon } from "@webiny/icons/visibility_off.svg";
 import { useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
-import { BulkActionButton, useBulkActionDialog } from "@webiny/app-admin/components/BulkActions/index.js";
+import {
+    BulkActionButton,
+    useBulkActionDialog
+} from "@webiny/app-admin/components/BulkActions/index.js";
 import { usePermission } from "~/admin/hooks/index.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 import { BulkUnpublishFeature } from "~/presentation/contentEntries/bulkActions/feature.js";
