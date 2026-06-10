@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import debounce from "lodash/debounce.js";
 import { observer } from "mobx-react-lite";
-import { Scrollbar, Text, IconButton, Loader, Separator } from "@webiny/admin-ui";
+import { Scrollbar, Text, IconButton, Loader, Separator, Heading } from "@webiny/admin-ui";
 import { ReactComponent as Close } from "@webiny/icons/close.svg";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as TrashIcon } from "@webiny/icons/delete_forever.svg";
@@ -17,6 +17,7 @@ import type { ITrashBinPresenter, TrashBinItem } from "../abstractions.js";
 
 interface TrashBinOverlayProps {
     presenter: ITrashBinPresenter;
+    title: string;
     onExited: () => void;
     onItemAfterRestore?: (item: TrashBinItem) => Promise<void>;
 }
@@ -143,7 +144,15 @@ const TrashBinEmpty = observer(() => {
 });
 
 const TrashBinOverlayContent = observer(
-    ({ onExited, presenter }: { onExited: () => void; presenter: ITrashBinPresenter }) => {
+    ({
+        onExited,
+        presenter,
+        title
+    }: {
+        onExited: () => void;
+        presenter: ITrashBinPresenter;
+        title: string;
+    }) => {
         const onTableScroll = useMemo(
             () =>
                 debounce(async (scrollFrame: { top: number }) => {
@@ -157,11 +166,7 @@ const TrashBinOverlayContent = observer(
         return (
             <OverlayLayout
                 onExited={onExited}
-                barLeft={
-                    <Text size={"lg"} className={"font-semibold"}>
-                        {presenter.vm.title}
-                    </Text>
-                }
+                barLeft={<Heading level={5} className={"text-neutral-primary"}>{title}</Heading>}
                 barMiddle={<SearchInput />}
             >
                 <BulkActionsBar />
@@ -175,7 +180,7 @@ const TrashBinOverlayContent = observer(
 );
 
 export const TrashBinOverlay = observer(
-    ({ presenter, onExited, onItemAfterRestore }: TrashBinOverlayProps) => {
+    ({ presenter, title, onExited, onItemAfterRestore }: TrashBinOverlayProps) => {
         const ctx: TrashBinContext = {
             vm: presenter.vm,
             actions: presenter.actions,
@@ -186,7 +191,11 @@ export const TrashBinOverlay = observer(
             <CompositionScope name={"trash"}>
                 <TrashBinListWithConfig>
                     <TrashBinProvider {...ctx}>
-                        <TrashBinOverlayContent onExited={onExited} presenter={presenter} />
+                        <TrashBinOverlayContent
+                            onExited={onExited}
+                            presenter={presenter}
+                            title={title}
+                        />
                     </TrashBinProvider>
                 </TrashBinListWithConfig>
             </CompositionScope>

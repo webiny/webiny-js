@@ -6,21 +6,22 @@ import { TrashBinOverlay } from "@webiny/app-admin/presentation/trashBin/compone
 import type { TrashBinItem } from "@webiny/app-admin/presentation/trashBin/abstractions.js";
 import { Sidebar } from "@webiny/admin-ui";
 import { ReactComponent as Delete } from "@webiny/icons/delete.svg";
-import { useModel } from "@webiny/app-headless-cms-common";
+import { useNavigateFolder } from "@webiny/app-aco";
+import { usePermissions } from "~/presentation/security/usePermissions.js";
 
-export const CmsTrashBin = observer(() => {
+export const WbTrashBin = observer(() => {
     const [open, setOpen] = useState(false);
-    const { model } = useModel();
+    const { canDelete } = usePermissions();
+    const { navigateToFolder } = useNavigateFolder();
 
     const { presenter } = useFeature(TrashBinFeature);
 
     const handleOpen = useCallback(() => {
         presenter.init({
-            nameColumnId: model.titleFieldId || "id"
+            nameColumnId: "properties.title"
         });
-
         setOpen(true);
-    }, [model, presenter]);
+    }, [presenter]);
 
     const handleClose = useCallback(() => {
         setOpen(false);
@@ -28,11 +29,18 @@ export const CmsTrashBin = observer(() => {
     }, [presenter]);
 
     const handleItemAfterRestore = useCallback(
-        async (_item: TrashBinItem) => {
+        async (item: TrashBinItem) => {
             handleClose();
+            if (item.location.folderId) {
+                navigateToFolder(item.location.folderId);
+            }
         },
-        [handleClose]
+        [handleClose, navigateToFolder]
     );
+
+    if (!canDelete("page")) {
+        return null;
+    }
 
     return (
         <>
@@ -40,13 +48,13 @@ export const CmsTrashBin = observer(() => {
                 <Sidebar.Item
                     onClick={handleOpen}
                     text={"Trash"}
-                    icon={<Sidebar.Item.Icon element={<Delete />} label={"Delete"} />}
+                    icon={<Sidebar.Item.Icon element={<Delete />} label={"Trash"} />}
                 />
             </div>
             {open ? (
                 <TrashBinOverlay
                     presenter={presenter}
-                    title={`Trash - ${model.name}`}
+                    title={"Trash - Pages"}
                     onExited={handleClose}
                     onItemAfterRestore={handleItemAfterRestore}
                 />

@@ -24,7 +24,7 @@ import {
 } from "~/modules/pages/PagesList/components/BulkActions/index.js";
 import { FilterByStatus } from "~/modules/pages/PagesList/components/Filters/index.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
-import { TrashBin } from "~/components/TrashBin/index.js";
+import { WbTrashBin } from "~/presentation/pages/TrashBin/WbTrashBin.js";
 
 const { Browser } = InternalPageListConfig;
 
@@ -100,7 +100,7 @@ export const PagesListConfig = () => {
                 truncate={false}
                 className={"flex justify-center"}
             />
-            <Browser.Sidebar.Footer name={"trash-bin"} element={<TrashBin />} />
+            <Browser.Sidebar.Footer name={"trash-bin"} element={<WbTrashBin />} />
         </InternalPageListConfig>
     );
 };

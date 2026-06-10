@@ -15,7 +15,6 @@ import {
 import { TrashBinDataSource } from "./TrashBinDataSource.js";
 
 class TrashBinPresenterImpl implements ITrashBinPresenter {
-    private _title = "";
     private _nameColumnId = "id";
     private _dataSource: TrashBinDataSource | null = null;
 
@@ -41,7 +40,6 @@ class TrashBinPresenterImpl implements ITrashBinPresenter {
     get vm(): ITrashBinViewModel {
         return {
             list: this.listPresenter.vm,
-            title: this._title,
             nameColumnId: this._nameColumnId
         };
     }
@@ -112,7 +110,6 @@ class TrashBinPresenterImpl implements ITrashBinPresenter {
     };
 
     init(config: ITrashBinPresenterConfig): void {
-        this._title = config.title;
         this._nameColumnId = config.nameColumnId;
 
         this._dataSource = new TrashBinDataSource(this.listGateway);

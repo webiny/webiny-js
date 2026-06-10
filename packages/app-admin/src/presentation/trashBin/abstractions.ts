@@ -109,14 +109,12 @@ export namespace TrashBinBulkActionGateway {
 // ---------------------------------------------------------------------------
 
 export interface ITrashBinPresenterConfig {
-    title: string;
     nameColumnId: string;
     initialSort?: { field: string; direction: "ASC" | "DESC" };
 }
 
 export interface ITrashBinViewModel {
     list: IListViewModel<TrashBinItem>;
-    title: string;
     nameColumnId: string;
 }
 
