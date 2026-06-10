@@ -3,8 +3,8 @@ import { registerSqlStorageOperations } from "../../src/index.js";
 import { createCmsEntryFieldSortingPlugin } from "@webiny/api-headless-cms-storage/plugins/CmsEntryFieldSortingPlugin.js";
 import knexLib from "knex";
 
-/* Create one shared knex instance so all handlers use the same in-memory database. */
-const knex = knexLib({
+/* Reuse existing knex instance so all SQL presets share the same in-memory database. */
+const knex = global.__testKnex || knexLib({
     client: "better-sqlite3",
     connection: {
         filename: ":memory:"
