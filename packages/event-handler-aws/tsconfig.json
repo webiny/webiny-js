@@ -4,7 +4,8 @@
   "references": [
     { "path": "../api-core" },
     { "path": "../aws-sdk" },
-    { "path": "../event-handler-core" }
+    { "path": "../event-handler-core" },
+    { "path": "../feature" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -17,8 +18,13 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
+      "@webiny/event-handler-core/testing": ["../event-handler-core/src/testing/index.js"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"]
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"]
     }
   }
 }
