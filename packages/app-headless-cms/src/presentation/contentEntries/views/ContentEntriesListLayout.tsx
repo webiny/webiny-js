@@ -77,7 +77,7 @@ const DocumentList = observer(() => {
                     title={{
                         icon: isRoot ? <HomeIcon /> : <FolderIcon />,
                         text: isRoot
-                            ? presenter.vm.model!.name
+                            ? "Home"
                             : presenter.folders.vm.currentFolderTitle
                     }}
                     search

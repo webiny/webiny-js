@@ -16,6 +16,7 @@ export interface IListCache<T> {
     getItems(): T[];
     getItem(predicate: IListCachePredicate<T>): T | undefined;
     addItems(items: T[]): void;
+    setItems(items: T[]): void;
     updateItems(updater: IListCacheItemUpdater<T>): void;
     removeItems(predicate: IListCachePredicate<T>): void;
 }
@@ -60,6 +61,12 @@ export class ListCache<T> implements IListCache<T> {
     addItems(items: T[]) {
         runInAction(() => {
             this.state = unionBy(items, this.state, this.keyField);
+        });
+    }
+
+    setItems(items: T[]) {
+        runInAction(() => {
+            this.state = [...items];
         });
     }
 

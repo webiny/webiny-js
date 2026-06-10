@@ -64,6 +64,10 @@ export class QueryMatcher<TRow> {
         return this._matcher;
     }
 
+    filter(items: TRow[]): TRow[] {
+        return items.filter(this._matcher);
+    }
+
     hasServerSideFilters(params: IDataSourceQuery): boolean {
         if (params.search) {
             return true;
