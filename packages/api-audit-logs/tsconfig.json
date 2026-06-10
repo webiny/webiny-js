@@ -19,7 +19,6 @@
     { "path": "../handler-graphql" },
     { "path": "../utils" },
     { "path": "../wcp" },
-    { "path": "../api-aco-ddb" },
     { "path": "../handler-aws" },
     { "path": "../plugins" }
   ],
@@ -66,8 +65,6 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"],
-      "@webiny/api-aco-ddb/*": ["../api-aco-ddb/src/*"],
-      "@webiny/api-aco-ddb": ["../api-aco-ddb/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
