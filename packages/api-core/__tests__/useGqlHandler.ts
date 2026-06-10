@@ -52,7 +52,6 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
 
     const handler = createTestHandler({
         root: container => {
-            GraphQLEngineFeature.register(container);
             HttpFeature.register(container);
 
             container.register(TestAuthenticator);
@@ -69,6 +68,7 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             // ApiCoreFeature in child container — TenantContext, IdentityContext etc.
             // registered here become per-request singletons automatically
             ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
+            GraphQLEngineFeature.register(container);
 
             for (const plugin of opts.plugins ?? []) {
                 // Arrow functions are setup callbacks; classes (which also have typeof "function")
