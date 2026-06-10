@@ -55,7 +55,23 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
 
     const handler = createTestHandler({
-        root: async container => {
+        root: container => {
+            GraphQLEngineFeature.register(container);
+            HttpFeature.register(container);
+
+            container.register(TestAuthenticator);
+            container.register(TestAuthorizer);
+            container.register(HttpTenantIdExtractorImpl);
+
+            container.register(ErrorHandler);
+            container.register(RootTenantInitializer);
+            container.register(AuthTriggerHandler);
+            container.register(HttpRouterHandler);
+            container.register(NotFoundHandler);
+        },
+        request: async container => {
+            // ApiCoreFeature in child container — TenantContext, IdentityContext etc.
+            // registered here become per-request singletons automatically
             ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
 
             // Apply plugins — ContextPlugin instances get the legacy context applied,
@@ -73,22 +89,6 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
                     container.register(plugin);
                 }
             }
-
-            GraphQLEngineFeature.register(container);
-            HttpFeature.register(container);
-
-            container.register(TestAuthenticator);
-            container.register(TestAuthorizer);
-            container.register(HttpTenantIdExtractorImpl);
-
-            container.register(ErrorHandler);
-            container.register(RootTenantInitializer);
-            container.register(AuthTriggerHandler);
-            container.register(HttpRouterHandler);
-            container.register(NotFoundHandler);
-        },
-        request: _container => {
-            // TenantContext is a root singleton — RootTenantInitializer sets it on each request
         }
     });
 
