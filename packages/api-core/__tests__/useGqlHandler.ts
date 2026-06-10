@@ -8,9 +8,6 @@ import {
 } from "@webiny/event-handler-core";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
-import { LegacyContext as SecurityLegacyContext } from "~/legacy/security/LegacyContext.js";
-import { LegacyContext as TenancyLegacyContext } from "~/legacy/tenancy/LegacyContext.js";
-import { LegacyWcpContext } from "~/legacy/wcp/LegacyWcpContext.js";
 import { ContextPlugin } from "@webiny/api";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
@@ -74,17 +71,9 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             // registered here become per-request singletons automatically
             ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
 
-            // Apply plugins — ContextPlugin instances get the legacy context applied,
-            // everything else is registered directly in the DI container
-            const pluginContext = {
-                container,
-                security: new SecurityLegacyContext(container),
-                tenancy: new TenancyLegacyContext(container),
-                wcp: new LegacyWcpContext(container)
-            };
             for (const plugin of opts.plugins ?? []) {
                 if (plugin instanceof ContextPlugin) {
-                    await plugin.apply(pluginContext as any);
+                    await plugin.apply({ container } as any);
                 } else {
                     container.register(plugin);
                 }
