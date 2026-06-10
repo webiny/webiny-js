@@ -37,7 +37,7 @@ export const createStorageOperations = (
     };
 
     const query = () => {
-        return knex<IKeyValueRow>(TABLE_NAME);
+        return knex<IKeyValueRow>(tableManager.resolve(TABLE_NAME));
     };
 
     const createScopedKey = (key: string, scope: string): string => {
