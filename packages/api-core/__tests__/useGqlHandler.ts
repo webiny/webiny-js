@@ -8,7 +8,6 @@ import {
 } from "@webiny/event-handler-core";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
-import { ContextPlugin } from "@webiny/api";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
 import { TestAuthenticator } from "./mocks/TestAuthenticator.js";
@@ -72,8 +71,10 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
 
             for (const plugin of opts.plugins ?? []) {
-                if (plugin instanceof ContextPlugin) {
-                    await plugin.apply({ container } as any);
+                // Arrow functions are setup callbacks; classes (which also have typeof "function")
+                // have a prototype and are DI implementations → register in container
+                if (typeof plugin === "function" && !plugin.prototype) {
+                    await plugin(container);
                 } else {
                     container.register(plugin);
                 }

@@ -1,11 +1,9 @@
 import { describe, test, expect, beforeEach } from "vitest";
-import { ContextPlugin } from "@webiny/api";
 import { useGqlHandler } from "../useGqlHandler";
 import mocks from "../mocks/securityTeam";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { RoleFactory } from "~/features/security/roles/shared/abstractions.js";
 import { TeamFactory } from "~/features/security/teams/shared/abstractions.js";
-import type { ApiCoreContext } from "~/types/core.js";
 
 class TestRoleFactory implements RoleFactory.Interface {
     execute(): RoleFactory.Return {
@@ -45,15 +43,20 @@ class TestTeamFactory implements TeamFactory.Interface {
     }
 }
 
+const testRoleFactory = RoleFactory.createImplementation({
+    implementation: TestRoleFactory,
+    dependencies: []
+});
+
+const testTeamFactory = TeamFactory.createImplementation({
+    implementation: TestTeamFactory,
+    dependencies: []
+});
+
 describe("Security Team CRUD Test", () => {
     const { install, securityTeam } = useGqlHandler({
         wcpLicense: createTestWcpLicense(),
-        plugins: [
-            new ContextPlugin<ApiCoreContext>(async context => {
-                context.container.registerInstance(RoleFactory, new TestRoleFactory());
-                context.container.registerInstance(TeamFactory, new TestTeamFactory());
-            })
-        ]
+        plugins: [testRoleFactory, testTeamFactory]
     });
 
     beforeEach(async () => {

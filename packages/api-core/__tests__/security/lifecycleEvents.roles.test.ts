@@ -6,7 +6,7 @@ import mocks from "~tests/mocks/securityRole.js";
 
 describe("Role Lifecycle Events", () => {
     const { install, securityRole } = useGqlHandler({
-        plugins: [assignRoleLifecycleEvents()]
+        plugins: [...assignRoleLifecycleEvents()]
     });
 
     beforeEach(async () => {

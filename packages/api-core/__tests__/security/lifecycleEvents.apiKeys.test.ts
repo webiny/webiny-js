@@ -5,7 +5,7 @@ import { assignApiKeyLifecycleEvents, tracker } from "../mocks/lifecycleEvents";
 
 describe("API Key Lifecycle Events", () => {
     const { install, securityApiKeys } = useGqlHandler({
-        plugins: [assignApiKeyLifecycleEvents()]
+        plugins: [...assignApiKeyLifecycleEvents()]
     });
 
     beforeEach(async () => {

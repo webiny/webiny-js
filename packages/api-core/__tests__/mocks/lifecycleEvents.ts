@@ -1,4 +1,3 @@
-import { ContextPlugin } from "@webiny/api";
 import { LifecycleEventTracker } from "@webiny/project-utils/testing/helpers/lifecycleTracker";
 import {
     ApiKeyBeforeCreateEventHandler,
@@ -24,106 +23,120 @@ import {
     RoleBeforeDeleteEventHandler,
     RoleAfterDeleteEventHandler
 } from "~/features/security/roles/DeleteRole/events.js";
-import type { ApiCoreContext } from "~/types/core.js";
 
 export const tracker = new LifecycleEventTracker();
 
-export const assignApiKeyLifecycleEvents = () => {
-    return new ContextPlugin<ApiCoreContext>(async context => {
-        if (!context.container) {
-            return;
-        }
+class ApiKeyBeforeCreateTrackerHandler implements ApiKeyBeforeCreateEventHandler.Interface {
+    async handle(event: ApiKeyBeforeCreateEventHandler.Event) {
+        tracker.track("apiKey:beforeCreate", event);
+    }
+}
+class ApiKeyAfterCreateTrackerHandler implements ApiKeyAfterCreateEventHandler.Interface {
+    async handle(event: ApiKeyAfterCreateEventHandler.Event) {
+        tracker.track("apiKey:afterCreate", event);
+    }
+}
+class ApiKeyBeforeUpdateTrackerHandler implements ApiKeyBeforeUpdateEventHandler.Interface {
+    async handle(event: ApiKeyBeforeUpdateEventHandler.Event) {
+        tracker.track("apiKey:beforeUpdate", event);
+    }
+}
+class ApiKeyAfterUpdateTrackerHandler implements ApiKeyAfterUpdateEventHandler.Interface {
+    async handle(event: ApiKeyAfterUpdateEventHandler.Event) {
+        tracker.track("apiKey:afterUpdate", event);
+    }
+}
+class ApiKeyBeforeDeleteTrackerHandler implements ApiKeyBeforeDeleteEventHandler.Interface {
+    async handle(event: ApiKeyBeforeDeleteEventHandler.Event) {
+        tracker.track("apiKey:beforeDelete", event);
+    }
+}
+class ApiKeyAfterDeleteTrackerHandler implements ApiKeyAfterDeleteEventHandler.Interface {
+    async handle(event: ApiKeyAfterDeleteEventHandler.Event) {
+        tracker.track("apiKey:afterDelete", event);
+    }
+}
+class RoleBeforeCreateTrackerHandler implements RoleBeforeCreateEventHandler.Interface {
+    async handle(event: RoleBeforeCreateEventHandler.Event) {
+        tracker.track("role:beforeCreate", event);
+    }
+}
+class RoleAfterCreateTrackerHandler implements RoleAfterCreateEventHandler.Interface {
+    async handle(event: RoleAfterCreateEventHandler.Event) {
+        tracker.track("role:afterCreate", event);
+    }
+}
+class RoleBeforeUpdateTrackerHandler implements RoleBeforeUpdateEventHandler.Interface {
+    async handle(event: RoleBeforeUpdateEventHandler.Event) {
+        tracker.track("role:beforeUpdate", event);
+    }
+}
+class RoleAfterUpdateTrackerHandler implements RoleAfterUpdateEventHandler.Interface {
+    async handle(event: RoleAfterUpdateEventHandler.Event) {
+        tracker.track("role:afterUpdate", event);
+    }
+}
+class RoleBeforeDeleteTrackerHandler implements RoleBeforeDeleteEventHandler.Interface {
+    async handle(event: RoleBeforeDeleteEventHandler.Event) {
+        tracker.track("role:beforeDelete", event);
+    }
+}
+class RoleAfterDeleteTrackerHandler implements RoleAfterDeleteEventHandler.Interface {
+    async handle(event: RoleAfterDeleteEventHandler.Event) {
+        tracker.track("role:afterDelete", event);
+    }
+}
 
-        // Register before create handler
-        context.container.registerFactory(ApiKeyBeforeCreateEventHandler, () => ({
-            handle: async (event: ApiKeyBeforeCreateEventHandler.Event) => {
-                tracker.track("apiKey:beforeCreate", event);
-            }
-        }));
+export const assignApiKeyLifecycleEvents = () => [
+    ApiKeyBeforeCreateEventHandler.createImplementation({
+        implementation: ApiKeyBeforeCreateTrackerHandler,
+        dependencies: []
+    }),
+    ApiKeyAfterCreateEventHandler.createImplementation({
+        implementation: ApiKeyAfterCreateTrackerHandler,
+        dependencies: []
+    }),
+    ApiKeyBeforeUpdateEventHandler.createImplementation({
+        implementation: ApiKeyBeforeUpdateTrackerHandler,
+        dependencies: []
+    }),
+    ApiKeyAfterUpdateEventHandler.createImplementation({
+        implementation: ApiKeyAfterUpdateTrackerHandler,
+        dependencies: []
+    }),
+    ApiKeyBeforeDeleteEventHandler.createImplementation({
+        implementation: ApiKeyBeforeDeleteTrackerHandler,
+        dependencies: []
+    }),
+    ApiKeyAfterDeleteEventHandler.createImplementation({
+        implementation: ApiKeyAfterDeleteTrackerHandler,
+        dependencies: []
+    })
+];
 
-        // Register after create handler
-        context.container.registerFactory(ApiKeyAfterCreateEventHandler, () => ({
-            handle: async (event: ApiKeyAfterCreateEventHandler.Event) => {
-                tracker.track("apiKey:afterCreate", event);
-            }
-        }));
-
-        // Register before update handler
-        context.container.registerFactory(ApiKeyBeforeUpdateEventHandler, () => ({
-            handle: async (event: ApiKeyBeforeUpdateEventHandler.Event) => {
-                tracker.track("apiKey:beforeUpdate", event);
-            }
-        }));
-
-        // Register after update handler
-        context.container.registerFactory(ApiKeyAfterUpdateEventHandler, () => ({
-            handle: async (event: ApiKeyAfterUpdateEventHandler.Event) => {
-                tracker.track("apiKey:afterUpdate", event);
-            }
-        }));
-
-        // Register before delete handler
-        context.container.registerFactory(ApiKeyBeforeDeleteEventHandler, () => ({
-            handle: async (event: ApiKeyBeforeDeleteEventHandler.Event) => {
-                tracker.track("apiKey:beforeDelete", event);
-            }
-        }));
-
-        // Register after delete handler
-        context.container.registerFactory(ApiKeyAfterDeleteEventHandler, () => ({
-            handle: async (event: ApiKeyAfterDeleteEventHandler.Event) => {
-                tracker.track("apiKey:afterDelete", event);
-            }
-        }));
-    });
-};
-
-export const assignRoleLifecycleEvents = () => {
-    return new ContextPlugin<ApiCoreContext>(async context => {
-        if (!context.container) {
-            return;
-        }
-
-        // Register before create handler
-        context.container.registerFactory(RoleBeforeCreateEventHandler, () => ({
-            handle: async (event: RoleBeforeCreateEventHandler.Event) => {
-                tracker.track("role:beforeCreate", event);
-            }
-        }));
-
-        // Register after create handler
-        context.container.registerFactory(RoleAfterCreateEventHandler, () => ({
-            handle: async (event: RoleAfterCreateEventHandler.Event) => {
-                tracker.track("role:afterCreate", event);
-            }
-        }));
-
-        // Register before update handler
-        context.container.registerFactory(RoleBeforeUpdateEventHandler, () => ({
-            handle: async (event: RoleBeforeUpdateEventHandler.Event) => {
-                tracker.track("role:beforeUpdate", event);
-            }
-        }));
-
-        // Register after update handler
-        context.container.registerFactory(RoleAfterUpdateEventHandler, () => ({
-            handle: async (event: RoleAfterUpdateEventHandler.Event) => {
-                tracker.track("role:afterUpdate", event);
-            }
-        }));
-
-        // Register before delete handler
-        context.container.registerFactory(RoleBeforeDeleteEventHandler, () => ({
-            handle: async (event: RoleBeforeDeleteEventHandler.Event) => {
-                tracker.track("role:beforeDelete", event);
-            }
-        }));
-
-        // Register after delete handler
-        context.container.registerFactory(RoleAfterDeleteEventHandler, () => ({
-            handle: async (event: RoleAfterDeleteEventHandler.Event) => {
-                tracker.track("role:afterDelete", event);
-            }
-        }));
-    });
-};
+export const assignRoleLifecycleEvents = () => [
+    RoleBeforeCreateEventHandler.createImplementation({
+        implementation: RoleBeforeCreateTrackerHandler,
+        dependencies: []
+    }),
+    RoleAfterCreateEventHandler.createImplementation({
+        implementation: RoleAfterCreateTrackerHandler,
+        dependencies: []
+    }),
+    RoleBeforeUpdateEventHandler.createImplementation({
+        implementation: RoleBeforeUpdateTrackerHandler,
+        dependencies: []
+    }),
+    RoleAfterUpdateEventHandler.createImplementation({
+        implementation: RoleAfterUpdateTrackerHandler,
+        dependencies: []
+    }),
+    RoleBeforeDeleteEventHandler.createImplementation({
+        implementation: RoleBeforeDeleteTrackerHandler,
+        dependencies: []
+    }),
+    RoleAfterDeleteEventHandler.createImplementation({
+        implementation: RoleAfterDeleteTrackerHandler,
+        dependencies: []
+    })
+];

@@ -1,9 +1,7 @@
 import { describe, test, expect, beforeEach } from "vitest";
-import { ContextPlugin } from "@webiny/api";
 import { RoleFactory } from "~/features/security/roles/shared/abstractions.js";
 import { useGqlHandler } from "~tests/useGqlHandler";
 import mocks from "~tests/mocks/securityRole.js";
-import type { ApiCoreContext } from "~/types/core.js";
 
 class TestRoleFactory implements RoleFactory.Interface {
     execute(): RoleFactory.Return {
@@ -24,13 +22,14 @@ class TestRoleFactory implements RoleFactory.Interface {
     }
 }
 
+const testRoleFactory = RoleFactory.createImplementation({
+    implementation: TestRoleFactory,
+    dependencies: []
+});
+
 describe("Security Role CRUD Test", () => {
     const { install, securityRole } = useGqlHandler({
-        plugins: [
-            new ContextPlugin<ApiCoreContext>(async context => {
-                context.container.registerInstance(RoleFactory, new TestRoleFactory());
-            })
-        ]
+        plugins: [testRoleFactory]
     });
 
     beforeEach(async () => {
