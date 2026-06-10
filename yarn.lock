@@ -11428,6 +11428,7 @@ __metadata:
   resolution: "@webiny/api-audit-logs-sql@workspace:packages/api-audit-logs-sql"
   dependencies:
     "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
@@ -11511,7 +11512,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-core-sql@workspace:packages/api-core-sql":
+"@webiny/api-core-sql@npm:0.0.0, @webiny/api-core-sql@workspace:packages/api-core-sql":
   version: 0.0.0-use.local
   resolution: "@webiny/api-core-sql@workspace:packages/api-core-sql"
   dependencies:

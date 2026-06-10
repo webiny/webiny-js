@@ -1,4 +1,5 @@
 import type { Knex } from "knex";
+import type { TableManager } from "@webiny/api-core-sql/TableManager.js";
 import type { IAuditLog, IAuditLogCreatedBy } from "@webiny/api-audit-logs/storage/types.js";
 import type {
     IStorage,
@@ -25,7 +26,7 @@ interface AuditLogRow {
     content: string;
 }
 
-const TABLE_NAME = "audit_logs";
+const TABLE_NAME = "webiny_audit_logs";
 
 /* Convert an IAuditLog to a flat database row. */
 const toRow = (data: IAuditLog): AuditLogRow => {
@@ -65,17 +66,18 @@ const fromRow = (row: AuditLogRow): IAuditLog => {
 
 export class SqliteStorage implements IStorage {
     private readonly knex: Knex;
-    private initialized: boolean = false;
+    private readonly tableManager: TableManager;
 
-    public constructor(params: { knex: Knex }) {
+    public constructor(params: { knex: Knex; tableManager: TableManager }) {
         this.knex = params.knex;
+        this.tableManager = params.tableManager;
     }
 
     public async fetch(params: IStorageFetchParams): Promise<IStorageFetchResult> {
         await this.ensureTable();
 
         try {
-            const row = await this.knex<AuditLogRow>(TABLE_NAME)
+            const row = await this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME))
                 .where("id", params.id)
                 .andWhere("tenant", params.tenant)
                 .first();
@@ -107,14 +109,16 @@ export class SqliteStorage implements IStorage {
         try {
             const row = toRow(params.data);
 
-            const existing = await this.knex<AuditLogRow>(TABLE_NAME)
+            const existing = await this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME))
                 .where("id", params.data.id)
                 .first();
 
             if (existing) {
-                await this.knex<AuditLogRow>(TABLE_NAME).where("id", params.data.id).update(row);
+                await this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME))
+                    .where("id", params.data.id)
+                    .update(row);
             } else {
-                await this.knex<AuditLogRow>(TABLE_NAME).insert(row);
+                await this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME)).insert(row);
             }
 
             return {
@@ -135,7 +139,10 @@ export class SqliteStorage implements IStorage {
         try {
             const limit = params.limit || 100;
 
-            const query = this.knex<AuditLogRow>(TABLE_NAME).where("tenant", params.tenant);
+            const query = this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME)).where(
+                "tenant",
+                params.tenant
+            );
 
             if (params.app) {
                 query.andWhere("app", params.app);
@@ -175,7 +182,7 @@ export class SqliteStorage implements IStorage {
             query.limit(limit + 1);
 
             if (params.after) {
-                const afterRow = await this.knex<AuditLogRow>(TABLE_NAME)
+                const afterRow = await this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME))
                     .where("id", params.after)
                     .first();
 
@@ -218,29 +225,19 @@ export class SqliteStorage implements IStorage {
     }
 
     private async ensureTable(): Promise<void> {
-        if (this.initialized) {
-            return;
-        }
-
-        const exists = await this.knex.schema.hasTable(TABLE_NAME);
-
-        if (!exists) {
-            await this.knex.schema.createTable(TABLE_NAME, table => {
-                table.text("id").primary();
-                table.text("tenant").notNullable();
-                table.text("createdBy").notNullable();
-                table.datetime("createdOn").notNullable();
-                table.text("app").notNullable();
-                table.text("action").notNullable();
-                table.text("message").notNullable();
-                table.text("entity").notNullable();
-                table.text("entityId").notNullable();
-                table.text("tags").notNullable();
-                table.datetime("expiresAt").notNullable();
-                table.text("content").notNullable();
-            });
-        }
-
-        this.initialized = true;
+        return this.tableManager.ensure(TABLE_NAME, table => {
+            table.text("id").primary();
+            table.text("tenant").notNullable();
+            table.text("createdBy").notNullable();
+            table.datetime("createdOn").notNullable();
+            table.text("app").notNullable();
+            table.text("action").notNullable();
+            table.text("message").notNullable();
+            table.text("entity").notNullable();
+            table.text("entityId").notNullable();
+            table.text("tags").notNullable();
+            table.datetime("expiresAt").notNullable();
+            table.text("content").notNullable();
+        });
     }
 }
