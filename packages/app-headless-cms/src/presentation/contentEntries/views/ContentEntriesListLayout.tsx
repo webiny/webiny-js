@@ -16,7 +16,7 @@ import { CmsAdvancedSearch } from "./CmsAdvancedSearch.js";
 export const ContentEntriesListLayout = observer(() => {
     const presenter = useContentEntriesPresenter();
 
-    if (presenter.vm.loading || !presenter.vm.model) {
+    if (!presenter.vm.model) {
         return null;
     }
 

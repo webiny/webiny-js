@@ -4,7 +4,8 @@ import { DialogsProvider } from "@webiny/app-admin";
 import { FoldersFeature } from "@webiny/app-aco/features/folders/feature.js";
 import { FolderTreePresenterFeature } from "@webiny/app-aco/presentation/folderTree/feature.js";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
-import { CmsModelAccessor as CmsModelAccessorImplementation } from "~/features/contentEntry/CmsModelAccessor.js";
+import { CmsModelAccessor } from "~/features/contentEntry/CmsModelAccessor.js";
+import { CmsModelAccessor as CmsModelAccessorAbstraction } from "~/features/contentEntry/abstractions.js";
 import { GetModelFeature } from "~/features/model/getModel/feature.js";
 import type { CmsModel } from "~/types.js";
 import { ContentEntriesPresenterFeature } from "../list/feature.js";
@@ -23,47 +24,78 @@ import { ModelProvider } from "~/admin/components/ModelProvider/index.js";
 import { ContentEntriesListLayout } from "./ContentEntriesListLayout.js";
 import { SingletonEntryLayout } from "./SingletonEntryLayout.js";
 import { OverlayLoader } from "@webiny/admin-ui";
-import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
 
 export interface ContentEntriesViewProps {
     modelId: string;
-    children?: React.ReactNode;
 }
 
-const ContentEntriesViewInner = ({ modelId, children }: ContentEntriesViewProps) => {
-    const [model, setModel] = useState<CmsModel | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const container = useContainer();
+interface ModelViewProps {
+    model: CmsModel;
+}
 
-    const { useCase: getModelUseCase } = useFeature(GetModelFeature);
-    const { presenter: listPresenter } = useFeature(ContentEntriesPresenterFeature);
-    const { presenter: formPresenter } = useFeature(ContentEntryFormPresenterFeature);
+const SingletonView = ({ model }: ModelViewProps) => {
     const { presenter: singletonPresenter } = useFeature(SingletonEntryPresenterFeature);
 
     useEffect(() => {
-        listPresenter.init({ modelId });
+        singletonPresenter.init({ model });
+
+        return () => {
+            singletonPresenter.dispose();
+        };
+    }, [model]);
+
+    return <SingletonEntryLayout presenter={singletonPresenter} />;
+};
+
+const ListView = ({ model }: ModelViewProps) => {
+    const { presenter: listPresenter } = useFeature(ContentEntriesPresenterFeature);
+    const { presenter: formPresenter } = useFeature(ContentEntryFormPresenterFeature);
+
+    useEffect(() => {
+        listPresenter.init({ model });
+
+        return () => {
+            listPresenter.dispose();
+        };
+    }, [model]);
+
+    return (
+        <ModelProvider model={model}>
+            <ContentEntryListWithConfig>
+                <ContentEntriesPresenterProvider presenter={listPresenter}>
+                    <ContentEntryFormPresenterProvider presenter={formPresenter}>
+                        <ContentEntriesListLayout />
+                    </ContentEntryFormPresenterProvider>
+                </ContentEntriesPresenterProvider>
+            </ContentEntryListWithConfig>
+        </ModelProvider>
+    );
+};
+
+interface ModelLoaderProps {
+    modelId: string;
+}
+
+const ModelLoader = ({ modelId }: ModelLoaderProps) => {
+    const [model, setModel] = useState<CmsModel | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const container = useContainer();
+    const { useCase: getModelUseCase } = useFeature(GetModelFeature);
+
+    useEffect(() => {
+        setModel(null);
+        setError(null);
 
         getModelUseCase
             .execute({ modelId })
             .then(loadedModel => {
+                container.resolve(CmsModelAccessorAbstraction).setModel(loadedModel);
                 setModel(loadedModel);
-                container.resolve(CmsModelAccessor).setModel(loadedModel);
-
-                if (loadedModel.tags.includes(CMS_MODEL_SINGLETON_TAG)) {
-                    singletonPresenter.init({ model: loadedModel });
-                } else {
-                    listPresenter.setModel(loadedModel);
-                }
             })
             .catch(err => {
                 console.error("[ContentEntriesView] Failed to load model:", err);
                 setError(err instanceof Error ? err.message : String(err));
             });
-
-        return () => {
-            listPresenter.dispose();
-            singletonPresenter.dispose();
-        };
     }, [modelId]);
 
     if (error) {
@@ -74,38 +106,22 @@ const ContentEntriesViewInner = ({ modelId, children }: ContentEntriesViewProps)
         return <OverlayLoader text={"Loading model..."} />;
     }
 
-    if (model.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {
-        return (
-            <>
-                <SingletonEntryLayout presenter={singletonPresenter} />
-                {children}
-            </>
-        );
+    if (model.tags.includes(CMS_MODEL_SINGLETON_TAG)) {
+        return <SingletonView model={model} />;
     }
 
-    return (
-        <ModelProvider model={model}>
-            <ContentEntryListWithConfig>
-                <ContentEntriesPresenterProvider presenter={listPresenter}>
-                    <ContentEntryFormPresenterProvider presenter={formPresenter}>
-                        <ContentEntriesListLayout />
-                        {children}
-                    </ContentEntryFormPresenterProvider>
-                </ContentEntriesPresenterProvider>
-            </ContentEntryListWithConfig>
-        </ModelProvider>
-    );
+    return <ListView model={model} />;
 };
 
-export const ContentEntriesView = ({ modelId, children }: ContentEntriesViewProps) => {
+export const ContentEntriesView = ({ modelId }: ContentEntriesViewProps) => {
     const container = useContainer();
 
     const scopedContainer = useMemo(() => {
         const child = container.createChildContainer();
 
-        FoldersFeature.register(child, { type: "cms" });
+        FoldersFeature.register(child, { type: `cms` });
         FolderTreePresenterFeature.register(child);
-        child.register(CmsModelAccessorImplementation).inSingletonScope();
+        child.register(CmsModelAccessor).inSingletonScope();
         ContentEntriesPresenterFeature.register(child);
         ContentEntryFormPresenterFeature.register(child);
         SingletonEntryPresenterFeature.register(child);
@@ -120,7 +136,7 @@ export const ContentEntriesView = ({ modelId, children }: ContentEntriesViewProp
     return (
         <DiContainerProvider container={scopedContainer}>
             <DialogsProvider>
-                <ContentEntriesViewInner modelId={modelId}>{children}</ContentEntriesViewInner>
+                <ModelLoader modelId={modelId} />
             </DialogsProvider>
         </DiContainerProvider>
     );

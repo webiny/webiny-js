@@ -41,6 +41,7 @@ export interface IListPresenterConfig<TRow> {
     initialFilters?: Record<string, unknown>;
     debounceMs?: number;
     limit?: number;
+    itemLabel?: { singular: string; plural: string };
 }
 
 // ---------------------------------------------------------------------------
@@ -74,6 +75,7 @@ export interface IListViewModel<TRow> {
         selectedIds: Set<string>;
         selectedCount: number;
         allSelected: boolean;
+        label: string;
     };
     showingFilters: boolean;
     empty: boolean;

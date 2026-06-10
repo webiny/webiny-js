@@ -6,7 +6,6 @@ import { useFeature } from "@webiny/app";
 import { ReactComponent as PublishIcon } from "@webiny/icons/visibility.svg";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { usePermission } from "~/admin/hooks/index.js";
-import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 import { BulkPublishFeature } from "~/presentation/contentEntries/bulkActions/feature.js";
 
@@ -20,7 +19,7 @@ export const ActionPublish = observer(() => {
     const { ButtonDefault } = useButtons();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
-    const entriesLabel = getEntriesLabel();
+    const entriesLabel = presenter.list.vm.selection.label;
     const listVm = presenter.list.vm;
 
     const allSelected = listVm.selection.allSelected;

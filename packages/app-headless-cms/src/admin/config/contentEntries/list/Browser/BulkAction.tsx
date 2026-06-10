@@ -1,11 +1,7 @@
-import React, { useCallback, useRef } from "react";
-import type { CallbackParams } from "@webiny/app-admin";
-import { makeDecoratable, useButtons, useDialogWithReport, useListView, Worker } from "@webiny/app-admin";
+import React from "react";
+import { makeDecoratable, useButtons, useDialogWithReport } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { useCms, useModel } from "~/admin/hooks/index.js";
-import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
-import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
-import merge from "lodash/merge.js";
+import { useModel } from "~/admin/hooks/index.js";
 
 export interface BulkActionConfig {
     name: string;
@@ -19,12 +15,6 @@ export interface BulkActionProps {
     after?: string;
     modelIds?: string[];
     element?: React.ReactElement;
-}
-
-export interface ProcessInBulkParams {
-    action: string;
-    where?: Record<string, any>;
-    data?: Record<string, any>;
 }
 
 export const BaseBulkAction = makeDecoratable(
@@ -67,52 +57,7 @@ export const BaseBulkAction = makeDecoratable(
     }
 );
 
-const useWorker = () => {
-    const { model } = useModel();
-    const { list, actions: listActions } = useListView();
-    const presenter = useContentEntriesPresenter();
-    const { bulkAction } = useCms();
-    const { current: worker } = useRef(new Worker<CmsContentEntry>());
-
-    const selectedIds = Array.from(list.selection.selectedIds);
-    const selected = presenter.list.vm.rows.filter(row =>
-        list.selection.selectedIds.has(row.id)
-    );
-    const isSelectedAll = list.selection.allSelected;
-
-    const resetItems = useCallback(() => {
-        listActions.selection.deselectAll();
-    }, []);
-
-    return {
-        items: selected,
-        process: (callback: (items: CmsContentEntry[]) => void) =>
-            worker.process(selected, callback),
-        processInSeries: async (
-            callback: ({
-                item,
-                allItems,
-                report
-            }: CallbackParams<CmsContentEntry>) => Promise<void>,
-            chunkSize?: number
-        ) => worker.processInSeries(selected, callback, chunkSize),
-        processInBulk: async ({ action, where: initialWhere, data }: ProcessInBulkParams) => {
-            const where = merge(
-                {
-                    id_in: selectedIds
-                },
-                initialWhere
-            );
-            await bulkAction({ model, action, where, search: list.search, data });
-        },
-        resetItems,
-        results: worker.results,
-        isSelectedAll
-    };
-};
-
 export const BulkAction = Object.assign(BaseBulkAction, {
     useButtons,
-    useWorker,
     useDialog: useDialogWithReport
 });

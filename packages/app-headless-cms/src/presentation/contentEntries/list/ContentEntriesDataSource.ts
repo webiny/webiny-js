@@ -128,10 +128,14 @@ export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
         const filters = params.filters ?? {};
         const folderId = (filters.folderId as string | undefined) || "root";
         const isRoot = folderId === "root";
+        const hasAdvancedFilters = Object.keys(filters).some(
+            k => k !== "folderId" && k !== "status"
+        );
+        const isSearching = !!params.search || hasAdvancedFilters;
 
-        if (params.search && isRoot) {
-            // Search from root: no folder filter — search all folders.
-        } else if (params.search && this.getDescendantFoldersUseCase) {
+        if (isSearching && isRoot) {
+            // Search/filter from root: no folder filter — search all folders.
+        } else if (isSearching && this.getDescendantFoldersUseCase) {
             const descendants = this.getDescendantFoldersUseCase.execute(folderId);
             const folderIds = descendants.map(f => f.id);
             where["wbyAco_location"] = { folderId_in: folderIds };

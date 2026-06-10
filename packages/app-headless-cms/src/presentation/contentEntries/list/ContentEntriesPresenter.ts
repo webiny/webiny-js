@@ -14,9 +14,7 @@ import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/update
 import { ContentEntriesCacheProvider } from "~/features/contentEntry/abstractions.js";
 import {
     ContentEntriesPresenter as Abstraction,
-    type IContentEntriesPresenter,
-    type IContentEntriesViewModel,
-    type IContentEntriesInitConfig
+    type IContentEntriesViewModel
 } from "./abstractions.js";
 import { ContentEntriesDataSource } from "./ContentEntriesDataSource.js";
 
@@ -24,12 +22,11 @@ export const TRASH_ENTRY_DIALOG = "trash-entry";
 export const PUBLISH_ENTRY_DIALOG = "publish-entry";
 export const UNPUBLISH_ENTRY_DIALOG = "unpublish-entry";
 
-class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
+class ContentEntriesPresenterImpl implements Abstraction.Interface {
     private _model: CmsModel | null = null;
     private _selectedEntryId: string | null = null;
-    private _loading = false;
     private _disposeReaction: IReactionDisposer | null = null;
-    private _initConfig: IContentEntriesInitConfig | null = null;
+    private _initConfig: Abstraction.InitConfig | null = null;
 
     constructor(
         private _listPresenter: ListPresenter.Interface<CmsContentEntry>,
@@ -80,9 +77,43 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
             model: this._model,
             selectedEntryId: this._selectedEntryId,
             showingEntry: this._selectedEntryId !== null,
-            showFolders: !hasSearch && !hasFilters,
-            loading: this._loading
+            showFolders: !hasSearch && !hasFilters
         };
+    }
+
+    init(config: Abstraction.InitConfig): void {
+        this._model = config.model;
+        this._initConfig = config;
+
+        const initialFolderId = this._initConfig?.initialFolderId ?? "root";
+
+        const cache = this.cacheProvider.get(this._model.modelId);
+        const dataSource = new ContentEntriesDataSource(
+            this._model,
+            this.listEntriesUseCase,
+            cache,
+            this.getDescendantFoldersUseCase
+        );
+
+        this._listPresenter.init({
+            dataSource,
+            initialSort: { field: "savedOn", direction: "DESC" },
+            initialFilters: { folderId: initialFolderId },
+            limit: 50,
+            itemLabel: { singular: "entry", plural: "entries" }
+        });
+
+        if (initialFolderId !== "root") {
+            this._foldersPresenter.selectFolder(initialFolderId);
+        }
+
+        this._disposeReaction = reaction(
+            () => this._foldersPresenter.vm.currentFolderId,
+            folderId => {
+                const effectiveFolderId = folderId ?? "root";
+                this._listPresenter.actions.filter.set("folderId", effectiveFolderId);
+            }
+        );
     }
 
     get list(): ListPresenter.Interface<CmsContentEntry> {
@@ -163,46 +194,6 @@ class ContentEntriesPresenterImpl implements IContentEntriesPresenter {
         }
         await this.moveEntryUseCase.execute({ model: this._model, id, folderId });
         return true;
-    }
-
-    init(config: IContentEntriesInitConfig): void {
-        this._loading = true;
-        this._model = null;
-        this._initConfig = config;
-    }
-
-    setModel(model: CmsModel): void {
-        this._model = model;
-        this._loading = false;
-
-        const initialFolderId = this._initConfig?.initialFolderId ?? "root";
-
-        const cache = this.cacheProvider.get(model.modelId);
-        const dataSource = new ContentEntriesDataSource(
-            model,
-            this.listEntriesUseCase,
-            cache,
-            this.getDescendantFoldersUseCase
-        );
-
-        this._listPresenter.init({
-            dataSource,
-            initialSort: { field: "savedOn", direction: "DESC" },
-            initialFilters: { folderId: initialFolderId },
-            limit: 50
-        });
-
-        if (initialFolderId !== "root") {
-            this._foldersPresenter.selectFolder(initialFolderId);
-        }
-
-        this._disposeReaction = reaction(
-            () => this._foldersPresenter.vm.currentFolderId,
-            folderId => {
-                const effectiveFolderId = folderId ?? "root";
-                this._listPresenter.actions.filter.set("folderId", effectiveFolderId);
-            }
-        );
     }
 
     dispose(): void {

@@ -9,18 +9,6 @@ import { i18n } from "@webiny/app/i18n/index.js";
 
 const t = i18n.ns("app-headless-cms/admin/content-entries/bulk-actions");
 
-export const getEntriesLabel = (): string => {
-    const { list } = useListView();
-    const count = list.selection.selectedCount;
-    const isAll = list.selection.allSelected;
-
-    if (isAll) {
-        return "all entries";
-    }
-
-    return `${count} ${count === 1 ? "entry" : "entries"}`;
-};
-
 export const SelectAll = () => {
     const { list, actions } = useListView();
 

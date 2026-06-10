@@ -4,7 +4,7 @@ import type { IFolderTreePresenter } from "@webiny/app-aco/presentation/folderTr
 import type { CmsContentEntry, CmsModel } from "~/types.js";
 
 export interface IContentEntriesInitConfig {
-    modelId: string;
+    model: CmsModel;
     initialFolderId?: string;
 }
 
@@ -13,7 +13,6 @@ export interface IContentEntriesViewModel {
     selectedEntryId: string | null;
     showingEntry: boolean;
     showFolders: boolean;
-    loading: boolean;
 }
 
 export interface IContentEntriesPresenter {
@@ -30,7 +29,6 @@ export interface IContentEntriesPresenter {
     moveEntry(id: string, folderId: string): Promise<boolean>;
 
     init(config: IContentEntriesInitConfig): void;
-    setModel(model: CmsModel): void;
     dispose(): void;
 }
 

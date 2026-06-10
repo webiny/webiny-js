@@ -191,8 +191,7 @@ async function initPresenter(
         }
     });
 
-    t.presenter.init({ modelId: MODEL.modelId });
-    t.presenter.setModel(MODEL);
+    t.presenter.init({ model: MODEL });
 
     await vi.waitFor(() => {
         expect(t.presenter.list.vm.pagination.loading).toBe(false);
@@ -228,11 +227,10 @@ describe("ContentEntriesPresenter", () => {
             );
         });
 
-        it("should set model and loading state", async () => {
+        it("should set model after init", async () => {
             await initPresenter(t, { data: [] });
 
             expect(t.presenter.vm.model).toStrictEqual(MODEL);
-            expect(t.presenter.vm.loading).toBe(false);
         });
     });
 
@@ -363,8 +361,7 @@ describe("ContentEntriesPresenter", () => {
                 meta: { cursor: null, hasMoreItems: false, totalCount: 1 }
             });
 
-            t.presenter.init({ modelId: MODEL.modelId, initialFolderId: "folder-a" });
-            t.presenter.setModel(MODEL);
+            t.presenter.init({ model: MODEL, initialFolderId: "folder-a" });
 
             await vi.waitFor(() => {
                 expect(t.presenter.list.vm.pagination.loading).toBe(false);
@@ -500,10 +497,13 @@ describe("ContentEntriesPresenter", () => {
     });
 
     describe("vm", () => {
-        it("should show loading state before model is set", () => {
-            t.presenter.init({ modelId: "test" });
-            expect(t.presenter.vm.loading).toBe(true);
-            expect(t.presenter.vm.model).toBeNull();
+        it("should set model on init", () => {
+            t.listEntriesGateway.execute.mockResolvedValueOnce({
+                data: [],
+                meta: { cursor: null, hasMoreItems: false, totalCount: 0 }
+            });
+            t.presenter.init({ model: MODEL });
+            expect(t.presenter.vm.model).toStrictEqual(MODEL);
         });
 
         it("should track selected entry", async () => {

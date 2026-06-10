@@ -27,6 +27,10 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     private _initialized = false;
     private _loadingMore = false;
     private _showingFilters = false;
+    private _itemLabel: { singular: string; plural: string } = {
+        singular: "item",
+        plural: "items"
+    };
 
     constructor() {
         this._selection = new SelectionController<TRow>(
@@ -65,7 +69,8 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             selection: {
                 selectedIds: this._selection.selectedIds,
                 selectedCount: this._selection.selectedCount,
-                allSelected: this._selection.allSelected
+                allSelected: this._selection.allSelected,
+                label: this.buildSelectionLabel()
             },
             showingFilters: this._showingFilters,
             empty: rows.length === 0 && !loading,
@@ -173,6 +178,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
         this._initialFilterKeys = new Set(Object.keys(this._filters));
         this._debounceMs = config.debounceMs ?? 300;
         this._limit = config.limit;
+        this._itemLabel = config.itemLabel ?? { singular: "item", plural: "items" };
         this._search = "";
         this._appliedQuery = null;
         this._selection.reset();
@@ -238,6 +244,18 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
 
     private getRowId(row: TRow): string {
         return (row as any).id;
+    }
+
+    private buildSelectionLabel(): string {
+        const { selectedCount, allSelected } = this._selection;
+        if (allSelected) {
+            return `all ${this._itemLabel.plural}`;
+        }
+        if (selectedCount === 0) {
+            return "";
+        }
+        const noun = selectedCount === 1 ? this._itemLabel.singular : this._itemLabel.plural;
+        return `${selectedCount} ${noun}`;
     }
 
     private toListError(err: unknown): IListError {

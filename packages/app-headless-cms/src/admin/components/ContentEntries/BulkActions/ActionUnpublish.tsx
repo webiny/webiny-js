@@ -6,7 +6,6 @@ import { useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { usePermission } from "~/admin/hooks/index.js";
-import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 import { BulkUnpublishFeature } from "~/presentation/contentEntries/bulkActions/feature.js";
 
@@ -20,7 +19,7 @@ export const ActionUnpublish = observer(() => {
     const { ButtonDefault } = useButtons();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
-    const entriesLabel = getEntriesLabel();
+    const entriesLabel = presenter.list.vm.selection.label;
     const allSelected = presenter.list.vm.selection.allSelected;
     const selectedItems = presenter.list.vm.rows.filter(row => {
         return presenter.list.vm.selection.selectedIds.has(row.id);

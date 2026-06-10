@@ -7,7 +7,6 @@ import { useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { ROOT_FOLDER } from "~/admin/constants.js";
-import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 import { BulkMoveFeature } from "~/presentation/contentEntries/bulkActions/feature.js";
 
@@ -21,7 +20,7 @@ export const ActionMove = observer(() => {
     const { showConfirmationDialog, showResultsDialog } = useDialog();
     const { showDialog: showMoveDialog } = useMoveToFolderDialog();
 
-    const entriesLabel = getEntriesLabel();
+    const entriesLabel = presenter.list.vm.selection.label;
     const currentFolderId = presenter.folders.vm.currentFolderId;
     const allSelected = presenter.list.vm.selection.allSelected;
     const selectedItems = presenter.list.vm.rows.filter(row => {
