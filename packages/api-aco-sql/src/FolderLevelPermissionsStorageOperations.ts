@@ -21,17 +21,22 @@ interface FlpRow {
     permissions: string;
 }
 
-const TABLE_NAME = "aco_flp";
+const BASE_TABLE_NAME = "webiny_aco_flp";
 
 export interface StorageOperationsConfig {
     knex: Knex;
+    tableNamePrefix?: string;
 }
 
 export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPermissionsStorageOperations {
     private readonly knex: Knex;
+    private readonly tableName: string;
 
-    constructor({ knex }: StorageOperationsConfig) {
+    constructor({ knex, tableNamePrefix }: StorageOperationsConfig) {
         this.knex = knex;
+        this.tableName = tableNamePrefix
+            ? `${tableNamePrefix}_${BASE_TABLE_NAME}`
+            : BASE_TABLE_NAME;
     }
 
     public async list({
@@ -41,7 +46,7 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
             await this.ensureTable();
 
             if (parentId) {
-                const rows = await this.knex<FlpRow>(TABLE_NAME)
+                const rows = await this.knex<FlpRow>(this.tableName)
                     .where("tenant", tenant)
                     .andWhere("parentId", parentId);
 
@@ -49,7 +54,7 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
             }
 
             if (path_startsWith) {
-                const rows = await this.knex<FlpRow>(TABLE_NAME)
+                const rows = await this.knex<FlpRow>(this.tableName)
                     .where("tenant", tenant)
                     .andWhere("type", type)
                     .andWhere("path", "like", path_startsWith + "%");
@@ -78,7 +83,7 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         try {
             await this.ensureTable();
 
-            const row = await this.knex<FlpRow>(TABLE_NAME)
+            const row = await this.knex<FlpRow>(this.tableName)
                 .where("tenant", tenant)
                 .andWhere("id", id)
                 .first();
@@ -103,7 +108,7 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         try {
             await this.ensureTable();
 
-            await this.knex<FlpRow>(TABLE_NAME).insert(this.toRow(data));
+            await this.knex<FlpRow>(this.tableName).insert(this.toRow(data));
 
             return data;
         } catch (err) {
@@ -127,7 +132,7 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
                 ...inputData
             };
 
-            await this.knex<FlpRow>(TABLE_NAME)
+            await this.knex<FlpRow>(this.tableName)
                 .where("tenant", data.tenant)
                 .andWhere("id", data.id)
                 .update(this.toRow(data));
@@ -146,7 +151,7 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         try {
             await this.ensureTable();
 
-            await this.knex<FlpRow>(TABLE_NAME)
+            await this.knex<FlpRow>(this.tableName)
                 .where("tenant", flp.tenant)
                 .andWhere("id", flp.id)
                 .delete();
@@ -174,7 +179,7 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
                         ...inputData
                     };
 
-                    await trx<FlpRow>(TABLE_NAME)
+                    await trx<FlpRow>(this.tableName)
                         .where("tenant", data.tenant)
                         .andWhere("id", data.id)
                         .update(this.toRow(data));
@@ -194,12 +199,12 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
     }
 
     private async ensureTable(): Promise<void> {
-        const exists = await this.knex.schema.hasTable(TABLE_NAME);
+        const exists = await this.knex.schema.hasTable(this.tableName);
         if (exists) {
             return;
         }
 
-        await this.knex.schema.createTable(TABLE_NAME, table => {
+        await this.knex.schema.createTable(this.tableName, table => {
             table.text("id").notNullable();
             table.text("tenant").notNullable();
             table.text("type").notNullable();
