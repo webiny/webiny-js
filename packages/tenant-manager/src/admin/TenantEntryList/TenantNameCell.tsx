@@ -4,22 +4,27 @@ import { ReactComponent as File } from "@webiny/icons/description.svg";
 import { ContentEntryListConfig } from "@webiny/app-headless-cms";
 import { FolderNameCell } from "./FolderNameCell.js";
 import type { TenantEntry } from "~/admin/types.js";
-import { useContentEntriesList } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
+import { useContentEntriesPresenter } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
+import { useRouter } from "@webiny/app-admin";
+import { Routes } from "@webiny/app-headless-cms";
 
 interface TenantNameProps {
     tenant: TenantEntry;
 }
 
 const TenantName = ({ tenant }: TenantNameProps) => {
-    const { getEntryEditUrl } = useContentEntriesList();
+    const presenter = useContentEntriesPresenter();
+    const { getLink } = useRouter();
+
+    const url = getLink(Routes.ContentEntries.List, {
+        modelId: presenter.vm.model?.modelId ?? "",
+        folderId: presenter.folders.vm.currentFolderId ?? undefined,
+        id: tenant.id
+    });
 
     return (
         <div className={"flex flex-col gap-y-[3px]"}>
-            <Link
-                to={getEntryEditUrl(tenant)}
-                variant={"secondary"}
-                className={"truncate no-underline!"}
-            >
+            <Link to={url} variant={"secondary"} className={"truncate no-underline!"}>
                 <div className={"flex w-full items-center"}>
                     <Icon
                         size={"sm"}
