@@ -61,7 +61,7 @@ export const handler = createHandler({
         createFileManagerAco(),
         createAssetDelivery(),
         createFileManagerS3(),
-        createAco({ knex }),
+        createAco(),
         createWorkflows(),
         createHeadlessCmsWorkflows(),
         createWebsiteBuilderWorkflows(),

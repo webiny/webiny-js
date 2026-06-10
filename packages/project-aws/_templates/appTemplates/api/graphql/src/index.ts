@@ -12,6 +12,7 @@ import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-
 import { registerDynamoDbStorageOperations } from "@webiny/api-headless-cms-ddb";
 import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
 import { createAco } from "@webiny/api-aco";
+import { registerAcoDdbStorageOperations } from "@webiny/api-aco-ddb";
 import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
 import securityPlugins from "./security";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
@@ -60,7 +61,8 @@ export const handler = createHandler({
         createFileManagerAco(),
         createAssetDelivery(),
         createFileManagerS3(),
-        createAco({ documentClient }),
+        registerAcoDdbStorageOperations({ documentClient }),
+        createAco(),
         createWorkflows(),
         createHeadlessCmsWorkflows(),
         createWebsiteBuilderWorkflows(),
