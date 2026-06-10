@@ -9,7 +9,6 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { AuditLogsContext } from "~/types";
 import { createAco } from "@webiny/api-aco";
-import { registerAcoDdbStorageOperations } from "@webiny/api-aco-ddb";
 import { createAuditLogs } from "~/index";
 import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createMailerContext } from "@webiny/api-mailer";
@@ -49,6 +48,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
 
     const documentClient = getDocumentClient();
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiAcoStorage = getStorageOps<ApiCoreStorageOperations>("aco");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = createTestWcpLicense();
@@ -64,6 +64,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
                 storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
             }),
+            ...apiAcoStorage.plugins,
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 permissions: createPermissions(permissions),
@@ -104,7 +105,6 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
             createFileManagerContext(),
             createHeadlessCmsGraphQL(),
             createWebsiteBuilder(),
-            registerAcoDdbStorageOperations({ documentClient }),
             createAco(),
             createAuditLogs(),
             plugins,

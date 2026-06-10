@@ -28,7 +28,6 @@
   },
   "devDependencies": {
     "@webiny/api": "0.0.0",
-    "@webiny/api-aco-ddb": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/build-tools": "0.0.0",

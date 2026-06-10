@@ -9,7 +9,6 @@ import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { createAcoHcmsContext } from "~/index";
 import { createAco } from "@webiny/api-aco";
-import { registerAcoDdbStorageOperations } from "@webiny/api-aco-ddb";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getIntrospectionQuery } from "graphql";
@@ -17,7 +16,6 @@ import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { until } from "@webiny/project-utils/testing/helpers/until.js";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import {
     CREATE_CONTENT_MODEL,
     CREATE_CONTENT_MODEL_GROUP,
@@ -60,9 +58,8 @@ const defaultIdentity: IdentityData = {
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
 
-    const documentClient = getDocumentClient();
-
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiAcoStorage = getStorageOps<ApiCoreStorageOperations>("aco");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
@@ -73,6 +70,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
             }),
+            ...apiAcoStorage.plugins,
             ...cmsStorage.plugins,
             createGraphQLHandler(),
             ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
@@ -83,7 +81,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             }),
             createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
-            registerAcoDdbStorageOperations({ documentClient }),
             createAco(),
             createAcoHcmsContext(),
             plugins

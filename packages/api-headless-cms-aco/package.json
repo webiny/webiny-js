@@ -21,7 +21,6 @@
     "access": "public"
   },
   "devDependencies": {
-    "@webiny/api-aco-ddb": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
