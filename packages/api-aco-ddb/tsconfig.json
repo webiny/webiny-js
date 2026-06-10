@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src"],
+  "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-aco" },
     { "path": "../aws-sdk" },
@@ -10,11 +10,12 @@
     { "path": "../utils" }
   ],
   "compilerOptions": {
-    "rootDirs": ["./src"],
+    "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],

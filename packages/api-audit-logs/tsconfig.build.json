@@ -19,6 +19,7 @@
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" },
+    { "path": "../api-aco-ddb/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" }
   ],
@@ -65,6 +66,8 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"],
+      "@webiny/api-aco-ddb/*": ["../api-aco-ddb/src/*"],
+      "@webiny/api-aco-ddb": ["../api-aco-ddb/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

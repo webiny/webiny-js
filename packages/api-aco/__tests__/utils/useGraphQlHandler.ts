@@ -5,6 +5,7 @@ import createGraphQLHandler from "@webiny/handler-graphql";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { until } from "@webiny/project-utils/testing/helpers/until";
+import { registerAcoDdbStorageOperations } from "@webiny/api-aco-ddb";
 
 import {
     CREATE_RECORD,
@@ -85,7 +86,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createFileManagerContext(),
             createFileManagerGraphQL(),
             createHeadlessCmsGraphQL(),
-            createAco({ documentClient }),
+            registerAcoDdbStorageOperations({ documentClient }),
+            createAco(),
             plugins
         ],
         debug: false

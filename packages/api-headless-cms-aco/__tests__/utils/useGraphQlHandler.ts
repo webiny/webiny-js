@@ -9,6 +9,7 @@ import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { createAcoHcmsContext } from "~/index";
 import { createAco } from "@webiny/api-aco";
+import { registerAcoDdbStorageOperations } from "@webiny/api-aco-ddb";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getIntrospectionQuery } from "graphql";
@@ -82,7 +83,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             }),
             createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
-            createAco({ documentClient }),
+            registerAcoDdbStorageOperations({ documentClient }),
+            createAco(),
             createAcoHcmsContext(),
             plugins
         ],

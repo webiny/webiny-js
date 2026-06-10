@@ -1,8 +1,5 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import {
-    createStandardEntity,
-    createTable
-} from "@webiny/db-dynamodb";
+import { createStandardEntity, createTable } from "@webiny/db-dynamodb";
 import { WebinyError } from "@webiny/error";
 import type {
     AcoFolderLevelPermissionsStorageOperations,

@@ -11340,7 +11340,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-aco-ddb@workspace:packages/api-aco-ddb":
+"@webiny/api-aco-ddb@npm:0.0.0, @webiny/api-aco-ddb@workspace:packages/api-aco-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-aco-ddb@workspace:packages/api-aco-ddb"
   dependencies:
@@ -11362,14 +11362,13 @@ __metadata:
   resolution: "@webiny/api-aco@workspace:packages/api-aco"
   dependencies:
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-aco-ddb": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
@@ -11396,6 +11395,7 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-aco-ddb": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
@@ -11571,6 +11571,7 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-aco-ddb": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
@@ -11653,6 +11654,7 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-aco-ddb": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"

@@ -7,6 +7,7 @@ import {
 import { createHandler } from "@webiny/handler-aws";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createAco } from "@webiny/api-aco";
+import { registerAcoDdbStorageOperations } from "@webiny/api-aco-ddb";
 import { createAcoSdk } from "../../../api-aco/__tests__/utils/createAcoSdk.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
@@ -73,7 +74,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             }),
             createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
-            createAco({ documentClient }),
+            registerAcoDdbStorageOperations({ documentClient }),
+            createAco(),
             createFileManagerContext(),
             createFileManagerGraphQL(),
             createFileManagerAco(),

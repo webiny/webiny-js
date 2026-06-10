@@ -9,6 +9,7 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { AuditLogsContext } from "~/types";
 import { createAco } from "@webiny/api-aco";
+import { registerAcoDdbStorageOperations } from "@webiny/api-aco-ddb";
 import { createAuditLogs } from "~/index";
 import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createMailerContext } from "@webiny/api-mailer";
@@ -103,7 +104,8 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
             createFileManagerContext(),
             createHeadlessCmsGraphQL(),
             createWebsiteBuilder(),
-            createAco({ documentClient }),
+            registerAcoDdbStorageOperations({ documentClient }),
+            createAco(),
             createAuditLogs(),
             plugins,
             graphQLHandlerPlugins(),

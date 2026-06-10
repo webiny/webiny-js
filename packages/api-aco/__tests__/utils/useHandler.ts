@@ -5,6 +5,7 @@ import type { AcoContext } from "~/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createAco } from "~/index";
+import { registerAcoDdbStorageOperations } from "@webiny/api-aco-ddb";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createIdentity } from "./identity";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
@@ -40,7 +41,8 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             ...createTenancyAndSecurity({ permissions, identity: createIdentity() }),
             createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
-            createAco({ documentClient }),
+            registerAcoDdbStorageOperations({ documentClient }),
+            createAco(),
             createEventHandler<any, AcoContext, AcoContext>(async ({ context }) => {
                 return context;
             }),

@@ -13,6 +13,7 @@
     { "path": "../shared-aco" },
     { "path": "../utils" },
     { "path": "../validation" },
+    { "path": "../api-aco-ddb" },
     { "path": "../api-core-ddb" },
     { "path": "../api-file-manager" },
     { "path": "../handler-aws" },
