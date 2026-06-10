@@ -26,6 +26,11 @@ class EnsureFolderIsEmptyImpl implements Abstraction.Interface {
                 limit: 1
             });
 
+            if (result.isFail()) {
+                console.error(result.error.message);
+                return true;
+            }
+
             const { folders } = result.value;
 
             return folders.length > 0;
