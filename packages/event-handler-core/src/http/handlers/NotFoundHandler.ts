@@ -1,7 +1,7 @@
-import { HttpEventHandler } from "../abstractions/EventHandler.js";
-import { isHttpRequest } from "../abstractions/IHttp.js";
-import type { EventContext } from "../abstractions/EventHandler.js";
-import type { NextFunction } from "../types.js";
+import { HttpEventHandler } from "~/events/EventHandler.js";
+import { isHttpRequest } from "~/http/abstractions.js";
+import type { EventContext } from "~/events/EventHandler.js";
+import type { NextFunction } from "~/events/types.js";
 
 class NotFoundHandlerImpl implements HttpEventHandler.Interface {
     async execute(ctx: EventContext, next: NextFunction): Promise<any> {

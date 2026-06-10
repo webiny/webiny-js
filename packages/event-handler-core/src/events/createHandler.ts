@@ -1,8 +1,8 @@
 import { Container } from "@webiny/di";
-import { EventType } from "./abstractions/EventType.js";
-import { RequestContainer } from "./abstractions/RequestContainer.js";
-import { executeChain } from "./chain.js";
-import type { HandlerSetup } from "./types.js";
+import { EventType } from "~/events/EventType.js";
+import { RequestContainer } from "~/events/RequestContainer.js";
+import { executeChain } from "~/events/chain.js";
+import type { HandlerSetup } from "~/events/types.js";
 
 export interface CreateHandlerOptions {
     root: HandlerSetup;

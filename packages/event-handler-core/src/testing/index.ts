@@ -1,7 +1,7 @@
-import { HttpEventHandler } from "../abstractions/EventHandler.js";
-import { EventType } from "../abstractions/EventType.js";
-import { isHttpRequest } from "../abstractions/IHttp.js";
-import { createHandler } from "../createHandler.js";
+import { HttpEventHandler } from "~/events/EventHandler.js";
+import { EventType } from "~/events/EventType.js";
+import { isHttpRequest } from "~/http/abstractions.js";
+import { createHandler } from "~/events/createHandler.js";
 import type { HandlerSetup, IHttpRequest, IHttpResponse } from "../index.js";
 
 /**

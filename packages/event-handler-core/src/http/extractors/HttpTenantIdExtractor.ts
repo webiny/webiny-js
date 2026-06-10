@@ -1,5 +1,5 @@
 import { Abstraction } from "@webiny/di";
-import type { IHttpRequest } from "../abstractions/IHttp.js";
+import type { IHttpRequest } from "~/http/abstractions.js";
 
 export interface IHttpTenantIdExtractor {
     extract(request: IHttpRequest): string | undefined;

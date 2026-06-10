@@ -1,11 +1,3 @@
-export { createHandler } from "./createHandler.js";
-export { executeChain } from "./chain.js";
-export type { CreateHandlerOptions } from "./createHandler.js";
-export type { NextFunction, HandlerSetup } from "./types.js";
-export * from "./abstractions/index.js";
-export * from "./handlers/index.js";
-export * from "./features/HttpFeature.js";
+export * from "./events/index.js";
+export * from "./http/index.js";
 export { Container, Abstraction } from "@webiny/di";
-export * from "./extractors/index.js";
-export * from "./decorators/SecureHeadersDecorator.js";
-export { RequestContainer } from "./abstractions/RequestContainer.js";

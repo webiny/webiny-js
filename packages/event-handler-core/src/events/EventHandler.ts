@@ -1,5 +1,5 @@
 import { Abstraction } from "@webiny/di";
-import type { NextFunction } from "../types.js";
+import type { NextFunction } from "./types.js";
 
 export interface EventContext<TEvent = any> {
     event: TEvent;

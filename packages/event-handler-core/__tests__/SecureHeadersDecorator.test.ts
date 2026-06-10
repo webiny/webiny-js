@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
-import { HttpRouter } from "~/abstractions/IHttp.js";
-import { HttpRouterImpl } from "~/handlers/HttpRouterImpl.js";
-import { SecureHeadersDecorator } from "~/decorators/SecureHeadersDecorator.js";
-import { HttpRoute } from "~/abstractions/IHttp.js";
-import type { IHttpRequest, IHttpRoute, IHttpResponse } from "~/abstractions/IHttp.js";
+import { HttpRouter } from "~/http/abstractions.js";
+import { HttpRouterImpl } from "~/http/HttpRouter.js";
+import { SecureHeadersDecorator } from "~/http/decorators/SecureHeadersDecorator.js";
+import { HttpRoute } from "~/http/abstractions.js";
+import type { IHttpRequest, IHttpRoute, IHttpResponse } from "~/http/abstractions.js";
 
 const req = (method: string, path: string, origin?: string): IHttpRequest => ({
     method,

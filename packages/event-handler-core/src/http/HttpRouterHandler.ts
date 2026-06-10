@@ -1,8 +1,8 @@
-import { HttpEventHandler } from "../abstractions/EventHandler.js";
-import { HttpRouter, isHttpRequest, RouteNotFoundError } from "../abstractions/IHttp.js";
-import type { IHttpRouter } from "../abstractions/IHttp.js";
-import type { EventContext } from "../abstractions/EventHandler.js";
-import type { NextFunction } from "../types.js";
+import { HttpEventHandler } from "~/events/EventHandler.js";
+import { HttpRouter, isHttpRequest, RouteNotFoundError } from "~/http/abstractions.js";
+import type { IHttpRouter } from "~/http/abstractions.js";
+import type { EventContext } from "~/events/EventHandler.js";
+import type { NextFunction } from "~/events/types.js";
 
 class HttpRouterHandlerImpl implements HttpEventHandler.Interface {
     constructor(private router: IHttpRouter) {}

@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
-import { HttpRoute, HttpRouter } from "~/abstractions/IHttp.js";
-import { HttpRouterImpl } from "~/handlers/HttpRouterImpl.js";
-import type { IHttpRequest, IHttpResponse } from "~/abstractions/IHttp.js";
+import { HttpRoute, HttpRouter } from "~/http/abstractions.js";
+import { HttpRouterImpl } from "~/http/HttpRouter.js";
+import type { IHttpRequest, IHttpResponse } from "~/http/abstractions.js";
 
 function makeRoute(method: string, path: string, body: any = "ok"): HttpRoute.Interface {
     return {
