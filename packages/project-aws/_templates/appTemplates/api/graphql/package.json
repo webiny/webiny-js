@@ -8,6 +8,8 @@
     "@webiny/api-aco-ddb": "latest",
     "@webiny/api-aco-sql": "latest",
     "@webiny/api-audit-logs": "latest",
+    "@webiny/api-audit-logs-ddb": "latest",
+    "@webiny/api-audit-logs-sql": "latest",
     "@webiny/api-background-tasks-ddb": "latest",
     "@webiny/api-background-tasks-os": "latest",
     "@webiny/api-core": "latest",

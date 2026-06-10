@@ -16,6 +16,7 @@ import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
 import securityPlugins from "./security.js";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
 import { createAuditLogs } from "@webiny/api-audit-logs";
+import { registerAuditLogsSqlStorageOperations } from "@webiny/api-audit-logs-sql";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-os";
 import { createWebsockets } from "@webiny/api-websockets";
 import { createRecordLocking } from "@webiny/api-record-locking";
@@ -67,6 +68,9 @@ export const handler = createHandler({
         createWorkflows(),
         createHeadlessCmsWorkflows(),
         createWebsiteBuilderWorkflows(),
+        registerAuditLogsSqlStorageOperations({
+            knex
+        }),
         createAuditLogs(),
         createAcoHcmsContext(),
         createHcmsTasks(),
