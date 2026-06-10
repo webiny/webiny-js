@@ -6,6 +6,7 @@
   "dependencies": {
     "@webiny/api-aco": "latest",
     "@webiny/api-aco-ddb": "0.0.0",
+    "@webiny/api-aco-sql": "0.0.0",
     "@webiny/api-audit-logs": "latest",
     "@webiny/api-background-tasks-ddb": "latest",
     "@webiny/api-background-tasks-os": "latest",
