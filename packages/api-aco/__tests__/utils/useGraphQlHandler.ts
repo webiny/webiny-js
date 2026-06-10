@@ -4,8 +4,7 @@ import { createHandler } from "@webiny/handler-aws";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { until } from "@webiny/project-utils/testing/helpers/until";
-import { registerAcoDdbStorageOperations } from "@webiny/api-aco-ddb";
+import { until } from "@webiny/project-utils/testing/helpers/until.js";
 
 import {
     CREATE_RECORD,
@@ -30,13 +29,12 @@ import {
 import { createAco } from "~/index";
 import { createIdentity } from "./identity";
 import { getIntrospectionQuery } from "graphql";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -61,7 +59,6 @@ interface InvokeParams {
 }
 
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
-    const documentClient = getDocumentClient();
     const { permissions, identity, plugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
@@ -86,7 +83,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createFileManagerContext(),
             createFileManagerGraphQL(),
             createHeadlessCmsGraphQL(),
-            registerAcoDdbStorageOperations({ documentClient }),
             createAco(),
             plugins
         ],

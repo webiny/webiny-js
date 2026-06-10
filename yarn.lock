@@ -11377,7 +11377,6 @@ __metadata:
   resolution: "@webiny/api-aco@workspace:packages/api-aco"
   dependencies:
     "@webiny/api": "npm:0.0.0"
-    "@webiny/api-aco-ddb": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
