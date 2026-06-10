@@ -92,7 +92,8 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             this._model,
             this.listEntriesUseCase,
             cache,
-            this.getDescendantFoldersUseCase
+            this.getDescendantFoldersUseCase,
+            config.filterNames
         );
 
         this._listPresenter.init({

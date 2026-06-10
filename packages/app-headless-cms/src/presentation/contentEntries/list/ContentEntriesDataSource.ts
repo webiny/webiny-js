@@ -13,6 +13,7 @@ import type { IListEntriesUseCase } from "~/features/contentEntry/listEntries/ab
 export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
     private _meta: IDataSourceMeta = { cursor: null, hasMoreItems: false, totalCount: 0 };
     private _loading = false;
+    private registeredFilterNames: Set<string>;
     private queryMatcher = new QueryMatcher<CmsContentEntry>({
         keyField: "entryId",
         localFilters: {
@@ -23,9 +24,6 @@ export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
                     return itemFolderId === folderId;
                 }
                 return !itemFolderId || itemFolderId === "root";
-            },
-            status: (item, value) => {
-                return item.meta.status === value;
             }
         }
     });
@@ -34,8 +32,10 @@ export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
         private model: CmsModel,
         private listEntriesUseCase: IListEntriesUseCase,
         private cache: IListCache<CmsContentEntry>,
-        private getDescendantFoldersUseCase?: IGetDescendantFoldersUseCase
+        private getDescendantFoldersUseCase?: IGetDescendantFoldersUseCase,
+        registeredFilterNames: string[] = []
     ) {
+        this.registeredFilterNames = new Set(registeredFilterNames);
         makeAutoObservable<
             ContentEntriesDataSource,
             "model" | "listEntriesUseCase" | "getDescendantFoldersUseCase" | "queryMatcher"
@@ -129,7 +129,7 @@ export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
         const folderId = (filters.folderId as string | undefined) || "root";
         const isRoot = folderId === "root";
         const hasAdvancedFilters = Object.keys(filters).some(
-            k => k !== "folderId" && k !== "status"
+            k => k !== "folderId" && !this.registeredFilterNames.has(k)
         );
         const isSearching = !!params.search || hasAdvancedFilters;
 
@@ -143,12 +143,8 @@ export class ContentEntriesDataSource implements IDataSource<CmsContentEntry> {
             where["wbyAco_location"] = { folderId };
         }
 
-        if (filters.status) {
-            where["status"] = filters.status;
-        }
-
         for (const [key, value] of Object.entries(filters)) {
-            if (key === "folderId" || key === "status") {
+            if (key === "folderId") {
                 continue;
             }
             where[key] = value;

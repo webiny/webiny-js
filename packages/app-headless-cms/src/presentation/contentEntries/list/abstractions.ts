@@ -6,6 +6,7 @@ import type { CmsContentEntry, CmsModel } from "~/types.js";
 export interface IContentEntriesInitConfig {
     model: CmsModel;
     initialFolderId?: string;
+    filterNames?: string[];
 }
 
 export interface IContentEntriesViewModel {

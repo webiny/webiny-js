@@ -17,9 +17,13 @@ import {
     BulkDeleteFeature,
     BulkMoveFeature
 } from "../bulkActions/feature.js";
+import { ContentEntriesPresenter } from "../list/abstractions.js";
 import { ContentEntriesPresenterProvider } from "./ContentEntriesPresenterProvider.js";
 import { ContentEntryFormPresenterProvider } from "./ContentEntryFormPresenterProvider.js";
-import { ContentEntryListWithConfig } from "~/admin/config/contentEntries/list/ContentEntryListConfig.js";
+import {
+    ContentEntryListWithConfig,
+    useContentEntryListConfig
+} from "~/admin/config/contentEntries/list/ContentEntryListConfig.js";
 import { ModelProvider } from "~/admin/components/ModelProvider/index.js";
 import { ContentEntriesListLayout } from "./ContentEntriesListLayout.js";
 import { SingletonEntryLayout } from "./SingletonEntryLayout.js";
@@ -51,25 +55,40 @@ const ListView = ({ model }: ModelViewProps) => {
     const { presenter: listPresenter } = useFeature(ContentEntriesPresenterFeature);
     const { presenter: formPresenter } = useFeature(ContentEntryFormPresenterFeature);
 
+    return (
+        <ModelProvider model={model}>
+            <ContentEntryListWithConfig>
+                <ListViewInit model={model} listPresenter={listPresenter}>
+                    <ContentEntriesPresenterProvider presenter={listPresenter}>
+                        <ContentEntryFormPresenterProvider presenter={formPresenter}>
+                            <ContentEntriesListLayout />
+                        </ContentEntryFormPresenterProvider>
+                    </ContentEntriesPresenterProvider>
+                </ListViewInit>
+            </ContentEntryListWithConfig>
+        </ModelProvider>
+    );
+};
+
+interface ListViewInitProps {
+    model: CmsModel;
+    listPresenter: ContentEntriesPresenter.Interface;
+    children: React.ReactNode;
+}
+
+const ListViewInit = ({ model, listPresenter, children }: ListViewInitProps) => {
+    const { browser } = useContentEntryListConfig();
+
     useEffect(() => {
-        listPresenter.init({ model });
+        const filterNames = browser.filters.map(f => f.name);
+        listPresenter.init({ model, filterNames });
 
         return () => {
             listPresenter.dispose();
         };
     }, [model]);
 
-    return (
-        <ModelProvider model={model}>
-            <ContentEntryListWithConfig>
-                <ContentEntriesPresenterProvider presenter={listPresenter}>
-                    <ContentEntryFormPresenterProvider presenter={formPresenter}>
-                        <ContentEntriesListLayout />
-                    </ContentEntryFormPresenterProvider>
-                </ContentEntriesPresenterProvider>
-            </ContentEntryListWithConfig>
-        </ModelProvider>
-    );
+    return <>{children}</>;
 };
 
 interface ModelLoaderProps {
