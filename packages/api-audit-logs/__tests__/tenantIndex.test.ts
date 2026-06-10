@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AUDIT } from "~/config.js";
 import { useHandler } from "~tests/helpers/useHandler.js";
-import { createEntity } from "~/storage/entity.js";
+import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 
 const createApiKeyCreateAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.CREATE);
 
-describe("Audit Logs Tenant Index", () => {
-    const { handler, documentClient } = useHandler();
+const isSql = process.env.WEBINY_STORAGE?.includes("sql");
+
+describe.skipIf(isSql)("Audit Logs Tenant Index", () => {
+    const { handler } = useHandler();
 
     it("should have LastEvaluatedKey in the result and it should be the result", async () => {
         const context = await handler();
@@ -56,36 +58,25 @@ describe("Audit Logs Tenant Index", () => {
             }
         ]);
 
-        const { entity } = createEntity({
-            client: documentClient,
-            tableName: process.env.DB_TABLE_AUDIT_LOGS,
-            gsiAmount: 10
-        });
+        const documentClient = getDocumentClient();
 
-        const results = await entity.queryAll({
-            partitionKey: tenantId,
-            options: {
-                index: "GSI_TENANT",
-                reverse: false
+        const scanned = await documentClient.scan({
+            TableName: process.env.DB_TABLE_AUDIT_LOGS,
+            IndexName: "GSI_TENANT",
+            FilterExpression: "GSI_TENANT = :tenant",
+            ExpressionAttributeValues: {
+                ":tenant": tenantId
             }
         });
 
-        expect(results).toMatchObject([
-            {
+        expect(scanned.Items).toHaveLength(3);
+
+        for (const item of scanned.Items || []) {
+            expect(item).toMatchObject({
                 GSI_TENANT: "root",
                 PK: "T#root#AUDIT_LOG",
                 SK: expect.any(String)
-            },
-            {
-                GSI_TENANT: "root",
-                PK: "T#root#AUDIT_LOG",
-                SK: expect.any(String)
-            },
-            {
-                GSI_TENANT: "root",
-                PK: "T#root#AUDIT_LOG",
-                SK: expect.any(String)
-            }
-        ]);
+            });
+        }
     });
 });
