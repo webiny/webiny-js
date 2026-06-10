@@ -3,13 +3,15 @@ import { createApiCoreSql } from "~/createApiCoreSql.js";
 import { getSqlTablePrefix } from "~/getSqlTablePrefix.js";
 import knexLib from "knex";
 
-const knex = global.__testKnex || knexLib({
-    client: "better-sqlite3",
-    connection: {
-        filename: ":memory:"
-    },
-    useNullAsDefault: true
-});
+const knex =
+    global.__testKnex ||
+    knexLib({
+        client: "better-sqlite3",
+        connection: {
+            filename: ":memory:"
+        },
+        useNullAsDefault: true
+    });
 
 global.__testKnex = knex;
 

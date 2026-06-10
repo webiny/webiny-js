@@ -4,13 +4,15 @@ import { createCmsEntryFieldSortingPlugin } from "@webiny/api-headless-cms-stora
 import knexLib from "knex";
 
 /* Reuse existing knex instance so all SQL presets share the same in-memory database. */
-const knex = global.__testKnex || knexLib({
-    client: "better-sqlite3",
-    connection: {
-        filename: ":memory:"
-    },
-    useNullAsDefault: true
-});
+const knex =
+    global.__testKnex ||
+    knexLib({
+        client: "better-sqlite3",
+        connection: {
+            filename: ":memory:"
+        },
+        useNullAsDefault: true
+    });
 
 global.__testKnex = knex;
 

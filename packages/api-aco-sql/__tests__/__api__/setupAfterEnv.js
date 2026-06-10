@@ -1,8 +1,2 @@
-import { beforeEach } from "vitest";
-
-beforeEach(() => {
-    const managers = globalThis.__acoSqlManagers || [];
-    for (const manager of managers) {
-        manager.reset();
-    }
-});
+/* No-op: table cleanup is handled by CMS SQL setupAfterEnv (drops all tables). */
+/* FLP storage operations re-check table existence on every call via hasTable(). */

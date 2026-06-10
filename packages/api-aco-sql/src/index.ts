@@ -3,8 +3,6 @@ import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { FolderLevelPermissionsStorageOperations } from "./FolderLevelPermissionsStorageOperations.js";
 import { FlpStorageOperations } from "@webiny/api-aco/features/folder/shared/abstractions.js";
 
-export { FolderLevelPermissionsStorageOperations } from "./FolderLevelPermissionsStorageOperations.js";
-
 interface RegisterAcoSqlStorageOperationsParams {
     knex: Knex;
 }
@@ -16,9 +14,5 @@ export const registerAcoSqlStorageOperations = (params: RegisterAcoSqlStorageOpe
         });
 
         context.container.registerInstance(FlpStorageOperations, flpStorageOperations);
-
-        const managers = globalThis.__acoSqlManagers || [];
-        managers.push(flpStorageOperations);
-        globalThis.__acoSqlManagers = managers;
     });
 };

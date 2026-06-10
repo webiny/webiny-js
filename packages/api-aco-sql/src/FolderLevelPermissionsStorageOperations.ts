@@ -29,7 +29,6 @@ export interface StorageOperationsConfig {
 
 export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPermissionsStorageOperations {
     private readonly knex: Knex;
-    private tableCreated = false;
 
     constructor({ knex }: StorageOperationsConfig) {
         this.knex = knex;
@@ -194,31 +193,22 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         }
     }
 
-    public reset(): void {
-        this.tableCreated = false;
-    }
-
     private async ensureTable(): Promise<void> {
-        if (this.tableCreated) {
+        const exists = await this.knex.schema.hasTable(TABLE_NAME);
+        if (exists) {
             return;
         }
 
-        const exists = await this.knex.schema.hasTable(TABLE_NAME);
-
-        if (!exists) {
-            await this.knex.schema.createTable(TABLE_NAME, table => {
-                table.text("id").notNullable();
-                table.text("tenant").notNullable();
-                table.text("type").notNullable();
-                table.text("slug").notNullable();
-                table.text("path").notNullable();
-                table.text("parentId").notNullable();
-                table.text("permissions").notNullable();
-                table.primary(["tenant", "id"]);
-            });
-        }
-
-        this.tableCreated = true;
+        await this.knex.schema.createTable(TABLE_NAME, table => {
+            table.text("id").notNullable();
+            table.text("tenant").notNullable();
+            table.text("type").notNullable();
+            table.text("slug").notNullable();
+            table.text("path").notNullable();
+            table.text("parentId").notNullable();
+            table.text("permissions").notNullable();
+            table.primary(["tenant", "id"]);
+        });
     }
 
     private toRow(data: FolderLevelPermission & { tenant: string }): FlpRow {
