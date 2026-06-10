@@ -1,16 +1,14 @@
 import React from "react";
-import { makeDecoratable } from "@webiny/react-composition";
-import { CmsTrashBin } from "~/presentation/contentEntries/trashBin/CmsTrashBin.js";
+import { useContentEntryListConfig } from "~/admin/config/contentEntries/list/ContentEntryListConfig.js";
 
-export interface ISidebarFooterProps {
-    children?: React.ReactNode;
-}
+export const SidebarFooter = () => {
+    const { browser } = useContentEntryListConfig();
 
-export const SidebarFooter = makeDecoratable(({ children }: ISidebarFooterProps) => {
     return (
         <div className={"px-xs py-sm bg-neutral-base"}>
-            {children}
-            <CmsTrashBin />
+            {browser.sidebarFooter.map(footer => {
+                return React.cloneElement(footer.element, { key: footer.name });
+            })}
         </div>
     );
-});
+};

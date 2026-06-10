@@ -44,6 +44,7 @@ import { ContentFormOptionsMenu } from "~/admin/components/ContentEntryForm/Head
 import { RevisionSelector } from "~/admin/components/ContentEntryForm/Header/index.js";
 import { AdminConfig } from "@webiny/app-admin";
 import { TrashEntryConfirmDialog } from "~/admin/components/Dialogs/TrashEntryConfirmDialog.js";
+import { CmsTrashBin } from "~/presentation/contentEntries/trashBin/CmsTrashBin.js";
 import {
     TRASH_ENTRY_DIALOG,
     PUBLISH_ENTRY_DIALOG,
@@ -143,6 +144,7 @@ export const ContentEntriesModule = () => {
                     element={<Ref />}
                     type={Browser.AdvancedSearch.FieldRenderer.FieldType.REF}
                 />
+                <Browser.Sidebar.Footer name={"trash"} element={<CmsTrashBin />} />
             </InternalContentEntryListConfig>
             <ContentEntryEditorConfig>
                 <IsModelPublishable>

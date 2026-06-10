@@ -15,6 +15,10 @@ import { shouldDecorateFolderField } from "./FolderFieldDecorator.js";
 import { FolderDropConfirmation } from "./FolderDropConfirmation.js";
 import { FolderConfig } from "@webiny/app-aco/config/folder";
 import { RecordConfig } from "@webiny/app-aco/config/record";
+import type { SidebarFooterConfig } from "./SidebarFooter.js";
+import { SidebarFooter } from "./SidebarFooter.js";
+
+export type { SidebarFooterConfig };
 
 export interface BrowserConfig {
     advancedSearch: AdvancedSearchConfig;
@@ -24,6 +28,7 @@ export interface BrowserConfig {
     bulkActions: BulkActionConfig[];
     filters: FilterConfig[];
     filtersToWhere: FiltersToWhereConverter[];
+    sidebarFooter: SidebarFooterConfig[];
 }
 
 export const Browser = {
@@ -32,6 +37,9 @@ export const Browser = {
     Filter,
     FiltersToWhere,
     Table,
+    Sidebar: {
+        Footer: SidebarFooter
+    },
     Folder: {
         ExtensionField: {
             createDecorator: createFolderFieldDecoratorFactory({

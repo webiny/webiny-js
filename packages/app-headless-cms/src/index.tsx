@@ -1,4 +1,3 @@
-import { SidebarFooter } from "./admin/components/ContentEntries/SidebarFooter/index.js";
 import { ContentEntryListConfig } from "./ContentEntryListConfig.js";
 
 export * from "./HeadlessCMS.js";
@@ -16,9 +15,3 @@ export * from "~/admin/components/ContentEntryForm/ContentEntryForm.js";
 export * from "./plugins/index.js";
 
 export * from "./routes.js";
-
-export const Components = {
-    Sidebar: {
-        Footer: SidebarFooter
-    }
-};
