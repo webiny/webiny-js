@@ -75,4 +75,5 @@ When helping with Webiny-related tasks:
 2. Call `get_webiny_skill` with the relevant topic before writing code.
 
 ## CI/CD - GitHub Actions
+
 When working on GitHub Actions workflows, when possible, we always want to make modifications on `.github/workflows/wac` TS files first, and then emit YAML files via `yarn ci-workflows:build`. Only work on YAML files if a corresponding .wac.ts file does not exist.
