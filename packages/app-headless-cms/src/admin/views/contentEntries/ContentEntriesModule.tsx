@@ -11,11 +11,9 @@ import {
     ActionUnpublish
 } from "~/admin/components/ContentEntries/BulkActions/index.js";
 import { FilterByStatus } from "~/admin/components/ContentEntries/Filters/index.js";
-import {
-    DeleteEntry as DeleteEntryMenuItem,
-    SaveAndPublishButton,
-    SaveContentButton
-} from "~/admin/components/ContentEntryForm/Header/index.js";
+import { SaveContentButton } from "~/presentation/contentEntries/views/actions/SaveContentButton.js";
+import { SaveAndPublishButton } from "~/presentation/contentEntries/views/actions/SaveAndPublishButton.js";
+import { DeleteEntryMenuItem } from "~/presentation/contentEntries/views/actions/DeleteEntryMenuItem.js";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import {
     ChangeEntryStatus,
@@ -37,11 +35,11 @@ import { PublishEntryConfirmDialog } from "~/admin/components/Dialogs/PublishEnt
 import { UnpublishEntryConfirmDialog } from "~/admin/components/Dialogs/UnpublishEntryConfirmDialog.js";
 import { DeleteRevisionConfirmDialog } from "~/admin/components/Dialogs/DeleteRevisionConfirmDialog.js";
 import { FullScreenContentEntry } from "~/admin/views/contentEntries/ContentEntry/FullScreenContentEntry/index.js";
-import { ShowRevisionList } from "~/admin/components/ContentEntryForm/Header/ShowRevisionsList/index.js";
+import { ShowRevisionListMenuItem as ShowRevisionList } from "~/presentation/contentEntries/views/actions/ShowRevisionListMenuItem.js";
 import { AdvancedSearchConfigs } from "@webiny/app-aco/components/AdvancedSearch/AdvancedSearchConfigs";
 import { IsModelPublishable } from "~/admin/components/IsModelPublishable.js";
-import { ContentFormOptionsMenu } from "~/admin/components/ContentEntryForm/Header/ContentFormOptionsMenu/index.js";
-import { RevisionSelector } from "~/admin/components/ContentEntryForm/Header/index.js";
+import { ContentFormOptionsMenu } from "~/presentation/contentEntries/views/actions/ContentFormOptionsMenu.js";
+import { RevisionSelector } from "~/presentation/contentEntries/views/actions/RevisionSelector.js";
 import { AdminConfig } from "@webiny/app-admin";
 import { TrashEntryConfirmDialog } from "~/admin/components/Dialogs/TrashEntryConfirmDialog.js";
 import { CmsTrashBin } from "~/presentation/contentEntries/trashBin/CmsTrashBin.js";

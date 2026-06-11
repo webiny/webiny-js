@@ -2,12 +2,13 @@ import React, { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { observer } from "mobx-react-lite";
 import { useFeature, useRouter } from "@webiny/app";
-import { Buttons, useDialogs } from "@webiny/app-admin";
+import { Buttons, useDialogs, useRoute } from "@webiny/app-admin";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { HeaderBar, Heading, Icon, IconButton, OverlayLoader, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as BackIcon } from "@webiny/icons/arrow_back.svg";
 import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
 import { useContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
+import { Routes } from "~/routes.js";
 import {
     Container,
     Content,
@@ -26,6 +27,7 @@ export const ContentEntryFormView = observer(() => {
     const { width } = useContentEntryEditorConfig();
     const router = useRouter();
     const dialogs = useDialogs();
+    const { route } = useRoute(Routes.ContentEntries.List);
 
     const entryId = listPresenter.vm.selectedEntryId;
 
@@ -53,7 +55,11 @@ export const ContentEntryFormView = observer(() => {
                         "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?",
                     acceptLabel: "Yes!",
                     cancelLabel: "No, stay here.",
-                    onAccept: () => router.confirmTransition(),
+                    onAccept: () => {
+                        // We must reset the form to prevent the guard from kicking in again.
+                        formPresenter.dispose();
+                        router.confirmTransition();
+                    },
                     onClose: () => router.cancelTransition()
                 });
             }
@@ -62,13 +68,18 @@ export const ContentEntryFormView = observer(() => {
 
     const { vm } = formPresenter;
 
+    const handleBack = () => {
+        const { modelId, folderId } = route.params;
+        router.goToRoute(Routes.ContentEntries.List, { modelId, folderId });
+    };
+
     return (
         <Container>
             <Helmet title={vm.entry?.meta?.title || listPresenter.vm.model.name} />
             <HeaderBar
                 start={
                     <EntryFormHeaderLeft
-                        onBack={() => listPresenter.deselectEntry()}
+                        onBack={handleBack}
                         title={vm.entry?.meta?.title || `New ${listPresenter.vm.model.name}`}
                         isNewEntry={vm.isNewEntry}
                         modelName={listPresenter.vm.model.name}
@@ -81,9 +92,9 @@ export const ContentEntryFormView = observer(() => {
                 {vm.loading ? <OverlayLoader text={vm.loading} /> : null}
                 <ContentFormWrapper>
                     <ContentFormInner width={width}>
-                        {vm.form ? (
-                            <FormView name="ContentEntryForm" form={vm.form} />
-                        ) : null}
+                        <div className={"bg-neutral-base rounded-lg p-lg"}>
+                            {vm.form ? <FormView name="ContentEntryForm" form={vm.form} /> : null}
+                        </div>
                     </ContentFormInner>
                 </ContentFormWrapper>
             </Content>
@@ -110,21 +121,13 @@ const EntryFormHeaderLeft = ({
     return (
         <div className={"flex items-center gap-sm"}>
             <IconButton variant={"ghost"} onClick={onBack} icon={<BackIcon />} />
-            <Heading
-                level={5}
-                className={`text-neutral-primary${isNewEntry ? " opacity-50" : ""}`}
-            >
+            <Heading level={5} className={`text-neutral-primary${isNewEntry ? " opacity-50" : ""}`}>
                 {title}
             </Heading>
             <Tooltip
                 content={`Model: ${modelName}${status ? ` - Status: ${status}` : ""}`}
                 trigger={
-                    <Icon
-                        icon={<InfoIcon />}
-                        label={"Info"}
-                        size={"sm"}
-                        color={"neutral-light"}
-                    />
+                    <Icon icon={<InfoIcon />} label={"Info"} size={"sm"} color={"neutral-light"} />
                 }
             />
         </div>

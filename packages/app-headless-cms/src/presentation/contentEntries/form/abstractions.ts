@@ -16,17 +16,13 @@ export interface IContentEntryFormViewModel {
     isDirty: boolean;
 }
 
-export interface IContentEntryFormActions {
+export interface IContentEntryFormPresenter {
+    vm: IContentEntryFormViewModel;
     save(): Promise<boolean>;
     publish(): Promise<boolean>;
     unpublish(): Promise<boolean>;
     deleteEntry(): Promise<boolean>;
     updateRevisionDescription(description: string): Promise<boolean>;
-}
-
-export interface IContentEntryFormPresenter {
-    vm: IContentEntryFormViewModel;
-    actions: IContentEntryFormActions;
     loadEntry(entryId: string): Promise<void>;
     newEntry(): void;
     dispose(): void;
@@ -39,5 +35,4 @@ export const ContentEntryFormPresenter = createAbstraction<IContentEntryFormPres
 export namespace ContentEntryFormPresenter {
     export type Interface = IContentEntryFormPresenter;
     export type ViewModel = IContentEntryFormViewModel;
-    export type Actions = IContentEntryFormActions;
 }

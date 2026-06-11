@@ -3,10 +3,10 @@ import { observer } from "mobx-react-lite";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { usePermission } from "~/admin/hooks/index.js";
 import { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
-import { useContentEntryFormPresenter } from "~/presentation/contentEntries/views/ContentEntryFormPresenterProvider.js";
-import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
+import { useContentEntryFormPresenter } from "../ContentEntryFormPresenterProvider.js";
+import { useContentEntriesPresenter } from "../ContentEntriesPresenterProvider.js";
 
-export const DeleteEntry = observer(() => {
+export const DeleteEntryMenuItem = observer(() => {
     const presenter = useContentEntryFormPresenter();
     const listPresenter = useContentEntriesPresenter();
     const { canDelete } = usePermission();

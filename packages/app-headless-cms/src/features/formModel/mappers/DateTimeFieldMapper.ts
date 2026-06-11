@@ -8,6 +8,24 @@ export class DateTimeFieldMapper implements ICmsFieldTypeMapper {
 
     map(field: CmsModelField, registry: IFieldBuilderRegistry) {
         const builder = registry.datetime();
-        return applyFieldProps(builder, field);
+        applyFieldProps(builder, field);
+
+        const subtype = field.settings?.type as string | undefined;
+        switch (subtype) {
+            case "date":
+                builder.dateOnly();
+                break;
+            case "time":
+                builder.timeOnly();
+                break;
+            case "dateTimeWithTimezone":
+                builder.withTimezone();
+                break;
+            case "dateTimeWithoutTimezone":
+                builder.withoutTimezone();
+                break;
+        }
+
+        return builder;
     }
 }

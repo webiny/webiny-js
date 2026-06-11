@@ -9,8 +9,7 @@ import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
 import {
     SingletonEntryPresenter as Abstraction,
     type ISingletonEntryPresenter,
-    type ISingletonEntryViewModel,
-    type ISingletonEntryActions
+    type ISingletonEntryViewModel
 } from "./abstractions.js";
 
 class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
@@ -56,41 +55,39 @@ class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
         };
     }
 
-    actions: ISingletonEntryActions = {
-        save: async () => {
-            if (!this._form) {
-                return false;
-            }
-
-            const data = await this._form.submit();
-            if (!data) {
-                return false;
-            }
-
-            this._loading = "Saving...";
-
-            try {
-                const entry = await this.updateSingletonEntryUseCase.execute({
-                    model: this.model,
-                    data: data as Record<string, unknown>
-                });
-
-                runInAction(() => {
-                    this._entry = entry;
-                    this._form!.setData(entry.values);
-                    this._form!.reset();
-                });
-
-                return true;
-            } catch {
-                return false;
-            } finally {
-                runInAction(() => {
-                    this._loading = null;
-                });
-            }
+    async save(): Promise<boolean> {
+        if (!this._form) {
+            return false;
         }
-    };
+
+        const data = await this._form.submit();
+        if (!data) {
+            return false;
+        }
+
+        this._loading = "Saving...";
+
+        try {
+            const entry = await this.updateSingletonEntryUseCase.execute({
+                model: this.model,
+                data: data as Record<string, unknown>
+            });
+
+            runInAction(() => {
+                this._entry = entry;
+                this._form!.setData(entry.values);
+                this._form!.reset();
+            });
+
+            return true;
+        } catch {
+            return false;
+        } finally {
+            runInAction(() => {
+                this._loading = null;
+            });
+        }
+    }
 
     async init(): Promise<void> {
         this._loading = "Loading...";

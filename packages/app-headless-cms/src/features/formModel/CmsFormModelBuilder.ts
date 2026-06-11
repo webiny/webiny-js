@@ -39,7 +39,12 @@ class CmsFormModelBuilderImpl implements ICmsFormModelBuilder {
             mapField: (field, registry) => this.mapField(field, registry, context)
         };
 
-        const fieldIdsInLayout = model.layout ? collectFieldIds(model.layout) : null;
+        const idToFieldId = new Map<string, string>();
+        for (const field of model.fields) {
+            idToFieldId.set(field.id, field.fieldId);
+        }
+
+        const fieldIdsInLayout = model.layout ? collectFieldIds(model.layout, idToFieldId) : null;
 
         return {
             fields: registry => {
@@ -53,7 +58,9 @@ class CmsFormModelBuilderImpl implements ICmsFormModelBuilder {
                 }
                 return result;
             },
-            layout: model.layout ? layout => mapCmsLayout(model.layout!, layout) : undefined
+            layout: model.layout
+                ? layout => mapCmsLayout(model.layout!, layout, idToFieldId)
+                : undefined
         };
     }
 
@@ -76,23 +83,29 @@ export const CmsFormModelBuilder = BuilderAbstraction.createImplementation({
     dependencies: [[CmsFieldTypeMapper, { multiple: true, optional: true }]]
 });
 
-function collectFieldIds(layout: CmsEditorFieldsLayout): Set<string> {
-    const ids = new Set<string>();
+function collectFieldIds(
+    layout: CmsEditorFieldsLayout,
+    idToFieldId: Map<string, string>
+): Set<string> {
+    const fieldIds = new Set<string>();
 
     for (const row of layout) {
         for (const cell of row) {
             if (typeof cell === "string") {
-                ids.add(cell);
+                const fieldId = idToFieldId.get(cell);
+                if (fieldId) {
+                    fieldIds.add(fieldId);
+                }
             } else if (isLayoutField(cell) && cell.type === "tabs") {
                 const tabsField = cell as { tabs: Array<{ layout: CmsEditorFieldsLayout }> };
                 for (const tab of tabsField.tabs) {
-                    for (const id of collectFieldIds(tab.layout)) {
-                        ids.add(id);
+                    for (const id of collectFieldIds(tab.layout, idToFieldId)) {
+                        fieldIds.add(id);
                     }
                 }
             }
         }
     }
 
-    return ids;
+    return fieldIds;
 }

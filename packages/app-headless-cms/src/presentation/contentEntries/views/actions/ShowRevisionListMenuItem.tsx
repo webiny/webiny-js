@@ -3,10 +3,10 @@ import { useFeature } from "@webiny/app";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as ListIcon } from "@webiny/icons/checklist.svg";
 import { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
-import { useContentEntryFormPresenter } from "~/presentation/contentEntries/views/ContentEntryFormPresenterProvider.js";
-import { RevisionsListFeature } from "~/presentation/contentEntries/revisionsList/feature.js";
+import { useContentEntryFormPresenter } from "../ContentEntryFormPresenterProvider.js";
+import { RevisionsListFeature } from "../../revisionsList/feature.js";
 
-export const ShowRevisionList = observer(() => {
+export const ShowRevisionListMenuItem = observer(() => {
     const { useOptionsMenuItem } = ContentEntryEditorConfig.Actions.MenuItemAction;
     const { OptionsMenuItem } = useOptionsMenuItem();
     const presenter = useContentEntryFormPresenter();

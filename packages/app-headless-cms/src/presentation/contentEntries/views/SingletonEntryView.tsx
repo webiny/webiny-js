@@ -37,7 +37,7 @@ const SingletonEntryViewInner = observer(({ modelId }: SingletonEntryViewProps) 
         return () => presenter.dispose();
     }, [modelId]);
 
-    const { vm, actions } = presenter;
+    const { vm } = presenter;
 
     if (vm.loading) {
         return <div>{vm.loading}</div>;
@@ -51,7 +51,7 @@ const SingletonEntryViewInner = observer(({ modelId }: SingletonEntryViewProps) 
         <div>
             <div>
                 {vm.canSave && (
-                    <button onClick={() => actions.save()} disabled={vm.loading !== null}>
+                    <button onClick={() => presenter.save()} disabled={vm.loading !== null}>
                         Save
                     </button>
                 )}

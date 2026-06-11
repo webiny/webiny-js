@@ -10,13 +10,9 @@ export interface ISingletonEntryViewModel {
     isDirty: boolean;
 }
 
-export interface ISingletonEntryActions {
-    save(): Promise<boolean>;
-}
-
 export interface ISingletonEntryPresenter {
     vm: ISingletonEntryViewModel;
-    actions: ISingletonEntryActions;
+    save(): Promise<boolean>;
     init(): Promise<void>;
     dispose(): void;
 }
@@ -27,5 +23,4 @@ export const SingletonEntryPresenter =
 export namespace SingletonEntryPresenter {
     export type Interface = ISingletonEntryPresenter;
     export type ViewModel = ISingletonEntryViewModel;
-    export type Actions = ISingletonEntryActions;
 }

@@ -2,7 +2,7 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
 import { usePermission } from "~/admin/hooks/usePermission.js";
-import { useContentEntryFormPresenter } from "~/presentation/contentEntries/views/ContentEntryFormPresenterProvider.js";
+import { useContentEntryFormPresenter } from "../ContentEntryFormPresenterProvider.js";
 
 export const SaveContentButton = observer(() => {
     const { useButtons } = ContentEntryEditorConfig.Actions.ButtonAction;
@@ -10,7 +10,10 @@ export const SaveContentButton = observer(() => {
     const { ButtonSecondary } = useButtons();
     const presenter = useContentEntryFormPresenter();
 
-    if (!presenter.vm.canSave || (presenter.vm.entry && !canEdit(presenter.vm.entry, "cms.contentEntry"))) {
+    if (
+        !presenter.vm.canSave ||
+        (presenter.vm.entry && !canEdit(presenter.vm.entry, "cms.contentEntry"))
+    ) {
         return null;
     }
 

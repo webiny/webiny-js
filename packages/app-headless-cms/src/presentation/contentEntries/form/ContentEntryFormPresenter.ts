@@ -22,8 +22,7 @@ import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
 import {
     ContentEntryFormPresenter as Abstraction,
     type IContentEntryFormPresenter,
-    type IContentEntryFormViewModel,
-    type IContentEntryFormActions
+    type IContentEntryFormViewModel
 } from "./abstractions.js";
 
 class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
@@ -97,176 +96,182 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
         };
     }
 
-    actions: IContentEntryFormActions = {
-        save: async () => {
-            if (!this._form) {
-                return false;
-            }
+    async save(): Promise<boolean> {
+        if (!this._form) {
+            return false;
+        }
 
-            const data = await this._form.submit();
-            if (!data) {
-                return false;
-            }
+        const data = await this._form.submit();
+        if (!data) {
+            return false;
+        }
 
+        runInAction(() => {
             this._loading = "Saving...";
+        });
 
-            try {
-                if (this._entry) {
-                    const entry = await this.updateEntryUseCase.execute({
-                        model: this.model,
-                        revisionId: this._entry.id,
-                        data: data as Record<string, unknown>
-                    });
+        try {
+            if (this._entry) {
+                const entry = await this.updateEntryUseCase.execute({
+                    model: this.model,
+                    revisionId: this._entry.id,
+                    data: {
+                        values: data
+                    }
+                });
 
-                    runInAction(() => {
-                        this._entry = entry;
-                        this._form!.setData(entry.values);
-                        this._form!.reset();
-                    });
-                } else {
-                    const entry = await this.createEntryUseCase.execute({
-                        model: this.model,
-                        data: data as Record<string, unknown>
-                    });
-
-                    runInAction(() => {
-                        this._entry = entry;
-                        this._form!.setData(entry.values);
-                        this._form!.reset();
-                    });
-                }
-
-                return true;
-            } catch {
-                return false;
-            } finally {
                 runInAction(() => {
-                    this._loading = null;
+                    this._entry = entry;
+                    this._form!.setData(entry.values);
+                    this._form!.reset();
+                });
+            } else {
+                const entry = await this.createEntryUseCase.execute({
+                    model: this.model,
+                    data: {
+                        values: data
+                    }
+                });
+
+                runInAction(() => {
+                    this._entry = entry;
+                    this._form!.setData(entry.values);
+                    this._form!.reset();
                 });
             }
-        },
 
-        publish: async () => {
-            if (!this._entry) {
-                return false;
-            }
+            return true;
+        } catch {
+            return false;
+        } finally {
+            runInAction(() => {
+                this._loading = null;
+            });
+        }
+    }
 
-            const result = await this.confirmation.confirm<PublishEntryDialogData>(
-                PUBLISH_ENTRY_DIALOG,
-                { entryId: this._entry.id }
-            );
+    async publish(): Promise<boolean> {
+        if (!this._entry) {
+            return false;
+        }
 
-            if (result === false) {
-                return false;
-            }
+        const result = await this.confirmation.confirm<PublishEntryDialogData>(
+            PUBLISH_ENTRY_DIALOG,
+            { entry: this._entry }
+        );
 
+        if (result === false) {
+            return false;
+        }
+
+        runInAction(() => {
             this._loading = "Publishing...";
+        });
 
-            try {
-                if (result.revisionDescription) {
-                    await this.updateRevisionDescriptionUseCase.execute({
-                        model: this.model,
-                        id: this._entry.id,
-                        revisionDescription: result.revisionDescription
-                    });
-                }
-
-                const entry = await this.publishEntryUseCase.execute({
-                    model: this.model,
-                    revisionId: this._entry.id
-                });
-
-                runInAction(() => {
-                    this._entry = entry;
-                });
-
-                return true;
-            } catch {
-                return false;
-            } finally {
-                runInAction(() => {
-                    this._loading = null;
-                });
-            }
-        },
-
-        unpublish: async () => {
-            if (!this._entry) {
-                return false;
-            }
-
-            this._loading = "Unpublishing...";
-
-            try {
-                const entry = await this.unpublishEntryUseCase.execute({
-                    model: this.model,
-                    revisionId: this._entry.id
-                });
-
-                runInAction(() => {
-                    this._entry = entry;
-                });
-
-                return true;
-            } catch {
-                return false;
-            } finally {
-                runInAction(() => {
-                    this._loading = null;
-                });
-            }
-        },
-
-        deleteEntry: async () => {
-            if (!this._entry) {
-                return false;
-            }
-
-            this._loading = "Deleting...";
-
-            try {
-                await this.deleteEntryUseCase.execute({
-                    model: this.model,
-                    id: this._entry.id
-                });
-
-                runInAction(() => {
-                    this._entry = null;
-                    this._form = null;
-                });
-
-                return true;
-            } catch {
-                return false;
-            } finally {
-                runInAction(() => {
-                    this._loading = null;
-                });
-            }
-        },
-
-        updateRevisionDescription: async (description: string) => {
-            if (!this._entry) {
-                return false;
-            }
-
-            try {
-                const entry = await this.updateRevisionDescriptionUseCase.execute({
+        try {
+            if (result.revisionDescription) {
+                await this.updateRevisionDescriptionUseCase.execute({
                     model: this.model,
                     id: this._entry.id,
-                    revisionDescription: description
+                    revisionDescription: result.revisionDescription
                 });
-
-                runInAction(() => {
-                    this._entry = entry;
-                });
-
-                return true;
-            } catch {
-                return false;
             }
+
+            const entry = await this.publishEntryUseCase.execute({
+                model: this.model,
+                revisionId: this._entry.id
+            });
+
+            runInAction(() => {
+                this._entry = entry;
+            });
+
+            return true;
+        } catch {
+            return false;
+        } finally {
+            runInAction(() => {
+                this._loading = null;
+            });
         }
-    };
+    }
+
+    async unpublish(): Promise<boolean> {
+        if (!this._entry) {
+            return false;
+        }
+
+        this._loading = "Unpublishing...";
+
+        try {
+            const entry = await this.unpublishEntryUseCase.execute({
+                model: this.model,
+                revisionId: this._entry.id
+            });
+
+            runInAction(() => {
+                this._entry = entry;
+            });
+
+            return true;
+        } catch {
+            return false;
+        } finally {
+            runInAction(() => {
+                this._loading = null;
+            });
+        }
+    }
+
+    async deleteEntry(): Promise<boolean> {
+        if (!this._entry) {
+            return false;
+        }
+
+        this._loading = "Deleting...";
+
+        try {
+            await this.deleteEntryUseCase.execute({
+                model: this.model,
+                id: this._entry.id
+            });
+
+            runInAction(() => {
+                this._entry = null;
+                this._form = null;
+            });
+
+            return true;
+        } catch {
+            return false;
+        } finally {
+            runInAction(() => {
+                this._loading = null;
+            });
+        }
+    }
+
+    async updateRevisionDescription(description: string): Promise<boolean> {
+        if (!this._entry) {
+            return false;
+        }
+
+        try {
+            const entry = await this.updateRevisionDescriptionUseCase.execute({
+                model: this.model,
+                id: this._entry.id,
+                revisionDescription: description
+            });
+
+            runInAction(() => {
+                this._entry = entry;
+            });
+
+            return true;
+        } catch {
+            return false;
+        }
+    }
 
     async loadEntry(entryId: string): Promise<void> {
         this._loading = "Loading entry...";

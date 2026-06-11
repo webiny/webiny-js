@@ -13,7 +13,8 @@ import type {
 
 export function mapCmsLayout(
     cmsLayout: CmsEditorFieldsLayout,
-    layoutBuilder: ILayoutBuilder
+    layoutBuilder: ILayoutBuilder,
+    idToFieldId: Map<string, string>
 ): ILayoutNodeBuilder[] {
     const nodes: ILayoutNodeBuilder[] = [];
 
@@ -26,7 +27,7 @@ export function mapCmsLayout(
 
         if (row.length === 1 && isLayoutField(firstCell)) {
             const layoutField = firstCell as CmsLayoutField;
-            const node = mapLayoutField(layoutField, layoutBuilder);
+            const node = mapLayoutField(layoutField, layoutBuilder, idToFieldId);
             if (node) {
                 nodes.push(node);
             }
@@ -36,7 +37,10 @@ export function mapCmsLayout(
         const fieldIds: string[] = [];
         for (const cell of row) {
             if (typeof cell === "string") {
-                fieldIds.push(cell);
+                const fieldId = idToFieldId.get(cell);
+                if (fieldId) {
+                    fieldIds.push(fieldId);
+                }
             }
         }
 
@@ -50,14 +54,15 @@ export function mapCmsLayout(
 
 function mapLayoutField(
     field: CmsLayoutField,
-    layoutBuilder: ILayoutBuilder
+    layoutBuilder: ILayoutBuilder,
+    idToFieldId: Map<string, string>
 ): ILayoutNodeBuilder | null {
     switch (field.type) {
         case "separator":
             return mapSeparator(field as CmsSeparatorLayoutField, layoutBuilder);
 
         case "tabs":
-            return mapTabs(field as CmsTabLayoutField, layoutBuilder);
+            return mapTabs(field as CmsTabLayoutField, layoutBuilder, idToFieldId);
 
         case "alert":
             return mapAlert(field as CmsAlertLayoutField, layoutBuilder);
@@ -74,7 +79,11 @@ function mapSeparator(
     return layoutBuilder.separator();
 }
 
-function mapTabs(field: CmsTabLayoutField, layoutBuilder: ILayoutBuilder): ILayoutNodeBuilder {
+function mapTabs(
+    field: CmsTabLayoutField,
+    layoutBuilder: ILayoutBuilder,
+    idToFieldId: Map<string, string>
+): ILayoutNodeBuilder {
     const tabsBuilder = layoutBuilder.tabs(field.id);
 
     for (const tab of field.tabs) {
@@ -83,7 +92,7 @@ function mapTabs(field: CmsTabLayoutField, layoutBuilder: ILayoutBuilder): ILayo
             if (tab.icon) {
                 t.icon({ type: "icon", name: tab.icon });
             }
-            t.layout(l => mapCmsLayout(tab.layout, l));
+            t.layout(l => mapCmsLayout(tab.layout, l, idToFieldId));
             if (tab.rules) {
                 t.rules(
                     tab.rules.map(r => ({

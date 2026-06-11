@@ -8,7 +8,7 @@ interface SingletonEntryLayoutProps {
 }
 
 export const SingletonEntryLayout = observer(({ presenter }: SingletonEntryLayoutProps) => {
-    const { vm, actions } = presenter;
+    const { vm } = presenter;
 
     if (vm.loading) {
         return <div>{vm.loading}</div>;
@@ -22,7 +22,7 @@ export const SingletonEntryLayout = observer(({ presenter }: SingletonEntryLayou
         <div>
             <div>
                 {vm.canSave && (
-                    <button onClick={() => actions.save()} disabled={vm.loading !== null}>
+                    <button onClick={() => presenter.save()} disabled={vm.loading !== null}>
                         Save
                     </button>
                 )}
