@@ -15,21 +15,7 @@ export namespace HttpTenantIdExtractor {
 
 class DefaultHttpTenantIdExtractor implements IHttpTenantIdExtractor {
     extract(request: IHttpRequest): string | undefined {
-        const header = request.headers["x-tenant"] || request.headers["X-Tenant"];
-        if (header) {
-            return header;
-        }
-
-        const host = request.headers["host"] || request.headers["Host"] || "";
-        const parts = host.split(".");
-        if (parts.length >= 3) {
-            const subdomain = parts[0];
-            if (subdomain && subdomain !== "www" && subdomain !== "api") {
-                return subdomain;
-            }
-        }
-
-        return undefined;
+        return request.headers["x-tenant"] || request.headers["X-Tenant"];
     }
 }
 
