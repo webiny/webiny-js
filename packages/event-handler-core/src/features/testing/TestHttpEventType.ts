@@ -1,6 +1,6 @@
 import { EventHandler } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
-import { IHttpRequest } from "~/features/http";
+import { IHttpRequest } from "~/features/http/index.js";
 
 export function isHttpRequest(event: any): event is IHttpRequest {
     return (
