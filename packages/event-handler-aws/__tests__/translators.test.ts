@@ -4,7 +4,7 @@ import {
     ApiGatewayEventType,
     FunctionUrlEventType,
     ApiGatewayTranslator,
-    FunctionUrlTranslator,
+    FunctionUrlTranslator
 } from "~/index.js";
 import { EventHandler } from "@webiny/event-handler-core";
 import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
@@ -142,4 +142,3 @@ describe("FunctionUrlTranslator", () => {
         expect(body.query).toEqual({ foo: "bar" });
     });
 });
-
