@@ -1,6 +1,7 @@
 import { HttpEventHandler } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
 import { isHttpRequest } from "~/features/http/abstractions.js";
+import { HttpFeature } from "~/features/http/feature.js";
 import { createHandler } from "~/features/events/createHandler.js";
 import type { HandlerSetup, IHttpRequest, IHttpResponse } from "~/index.js";
 
@@ -34,6 +35,7 @@ export function createTestHttpHandler(options: CreateTestHttpHandlerOptions) {
     const invoke = createHandler({
         root: async container => {
             container.register(TestHttpEventType);
+            HttpFeature.register(container);
             await options.root(container);
         },
         request: options.request
