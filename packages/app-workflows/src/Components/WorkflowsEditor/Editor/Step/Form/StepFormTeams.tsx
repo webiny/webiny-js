@@ -31,6 +31,7 @@ const Autocomplete = ({ bind }: IAutocompleteProps) => {
             label={"Select which teams need to review and approve this workflow"}
             values={values}
             onChange={onChange}
+            validation={bind.validation}
         />
     );
 };
