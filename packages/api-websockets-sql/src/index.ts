@@ -1,7 +1,7 @@
 import type { Knex } from "knex";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { WebsocketsConnectionRegistry } from "./WebsocketsConnectionRegistry.js";
-import { ConnectionRegistry } from "@webiny/api-websockets";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 
 interface RegisterWebsocketsSqlStorageOperationsParams {
     knex: Knex;

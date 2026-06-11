@@ -12,8 +12,6 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import { registerWebsocketsDdbStorageOperations } from "../../../api-websockets-ddb/src/index";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 
 export interface Params {
     plugins?: PluginCollection | PluginsContainer;
@@ -25,6 +23,7 @@ export const createPlugins = (params?: Params): PluginsContainer => {
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const websocketsStorage = getStorageOps("websockets");
 
     const container = plugins instanceof PluginsContainer ? plugins : new PluginsContainer();
     container.register([
@@ -39,7 +38,7 @@ export const createPlugins = (params?: Params): PluginsContainer => {
             identity: createIdentity()
         }),
         createWebsockets(),
-        registerWebsocketsDdbStorageOperations({ documentClient: getDocumentClient() }),
+        ...websocketsStorage.plugins,
         createHeadlessCmsContext(),
         createHeadlessCmsGraphQL(),
         graphQLHandlerPlugins(),

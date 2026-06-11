@@ -1,7 +1,7 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { WebsocketsConnectionRegistry } from "./WebsocketsConnectionRegistry.js";
-import { ConnectionRegistry } from "@webiny/api-websockets";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 
 export { WebsocketsConnectionRegistry } from "./WebsocketsConnectionRegistry.js";
 

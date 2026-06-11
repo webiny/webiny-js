@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { WebsocketsConnectionRegistry } from "../src/WebsocketsConnectionRegistry";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { useHandler } from "~tests/helpers/useHandler";
 
 describe("websockets connection registry", () => {
     it("should register new connections", async () => {
-        const documentClient = getDocumentClient();
-        const registry = new WebsocketsConnectionRegistry(documentClient);
+        const { handle } = useHandler();
+        const context = await handle();
+        const registry = context.websockets.registry;
 
         const result = await registry.register({
             connectionId: "connection-1",
@@ -86,8 +86,9 @@ describe("websockets connection registry", () => {
     });
 
     it("should unregister connections", async () => {
-        const documentClient = getDocumentClient();
-        const registry = new WebsocketsConnectionRegistry(documentClient);
+        const { handle } = useHandler();
+        const context = await handle();
+        const registry = context.websockets.registry;
 
         const result = await registry.register({
             connectionId: "connection-1",

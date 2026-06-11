@@ -1,9 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useGraphQLHandler } from "~tests/helpers/useGraphQLHandler";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
-import type { IWebsocketsConnectionRegistryData } from "~/registry";
-import { WebsocketsConnectionRegistry } from "../../../api-websockets-ddb/src/WebsocketsConnectionRegistry";
+import type { IWebsocketsConnectionRegistry, IWebsocketsConnectionRegistryData } from "~/registry";
 import type { IWebsocketsIdentity } from "~/context";
+import { useHandler } from "~tests/helpers/useHandler";
 
 vi.mock("@webiny/aws-sdk/client-apigatewaymanagementapi", () => {
     return {
@@ -35,10 +34,12 @@ interface InsertConnectionsParams {
     identity?: IWebsocketsIdentity;
 }
 
-const insertConnections = async (amount: number, params?: InsertConnectionsParams) => {
+const insertConnections = async (
+    registry: IWebsocketsConnectionRegistry,
+    amount: number,
+    params?: InsertConnectionsParams
+) => {
     const { suffix, tenant, identity } = params || {};
-    const documentClient = getDocumentClient();
-    const registry = new WebsocketsConnectionRegistry(documentClient);
 
     const connections: IWebsocketsConnectionRegistryData[] = [];
     for (let i = 0; i < amount; i++) {
@@ -62,6 +63,14 @@ const insertConnections = async (amount: number, params?: InsertConnectionsParam
 };
 
 describe("crud graphql", () => {
+    let registry: IWebsocketsConnectionRegistry;
+
+    beforeEach(async () => {
+        const { handle } = useHandler();
+        const ctx = await handle();
+        registry = ctx.websockets.registry;
+    });
+
     it("should list all connections", async () => {
         const { listConnections } = useGraphQLHandler();
 
@@ -71,7 +80,7 @@ describe("crud graphql", () => {
             0
         );
 
-        const connections = await insertConnections(50);
+        const connections = await insertConnections(registry, 50);
 
         const [resultAfterInsertingConnections] = await listConnections();
 
@@ -104,7 +113,7 @@ describe("crud graphql", () => {
          * Generate connections 5 * 5
          */
         for (let i = 0; i < 5; i++) {
-            await insertConnections(5, {
+            await insertConnections(registry, 5, {
                 suffix: `iteration-${i}`
             });
         }
@@ -136,7 +145,7 @@ describe("crud graphql", () => {
         /**
          * Generate some more connections
          */
-        await insertConnections(5, {
+        await insertConnections(registry, 5, {
             suffix: "iteration-6"
         });
 
@@ -167,8 +176,8 @@ describe("crud graphql", () => {
 
     it("should list all connections for a specific tenant", async () => {
         const { listConnections } = useGraphQLHandler();
-        await insertConnections(5);
-        await insertConnections(5, {
+        await insertConnections(registry, 5);
+        await insertConnections(registry, 5, {
             suffix: `dev`,
             tenant: "dev"
         });
@@ -194,7 +203,7 @@ describe("crud graphql", () => {
 
     it("should list all connections for specific tenant", async () => {
         const { listConnections } = useGraphQLHandler();
-        await insertConnections(5);
+        await insertConnections(registry, 5);
 
         const [resultRoot] = await listConnections({
             where: {
@@ -207,7 +216,7 @@ describe("crud graphql", () => {
     it("should disconnect a specific identity connection", async () => {
         const { listConnections, disconnectIdentity } = useGraphQLHandler();
 
-        const connections = await insertConnections(5);
+        const connections = await insertConnections(registry, 5);
 
         const [resultBeforeDisconnect] = await listConnections();
         expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(5);
@@ -231,8 +240,8 @@ describe("crud graphql", () => {
     it("should disconnect a specific tenant connection", async () => {
         const { listConnections, disconnectTenant } = useGraphQLHandler();
 
-        const connections = await insertConnections(5);
-        await insertConnections(5, {
+        const connections = await insertConnections(registry, 5);
+        await insertConnections(registry, 5, {
             suffix: "dev",
             tenant: "dev"
         });
@@ -260,12 +269,12 @@ describe("crud graphql", () => {
     it("should disconnect specific tenant combination", async () => {
         const { listConnections, disconnectTenant } = useGraphQLHandler();
 
-        const rootEnConnections = await insertConnections(5);
-        const devEnConnections = await insertConnections(5, {
+        const rootEnConnections = await insertConnections(registry, 5);
+        const devEnConnections = await insertConnections(registry, 5, {
             suffix: "dev-en",
             tenant: "dev"
         });
-        await insertConnections(5, {
+        await insertConnections(registry, 5, {
             suffix: "dev-hr",
             tenant: "dev"
         });
@@ -308,17 +317,17 @@ describe("crud graphql", () => {
         const { listConnections, disconnectAll } = useGraphQLHandler();
 
         const connections = [
-            ...(await insertConnections(5)),
-            ...(await insertConnections(5, {
+            ...(await insertConnections(registry, 5)),
+            ...(await insertConnections(registry, 5, {
                 suffix: "dev",
                 tenant: "dev"
             })),
-            ...(await insertConnections(5, {
+            ...(await insertConnections(registry, 5, {
                 suffix: "webiny",
                 tenant: "webiny"
             })),
 
-            ...(await insertConnections(5, {
+            ...(await insertConnections(registry, 5, {
                 suffix: "webiny-en",
                 tenant: "webiny"
             }))
@@ -345,7 +354,7 @@ describe("crud graphql", () => {
 
     it("should disconnect specific connections", async () => {
         const { listConnections, disconnect } = useGraphQLHandler();
-        const connections = await insertConnections(5);
+        const connections = await insertConnections(registry, 5);
 
         const [resultBeforeDisconnect] = await listConnections();
         expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(5);
