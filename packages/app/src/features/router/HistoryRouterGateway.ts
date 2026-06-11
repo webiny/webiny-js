@@ -58,6 +58,10 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
         this.history.replace(RouteUrl.fromPattern(route.path, params, baseUrl));
     }
 
+    goBack(): void {
+        this.history.back();
+    }
+
     setRoutes(routes: RouteDefinition[]) {
         this.router.setRoutes(routes);
 

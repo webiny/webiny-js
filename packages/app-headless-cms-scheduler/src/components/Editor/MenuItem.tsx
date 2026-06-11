@@ -66,6 +66,10 @@ export const MenuItem = observer(() => {
 
     const vm = presenter.vm;
 
+    if (!vm.canPublish && !vm.canUnpublish) {
+        return null;
+    }
+
     if (!canPublish && !canUnpublish) {
         return null;
     }

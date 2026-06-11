@@ -28,6 +28,7 @@ export interface IRouterPresenter {
     ): string;
     setRouteParams<T extends Record<string, any>>(cb: (params: T) => T): void;
     replaceRouteParams<T extends Record<string, any>>(cb: (params: T) => T): void;
+    goBack(): void;
     addTransitionGuard(config: RouteTransitionGuardConfig): GuardDisposer;
     isTransitionBlocked(): boolean;
     unblockTransition(): void;
@@ -74,6 +75,8 @@ export interface IRouterRepository {
         params: TParams extends RouteParamsDefinition ? RouteParamsInfer<TParams> : undefined
     ): string;
 
+    goBack(): void;
+
     registerRoutes(routes: Route[]): void;
 
     addGuard(config: RouteTransitionGuardConfig): GuardDisposer;
@@ -108,6 +111,7 @@ interface IRouterGateway {
     setRoutes(routes: RouteDefinition[]): void;
     goToRoute(name: string, params?: { [k: string]: any }): void;
     replaceRoute(name: string, params?: { [k: string]: any }): void;
+    goBack(): void;
     pushState(url: string): void;
     replaceState(url: string): void;
     addGuard(config: RouteTransitionGuardConfig): GuardDisposer;

@@ -178,18 +178,18 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                         {!revision.meta.locked &&
                             formVm.entry &&
                             canDelete(formVm.entry, "cms.contentEntry") && (
-                            <>
-                                <DropdownMenu.Separator />
-                                <DropdownMenu.Item
-                                    onClick={handleDeleteRevision}
-                                    icon={<DeleteIcon />}
-                                    text={t`Delete revision`}
-                                    className={
-                                        "text-destructive-primary! [&_svg]:fill-destructive"
-                                    }
-                                />
-                            </>
-                        )}
+                                <>
+                                    <DropdownMenu.Separator />
+                                    <DropdownMenu.Item
+                                        onClick={handleDeleteRevision}
+                                        icon={<DeleteIcon />}
+                                        text={t`Delete revision`}
+                                        className={
+                                            "text-destructive-primary! [&_svg]:fill-destructive"
+                                        }
+                                    />
+                                </>
+                            )}
                     </>
                 </DropdownMenu>
             }

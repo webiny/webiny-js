@@ -31,7 +31,7 @@ export const DeleteEntryMenuItem = observer(() => {
         }
     };
 
-    if (!presenter.vm.entry || !canDelete(presenter.vm.entry, "cms.contentEntry")) {
+    if (!presenter.vm.canDelete || !canDelete(presenter.vm.entry!, "cms.contentEntry")) {
         return null;
     }
 

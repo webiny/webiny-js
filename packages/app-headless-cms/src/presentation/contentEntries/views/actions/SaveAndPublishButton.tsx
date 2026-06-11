@@ -10,6 +10,7 @@ export const SaveAndPublishButton = observer(() => {
     const { canEdit, canPublish } = usePermission();
 
     if (
+        !presenter.vm.canPublish ||
         (presenter.vm.entry && !canEdit(presenter.vm.entry, "cms.contentEntry")) ||
         !canPublish("cms.contentEntry")
     ) {

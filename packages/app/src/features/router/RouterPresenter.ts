@@ -57,6 +57,10 @@ class RouterPresenterImpl implements Abstraction.Interface {
         return this.routerRepository.getLink(route, params);
     };
 
+    goBack = (): void => {
+        this.routerRepository.goBack();
+    };
+
     addTransitionGuard = (config: RouteTransitionGuardConfig): GuardDisposer => {
         return this.routerRepository.addGuard(config);
     };

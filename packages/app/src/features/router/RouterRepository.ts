@@ -65,6 +65,10 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
         this.gateway.replaceRoute(route.name, params);
     }
 
+    goBack(): void {
+        this.gateway.goBack();
+    }
+
     addGuard(config: RouteTransitionGuardConfig): GuardDisposer {
         const gatewayGuard: RouteTransitionGuardConfig = {
             guard: () => {

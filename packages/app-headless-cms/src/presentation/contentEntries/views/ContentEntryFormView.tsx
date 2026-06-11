@@ -9,12 +9,7 @@ import { ReactComponent as BackIcon } from "@webiny/icons/arrow_back.svg";
 import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
 import { useContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
 import { Routes } from "~/routes.js";
-import {
-    Container,
-    Content,
-    ContentFormWrapper,
-    ContentFormInner
-} from "~/admin/views/contentEntries/ContentEntry/FullScreenContentEntry/FullScreenContentEntry.styled.js";
+import { Container, ScrollArea, Content, ContentFormInner } from "./layout/index.js";
 import { RevisionsListFeature } from "../revisionsList/feature.js";
 import { useContentEntriesPresenter } from "./ContentEntriesPresenterProvider.js";
 import { useContentEntryFormPresenter } from "./ContentEntryFormPresenterProvider.js";
@@ -89,9 +84,9 @@ export const ContentEntryFormView = observer(() => {
                 }
                 end={<EntryFormHeaderRight />}
             />
-            <Content>
+            <ScrollArea>
                 {vm.loading ? <OverlayLoader text={vm.loading} /> : null}
-                <ContentFormWrapper>
+                <Content>
                     <ContentFormInner width={width}>
                         <div className={"bg-neutral-base rounded-lg p-lg"}>
                             {vm.form ? (
@@ -104,8 +99,8 @@ export const ContentEntryFormView = observer(() => {
                             ) : null}
                         </div>
                     </ContentFormInner>
-                </ContentFormWrapper>
-            </Content>
+                </Content>
+            </ScrollArea>
             <RevisionDrawer />
         </Container>
     );
@@ -143,7 +138,14 @@ const EntryFormHeaderLeft = ({
 };
 
 const EntryFormHeaderRight = observer(() => {
+    const presenter = useContentEntryFormPresenter();
     const { buttonActions } = useContentEntryEditorConfig();
+
+    const { canSave, canPublish, canUnpublish, canDelete } = presenter.vm;
+
+    if (!canSave && !canPublish && !canUnpublish && !canDelete) {
+        return null;
+    }
 
     return (
         <div className={"flex items-center gap-sm"}>

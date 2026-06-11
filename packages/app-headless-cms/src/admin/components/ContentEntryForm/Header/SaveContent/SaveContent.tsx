@@ -10,7 +10,10 @@ export const SaveContentButton = observer(() => {
     const { ButtonSecondary } = useButtons();
     const presenter = useContentEntryFormPresenter();
 
-    if (!presenter.vm.canSave || (presenter.vm.entry && !canEdit(presenter.vm.entry, "cms.contentEntry"))) {
+    if (
+        !presenter.vm.canSave ||
+        (presenter.vm.entry && !canEdit(presenter.vm.entry, "cms.contentEntry"))
+    ) {
         return null;
     }
 
