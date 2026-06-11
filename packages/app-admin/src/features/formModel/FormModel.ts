@@ -401,7 +401,13 @@ export class FormModel implements IFormModel {
         return isValid;
     }
 
-    async submit<T = Record<string, unknown>>(): Promise<T | false> {
+    async submit<T = Record<string, unknown>>(options?: {
+        skipValidation?: boolean;
+    }): Promise<T | false> {
+        if (options?.skipValidation) {
+            return this.getData() as T;
+        }
+
         const valid = await this.validate();
         if (!valid) {
             return false;

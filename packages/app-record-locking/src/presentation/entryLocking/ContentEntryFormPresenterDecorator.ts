@@ -34,8 +34,8 @@ class ContentEntryFormPresenterWithLocking implements IContentEntryFormPresenter
         };
     }
 
-    async save(): Promise<boolean> {
-        const result = await this.original.save();
+    async save(options?: { skipValidation?: boolean }): Promise<boolean> {
+        const result = await this.original.save(options);
 
         if (result) {
             await this.lockingPresenter.refreshLock();

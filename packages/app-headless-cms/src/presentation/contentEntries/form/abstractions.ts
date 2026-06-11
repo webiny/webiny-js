@@ -18,7 +18,7 @@ export interface IContentEntryFormViewModel {
 
 export interface IContentEntryFormPresenter {
     vm: IContentEntryFormViewModel;
-    save(): Promise<boolean>;
+    save(options?: { skipValidation?: boolean }): Promise<boolean>;
     publish(): Promise<boolean>;
     unpublish(): Promise<boolean>;
     deleteEntry(): Promise<boolean>;

@@ -675,7 +675,7 @@ export interface IFormModel<T = Record<string, any>> {
     setData(data: T): void;
     reset(): void;
     validate(): Promise<boolean>;
-    submit<T = Record<string, unknown>>(): Promise<T | false>;
+    submit<T = Record<string, unknown>>(options?: { skipValidation?: boolean }): Promise<T | false>;
     evaluateRules(rules: IRule[] | undefined): { visible: boolean; disabled: boolean };
     focusField(name: string): void;
     readonly isDirty: boolean;

@@ -97,12 +97,13 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
         };
     }
 
-    async save(): Promise<boolean> {
+    async save(options?: { skipValidation?: boolean }): Promise<boolean> {
         if (!this._form) {
             return false;
         }
 
-        const data = await this._form.submit();
+        const skipValidation = options?.skipValidation ?? true;
+        const data = await this._form.submit({ skipValidation });
 
         if (!data) {
             return false;
