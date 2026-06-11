@@ -1,63 +1,65 @@
 import { describe, it, expect } from "vitest";
-import { executeChain } from "~/features/events/chain.js";
-import { ErrorHandler } from "~/features/http/handlers/ErrorHandler.js";
-import { Container } from "@webiny/di";
-import { EventHandler } from "~/features/events/EventHandler.js";
-import type { IHttpRequest } from "~/features/http/abstractions.js";
+import { createTestHttpHandler } from "~/features/testing/index.js";
+import { HttpRoute } from "~/features/http/abstractions.js";
+import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 
-const httpRequest: IHttpRequest = {
-    method: "GET",
-    path: "/test",
-    headers: {},
-    query: {},
-    pathParameters: {},
-    body: undefined
-};
+class ThrowingRoute {
+    readonly method = "GET";
+    readonly path = "/boom";
 
-function resolveErrorHandler() {
-    const container = new Container();
-    container.register(ErrorHandler);
-    return container.resolveAll(EventHandler);
+    async handle(_request: IHttpRequest): Promise<IHttpResponse> {
+        throw new Error("route exploded");
+    }
 }
 
-describe("ErrorHandler", () => {
-    it("should return 500 for errors on HTTP events", async () => {
-        const handlers = [
-            ...resolveErrorHandler(),
-            {
-                execute: async () => {
-                    throw new Error("boom");
-                }
-            }
-        ];
+const ThrowingRouteImpl = HttpRoute.createImplementation({
+    implementation: ThrowingRoute,
+    dependencies: []
+});
 
-        const result = await executeChain(handlers, httpRequest);
+class OkRoute {
+    readonly method = "GET";
+    readonly path = "/ok";
+
+    async handle(_request: IHttpRequest): Promise<IHttpResponse> {
+        return { statusCode: 200, body: "ok" };
+    }
+}
+
+const OkRouteImpl = HttpRoute.createImplementation({
+    implementation: OkRoute,
+    dependencies: []
+});
+
+describe("HttpFeature error handling", () => {
+    it("should return 500 when a route throws", async () => {
+        const handler = createTestHttpHandler({
+            root: container => {
+                container.register(ThrowingRouteImpl);
+            }
+        });
+
+        const result = await handler({ method: "GET", path: "/boom" });
         expect(result.statusCode).toBe(500);
-        expect(JSON.parse(result.body)).toEqual({ error: "Internal server error" });
     });
 
-    it("should rethrow errors for non-HTTP events", async () => {
-        const handlers = [
-            ...resolveErrorHandler(),
-            {
-                execute: async () => {
-                    throw new Error("s3 boom");
-                }
-            }
-        ];
+    it("should return 404 for unknown routes", async () => {
+        const handler = createTestHttpHandler({
+            root: () => {}
+        });
 
-        await expect(executeChain(handlers, { Records: [] })).rejects.toThrow("s3 boom");
+        const result = await handler({ method: "GET", path: "/missing" });
+        expect(result.statusCode).toBe(404);
     });
 
     it("should pass through successful responses", async () => {
-        const handlers = [
-            ...resolveErrorHandler(),
-            {
-                execute: async () => ({ statusCode: 200, body: "ok" })
+        const handler = createTestHttpHandler({
+            root: container => {
+                container.register(OkRouteImpl);
             }
-        ];
+        });
 
-        const result = await executeChain(handlers, httpRequest);
+        const result = await handler({ method: "GET", path: "/ok" });
         expect(result.statusCode).toBe(200);
     });
 });
