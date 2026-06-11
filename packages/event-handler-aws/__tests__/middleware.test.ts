@@ -10,13 +10,14 @@ import {
     type SNSEvent,
     type SnsResult
 } from "~/index.js";
+import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
 import { HttpEventHandler } from "@webiny/event-handler-core";
 
 describe("Middleware Pattern", () => {
     it("should call handlers in registration order", async () => {
         const logs: string[] = [];
 
-        const Handler1 = HttpEventHandler.createImplementation({
+        const Handler1 = ApiGatewayEventHandler.createImplementation({
             implementation: class {
                 async execute(_ctx: EventContext, next: NextFunction) {
                     logs.push("Handler1");
@@ -26,7 +27,7 @@ describe("Middleware Pattern", () => {
             dependencies: []
         });
 
-        const Handler2 = HttpEventHandler.createImplementation({
+        const Handler2 = ApiGatewayEventHandler.createImplementation({
             implementation: class {
                 async execute(_ctx: EventContext, next: NextFunction) {
                     logs.push("Handler2");
@@ -36,7 +37,7 @@ describe("Middleware Pattern", () => {
             dependencies: []
         });
 
-        const Handler3 = HttpEventHandler.createImplementation({
+        const Handler3 = ApiGatewayEventHandler.createImplementation({
             implementation: class {
                 async execute(_ctx: EventContext, _next: NextFunction) {
                     logs.push("Handler3");
@@ -69,7 +70,7 @@ describe("Middleware Pattern", () => {
     });
 
     it("should return result from the first handler that handles the event", async () => {
-        const ApiHandler = HttpEventHandler.createImplementation({
+        const ApiHandler = ApiGatewayEventHandler.createImplementation({
             implementation: class {
                 async execute(ctx: EventContext, next: NextFunction): Promise<any> {
                     if (ctx.event?.method !== "GET") {

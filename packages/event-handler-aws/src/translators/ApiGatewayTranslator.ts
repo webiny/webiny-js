@@ -1,6 +1,6 @@
 // Translator: converts between transport-specific format and IHttpRequest/IHttpResponse. Not an Adapter (which implies interface compatibility).
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
-import { HttpEventHandler } from "@webiny/event-handler-core";
+import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
 import type {
     EventContext,
     IHttpRequest,
@@ -51,7 +51,7 @@ function toApiGatewayResult(response: IHttpResponse): APIGatewayProxyResult {
     };
 }
 
-class ApiGatewayTranslatorImpl implements HttpEventHandler.Interface {
+class ApiGatewayTranslatorImpl implements ApiGatewayEventHandler.Interface {
     async execute(ctx: EventContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
         const request = toHttpRequest(ctx.event);
         const httpCtx: EventContext<IHttpRequest> = { event: request, metadata: ctx.metadata };
@@ -60,7 +60,7 @@ class ApiGatewayTranslatorImpl implements HttpEventHandler.Interface {
     }
 }
 
-export const ApiGatewayTranslator = HttpEventHandler.createImplementation({
+export const ApiGatewayTranslator = ApiGatewayEventHandler.createImplementation({
     implementation: ApiGatewayTranslatorImpl,
     dependencies: []
 });

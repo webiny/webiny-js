@@ -28,3 +28,4 @@ export * from "./translators/AwsHttpTranslator.js";
 export * from "./extractors/index.js";
 export * from "./handlers/index.js";
 export * from "./features/S3Feature.js";
+export { AwsHttpTranslatorApiGateway } from "./translators/AwsHttpTranslator.js";

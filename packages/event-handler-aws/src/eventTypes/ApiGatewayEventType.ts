@@ -1,5 +1,6 @@
 import type { APIGatewayProxyEvent } from "@webiny/aws-sdk/types/index.js";
-import { EventType, HttpEventHandler } from "@webiny/event-handler-core";
+import { EventType } from "@webiny/event-handler-core";
+import { ApiGatewayEventHandler } from "../abstractions/handlers/ApiGatewayEventHandler.js";
 import type { IEventType } from "@webiny/event-handler-core";
 
 class ApiGatewayEventTypeImpl implements IEventType<APIGatewayProxyEvent> {
@@ -8,7 +9,7 @@ class ApiGatewayEventTypeImpl implements IEventType<APIGatewayProxyEvent> {
     }
 
     getHandlerAbstraction() {
-        return HttpEventHandler;
+        return ApiGatewayEventHandler;
     }
 }
 

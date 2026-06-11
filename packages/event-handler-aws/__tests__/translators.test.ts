@@ -5,12 +5,25 @@ import {
     FunctionUrlEventType,
     ApiGatewayTranslator,
     FunctionUrlTranslator,
-    AwsHttpTranslator
+    AwsHttpTranslator,
+    AwsHttpTranslatorApiGateway
 } from "~/index.js";
 import { HttpEventHandler } from "@webiny/event-handler-core";
+import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 
-const captureHandler = HttpEventHandler.createImplementation({
+// Capture handler for API GW chain (ApiGatewayEventHandler pool)
+const agwCaptureHandler = ApiGatewayEventHandler.createImplementation({
+    implementation: class {
+        async execute(ctx: EventContext, _next: NextFunction) {
+            return { statusCode: 200, body: ctx.event };
+        }
+    },
+    dependencies: []
+});
+
+// Capture handler for Function URL chain (HttpEventHandler pool)
+const fnUrlCaptureHandler = HttpEventHandler.createImplementation({
     implementation: class {
         async execute(ctx: EventContext, _next: NextFunction) {
             return { statusCode: 200, body: ctx.event };
@@ -50,7 +63,7 @@ describe("ApiGatewayTranslator", () => {
             root: container => {
                 container.register(ApiGatewayEventType);
                 container.register(ApiGatewayTranslator);
-                container.register(captureHandler);
+                container.register(agwCaptureHandler);
             }
         });
 
@@ -63,7 +76,7 @@ describe("ApiGatewayTranslator", () => {
     });
 
     it("should translate IHttpResponse back to APIGatewayProxyResult", async () => {
-        const jsonHandler = HttpEventHandler.createImplementation({
+        const jsonHandler = ApiGatewayEventHandler.createImplementation({
             implementation: class {
                 async execute(_ctx: EventContext, _next: NextFunction) {
                     return { statusCode: 201, headers: { "x-custom": "yes" }, body: { ok: true } };
@@ -87,7 +100,7 @@ describe("ApiGatewayTranslator", () => {
     });
 
     it("should set isBase64Encoded for Buffer responses", async () => {
-        const bufferHandler = HttpEventHandler.createImplementation({
+        const bufferHandler = ApiGatewayEventHandler.createImplementation({
             implementation: class {
                 async execute(_ctx: EventContext, _next: NextFunction) {
                     return {
@@ -120,7 +133,7 @@ describe("FunctionUrlTranslator", () => {
             root: container => {
                 container.register(FunctionUrlEventType);
                 container.register(FunctionUrlTranslator);
-                container.register(captureHandler);
+                container.register(fnUrlCaptureHandler);
             }
         });
 
@@ -138,8 +151,10 @@ describe("AwsHttpTranslator", () => {
             root: container => {
                 container.register(ApiGatewayEventType);
                 container.register(FunctionUrlEventType);
+                container.register(AwsHttpTranslatorApiGateway);
                 container.register(AwsHttpTranslator);
-                container.register(captureHandler);
+                container.register(agwCaptureHandler);
+                container.register(fnUrlCaptureHandler);
             }
         });
 
@@ -148,13 +163,12 @@ describe("AwsHttpTranslator", () => {
         expect(JSON.parse(result.body).path).toBe("/graphql");
     });
 
-    it("should handle Function URL events", async () => {
+    it("should handle Function URL events via FunctionUrlTranslator", async () => {
         const handler = createLambdaHandler({
             root: container => {
-                container.register(ApiGatewayEventType);
                 container.register(FunctionUrlEventType);
-                container.register(AwsHttpTranslator);
-                container.register(captureHandler);
+                container.register(FunctionUrlTranslator);
+                container.register(fnUrlCaptureHandler);
             }
         });
 

@@ -1,4 +1,9 @@
-import { HttpRouter, HttpRoute, matchPath, RouteNotFoundError } from "~/features/http/abstractions.js";
+import {
+    HttpRouter,
+    HttpRoute,
+    matchPath,
+    RouteNotFoundError
+} from "~/features/http/abstractions.js";
 import type { IHttpRoute, IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 
 class HttpRouterImplClass implements HttpRouter.Interface {

@@ -55,7 +55,6 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
 
     const handler = createTestHttpHandler({
         root: container => {
-
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             container.register(HttpTenantIdExtractorImpl);
