@@ -27,8 +27,7 @@ import { KnexClient } from "@webiny/api-core-sql";
 const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
     const { container, plugins } = params;
 
-    const knexClient = container.resolve(KnexClient);
-    const knex = knexClient.client;
+    const knex = container.resolve(KnexClient);
     const tableNameResolver = container.resolve(TableNameResolver);
     const groupSchemaManager = container.resolve(GroupSchemaManager);
     const modelSchemaManager = container.resolve(ModelSchemaManager);
