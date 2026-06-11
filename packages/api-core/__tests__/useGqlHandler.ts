@@ -1,4 +1,4 @@
-import { createTestHandler } from "@webiny/event-handler-core/testing";
+import { createTestHttpHandler } from "@webiny/event-handler-core/testing";
 import {
     HttpFeature,
     HttpRouterHandler,
@@ -53,7 +53,7 @@ type UseGqlHandlerParams = {
 export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
 
-    const handler = createTestHandler({
+    const handler = createTestHttpHandler({
         root: container => {
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);

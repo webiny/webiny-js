@@ -36,46 +36,6 @@ export namespace HttpRouter {
     export type Interface = IHttpRouter;
 }
 
-export function isHttpRequest(event: any): event is IHttpRequest {
-    return (
-        typeof event === "object" &&
-        event !== null &&
-        typeof event.method === "string" &&
-        typeof event.path === "string" &&
-        typeof event.headers === "object" &&
-        typeof event.query === "object"
-    );
-}
-
-export function matchPath(pattern: string, path: string): Record<string, string> | null {
-    if (pattern.endsWith("/*")) {
-        const prefix = pattern.slice(0, -2);
-        return path.startsWith(prefix) ? {} : null;
-    }
-
-    const patternParts = pattern.split("/").filter(Boolean);
-    const pathParts = path.split("/").filter(Boolean);
-
-    if (patternParts.length !== pathParts.length) {
-        return null;
-    }
-
-    const params: Record<string, string> = {};
-
-    for (let i = 0; i < patternParts.length; i++) {
-        const pp = patternParts[i];
-        const pathPart = pathParts[i];
-
-        if (pp.startsWith(":")) {
-            params[pp.slice(1)] = decodeURIComponent(pathPart);
-        } else if (pp !== pathPart) {
-            return null;
-        }
-    }
-
-    return params;
-}
-
 export class RouteNotFoundError extends Error {
     readonly code = "ROUTE_NOT_FOUND" as const;
 
