@@ -1,5 +1,5 @@
 import { IncomingMessage } from "node:http";
-import { EventType, HttpEventHandler } from "@webiny/event-handler-core";
+import { EventType, EventHandler } from "@webiny/event-handler-core";
 import type { IEventType } from "@webiny/event-handler-core";
 
 class NodeHttpEventTypeImpl implements IEventType<IncomingMessage> {
@@ -8,7 +8,7 @@ class NodeHttpEventTypeImpl implements IEventType<IncomingMessage> {
     }
 
     getHandlerAbstraction() {
-        return HttpEventHandler;
+        return EventHandler;
     }
 }
 

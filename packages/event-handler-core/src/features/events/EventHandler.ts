@@ -15,9 +15,3 @@ export const EventHandler = new Abstraction<IEventHandler>("EventHandler");
 export namespace EventHandler {
     export type Interface<TEvent = any, TResult = any> = IEventHandler<TEvent, TResult>;
 }
-
-export const HttpEventHandler = new Abstraction<IEventHandler>("HttpEventHandler");
-
-export namespace HttpEventHandler {
-    export type Interface<TEvent = any, TResult = any> = IEventHandler<TEvent, TResult>;
-}

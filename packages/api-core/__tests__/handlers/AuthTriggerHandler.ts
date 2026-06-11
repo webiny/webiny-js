@@ -1,11 +1,11 @@
-import { HttpEventHandler } from "@webiny/event-handler-core";
+import { EventHandler } from "@webiny/event-handler-core";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { AuthenticationContext } from "~/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import type { IAuthenticationContext } from "~/features/security/authentication/AuthenticationContext/index.js";
 import type { IIdentityContext } from "~/features/security/IdentityContext/abstractions.js";
 
-class AuthTriggerHandlerImpl implements HttpEventHandler.Interface {
+class AuthTriggerHandlerImpl implements EventHandler.Interface {
     constructor(
         private authCtx: IAuthenticationContext,
         private identityCtx: IIdentityContext
@@ -20,7 +20,7 @@ class AuthTriggerHandlerImpl implements HttpEventHandler.Interface {
     }
 }
 
-export const AuthTriggerHandler = HttpEventHandler.createImplementation({
+export const AuthTriggerHandler = EventHandler.createImplementation({
     implementation: AuthTriggerHandlerImpl,
     dependencies: [AuthenticationContext, IdentityContext]
 });

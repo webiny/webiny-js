@@ -1,9 +1,9 @@
-import { HttpEventHandler } from "@webiny/event-handler-core";
+import { EventHandler } from "@webiny/event-handler-core";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { TenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
 import type { ITenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
 
-class RootTenantInitializerImpl implements HttpEventHandler.Interface {
+class RootTenantInitializerImpl implements EventHandler.Interface {
     constructor(private tenantCtx: ITenantContext) {}
 
     async execute(ctx: EventContext, next: NextFunction): Promise<any> {
@@ -28,7 +28,7 @@ class RootTenantInitializerImpl implements HttpEventHandler.Interface {
     }
 }
 
-export const RootTenantInitializer = HttpEventHandler.createImplementation({
+export const RootTenantInitializer = EventHandler.createImplementation({
     implementation: RootTenantInitializerImpl,
     dependencies: [TenantContext]
 });

@@ -7,7 +7,7 @@ export * from "./eventTypes/index.js";
 
 export {
     EventHandler,
-    HttpEventHandler,
+    EventHandler,
     EventType,
     ErrorHandler,
     NotFoundHandler,

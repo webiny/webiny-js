@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
-import { HttpEventHandler } from "~/features/events/EventHandler.js";
+import { EventHandler } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
 import type { IEventType } from "~/features/events/EventType.js";
 import type { IEventHandler, EventContext } from "~/features/events/EventHandler.js";
@@ -9,7 +9,7 @@ import { createHandler } from "~/features/events/createHandler.js";
 
 const makeEventType = (canHandle: (e: any) => boolean): IEventType => ({
     canHandle: (e): e is any => canHandle(e),
-    getHandlerAbstraction: () => HttpEventHandler
+    getHandlerAbstraction: () => EventHandler
 });
 
 describe("EventType dispatch", () => {
@@ -20,13 +20,13 @@ describe("EventType dispatch", () => {
                     return !!e.method;
                 }
                 getHandlerAbstraction() {
-                    return HttpEventHandler;
+                    return EventHandler;
                 }
             },
             dependencies: []
         });
 
-        const handler = HttpEventHandler.createImplementation({
+        const handler = EventHandler.createImplementation({
             implementation: class implements IEventHandler {
                 async execute(ctx: EventContext, _next: NextFunction) {
                     return { handled: true, event: ctx.event };
@@ -60,7 +60,7 @@ describe("EventType dispatch", () => {
                     return !!e.method;
                 }
                 getHandlerAbstraction() {
-                    return HttpEventHandler;
+                    return EventHandler;
                 }
             },
             dependencies: []
@@ -87,7 +87,7 @@ describe("EventType dispatch", () => {
                     return !!e.method;
                 }
                 getHandlerAbstraction() {
-                    return HttpEventHandler;
+                    return EventHandler;
                 }
             },
             dependencies: []
@@ -105,7 +105,7 @@ describe("EventType dispatch", () => {
             dependencies: []
         });
 
-        const httpHandler = HttpEventHandler.createImplementation({
+        const httpHandler = EventHandler.createImplementation({
             implementation: class implements IEventHandler {
                 async execute(_ctx: EventContext, _next: NextFunction) {
                     return "http";

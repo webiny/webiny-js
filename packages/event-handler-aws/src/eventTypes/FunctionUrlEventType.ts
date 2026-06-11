@@ -1,5 +1,5 @@
 import type { LambdaFunctionURLEvent } from "@webiny/aws-sdk/types/index.js";
-import { EventType, HttpEventHandler } from "@webiny/event-handler-core";
+import { EventType, EventHandler } from "@webiny/event-handler-core";
 import type { IEventType } from "@webiny/event-handler-core";
 
 class FunctionUrlEventTypeImpl implements IEventType<LambdaFunctionURLEvent> {
@@ -12,7 +12,7 @@ class FunctionUrlEventTypeImpl implements IEventType<LambdaFunctionURLEvent> {
     }
 
     getHandlerAbstraction() {
-        return HttpEventHandler;
+        return EventHandler;
     }
 }
 

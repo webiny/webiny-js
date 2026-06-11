@@ -1,5 +1,5 @@
 import type { LambdaFunctionURLEvent } from "@webiny/aws-sdk/types/index.js";
-import { HttpEventHandler } from "@webiny/event-handler-core";
+import { EventHandler } from "@webiny/event-handler-core";
 import type {
     EventContext,
     IHttpRequest,
@@ -54,7 +54,7 @@ function toFunctionUrlResult(response: IHttpResponse) {
     };
 }
 
-class FunctionUrlTranslatorImpl implements HttpEventHandler.Interface {
+class FunctionUrlTranslatorImpl implements EventHandler.Interface {
     async execute(ctx: EventContext<LambdaFunctionURLEvent>, next: NextFunction): Promise<any> {
         const request = toHttpRequest(ctx.event);
         const httpCtx: EventContext<IHttpRequest> = { event: request, metadata: ctx.metadata };
@@ -63,7 +63,7 @@ class FunctionUrlTranslatorImpl implements HttpEventHandler.Interface {
     }
 }
 
-export const FunctionUrlTranslator = HttpEventHandler.createImplementation({
+export const FunctionUrlTranslator = EventHandler.createImplementation({
     implementation: FunctionUrlTranslatorImpl,
     dependencies: []
 });

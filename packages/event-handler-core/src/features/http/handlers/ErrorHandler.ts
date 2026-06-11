@@ -1,9 +1,9 @@
-import { HttpEventHandler } from "~/features/events/EventHandler.js";
+import { EventHandler } from "~/features/events/EventHandler.js";
 import { isHttpRequest } from "~/features/http/abstractions.js";
 import type { EventContext } from "~/features/events/EventHandler.js";
 import type { NextFunction } from "~/features/events/types.js";
 
-class ErrorHandlerImpl implements HttpEventHandler.Interface {
+class ErrorHandlerImpl implements EventHandler.Interface {
     async execute(ctx: EventContext, next: NextFunction): Promise<any> {
         try {
             return await next();
@@ -20,7 +20,7 @@ class ErrorHandlerImpl implements HttpEventHandler.Interface {
     }
 }
 
-export const ErrorHandler = HttpEventHandler.createImplementation({
+export const ErrorHandler = EventHandler.createImplementation({
     implementation: ErrorHandlerImpl,
     dependencies: []
 });

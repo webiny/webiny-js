@@ -113,7 +113,7 @@ describe("EventType detection", () => {
     });
 
     it("each event type returns the correct handler abstraction", async () => {
-        const { HttpEventHandler } = await import("@webiny/event-handler-core");
+        const { EventHandler } = await import("@webiny/event-handler-core");
         const { ApiGatewayEventHandler } =
             await import("~/abstractions/handlers/ApiGatewayEventHandler.js");
         const { S3EventHandler } = await import("~/abstractions/handlers/S3EventHandler.js");
@@ -125,7 +125,7 @@ describe("EventType detection", () => {
         const [sqs] = resolveEventTypes(SqsEventType);
 
         expect(agw.getHandlerAbstraction()).toBe(ApiGatewayEventHandler);
-        expect(fn.getHandlerAbstraction()).toBe(HttpEventHandler);
+        expect(fn.getHandlerAbstraction()).toBe(EventHandler);
         expect(s3.getHandlerAbstraction()).toBe(S3EventHandler);
         expect(sqs.getHandlerAbstraction()).toBe(SqsEventHandler);
     });

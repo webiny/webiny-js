@@ -1,10 +1,10 @@
-import { HttpEventHandler } from "~/features/events/EventHandler.js";
+import { EventHandler } from "~/features/events/EventHandler.js";
 import { HttpRouter, isHttpRequest, RouteNotFoundError } from "~/features/http/abstractions.js";
 import type { IHttpRouter } from "~/features/http/abstractions.js";
 import type { EventContext } from "~/features/events/EventHandler.js";
 import type { NextFunction } from "~/features/events/types.js";
 
-class HttpRouterHandlerImpl implements HttpEventHandler.Interface {
+class HttpRouterHandlerImpl implements EventHandler.Interface {
     constructor(private router: IHttpRouter) {}
 
     async execute(ctx: EventContext, next: NextFunction): Promise<any> {
@@ -23,7 +23,7 @@ class HttpRouterHandlerImpl implements HttpEventHandler.Interface {
     }
 }
 
-export const HttpRouterHandler = HttpEventHandler.createImplementation({
+export const HttpRouterHandler = EventHandler.createImplementation({
     implementation: HttpRouterHandlerImpl,
     dependencies: [HttpRouter]
 });

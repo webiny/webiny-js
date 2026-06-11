@@ -1,6 +1,6 @@
 // Translator: converts between transport-specific format and IHttpRequest/IHttpResponse. Not an Adapter (which implies interface compatibility).
 import { IncomingMessage } from "node:http";
-import { HttpEventHandler } from "@webiny/event-handler-core";
+import { EventHandler } from "@webiny/event-handler-core";
 import type { EventContext, IHttpRequest, NextFunction } from "@webiny/event-handler-core";
 
 async function readBody(req: IncomingMessage): Promise<any> {
@@ -40,7 +40,7 @@ function parseQuery(url: string): Record<string, string> {
     return result;
 }
 
-class NodeHttpTranslatorImpl implements HttpEventHandler.Interface {
+class NodeHttpTranslatorImpl implements EventHandler.Interface {
     async execute(ctx: EventContext<IncomingMessage>, next: NextFunction): Promise<any> {
         const url = ctx.event.url || "/";
         const qIdx = url.indexOf("?");
@@ -59,7 +59,7 @@ class NodeHttpTranslatorImpl implements HttpEventHandler.Interface {
     }
 }
 
-export const NodeHttpTranslator = HttpEventHandler.createImplementation({
+export const NodeHttpTranslator = EventHandler.createImplementation({
     implementation: NodeHttpTranslatorImpl,
     dependencies: []
 });

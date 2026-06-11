@@ -1,4 +1,4 @@
-import { HttpEventHandler, HttpTenantIdExtractor, isHttpRequest } from "@webiny/event-handler-core";
+import { EventHandler, HttpTenantIdExtractor, isHttpRequest } from "@webiny/event-handler-core";
 import type {
     EventContext,
     NextFunction,
@@ -9,7 +9,7 @@ import { TenantContext } from "~/features/tenancy/TenantContext/abstractions.js"
 import type { IGetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/abstractions.js";
 import type { ITenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
 
-class HttpTenantInitializerImpl implements HttpEventHandler.Interface {
+class HttpTenantInitializerImpl implements EventHandler.Interface {
     constructor(
         private tenantContext: ITenantContext,
         private getTenantById: IGetTenantByIdUseCase,
@@ -44,7 +44,7 @@ class HttpTenantInitializerImpl implements HttpEventHandler.Interface {
     }
 }
 
-export const HttpTenantInitializer = HttpEventHandler.createImplementation({
+export const HttpTenantInitializer = EventHandler.createImplementation({
     implementation: HttpTenantInitializerImpl,
     dependencies: [TenantContext, GetTenantByIdUseCase, HttpTenantIdExtractor]
 });

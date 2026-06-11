@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { executeChain } from "~/features/events/chain.js";
 import { ErrorHandler } from "~/features/http/handlers/ErrorHandler.js";
 import { Container } from "@webiny/di";
-import { HttpEventHandler } from "~/features/events/EventHandler.js";
+import { EventHandler } from "~/features/events/EventHandler.js";
 import type { IHttpRequest } from "~/features/http/abstractions.js";
 
 const httpRequest: IHttpRequest = {
@@ -17,7 +17,7 @@ const httpRequest: IHttpRequest = {
 function resolveErrorHandler() {
     const container = new Container();
     container.register(ErrorHandler);
-    return container.resolveAll(HttpEventHandler);
+    return container.resolveAll(EventHandler);
 }
 
 describe("ErrorHandler", () => {

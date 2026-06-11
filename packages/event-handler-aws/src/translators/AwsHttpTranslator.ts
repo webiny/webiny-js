@@ -1,6 +1,6 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
 import type { LambdaFunctionURLEvent } from "@webiny/aws-sdk/types/index.js";
-import { HttpEventHandler } from "@webiny/event-handler-core";
+import { EventHandler } from "@webiny/event-handler-core";
 import { ApiGatewayEventHandler } from "../abstractions/handlers/ApiGatewayEventHandler.js";
 import type {
     EventContext,
@@ -79,7 +79,7 @@ function toResult(response: IHttpResponse): APIGatewayProxyResult {
     };
 }
 
-class AwsHttpTranslatorImpl implements HttpEventHandler.Interface {
+class AwsHttpTranslatorImpl implements EventHandler.Interface {
     async execute(ctx: EventContext, next: NextFunction): Promise<any> {
         let request: IHttpRequest;
 
@@ -97,7 +97,7 @@ class AwsHttpTranslatorImpl implements HttpEventHandler.Interface {
     }
 }
 
-export const AwsHttpTranslator = HttpEventHandler.createImplementation({
+export const AwsHttpTranslator = EventHandler.createImplementation({
     implementation: AwsHttpTranslatorImpl,
     dependencies: []
 });

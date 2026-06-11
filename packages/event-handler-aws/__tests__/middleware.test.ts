@@ -11,7 +11,7 @@ import {
     type SnsResult
 } from "~/index.js";
 import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
-import { HttpEventHandler } from "@webiny/event-handler-core";
+import { EventHandler } from "@webiny/event-handler-core";
 
 describe("Middleware Pattern", () => {
     it("should call handlers in registration order", async () => {

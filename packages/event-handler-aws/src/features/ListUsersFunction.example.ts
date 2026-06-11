@@ -3,7 +3,7 @@
  */
 
 import { Abstraction } from "@webiny/di";
-import { HttpEventHandler, type APIGatewayEvent, type APIGatewayProxyResult } from "../index.js";
+import { EventHandler, type APIGatewayEvent, type APIGatewayProxyResult } from "../index.js";
 import type { NextFunction, EventContext } from "@webiny/event-handler-core";
 
 interface IUserService {
@@ -18,7 +18,7 @@ interface ILoggerService {
 declare const UserService: Abstraction<IUserService>;
 declare const LoggerService: Abstraction<ILoggerService>;
 
-class ListUsersHandler implements HttpEventHandler.Interface {
+class ListUsersHandler implements EventHandler.Interface {
     constructor(
         private userService: IUserService,
         private logger: ILoggerService
@@ -52,7 +52,7 @@ class ListUsersHandler implements HttpEventHandler.Interface {
     }
 }
 
-export const listUsersHandler = HttpEventHandler.createImplementation({
+export const listUsersHandler = EventHandler.createImplementation({
     implementation: ListUsersHandler,
     dependencies: [UserService, LoggerService]
 });

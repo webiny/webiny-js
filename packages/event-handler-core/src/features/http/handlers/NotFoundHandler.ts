@@ -1,9 +1,9 @@
-import { HttpEventHandler } from "~/features/events/EventHandler.js";
+import { EventHandler } from "~/features/events/EventHandler.js";
 import { isHttpRequest } from "~/features/http/abstractions.js";
 import type { EventContext } from "~/features/events/EventHandler.js";
 import type { NextFunction } from "~/features/events/types.js";
 
-class NotFoundHandlerImpl implements HttpEventHandler.Interface {
+class NotFoundHandlerImpl implements EventHandler.Interface {
     async execute(ctx: EventContext, next: NextFunction): Promise<any> {
         if (!isHttpRequest(ctx.event)) {
             return next();
@@ -16,7 +16,7 @@ class NotFoundHandlerImpl implements HttpEventHandler.Interface {
     }
 }
 
-export const NotFoundHandler = HttpEventHandler.createImplementation({
+export const NotFoundHandler = EventHandler.createImplementation({
     implementation: NotFoundHandlerImpl,
     dependencies: []
 });

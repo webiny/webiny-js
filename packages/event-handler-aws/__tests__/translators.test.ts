@@ -8,7 +8,7 @@ import {
     AwsHttpTranslator,
     AwsHttpTranslatorApiGateway
 } from "~/index.js";
-import { HttpEventHandler } from "@webiny/event-handler-core";
+import { EventHandler } from "@webiny/event-handler-core";
 import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 
@@ -22,8 +22,8 @@ const agwCaptureHandler = ApiGatewayEventHandler.createImplementation({
     dependencies: []
 });
 
-// Capture handler for Function URL chain (HttpEventHandler pool)
-const fnUrlCaptureHandler = HttpEventHandler.createImplementation({
+// Capture handler for Function URL chain (EventHandler pool)
+const fnUrlCaptureHandler = EventHandler.createImplementation({
     implementation: class {
         async execute(ctx: EventContext, _next: NextFunction) {
             return { statusCode: 200, body: ctx.event };

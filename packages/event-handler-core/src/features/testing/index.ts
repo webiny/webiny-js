@@ -1,4 +1,4 @@
-import { HttpEventHandler } from "~/features/events/EventHandler.js";
+import { EventHandler } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
 import { isHttpRequest } from "~/features/http/abstractions.js";
 import { HttpFeature } from "~/features/http/feature.js";
@@ -16,7 +16,7 @@ export const TestHttpEventType = EventType.createImplementation({
         }
 
         getHandlerAbstraction() {
-            return HttpEventHandler;
+            return EventHandler;
         }
     },
     dependencies: []
