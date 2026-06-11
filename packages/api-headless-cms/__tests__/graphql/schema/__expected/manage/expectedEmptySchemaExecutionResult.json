@@ -294,12 +294,6 @@
           "fields": null
         },
         {
-          "name": "SkipValidatorEnum",
-          "kind": "ENUM",
-          "description": null,
-          "fields": null
-        },
-        {
           "name": "CreateCmsEntryOptionsInput",
           "kind": "INPUT_OBJECT",
           "description": null,
