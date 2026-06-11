@@ -90,13 +90,13 @@ largest refactoring effort.
 
 ## Summary
 
-| Package                   | Severity               | Effort                                                                       | Status   |
-| ------------------------- | ---------------------- | ---------------------------------------------------------------------------- | -------- |
-| `api-core`                | Stale dep only         | Trivial — remove from `package.json`                                         | **DONE** |
-| `api-headless-cms`        | Stale dep only         | Trivial — remove from `package.json`                                         | **DONE** |
-| `api-mailer`              | Stale dep only         | Trivial — remove from `package.json`                                         | **DONE** |
+| Package                   | Severity               | Effort                                                                       | Status                         |
+| ------------------------- | ---------------------- | ---------------------------------------------------------------------------- | ------------------------------ |
+| `api-core`                | Stale dep only         | Trivial — remove from `package.json`                                         | **DONE**                       |
+| `api-headless-cms`        | Stale dep only         | Trivial — remove from `package.json`                                         | **DONE**                       |
+| `api-mailer`              | Stale dep only         | Trivial — remove from `package.json`                                         | **DONE**                       |
 | `api-opensearch`          | Source usage (3 files) | Small — extract `src/db/` to `-ddb` package                                  | Skipped (AWS-only, OK for now) |
-| `api-scheduler`           | Source usage (2 files) | Small — abstract client access                                               | TODO     |
-| `api-websockets`          | Source usage (2 files) | Medium — abstract connection registry                                        | **DONE** |
-| `api-elasticsearch-tasks` | Source usage (7 files) | Medium — abstract task config interfaces                                     | Deferred |
-| `api-sync-system`         | Source usage (8 files) | Large — DDB is architectural; sync interceptor decorates DDB client directly | Deferred |
+| `api-scheduler`           | Source usage (2 files) | Small — abstract client access                                               | TODO                           |
+| `api-websockets`          | Source usage (2 files) | Medium — abstract connection registry                                        | **DONE**                       |
+| `api-elasticsearch-tasks` | Source usage (7 files) | Medium — abstract task config interfaces                                     | Deferred                       |
+| `api-sync-system`         | Source usage (8 files) | Large — DDB is architectural; sync interceptor decorates DDB client directly | Deferred                       |

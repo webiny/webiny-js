@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { WebsocketsContext } from "~/context/WebsocketsContext";
-import { WebsocketsConnectionRegistry } from "@webiny/api-websockets-ddb";
+import { WebsocketsConnectionRegistry } from "../../../api-websockets-ddb/src/WebsocketsConnectionRegistry";
 import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport";
 
 interface IMockData {

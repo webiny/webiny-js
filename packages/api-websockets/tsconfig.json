@@ -12,7 +12,6 @@
     { "path": "../plugins" },
     { "path": "../utils" },
     { "path": "../api-headless-cms" },
-    { "path": "../api-websockets-ddb" },
     { "path": "../handler-db" },
     { "path": "../handler-graphql" }
   ],
@@ -45,8 +44,6 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/api-websockets-ddb/*": ["../api-websockets-ddb/src/*"],
-      "@webiny/api-websockets-ddb": ["../api-websockets-ddb/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],

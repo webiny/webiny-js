@@ -12,7 +12,6 @@
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
-    { "path": "../api-websockets-ddb/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" }
   ],
@@ -45,8 +44,6 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/api-websockets-ddb/*": ["../api-websockets-ddb/src/*"],
-      "@webiny/api-websockets-ddb": ["../api-websockets-ddb/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],

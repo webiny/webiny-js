@@ -12,7 +12,7 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import { registerWebsocketsDdbStorageOperations } from "@webiny/api-websockets-ddb";
+import { registerWebsocketsDdbStorageOperations } from "../../../api-websockets-ddb/src/index";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 
 export interface Params {
