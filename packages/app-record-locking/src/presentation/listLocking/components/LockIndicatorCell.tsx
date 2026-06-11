@@ -1,20 +1,20 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
+import { useContainer } from "@webiny/app";
 import { ReactComponent as LockedIcon } from "@webiny/icons/lock.svg";
 import { Icon, Tooltip } from "@webiny/admin-ui";
-import { useModel } from "@webiny/app-headless-cms";
-import { ContentEntryListConfig } from "@webiny/app-headless-cms";
-import type { IListLockRecordsPresenter } from "../abstractions.js";
+import { useModel, ContentEntryListConfig } from "@webiny/app-headless-cms";
+import { ListLockRecordsPresenter } from "../abstractions.js";
 
 const { Browser } = ContentEntryListConfig;
 
-interface ActionsCellProps {
-    children: React.ReactNode;
-    presenter: IListLockRecordsPresenter;
-}
-
-const ActionsCell = observer(({ children, presenter }: ActionsCellProps) => {
+const ActionsCell = observer(({ children }: { children: React.ReactNode }) => {
     const { model } = useModel();
+    const container = useContainer();
+    const presenter = React.useMemo(
+        () => container.resolve(ListLockRecordsPresenter),
+        [container]
+    );
     const { useTableRow, isFolderRow } = Browser.Table.Column;
     const { row } = useTableRow();
 
@@ -37,19 +37,12 @@ const ActionsCell = observer(({ children, presenter }: ActionsCellProps) => {
     );
 });
 
-export function createLockIndicatorDecorator(presenter: IListLockRecordsPresenter) {
-    return Browser.Table.Column.createDecorator(Original => {
-        return function RecordLockingCellActions(props) {
-            if (props.name === "actions" && props.cell) {
-                return (
-                    <Original
-                        {...props}
-                        cell={<ActionsCell presenter={presenter}>{props.cell}</ActionsCell>}
-                    />
-                );
-            }
+export const RecordLockingCellActionsDecorator = Browser.Table.Column.createDecorator(Original => {
+    return function RecordLockingCellActions(props) {
+        if (props.name === "actions" && props.cell) {
+            return <Original {...props} cell={<ActionsCell>{props.cell}</ActionsCell>} />;
+        }
 
-            return <Original {...props} />;
-        };
-    });
-}
+        return <Original {...props} />;
+    };
+});

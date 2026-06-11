@@ -15,8 +15,6 @@ export const RecordLocking = () => {
         return null;
     }
 
-    console.log("record locking");
-
     return (
         <>
             <RegisterFeature feature={RecordLockingPermissionsFeature} />

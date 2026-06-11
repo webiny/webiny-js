@@ -1,26 +1,28 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { useModel, ContentEntryListConfig } from "@webiny/app-headless-cms";
-import type { IListLockRecordsPresenter } from "../abstractions.js";
+import { useContainer } from "@webiny/app";
+import { useContentEntriesPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
+import { ListLockRecordsPresenter } from "../abstractions.js";
 
-const { ContentEntries } = ContentEntryListConfig;
+export const ListLockRecordsSync = observer(() => {
+    const container = useContainer();
+    const presenter = React.useMemo(
+        () => container.resolve(ListLockRecordsPresenter),
+        [container]
+    );
+    const entriesPresenter = useContentEntriesPresenter();
 
-interface ListLockRecordsSyncProps {
-    presenter: IListLockRecordsPresenter;
-}
-
-export const ListLockRecordsSync = observer(({ presenter }: ListLockRecordsSyncProps) => {
-    const { model } = useModel();
-    const { records } = ContentEntries.useContentEntriesList();
+    const rows = entriesPresenter.list.vm.rows;
+    const modelId = entriesPresenter.vm.model.modelId;
 
     useEffect(() => {
-        if (!records || records.length === 0) {
+        if (rows.length === 0) {
             return;
         }
 
-        const entryIds = records.map(record => record.id);
-        presenter.fetchForEntries(entryIds, model.modelId);
-    }, [records, model.modelId]);
+        const entryIds = rows.map(row => row.id);
+        presenter.fetchForEntries(entryIds, modelId);
+    }, [rows, modelId]);
 
     return null;
 });
