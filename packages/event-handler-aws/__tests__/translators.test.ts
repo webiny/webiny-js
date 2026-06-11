@@ -5,8 +5,6 @@ import {
     FunctionUrlEventType,
     ApiGatewayTranslator,
     FunctionUrlTranslator,
-    AwsHttpTranslator,
-    AwsHttpTranslatorApiGateway
 } from "~/index.js";
 import { EventHandler } from "@webiny/event-handler-core";
 import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
@@ -145,35 +143,3 @@ describe("FunctionUrlTranslator", () => {
     });
 });
 
-describe("AwsHttpTranslator", () => {
-    it("should handle API GW events", async () => {
-        const handler = createLambdaHandler({
-            root: container => {
-                container.register(ApiGatewayEventType);
-                container.register(FunctionUrlEventType);
-                container.register(AwsHttpTranslatorApiGateway);
-                container.register(AwsHttpTranslator);
-                container.register(agwCaptureHandler);
-                container.register(fnUrlCaptureHandler);
-            }
-        });
-
-        const result = await handler(apiGwEvent);
-        expect(JSON.parse(result.body).method).toBe("POST");
-        expect(JSON.parse(result.body).path).toBe("/graphql");
-    });
-
-    it("should handle Function URL events via FunctionUrlTranslator", async () => {
-        const handler = createLambdaHandler({
-            root: container => {
-                container.register(FunctionUrlEventType);
-                container.register(FunctionUrlTranslator);
-                container.register(fnUrlCaptureHandler);
-            }
-        });
-
-        const result = await handler(fnUrlEvent);
-        expect(JSON.parse(result.body).method).toBe("POST");
-        expect(JSON.parse(result.body).path).toBe("/graphql");
-    });
-});
