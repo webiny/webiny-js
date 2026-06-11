@@ -1,4 +1,3 @@
-import type { Knex } from "knex";
 import type { PluginsContainer } from "@webiny/plugins/types.js";
 import type {
     CmsContext,
@@ -8,7 +7,6 @@ import type {
 export type { CmsContext };
 
 export interface SqlStorageOperationsFactoryParams {
-    knex: Knex;
     plugins: PluginsContainer;
     container: CmsContext["container"];
 }

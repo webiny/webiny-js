@@ -9,7 +9,6 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { CmsContext } from "~/types.js";
-import type { KnexInstance } from "~/features/knexInstance/abstractions.js";
 import type { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
 import type { IEntryRow } from "./types.js";
 import { entryToRow, rowToEntry, mergeEntryLevelMeta } from "./mappers.js";
@@ -24,9 +23,10 @@ import {
     createStorageTransformCallable,
     aggregateUniqueFieldValues
 } from "@webiny/api-headless-cms-storage";
+import { KnexClient } from "@webiny/api-core-sql";
 
 interface CreateEntriesStorageOperationsParams {
-    knex: KnexInstance.Interface;
+    knex: KnexClient.Interface;
     entryTableManager: EntryTableManager.Interface;
     container: CmsContext["container"];
     plugins: PluginsContainer;
@@ -53,7 +53,7 @@ export const createEntriesStorageOperations = (
     const { getModel: getStorageOperationsModel } = createStorageModelAccessor(plugins);
 
     const query = (): Knex.QueryBuilder<IEntryRow> => {
-        return knex<IEntryRow>(entryTableManager.getTableName());
+        return knex.client<IEntryRow>(entryTableManager.getTableName());
     };
 
     /*
@@ -112,7 +112,7 @@ export const createEntriesStorageOperations = (
         });
 
         const update: Record<string, unknown> = {
-            data: knex.raw(
+            data: knex.client.raw(
                 `CASE id ${cases.map(() => "WHEN ? THEN ?").join(" ")} END`,
                 cases.flatMap((c: { id: string; data: string }) => [c.id, c.data])
             ),

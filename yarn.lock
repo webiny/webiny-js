@@ -11851,6 +11851,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-sql@workspace:packages/api-headless-cms-sql"
   dependencies:
+    "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-storage": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"

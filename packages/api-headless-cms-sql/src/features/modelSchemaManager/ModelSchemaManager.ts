@@ -1,11 +1,11 @@
+import { KnexClient } from "@webiny/api-core-sql";
 import { ModelSchemaManager as ModelSchemaManagerAbstraction } from "./abstractions.js";
-import { KnexInstance } from "~/features/knexInstance/abstractions.js";
 
 class ModelSchemaManagerImpl implements ModelSchemaManagerAbstraction.Interface {
-    private readonly knex: KnexInstance.Interface;
+    private readonly knex;
     private readonly verified = new Set<string>();
 
-    constructor(knex: KnexInstance.Interface) {
+    constructor(knex: KnexClient.Interface) {
         this.knex = knex;
 
         const g = globalThis as Record<string, unknown>;
@@ -22,10 +22,10 @@ class ModelSchemaManagerImpl implements ModelSchemaManagerAbstraction.Interface 
             return;
         }
 
-        const exists = await this.knex.schema.hasTable(tableName);
+        const exists = await this.knex.client.schema.hasTable(tableName);
 
         if (!exists) {
-            await this.knex.schema.createTable(tableName, table => {
+            await this.knex.client.schema.createTable(tableName, table => {
                 table.text("modelId").primary().notNullable();
                 table.text("tenant").notNullable();
                 table.text("name").notNullable();
@@ -58,5 +58,5 @@ class ModelSchemaManagerImpl implements ModelSchemaManagerAbstraction.Interface 
 
 export const ModelSchemaManager = ModelSchemaManagerAbstraction.createImplementation({
     implementation: ModelSchemaManagerImpl,
-    dependencies: [KnexInstance]
+    dependencies: [KnexClient]
 });

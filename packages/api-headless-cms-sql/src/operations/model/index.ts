@@ -8,13 +8,13 @@ import type {
     StorageCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import type { IModelRow } from "./types.js";
-import { KnexInstance } from "~/features/knexInstance/abstractions.js";
 import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js";
 import { ModelSchemaManager } from "~/features/modelSchemaManager/abstractions.js";
 import { modelToRow, rowToModel } from "./mappers.js";
+import { KnexClient } from "@webiny/api-core-sql";
 
 export const createModelsStorageOperations = (
-    knex: KnexInstance.Interface,
+    knex: KnexClient.Interface,
     tableNameResolver: TableNameResolver.Interface,
     modelSchemaManager: ModelSchemaManager.Interface
 ): CmsModelStorageOperations => {
@@ -25,7 +25,7 @@ export const createModelsStorageOperations = (
     };
 
     const query = () => {
-        return knex<IModelRow>(tableName);
+        return knex.client<IModelRow>(tableName);
     };
 
     const get = async (
