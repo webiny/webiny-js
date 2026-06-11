@@ -6,7 +6,6 @@ import type {
     CmsModel,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type {
     Client,
     IOpenSearchEntity as IElasticsearchEntity,
@@ -42,7 +41,6 @@ export enum ENTITIES {
 }
 
 export interface StorageOperationsFactoryParams {
-    documentClient: DynamoDBDocument;
     elasticsearch: Client;
     table?: string;
     esTable?: string;

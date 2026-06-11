@@ -6,13 +6,9 @@ export interface IDynamoDBClientParams {
 }
 
 export class DynamoDBClient implements Abstraction.Interface {
-    private readonly client: DynamoDBDocument;
+    public readonly client: DynamoDBDocument;
 
     public constructor(params: IDynamoDBClientParams) {
         this.client = params.client;
-    }
-
-    public getDocumentClient(): DynamoDBDocument {
-        return this.client;
     }
 }

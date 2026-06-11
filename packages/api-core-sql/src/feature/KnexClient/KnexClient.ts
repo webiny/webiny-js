@@ -6,13 +6,9 @@ export interface IKnexClientParams {
 }
 
 export class KnexClient implements Abstraction.Interface {
-    private readonly knex: Knex;
+    public readonly client;
 
     public constructor(params: IKnexClientParams) {
-        this.knex = params.knex;
-    }
-
-    public getKnex(): Knex {
-        return this.knex;
+        this.client = params.knex;
     }
 }
