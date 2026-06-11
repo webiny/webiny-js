@@ -7,12 +7,9 @@ export * from "./eventTypes/index.js";
 
 export {
     EventHandler,
-    EventHandler,
     EventType,
     ErrorHandler,
     NotFoundHandler,
-    HttpRouterHandler,
-    isHttpRequest,
     Container,
     Abstraction
 } from "@webiny/event-handler-core";

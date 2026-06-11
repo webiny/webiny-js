@@ -1,21 +1,21 @@
 import { HttpFeature } from "~/features/http/feature.js";
 import { createHandler } from "~/features/events/createHandler.js";
-import { TestHttpEventType } from "./TestHttpEventType.js";
+import { TestEventType } from "./TestEventType.js";
 import type { HandlerSetup, IHttpRequest, IHttpResponse } from "~/index.js";
 
-export interface CreateTestHttpHandlerOptions {
+export interface createTestHandlerOptions {
     root: HandlerSetup;
     request?: HandlerSetup;
 }
 
 /**
  * Test handler that accepts IHttpRequest directly and returns IHttpResponse.
- * Registers TestHttpEventType automatically — no AWS/Node transport needed.
+ * Registers TestEventType automatically — no AWS/Node transport needed.
  */
-export function createTestHttpHandler(options: CreateTestHttpHandlerOptions) {
+export function createTestHandler(options: createTestHandlerOptions) {
     const invoke = createHandler({
         root: async container => {
-            container.register(TestHttpEventType);
+            container.register(TestEventType);
             HttpFeature.register(container);
             await options.root(container);
         },

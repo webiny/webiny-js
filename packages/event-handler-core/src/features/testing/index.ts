@@ -1,2 +1,2 @@
-export * from "./TestHttpEventType.js";
-export * from "./createTestHttpHandler.js";
+export * from "./TestEventType.js";
+export * from "./createTestHandler.js";
