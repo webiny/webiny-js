@@ -19,6 +19,7 @@ import { createAuditLogs } from "@webiny/api-audit-logs";
 import { registerAuditLogsSqlStorageOperations } from "@webiny/api-audit-logs-sql";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-os";
 import { createWebsockets } from "@webiny/api-websockets";
+import { registerWebsocketsSqlStorageOperations } from "@webiny/api-websockets-sql";
 import { createRecordLocking } from "@webiny/api-record-locking";
 import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { createScheduler } from "@webiny/api-scheduler";
@@ -50,6 +51,7 @@ export const handler = createHandler({
         graphqlPlugins({ debug }),
         securityPlugins(),
         createWebsockets(),
+        registerWebsocketsSqlStorageOperations({ knex }),
         registerSqlStorageOperations(),
         createHeadlessCmsContext(),
         createHeadlessCmsGraphQL(),

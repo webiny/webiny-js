@@ -12186,7 +12186,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-websockets-ddb@workspace:packages/api-websockets-ddb":
+"@webiny/api-websockets-ddb@npm:0.0.0, @webiny/api-websockets-ddb@workspace:packages/api-websockets-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-websockets-ddb@workspace:packages/api-websockets-ddb"
   dependencies:
@@ -12203,7 +12203,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-websockets-sql@workspace:packages/api-websockets-sql":
+"@webiny/api-websockets-sql@npm:0.0.0, @webiny/api-websockets-sql@workspace:packages/api-websockets-sql":
   version: 0.0.0-use.local
   resolution: "@webiny/api-websockets-sql@workspace:packages/api-websockets-sql"
   dependencies:
@@ -13788,6 +13788,8 @@ __metadata:
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-website-builder-workflows": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/api-websockets-ddb": "npm:0.0.0"
+    "@webiny/api-websockets-sql": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"
