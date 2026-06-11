@@ -21,7 +21,7 @@ export const TestHttpEventType = EventType.createImplementation({
     dependencies: []
 });
 
-export interface CreateTestHandlerOptions {
+export interface CreateTestHttpHandlerOptions {
     root: HandlerSetup;
     request?: HandlerSetup;
 }
@@ -30,7 +30,7 @@ export interface CreateTestHandlerOptions {
  * Test handler that accepts IHttpRequest directly and returns IHttpResponse.
  * Registers TestHttpEventType automatically — no AWS/Node transport needed.
  */
-export function createTestHandler(options: CreateTestHandlerOptions) {
+export function createTestHttpHandler(options: CreateTestHttpHandlerOptions) {
     const invoke = createHandler({
         root: async container => {
             container.register(TestHttpEventType);
