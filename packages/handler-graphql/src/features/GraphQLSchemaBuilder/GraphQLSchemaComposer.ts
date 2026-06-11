@@ -9,15 +9,15 @@ class GraphQLSchemaComposerImpl implements Abstraction.Interface {
         private userSchemas: GraphQLSchemaFactory.Interface[]
     ) {}
 
-    async build(): Promise<IGraphQLSchema> {
+    async build(ctx?: Record<string, any>): Promise<IGraphQLSchema> {
         const builder = new GraphQLSchemaBuilder();
 
         for (const factory of this.coreSchemas) {
-            await factory.execute(builder);
+            await factory.execute(builder, ctx);
         }
 
         for (const factory of this.userSchemas) {
-            await factory.execute(builder);
+            await factory.execute(builder, ctx);
         }
 
         return builder.build();

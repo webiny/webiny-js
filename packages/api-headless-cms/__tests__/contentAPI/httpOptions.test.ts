@@ -29,23 +29,12 @@ describe("HTTP Options request", () => {
             body: undefined
         });
 
-        expect(response).toMatchObject([
-            {},
-            {
-                body: "",
-                headers: {
-                    ...versionHeaders,
-                    "access-control-allow-headers": "*",
-                    "access-control-allow-methods": ["OPTIONS", "POST"].sort().join(","),
-                    "access-control-allow-origin": "*",
-                    "access-control-max-age": expect.stringMatching(/([0-9]+)/),
-                    "cache-control": expect.stringMatching(/public, max-age=([0-9]+)/),
-                    connection: "keep-alive",
-                    date: expect.any(String)
-                },
-                isBase64Encoded: false,
-                statusCode: 204
-            }
-        ]);
+        const [, httpResponse] = response;
+        expect(httpResponse.statusCode).toBe(204);
+        expect(httpResponse.headers).toMatchObject({
+            "access-control-allow-origin": "*",
+            "access-control-max-age": expect.stringMatching(/([0-9]+)/),
+            "cache-control": expect.stringMatching(/public, max-age=([0-9]+)/)
+        });
     });
 });

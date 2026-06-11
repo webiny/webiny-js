@@ -30,7 +30,7 @@ export namespace GraphQLSchemaBuilder {
 }
 
 export interface IGraphQLSchemaComposer {
-    build(): Promise<IGraphQLSchema>;
+    build(ctx?: Record<string, any>): Promise<IGraphQLSchema>;
 }
 
 export const GraphQLSchemaComposer =

@@ -1,6 +1,36 @@
 import { getIntrospectionQuery } from "graphql";
-import { createHandler } from "@webiny/handler-aws";
-import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
+import { createTestHttpHandler } from "@webiny/event-handler-core/testing";
+import { ApiCoreFeature } from "@webiny/api-core";
+import { GraphQLContextEnhancer, GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { HeadlessCmsFeature } from "~/index";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
+import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { HeadlessCmsStorageOperations, ApiEndpoint } from "~/types";
+import type { PermissionsArg } from "~tests/testHelpers/helpers";
+import { createPermissions } from "~tests/testHelpers/helpers";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { TestIdentity, TestAuthenticator } from "~tests/testHelpers/mocks/TestAuthenticator";
+import { TestPermissions, TestAuthorizer } from "~tests/testHelpers/mocks/TestAuthorizer";
+import { RootTenantInitializer } from "~tests/testHelpers/handlers/RootTenantInitializer";
+import { AuthTriggerHandler } from "~tests/testHelpers/handlers/AuthTriggerHandler";
+import { CmsEndpointAccessDecorator } from "~tests/testHelpers/handlers/CmsEndpointAccessDecorator";
+import { defaultIdentity } from "~tests/testHelpers/tenancySecurity";
+import { processLegacyPlugins } from "~tests/testHelpers/bridgeLegacyPlugins";
+import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import type {
+    CmsExportStructureQueryVariables,
+    CmsImportStructureMutationVariables,
+    CmsValidateStructureMutationResponse,
+    CmsValidateStructureMutationVariables
+} from "~tests/testHelpers/graphql/structure";
+import {
+    CMS_EXPORT_STRUCTURE_QUERY,
+    CMS_IMPORT_STRUCTURE_MUTATION,
+    CMS_VALIDATE_STRUCTURE_MUTATION
+} from "~tests/testHelpers/graphql/structure";
 import type { ContentModelGroupsMutationVariables } from "./graphql/contentModelGroup";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
@@ -22,8 +52,7 @@ import {
     LIST_CONTENT_MODELS_QUERY,
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./graphql/contentModel";
-import { PluginsContainer } from "@webiny/plugins/types";
-
+import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import type { SearchContentEntriesVariables } from "./graphql/contentEntry";
 import {
     GET_CONTENT_ENTRIES_QUERY,
@@ -34,29 +63,15 @@ import {
     GET_PUBLISHED_CONTENT_ENTRY_QUERY,
     SEARCH_CONTENT_ENTRIES_QUERY
 } from "./graphql/contentEntry";
-import type { CreateHandlerCoreParams } from "./plugins";
-import { createHandlerCore } from "./plugins";
-import { acceptIncomingChanges } from "./acceptIncommingChanges";
-import { StorageOperationsCmsModelPlugin } from "~/plugins";
-import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
-import { ContextPlugin } from "@webiny/api";
-import { createOutputBenchmarkLogs } from "~tests/testHelpers/outputBenchmarkLogs";
-import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
-import type {
-    CmsExportStructureQueryVariables,
-    CmsImportStructureMutationVariables,
-    CmsValidateStructureMutationResponse,
-    CmsValidateStructureMutationVariables
-} from "~tests/testHelpers/graphql/structure";
-import {
-    CMS_EXPORT_STRUCTURE_QUERY,
-    CMS_IMPORT_STRUCTURE_MUTATION,
-    CMS_VALIDATE_STRUCTURE_MUTATION
-} from "~tests/testHelpers/graphql/structure";
-import { defaultIdentity } from "~tests/testHelpers/tenancySecurity";
-import type { CmsContext } from "~/types/index.js";
 
-export type GraphQLHandlerParams = CreateHandlerCoreParams;
+export interface GraphQLHandlerParams {
+    permissions?: PermissionsArg[];
+    identity?: IdentityData;
+    path?: string;
+    plugins?: any[];
+    topPlugins?: any[];
+    bottomPlugins?: any[];
+}
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
@@ -72,69 +87,130 @@ export interface IBaseGraphQLResponse<T = any> {
     errors?: Error[];
 }
 
+function extractCmsType(path?: string): ApiEndpoint {
+    if (!path) {
+        return "manage";
+    }
+    const segment = path.split("/")[0].toLowerCase();
+    if (segment === "read") {
+        return "read";
+    }
+    if (segment === "preview") {
+        return "preview";
+    }
+    return "manage";
+}
+
 export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
-    const { identity, path } = params;
+    const { identity = defaultIdentity, permissions } = params;
+    const allPlugins = [
+        ...(params.topPlugins ?? []),
+        ...(params.plugins ?? []),
+        ...(params.bottomPlugins ?? [])
+    ];
 
-    const core = createHandlerCore(params);
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsType = extractCmsType(params.path);
+    const resolvedPermissions = createPermissions(permissions);
 
-    const plugins = new PluginsContainer(
-        core.plugins.concat([...createOutputBenchmarkLogs(), acceptIncomingChanges()])
-    );
+    // Build ctx.db from the test DynamoDB document client
+    const documentClient = getDocumentClient();
+    const dbDriver = new DynamoDbDriver({ documentClient });
 
-    const storageOperationsCmsModelPlugin = new ContextPlugin<CmsContext>(async context => {
-        context.plugins.register(
-            new StorageOperationsCmsModelPlugin(createCmsModelFieldConvertersAttachFactory(context))
-        );
-    });
-    plugins.register(storageOperationsCmsModelPlugin);
+    // Context capture for getContext()
+    const capturedCtx: { value?: Record<string, any> } = {};
 
-    let capturedContext: CmsContext;
+    const handler = createTestHttpHandler({
+        root: container => {
+            container.registerInstance(TestIdentity, identity);
+            container.registerInstance(TestPermissions, resolvedPermissions);
+            container.register(TestAuthenticator);
+            container.register(TestAuthorizer);
+            // Decorator order (last = outermost = runs first):
+            // RootTenantInit → AuthTrigger → CmsEndpointAccess → HttpRouterHandler
+            container.registerDecorator(CmsEndpointAccessDecorator);
+            container.registerDecorator(AuthTriggerHandler);
+            container.registerDecorator(RootTenantInitializer);
+        },
+        request: async container => {
+            const wcpLicense = await loadWcpLicense(createTestWcpLicense());
 
-    const handler = createHandler({
-        plugins: [
-            ...plugins.all(),
-            new ContextPlugin<CmsContext>(async context => {
-                capturedContext = context;
-            })
-        ],
-        debug: false
+            // ctx.db bridge — must run before HeadlessCmsContextEnhancer (instance order)
+            container.registerInstance(GraphQLContextEnhancer, {
+                enhance(ctx: Record<string, any>) {
+                    ctx.db = { driver: dbDriver };
+                }
+            });
+
+            // Context capture enhancer — runs after cms enhancer sets up ctx.cms
+            container.registerInstance(GraphQLContextEnhancer, {
+                enhance(ctx: Record<string, any>) {
+                    capturedCtx.value = ctx;
+                }
+            });
+
+            ApiCoreFeature.register(container, {
+                ...apiCoreStorage.storageOperations,
+                wcpLicense
+            });
+
+            // Process legacy RegisterExtensionPlugins to register StorageOperationsFactory
+            processLegacyPlugins(container, cmsStorage.plugins);
+
+            // Separate plugins:
+            // - Arrow functions (no prototype) → container setup callbacks, call immediately
+            // - Everything else → extra plugins (CmsGraphQLSchemaPlugin, ContextPlugin, etc.)
+            const extraCmsPlugins: any[] = [];
+
+            // Collect plain Plugin objects from cmsStorage.plugins (e.g. sorting plugins)
+            for (const p of [cmsStorage.plugins].flat(Infinity as 1)) {
+                if (p && typeof (p as any).apply !== "function" && typeof p !== "function") {
+                    extraCmsPlugins.push(p);
+                }
+            }
+
+            for (const plugin of allPlugins) {
+                if (typeof plugin === "function" && !plugin.prototype) {
+                    await (plugin as (container: any) => void)(container);
+                } else {
+                    extraCmsPlugins.push(...[plugin].flat());
+                }
+            }
+
+            HeadlessCmsFeature.register(container, {
+                type: cmsType,
+                extraPlugins: extraCmsPlugins
+            });
+            GraphQLEngineFeature.register(container);
+        }
     });
 
     const invoke = async <T = any>({
         httpMethod = "POST",
         body,
-        headers = {},
-        ...rest
-    }: InvokeParams): Promise<[IBaseGraphQLResponse<T>, any]> => {
-        const event = {
-            /**
-             * If no path defined, use /graphql as we want to make request to main api
-             */
-            path: path ? `/cms/${path}` : "/graphql",
-            httpMethod,
+        headers = {}
+    }: InvokeParams = {}): Promise<[IBaseGraphQLResponse<T>, any]> => {
+        const response = await handler({
+            method: httpMethod,
+            path: "/graphql",
             headers: {
-                ["x-tenant"]: "root",
-                ["content-type"]: "application/json",
+                "x-tenant": "root",
+                "content-type": "application/json",
                 ...headers
             },
-            ...rest
-        } as unknown as APIGatewayEvent;
-        if (body) {
-            event.body = JSON.stringify(body);
-        }
-        const response = await handler(event, {} as unknown as LambdaContext);
-        // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body || "{}"), response];
+            body
+        });
+        return [response.body, response];
     };
 
     return {
         handler,
         invoke,
-        tenant: core.tenant,
-        identity: identity || defaultIdentity,
-        plugins,
-        storageOperations: core.storageOperations,
-        getContext: () => capturedContext,
+        tenant: { id: "root", name: "Root", parent: null },
+        identity,
+        storageOperations: cmsStorage.storageOperations,
+        getContext: () => capturedCtx.value as any,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });
         },
@@ -147,27 +223,14 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         },
         // export / import
         async exportStructureQuery(variables?: CmsExportStructureQueryVariables) {
-            return invoke({
-                body: {
-                    query: CMS_EXPORT_STRUCTURE_QUERY,
-                    variables
-                }
-            });
+            return invoke({ body: { query: CMS_EXPORT_STRUCTURE_QUERY, variables } });
         },
         async importCmsStructureMutation(variables: CmsImportStructureMutationVariables) {
-            return invoke({
-                body: {
-                    query: CMS_IMPORT_STRUCTURE_MUTATION,
-                    variables
-                }
-            });
+            return invoke({ body: { query: CMS_IMPORT_STRUCTURE_MUTATION, variables } });
         },
         async validateCmsStructureMutation(variables: CmsValidateStructureMutationVariables) {
             return invoke<CmsValidateStructureMutationResponse>({
-                body: {
-                    query: CMS_VALIDATE_STRUCTURE_MUTATION,
-                    variables
-                }
+                body: { query: CMS_VALIDATE_STRUCTURE_MUTATION, variables }
             });
         },
         // content model group

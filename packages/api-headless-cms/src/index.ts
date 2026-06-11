@@ -16,6 +16,8 @@ import { createExportGraphQL } from "~/export/index.js";
 import { createRevisionIdScalarPlugin } from "~/graphql/scalars/RevisionIdScalarPlugin.js";
 import type { Plugin } from "@webiny/plugins/types.js";
 
+export { HeadlessCmsFeature } from "./HeadlessCmsFeature.js";
+export type { HeadlessCmsConfig } from "./HeadlessCmsFeature.js";
 export * from "./utils/isHeadlessCmsReady.js";
 export * from "./utils/createModelField.js";
 export * from "./graphql/schema/resolvers/manage/normalizeGraphQlInput.js";

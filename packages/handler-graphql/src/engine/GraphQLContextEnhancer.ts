@@ -6,7 +6,7 @@ import { createAbstraction } from "@webiny/feature/api";
  * available to resolvers alongside the base `context.container`.
  */
 export interface IGraphQLContextEnhancer {
-    enhance(ctx: Record<string, any>): void;
+    enhance(ctx: Record<string, any>): void | Promise<void>;
 }
 
 export const GraphQLContextEnhancer =
