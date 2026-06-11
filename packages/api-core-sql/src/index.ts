@@ -12,7 +12,7 @@ interface IRegisterApiCoreSqlExtension {
     knex: Knex;
 }
 
-export const registerSqlExtension = ({ knex }: IRegisterApiCoreSqlExtension) => {
+export const registerSQLCore = ({ knex }: IRegisterApiCoreSqlExtension) => {
     return createRegisterExtensionPlugin(async context => {
         KnexClientFeature.register(context.container, knex);
     });

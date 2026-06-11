@@ -3,7 +3,7 @@ import { registerSqlStorageOperations } from "../../src/index.js";
 import { createCmsEntryFieldSortingPlugin } from "@webiny/api-headless-cms-storage/plugins/CmsEntryFieldSortingPlugin.js";
 import knexLib from "knex";
 
-import { registerSqlExtension } from "@webiny/api-core-sql";
+import { registerSQLCore } from "@webiny/api-core-sql";
 
 /* Reuse existing knex instance so all SQL presets share the same in-memory database. */
 const knex =
@@ -22,7 +22,7 @@ const tableNamePrefix = process.env.SQL_TABLE_PREFIX || process.env.WEBINY_SQL_T
 
 setStorageOps("cms", () => {
     const plugins = [
-        registerSqlExtension({
+        registerSQLCore({
             knex
         }),
         ...registerSqlStorageOperations({ knex, tableNamePrefix }),

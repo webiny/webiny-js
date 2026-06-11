@@ -3,7 +3,7 @@ import knexLib from "knex";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createApiCore } from "@webiny/api-core";
-import { createApiCoreSql, registerSqlExtension } from "@webiny/api-core-sql";
+import { createApiCoreSql, registerSQLCore } from "@webiny/api-core-sql";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAssetDelivery, createFileManagerS3 } from "@webiny/api-file-manager-s3";
@@ -45,7 +45,7 @@ const knex = knexLib({
 
 export const handler = createHandler({
     plugins: [
-        registerSqlExtension({
+        registerSQLCore({
             knex
         }),
         createApiCore({
