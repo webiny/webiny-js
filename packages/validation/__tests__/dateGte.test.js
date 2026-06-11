@@ -43,4 +43,10 @@ describe("date gte test", () => {
             );
         }
     );
+
+    test("should throw a ValidationError (not RangeError) when the comparison date is invalid", async () => {
+        await expect(validation.validate("2020-06-06", "dateGte:garbage")).rejects.toThrow(
+            `Value "garbage" is not a valid date to compare against.`
+        );
+    });
 });

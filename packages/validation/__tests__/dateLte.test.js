@@ -44,4 +44,10 @@ describe("date lte test", () => {
             );
         }
     );
+
+    test("should throw a ValidationError (not RangeError) when the comparison date is invalid", async () => {
+        await expect(validation.validate("2030-06-06", "dateLte:garbage")).rejects.toThrow(
+            `Value "garbage" is not a valid date to compare against.`
+        );
+    });
 });

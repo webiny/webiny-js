@@ -16,6 +16,10 @@ export default (value: string, params?: string[]) => {
     const date = new Date(value);
     const lteDate = new Date(lteValue);
 
+    if (isNaN(lteDate.getTime())) {
+        throw new ValidationError(`Value "${lteValue}" is not a valid date to compare against.`);
+    }
+
     if (date <= lteDate) {
         return;
     }
