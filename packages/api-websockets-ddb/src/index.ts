@@ -3,6 +3,8 @@ import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { WebsocketsConnectionRegistry } from "./WebsocketsConnectionRegistry.js";
 import { ConnectionRegistry } from "@webiny/api-websockets";
 
+export { WebsocketsConnectionRegistry } from "./WebsocketsConnectionRegistry.js";
+
 interface RegisterWebsocketsDdbStorageOperationsParams {
     documentClient: DynamoDBDocument;
 }

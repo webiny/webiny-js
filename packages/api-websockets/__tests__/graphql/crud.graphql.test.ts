@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { useGraphQLHandler } from "~tests/helpers/useGraphQLHandler";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import type { IWebsocketsConnectionRegistryData } from "~/registry";
-import { WebsocketsConnectionRegistry } from "~/registry";
+import { WebsocketsConnectionRegistry } from "@webiny/api-websockets-ddb";
 import type { IWebsocketsIdentity } from "~/context";
 
 vi.mock("@webiny/aws-sdk/client-apigatewaymanagementapi", () => {
