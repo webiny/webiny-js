@@ -98,9 +98,9 @@ export class WorkflowStateModel implements IWorkflowStateModel {
             steps: this.steps.map(step => {
                 return step.toJS();
             }),
-            currentStep: this.currentStep,
-            previousStep: this.previousStep,
-            nextStep: this.nextStep
+            currentStep: this.currentStep.toJS(),
+            previousStep: this.previousStep?.toJS() ?? null,
+            nextStep: this.nextStep?.toJS() ?? null
         });
     }
 
