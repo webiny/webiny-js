@@ -8,8 +8,6 @@ export * from "./eventTypes/index.js";
 export {
     EventHandler,
     EventType,
-    ErrorHandler,
-    NotFoundHandler,
     Container,
     Abstraction
 } from "@webiny/event-handler-core";
