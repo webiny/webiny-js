@@ -19,16 +19,13 @@ them with DynamoDB. All base packages should follow this split.
 
 ## Findings
 
-### 1. Stale `package.json` deps only (no source usage)
+### ~~1. Stale `package.json` deps only~~ — DONE
 
-These packages list DDB dependencies but have **zero** DDB imports in `src/`.
-Fix: remove the deps from `package.json`.
+All three cleaned up:
 
-| Package            | Stale deps                               |
-| ------------------ | ---------------------------------------- |
-| `api-core`         | `@webiny/db-dynamodb`                    |
-| `api-headless-cms` | `@webiny/aws-sdk`, `@webiny/db-dynamodb` |
-| `api-mailer`       | `@webiny/db-dynamodb`                    |
+- `api-core` — removed `@webiny/db-dynamodb`, deleted dead AACL tests (`e6797145e5`)
+- `api-headless-cms` — removed `@webiny/aws-sdk` + `@webiny/db-dynamodb`, deleted orphaned `context.ts` (`3113d9c5db`)
+- `api-mailer` — removed `@webiny/db-dynamodb` + `jest-dynalite` (`3dc1eace50`)
 
 ### 2. `api-opensearch` — DDB entity/table in source
 
@@ -65,15 +62,14 @@ manager, all task constructors, and the client helper need abstraction.
 
 **Scope:** Small surface. Two files with direct DDB client usage.
 
-### 5. `api-websockets` — Hardcoded DDB entity and registry
+### ~~5. `api-websockets`~~ — DONE
 
-**Files:**
+Split into storage-agnostic base + two storage packages:
 
-- `src/registry/entity.ts` — `createEntity(documentClient: DynamoDBDocument)` using toolbox Entity
-- `src/registry/WebsocketsConnectionRegistry.ts` — constructor takes `DynamoDBDocument`, creates entity
-
-**Scope:** The entire connection registry is DDB-specific. Needs abstraction
-interface + extraction to a storage-specific package.
+- `api-websockets` — `ConnectionRegistry` DI abstraction, resolved from container (`04d580942b`)
+- `api-websockets-ddb` — DDB implementation with toolbox entity (`9ba5163b86`)
+- `api-websockets-sql` — Knex implementation with lazy table creation (`ec817c38ad`)
+- Templates wired (`2cbc6b52fa`), tests moved (`5956d1a98b`)
 
 ### 6. `api-sync-system` — Heaviest offender (8 files)
 
@@ -94,13 +90,13 @@ largest refactoring effort.
 
 ## Summary
 
-| Package                   | Severity               | Effort                                                                       |
-| ------------------------- | ---------------------- | ---------------------------------------------------------------------------- |
-| `api-core`                | Stale dep only         | Trivial — remove from `package.json`                                         |
-| `api-headless-cms`        | Stale dep only         | Trivial — remove from `package.json`                                         |
-| `api-mailer`              | Stale dep only         | Trivial — remove from `package.json`                                         |
-| `api-opensearch`          | Source usage (3 files) | Small — extract `src/db/` to `-ddb` package                                  |
-| `api-scheduler`           | Source usage (2 files) | Small — abstract client access                                               |
-| `api-websockets`          | Source usage (2 files) | Medium — abstract connection registry                                        |
-| `api-elasticsearch-tasks` | Source usage (7 files) | Medium — abstract task config interfaces                                     |
-| `api-sync-system`         | Source usage (8 files) | Large — DDB is architectural; sync interceptor decorates DDB client directly |
+| Package                   | Severity               | Effort                                                                       | Status   |
+| ------------------------- | ---------------------- | ---------------------------------------------------------------------------- | -------- |
+| `api-core`                | Stale dep only         | Trivial — remove from `package.json`                                         | **DONE** |
+| `api-headless-cms`        | Stale dep only         | Trivial — remove from `package.json`                                         | **DONE** |
+| `api-mailer`              | Stale dep only         | Trivial — remove from `package.json`                                         | **DONE** |
+| `api-opensearch`          | Source usage (3 files) | Small — extract `src/db/` to `-ddb` package                                  | Skipped (AWS-only, OK for now) |
+| `api-scheduler`           | Source usage (2 files) | Small — abstract client access                                               | TODO     |
+| `api-websockets`          | Source usage (2 files) | Medium — abstract connection registry                                        | **DONE** |
+| `api-elasticsearch-tasks` | Source usage (7 files) | Medium — abstract task config interfaces                                     | Deferred |
+| `api-sync-system`         | Source usage (8 files) | Large — DDB is architectural; sync interceptor decorates DDB client directly | Deferred |
