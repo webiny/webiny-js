@@ -1,4 +1,5 @@
 import { HttpFeature } from "~/features/http/feature.js";
+import { HttpRouterHandler } from "./HttpRouterHandler.js";
 import { createHandler } from "~/features/events/createHandler.js";
 import { TestHttpEventType } from "./TestHttpEventType.js";
 import type { HandlerSetup, IHttpRequest, IHttpResponse } from "~/index.js";
@@ -18,6 +19,8 @@ export function createTestHttpHandler(options: createTestHttpHandlerOptions) {
             container.register(TestHttpEventType);
             HttpFeature.register(container);
             await options.root(container);
+            // HttpRouterHandler is the terminal handler — must be last in the chain
+            container.register(HttpRouterHandler);
         },
         request: options.request
     });
