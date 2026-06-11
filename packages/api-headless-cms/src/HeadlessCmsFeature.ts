@@ -1,8 +1,28 @@
 import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
-import { HeadlessCmsContextEnhancer, HeadlessCmsEnhancerConfig } from "./HeadlessCmsContextEnhancer.js";
+import {
+    HeadlessCmsContextEnhancer,
+    HeadlessCmsEnhancerConfig
+} from "./HeadlessCmsContextEnhancer.js";
 import { HeadlessCmsContextualSchema } from "./HeadlessCmsContextualSchema.js";
 import { StorageOperationsFactory } from "~/features/shared/abstractions.js";
+import { CmsBaseErrorTypeFactory } from "~/graphql/schema/cms/CmsBaseErrorTypeFactory.js";
+import {
+    CmsResponseTypeDefsImpl,
+    CmsQueryTypeDefsImpl,
+    CmsMutationTypeDefsImpl
+} from "~/graphql/schema/cms/typeDefs/index.js";
+import {
+    QueryCmsResolverImpl,
+    MutationCmsResolverImpl,
+    GetEntryResolverImpl,
+    ListEntriesResolverImpl,
+    CreateEntryResolverImpl,
+    UpdateEntryRevisionResolverImpl,
+    DeleteEntryRevisionResolverImpl,
+    PublishEntryRevisionResolverImpl,
+    UnpublishEntryRevisionResolverImpl
+} from "~/graphql/schema/cms/resolvers/index.js";
 import type { IHeadlessCmsStorageOperationsFactory } from "~/features/shared/abstractions.js";
 import type { ApiEndpoint } from "~/types/index.js";
 
@@ -23,6 +43,24 @@ export const HeadlessCmsFeature = createFeature({
         if (config.storageOperations) {
             container.registerInstance(StorageOperationsFactory, config.storageOperations);
         }
+
+        // Pre-register the CMS SDK namespace schema (Query.cms / Mutation.cms) so it is
+        // available when GraphQLSchemaComposer is constructed (before context enhancement).
+        // All these implementations have zero DI dependencies and are safe to register early.
+        container.register(CmsBaseErrorTypeFactory); // CmsError must come first
+        container.register(CmsResponseTypeDefsImpl);
+        container.register(CmsQueryTypeDefsImpl);
+        container.register(CmsMutationTypeDefsImpl);
+        container.register(QueryCmsResolverImpl);
+        container.register(MutationCmsResolverImpl);
+        container.register(GetEntryResolverImpl);
+        container.register(ListEntriesResolverImpl);
+        container.register(CreateEntryResolverImpl);
+        container.register(UpdateEntryRevisionResolverImpl);
+        container.register(DeleteEntryRevisionResolverImpl);
+        container.register(PublishEntryRevisionResolverImpl);
+        container.register(UnpublishEntryRevisionResolverImpl);
+
         container.registerInstance(HeadlessCmsEnhancerConfig, {
             type: config.type,
             extraPlugins: config.extraPlugins

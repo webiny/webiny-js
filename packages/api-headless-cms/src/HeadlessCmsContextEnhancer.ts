@@ -13,8 +13,8 @@ import { createFieldConverters } from "~/fieldConverters/index.js";
 import { createExportCrud } from "~/export/index.js";
 import { createImportCrud } from "~/export/crud/importing.js";
 import { getSchema } from "~/graphql/getSchema.js";
+import { processRequestBody } from "@webiny/handler-graphql";
 import { createBaseSchema } from "~/graphql/schema/baseSchema.js";
-import { createCmsSchema } from "~/graphql/schema/cms/index.js";
 import { createExportGraphQL } from "~/export/graphql/index.js";
 import { createRevisionIdScalarPlugin } from "~/graphql/scalars/RevisionIdScalarPlugin.js";
 import { CmsInstallerFeature } from "~/features/installer/feature.js";
@@ -24,10 +24,10 @@ import { ContentModelGroupFeature } from "~/features/contentModelGroup/ContentMo
 import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
 import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
+import { CmsWebhooksFeature } from "~/features/webhooks/feature.js";
 import { GraphQLFeature } from "~/features/graphql/index.js";
 import { ValidationFeature } from "~/features/validation/index.js";
 import { StorageFeature } from "~/features/storage/index.js";
-import { CmsWebhooksFeature } from "~/features/webhooks/feature.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import {
     AccessControl as AccessControlAbstraction,
@@ -51,8 +51,9 @@ export interface IHeadlessCmsEnhancerConfig {
     extraPlugins?: any[];
 }
 
-export const HeadlessCmsEnhancerConfig =
-    new Abstraction<IHeadlessCmsEnhancerConfig>("HeadlessCmsEnhancerConfig");
+export const HeadlessCmsEnhancerConfig = new Abstraction<IHeadlessCmsEnhancerConfig>(
+    "HeadlessCmsEnhancerConfig"
+);
 
 class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
     private initialized = false;
@@ -133,9 +134,10 @@ class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
             storageOperations,
             accessControl,
             getExecutableSchema: async (schemaType: ApiEndpoint) => {
-                return ctx.security.withoutAuthorization(() => {
+                const schema = await ctx.security.withoutAuthorization(() => {
                     return getSchema({ context: ctx as CmsContext, getTenant, type: schemaType });
                 });
+                return async (input: any) => processRequestBody(input, schema, ctx as CmsContext);
             },
             ...createModelGroupsCrud({ context: ctx as CmsContext }),
             ...createModelsCrud({ context: ctx as CmsContext }),
@@ -144,10 +146,10 @@ class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
             importing: { ...createImportCrud(ctx as CmsContext) }
         };
 
-        // Apply base, CMS, and export schema context plugins —
-        // these register CmsGraphQLSchemaPlugin instances into ctx.plugins
+        // Apply base and export schema context plugins —
+        // these register CmsGraphQLSchemaPlugin instances into ctx.plugins.
+        // createCmsSchema() is pre-registered in HeadlessCmsFeature (CoreGraphQLSchemaFactory).
         await createBaseSchema().apply(ctx as CmsContext);
-        await createCmsSchema().apply(ctx as CmsContext);
         await createExportGraphQL().apply(ctx as CmsContext);
 
         // Register DI features after cms is set on ctx
