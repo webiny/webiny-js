@@ -1,7 +1,8 @@
 import React, { useCallback } from "react";
+import { observer } from "mobx-react-lite";
 import {
     ContentEntryEditorConfig,
-    useContentEntryEditor
+    useContentEntryFormPresenter
 } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
 import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
 import { useApolloClient } from "@apollo/react-hooks";
@@ -10,22 +11,29 @@ import { usePermissions } from "~/hooks/usePermissions.js";
 import { createNamespace } from "~/utils/index.js";
 
 interface MenuItemWithIdProps {
-    entry: ReturnType<typeof useContentEntryEditor>["entry"];
-    contentModel: ReturnType<typeof useContentEntryEditor>["contentModel"];
+    entryId: string;
+    entryTitle: string;
+    entryStatus: string;
+    modelId: string;
     loading: boolean;
 }
 
-/* Rendered only when entry.id exists; hooks that depend on entry.id live here. */
-const MenuItemWithId = ({ entry, contentModel, loading }: MenuItemWithIdProps) => {
+const MenuItemWithId = ({
+    entryId,
+    entryTitle,
+    entryStatus,
+    modelId,
+    loading
+}: MenuItemWithIdProps) => {
     const client = useApolloClient();
 
     const { showDialog: showSchedulerDialog } = useScheduleDialog({
         client,
-        namespace: createNamespace(contentModel),
+        namespace: createNamespace({ modelId }),
         target: {
-            id: entry.id,
-            title: entry.meta.title,
-            status: entry.meta.status
+            id: entryId,
+            title: entryTitle,
+            status: entryStatus
         }
     });
 
@@ -36,33 +44,33 @@ const MenuItemWithId = ({ entry, contentModel, loading }: MenuItemWithIdProps) =
         showSchedulerDialog();
     }, [showSchedulerDialog]);
 
-    const action = entry.meta?.status === "published" ? "unpublish" : "publish";
+    const action = entryStatus === "published" ? "unpublish" : "publish";
 
     return (
         <OptionsMenuItem
             icon={<ScheduleIcon />}
             label={`Schedule ${action}`}
             onAction={showDialog}
-            disabled={!entry?.meta?.status || loading}
+            disabled={!entryStatus || loading}
             data-testid={"cms.content-form.header.schedule"}
         />
     );
 };
 
-export const MenuItem = () => {
-    const { entry, loading, contentModel } = useContentEntryEditor();
+export const MenuItem = observer(() => {
+    const presenter = useContentEntryFormPresenter();
     const { canPublish, canUnpublish } = usePermissions();
 
     const { OptionsMenuItem } =
         ContentEntryEditorConfig.Actions.MenuItemAction.useOptionsMenuItem();
 
+    const vm = presenter.vm;
+
     if (!canPublish && !canUnpublish) {
         return null;
     }
 
-    /* When entry.id is missing (e.g. new unsaved entry), render a disabled item
-     * without invoking hooks that require a persisted entry. */
-    if (!entry.id) {
+    if (!vm.entry) {
         return (
             <OptionsMenuItem
                 icon={<ScheduleIcon />}
@@ -74,5 +82,13 @@ export const MenuItem = () => {
         );
     }
 
-    return <MenuItemWithId entry={entry} contentModel={contentModel} loading={loading} />;
-};
+    return (
+        <MenuItemWithId
+            entryId={vm.entry.id}
+            entryTitle={vm.entry.meta?.title || ""}
+            entryStatus={vm.entry.meta?.status || ""}
+            modelId={vm.model.modelId}
+            loading={vm.loading !== null}
+        />
+    );
+});

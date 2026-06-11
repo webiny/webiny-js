@@ -10,6 +10,7 @@ import {
     ContentEntryListWithConfig,
     useContentEntryListConfig
 } from "~/admin/config/contentEntries/list/ContentEntryListConfig.js";
+import { ContentEntryEditorWithConfig } from "~/admin/config/contentEntries/editor/ContentEntryEditorConfig.js";
 import { ModelProvider } from "~/admin/components/ModelProvider/index.js";
 import { ContentEntriesListLayout } from "./ContentEntriesListLayout.js";
 import { RouteParamsSync } from "./RouteParamsSync.js";
@@ -28,19 +29,21 @@ export const ListView = ({ model, initialFolderId, initialSearch, syncToUrl }: L
     return (
         <ModelProvider model={model}>
             <ContentEntryListWithConfig>
-                <ListViewInit
-                    model={model}
-                    listPresenter={listPresenter}
-                    initialFolderId={initialFolderId}
-                    initialSearch={initialSearch}
-                >
-                    <ContentEntriesPresenterProvider presenter={listPresenter}>
-                        <ContentEntryFormPresenterProvider presenter={formPresenter}>
-                            <ContentEntriesListLayout />
-                            {syncToUrl && <RouteParamsSync modelId={model.modelId} />}
-                        </ContentEntryFormPresenterProvider>
-                    </ContentEntriesPresenterProvider>
-                </ListViewInit>
+                <ContentEntryEditorWithConfig>
+                    <ListViewInit
+                        model={model}
+                        listPresenter={listPresenter}
+                        initialFolderId={initialFolderId}
+                        initialSearch={initialSearch}
+                    >
+                        <ContentEntriesPresenterProvider presenter={listPresenter}>
+                            <ContentEntryFormPresenterProvider presenter={formPresenter}>
+                                <ContentEntriesListLayout />
+                                {syncToUrl && <RouteParamsSync modelId={model.modelId} />}
+                            </ContentEntryFormPresenterProvider>
+                        </ContentEntriesPresenterProvider>
+                    </ListViewInit>
+                </ContentEntryEditorWithConfig>
             </ContentEntryListWithConfig>
         </ModelProvider>
     );

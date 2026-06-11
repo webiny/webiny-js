@@ -13,6 +13,7 @@ import {
     BulkDeleteFeature,
     BulkMoveFeature
 } from "../bulkActions/feature.js";
+import { RevisionsListFeature } from "../revisionsList/feature.js";
 import { ModelLoader } from "./ModelLoader.js";
 
 export interface ContentEntriesViewProps {
@@ -38,6 +39,7 @@ export const ContentEntriesView = ({
         child.register(CmsModelAccessor).inSingletonScope();
         ContentEntriesPresenterFeature.register(child);
         ContentEntryFormPresenterFeature.register(child);
+        RevisionsListFeature.register(child);
         SingletonEntryPresenterFeature.register(child);
         BulkPublishFeature.register(child);
         BulkUnpublishFeature.register(child);

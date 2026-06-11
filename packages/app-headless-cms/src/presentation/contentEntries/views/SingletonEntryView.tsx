@@ -9,6 +9,8 @@ import { CmsFormModelFeature } from "~/features/formModel/feature.js";
 import { ModelFeature } from "~/features/model/feature.js";
 import { GetModelFeature } from "~/features/model/getModel/feature.js";
 import type { IGetModelUseCase } from "~/features/model/getModel/abstractions.js";
+import { CmsModelAccessor as CmsModelAccessorAbstraction } from "~/features/contentEntry/abstractions.js";
+import { CmsModelAccessor } from "~/features/contentEntry/CmsModelAccessor.js";
 import { SingletonEntryPresenterFeature } from "../singleton/feature.js";
 import type { ISingletonEntryPresenter } from "../singleton/abstractions.js";
 
@@ -18,6 +20,7 @@ export interface SingletonEntryViewProps {
 }
 
 const SingletonEntryViewInner = observer(({ modelId }: SingletonEntryViewProps) => {
+    const container = useContainer();
     const { presenter } = useFeature(SingletonEntryPresenterFeature) as {
         presenter: ISingletonEntryPresenter;
     };
@@ -27,7 +30,8 @@ const SingletonEntryViewInner = observer(({ modelId }: SingletonEntryViewProps) 
 
     useEffect(() => {
         getModelUseCase.execute({ modelId }).then(model => {
-            presenter.init({ model });
+            container.resolve(CmsModelAccessorAbstraction).setModel(model);
+            presenter.init();
         });
 
         return () => presenter.dispose();
@@ -68,6 +72,7 @@ export const SingletonEntryView = ({ modelId, children }: SingletonEntryViewProp
         CmsFormModelFeature.register(child);
         ContentEntryFeature.register(child);
         ModelFeature.register(child);
+        child.register(CmsModelAccessor).inSingletonScope();
         SingletonEntryPresenterFeature.register(child);
 
         return child;

@@ -1,20 +1,19 @@
 import { computed, makeAutoObservable, runInAction } from "mobx";
 import type { IFormModel } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
-import type { CmsContentEntry, CmsModel } from "~/types.js";
+import type { CmsContentEntry } from "~/types.js";
 import { GetSingletonEntryUseCase } from "~/features/contentEntry/singletonEntry/abstractions.js";
 import { UpdateSingletonEntryUseCase } from "~/features/contentEntry/singletonEntry/abstractions.js";
 import { CmsFormModelBuilder } from "~/features/formModel/abstractions.js";
+import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
 import {
     SingletonEntryPresenter as Abstraction,
     type ISingletonEntryPresenter,
     type ISingletonEntryViewModel,
-    type ISingletonEntryActions,
-    type ISingletonEntryInitConfig
+    type ISingletonEntryActions
 } from "./abstractions.js";
 
 class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
-    private _model: CmsModel | null = null;
     private _entry: CmsContentEntry | null = null;
     private _form: IFormModel | null = null;
     private _loading: string | null = null;
@@ -22,6 +21,7 @@ class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
     constructor(
         private formModelFactory: FormModelFactory.Interface,
         private cmsFormModelBuilder: CmsFormModelBuilder.Interface,
+        private modelAccessor: CmsModelAccessor.Interface,
         private getSingletonEntryUseCase: GetSingletonEntryUseCase.Interface,
         private updateSingletonEntryUseCase: UpdateSingletonEntryUseCase.Interface
     ) {
@@ -29,15 +29,21 @@ class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
             SingletonEntryPresenterImpl,
             | "formModelFactory"
             | "cmsFormModelBuilder"
+            | "modelAccessor"
             | "getSingletonEntryUseCase"
             | "updateSingletonEntryUseCase"
         >(this, {
             formModelFactory: false,
             cmsFormModelBuilder: false,
+            modelAccessor: false,
             getSingletonEntryUseCase: false,
             updateSingletonEntryUseCase: false,
             vm: computed
         });
+    }
+
+    private get model() {
+        return this.modelAccessor.getModel();
     }
 
     get vm(): ISingletonEntryViewModel {
@@ -52,7 +58,7 @@ class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
 
     actions: ISingletonEntryActions = {
         save: async () => {
-            if (!this._form || !this._model) {
+            if (!this._form) {
                 return false;
             }
 
@@ -65,7 +71,7 @@ class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
 
             try {
                 const entry = await this.updateSingletonEntryUseCase.execute({
-                    model: this._model,
+                    model: this.model,
                     data: data as Record<string, unknown>
                 });
 
@@ -86,18 +92,17 @@ class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
         }
     };
 
-    async init(config: ISingletonEntryInitConfig): Promise<void> {
-        this._model = config.model;
+    async init(): Promise<void> {
         this._loading = "Loading...";
 
         try {
             const entry = await this.getSingletonEntryUseCase.execute({
-                model: config.model
+                model: this.model
             });
 
             runInAction(() => {
                 this._entry = entry;
-                const formConfig = this.cmsFormModelBuilder.build(config.model);
+                const formConfig = this.cmsFormModelBuilder.build(this.model);
                 this._form = this.formModelFactory.create(formConfig);
                 this._form.setData(entry.values);
                 this._form.reset();
@@ -112,7 +117,6 @@ class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
     dispose(): void {
         this._form = null;
         this._entry = null;
-        this._model = null;
     }
 }
 
@@ -121,6 +125,7 @@ export const SingletonEntryPresenterImplementation = Abstraction.createImplement
     dependencies: [
         FormModelFactory,
         CmsFormModelBuilder,
+        CmsModelAccessor,
         GetSingletonEntryUseCase,
         UpdateSingletonEntryUseCase
     ]

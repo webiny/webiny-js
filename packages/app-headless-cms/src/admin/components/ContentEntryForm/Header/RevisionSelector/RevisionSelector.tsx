@@ -1,27 +1,29 @@
-import React, { useCallback } from "react";
-import { useRoute, useRouter } from "@webiny/app-admin";
+import React from "react";
+import { useFeature } from "@webiny/app";
 import { Button, DropdownMenu, Text } from "@webiny/admin-ui";
+import { useRoute, useRouter } from "@webiny/app-admin";
 import { ReactComponent as DownButton } from "@webiny/icons/keyboard_arrow_down.svg";
-import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry.js";
-import { statuses as statusLabels } from "~/admin/constants.js";
+import { statuses } from "~/admin/constants.js";
 import { Routes } from "~/routes.js";
-import { useFullScreenContentEntry } from "~/admin/views/contentEntries/ContentEntry/FullScreenContentEntry/useFullScreenContentEntry.js";
+import { useContentEntryFormPresenter } from "~/presentation/contentEntries/views/ContentEntryFormPresenterProvider.js";
+import { RevisionsListFeature } from "~/presentation/contentEntries/revisionsList/feature.js";
+
+const getStatusLabel = (status: string): string => {
+    return (statuses as Record<string, string>)[status] || status;
+};
 
 export const RevisionSelector = () => {
+    const { vm } = useContentEntryFormPresenter();
+    const { presenter: revisionsPresenter } = useFeature(RevisionsListFeature);
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.ContentEntries.List);
 
-    const { entry, revisions, loading } = useContentEntry();
-    const { openRevisionList } = useFullScreenContentEntry();
-
-    const showRevisionsDrawer = useCallback(() => {
-        openRevisionList(true);
-    }, []);
-
     const currentRevision = {
-        version: entry.meta?.version || 1,
-        status: entry.meta?.status || "draft"
+        version: vm.entry?.meta?.version || 1,
+        status: vm.entry?.meta?.status || "draft"
     };
+
+    const revisions = revisionsPresenter.vm.revisions;
 
     if (!revisions.length) {
         return null;
@@ -34,18 +36,18 @@ export const RevisionSelector = () => {
             trigger={
                 <Button
                     variant={"ghost"}
-                    disabled={loading}
+                    disabled={vm.loading !== null}
                     icon={<DownButton />}
                     iconPosition={"end"}
                     text={
                         <>
-                            v{currentRevision.version} ({statusLabels[currentRevision.status]})
+                            v{currentRevision.version} ({getStatusLabel(currentRevision.status)})
                         </>
                     }
                 />
             }
         >
-            {firstFiveRevisions.slice(0, 5).map(revision => (
+            {firstFiveRevisions.map(revision => (
                 <DropdownMenu.Item
                     key={revision.id}
                     onClick={() => {
@@ -55,11 +57,9 @@ export const RevisionSelector = () => {
                         });
                     }}
                     text={
-                        <>
-                            <Text size={"sm"}>
-                                v{revision.meta.version} ({statusLabels[revision.meta.status]})
-                            </Text>
-                        </>
+                        <Text size={"sm"}>
+                            v{revision.meta.version} ({getStatusLabel(revision.meta.status)})
+                        </Text>
                     }
                 />
             ))}
@@ -68,12 +68,8 @@ export const RevisionSelector = () => {
                     <DropdownMenu.Separator />
                     <DropdownMenu.Item
                         key={"revisions-all"}
-                        onClick={showRevisionsDrawer}
-                        text={
-                            <>
-                                <Text size={"sm"}>Show All Revisions</Text>
-                            </>
-                        }
+                        onClick={() => revisionsPresenter.show()}
+                        text={<Text size={"sm"}>Show All Revisions</Text>}
                     />
                 </>
             ) : null}

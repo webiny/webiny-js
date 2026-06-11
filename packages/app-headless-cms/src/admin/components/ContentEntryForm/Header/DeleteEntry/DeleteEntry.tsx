@@ -1,26 +1,26 @@
 import React from "react";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
-import { useNavigateFolder } from "@webiny/app-aco";
 import { usePermission } from "~/admin/hooks/index.js";
 import { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
-import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry.js";
+import { useContentEntryFormPresenter } from "~/presentation/contentEntries/views/ContentEntryFormPresenterProvider.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
 
 export const DeleteEntry = () => {
-    const { navigateToFolder } = useNavigateFolder();
-    const { entry, loading, ...contentEntry } = useContentEntry();
+    const { vm, actions } = useContentEntryFormPresenter();
+    const listPresenter = useContentEntriesPresenter();
     const { canDelete } = usePermission();
 
     const { OptionsMenuItem } =
         ContentEntryEditorConfig.Actions.MenuItemAction.useOptionsMenuItem();
 
     const deleteEntry = async () => {
-        const response = await contentEntry.deleteEntry({ id: entry.entryId });
-        if (typeof response === "boolean") {
-            navigateToFolder(entry.wbyAco_location.folderId);
+        const deleted = await actions.deleteEntry();
+        if (deleted) {
+            listPresenter.deselectEntry();
         }
     };
 
-    if (!canDelete(entry, "cms.contentEntry")) {
+    if (!vm.entry || !canDelete(vm.entry, "cms.contentEntry")) {
         return null;
     }
 
@@ -29,7 +29,7 @@ export const DeleteEntry = () => {
             icon={<DeleteIcon />}
             label={"Trash entry"}
             onAction={deleteEntry}
-            disabled={!entry.id || loading}
+            disabled={vm.loading !== null}
             data-testid={"cms.content-form.header.delete"}
         />
     );

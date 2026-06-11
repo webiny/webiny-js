@@ -50,7 +50,7 @@ import {
     PUBLISH_ENTRY_DIALOG,
     UNPUBLISH_ENTRY_DIALOG
 } from "~/presentation/contentEntries/list/ContentEntriesPresenter.js";
-import { DELETE_REVISION_DIALOG } from "~/presentation/contentEntries/form/ContentEntryFormPresenter.js";
+import { DELETE_REVISION_DIALOG } from "~/presentation/contentEntries/revisionsList/RevisionsListPresenter.js";
 
 const { Browser } = InternalContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;

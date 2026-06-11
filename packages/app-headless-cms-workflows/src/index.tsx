@@ -14,7 +14,9 @@ import { ListOpenInNewWindow } from "~/Components/OptionItem/OpenInNewWindow.js"
 import { CmsEntryFormCreateNewRevisionButton } from "~/Components/ContentEntryForm/CmsEntryFormCreateNewRevisionButton.js";
 
 export const CmsWorkflows = () => {
-    return (
+    return null;
+
+    /*return (
         <Wcp.CanUseWorkflows>
             <ListOpenInNewWindow />
             <CmsEntriesWorkflowStateListFooterMenu />
@@ -27,5 +29,5 @@ export const CmsWorkflows = () => {
             <CmsEntryFormSaveButton />
             <CmsEntryFormCreateNewRevisionButton />
         </Wcp.CanUseWorkflows>
-    );
+    );*/
 };

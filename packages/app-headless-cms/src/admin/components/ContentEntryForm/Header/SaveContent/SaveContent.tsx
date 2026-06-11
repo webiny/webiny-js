@@ -1,26 +1,22 @@
 import React from "react";
 import { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
 import { usePermission } from "~/admin/hooks/usePermission.js";
-import { useContentEntryForm } from "~/admin/components/ContentEntryForm/useContentEntryForm.js";
-import { useIsModelPublishable } from "~/admin/hooks/useIsModelPublishable.js";
+import { useContentEntryFormPresenter } from "~/presentation/contentEntries/views/ContentEntryFormPresenterProvider.js";
 
 export const SaveContentButton = () => {
     const { useButtons } = ContentEntryEditorConfig.Actions.ButtonAction;
     const { canEdit } = usePermission();
     const { ButtonSecondary } = useButtons();
-    const { entry, saveEntry } = useContentEntryForm();
-    const isModelPublishable = useIsModelPublishable();
+    const { vm, actions } = useContentEntryFormPresenter();
 
-    if (!canEdit(entry, "cms.contentEntry")) {
+    if (!vm.canSave || (vm.entry && !canEdit(vm.entry, "cms.contentEntry"))) {
         return null;
     }
-
-    const skipValidators = isModelPublishable ? ["required"] : [];
 
     return (
         <ButtonSecondary
             data-testid={"cms-content-save-content-button"}
-            onAction={() => saveEntry({ skipValidators })}
+            onAction={() => actions.save()}
         >
             {"Save"}
         </ButtonSecondary>

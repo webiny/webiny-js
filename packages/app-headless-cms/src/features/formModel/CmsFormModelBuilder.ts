@@ -3,7 +3,12 @@ import type {
     IFieldBuilderRegistry,
     IFormModelConfig
 } from "@webiny/app-admin/features/formModel/abstractions.js";
-import type { CmsModel, CmsModelField } from "~/types.js";
+import {
+    isLayoutField,
+    type CmsEditorFieldsLayout,
+    type CmsModel,
+    type CmsModelField
+} from "~/types.js";
 import type {
     ICmsFieldTypeMapper,
     ICmsFieldMapperContext,
@@ -34,11 +39,17 @@ class CmsFormModelBuilderImpl implements ICmsFormModelBuilder {
             mapField: (field, registry) => this.mapField(field, registry, context)
         };
 
+        const fieldIdsInLayout = model.layout ? collectFieldIds(model.layout) : null;
+
         return {
             fields: registry => {
                 const result: Record<string, IFieldBuilder> = {};
                 for (const field of model.fields) {
-                    result[field.fieldId] = this.mapField(field, registry, context);
+                    const builder = this.mapField(field, registry, context);
+                    if (fieldIdsInLayout && !fieldIdsInLayout.has(field.fieldId)) {
+                        builder.hidden();
+                    }
+                    result[field.fieldId] = builder;
                 }
                 return result;
             },
@@ -64,3 +75,24 @@ export const CmsFormModelBuilder = BuilderAbstraction.createImplementation({
     implementation: CmsFormModelBuilderImpl,
     dependencies: [[CmsFieldTypeMapper, { multiple: true, optional: true }]]
 });
+
+function collectFieldIds(layout: CmsEditorFieldsLayout): Set<string> {
+    const ids = new Set<string>();
+
+    for (const row of layout) {
+        for (const cell of row) {
+            if (typeof cell === "string") {
+                ids.add(cell);
+            } else if (isLayoutField(cell) && cell.type === "tabs") {
+                const tabsField = cell as { tabs: Array<{ layout: CmsEditorFieldsLayout }> };
+                for (const tab of tabsField.tabs) {
+                    for (const id of collectFieldIds(tab.layout)) {
+                        ids.add(id);
+                    }
+                }
+            }
+        }
+    }
+
+    return ids;
+}

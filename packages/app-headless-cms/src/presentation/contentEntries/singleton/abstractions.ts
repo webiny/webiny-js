@@ -1,10 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IFormVM } from "@webiny/app-admin/features/formModel/abstractions.js";
-import type { CmsContentEntry, CmsModel } from "~/types.js";
-
-export interface ISingletonEntryInitConfig {
-    model: CmsModel;
-}
+import type { CmsContentEntry } from "~/types.js";
 
 export interface ISingletonEntryViewModel {
     loading: string | null;
@@ -21,7 +17,7 @@ export interface ISingletonEntryActions {
 export interface ISingletonEntryPresenter {
     vm: ISingletonEntryViewModel;
     actions: ISingletonEntryActions;
-    init(config: ISingletonEntryInitConfig): Promise<void>;
+    init(): Promise<void>;
     dispose(): void;
 }
 
@@ -32,5 +28,4 @@ export namespace SingletonEntryPresenter {
     export type Interface = ISingletonEntryPresenter;
     export type ViewModel = ISingletonEntryViewModel;
     export type Actions = ISingletonEntryActions;
-    export type InitConfig = ISingletonEntryInitConfig;
 }

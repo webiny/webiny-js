@@ -12,7 +12,7 @@ export const SingletonView = ({ model }: SingletonViewProps) => {
     const { presenter: singletonPresenter } = useFeature(SingletonEntryPresenterFeature);
 
     useEffect(() => {
-        singletonPresenter.init({ model });
+        singletonPresenter.init();
 
         return () => {
             singletonPresenter.dispose();

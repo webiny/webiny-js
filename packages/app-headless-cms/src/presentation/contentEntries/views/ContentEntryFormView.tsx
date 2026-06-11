@@ -1,74 +1,142 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { Helmet } from "react-helmet";
 import { observer } from "mobx-react-lite";
+import { useFeature, useRouter } from "@webiny/app";
+import { Buttons, useDialogs } from "@webiny/app-admin";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
+import { HeaderBar, Heading, Icon, IconButton, OverlayLoader, Tooltip } from "@webiny/admin-ui";
+import { ReactComponent as BackIcon } from "@webiny/icons/arrow_back.svg";
+import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
+import { useContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
+import {
+    Container,
+    Content,
+    ContentFormWrapper,
+    ContentFormInner
+} from "~/admin/views/contentEntries/ContentEntry/FullScreenContentEntry/FullScreenContentEntry.styled.js";
+import { RevisionsListFeature } from "../revisionsList/feature.js";
+import { useContentEntriesPresenter } from "./ContentEntriesPresenterProvider.js";
 import { useContentEntryFormPresenter } from "./ContentEntryFormPresenterProvider.js";
+import { RevisionDrawer } from "./RevisionDrawer.js";
 
 export const ContentEntryFormView = observer(() => {
-    const { vm, actions } = useContentEntryFormPresenter();
+    const listPresenter = useContentEntriesPresenter();
+    const formPresenter = useContentEntryFormPresenter();
+    const { presenter: revisionsPresenter } = useFeature(RevisionsListFeature);
+    const { width } = useContentEntryEditorConfig();
+    const router = useRouter();
+    const dialogs = useDialogs();
 
-    if (vm.loading) {
-        return <div>{vm.loading}</div>;
-    }
+    const entryId = listPresenter.vm.selectedEntryId;
 
-    if (!vm.form) {
-        return null;
-    }
+    useEffect(() => {
+        if (entryId === "new") {
+            formPresenter.newEntry();
+        } else if (entryId) {
+            formPresenter.loadEntry(entryId);
+            revisionsPresenter.init(entryId);
+        }
+
+        return () => {
+            formPresenter.dispose();
+            revisionsPresenter.dispose();
+        };
+    }, [entryId]);
+
+    useEffect(() => {
+        return router.addTransitionGuard({
+            guard: () => formPresenter.vm.isDirty,
+            onBlocked: () => {
+                dialogs.showDialog({
+                    title: "Confirm Navigation",
+                    content:
+                        "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?",
+                    acceptLabel: "Yes!",
+                    cancelLabel: "No, stay here.",
+                    onAccept: () => router.confirmTransition(),
+                    onClose: () => router.cancelTransition()
+                });
+            }
+        });
+    }, []);
+
+    const { vm } = formPresenter;
 
     return (
-        <div>
-            <ContentEntryFormHeader />
-            {vm.activeTab === "content" ? (
-                <FormView name="ContentEntryForm" form={vm.form} />
-            ) : (
-                <ContentEntryRevisionsList />
-            )}
-        </div>
+        <Container>
+            <Helmet title={vm.entry?.meta?.title || listPresenter.vm.model.name} />
+            <HeaderBar
+                start={
+                    <EntryFormHeaderLeft
+                        onBack={() => listPresenter.deselectEntry()}
+                        title={vm.entry?.meta?.title || `New ${listPresenter.vm.model.name}`}
+                        isNewEntry={vm.isNewEntry}
+                        modelName={listPresenter.vm.model.name}
+                        status={vm.entry?.meta?.status ?? null}
+                    />
+                }
+                end={<EntryFormHeaderRight />}
+            />
+            <Content>
+                {vm.loading ? <OverlayLoader text={vm.loading} /> : null}
+                <ContentFormWrapper>
+                    <ContentFormInner width={width}>
+                        {vm.form ? (
+                            <FormView name="ContentEntryForm" form={vm.form} />
+                        ) : null}
+                    </ContentFormInner>
+                </ContentFormWrapper>
+            </Content>
+            <RevisionDrawer />
+        </Container>
     );
 });
 
-const ContentEntryFormHeader = observer(() => {
-    const { vm, actions } = useContentEntryFormPresenter();
+interface EntryFormHeaderLeftProps {
+    onBack: () => void;
+    title: string;
+    isNewEntry: boolean;
+    modelName: string;
+    status: string | null;
+}
 
+const EntryFormHeaderLeft = ({
+    onBack,
+    title,
+    isNewEntry,
+    modelName,
+    status
+}: EntryFormHeaderLeftProps) => {
     return (
-        <div>
-            {vm.canSave && (
-                <button onClick={() => actions.save()} disabled={vm.loading !== null}>
-                    Save
-                </button>
-            )}
-            {vm.canPublish && (
-                <button onClick={() => actions.publish()} disabled={vm.loading !== null}>
-                    Publish
-                </button>
-            )}
-            {vm.canUnpublish && (
-                <button onClick={() => actions.unpublish()} disabled={vm.loading !== null}>
-                    Unpublish
-                </button>
-            )}
-            {vm.canCreateRevision && (
-                <button onClick={() => actions.createRevision()} disabled={vm.loading !== null}>
-                    New Revision
-                </button>
-            )}
+        <div className={"flex items-center gap-sm"}>
+            <IconButton variant={"ghost"} onClick={onBack} icon={<BackIcon />} />
+            <Heading
+                level={5}
+                className={`text-neutral-primary${isNewEntry ? " opacity-50" : ""}`}
+            >
+                {title}
+            </Heading>
+            <Tooltip
+                content={`Model: ${modelName}${status ? ` - Status: ${status}` : ""}`}
+                trigger={
+                    <Icon
+                        icon={<InfoIcon />}
+                        label={"Info"}
+                        size={"sm"}
+                        color={"neutral-light"}
+                    />
+                }
+            />
         </div>
     );
-});
+};
 
-const ContentEntryRevisionsList = observer(() => {
-    const { vm, actions } = useContentEntryFormPresenter();
+const EntryFormHeaderRight = observer(() => {
+    const { buttonActions } = useContentEntryEditorConfig();
 
     return (
-        <div>
-            {vm.revisions.map(revision => (
-                <div key={revision.id}>
-                    <span>v{revision.meta.version}</span>
-                    <span>{revision.meta.status}</span>
-                    <button onClick={() => actions.switchRevision(revision.id)}>
-                        {revision.id === vm.entry?.id ? "Current" : "Switch"}
-                    </button>
-                </div>
-            ))}
+        <div className={"flex items-center gap-sm"}>
+            <Buttons actions={buttonActions} />
         </div>
     );
 });
