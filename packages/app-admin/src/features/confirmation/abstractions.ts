@@ -13,9 +13,18 @@ export namespace NamedDialogOpener {
 export interface IConfirmation {
     confirm<TData = void, TParams extends Record<string, unknown> = Record<string, unknown>>(
         name: string,
-        params?: TParams,
-        execute?: (data: TData) => Promise<unknown>
+        params?: TParams
     ): Promise<TData | false>;
+
+    confirm<
+        TData = void,
+        TParams extends Record<string, unknown> = Record<string, unknown>,
+        TResult = unknown
+    >(
+        name: string,
+        params: TParams,
+        execute: (data: TData) => Promise<TResult>
+    ): Promise<TResult | false>;
 }
 
 export const Confirmation = createAbstraction<IConfirmation>("Confirmation");

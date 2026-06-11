@@ -24,6 +24,7 @@ import {
     type IContentEntryFormPresenter,
     type IContentEntryFormViewModel
 } from "./abstractions.js";
+import { TRASH_ENTRY_DIALOG } from "~/presentation/contentEntries/list/ContentEntriesPresenter.js";
 
 class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
     private _entry: CmsContentEntry | null = null;
@@ -102,6 +103,7 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
         }
 
         const data = await this._form.submit();
+
         if (!data) {
             return false;
         }
@@ -228,27 +230,30 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
             return false;
         }
 
-        this._loading = "Deleting...";
+        const model = this.model;
+        const entry = this._entry;
 
-        try {
-            await this.deleteEntryUseCase.execute({
-                model: this.model,
-                id: this._entry.id
-            });
+        return this.confirmation.confirm(
+            TRASH_ENTRY_DIALOG,
+            { entryId: entry.entryId },
+            async () => {
+                try {
+                    await this.deleteEntryUseCase.execute({
+                        model,
+                        id: entry.entryId
+                    });
 
-            runInAction(() => {
-                this._entry = null;
-                this._form = null;
-            });
+                    runInAction(() => {
+                        this._entry = null;
+                        this._form = null;
+                    });
 
-            return true;
-        } catch {
-            return false;
-        } finally {
-            runInAction(() => {
-                this._loading = null;
-            });
-        }
+                    return true;
+                } catch {
+                    return false;
+                }
+            }
+        );
     }
 
     async updateRevisionDescription(description: string): Promise<boolean> {

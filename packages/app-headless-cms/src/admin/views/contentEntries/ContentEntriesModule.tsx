@@ -156,7 +156,11 @@ export const ContentEntriesModule = () => {
                 <IsModelPublishable>
                     <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
                 </IsModelPublishable>
-                <Actions.MenuItemAction name={"delete"} element={<DeleteEntryMenuItem />} />
+                <Actions.MenuItemAction
+                    name={"delete"}
+                    element={<DeleteEntryMenuItem />}
+                    after={"$last"}
+                />
                 <IsModelPublishable>
                     <Actions.MenuItemAction
                         name={"showRevisionsList"}

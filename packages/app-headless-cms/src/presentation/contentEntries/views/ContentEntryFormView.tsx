@@ -19,6 +19,7 @@ import { RevisionsListFeature } from "../revisionsList/feature.js";
 import { useContentEntriesPresenter } from "./ContentEntriesPresenterProvider.js";
 import { useContentEntryFormPresenter } from "./ContentEntryFormPresenterProvider.js";
 import { RevisionDrawer } from "./RevisionDrawer.js";
+import { FormErrors } from "@webiny/app-admin";
 
 export const ContentEntryFormView = observer(() => {
     const listPresenter = useContentEntriesPresenter();
@@ -93,7 +94,14 @@ export const ContentEntryFormView = observer(() => {
                 <ContentFormWrapper>
                     <ContentFormInner width={width}>
                         <div className={"bg-neutral-base rounded-lg p-lg"}>
-                            {vm.form ? <FormView name="ContentEntryForm" form={vm.form} /> : null}
+                            {vm.form ? (
+                                <>
+                                    <div className={"mb-md"}>
+                                        <FormErrors form={vm.form} />
+                                    </div>
+                                    <FormView name="ContentEntryForm" form={vm.form} />
+                                </>
+                            ) : null}
                         </div>
                     </ContentFormInner>
                 </ContentFormWrapper>

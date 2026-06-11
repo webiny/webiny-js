@@ -1,14 +1,15 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
+import { Button, useToast } from "@webiny/admin-ui";
 import { usePermission } from "~/admin/hooks/usePermission.js";
 import { useContentEntryFormPresenter } from "../ContentEntryFormPresenterProvider.js";
+import { useContentEntriesPresenter } from "../ContentEntriesPresenterProvider.js";
 
 export const SaveContentButton = observer(() => {
-    const { useButtons } = ContentEntryEditorConfig.Actions.ButtonAction;
     const { canEdit } = usePermission();
-    const { ButtonSecondary } = useButtons();
     const presenter = useContentEntryFormPresenter();
+    const listPresenter = useContentEntriesPresenter();
+    const { showSuccessToast } = useToast();
 
     if (
         !presenter.vm.canSave ||
@@ -17,12 +18,25 @@ export const SaveContentButton = observer(() => {
         return null;
     }
 
+    const handleSave = async () => {
+        const isNew = presenter.vm.isNewEntry;
+        const saved = await presenter.save();
+        if (saved) {
+            if (isNew && presenter.vm.entry) {
+                listPresenter.selectEntry(presenter.vm.entry.id);
+            }
+            showSuccessToast({
+                title: `${presenter.vm.entry?.meta?.title || "Entry"} saved successfully!`
+            });
+        }
+    };
+
     return (
-        <ButtonSecondary
+        <Button
+            variant={"secondary"}
             data-testid={"cms-content-save-content-button"}
-            onAction={() => presenter.save()}
-        >
-            {"Save"}
-        </ButtonSecondary>
+            onClick={handleSave}
+            text={"Save"}
+        />
     );
 });
