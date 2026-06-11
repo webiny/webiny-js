@@ -1,6 +1,6 @@
-import { EventHandler } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
-import { IHttpRequest } from "~/features/http/index.js";
+import { TestHttpEventHandler } from "./TestHttpEventHandler.js";
+import type { IHttpRequest } from "~/features/http/index.js";
 
 export function isHttpRequest(event: any): event is IHttpRequest {
     return (
@@ -24,7 +24,7 @@ export const TestHttpEventType = EventType.createImplementation({
         }
 
         getHandlerAbstraction() {
-            return EventHandler;
+            return TestHttpEventHandler;
         }
     },
     dependencies: []

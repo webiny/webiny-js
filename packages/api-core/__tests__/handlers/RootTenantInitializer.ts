@@ -1,10 +1,13 @@
-import { EventHandler } from "@webiny/event-handler-core";
+import { TestHttpEventHandler } from "@webiny/event-handler-core/testing";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { TenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
 import type { ITenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
 
-class RootTenantInitializerImpl implements EventHandler.Interface {
-    constructor(private tenantCtx: ITenantContext) {}
+class RootTenantInitializerImpl implements TestHttpEventHandler.Interface {
+    constructor(
+        private tenantCtx: ITenantContext,
+        private inner: TestHttpEventHandler.Interface
+    ) {}
 
     async execute(ctx: EventContext, next: NextFunction): Promise<any> {
         this.tenantCtx.setTenant({
@@ -24,11 +27,11 @@ class RootTenantInitializerImpl implements EventHandler.Interface {
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString()
         });
-        return next();
+        return this.inner.execute(ctx, next);
     }
 }
 
-export const RootTenantInitializer = EventHandler.createImplementation({
-    implementation: RootTenantInitializerImpl,
+export const RootTenantInitializer = TestHttpEventHandler.createDecorator({
+    decorator: RootTenantInitializerImpl,
     dependencies: [TenantContext]
 });

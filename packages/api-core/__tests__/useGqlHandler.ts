@@ -51,8 +51,8 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
 
-            container.register(RootTenantInitializer);
-            container.register(AuthTriggerHandler);
+            container.registerDecorator(AuthTriggerHandler);
+            container.registerDecorator(RootTenantInitializer);
         },
         request: async container => {
             // ApiCoreFeature in child container — TenantContext, IdentityContext etc.

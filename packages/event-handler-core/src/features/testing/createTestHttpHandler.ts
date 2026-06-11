@@ -11,16 +11,16 @@ export interface createTestHttpHandlerOptions {
 
 /**
  * Test handler that accepts IHttpRequest directly and returns IHttpResponse.
- * Registers TestHttpEventType automatically — no AWS/Node transport needed.
+ * Registers HttpRouterHandler as the base TestHttpEventHandler implementation.
+ * Callers layer middleware on top via container.registerDecorator() in options.root.
  */
 export function createTestHttpHandler(options: createTestHttpHandlerOptions) {
     const invoke = createHandler({
         root: async container => {
             container.register(TestHttpEventType);
+            container.register(HttpRouterHandler);
             HttpFeature.register(container);
             await options.root(container);
-            // HttpRouterHandler is the terminal handler — must be last in the chain
-            container.register(HttpRouterHandler);
         },
         request: options.request
     });
