@@ -25,7 +25,6 @@ export const TeamsMultiAutocomplete = ({
 
     const onValuesChange = useCallback((ids: string[]) => onChange?.(ids), [onChange]);
 
-    console.log('props, props', props)
     return (
         <MultiAutoComplete
             {...props}
