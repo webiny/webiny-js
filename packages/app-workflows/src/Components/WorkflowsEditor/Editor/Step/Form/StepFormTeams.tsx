@@ -16,9 +16,7 @@ const Autocomplete = ({ bind }: IAutocompleteProps) => {
         if (!Array.isArray(bind.value) || !bind.value.length) {
             return [];
         }
-        return bind.value
-            .map((item: IInput) => item.id)
-            .filter(Boolean) as string[];
+        return bind.value.map((item: IInput) => item.id).filter(Boolean) as string[];
     }, [bind.value]);
 
     const onChange = useCallback(
