@@ -73,6 +73,8 @@ jobs:
     runs-on: ubuntu-latest
   createDocsBranch:
     name: Trigger release notes generation (docs.webiny.com)
+    needs:
+      - createWebinyJsBranch
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
