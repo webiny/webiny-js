@@ -4,7 +4,7 @@ import graphqlPlugins from "@webiny/handler-graphql";
 import { createApiCore } from "@webiny/api-core";
 import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver, registerDynamoDbExtension } from "@webiny/db-dynamodb";
+import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createFileManagerS3, createAssetDelivery } from "@webiny/api-file-manager-s3";
@@ -40,7 +40,7 @@ const documentClient = getDocumentClient();
 
 export const handler = createHandler({
     plugins: [
-        registerDynamoDbExtension({ documentClient }),
+        registerDynamoDBCore({ documentClient }),
         createApiCore({
             storageOperations: createApiCoreDdb({ documentClient })
         }),

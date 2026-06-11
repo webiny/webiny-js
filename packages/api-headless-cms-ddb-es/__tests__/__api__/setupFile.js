@@ -1,6 +1,6 @@
 import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver, registerDynamoDbExtension } from "@webiny/db-dynamodb";
+import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { ContextPlugin } from "@webiny/api";
 import { registerCmsOpenSearchStorageOperations } from "../../src/index";
@@ -82,7 +82,7 @@ setStorageOps("cms", () => {
     return {
         storageOperations: {},
         plugins: [
-            registerDynamoDbExtension({
+            registerDynamoDBCore({
                 documentClient
             }),
             registerCmsOpenSearchStorageOperations(),
