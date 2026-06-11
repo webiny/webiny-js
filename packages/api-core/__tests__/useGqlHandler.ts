@@ -1,11 +1,4 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/testing";
-import {
-    HttpFeature,
-    HttpRouterHandler,
-    ErrorHandler,
-    NotFoundHandler,
-    HttpTenantIdExtractorImpl
-} from "@webiny/event-handler-core";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
@@ -57,13 +50,9 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
         root: container => {
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
-            container.register(HttpTenantIdExtractorImpl);
 
-            container.register(ErrorHandler);
             container.register(RootTenantInitializer);
             container.register(AuthTriggerHandler);
-            container.register(HttpRouterHandler);
-            container.register(NotFoundHandler);
         },
         request: async container => {
             // ApiCoreFeature in child container — TenantContext, IdentityContext etc.
