@@ -42,7 +42,7 @@ export const PreviewTab = ({ activeTab, onSwitchToEdit }: PreviewTabProps) => {
                     {t`Nothing to see here`}
                 </p>
                 <p className={"text-sm text-neutral-strong max-w-[400px]"}>
-                    {t`It seems there was no field added to this content model. Switch to editor mode and add your very first field.`}
+                    {t`It looks like no field has been added to this content model yet. Switch to editor mode to add your first field.`}
                 </p>
             </div>
             {onSwitchToEdit && (
