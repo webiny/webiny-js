@@ -1,5 +1,8 @@
 import React from "react";
-import type { IWorkflowError, IWorkflowErrorDataInvalidFields } from "~/presentation/workflowsEditor/abstractions.js";
+import type {
+    IWorkflowError,
+    IWorkflowErrorDataInvalidFields
+} from "~/presentation/workflowsEditor/abstractions.js";
 import { Grid, Heading } from "@webiny/admin-ui";
 
 interface IInvalidFieldsProps {

@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
-import { Dialog, Grid, Icon, OverlayLoader, Textarea } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon, Textarea } from "@webiny/admin-ui";
 import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
+import { OverlayLoader } from "@webiny/admin-ui";
 
 interface IApproveDialogProps {
     onApprove(comment?: string): void;
@@ -21,6 +22,7 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
         <Dialog
             open={true}
             onOpenChange={hide}
+            overlay={loading ? <OverlayLoader size="md" /> : null}
             title={
                 <>
                     <Icon
@@ -41,7 +43,6 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
             showCloseButton={true}
             dismissible={true}
         >
-            {loading ? <OverlayLoader size="sm" variant="accent" indeterminate={true} /> : null}
             <Grid>
                 <Grid.Column span={12}>
                     You are about to approve the <strong>{title}</strong>. Authors and responsible

@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
-import { Dialog, Grid, Icon, OverlayLoader, Textarea } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon, Textarea } from "@webiny/admin-ui";
 import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
+import { OverlayLoader } from "@webiny/admin-ui";
 
 interface IRejectDialogProps {
     onReject(comment: string): void;
@@ -58,6 +59,7 @@ export const RejectDialog = (props: IRejectDialogProps) => {
         <Dialog
             open={true}
             onOpenChange={hide}
+            overlay={loading ? <OverlayLoader size="md" /> : null}
             title={
                 <>
                     <Icon
@@ -81,7 +83,6 @@ export const RejectDialog = (props: IRejectDialogProps) => {
             showCloseButton={true}
             dismissible={true}
         >
-            {loading ? <OverlayLoader size="sm" variant="accent" indeterminate={true} /> : null}
             <Grid>
                 <Grid.Column span={12}>
                     You are about to reject the <strong>{title}</strong>, are you sure you want to

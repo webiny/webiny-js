@@ -28,6 +28,7 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
     private _state: IWorkflowStateModel | null | undefined = undefined;
     private _dialog: IWorkflowStatePresenterViewModelDialog | null = null;
     private _loading = false;
+    private _executing = false;
     private _error: IWorkflowStateError | null = null;
 
     constructor(
@@ -97,6 +98,8 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
     }
 
     get vm(): IWorkflowStatePresenterViewModel {
+        const stateValue = this._state?.state ?? null;
+
         return {
             workflow: toJS(this._workflow),
             state: this._state ? this._state.toJS() : (this._state as null | undefined),
@@ -105,11 +108,18 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
             lastRejectedStep: toJS(this._state?.lastRejected ?? null),
             nextStep: toJS(this._state ? this._state.nextStep : null),
             loading: this._loading,
+            executing: this._executing,
             error: this._error,
             app: this._app,
             id: this._targetRevisionId,
             canCancel: this.canCancel,
-            dialog: this._dialog
+            dialog: this._dialog,
+            hasWorkflow: this._workflow != null,
+            hasState: this._state != null,
+            isApproved: stateValue === WorkflowStateValue.approved,
+            isRejected: stateValue === WorkflowStateValue.rejected,
+            isPending: stateValue === WorkflowStateValue.pending,
+            isInReview: stateValue === WorkflowStateValue.inReview
         };
     }
 
@@ -170,6 +180,7 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
         this._state = undefined;
         this._dialog = null;
         this._loading = false;
+        this._executing = false;
         this._error = null;
     }
 
@@ -178,6 +189,7 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
     }
 
     requestReview = async () => {
+        this._executing = true;
         try {
             const data = await this.requestReviewUseCase.execute({
                 app: this._app,
@@ -187,6 +199,7 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
             runInAction(() => {
                 this.setState(data);
                 this._dialog = null;
+                this._executing = false;
             });
         } catch (err) {
             runInAction(() => {
@@ -194,16 +207,19 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
                     code: null,
                     message: err instanceof Error ? err.message : "Unknown error"
                 };
+                this._executing = false;
             });
         }
     };
 
     start = async () => {
+        this._executing = true;
         try {
             const data = await this.startStepUseCase.execute({ id: this._state!.id });
             runInAction(() => {
                 this.setState(data);
                 this._dialog = { type: "start:success" };
+                this._executing = false;
             });
         } catch (err) {
             runInAction(() => {
@@ -211,16 +227,19 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
                     code: null,
                     message: err instanceof Error ? err.message : "Unknown error"
                 };
+                this._executing = false;
             });
         }
     };
 
     approve = async (comment?: string) => {
+        this._executing = true;
         try {
             const data = await this.approveStepUseCase.execute({ id: this._state!.id, comment });
             runInAction(() => {
                 this.setState(data);
                 this._dialog = { type: "approve:success" };
+                this._executing = false;
             });
         } catch (err) {
             runInAction(() => {
@@ -228,16 +247,19 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
                     code: null,
                     message: err instanceof Error ? err.message : "Unknown error"
                 };
+                this._executing = false;
             });
         }
     };
 
     reject = async (comment: string) => {
+        this._executing = true;
         try {
             const data = await this.rejectStepUseCase.execute({ id: this._state!.id, comment });
             runInAction(() => {
                 this.setState(data);
                 this._dialog = { type: "reject:success" };
+                this._executing = false;
             });
         } catch (err) {
             runInAction(() => {
@@ -245,16 +267,19 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
                     code: null,
                     message: err instanceof Error ? err.message : "Unknown error"
                 };
+                this._executing = false;
             });
         }
     };
 
     cancel = async () => {
+        this._executing = true;
         try {
             await this.cancelWorkflowStateUseCase.execute({ id: this._state!.id });
             runInAction(() => {
                 this._state = null;
                 this._dialog = null;
+                this._executing = false;
             });
         } catch (err) {
             runInAction(() => {
@@ -262,16 +287,19 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
                     code: null,
                     message: err instanceof Error ? err.message : "Unknown error"
                 };
+                this._executing = false;
             });
         }
     };
 
     takeOver = async () => {
+        this._executing = true;
         try {
             const data = await this.takeOverStepUseCase.execute({ id: this._state!.id });
             runInAction(() => {
                 this.setState(data);
                 this._dialog = { type: "takeOver:success", step: null };
+                this._executing = false;
             });
         } catch (err) {
             runInAction(() => {
@@ -279,6 +307,7 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
                     code: null,
                     message: err instanceof Error ? err.message : "Unknown error"
                 };
+                this._executing = false;
             });
         }
     };

@@ -6,10 +6,7 @@ import { ListLockRecordsPresenter } from "../abstractions.js";
 
 export const ListLockRecordsSync = observer(() => {
     const container = useContainer();
-    const presenter = React.useMemo(
-        () => container.resolve(ListLockRecordsPresenter),
-        [container]
-    );
+    const presenter = React.useMemo(() => container.resolve(ListLockRecordsPresenter), [container]);
     const entriesPresenter = useContentEntriesPresenter();
 
     const rows = entriesPresenter.list.vm.rows;

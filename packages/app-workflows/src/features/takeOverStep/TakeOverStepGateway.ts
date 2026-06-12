@@ -1,6 +1,9 @@
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { WORKFLOW_STATE_FIELDS, ERROR_FIELDS } from "~/features/graphqlFields.js";
-import { TakeOverStepGateway as GatewayAbstraction, type ITakeOverStepParams } from "./abstractions.js";
+import {
+    TakeOverStepGateway as GatewayAbstraction,
+    type ITakeOverStepParams
+} from "./abstractions.js";
 import type { IWorkflowState } from "~/types.js";
 
 interface TakeOverStepResponse {

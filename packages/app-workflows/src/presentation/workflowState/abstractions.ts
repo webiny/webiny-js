@@ -47,6 +47,7 @@ export interface IWorkflowStatePresenterViewModel {
     id: string;
     app: string;
     loading: boolean;
+    executing: boolean;
     workflow: IWorkflow | null;
     error: IWorkflowStateError | null;
     state: IWorkflowState | null | undefined;
@@ -56,6 +57,12 @@ export interface IWorkflowStatePresenterViewModel {
     nextStep: IWorkflowStateStep | null;
     canCancel: boolean;
     dialog: IWorkflowStatePresenterViewModelDialog | null;
+    hasWorkflow: boolean;
+    hasState: boolean;
+    isApproved: boolean;
+    isRejected: boolean;
+    isPending: boolean;
+    isInReview: boolean;
 }
 
 export interface IWorkflowStatePresenter {

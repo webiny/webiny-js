@@ -1,6 +1,7 @@
 import React from "react";
-import { Dialog, Grid, Icon, OverlayLoader } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon } from "@webiny/admin-ui";
 import { ReactComponent as CancelReviewIcon } from "@webiny/icons/check.svg";
+import { OverlayLoader } from "@webiny/admin-ui";
 
 interface ICancelReviewDialogProps {
     onCancelReview(): void;
@@ -14,6 +15,7 @@ export const CancelReviewDialog = (props: ICancelReviewDialogProps) => {
     return (
         <Dialog
             open={true}
+            overlay={loading ? <OverlayLoader size="md" /> : null}
             onOpenChange={hide}
             title={
                 <>
@@ -35,10 +37,9 @@ export const CancelReviewDialog = (props: ICancelReviewDialogProps) => {
             showCloseButton={true}
             dismissible={true}
         >
-            {loading ? <OverlayLoader size="sm" variant="accent" indeterminate={true} /> : null}
             <Grid>
                 <Grid.Column span={12}>
-                    You are about to cancel the request to for content review.
+                    You are about to cancel the request for content review.
                 </Grid.Column>
             </Grid>
         </Dialog>

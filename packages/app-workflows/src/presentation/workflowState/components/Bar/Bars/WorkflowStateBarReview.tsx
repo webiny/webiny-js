@@ -5,8 +5,6 @@ import React from "react";
 import { Alert } from "@webiny/admin-ui";
 import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";
 import { observer } from "mobx-react-lite";
-import { WorkflowStateValue } from "~/types.js";
-
 export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(Original => {
     return observer(function WorkflowStateBarReviewDecorator(props) {
         const { presenter } = props;
@@ -16,7 +14,7 @@ export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(
         /**
          * If current user cannot review the step, continue.
          */
-        if (!step?.canReview || step.state !== WorkflowStateValue.inReview) {
+        if (!step?.canReview || !presenter.vm.isInReview) {
             return <Original {...props} />;
         }
         /**

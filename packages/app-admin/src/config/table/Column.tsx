@@ -2,7 +2,6 @@ import type { ReactElement } from "react";
 import React from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 import { createUseTableRow } from "~/components/Table/useTableRow.js";
-import type { TableRow } from "~/components/Table/table.types.js";
 
 export interface ColumnConfig {
     cell: string | ReactElement;

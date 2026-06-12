@@ -1,19 +1,15 @@
-/**
- * When state is approved.
- */
 import React from "react";
-import { Alert } from "@webiny/admin-ui";
-import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";
 import { observer } from "mobx-react-lite";
+import { Alert } from "@webiny/admin-ui";
 import { DeveloperMode } from "@webiny/app-admin";
-import { WorkflowStateValue } from "~/types.js";
+import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";
 
 export const WorkflowStateBarApproved = WorkflowStateBarComponent.createDecorator(Original => {
     return observer(function WorkflowStateBarApprovedDecorator(props) {
         const { presenter } = props;
 
         const step = presenter.vm.step;
-        if (presenter.vm.state?.state !== WorkflowStateValue.approved || !step) {
+        if (!presenter.vm.isApproved || !step) {
             return <Original {...props} />;
         }
 

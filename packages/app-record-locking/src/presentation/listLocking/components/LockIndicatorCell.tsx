@@ -11,10 +11,7 @@ const { Browser } = ContentEntryListConfig;
 const ActionsCell = observer(({ children }: { children: React.ReactNode }) => {
     const { model } = useModel();
     const container = useContainer();
-    const presenter = React.useMemo(
-        () => container.resolve(ListLockRecordsPresenter),
-        [container]
-    );
+    const presenter = React.useMemo(() => container.resolve(ListLockRecordsPresenter), [container]);
     const { useTableRow, isFolderRow } = Browser.Table.Column;
     const { row } = useTableRow();
 

@@ -1,6 +1,9 @@
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { WORKFLOW_FIELDS, ERROR_FIELDS } from "~/features/graphqlFields.js";
-import { ListWorkflowsGateway as GatewayAbstraction, type IListWorkflowsParams } from "./abstractions.js";
+import {
+    ListWorkflowsGateway as GatewayAbstraction,
+    type IListWorkflowsParams
+} from "./abstractions.js";
 import type { IWorkflow } from "~/types.js";
 
 interface ListWorkflowsResponse {

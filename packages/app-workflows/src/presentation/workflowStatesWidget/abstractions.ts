@@ -48,8 +48,9 @@ export interface IWorkflowStatesWidgetPresenter {
     hideDialog(): void;
 }
 
-export const WorkflowStatesWidgetPresenter =
-    createAbstraction<IWorkflowStatesWidgetPresenter>("WorkflowStatesWidgetPresenter");
+export const WorkflowStatesWidgetPresenter = createAbstraction<IWorkflowStatesWidgetPresenter>(
+    "WorkflowStatesWidgetPresenter"
+);
 
 export namespace WorkflowStatesWidgetPresenter {
     export type Interface = IWorkflowStatesWidgetPresenter;

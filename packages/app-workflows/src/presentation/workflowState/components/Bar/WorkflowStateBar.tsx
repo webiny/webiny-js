@@ -41,7 +41,7 @@ export const WorkflowStateBar = observer((props: IWorkflowStateBarProps) => {
      * If no workflow, do not show anything - there might not be a workflow assigned.
      * We do not want to show loading or error states in this case.
      */
-    if (!presenter.vm.workflow) {
+    if (!presenter.vm.hasWorkflow) {
         return null;
     }
 
@@ -65,7 +65,7 @@ export const WorkflowStateBar = observer((props: IWorkflowStateBarProps) => {
                 ? props.children({
                       stateBar,
                       state: presenter.vm.state,
-                      workflow: presenter.vm.workflow
+                      workflow: presenter.vm.workflow!
                   })
                 : stateBar}
         </>

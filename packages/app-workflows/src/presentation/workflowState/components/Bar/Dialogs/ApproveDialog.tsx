@@ -1,4 +1,5 @@
 import React from "react";
+import { observer } from "mobx-react-lite";
 import { ApproveDialog as BaseApproveDialog } from "~/presentation/shared/dialogs/index.js";
 import type { IWorkflowStatePresenter } from "~/presentation/workflowState/abstractions.js";
 
@@ -6,7 +7,7 @@ interface IApproveDialogProps {
     presenter: IWorkflowStatePresenter;
 }
 
-export const ApproveDialog = (props: IApproveDialogProps) => {
+export const ApproveDialog = observer((props: IApproveDialogProps) => {
     const { presenter } = props;
     const step = presenter.vm.step;
     if (!step) {
@@ -17,8 +18,8 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
         <BaseApproveDialog
             onApprove={presenter.approve}
             hide={presenter.hideDialog}
-            loading={presenter.vm.loading}
+            loading={presenter.vm.executing}
             title={step.title}
         />
     );
-};
+});

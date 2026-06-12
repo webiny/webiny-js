@@ -1,4 +1,7 @@
-import { StoreWorkflowUseCase as UseCaseAbstraction, StoreWorkflowGateway } from "./abstractions.js";
+import {
+    StoreWorkflowUseCase as UseCaseAbstraction,
+    StoreWorkflowGateway
+} from "./abstractions.js";
 import type { IWorkflow } from "~/types.js";
 
 class StoreWorkflowUseCaseImpl implements UseCaseAbstraction.Interface {

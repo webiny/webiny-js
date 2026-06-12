@@ -1,6 +1,9 @@
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { WORKFLOW_STATE_FIELDS, ERROR_FIELDS } from "~/features/graphqlFields.js";
-import { ApproveStepGateway as GatewayAbstraction, type IApproveStepParams } from "./abstractions.js";
+import {
+    ApproveStepGateway as GatewayAbstraction,
+    type IApproveStepParams
+} from "./abstractions.js";
 import type { IWorkflowState } from "~/types.js";
 
 interface ApproveStepResponse {

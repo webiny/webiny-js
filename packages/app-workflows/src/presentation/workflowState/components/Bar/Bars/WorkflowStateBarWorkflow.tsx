@@ -9,7 +9,7 @@ export const WorkflowStateBarWorkflow = WorkflowStateBarComponent.createDecorato
     return observer(function WorkflowStateBarWorkflowDecorator(props) {
         const { presenter } = props;
 
-        if (!presenter.vm.workflow) {
+        if (!presenter.vm.hasWorkflow) {
             return null;
         }
         return <Original {...props} />;

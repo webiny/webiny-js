@@ -16,13 +16,10 @@ export const ContentEntryFormWorkflow = Content.createDecorator(Original => {
         const formPresenter = useContentEntryFormPresenter();
         const { presenter } = useWorkflowState();
         const model = formPresenter.vm.model;
-        const entry = formPresenter.vm.entry;
-        const inReview = !!presenter.vm.state;
 
         const isSingleton = model.tags.includes(CMS_MODEL_SINGLETON_TAG);
-        const isNew = !entry?.id;
 
-        if (isSingleton || isNew) {
+        if (isSingleton || formPresenter.vm.isNewEntry) {
             return <Original {...props} />;
         }
 
@@ -30,7 +27,7 @@ export const ContentEntryFormWorkflow = Content.createDecorator(Original => {
             <>
                 <div className={"max-w-screen bg-white p-sm"}>
                     <WorkflowStateBar />
-                    {inReview ? (
+                    {presenter.vm.hasState ? (
                         <Alert type="danger" className={"mt-sm"}>
                             Any changes you do on the entry will not be stored!
                         </Alert>

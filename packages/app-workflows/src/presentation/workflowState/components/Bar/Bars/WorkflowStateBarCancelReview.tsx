@@ -1,10 +1,7 @@
-/**
- * Owner of the review can cancel the review request.
- */
 import React from "react";
+import { observer } from "mobx-react-lite";
 import { Alert } from "@webiny/admin-ui";
 import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";
-import { observer } from "mobx-react-lite";
 
 export const WorkflowStateBarCancelReview = WorkflowStateBarComponent.createDecorator(Original => {
     return observer(function WorkflowStateBarCancelReviewDecorator(props) {
@@ -20,12 +17,10 @@ export const WorkflowStateBarCancelReview = WorkflowStateBarComponent.createDeco
                 icon={null}
                 swatchColor={step.color}
                 actions={
-                    <>
-                        <Alert.Action
-                            text={"Cancel Review Request"}
-                            onClick={presenter.showCancelReviewDialog}
-                        />
-                    </>
+                    <Alert.Action
+                        text={"Cancel Review Request"}
+                        onClick={presenter.showCancelReviewDialog}
+                    />
                 }
             >
                 This entry is now under review. You can cancel the review request.

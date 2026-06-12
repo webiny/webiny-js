@@ -15,6 +15,7 @@ export const StartDialog = (props: IStartDialogProps) => {
     return (
         <Dialog
             open={true}
+            overlay={loading ? <OverlayLoader size="md" /> : null}
             onOpenChange={hide}
             title={
                 <>
@@ -36,7 +37,6 @@ export const StartDialog = (props: IStartDialogProps) => {
             showCloseButton={true}
             dismissible={true}
         >
-            {loading ? <OverlayLoader size="sm" variant="accent" indeterminate={true} /> : null}
             <Grid>
                 <Grid.Column span={12}>
                     You are about to start the review of <strong>{title}</strong>.

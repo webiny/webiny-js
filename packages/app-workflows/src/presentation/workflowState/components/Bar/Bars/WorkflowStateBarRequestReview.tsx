@@ -10,7 +10,7 @@ export const WorkflowStateBarRequestReview = WorkflowStateBarComponent.createDec
     return observer(function WorkflowStateBarRequestReviewDecorator(props) {
         const { presenter } = props;
 
-        if (presenter.vm.state) {
+        if (presenter.vm.hasState) {
             return <Original {...props} />;
         }
         return (

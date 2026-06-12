@@ -94,7 +94,11 @@ class WorkflowStatesWidgetPresenterImpl implements IWorkflowStatesWidgetPresente
                         { where: { state }, limit: 5 },
                         variant
                     );
-                    return { key: state, items: result.data, totalCount: result.meta?.totalCount ?? 0 };
+                    return {
+                        key: state,
+                        items: result.data,
+                        totalCount: result.meta?.totalCount ?? 0
+                    };
                 })
             );
 

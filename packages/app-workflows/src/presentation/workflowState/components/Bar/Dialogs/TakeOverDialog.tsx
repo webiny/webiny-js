@@ -1,4 +1,5 @@
 import React from "react";
+import { observer } from "mobx-react-lite";
 import { TakeOverDialog as BaseTakeOverDialog } from "~/presentation/shared/dialogs/index.js";
 import type { IWorkflowStatePresenter } from "~/presentation/workflowState/abstractions.js";
 
@@ -6,7 +7,7 @@ interface ITakeOverDialogProps {
     presenter: IWorkflowStatePresenter;
 }
 
-export const TakeOverDialog = (props: ITakeOverDialogProps) => {
+export const TakeOverDialog = observer((props: ITakeOverDialogProps) => {
     const { presenter } = props;
     const step = presenter.vm.step;
     if (!step) {
@@ -19,9 +20,9 @@ export const TakeOverDialog = (props: ITakeOverDialogProps) => {
         <BaseTakeOverDialog
             onTakeOver={presenter.takeOver}
             hide={presenter.hideDialog}
-            loading={presenter.vm.loading}
+            loading={presenter.vm.executing}
             title={step.title}
             displayName={displayName}
         />
     );
-};
+});

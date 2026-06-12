@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { IGenericError, IGenericMeta, IWorkflowState, WorkflowStateValue } from "~/types.js";
+import type { IGenericError, IWorkflowState, WorkflowStateValue } from "~/types.js";
 import type { ListWorkflowStatesVariant } from "~/features/listWorkflowStates/abstractions.js";
 
 export interface IWorkflowStateListPresenterListParamsWhereSteps {

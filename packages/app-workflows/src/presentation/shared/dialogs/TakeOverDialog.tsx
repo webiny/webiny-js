@@ -1,6 +1,7 @@
 import React from "react";
-import { Dialog, Grid, Icon, OverlayLoader } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon } from "@webiny/admin-ui";
 import { ReactComponent as StartIcon } from "@webiny/icons/check.svg";
+import { OverlayLoader } from "@webiny/admin-ui";
 
 interface ITakeOverProps {
     onTakeOver(): void;
@@ -16,6 +17,7 @@ export const TakeOverDialog = (props: ITakeOverProps) => {
     return (
         <Dialog
             open={true}
+            overlay={loading ? <OverlayLoader size="md" /> : null}
             onOpenChange={hide}
             title={
                 <>
@@ -37,7 +39,6 @@ export const TakeOverDialog = (props: ITakeOverProps) => {
             showCloseButton={true}
             dismissible={true}
         >
-            {loading ? <OverlayLoader size="sm" variant="accent" indeterminate={true} /> : null}
             <Grid>
                 <Grid.Column span={12}>
                     You are about to take over the review of <strong>{title}</strong>. Current owner

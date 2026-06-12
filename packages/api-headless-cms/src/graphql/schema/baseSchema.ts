@@ -4,7 +4,7 @@ import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { ContextPlugin } from "@webiny/api";
 
-const createSchema = (context: CmsContext): IGraphQLSchemaPlugin<CmsContext>[] => {
+const createSchema = (): IGraphQLSchemaPlugin<CmsContext>[] => {
     const cmsPlugin = createCmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsIdentity {
@@ -143,7 +143,7 @@ const createSchema = (context: CmsContext): IGraphQLSchemaPlugin<CmsContext>[] =
 
 export const createBaseSchema = () => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
-        context.plugins.register(...createSchema(context));
+        context.plugins.register(...createSchema());
     });
 
     plugin.name = "headless-cms.graphql.createBaseSchema";

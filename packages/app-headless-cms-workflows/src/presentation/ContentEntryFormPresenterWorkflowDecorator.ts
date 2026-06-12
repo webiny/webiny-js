@@ -7,7 +7,6 @@ import {
 import { CmsModelAccessor } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
 import { WorkflowStatePresenter } from "@webiny/app-workflows/presentation/workflowState/abstractions.js";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
-import { WorkflowStateValue } from "@webiny/app-workflows";
 
 class ContentEntryFormPresenterWithWorkflow implements IContentEntryFormPresenter {
     constructor(
@@ -29,13 +28,11 @@ class ContentEntryFormPresenterWithWorkflow implements IContentEntryFormPresente
     get vm(): IContentEntryFormViewModel {
         const base = this.original.vm;
         const wfVm = this.workflowPresenter.vm;
-        const hasActiveWorkflow = wfVm.state != null;
-        const isApproved = wfVm.state?.state === WorkflowStateValue.approved;
 
         return {
             ...base,
-            canSave: base.canSave && !hasActiveWorkflow,
-            canPublish: base.canPublish && (!wfVm.workflow || isApproved)
+            canSave: base.canSave && !wfVm.hasState,
+            canPublish: base.canPublish && (!wfVm.hasWorkflow || wfVm.isApproved)
         };
     }
 
@@ -52,7 +49,7 @@ class ContentEntryFormPresenterWithWorkflow implements IContentEntryFormPresente
     }
 
     async saveRevision(options?: { skipValidation?: boolean }): Promise<boolean> {
-        if (this.workflowPresenter.vm.state != null) {
+        if (this.workflowPresenter.vm.hasState) {
             return false;
         }
         return this.original.saveRevision(options);

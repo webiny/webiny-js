@@ -14,6 +14,7 @@ export const RequestReviewDialog = (props: IRequestReviewDialogProps) => {
     return (
         <Dialog
             open={true}
+            overlay={loading ? <OverlayLoader size="md" /> : null}
             onOpenChange={hide}
             title={
                 <>
@@ -38,7 +39,6 @@ export const RequestReviewDialog = (props: IRequestReviewDialogProps) => {
             showCloseButton={true}
             dismissible={true}
         >
-            {loading ? <OverlayLoader size="sm" variant="accent" indeterminate={true} /> : null}
             <Grid>
                 <Grid.Column span={12}>
                     You are about to request the content review. Once requested, the entry will be

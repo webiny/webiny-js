@@ -54,7 +54,10 @@ class WorkflowStateListPresenterImpl implements IWorkflowStateListPresenter {
         return this.list({
             ...this._listParams,
             after: undefined,
-            where
+            where: {
+                ...this._listParams?.where,
+                ...where
+            }
         });
     };
 
