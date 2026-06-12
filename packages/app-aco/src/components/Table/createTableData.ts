@@ -1,16 +1,7 @@
-import type { FolderDto } from "~/domain/folder/FolderDto.js";
-import type { FolderTableRow, RecordTableRow } from "~/table.types.js";
+export { createRecordsData } from "@webiny/app-admin/components/Table/createTableData.js";
 
-export const createRecordsData = <T extends { id: string; $selectable?: boolean }>(
-    items: T[]
-): RecordTableRow<T>[] => {
-    return items.map(item => ({
-        id: item.id,
-        $type: "RECORD",
-        $selectable: item.$selectable !== undefined ? item.$selectable : true,
-        data: item
-    }));
-};
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import type { FolderTableRow } from "~/table.types.js";
 
 export const createFoldersData = (items: FolderDto[]): FolderTableRow[] => {
     return items.map(item => ({

@@ -24,6 +24,10 @@ export * from "./base/ui/NotFound.js";
 // Base admin app
 export { Admin } from "./base/Admin.js";
 export * from "./config/AdminConfig.js";
+export type { ColumnConfig as TableColumnConfig } from "./config/table/Column.js";
+export type { SortingConfig as TableSortingConfig } from "./config/table/Sorting.js";
+export { Column as TableColumn } from "./config/table/Column.js";
+export { Sorting as TableSorting } from "./config/table/Sorting.js";
 
 export type { AdminProps } from "./base/Admin.js";
 

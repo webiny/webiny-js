@@ -1,21 +1,18 @@
 import React from "react";
-import { AcoConfig, type TableColumnConfig as ColumnConfig } from "@webiny/app-aco";
+import { Column as TableColumn, type ColumnConfig } from "~/config/table/Column.js";
 import type { TrashBinItem } from "../../../abstractions.js";
-import type { TableRow } from "@webiny/app-aco";
-
-const { Table } = AcoConfig;
+import type { TableRow } from "~/components/Table/table.types.js";
 
 export type { ColumnConfig };
 
 export type TrashBinTableRow = TableRow<TrashBinItem>;
 
-type ColumnProps = React.ComponentProps<typeof AcoConfig.Table.Column>;
+type ColumnProps = React.ComponentProps<typeof TableColumn>;
 
 const BaseColumn = (props: ColumnProps) => {
-    return <Table.Column {...props} />;
+    return <TableColumn {...props} />;
 };
 
 export const Column = Object.assign(BaseColumn, {
-    useTableRow: Table.Column.createUseTableRow<TrashBinTableRow>(),
-    isFolderRow: Table.Column.isFolderRow
+    useTableRow: TableColumn.createUseTableRow<TrashBinTableRow>()
 });

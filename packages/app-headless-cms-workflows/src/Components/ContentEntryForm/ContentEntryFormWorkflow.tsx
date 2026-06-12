@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Alert, Grid } from "@webiny/admin-ui";
+import { Alert } from "@webiny/admin-ui";
 import { Content } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/views/ContentEntryFormPresenterProvider.js";
 import { useWorkflowState } from "@webiny/app-workflows";
@@ -11,23 +11,13 @@ const {
     ContentReview: { WorkflowStateBar }
 } = Components;
 
-const StoreAlert = observer(() => {
-    const { presenter } = useWorkflowState();
-    if (!presenter.vm.state) {
-        return null;
-    }
-    return (
-        <Alert className={"mb-md"} type="danger">
-            Any changes you do on the entry will not be stored!
-        </Alert>
-    );
-});
-
 export const ContentEntryFormWorkflow = Content.createDecorator(Original => {
     return observer(function ContentEntryFormWorkflowDecorator(props) {
         const formPresenter = useContentEntryFormPresenter();
+        const { presenter } = useWorkflowState();
         const model = formPresenter.vm.model;
         const entry = formPresenter.vm.entry;
+        const inReview = !!presenter.vm.state;
 
         const isSingleton = model.tags.includes(CMS_MODEL_SINGLETON_TAG);
         const isNew = !entry?.id;
@@ -37,15 +27,17 @@ export const ContentEntryFormWorkflow = Content.createDecorator(Original => {
         }
 
         return (
-            <Grid>
-                <Grid.Column span={12}>
+            <>
+                <div className={"max-w-screen bg-white p-sm"}>
                     <WorkflowStateBar />
-                </Grid.Column>
-                <Grid.Column span={12}>
-                    <StoreAlert />
-                    <Original {...props} />
-                </Grid.Column>
-            </Grid>
+                    {inReview ? (
+                        <Alert type="danger" className={"mt-sm"}>
+                            Any changes you do on the entry will not be stored!
+                        </Alert>
+                    ) : null}
+                </div>
+                <Original {...props} />
+            </>
         );
     });
 });

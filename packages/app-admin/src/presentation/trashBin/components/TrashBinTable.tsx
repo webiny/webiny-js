@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
-import { createRecordsData, Table as AcoTable } from "@webiny/app-aco";
-import type { TableRow } from "@webiny/app-aco";
+import { createRecordsData, Table as AcoTable } from "~/components/Table/index.js";
+import type { TableRow } from "~/components/Table/table.types.js";
 import { useTrashBinPresenter } from "../hooks/index.js";
 import { useTrashBinListConfig } from "../configs/index.js";
 import type { TrashBinItem } from "../abstractions.js";

@@ -12633,6 +12633,7 @@ __metadata:
     "@webiny/app-headless-cms-common": "npm:0.0.0"
     "@webiny/app-workflows": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
@@ -13037,19 +13038,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-workflows@workspace:packages/app-workflows"
   dependencies:
-    "@apollo/react-hooks": "npm:^3.1.5"
     "@types/react": "npm:18.3.31"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
-    apollo-client: "npm:^2.6.10"
-    graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.16.1"
     mobx-react-lite: "npm:^4.1.1"
@@ -22157,7 +22156,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx@npm:^6.16.1":
+"mobx@npm:^6.15.3, mobx@npm:^6.16.1":
   version: 6.16.1
   resolution: "mobx@npm:6.16.1"
   checksum: 10/01753230a35d2f8a376d4f0e5b0096848141a6c1567f09f4a5e6f7a983814e971141eccb58288e737a7b259618312e4c963523100ccc13f5505881ead7066c80

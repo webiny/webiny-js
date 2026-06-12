@@ -3,7 +3,6 @@ import { createConfigurableComponent } from "@webiny/react-properties";
 import type { BrowserConfig } from "./Browser/index.js";
 import { Browser } from "./Browser/index.js";
 import { CompositionScope } from "@webiny/react-composition";
-import { useAcoConfig } from "@webiny/app-aco";
 
 const base = createConfigurableComponent<TrashBinListConfig>("TrashBinListConfig");
 
@@ -25,17 +24,20 @@ interface TrashBinListConfig {
 }
 
 export function useTrashBinListConfig() {
-    const config = base.useConfig();
-    const acoConfig = useAcoConfig(config);
-
+    const config: Record<string, any> = base.useConfig();
     const browser = config.browser || {};
+    const record = config.record || {};
+    const table = config.table || {};
 
     return useMemo(
         () => ({
             browser: {
                 ...browser,
-                table: acoConfig.table,
-                entryActions: acoConfig.record.actions,
+                table: {
+                    columns: [...(table.columns || [])],
+                    sorting: [...(table.sorting || [])]
+                },
+                entryActions: [...(record.actions || [])],
                 bulkActions: [...(browser.bulkActions || [])]
             }
         }),

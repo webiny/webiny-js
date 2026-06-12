@@ -34,3 +34,4 @@ export * from "~/components/TeamAutocomplete/index.js";
 export * from "~/components/TeamsMultiAutocomplete/index.js";
 export * from "./DeveloperMode/index.js";
 export * from "~/components/ListView/index.js";
+export * from "~/components/Table/index.js";

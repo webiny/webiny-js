@@ -1,12 +1,10 @@
 import React from "react";
-import { AcoConfig, type TableSortingConfig as SortingConfig } from "@webiny/app-aco";
-
-const { Table } = AcoConfig;
+import { Sorting as TableSorting, type SortingConfig } from "~/config/table/Sorting.js";
 
 export type { SortingConfig };
 
-type SortingProps = React.ComponentProps<typeof AcoConfig.Table.Sorting>;
+type SortingProps = React.ComponentProps<typeof TableSorting>;
 
 export const Sorting = (props: SortingProps) => {
-    return <Table.Sorting {...props} />;
+    return <TableSorting {...props} />;
 };
