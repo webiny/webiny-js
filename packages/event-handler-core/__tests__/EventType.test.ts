@@ -1,16 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { Container } from "@webiny/di";
 import { EventHandler } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
-import type { IEventType } from "~/features/events/EventType.js";
 import type { IEventHandler, EventContext } from "~/features/events/EventHandler.js";
 import type { NextFunction } from "~/features/events/types.js";
 import { createHandler } from "~/features/events/createHandler.js";
-
-const makeEventType = (canHandle: (e: any) => boolean): IEventType => ({
-    canHandle: (e): e is any => canHandle(e),
-    getHandlerAbstraction: () => EventHandler
-});
 
 describe("EventType dispatch", () => {
     it("should route to correct handler based on canHandle", async () => {

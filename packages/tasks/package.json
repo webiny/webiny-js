@@ -15,6 +15,11 @@
     "Bruno Zorić <bruno@webiny.com>"
   ],
   "license": "MIT",
+  "adio": {
+    "ignore": {
+      "dependencies": true
+    }
+  },
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
