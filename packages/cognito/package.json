@@ -26,11 +26,11 @@
     "@webiny/project-aws": "0.0.0",
     "@webiny/validation": "0.0.0",
     "aws-amplify": "^6.17.0",
-    "graphql": "^16.14.1",
+    "graphql": "^16.14.2",
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.18.1",
-    "mobx": "^6.16.0",
+    "mobx": "^6.16.1",
     "mobx-react-lite": "^4.1.1",
     "react": "18.3.1",
     "zod": "4.4.3"
