@@ -26,7 +26,7 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
     async execute(body: any): Promise<any> {
         // Build context first — enhancers may be async (e.g. CMS storage init)
         const ctx = await this.buildContext();
-
+        const bm = ctx.benchmark as { measure?: Function } | undefined;
         const schemaConfig = await this.composer.build(ctx);
 
         const resolverDecoration = new ResolverDecoration();
@@ -42,14 +42,31 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
             inheritResolversFromInterfaces: true
         });
 
-        const schema = await this.buildSchema(staticSchema, ctx);
+        const schema = await (bm?.measure
+            ? bm.measure("headlessCms.graphql.getSchema", () => this.buildSchema(staticSchema, ctx))
+            : this.buildSchema(staticSchema, ctx));
 
-        const parsed = createRequestBody(body);
+        const parsed = bm?.measure
+            ? await bm.measure("headlessCms.graphql.createRequestBody", () =>
+                  createRequestBody(body)
+              )
+            : createRequestBody(body);
 
-        if (Array.isArray(parsed)) {
-            return Promise.all(parsed.map(b => this.executeOne(b, schema, ctx)));
+        const executeAll = async () =>
+            Array.isArray(parsed)
+                ? Promise.all(parsed.map(b => this.executeOne(b, schema, ctx)))
+                : this.executeOne(parsed, schema, ctx);
+
+        const result = await (bm?.measure
+            ? bm.measure("headlessCms.graphql.processRequestBody", executeAll)
+            : executeAll());
+
+        // Fire benchmark output callbacks if a benchmark is attached to the context
+        if (bm && typeof (bm as any).output === "function") {
+            await (bm as any).output();
         }
-        return this.executeOne(parsed, schema, ctx);
+
+        return result;
     }
 
     private async buildContext(): Promise<Record<string, any>> {
@@ -67,9 +84,7 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         if (this.contextualSchemas.length === 0) {
             return staticSchema;
         }
-        const extra = await Promise.all(
-            this.contextualSchemas.map(s => s.build(ctx))
-        );
+        const extra = await Promise.all(this.contextualSchemas.map(s => s.build(ctx)));
         return mergeSchemas({ schemas: [staticSchema, ...extra] });
     }
 

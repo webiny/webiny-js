@@ -14,6 +14,7 @@ import { createExportCrud } from "~/export/index.js";
 import { createImportCrud } from "~/export/crud/importing.js";
 import { getSchema } from "~/graphql/getSchema.js";
 import { processRequestBody } from "@webiny/handler-graphql";
+import { Benchmark } from "@webiny/api/Benchmark.js";
 import { createBaseSchema } from "~/graphql/schema/baseSchema.js";
 import { createExportGraphQL } from "~/export/graphql/index.js";
 import { createRevisionIdScalarPlugin } from "~/graphql/scalars/RevisionIdScalarPlugin.js";
@@ -81,19 +82,9 @@ class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
             ...(this.config.extraPlugins ?? [])
         ]);
 
-        // Passthrough benchmark stub — the real implementation lives in @webiny/api/Context
+        // Use the real Benchmark implementation if not already set
         if (!ctx.benchmark) {
-            ctx.benchmark = {
-                elapsed: 0,
-                runs: {},
-                measurements: [],
-                output: async () => {},
-                onOutput: () => {},
-                enableOn: () => {},
-                enable: () => {},
-                disable: () => {},
-                measure: async (_opts: any, fn: () => Promise<any>) => fn()
-            };
+            ctx.benchmark = new Benchmark();
         }
 
         // Must run before storage ops — registers graphql/validation/storage DI features
@@ -134,10 +125,53 @@ class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
             storageOperations,
             accessControl,
             getExecutableSchema: async (schemaType: ApiEndpoint) => {
-                const schema = await ctx.security.withoutAuthorization(() => {
-                    return getSchema({ context: ctx as CmsContext, getTenant, type: schemaType });
-                });
-                return async (input: any) => processRequestBody(input, schema, ctx as CmsContext);
+                // Use a forked context for schema generation so that:
+                // 1. Type flags are correct for the requested schema type
+                // 2. generateSchema's ctx.plugins.register() doesn't pollute the main context's plugin list
+                const schemaCtx: Record<string, any> = Object.assign(
+                    Object.create(Object.getPrototypeOf(ctx)),
+                    ctx,
+                    {
+                        plugins: new PluginsContainer([
+                            ...createFieldConverters(),
+                            ...createRevisionIdScalarPlugin()
+                        ]),
+                        cms: {
+                            ...ctx.cms,
+                            type: schemaType,
+                            READ: schemaType === "read",
+                            PREVIEW: schemaType === "preview",
+                            MANAGE: schemaType === "manage"
+                        }
+                    }
+                );
+                // Apply base schema plugins to the forked context's plugin list
+                await createBaseSchema().apply(schemaCtx as CmsContext);
+
+                const schema = await ctx.benchmark.measure(
+                    "headlessCms.graphql.getSchema",
+                    async () => {
+                        return ctx.security.withoutAuthorization(() => {
+                            return getSchema({
+                                context: schemaCtx as CmsContext,
+                                getTenant,
+                                type: schemaType
+                            });
+                        });
+                    }
+                );
+
+                // Execution uses the original ctx so CRUD methods and security have correct context
+                return async (input: any) => {
+                    const body = await ctx.benchmark.measure(
+                        "headlessCms.graphql.createRequestBody",
+                        async () => input
+                    );
+                    return ctx.benchmark.measure(
+                        "headlessCms.graphql.processRequestBody",
+                        async () => processRequestBody(body, schema, ctx as CmsContext)
+                    );
+                };
             },
             ...createModelGroupsCrud({ context: ctx as CmsContext }),
             ...createModelsCrud({ context: ctx as CmsContext }),

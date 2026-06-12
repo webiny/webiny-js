@@ -39,12 +39,12 @@ describe("Header Parameter Plugin", () => {
         expect(result).toBeNull();
     });
 
-    it("should load main schema when no type", async () => {
+    it("should load combined schema — both system and CMS queries available", async () => {
         const { isInstalledQuery, listContentModelGroupsQuery } = useGraphQLHandler();
 
-        /**
-         * We should be able to run isInstalledQuery
-         */
+        // In the new architecture, the handler uses a combined schema that includes
+        // both api-core (system) and CMS (listContentModelGroups) operations.
+
         const [isInstalledResponse] = await isInstalledQuery();
 
         expect(isInstalledResponse).toEqual({
@@ -56,44 +56,38 @@ describe("Header Parameter Plugin", () => {
                 }
             }
         });
-        /**
-         * We should not be able to run listContentModelGroupsQuery
-         */
+
         const [listGroupsResponse] = await listContentModelGroupsQuery();
 
-        expect(listGroupsResponse).toMatchObject({
-            errors: [
-                {
-                    message: `Cannot query field "listContentModelGroups" on type "Query".`
+        expect(listGroupsResponse).toEqual({
+            data: {
+                listContentModelGroups: {
+                    data: [],
+                    error: null
                 }
-            ]
+            }
         });
     });
 
-    it("should load content schema when type headers passed", async () => {
+    it("should load combined schema when type is passed explicitly", async () => {
         const { isInstalledQuery, listContentModelGroupsQuery } = useGraphQLHandler({
             path: "manage"
         });
 
-        /**
-         * We should not be able to run isInstalledQuery
-         */
-        const [isInstalledResponse] = await isInstalledQuery({
-            headers: {
-                [TYPE]: "manage"
+        // Both system (api-core) and CMS queries are available in the combined schema.
+
+        const [isInstalledResponse] = await isInstalledQuery();
+
+        expect(isInstalledResponse).toEqual({
+            data: {
+                system: {
+                    isSystemInstalled: {
+                        data: false
+                    }
+                }
             }
         });
 
-        expect(isInstalledResponse).toMatchObject({
-            errors: [
-                {
-                    message: `Cannot query field "system" on type "Query".`
-                }
-            ]
-        });
-        /**
-         * We should be able to run listContentModelGroupsQuery
-         */
         const [listGroupsResponse] = await listContentModelGroupsQuery();
 
         expect(listGroupsResponse).toEqual({

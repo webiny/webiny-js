@@ -1,4 +1,5 @@
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "~/index";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import type { PermissionsArg } from "./helpers";
@@ -88,8 +89,12 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                     };
                 }
             } as ContextPlugin<CmsContext>,
-            apiKeyAuthentication({ identityType: "api-key" }),
-            apiKeyAuthorization({ identityType: "api-key" }),
+            createRegisterExtensionPlugin(context => {
+                apiKeyAuthentication({ identityType: "api-key" })(context.container);
+            }),
+            createRegisterExtensionPlugin(context => {
+                apiKeyAuthorization({ identityType: "api-key" })(context.container);
+            }),
             createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             plugins,
