@@ -53,3 +53,4 @@ export const createAssetDelivery = () => {
         ...setupAssetDelivery()
     ];
 };
+export { FileManagerAppFeature } from "./FileManagerAppFeature.js";

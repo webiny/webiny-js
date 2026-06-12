@@ -113,3 +113,4 @@ const createContext = () => {
 export const createWebsiteBuilder = () => {
     return [...createContext(), createGraphQL(), createRedirectsRoute()];
 };
+export { WebsiteBuilderFeature } from "./WebsiteBuilderFeature.js";

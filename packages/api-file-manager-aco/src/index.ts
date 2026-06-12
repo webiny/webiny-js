@@ -8,3 +8,4 @@ export const createFileManagerAco = () => {
         EnsureFolderIsEmptyBeforeDeleteFeature.register(context.container);
     });
 };
+export { FileManagerAcoFeature } from "./FileManagerAcoFeature.js";
