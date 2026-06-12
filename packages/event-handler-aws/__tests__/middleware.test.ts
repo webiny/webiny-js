@@ -1,46 +1,49 @@
 import { describe, it, expect } from "vitest";
 import { createLambdaHandler } from "~/createLambdaHandler.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import { HttpFeature } from "@webiny/event-handler-core";
 import {
     SnsEventHandler,
     SnsEventType,
     ApiGatewayEventType,
-    ApiGatewayTranslator,
+    ApiGatewayHttpRouterHandler,
     type APIGatewayEvent,
     type SNSEvent,
     type SnsResult
 } from "~/index.js";
 import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
 
-describe("Middleware Pattern", () => {
-    it("should call handlers in registration order", async () => {
+const apiGwEvent = {
+    httpMethod: "GET",
+    path: "/test",
+    headers: {},
+    requestContext: { requestId: "test" } as any,
+    body: null,
+    isBase64Encoded: false
+} as APIGatewayEvent;
+
+describe("Middleware Pattern — ApiGatewayEventHandler decorators", () => {
+    it("should run decorators outermost-first then terminal handler", async () => {
         const logs: string[] = [];
 
-        const Handler1 = ApiGatewayEventHandler.createImplementation({
-            implementation: class {
-                async execute(_ctx: EventContext, next: NextFunction) {
-                    logs.push("Handler1");
-                    return next();
+        // Decorators: last-registered = outermost = first to execute
+        const Decorator1 = ApiGatewayEventHandler.createDecorator({
+            decorator: class {
+                constructor(private inner: ApiGatewayEventHandler.Interface) {}
+                async execute(ctx: EventContext, next: NextFunction) {
+                    logs.push("Decorator1");
+                    return this.inner.execute(ctx, next);
                 }
             },
             dependencies: []
         });
 
-        const Handler2 = ApiGatewayEventHandler.createImplementation({
-            implementation: class {
-                async execute(_ctx: EventContext, next: NextFunction) {
-                    logs.push("Handler2");
-                    return next();
-                }
-            },
-            dependencies: []
-        });
-
-        const Handler3 = ApiGatewayEventHandler.createImplementation({
-            implementation: class {
-                async execute(_ctx: EventContext, _next: NextFunction) {
-                    logs.push("Handler3");
-                    return { statusCode: 200, headers: {}, body: "" };
+        const Decorator2 = ApiGatewayEventHandler.createDecorator({
+            decorator: class {
+                constructor(private inner: ApiGatewayEventHandler.Interface) {}
+                async execute(ctx: EventContext, next: NextFunction) {
+                    logs.push("Decorator2");
+                    return this.inner.execute(ctx, next);
                 }
             },
             dependencies: []
@@ -49,37 +52,33 @@ describe("Middleware Pattern", () => {
         const handler = createLambdaHandler({
             root: container => {
                 container.register(ApiGatewayEventType);
-                container.register(ApiGatewayTranslator);
-                container.register(Handler1);
-                container.register(Handler2);
-                container.register(Handler3);
+                HttpFeature.register(container);
+                container.register(ApiGatewayHttpRouterHandler);
+                // Last registered = outermost
+                container.registerDecorator(Decorator1);
+                container.registerDecorator(Decorator2);
             }
         });
 
-        await handler({
-            httpMethod: "GET",
-            path: "/test",
-            headers: {},
-            requestContext: { requestId: "test" } as any,
-            body: null,
-            isBase64Encoded: false
-        } as APIGatewayEvent);
+        await handler(apiGwEvent);
 
-        expect(logs).toEqual(["Handler1", "Handler2", "Handler3"]);
+        // Decorator2 is outermost (runs first), Decorator1 runs second, terminal last
+        expect(logs).toEqual(["Decorator2", "Decorator1"]);
     });
 
-    it("should return result from the first handler that handles the event", async () => {
-        const ApiHandler = ApiGatewayEventHandler.createImplementation({
-            implementation: class {
-                async execute(ctx: EventContext, next: NextFunction): Promise<any> {
-                    if (ctx.event?.method !== "GET") {
-                        return next();
+    it("should allow a decorator to short-circuit the chain", async () => {
+        const ShortCircuit = ApiGatewayEventHandler.createDecorator({
+            decorator: class {
+                constructor(private inner: ApiGatewayEventHandler.Interface) {}
+                async execute(ctx: EventContext<APIGatewayEvent>, next: NextFunction) {
+                    if ((ctx.event as any).httpMethod === "GET") {
+                        return {
+                            statusCode: 200,
+                            headers: {},
+                            body: JSON.stringify({ intercepted: true })
+                        };
                     }
-                    return {
-                        statusCode: 200,
-                        headers: {},
-                        body: JSON.stringify({ handler: "api-gateway" })
-                    };
+                    return this.inner.execute(ctx, next);
                 }
             },
             dependencies: []
@@ -88,21 +87,15 @@ describe("Middleware Pattern", () => {
         const handler = createLambdaHandler({
             root: container => {
                 container.register(ApiGatewayEventType);
-                container.register(ApiGatewayTranslator);
-                container.register(ApiHandler);
+                HttpFeature.register(container);
+                container.register(ApiGatewayHttpRouterHandler);
+                container.registerDecorator(ShortCircuit);
             }
         });
 
-        const result = await handler({
-            httpMethod: "GET",
-            path: "/test",
-            headers: {},
-            requestContext: { requestId: "test" } as any,
-            body: null,
-            isBase64Encoded: false
-        } as APIGatewayEvent);
-
+        const result = await handler(apiGwEvent);
         expect(result.statusCode).toBe(200);
+        expect(result.body).toBe(JSON.stringify({ intercepted: true }));
     });
 
     it("should route SNS events to SNS handlers only", async () => {
@@ -136,7 +129,8 @@ describe("Middleware Pattern", () => {
         const handler = createLambdaHandler({
             root: container => {
                 container.register(ApiGatewayEventType);
-                container.register(ApiGatewayTranslator);
+                HttpFeature.register(container);
+                container.register(ApiGatewayHttpRouterHandler);
             }
         });
 

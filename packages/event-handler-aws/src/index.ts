@@ -2,7 +2,6 @@ export { createLambdaHandler } from "./createLambdaHandler.js";
 export type { CreateLambdaHandlerOptions } from "./createLambdaHandler.js";
 
 export * from "./abstractions/index.js";
-export * from "./translators/ApiGatewayTranslator.js";
 export * from "./eventTypes/index.js";
 
 export { EventHandler, EventType, Container, Abstraction } from "@webiny/event-handler-core";

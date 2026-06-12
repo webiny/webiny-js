@@ -1,34 +1,15 @@
 import { describe, it, expect } from "vitest";
 import { createLambdaHandler } from "~/createLambdaHandler.js";
-import {
-    ApiGatewayEventType,
-    FunctionUrlEventType,
-    ApiGatewayTranslator,
-    FunctionUrlTranslator
-} from "~/index.js";
-import { EventHandler } from "@webiny/event-handler-core";
+import { ApiGatewayEventType, FunctionUrlEventType, FunctionUrlTranslator } from "~/index.js";
 import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
+import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHandler.js";
+import { HttpFeature } from "@webiny/event-handler-core";
+import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { HttpRoute } from "@webiny/event-handler-core";
+import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import { EventHandler } from "@webiny/event-handler-core";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
-
-// Capture handler for API GW chain (ApiGatewayEventHandler pool)
-const agwCaptureHandler = ApiGatewayEventHandler.createImplementation({
-    implementation: class {
-        async execute(ctx: EventContext, _next: NextFunction) {
-            return { statusCode: 200, body: ctx.event };
-        }
-    },
-    dependencies: []
-});
-
-// Capture handler for Function URL chain (EventHandler pool)
-const fnUrlCaptureHandler = EventHandler.createImplementation({
-    implementation: class {
-        async execute(ctx: EventContext, _next: NextFunction) {
-            return { statusCode: 200, body: ctx.event };
-        }
-    },
-    dependencies: []
-});
 
 const apiGwEvent = {
     httpMethod: "POST",
@@ -55,52 +36,53 @@ const fnUrlEvent = {
     isBase64Encoded: false
 };
 
-describe("ApiGatewayTranslator", () => {
-    it("should translate APIGatewayProxyEvent to IHttpRequest", async () => {
-        const handler = createLambdaHandler({
-            root: container => {
-                container.register(ApiGatewayEventType);
-                container.register(ApiGatewayTranslator);
-                container.register(agwCaptureHandler);
-            }
-        });
-
-        const result = await handler(apiGwEvent);
-        const body = JSON.parse(result.body);
-        expect(body.method).toBe("POST");
-        expect(body.path).toBe("/graphql");
-        expect(body.query).toEqual({ foo: "bar" });
-        expect(body.body).toEqual({ query: "{ hello }" });
-    });
-
-    it("should translate IHttpResponse back to APIGatewayProxyResult", async () => {
-        const jsonHandler = ApiGatewayEventHandler.createImplementation({
+describe("ApiGatewayHttpRouterHandler", () => {
+    const makeRoute = (statusCode: number, body: any) =>
+        HttpRoute.createImplementation({
             implementation: class {
-                async execute(_ctx: EventContext, _next: NextFunction) {
-                    return { statusCode: 201, headers: { "x-custom": "yes" }, body: { ok: true } };
+                readonly method = "POST";
+                readonly path = "/graphql";
+                async handle(_req: IHttpRequest): Promise<IHttpResponse> {
+                    return { statusCode, body };
                 }
             },
             dependencies: []
         });
 
+    it("should translate APIGatewayProxyEvent, route, and translate back", async () => {
         const handler = createLambdaHandler({
             root: container => {
                 container.register(ApiGatewayEventType);
-                container.register(ApiGatewayTranslator);
-                container.register(jsonHandler);
+                HttpFeature.register(container);
+                container.register(makeRoute(200, { ok: true }));
+                container.register(ApiGatewayHttpRouterHandler);
             }
         });
 
         const result = await handler(apiGwEvent);
-        expect(result.statusCode).toBe(201);
-        expect(result.headers["x-custom"]).toBe("yes");
+        expect(result.statusCode).toBe(200);
         expect(result.body).toBe(JSON.stringify({ ok: true }));
     });
 
+    it("should return 404 for unknown routes", async () => {
+        const handler = createLambdaHandler({
+            root: container => {
+                container.register(ApiGatewayEventType);
+                HttpFeature.register(container);
+                container.register(ApiGatewayHttpRouterHandler);
+            }
+        });
+
+        const result = await handler(apiGwEvent);
+        expect(result.statusCode).toBe(404);
+    });
+
     it("should set isBase64Encoded for Buffer responses", async () => {
-        const bufferHandler = ApiGatewayEventHandler.createImplementation({
+        const bufferRoute = HttpRoute.createImplementation({
             implementation: class {
-                async execute(_ctx: EventContext, _next: NextFunction) {
+                readonly method = "POST";
+                readonly path = "/graphql";
+                async handle(_req: IHttpRequest): Promise<IHttpResponse> {
                     return {
                         statusCode: 200,
                         headers: { "content-type": "image/png" },
@@ -114,8 +96,9 @@ describe("ApiGatewayTranslator", () => {
         const handler = createLambdaHandler({
             root: container => {
                 container.register(ApiGatewayEventType);
-                container.register(ApiGatewayTranslator);
-                container.register(bufferHandler);
+                HttpFeature.register(container);
+                container.register(bufferRoute);
+                container.register(ApiGatewayHttpRouterHandler);
             }
         });
 
@@ -127,6 +110,15 @@ describe("ApiGatewayTranslator", () => {
 
 describe("FunctionUrlTranslator", () => {
     it("should translate LambdaFunctionURLEvent to IHttpRequest", async () => {
+        const fnUrlCaptureHandler = EventHandler.createImplementation({
+            implementation: class {
+                async execute(ctx: EventContext, _next: NextFunction) {
+                    return { statusCode: 200, body: ctx.event };
+                }
+            },
+            dependencies: []
+        });
+
         const handler = createLambdaHandler({
             root: container => {
                 container.register(FunctionUrlEventType);
