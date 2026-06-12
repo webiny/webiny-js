@@ -25,7 +25,7 @@ export const DeleteEntryMenuItem = observer(() => {
         const deleted = await presenter.deleteEntry();
 
         if (deleted) {
-            presenter.dispose();
+            presenter.reset();
             const { modelId, folderId } = route.params;
             router.goToRoute(Routes.ContentEntries.List, { modelId, folderId });
         }

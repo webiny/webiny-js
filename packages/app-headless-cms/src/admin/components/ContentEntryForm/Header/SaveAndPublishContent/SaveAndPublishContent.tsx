@@ -17,11 +17,11 @@ export const SaveAndPublishButton = observer(() => {
     }
 
     const saveAndPublish = async () => {
-        const saved = await presenter.save();
+        const saved = await presenter.saveRevision();
         if (!saved) {
             return;
         }
-        await presenter.publish();
+        await presenter.publishRevision();
     };
 
     return (

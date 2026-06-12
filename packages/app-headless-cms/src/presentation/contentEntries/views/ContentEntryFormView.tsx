@@ -31,12 +31,12 @@ export const ContentEntryFormView = observer(() => {
         if (entryId === "new") {
             formPresenter.newEntry();
         } else if (entryId) {
-            formPresenter.loadEntry(entryId);
+            formPresenter.loadRevision(entryId);
             revisionsPresenter.init(entryId);
         }
 
         return () => {
-            formPresenter.dispose();
+            formPresenter.reset();
             revisionsPresenter.dispose();
         };
     }, [entryId]);
@@ -53,7 +53,7 @@ export const ContentEntryFormView = observer(() => {
                     cancelLabel: "No, stay here.",
                     onAccept: () => {
                         // We must reset the form to prevent the guard from kicking in again.
-                        formPresenter.dispose();
+                        formPresenter.reset();
                         router.confirmTransition();
                     },
                     onClose: () => router.cancelTransition()

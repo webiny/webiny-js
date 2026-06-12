@@ -18,6 +18,7 @@ import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.j
 import { CmsFormModelFeature } from "~/features/formModel/feature.js";
 import { ContentEntryFeature } from "~/features/contentEntry/feature.js";
 import { CmsFilePickerRenderer } from "~/presentation/fieldRenderers/CmsFilePickerRenderer.js";
+import { CmsMultiFilePickerRenderer } from "~/presentation/fieldRenderers/CmsMultiFilePickerRenderer.js";
 
 interface HeadlessCMSProvider {
     children: React.ReactNode;
@@ -88,6 +89,10 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
                 <AdminConfig.Form.FieldRenderer
                     name={"cmsFilePicker"}
                     component={CmsFilePickerRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"cmsMultiFilePicker"}
+                    component={CmsMultiFilePickerRenderer}
                 />
             </AdminConfig>
         </Fragment>

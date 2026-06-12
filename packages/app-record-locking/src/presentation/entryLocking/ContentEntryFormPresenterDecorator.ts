@@ -34,8 +34,8 @@ class ContentEntryFormPresenterWithLocking implements IContentEntryFormPresenter
         };
     }
 
-    async save(options?: { skipValidation?: boolean }): Promise<boolean> {
-        const result = await this.original.save(options);
+    async saveRevision(options?: { skipValidation?: boolean }): Promise<boolean> {
+        const result = await this.original.saveRevision(options);
 
         if (result) {
             await this.lockingPresenter.refreshLock();
@@ -44,32 +44,28 @@ class ContentEntryFormPresenterWithLocking implements IContentEntryFormPresenter
         return result;
     }
 
-    publish(): Promise<boolean> {
-        return this.original.publish();
+    publishRevision(): Promise<boolean> {
+        return this.original.publishRevision();
     }
 
-    unpublish(): Promise<boolean> {
-        return this.original.unpublish();
+    unpublishRevision(): Promise<boolean> {
+        return this.original.unpublishRevision();
     }
 
     deleteEntry(): Promise<boolean> {
         return this.original.deleteEntry();
     }
 
-    updateRevisionDescription(description: string): Promise<boolean> {
-        return this.original.updateRevisionDescription(description);
-    }
-
-    loadEntry(entryId: string): Promise<void> {
-        return this.original.loadEntry(entryId);
+    loadRevision(id: string): Promise<void> {
+        return this.original.loadRevision(id);
     }
 
     newEntry(): void {
         return this.original.newEntry();
     }
 
-    dispose(): void {
-        return this.original.dispose();
+    reset(): void {
+        return this.original.reset();
     }
 }
 

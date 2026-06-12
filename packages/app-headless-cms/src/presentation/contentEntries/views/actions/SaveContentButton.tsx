@@ -20,7 +20,7 @@ export const SaveContentButton = observer(() => {
 
     const handleSave = async () => {
         const isNew = presenter.vm.isNewEntry;
-        const saved = await presenter.save();
+        const saved = await presenter.saveRevision();
         if (saved) {
             if (isNew && presenter.vm.entry) {
                 listPresenter.selectEntry(presenter.vm.entry.id);

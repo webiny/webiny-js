@@ -20,7 +20,7 @@ export const SaveContentButton = observer(() => {
     return (
         <ButtonSecondary
             data-testid={"cms-content-save-content-button"}
-            onAction={() => presenter.save()}
+            onAction={() => presenter.saveRevision()}
         >
             {"Save"}
         </ButtonSecondary>

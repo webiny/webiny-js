@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { IFormVM } from "@webiny/app-admin/features/formModel/abstractions.js";
+import { FormModel } from "@webiny/app-admin";
 import type { CmsContentEntry } from "~/types.js";
 import type { CmsModel } from "~/types.js";
 
@@ -7,7 +7,7 @@ export interface IContentEntryFormViewModel {
     loading: string | null;
     entry: CmsContentEntry | null;
     model: CmsModel;
-    form: IFormVM | null;
+    form: FormModel.FormVM | null;
     canSave: boolean;
     canPublish: boolean;
     canUnpublish: boolean;
@@ -18,14 +18,13 @@ export interface IContentEntryFormViewModel {
 
 export interface IContentEntryFormPresenter {
     vm: IContentEntryFormViewModel;
-    save(options?: { skipValidation?: boolean }): Promise<boolean>;
-    publish(): Promise<boolean>;
-    unpublish(): Promise<boolean>;
+    loadRevision(id: string): Promise<void>;
+    saveRevision(options?: { skipValidation?: boolean }): Promise<boolean>;
+    publishRevision(): Promise<boolean>;
+    unpublishRevision(): Promise<boolean>;
     deleteEntry(): Promise<boolean>;
-    updateRevisionDescription(description: string): Promise<boolean>;
-    loadEntry(entryId: string): Promise<void>;
     newEntry(): void;
-    dispose(): void;
+    reset(): void;
 }
 
 export const ContentEntryFormPresenter = createAbstraction<IContentEntryFormPresenter>(

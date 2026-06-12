@@ -1,7 +1,7 @@
 import React from "react";
 import { createFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 import { FileManager } from "@webiny/app-admin/base/ui/FileManager.js";
-import { FilePicker, type FileItemDto } from "@webiny/admin-ui";
+import { FilePicker } from "@webiny/admin-ui";
 import type { FileManagerFileItem } from "@webiny/app-admin/base/ui/FileManager.js";
 import type { FileFieldSettings } from "@webiny/app-admin/features/formModel/fieldTypes/FileFieldType.js";
 
@@ -27,7 +27,7 @@ export const CmsFilePickerRenderer = createFieldRenderer<"cmsFilePicker">(({ fie
                     note={field.note}
                     hint={field.help}
                     type="compact"
-                    value={toFilePickerValue(field.value)}
+                    value={field.value as string | undefined}
                     validation={field.validation}
                     onSelectItem={() =>
                         showFileManager((file: FileManagerFileItem) => {
@@ -40,27 +40,3 @@ export const CmsFilePickerRenderer = createFieldRenderer<"cmsFilePicker">(({ fie
         />
     );
 });
-
-const toFilePickerValue = (value: unknown): FileItemDto | undefined => {
-    if (!value || typeof value !== "string") {
-        return undefined;
-    }
-
-    const name = value.split("/").pop() || "";
-
-    return { url: value, name, mimeType: guessMimeType(name) };
-};
-
-const guessMimeType = (name: string): string => {
-    const ext = name.split(".").pop()?.toLowerCase() || "";
-    const map: Record<string, string> = {
-        jpg: "image/jpeg",
-        jpeg: "image/jpeg",
-        png: "image/png",
-        gif: "image/gif",
-        svg: "image/svg+xml",
-        webp: "image/webp",
-        pdf: "application/pdf"
-    };
-    return map[ext] || "application/octet-stream";
-};

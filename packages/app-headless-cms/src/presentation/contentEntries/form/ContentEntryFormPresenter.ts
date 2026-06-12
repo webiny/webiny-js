@@ -1,6 +1,5 @@
 import { computed, makeAutoObservable, runInAction } from "mobx";
-import type { IFormModel } from "@webiny/app-admin/features/formModel/abstractions.js";
-import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
+import { FormModelFactory, FormModel } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { CmsContentEntry } from "~/types.js";
 
@@ -19,16 +18,12 @@ import { DeleteEntryUseCase } from "~/features/contentEntry/deleteEntry/abstract
 import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
 import { CmsFormModelBuilder } from "~/features/formModel/abstractions.js";
 import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
-import {
-    ContentEntryFormPresenter as Abstraction,
-    type IContentEntryFormPresenter,
-    type IContentEntryFormViewModel
-} from "./abstractions.js";
+import { ContentEntryFormPresenter as Abstraction } from "./abstractions.js";
 import { TRASH_ENTRY_DIALOG } from "~/presentation/contentEntries/list/ContentEntriesPresenter.js";
 
-class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
+class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     private _entry: CmsContentEntry | null = null;
-    private _form: IFormModel | null = null;
+    private _form: FormModel.Interface | null = null;
     private _loading: string | null = null;
 
     constructor(
@@ -77,7 +72,7 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
         return this.modelAccessor.getModel();
     }
 
-    get vm(): IContentEntryFormViewModel {
+    get vm(): Abstraction.ViewModel {
         const entry = this._entry;
         const meta = entry?.meta;
         const isLocked = meta?.locked ?? false;
@@ -97,7 +92,7 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
         };
     }
 
-    async save(options?: { skipValidation?: boolean }): Promise<boolean> {
+    async saveRevision(options?: { skipValidation?: boolean }): Promise<boolean> {
         if (!this._form) {
             return false;
         }
@@ -155,7 +150,7 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
         }
     }
 
-    async publish(): Promise<boolean> {
+    async publishRevision(): Promise<boolean> {
         if (!this._entry) {
             return false;
         }
@@ -201,7 +196,7 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
         }
     }
 
-    async unpublish(): Promise<boolean> {
+    async unpublishRevision(): Promise<boolean> {
         if (!this._entry) {
             return false;
         }
@@ -259,35 +254,13 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
         );
     }
 
-    async updateRevisionDescription(description: string): Promise<boolean> {
-        if (!this._entry) {
-            return false;
-        }
-
-        try {
-            const entry = await this.updateRevisionDescriptionUseCase.execute({
-                model: this.model,
-                id: this._entry.id,
-                revisionDescription: description
-            });
-
-            runInAction(() => {
-                this._entry = entry;
-            });
-
-            return true;
-        } catch {
-            return false;
-        }
-    }
-
-    async loadEntry(entryId: string): Promise<void> {
+    async loadRevision(id: string): Promise<void> {
         this._loading = "Loading entry...";
 
         try {
             const entry = await this.getEntryUseCase.execute({
                 model: this.model,
-                id: entryId
+                id
             });
 
             runInAction(() => {
@@ -308,7 +281,7 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
         this._form = this.formModelFactory.create(formConfig);
     }
 
-    dispose(): void {
+    reset(): void {
         this._form = null;
         this._entry = null;
     }
