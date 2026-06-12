@@ -3,6 +3,10 @@ import { Db } from "@webiny/db";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import type { DbContext } from "./types.js";
 
+export { DbFeature } from "./DbFeature.js";
+export type { DbFeatureConfig } from "./DbFeature.js";
+export { DynamoDBClient, DynamoDBClientFeature, DbInstance } from "./abstractions.js";
+
 export default <T = unknown>(args: ConstructorArgs<T>) => {
     const plugin = createRegisterExtensionPlugin<DbContext>(async context => {
         if (context.db) {

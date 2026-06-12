@@ -15,7 +15,7 @@ interface IRegisterDbDynamoDbExtension {
     documentClient: DynamoDBDocument;
 }
 
-export { DynamoDBClient } from "~/feature/DynamoDBClient/index.js";
+export { DynamoDBClient, DynamoDBClientFeature } from "~/feature/DynamoDBClient/index.js";
 
 export const registerDynamoDBCore = ({ documentClient }: IRegisterDbDynamoDbExtension) => {
     return createRegisterExtensionPlugin(async context => {
