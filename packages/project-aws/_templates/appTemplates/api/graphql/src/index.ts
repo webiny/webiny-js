@@ -4,7 +4,7 @@ import graphqlPlugins from "@webiny/handler-graphql";
 import { createApiCore } from "@webiny/api-core";
 import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createFileManagerS3, createAssetDelivery } from "@webiny/api-file-manager-s3";
@@ -20,6 +20,7 @@ import { createAuditLogs } from "@webiny/api-audit-logs";
 import { registerAuditLogsDdbStorageOperations } from "@webiny/api-audit-logs-ddb";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
 import { createWebsockets } from "@webiny/api-websockets";
+import { registerWebsocketsDdbStorageOperations } from "@webiny/api-websockets-ddb";
 import { createRecordLocking } from "@webiny/api-record-locking";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
 import { createScheduler } from "@webiny/api-scheduler";
@@ -39,6 +40,7 @@ const documentClient = getDocumentClient();
 
 export const handler = createHandler({
     plugins: [
+        registerDynamoDBCore({ documentClient }),
         createApiCore({
             storageOperations: createApiCoreDdb({ documentClient })
         }),
@@ -49,6 +51,7 @@ export const handler = createHandler({
         }),
         securityPlugins(),
         createWebsockets(),
+        registerWebsocketsDdbStorageOperations({ documentClient }),
         registerDynamoDbStorageOperations(),
         createHeadlessCmsContext(),
         createHeadlessCmsGraphQL(),

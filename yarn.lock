@@ -11519,6 +11519,8 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     better-sqlite3: "npm:^12.10.0"
     knex: "npm:^3.2.10"
@@ -11536,7 +11538,6 @@ __metadata:
     "@types/jsonwebtoken": "npm:^9.0.10"
     "@webiny/api": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
@@ -11551,7 +11552,6 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     ai: "npm:^6.0.197"
     dataloader: "npm:^2.2.3"
-    jest-dynalite: "npm:^3.6.1"
     jose: "npm:^6.2.3"
     jsonwebtoken: "npm:^9.0.3"
     lodash: "npm:^4.18.1"
@@ -11750,7 +11750,6 @@ __metadata:
     "@webiny/api-elasticsearch-tasks": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
@@ -11852,6 +11851,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-sql@workspace:packages/api-headless-cms-sql"
   dependencies:
+    "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-storage": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -11956,9 +11956,7 @@ __metadata:
     "@types/pluralize": "npm:^0.0.33"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
@@ -12000,7 +11998,6 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
@@ -12010,7 +12007,6 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     email-addresses: "npm:^5.0.0"
     graphql: "npm:^16.14.1"
-    jest-dynalite: "npm:^3.6.1"
     nodemailer: "npm:^8.0.10"
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.3"
@@ -12099,6 +12095,8 @@ __metadata:
     "@faker-js/faker": "npm:^10.4.0"
     "@types/lodash": "npm:^4.17.24"
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -12192,6 +12190,40 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-websockets-ddb@npm:0.0.0, @webiny/api-websockets-ddb@workspace:packages/api-websockets-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-websockets-ddb@workspace:packages/api-websockets-ddb"
+  dependencies:
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:6.0.3"
+    vitest: "npm:^4.1.8"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-websockets-sql@npm:0.0.0, @webiny/api-websockets-sql@workspace:packages/api-websockets-sql":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-websockets-sql@workspace:packages/api-websockets-sql"
+  dependencies:
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    better-sqlite3: "npm:^12.10.0"
+    knex: "npm:^3.2.10"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:6.0.3"
+    vitest: "npm:^4.1.8"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-websockets@npm:0.0.0, @webiny/api-websockets@workspace:packages/api-websockets":
   version: 0.0.0-use.local
   resolution: "@webiny/api-websockets@workspace:packages/api-websockets"
@@ -12201,7 +12233,6 @@ __metadata:
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -12247,7 +12278,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api@workspace:packages/api"
   dependencies:
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
     "@webiny/plugins": "npm:0.0.0"
@@ -13761,6 +13791,8 @@ __metadata:
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-website-builder-workflows": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/api-websockets-ddb": "npm:0.0.0"
+    "@webiny/api-websockets-sql": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"

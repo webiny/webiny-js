@@ -1,11 +1,11 @@
+import { KnexClient } from "@webiny/api-core-sql";
 import { GroupSchemaManager as GroupSchemaManagerAbstraction } from "./abstractions.js";
-import { KnexInstance } from "~/features/knexInstance/abstractions.js";
 
 class GroupSchemaManagerImpl implements GroupSchemaManagerAbstraction.Interface {
-    private readonly knex: KnexInstance.Interface;
+    private readonly knex;
     private readonly verified = new Set<string>();
 
-    constructor(knex: KnexInstance.Interface) {
+    constructor(knex: KnexClient.Interface) {
         this.knex = knex;
 
         const g = globalThis as Record<string, unknown>;
@@ -22,10 +22,10 @@ class GroupSchemaManagerImpl implements GroupSchemaManagerAbstraction.Interface 
             return;
         }
 
-        const exists = await this.knex.schema.hasTable(tableName);
+        const exists = await this.knex.client.schema.hasTable(tableName);
 
         if (!exists) {
-            await this.knex.schema.createTable(tableName, table => {
+            await this.knex.client.schema.createTable(tableName, table => {
                 table.text("id").primary().notNullable();
                 table.text("name").notNullable();
                 table.text("slug").notNullable();
@@ -49,5 +49,5 @@ class GroupSchemaManagerImpl implements GroupSchemaManagerAbstraction.Interface 
 
 export const GroupSchemaManager = GroupSchemaManagerAbstraction.createImplementation({
     implementation: GroupSchemaManagerImpl,
-    dependencies: [KnexInstance]
+    dependencies: [KnexClient]
 });

@@ -4,8 +4,8 @@ import type {
     IWebsocketsConnectionRegistryData,
     IWebsocketsConnectionRegistryRegisterParams,
     IWebsocketsConnectionRegistryUnregisterParams
-} from "./abstractions/IWebsocketsConnectionRegistry.js";
-import { createEntity } from "~/registry/entity.js";
+} from "@webiny/api-websockets";
+import { createEntity } from "./entity.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";
 
@@ -74,9 +74,6 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         return item?.data || null;
     }
 
-    /**
-     * Uses Primary keys
-     */
     public async listViaConnections(
         connections: string[]
     ): Promise<IWebsocketsConnectionRegistryData[]> {
@@ -96,9 +93,6 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         });
     }
 
-    /**
-     * Uses GSI1 keys
-     */
     public async listViaIdentity(identity: string): Promise<IWebsocketsConnectionRegistryData[]> {
         const items = await this.entity.queryAll({
             partitionKey: GSI1_PK,
@@ -112,9 +106,6 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         });
     }
 
-    /**
-     * Uses GSI2 keys
-     */
     public async listViaTenant(tenant: string): Promise<IWebsocketsConnectionRegistryData[]> {
         const options: Partial<EntityQueryOptions> = {
             beginsWith: `T#${tenant}`
@@ -147,13 +138,10 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
     private async store(data: IWebsocketsConnectionRegistryData) {
         const { connectionId, tenant, identity } = data;
         const item = {
-            // to find specific identity related to given connection
             PK,
             SK: connectionId,
-            // to find all connections related to given identity
             GSI1_PK,
             GSI1_SK: identity.id,
-            // to find all connections related to given tenant
             GSI2_PK,
             GSI2_SK: `T#${tenant}`,
             GSI_TENANT: tenant,

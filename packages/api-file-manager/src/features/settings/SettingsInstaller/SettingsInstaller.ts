@@ -1,4 +1,4 @@
-import { ServiceDiscovery } from "@webiny/api";
+import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { createImplementation } from "@webiny/feature/api";
 import { AppInstaller } from "@webiny/api-core/features/tenancy/InstallTenant/index.js";
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";

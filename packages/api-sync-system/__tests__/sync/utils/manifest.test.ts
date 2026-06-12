@@ -1,4 +1,5 @@
-import { ServiceDiscovery } from "@webiny/api";
+import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
+import { DdbServiceManifestLoader } from "@webiny/api-core-ddb";
 import { getManifest } from "~/sync/utils/manifest.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
@@ -8,14 +9,12 @@ describe("manifest", () => {
     let client: DynamoDBDocument;
     beforeEach(() => {
         client = getDocumentClient({});
-        ServiceDiscovery.setDocumentClient(client);
+        ServiceDiscovery.setLoader(new DdbServiceManifestLoader(client));
         ServiceDiscovery.clear();
     });
 
     it("should return error because no manifest is provided", async () => {
-        const result = await getManifest({
-            getDocumentClient: () => client
-        });
+        const result = await getManifest();
 
         expect(result.data).toBeUndefined();
         expect(result.error.message).toEqual(
@@ -37,9 +36,7 @@ describe("manifest", () => {
                 }
             }
         });
-        const result = await getManifest({
-            getDocumentClient: () => client
-        });
+        const result = await getManifest();
         expect(result.data).toBeUndefined();
         expect(result.error.message).toEqual("Validation failed.");
         expect(result.error.data).toEqual({
@@ -90,9 +87,7 @@ describe("manifest", () => {
                 }
             }
         });
-        const result = await getManifest({
-            getDocumentClient: () => client
-        });
+        const result = await getManifest();
 
         expect(result.error).toBeUndefined();
         expect(result.data).toEqual({
@@ -111,9 +106,7 @@ describe("manifest", () => {
             throw new Error("Some strange error.");
         });
 
-        const result = await getManifest({
-            getDocumentClient: () => client
-        });
+        const result = await getManifest();
 
         expect(result.data).toBeUndefined();
         expect(result.error.message).toEqual("Some strange error.");

@@ -4,7 +4,8 @@ export default async () => {
     const { getPresets } = await import("@webiny/project-utils/testing/presets/index.js");
     const presets = await getPresets(
         ["@webiny/api-headless-cms", "storage-operations"],
-        ["@webiny/api-core", "storage-operations"]
+        ["@webiny/api-core", "storage-operations"],
+        ["@webiny/api-websockets", "storage-operations"]
     );
 
     return createTestConfig({

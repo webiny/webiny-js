@@ -23,6 +23,7 @@ export const createPlugins = (params?: Params): PluginsContainer => {
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const websocketsStorage = getStorageOps("websockets");
 
     const container = plugins instanceof PluginsContainer ? plugins : new PluginsContainer();
     container.register([
@@ -37,6 +38,7 @@ export const createPlugins = (params?: Params): PluginsContainer => {
             identity: createIdentity()
         }),
         createWebsockets(),
+        ...websocketsStorage.plugins,
         createHeadlessCmsContext(),
         createHeadlessCmsGraphQL(),
         graphQLHandlerPlugins(),

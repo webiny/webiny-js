@@ -6,7 +6,6 @@ import type {
 import { getManifest } from "~/manifest.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { SCHEDULE_MODEL_ID } from "./constants.js";
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js";
 import { EventBridgeSchedulerService } from "~/features/SchedulerService/EventBridgeSchedulerService.js";
 import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
@@ -36,9 +35,7 @@ export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContex
             return;
         }
 
-        const manifest = await getManifest({
-            client: context.db.driver.getClient() as DynamoDBDocument
-        });
+        const manifest = await getManifest();
 
         if (manifest.error) {
             context.container.registerInstance(SchedulerService, new VoidSchedulerService());
