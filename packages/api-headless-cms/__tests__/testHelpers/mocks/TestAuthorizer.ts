@@ -18,7 +18,10 @@ class TestAuthorizerImpl implements IAuthorizer {
             return this.permissions;
         }
         // For api-key identities with embedded permissions, return those (mirrors apiKeyAuthorization)
-        if (this.identity?.type === "api-key" && Array.isArray((this.identity as any).permissions)) {
+        if (
+            this.identity?.type === "api-key" &&
+            Array.isArray((this.identity as any).permissions)
+        ) {
             return (this.identity as any).permissions;
         }
         return this.permissions;

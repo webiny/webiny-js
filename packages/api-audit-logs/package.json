@@ -39,6 +39,7 @@
     "@webiny/api-website-builder": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/common-audit-logs": "0.0.0",
+    "@webiny/di": "^1.0.1",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",

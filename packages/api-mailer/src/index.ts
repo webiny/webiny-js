@@ -8,6 +8,7 @@ import { SendMailFeature } from "~/features/SendMail/feature.js";
 import { createSettingsGraphQL } from "~/graphql/settings.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 
+export { MailerFeature } from "./MailerFeature.js";
 export { MailerService } from "./domain/MailerService/abstractions.js";
 export type { IMailerService, IMailerServiceErrors } from "./domain/MailerService/abstractions.js";
 

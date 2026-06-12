@@ -75,3 +75,6 @@ export const createRecordLocking = (params?: ICreateContextPluginParams) => {
 
     return [createContextPlugin(params), modelsPlugin];
 };
+
+export { RecordLockingAppFeature } from "./RecordLockingAppFeature.js";
+export type { IRecordLockingAppFeatureParams } from "./RecordLockingAppFeature.js";

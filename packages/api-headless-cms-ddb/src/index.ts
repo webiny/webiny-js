@@ -93,17 +93,27 @@ const DynamoDbStorageOperationsFactory = StorageOperationsFactoryAbstraction.cre
     dependencies: []
 });
 
-const storageOperationsFeature = createFeature({
-    name: "cms.storageOperations.openSearch",
+/**
+ * DI-native feature — registers the DynamoDB CMS storage operations factory.
+ * Requires DynamoDBClient to be registered in the container first (via DbFeature).
+ *
+ * Usage:
+ *   DbFeature.register(container, { documentClient, table });
+ *   HeadlessCmsDdbFeature.register(container);
+ *   // then in request: HeadlessCmsFeature.register(container, { type: "manage" });
+ */
+export const HeadlessCmsDdbFeature = createFeature({
+    name: "cms.storageOperations.ddb",
     register: container => {
         container.register(DynamoDbStorageOperationsFactory).inSingletonScope();
     }
 });
 
+/** @deprecated use HeadlessCmsDdbFeature instead */
 export const registerDynamoDbStorageOperations = () => {
     return [
         createRegisterExtensionPlugin(context => {
-            return storageOperationsFeature.register(context.container);
+            return HeadlessCmsDdbFeature.register(context.container);
         })
     ];
 };
