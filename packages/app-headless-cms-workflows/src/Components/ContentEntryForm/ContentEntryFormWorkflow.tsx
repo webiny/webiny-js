@@ -1,30 +1,19 @@
 import React from "react";
-import { ContentEntryForm, useModel } from "@webiny/app-headless-cms";
-import type { IWorkflowState } from "@webiny/app-workflows";
-import { Components } from "@webiny/app-workflows";
+import { observer } from "mobx-react-lite";
 import { Alert, Grid } from "@webiny/admin-ui";
-import type { PersistEntry } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/ContentEntryFormProvider.js";
+import { Content } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
+import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/views/ContentEntryFormPresenterProvider.js";
+import { useWorkflowState } from "@webiny/app-workflows";
+import { Components } from "@webiny/app-workflows";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
-import type { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 
 const {
-    ContentReview: { WorkflowStateBar, WorkflowStateOverlay }
+    ContentReview: { WorkflowStateBar }
 } = Components;
 
-/**
- * To override storing of the entry when in workflow state.
- */
-// @ts-expect-error
-const emptyFunction: PersistEntry = async () => {
-    return void 0;
-};
-
-interface IStoreAlertProps {
-    state: IWorkflowState | undefined;
-}
-
-const StoreAlert = ({ state }: IStoreAlertProps) => {
-    if (!state) {
+const StoreAlert = observer(() => {
+    const { presenter } = useWorkflowState();
+    if (!presenter.vm.state) {
         return null;
     }
     return (
@@ -32,34 +21,18 @@ const StoreAlert = ({ state }: IStoreAlertProps) => {
             Any changes you do on the entry will not be stored!
         </Alert>
     );
-};
+});
 
-interface IShouldShowOriginalParams {
-    entry: Partial<Pick<CmsContentEntry, "id">>;
-    model: Partial<Pick<CmsModel, "tags">>;
-}
-const shouldShowOriginal = (params: IShouldShowOriginalParams): boolean => {
-    const { entry, model } = params;
-    /**
-     * In case of new entry or no model, show original.
-     * Also, for singleton models, show original.
-     */
-    if (!entry?.id || !model?.tags) {
-        return true;
-    }
-    return model.tags.includes(CMS_MODEL_SINGLETON_TAG);
-};
+export const ContentEntryFormWorkflow = Content.createDecorator(Original => {
+    return observer(function ContentEntryFormWorkflowDecorator(props) {
+        const formPresenter = useContentEntryFormPresenter();
+        const model = formPresenter.vm.model;
+        const entry = formPresenter.vm.entry;
 
-export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Original => {
-    return function ContentEntryFormWorkflow(props) {
-        const { model } = useModel();
+        const isSingleton = model.tags.includes(CMS_MODEL_SINGLETON_TAG);
+        const isNew = !entry?.id;
 
-        const showOriginal = shouldShowOriginal({
-            entry: props.entry,
-            model
-        });
-
-        if (showOriginal) {
+        if (isSingleton || isNew) {
             return <Original {...props} />;
         }
 
@@ -69,21 +42,10 @@ export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Origina
                     <WorkflowStateBar />
                 </Grid.Column>
                 <Grid.Column span={12}>
-                    <WorkflowStateOverlay>
-                        {({ state }) => {
-                            return (
-                                <>
-                                    <StoreAlert state={state} />
-                                    <Original
-                                        {...props}
-                                        persistEntry={state ? emptyFunction : props.persistEntry}
-                                    />
-                                </>
-                            );
-                        }}
-                    </WorkflowStateOverlay>
+                    <StoreAlert />
+                    <Original {...props} />
                 </Grid.Column>
             </Grid>
         );
-    };
+    });
 });

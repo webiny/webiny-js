@@ -20,6 +20,7 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-headless-cms-common": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/app-workflows": "0.0.0",
     "@webiny/icons": "0.0.0",
     "mobx-react-lite": "^4.1.1",
