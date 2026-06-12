@@ -5,12 +5,12 @@ import { Droppable } from "./../Droppable.js";
 import { cn, cva } from "@webiny/admin-ui";
 
 const droppableContainerVariants = cva(
-    "bg-transparent box-border h-full min-h-[120px] relative user-select-none w-full border-md border-dashed",
+    "bg-neutral-base/30 box-border h-full min-h-[120px] relative user-select-none w-full border-md border-dashed rounded-xl",
     {
         variants: {
             isOver: {
-                true: "border-accent-default text-accent-primary",
-                false: "border-success-default text-success-primary"
+                true: "border-neutral-muted text-accent-primary",
+                false: "border-neutral-muted text-success-primary"
             },
             isDroppable: {
                 false: "border-success-default text-accent-primary"
@@ -50,7 +50,7 @@ const Center = ({ onDrop, children, style, isDroppable }: CenterProps) => {
                     {...getInert(isDroppable)}
                 >
                     <div className={cn(droppableContainerVariants({ isOver, isDroppable }))}>
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 m-0">
+                        <div className="text-sm text-neutral-strong absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 m-0">
                             {children}
                         </div>
                     </div>
