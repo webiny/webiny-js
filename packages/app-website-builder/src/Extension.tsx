@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
-import { AdminConfig, RegisterFeature, useContainer, useRouter } from "@webiny/app-admin";
+import React from "react";
+import { AdminConfig, RegisterFeature, useRouter } from "@webiny/app-admin";
 import {
     ReactComponent as PagesIcon,
     ReactComponent as PermissionsIcon
 } from "@webiny/icons/table_chart.svg";
 import { PageEditor } from "~/modules/pages/PageEditor.js";
-import { PageList } from "~/modules/pages/PageList.js";
+import { PagesList } from "~/presentation/pages/PageList/components/PagesList.js";
 import { useSettingsDialog } from "~/modules/settings/useSettingsDialog.js";
 import { useIntegrationsDialog } from "./modules/integrations/useIntegrationsDialog.js";
 import { PagesListConfig } from "~/modules/pages/PagesListConfig.js";
@@ -13,7 +13,6 @@ import { RedirectsList } from "~/presentation/redirects/RedirectList/components/
 import { RedirectsListConfig } from "~/presentation/redirects/RedirectList/components/RedirectsListConfig.js";
 import { Routes } from "~/routes.js";
 import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
-import { PageListFeature } from "~/presentation/pages/PageList/feature.js";
 import { Extension as NavigationExtension } from "./presentation/navigation/Extension.js";
 import { NextjsConfigFeature } from "~/presentation/navigation/NextjsConfig/feature.js";
 import { WB_PERMISSIONS_SCHEMA } from "~/constants.js";
@@ -33,7 +32,6 @@ import { GetPageFeature } from "~/features/pages/getPage/index.js";
 import { GetPageRevisionsFeature } from "~/features/pages/getPageRevisions/index.js";
 import { SelectPagesFeature } from "~/features/pages/selectPages/index.js";
 import { SharedPageInfrastructureFeature } from "~/features/pages/shared/feature.js";
-import { LoadPagesFeature } from "~/features/pages/loadPages/index.js";
 import { CreatePageConfig } from "./presentation/pages/CreatePage/CreatePageConfig.js";
 import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
 import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
@@ -44,11 +42,6 @@ const { Security, Menu, Route, Dashboard } = AdminConfig;
 
 export const Extension = () => {
     const router = useRouter();
-    const container = useContainer();
-
-    useEffect(() => {
-        PageListFeature.register(container);
-    }, []);
 
     return (
         <>
@@ -69,7 +62,6 @@ export const Extension = () => {
             <RegisterFeature feature={GetPageFeature} />
             <RegisterFeature feature={GetPageRevisionsFeature} />
             <RegisterFeature feature={SelectPagesFeature} />
-            <RegisterFeature feature={LoadPagesFeature} />
             <RegisterFeature feature={CreatePageFeature} />
             <RegisterFeature feature={PageSettingsFeature} />
             <AdminConfig>
@@ -98,7 +90,7 @@ export const Extension = () => {
                 </HasPermission>
 
                 <HasPermission entity={"page"}>
-                    <Route route={Routes.Pages.List} element={<PageList />} />
+                    <Route route={Routes.Pages.List} element={<PagesList />} />
                     <Route route={Routes.Pages.Editor} element={<PageEditor />} />
                     <Menu
                         name="wb.pages"

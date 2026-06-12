@@ -11,6 +11,7 @@ export { useGetPage } from "~/presentation/pages/hooks/useGetPage.js";
 export * from "./getPageRevisions/index.js";
 export { useGetPageRevisions } from "~/presentation/pages/hooks/useGetPageRevisions.js";
 export * from "./loadPages/index.js";
+export * from "./listPages/index.js";
 export { useLoadPages } from "~/presentation/pages/hooks/useLoadPages.js";
 export { useFilterPages } from "~/presentation/pages/hooks/useFilterPages.js";
 export { useSearchPages } from "~/presentation/pages/hooks/useSearchPages.js";
