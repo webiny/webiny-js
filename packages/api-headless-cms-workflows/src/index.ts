@@ -20,3 +20,4 @@ export const createHeadlessCmsWorkflows = () => {
 
     return plugin;
 };
+export { CmsWorkflowsFeature } from "./CmsWorkflowsFeature.js";

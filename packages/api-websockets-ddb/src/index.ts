@@ -17,3 +17,4 @@ export const registerWebsocketsDdbStorageOperations = (
         context.container.registerInstance(ConnectionRegistry, registry);
     });
 };
+export { WebsocketsDdbFeature } from "./WebsocketsDdbFeature.js";

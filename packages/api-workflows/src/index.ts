@@ -126,3 +126,4 @@ export const createWorkflows = () => {
 
     return [workflowsContextPlugin, modelsPlugin];
 };
+export { WorkflowsFeature } from "./WorkflowsFeature.js";

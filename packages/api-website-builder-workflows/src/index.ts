@@ -19,3 +19,4 @@ export const createWebsiteBuilderWorkflows = () => {
 
     return [plugin, createWebsiteBuilderPageGraphQLExtension()];
 };
+export { WebsiteBuilderWorkflowsFeature } from "./WebsiteBuilderWorkflowsFeature.js";
