@@ -1,5 +1,4 @@
 import React from "react";
-import { useApolloClient } from "@apollo/react-hooks";
 import { Sidebar } from "@webiny/admin-ui";
 import { ReactComponent as WorkflowStateListIcon } from "@webiny/icons/flowchart.svg";
 import { Components as WorkflowsComponents } from "@webiny/app-workflows";
@@ -16,14 +15,13 @@ const { Browser } = ContentEntryListConfig;
 
 const ContentReviewsMenuItem = () => {
     const presenter = useContentEntriesPresenter();
-    const client = useApolloClient();
 
     const model = presenter.vm.model;
     const app = createAppName(model);
 
     return (
         <IsModelPublishable>
-            <WorkflowStateListAppOverlay client={client} app={app}>
+            <WorkflowStateListAppOverlay app={app}>
                 {({ showOverlay }) => {
                     return (
                         <div className={"list-none"}>

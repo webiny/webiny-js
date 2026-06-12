@@ -21,7 +21,7 @@ import { AdvancedContentOrganisation } from "@webiny/app-aco";
 import { Extension as WebsiteBuilder } from "@webiny/app-website-builder/Extension.js";
 import { SchedulerConfigs } from "@webiny/app-scheduler";
 import { CmsScheduler } from "@webiny/app-headless-cms-scheduler";
-import { Components as WorkflowComponents } from "@webiny/app-workflows";
+import { WorkflowsAdminApp } from "@webiny/app-workflows";
 import { CmsWorkflows } from "@webiny/app-headless-cms-workflows";
 import { WebsiteBuilderWorkflows } from "@webiny/app-website-builder-workflows";
 import { Container } from "@webiny/di";
@@ -64,7 +64,7 @@ const App = (props: AdminProps) => {
             <TrashBinConfigs />
             <AdvancedContentOrganisation />
             <WebsiteBuilder />
-            <WorkflowComponents.App.WorkflowsAdminApp />
+            <WorkflowsAdminApp />
             <CmsWorkflows />
             <WebsiteBuilderWorkflows />
             <WbScheduler />

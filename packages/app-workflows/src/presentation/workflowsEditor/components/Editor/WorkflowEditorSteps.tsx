@@ -1,0 +1,56 @@
+import React from "react";
+import { NewStep } from "./Step/NewStep.js";
+import type { IInactiveStep } from "./Step/InactiveStep.js";
+import { InactiveStep } from "./Step/InactiveStep.js";
+import { Step } from "./Step/Step.js";
+import { observer } from "mobx-react-lite";
+import type { IWorkflowsEditorPresenter } from "~/presentation/workflowsEditor/abstractions.js";
+
+export interface IWorkflowEditorStepsProps {
+    presenter: IWorkflowsEditorPresenter;
+}
+
+const draftStep: IInactiveStep = {
+    id: "draft",
+    color: "#BEC3CC",
+    title: "Draft",
+    description: "(This is the initial state of your content)"
+};
+const publishedStep: IInactiveStep = {
+    id: "published",
+    color: "#5AC74C",
+    title: "Published",
+    description: "(The final state for all published content)"
+};
+
+export const WorkflowEditorSteps = observer((props: IWorkflowEditorStepsProps) => {
+    const { presenter } = props;
+
+    const workflow = presenter.vm.workflow;
+    if (!workflow) {
+        return null;
+    }
+
+    return (
+        <div className={"flex gap-y-md flex-col"}>
+            <InactiveStep step={draftStep} />
+            {workflow.steps.map(step => {
+                return (
+                    <Step
+                        key={`step-${step.id}`}
+                        step={step}
+                        notifications={presenter.vm.notifications}
+                        onSave={presenter.updateStep}
+                        onRemove={presenter.removeStep}
+                        onMoveUp={presenter.moveStepUp}
+                        canMoveDown={presenter.canMoveStepDown}
+                        onMoveDown={presenter.moveStepDown}
+                        canMoveUp={presenter.canMoveStepUp}
+                    />
+                );
+            })}
+            <NewStep onAdd={presenter.addStep} notifications={presenter.vm.notifications} />
+            <InactiveStep step={publishedStep} />
+        </div>
+    );
+});
