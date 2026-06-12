@@ -26,7 +26,9 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
     async execute(body: any): Promise<any> {
         // Build context first — enhancers may be async (e.g. CMS storage init)
         const ctx = await this.buildContext();
-        const bm = ctx.benchmark as { measure?: (name: string, fn: () => Promise<any>) => Promise<any> } | undefined;
+        const bm = ctx.benchmark as
+            | { measure?: (name: string, fn: () => Promise<any>) => Promise<any> }
+            | undefined;
         const schemaConfig = await this.composer.build(ctx);
 
         const resolverDecoration = new ResolverDecoration();

@@ -18,3 +18,4 @@ export * from "./extractors/index.js";
 export * from "./handlers/index.js";
 export * from "./features/S3Feature.js";
 export * from "./features/ApiGatewayFeature.js";
+export * from "./features/ApiGatewaySecurityFeature.js";
