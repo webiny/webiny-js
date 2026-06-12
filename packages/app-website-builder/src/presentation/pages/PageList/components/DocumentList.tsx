@@ -9,9 +9,11 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { FolderTree } from "@webiny/app-aco/presentation/folderTree/FolderTree.js";
 import { Button, Tooltip } from "@webiny/admin-ui";
 import { usePageListPresenter } from "../PageListPresenterProvider.js";
+import { usePageListConfig } from "../configs/index.js";
 import { useCreatePageDialog } from "~/presentation/pages/CreatePage/CreatePageDialog.js";
 import { usePermissions } from "~/presentation/security/usePermissions.js";
 import { WbTrashBin } from "~/presentation/pages/TrashBin/WbTrashBin.js";
+import { Table } from "./Table/Table.js";
 
 interface PageEmptyProps {
     isSearch: boolean;
@@ -92,6 +94,7 @@ const PageEmpty = ({
 export const DocumentList = observer(() => {
     const presenter = usePageListPresenter();
     const { vm, list, folders } = presenter;
+    const { browser } = usePageListConfig();
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
     const openCreatePageDialog = useCreatePageDialog();
     const wbPermissions = usePermissions();
@@ -141,6 +144,7 @@ export const DocumentList = observer(() => {
                         <FolderTree
                             vm={folders.vm}
                             actions={folders}
+                            folderActions={browser.folder.actions}
                             enableActions={true}
                             enableCreate={true}
                         />
@@ -181,7 +185,13 @@ export const DocumentList = observer(() => {
                 />
             }
             bulkActions={
-                <ListView.BulkActions itemLabel="page" actions={[]} />
+                <ListView.BulkActions itemLabel="page" actions={browser.bulkActions} />
+            }
+            filters={
+                <ListView.Filters
+                    filters={browser.filters}
+                    filtersToWhere={browser.filtersToWhere}
+                />
             }
             content={
                 <ListView.Content
@@ -190,9 +200,7 @@ export const DocumentList = observer(() => {
                             <PageEmpty
                                 isSearch={isSearch}
                                 canCreateContent={canCreatePage}
-                                canCreateFolder={
-                                    canCreatePage && canCreateFolder(folderId)
-                                }
+                                canCreateFolder={canCreatePage && canCreateFolder(folderId)}
                                 onCreateDocument={onCreateDocument}
                                 onCreateFolder={onCreateFolder}
                             />
@@ -206,7 +214,7 @@ export const DocumentList = observer(() => {
                         />
                     }
                 >
-                    {null}
+                    <Table />
                 </ListView.Content>
             }
             bottomBar={<ListView.BottomBar meta={{ itemLabel: "page" }} status />}

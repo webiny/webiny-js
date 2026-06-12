@@ -18,6 +18,7 @@ import { PageListPresenterFeature } from "~/presentation/pages/PageList/feature.
 import { PageListPresenterProvider } from "../PageListPresenterProvider.js";
 import { WB_PAGE_APP } from "~/constants.js";
 import { Routes } from "~/routes.js";
+import { PageListWithConfig } from "../configs/index.js";
 import { DocumentList } from "./DocumentList.js";
 
 const PagesListInner = observer(() => {
@@ -33,9 +34,10 @@ const PagesListInner = observer(() => {
 
     return (
         <DialogsProvider>
-            <PageListPresenterProvider presenter={presenter}>
-                <DocumentList />
-                <RouteParamsSync
+            <PageListWithConfig>
+                <PageListPresenterProvider presenter={presenter}>
+                    <DocumentList />
+                    <RouteParamsSync
                     route={Routes.Pages.List}
                     fields={fields => [
                         fields.create<string>({
@@ -58,7 +60,8 @@ const PagesListInner = observer(() => {
                         })
                     ]}
                 />
-            </PageListPresenterProvider>
+                </PageListPresenterProvider>
+            </PageListWithConfig>
         </DialogsProvider>
     );
 });

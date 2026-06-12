@@ -1,11 +1,8 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import type { CallbackParams } from "@webiny/app-admin";
-import { useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
+import { useButtons, useDialogWithReport, Worker, useListView } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { useDocumentList } from "~/presentation/pages/PageList/components/useDocumentList.js";
-import { useSelectPages } from "~/features/pages/selectPages/useSelectPages.js";
 import { Page, type PageDto, PageDtoMapper } from "~/domain/Page/index.js";
-import type { TableRow } from "~/presentation/pages/PageList/types.js";
 import { makeDecoratable } from "@webiny/react-composition";
 
 export interface BulkActionConfig {
@@ -50,18 +47,18 @@ export const BaseBulkAction = makeDecoratable(
 );
 
 const useWorker = () => {
-    const { vm } = useDocumentList();
-    const { selectPages } = useSelectPages<TableRow>();
+    const { list, actions } = useListView();
     const { current: worker } = useRef(new Worker<PageDto>());
 
     const items = useMemo(() => {
-        const pages = vm.selected.map(item => Page.create(item.data));
-        return pages.map(page => PageDtoMapper.toDTO(page));
-    }, [vm.selected]);
+        const selectedIds = list.selection.selectedIds;
+        const selectedRows = list.rows.filter((r: any) => selectedIds.has(r.entryId || r.id));
+        return selectedRows.map((row: any) => PageDtoMapper.toDTO(Page.create(row)));
+    }, [list.selection.selectedIds, list.rows]);
 
     const resetItems = useCallback(() => {
-        selectPages([]);
-    }, []);
+        actions.selection.deselectAll();
+    }, [actions]);
 
     const resetResults = useCallback(async () => {
         worker.resetResults();

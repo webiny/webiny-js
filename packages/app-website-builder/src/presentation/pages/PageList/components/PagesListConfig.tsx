@@ -1,5 +1,5 @@
 import React from "react";
-import { InternalPageListConfig } from "./configs/list/index.js";
+import { InternalPageListConfig } from "../configs/index.js";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import {
     CellActions,
@@ -24,7 +24,6 @@ import {
 } from "~/presentation/pages/PageList/components/BulkActions/index.js";
 import { FilterByStatus } from "~/presentation/pages/PageList/components/Filters/index.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
-import { WbTrashBin } from "~/presentation/pages/TrashBin/WbTrashBin.js";
 
 const { Browser } = InternalPageListConfig;
 
@@ -100,7 +99,6 @@ export const PagesListConfig = () => {
                 truncate={false}
                 className={"flex justify-center"}
             />
-            <Browser.Sidebar.Footer name={"trash-bin"} element={<WbTrashBin />} />
         </InternalPageListConfig>
     );
 };

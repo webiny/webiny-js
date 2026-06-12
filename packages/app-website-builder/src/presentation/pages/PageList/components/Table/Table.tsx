@@ -1,36 +1,45 @@
 import React, { useMemo } from "react";
-import { createFoldersData, createRecordsData, Table as AcoTable } from "@webiny/app-aco";
-import { useDocumentList } from "~/presentation/pages/PageList/components/useDocumentList.js";
-import { useSortPages } from "~/features/pages/index.js";
-import { useSelectPages } from "~/features/pages/selectPages/useSelectPages.js";
-import type { TableRow } from "~/presentation/pages/PageList/types.js";
-import { usePageListConfig } from "~/presentation/pages/PageList/configs/index.js";
+import { observer } from "mobx-react-lite";
+import { Table as AcoTable } from "@webiny/app-aco";
+import { useListViewTableProps } from "@webiny/app-admin";
+import { usePageListPresenter } from "../../../PageListPresenterProvider.js";
+import { usePageListConfig } from "../../configs/index.js";
+import type { TableRow } from "./TableRowMapper.js";
+import { TableRowMapper } from "./TableRowMapper.js";
 
-export const Table = () => {
-    const { vm } = useDocumentList();
-    const { sortPages } = useSortPages();
-    const { selectPages } = useSelectPages();
+export const Table = observer(() => {
+    const { vm, folders, list } = usePageListPresenter();
     const { browser } = usePageListConfig();
 
+    const tableProps = useListViewTableProps({
+        namespace: "wb/page/list",
+        nameColumnId: "name"
+    });
+
     const data = useMemo<TableRow[]>(() => {
-        return [...createFoldersData(vm.folders), ...createRecordsData(vm.data)];
-    }, [vm.folders, vm.data]);
+        const pageRows = list.vm.rows.map(r => TableRowMapper.fromPage(r));
+        if (!vm.showFolders) {
+            return pageRows;
+        }
+        const folderRows = (folders.vm.childFolders ?? []).map(f => TableRowMapper.fromFolder(f));
+        return [...folderRows, ...pageRows];
+    }, [list.vm.rows, folders.vm.childFolders, vm.showFolders]);
 
     const selected = useMemo<TableRow[]>(() => {
-        return createRecordsData(vm.selected);
-    }, [vm.selected]);
+        return data.filter(row => tableProps.selectedIds.has(row.id));
+    }, [data, tableProps.selectedIds]);
 
     return (
         <AcoTable<TableRow>
             columns={browser.table.columns}
             data={data}
-            loading={vm.isLoading}
-            sorting={vm.sorting}
-            onSortingChange={sort => sortPages(sort)}
-            onSelectRow={documents => selectPages(documents)}
+            loading={tableProps.loading}
+            sorting={tableProps.sorting}
+            onSortingChange={tableProps.onSortingChange}
+            onSelectRow={tableProps.onSelectRow}
             selected={selected}
-            nameColumnId={"name"}
-            namespace={"wb/page/list"}
+            nameColumnId={tableProps.nameColumnId}
+            namespace={tableProps.namespace}
         />
     );
-};
+});
