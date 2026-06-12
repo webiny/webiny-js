@@ -13,3 +13,4 @@ export const createAcoHcmsContext = () => {
 };
 
 export * from "./plugins/index.js";
+export { AcoHcmsFeature } from "./AcoHcmsFeature.js";
