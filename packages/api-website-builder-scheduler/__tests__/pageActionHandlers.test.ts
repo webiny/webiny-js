@@ -52,6 +52,7 @@ describe("Page Action Handlers", () => {
 
         const publishActionResult = await schedulePublishPage.execute({
             id: page.id,
+            tenant: "root",
             scheduleFor: new Date(Date.now() + 100000)
         });
 
@@ -66,6 +67,7 @@ describe("Page Action Handlers", () => {
 
         await executeScheduledAction.execute({
             id: publishActionResult.value!.scheduledAction.id,
+            tenant: "root",
             namespace: publishActionResult.value!.scheduledAction.namespace
         });
 
@@ -94,10 +96,12 @@ describe("Page Action Handlers", () => {
 
         const publishResult = await schedulePublishPage.execute({
             id: page.id,
+            tenant: "root",
             scheduleFor: new Date(Date.now() + 100000)
         });
         await executeScheduledAction.execute({
             id: publishResult.value!.scheduledAction.id,
+            tenant: "root",
             namespace: publishResult.value!.scheduledAction.namespace
         });
 
@@ -106,10 +110,12 @@ describe("Page Action Handlers", () => {
 
         const unpublishResult = await scheduleUnpublishPage.execute({
             id: page.id,
+            tenant: "root",
             scheduleFor: new Date(Date.now() + 1000000)
         });
         await executeScheduledAction.execute({
             id: unpublishResult.value!.scheduledAction.id,
+            tenant: "root",
             namespace: unpublishResult.value!.scheduledAction.namespace
         });
 

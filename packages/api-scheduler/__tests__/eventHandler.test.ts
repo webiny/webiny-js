@@ -20,6 +20,8 @@ import {
 } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 
 describe("Scheduler Event Handler", () => {
     const lambdaContext = {} as LambdaContext;
@@ -52,6 +54,7 @@ describe("Scheduler Event Handler", () => {
                     actionType: SCHEDULED_ACTION_PUBLISH,
                     targetId: "target-id#0001"
                 }),
+                tenant: "root",
                 namespace,
                 scheduleFor: new Date().toISOString()
             }
@@ -74,12 +77,14 @@ describe("Scheduler Event Handler", () => {
             actionType: SCHEDULED_ACTION_PUBLISH,
             targetId: "target-id#0001",
             scheduleFor,
-            immediately: false
+            immediately: false,
+            tenant: "root"
         });
 
         expect(createResult.isOk()).toBeTrue();
         expect(createResult.value).toEqual({
             actionType: SCHEDULED_ACTION_PUBLISH,
+            error: undefined,
             id: expect.stringMatching("wby-schedule-"),
             namespace: PublishTestEntryActionHandlerImpl.name,
             payload: {
@@ -97,6 +102,7 @@ describe("Scheduler Event Handler", () => {
             },
             scheduledFor: scheduleFor,
             targetId: "target-id#0001",
+            tenant: "root",
             title: "Fetched title from handler"
         });
         /**
@@ -113,6 +119,7 @@ describe("Scheduler Event Handler", () => {
                 [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
                     id,
                     namespace,
+                    tenant: "root",
                     scheduleFor: new Date(new Date().getTime() + 3 * 60 * 1000).toISOString()
                 }
             },
@@ -123,5 +130,65 @@ describe("Scheduler Event Handler", () => {
         expect(result).toEqual({
             success: true
         });
+    });
+
+    it("should execute a scheduled action created on a non-root tenant", async () => {
+        const tenantContext = context.container.resolve(TenantContext);
+        const getTenantById = context.container.resolve(GetTenantByIdUseCase);
+
+        const tenantResult = await getTenantById.execute("webiny");
+        expect(tenantResult.isOk()).toBeTrue();
+        const webinyTenant = tenantResult.value;
+
+        /* Schedule action while on the "webiny" tenant. */
+        const scheduleFor = new Date(Date.now() + 5 * 60 * 1000);
+        const createResult = await tenantContext.withTenant(webinyTenant, async () => {
+            const scheduleActionUseCase = context.container.resolve(ScheduleActionUseCase);
+            return scheduleActionUseCase.execute({
+                namespace: PublishTestEntryActionHandlerImpl.name,
+                actionType: SCHEDULED_ACTION_PUBLISH,
+                targetId: "target-id#0002",
+                scheduleFor,
+                tenant: "root",
+                immediately: false
+            });
+        });
+
+        expect(createResult.isOk()).toBeTrue();
+        expect(createResult.value.tenant).toBe("webiny");
+
+        /* We are back on root — simulating a separate Lambda invocation. */
+        expect(tenantContext.getTenant().id).toBe("root");
+
+        const identityContext = context.container.resolve(IdentityContext);
+        identityContext.setIdentity(undefined);
+
+        const eventHandler = createScheduledActionEventHandler();
+
+        /*
+         * Fire the event with tenant in the payload.
+         * Without the tenant-aware handler this would fail with "ScheduledAction/NotFound"
+         * because the CMS entry lives under the "webiny" tenant.
+         */
+        const result = await eventHandler.cb({
+            payload: {
+                [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
+                    id: createResult.value.id,
+                    namespace: PublishTestEntryActionHandlerImpl.name,
+                    tenant: "webiny",
+                    scheduleFor: new Date(Date.now() + 3 * 60 * 1000).toISOString()
+                }
+            },
+            context,
+            request: context.request,
+            reply: context.reply
+        });
+
+        expect(result).toEqual({
+            success: true
+        });
+
+        /* Tenant context should be restored to root after execution. */
+        expect(tenantContext.getTenant().id).toBe("root");
     });
 });

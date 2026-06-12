@@ -22,6 +22,8 @@ describe("SchedulerService", () => {
     };
     const namespace = "test:something";
 
+    const tenant = "root";
+
     it("creates a schedule successfully", async () => {
         const client = mockClient(SchedulerClient);
         client.on(CreateScheduleCommand).resolves({
@@ -34,13 +36,12 @@ describe("SchedulerService", () => {
 
         const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
+            tenant,
             namespace,
             scheduleFor: new Date(Date.now() + 1000000)
         };
 
         await service.create(input);
-        // We are simply testing if running the service succeeds.
-        // The service returns `void`, so there's no value to expect.
     });
 
     it("throws if creating a schedule in the past", async () => {
@@ -49,6 +50,7 @@ describe("SchedulerService", () => {
 
         const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
+            tenant,
             namespace,
             scheduleFor: new Date(Date.now() - 100000)
         };
@@ -81,13 +83,12 @@ describe("SchedulerService", () => {
 
         const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
+            tenant,
             namespace,
             scheduleFor: new Date(Date.now() + 1000000)
         };
 
         await service.update(input);
-        // We are simply testing if running the service succeeds.
-        // The service returns `void`, so there's no value to expect.
     });
 
     it("throws if updating a schedule in the past", async () => {
@@ -96,6 +97,7 @@ describe("SchedulerService", () => {
 
         const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
+            tenant,
             namespace,
             scheduleFor: new Date(Date.now())
         };
@@ -122,10 +124,11 @@ describe("SchedulerService", () => {
         const service = new EventBridgeSchedulerService(() => client, config);
         vi.spyOn(service, "exists").mockResolvedValue(true);
 
-        await service.delete("schedule-1");
-
-        // We are simply testing if running the service succeeds.
-        // The service returns `void`, so there's no value to expect.
+        await service.delete({
+            id: "schedule-1",
+            tenant,
+            namespace
+        });
     });
 
     it("does not delete a schedule if it does not exist", async () => {
@@ -134,12 +137,16 @@ describe("SchedulerService", () => {
         vi.spyOn(service, "exists").mockResolvedValue(false);
 
         try {
-            const result = await service.delete("schedule-1");
+            const result = await service.delete({
+                id: "schedule-1",
+                tenant,
+                namespace
+            });
             expect(result).toEqual("SHOULD NOT REACH HERE");
         } catch (ex) {
             expect(ex).toBeInstanceOf(WebinyError);
             expect(ex.message).toContain(
-                `Cannot delete schedule "schedule-1" because it does not exist.`
+                `Cannot delete schedule "schedule-1", tenant "${tenant}", because it does not exist.`
             );
         }
     });
@@ -154,7 +161,11 @@ describe("SchedulerService", () => {
 
         const service = new EventBridgeSchedulerService(() => client, config);
 
-        const result = await service.exists("schedule-1");
+        const result = await service.exists({
+            id: "schedule-1",
+            tenant,
+            namespace
+        });
 
         expect(result).toEqual(true);
     });
@@ -169,7 +180,11 @@ describe("SchedulerService", () => {
 
         const service = new EventBridgeSchedulerService(() => client, config);
 
-        const result = await service.exists("schedule-1");
+        const result = await service.exists({
+            id: "schedule-1",
+            tenant,
+            namespace
+        });
         expect(result).toBe(false);
     });
 
@@ -181,6 +196,12 @@ describe("SchedulerService", () => {
 
         const service = new EventBridgeSchedulerService(() => client, config);
 
-        await expect(() => service.exists("schedule-1")).rejects.toThrow();
+        await expect(() =>
+            service.exists({
+                id: "schedule-1",
+                tenant,
+                namespace
+            })
+        ).rejects.toThrow();
     });
 });
