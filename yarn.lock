@@ -11371,7 +11371,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-aco-ddb@workspace:packages/api-aco-ddb":
+"@webiny/api-aco-ddb@npm:0.0.0, @webiny/api-aco-ddb@workspace:packages/api-aco-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-aco-ddb@workspace:packages/api-aco-ddb"
   dependencies:
@@ -11388,7 +11388,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-aco-sql@workspace:packages/api-aco-sql":
+"@webiny/api-aco-sql@npm:0.0.0, @webiny/api-aco-sql@workspace:packages/api-aco-sql":
   version: 0.0.0-use.local
   resolution: "@webiny/api-aco-sql@workspace:packages/api-aco-sql"
   dependencies:
@@ -11435,7 +11435,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-audit-logs-ddb@workspace:packages/api-audit-logs-ddb":
+"@webiny/api-audit-logs-ddb@npm:0.0.0, @webiny/api-audit-logs-ddb@workspace:packages/api-audit-logs-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-audit-logs-ddb@workspace:packages/api-audit-logs-ddb"
   dependencies:
@@ -11878,7 +11878,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms-sql@workspace:packages/api-headless-cms-sql":
+"@webiny/api-headless-cms-sql@npm:0.0.0, @webiny/api-headless-cms-sql@workspace:packages/api-headless-cms-sql":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-sql@workspace:packages/api-headless-cms-sql"
   dependencies:
@@ -13800,10 +13800,14 @@ __metadata:
   dependencies:
     "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-aco-ddb": "npm:0.0.0"
+    "@webiny/api-aco-sql": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-audit-logs-ddb": "npm:0.0.0"
     "@webiny/api-background-tasks-ddb": "npm:0.0.0"
     "@webiny/api-background-tasks-os": "npm:0.0.0"
     "@webiny/api-core-ddb": "npm:0.0.0"
+    "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/api-dynamodb-to-elasticsearch": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-file-manager-aco": "npm:0.0.0"
@@ -13812,6 +13816,7 @@ __metadata:
     "@webiny/api-headless-cms-ddb": "npm:0.0.0"
     "@webiny/api-headless-cms-ddb-es": "npm:0.0.0"
     "@webiny/api-headless-cms-scheduler": "npm:0.0.0"
+    "@webiny/api-headless-cms-sql": "npm:0.0.0"
     "@webiny/api-headless-cms-tasks": "npm:0.0.0"
     "@webiny/api-headless-cms-tasks-ddb-es": "npm:0.0.0"
     "@webiny/api-headless-cms-workflows": "npm:0.0.0"
