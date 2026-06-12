@@ -40,6 +40,7 @@ export interface IScheduledAction<T extends GenericRecord = GenericRecord> exten
     "scheduledFor"
 > {
     id: string;
+    tenant: string;
     scheduledFor: Date;
 }
 
@@ -80,20 +81,34 @@ export namespace ScheduledActionHandler {
 
 export interface ISchedulerServiceCreateParams {
     id: string;
+    tenant: string;
     namespace: string;
     scheduleFor: Date;
 }
 export interface ISchedulerServiceUpdateParams {
     id: string;
+    tenant: string;
     namespace: string;
     scheduleFor: Date;
+}
+
+export interface ISchedulerServiceDeleteParams {
+    id: string;
+    namespace: string;
+    tenant: string;
+}
+
+export interface ISchedulerServiceExistsParams {
+    id: string;
+    namespace: string;
+    tenant: string;
 }
 
 export interface ISchedulerService {
     create(params: ISchedulerServiceCreateParams): Promise<void>;
     update(params: ISchedulerServiceUpdateParams): Promise<void>;
-    delete(id: string): Promise<void>;
-    exists(id: string): Promise<boolean>;
+    delete(params: ISchedulerServiceDeleteParams): Promise<void>;
+    exists(params: ISchedulerServiceExistsParams): Promise<boolean>;
 }
 
 /** Core service for managing scheduled actions. */
@@ -101,6 +116,10 @@ export const SchedulerService = createAbstraction<ISchedulerService>("SchedulerS
 
 export namespace SchedulerService {
     export type Interface = ISchedulerService;
+    export type CreateParams = ISchedulerServiceCreateParams;
+    export type UpdateParams = ISchedulerServiceUpdateParams;
+    export type DeleteParams = ISchedulerServiceDeleteParams;
+    export type ExistsParams = ISchedulerServiceExistsParams;
 }
 
 /**

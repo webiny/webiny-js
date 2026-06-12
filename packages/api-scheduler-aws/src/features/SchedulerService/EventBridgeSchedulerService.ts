@@ -25,8 +25,8 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         private config: ISchedulerConfig
     ) {}
 
-    public async create(params: ISchedulerServiceCreateParams): Promise<void> {
-        const { id, scheduleFor } = params;
+    public async create(params: SchedulerService.CreateParams): Promise<void> {
+        const { id, scheduleFor, tenant } = params;
 
         if (scheduleFor <= new Date()) {
             throw new WebinyError(
@@ -34,6 +34,7 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
                 "INVALID_SCHEDULE_DATE",
                 {
                     scheduleFor,
+                    tenant,
                     id
                 }
             );
@@ -63,7 +64,7 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         );
     }
 
-    public async update(params: ISchedulerServiceUpdateParams): Promise<void> {
+    public async update(params: SchedulerService.UpdateParams): Promise<void> {
         const { id, scheduleFor } = params;
 
         if (scheduleFor <= new Date()) {
@@ -96,16 +97,20 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         );
     }
 
-    public async delete(id: string): Promise<void> {
+    public async delete(params: SchedulerService.DeleteParams): Promise<void> {
         const client = this.getClient();
 
-        const exists = await this.exists(id);
+        const exists = await this.exists(params);
         if (!exists) {
-            throw new WebinyError(`Cannot delete schedule "${id}" because it does not exist.`);
+            throw new WebinyError(
+                `Cannot delete schedule "${params.id}", tenant "${params.tenant}", because it does not exist.`
+            );
         }
 
+        const name = this.createScheduleName(params);
+
         try {
-            await client.send(new DeleteScheduleCommand({ Name: id }));
+            await client.send(new DeleteScheduleCommand({ Name: name }));
         } catch (ex) {
             if (ex.name === "ResourceNotFoundException") {
                 return;
@@ -114,11 +119,13 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         }
     }
 
-    public async exists(id: string): Promise<boolean> {
+    public async exists(params: SchedulerService.ExistsParams): Promise<boolean> {
         const client = this.getClient();
 
+        const name = this.createScheduleName(params);
+
         try {
-            await client.send(new GetScheduleCommand({ Name: id }));
+            await client.send(new GetScheduleCommand({ Name: name }));
             return true;
         } catch (ex) {
             if (ex.name === "ResourceNotFoundException") {
@@ -141,14 +148,19 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
     }
 
     private createScheduledActionEventPayload(
-        params: ISchedulerServiceCreateParams | ISchedulerServiceUpdateParams
+        params: SchedulerService.CreateParams | SchedulerService.UpdateParams
     ): IScheduledActionEventPayload {
-        const { id, scheduleFor, namespace } = params;
+        const { id, scheduleFor, tenant, namespace } = params;
 
         return {
             id,
+            tenant,
             namespace,
             scheduleFor: scheduleFor.toISOString()
         };
+    }
+
+    private createScheduleName(params: SchedulerService.ExistsParams): string {
+        return `schedule_${params.tenant}-${params.namespace}-${params.id}`;
     }
 }
