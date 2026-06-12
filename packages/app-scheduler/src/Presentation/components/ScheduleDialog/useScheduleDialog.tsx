@@ -1,14 +1,16 @@
 import React, { useCallback, useMemo, useRef } from "react";
-import { Alert, Button, Grid, Input } from "@webiny/admin-ui";
+import { observer } from "mobx-react-lite";
+import { useToast } from "@webiny/admin-ui";
+import { Alert, Button, Grid, DatePicker } from "@webiny/admin-ui";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
-import { useDialogs, useSnackbar } from "@webiny/app-admin";
+import { useDialogs } from "@webiny/app-admin";
 import { Bind, type BindComponentRenderProp } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { ScheduleActionType } from "~/types.js";
 import type { Validator } from "@webiny/validation/types.js";
 import ValidationError from "@webiny/validation/validationError.js";
 import { makeDecoratable } from "@webiny/react-composition";
 import ApolloClient from "apollo-client/ApolloClient.js";
+import { ScheduleActionType } from "~/types.js";
 import { SchedulerCancelGraphQLGateway } from "~/Gateways/SchedulerCancelGraphQLGateway.js";
 import { SchedulerPublishGraphQLGateway } from "~/Gateways/SchedulerPublishGraphQLGateway.js";
 import { SchedulerUnpublishGraphQLGateway } from "~/Gateways/SchedulerUnpublishGraphQLGateway.js";
@@ -28,8 +30,7 @@ interface UseShowScheduleDialogResponse {
 }
 
 interface FormComponentProps {
-    scheduleOn: Date | undefined;
-    actionType: ScheduleActionType | undefined;
+    presenter: ScheduleDialogPresenter;
 }
 
 const dateToLocaleStringFormatter = new Intl.DateTimeFormat(undefined, {
@@ -62,28 +63,6 @@ const ReschedulingAlert = ({ scheduleOn, actionType }: IReschedulingAlertProps) 
         </Alert>
     );
 };
-/**
- * DO NOT use a library for this!
- */
-const padLeft = (num: number) => {
-    return String(num).padStart(2, "0");
-};
-
-const formatDateForDateTimeLocal = (date?: Date | string): string | undefined => {
-    if (!date) {
-        return undefined;
-    } else if (typeof date === "string") {
-        date = new Date(date);
-    }
-
-    const year = date.getFullYear();
-    const month = padLeft(date.getMonth() + 1);
-    const day = padLeft(date.getDate());
-    const hours = padLeft(date.getHours());
-    const minutes = padLeft(date.getMinutes());
-
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-};
 
 const minDateValidator: Validator = (input: string) => {
     const value = new Date(input);
@@ -105,10 +84,14 @@ export interface ISchedulerDialogFormComponentDateTimeInputProps {
 }
 
 interface ICancelButtonComponentProps {
-    enabled: boolean;
+    presenter: ScheduleDialogPresenter;
     onCancel: OnCancelCallable;
 }
-const CancelButtonComponent = ({ enabled, onCancel }: ICancelButtonComponentProps) => {
+const CancelButtonComponent = observer(({ presenter, onCancel }: ICancelButtonComponentProps) => {
+    const { entry } = presenter.vm;
+    const scheduleOn = entry?.publishOn || entry?.unpublishOn;
+    const enabled = !!scheduleOn;
+
     if (!enabled) {
         return null;
     }
@@ -122,29 +105,22 @@ const CancelButtonComponent = ({ enabled, onCancel }: ICancelButtonComponentProp
             iconPosition="start"
         />
     );
-};
+});
 
 export const SchedulerDialogFormComponentDateTimeInput = makeDecoratable(
     "SchedulerDialogFormComponentDateTimeInput",
     (props: ISchedulerDialogFormComponentDateTimeInputProps) => {
         const { bind } = props;
 
-        return (
-            <Input
-                {...bind}
-                value={formatDateForDateTimeLocal(bind.value)}
-                title={"Schedule On"}
-                label={"Schedule On"}
-                size={"lg"}
-                type={"datetime-local"}
-                required
-                autoFocus
-            />
-        );
+        return <DatePicker {...bind} type={"dateTimeLocal"} label={"Schedule On"} size={"lg"} />;
     }
 );
 
-const FormComponent = ({ scheduleOn, actionType }: FormComponentProps) => {
+const FormComponent = observer(({ presenter }: FormComponentProps) => {
+    const { entry } = presenter.vm;
+    const scheduleOn = entry?.publishOn || entry?.unpublishOn;
+    const actionType = entry?.actionType;
+
     return (
         <>
             {<ReschedulingAlert actionType={actionType} scheduleOn={scheduleOn} />}
@@ -162,7 +138,7 @@ const FormComponent = ({ scheduleOn, actionType }: FormComponentProps) => {
             </Grid>
         </>
     );
-};
+});
 
 interface ScheduleFormData {
     scheduleOn?: string;
@@ -188,7 +164,7 @@ export const useScheduleDialog = (
 ): UseShowScheduleDialogResponse => {
     const { client, target, namespace } = props;
     const dialog = useDialogs();
-    const { showSnackbar } = useSnackbar();
+    const toast = useToast();
 
     const presenter = useMemo(() => {
         return new ScheduleDialogPresenter({
@@ -214,9 +190,11 @@ export const useScheduleDialog = (
                     scheduleOn,
                     actionType
                 });
-                showSnackbar(`Scheduled ${actionType} action for "${target.title}"!`);
+                toast.showSuccessToast({
+                    title: `Scheduled ${actionType} action for "${target.title}"!`
+                });
             } catch (error) {
-                showSnackbar(error.message);
+                toast.showWarningToast({ title: error.message });
                 console.error(error);
             }
         },
@@ -226,49 +204,55 @@ export const useScheduleDialog = (
     const onCancel = useCallback(async () => {
         const entry = presenter.vm.entry;
         if (!entry) {
-            showSnackbar(`No scheduled action found for "${target.title}"!`);
+            toast.showWarningToast({ title: `No scheduled action found for "${target.title}"!` });
             if (dialogClose.current) {
                 dialogClose.current();
                 dialogClose.current = null;
             }
             return;
         }
+
+        if (dialogClose.current) {
+            dialogClose.current();
+            dialogClose.current = null;
+        }
+
         try {
             await presenter.cancel({
                 id: entry.id,
                 namespace: entry.namespace
             });
-            showSnackbar(`Canceled scheduled ${entry.actionType} on "${entry.title}"!`);
+            toast.showSuccessToast({
+                title: `Canceled scheduled ${entry.actionType} on "${entry.title}"!`
+            });
         } catch (error) {
-            showSnackbar(error.message);
+            toast.showWarningToast({ title: error.message });
         }
-        if (!dialogClose.current) {
-            return;
-        }
-        dialogClose.current();
-        dialogClose.current = null;
     }, [presenter.vm]);
 
     const showDialog = async () => {
-        await presenter.load({ namespace, id: target.id });
-
         const isPublished = target.status === "published";
-        const entry = presenter.vm.entry;
-        const scheduleOn = entry?.publishOn || entry?.unpublishOn;
 
         dialogClose.current = dialog.showDialog({
             title: `Schedule "${target.title}"`,
-            content: <FormComponent actionType={entry?.actionType} scheduleOn={scheduleOn} />,
-            formData: {
-                scheduleOn
+            content: <FormComponent presenter={presenter} />,
+            formData: async () => {
+                await presenter.load({ namespace, id: target.id });
+
+                const entry = presenter.vm.entry;
+                const scheduleOn = entry?.publishOn || entry?.unpublishOn;
+
+                return { scheduleOn };
             },
             acceptLabel: isPublished ? "Schedule Unpublish" : "Schedule Publish",
             cancelLabel: "Discard",
             loadingLabel: "Scheduling...",
-            info: <CancelButtonComponent enabled={!!scheduleOn} onCancel={onCancel} />,
+            dataLoadingLabel: "Checking schedule...",
+            info: <CancelButtonComponent presenter={presenter} onCancel={onCancel} />,
+            dismissible: false,
             onAccept: (data: Partial<ScheduleFormData>) => {
                 if (!data.scheduleOn) {
-                    showSnackbar(`Missing "Schedule On" date!`);
+                    toast.showWarningToast({ title: `Missing "Schedule On" date!` });
                     return;
                 }
                 /**
@@ -281,9 +265,7 @@ export const useScheduleDialog = (
                 try {
                     scheduleOn = new Date(data.scheduleOn);
                 } catch (ex) {
-                    showSnackbar(`Invalid "Schedule On" date!`, {
-                        value: data.scheduleOn
-                    });
+                    toast.showWarningToast({ title: `Invalid "Schedule On" date!` });
                     console.error(ex);
                     return;
                 }

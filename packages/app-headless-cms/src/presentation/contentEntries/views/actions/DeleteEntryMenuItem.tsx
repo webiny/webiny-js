@@ -2,9 +2,9 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "@webiny/app";
 import { useRoute } from "@webiny/app-admin";
+import { OptionsMenuItem } from "@webiny/app-admin";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { usePermission } from "~/admin/hooks/index.js";
-import { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
 import { Routes } from "~/routes.js";
 import { useContentEntryFormPresenter } from "../ContentEntryFormPresenterProvider.js";
 
@@ -13,9 +13,6 @@ export const DeleteEntryMenuItem = observer(() => {
     const { canDelete } = usePermission();
     const router = useRouter();
     const { route } = useRoute(Routes.ContentEntries.List);
-
-    const { OptionsMenuItem } =
-        ContentEntryEditorConfig.Actions.MenuItemAction.useOptionsMenuItem();
 
     const trashEntry = async () => {
         if (!presenter.vm.entry) {

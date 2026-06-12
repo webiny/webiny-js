@@ -1,9 +1,7 @@
 import React, { useCallback } from "react";
 import { observer } from "mobx-react-lite";
-import {
-    ContentEntryEditorConfig,
-    useContentEntryFormPresenter
-} from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
+import { OptionsMenuItem } from "@webiny/app-admin";
+import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
 import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useScheduleDialog } from "@webiny/app-scheduler";
@@ -37,9 +35,6 @@ const MenuItemWithId = ({
         }
     });
 
-    const { OptionsMenuItem } =
-        ContentEntryEditorConfig.Actions.MenuItemAction.useOptionsMenuItem();
-
     const showDialog = useCallback(() => {
         showSchedulerDialog();
     }, [showSchedulerDialog]);
@@ -60,9 +55,6 @@ const MenuItemWithId = ({
 export const MenuItem = observer(() => {
     const presenter = useContentEntryFormPresenter();
     const { canPublish, canUnpublish } = usePermissions();
-
-    const { OptionsMenuItem } =
-        ContentEntryEditorConfig.Actions.MenuItemAction.useOptionsMenuItem();
 
     const vm = presenter.vm;
 
