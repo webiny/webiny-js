@@ -1,7 +1,7 @@
 import React, { Fragment, memo } from "react";
 import type { ApolloClient } from "apollo-client";
 import { plugins } from "@webiny/plugins";
-import { Provider, RegisterFeature } from "@webiny/app-admin";
+import { AdminConfig, Provider, RegisterFeature } from "@webiny/app-admin";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app";
 import { CmsProvider } from "~/admin/contexts/Cms/index.js";
 import apiInformation from "~/admin/plugins/apiInformation/index.js";
@@ -17,6 +17,7 @@ import { ModelFeature } from "~/features/model/feature.js";
 import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.js";
 import { CmsFormModelFeature } from "~/features/formModel/feature.js";
 import { ContentEntryFeature } from "~/features/contentEntry/feature.js";
+import { CmsFilePickerRenderer } from "~/presentation/fieldRenderers/CmsFilePickerRenderer.js";
 
 interface HeadlessCMSProvider {
     children: React.ReactNode;
@@ -83,6 +84,12 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
             <Provider hoc={createHeadlessCMSProvider(createApolloClient)} />
             <LexicalEditorCmsPlugin />
             <CmsSecurityPermission />
+            <AdminConfig>
+                <AdminConfig.Form.FieldRenderer
+                    name={"cmsFilePicker"}
+                    component={CmsFilePickerRenderer}
+                />
+            </AdminConfig>
         </Fragment>
     );
 };

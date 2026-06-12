@@ -7,7 +7,7 @@ export class FileFieldMapper implements ICmsFieldTypeMapper {
     readonly type = "file";
 
     map(field: CmsModelField, registry: IFieldBuilderRegistry) {
-        const builder = registry.file();
+        const builder = registry.file().renderer("cmsFilePicker");
         return applyFieldProps(builder, field);
     }
 }

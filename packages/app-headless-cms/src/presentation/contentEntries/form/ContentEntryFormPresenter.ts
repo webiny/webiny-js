@@ -120,7 +120,8 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
                     revisionId: this._entry.id,
                     data: {
                         values: data
-                    }
+                    },
+                    options: { skipValidation }
                 });
 
                 runInAction(() => {
@@ -133,7 +134,8 @@ class ContentEntryFormPresenterImpl implements IContentEntryFormPresenter {
                     model: this.model,
                     data: {
                         values: data
-                    }
+                    },
+                    options: { skipValidation }
                 });
 
                 runInAction(() => {
