@@ -80,6 +80,7 @@ describe("Scheduler Event Handler", () => {
         expect(createResult.isOk()).toBeTrue();
         expect(createResult.value).toEqual({
             actionType: SCHEDULED_ACTION_PUBLISH,
+            error: undefined,
             id: expect.stringMatching("wby-schedule-"),
             namespace: PublishTestEntryActionHandlerImpl.name,
             payload: {
@@ -97,6 +98,7 @@ describe("Scheduler Event Handler", () => {
             },
             scheduledFor: scheduleFor,
             targetId: "target-id#0001",
+            tenant: "root",
             title: "Fetched title from handler"
         });
         /**

@@ -17,7 +17,7 @@ class SchedulePublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     public async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Result {
-        const { model: initialModel, scheduleFor, id } = params;
+        const { model: initialModel, tenant, scheduleFor, id } = params;
 
         const modelResult = await this.getModelUseCase.execute(initialModel.modelId);
         if (modelResult.isFail()) {
@@ -34,6 +34,7 @@ class SchedulePublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             namespace: createNamespace(model),
             actionType: ScheduledActionTypePublish,
             scheduleFor,
+            tenant,
             targetId: id
         });
         if (scheduleResult.isFail()) {

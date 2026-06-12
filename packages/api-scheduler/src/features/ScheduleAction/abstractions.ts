@@ -26,6 +26,7 @@ export interface IScheduleActionErrors {
 export type ScheduleActionError = IScheduleActionErrors[keyof IScheduleActionErrors];
 
 export interface IScheduleActionParams {
+    tenant: string;
     namespace: string;
     targetId: string;
     actionType: ScheduledActionType;
