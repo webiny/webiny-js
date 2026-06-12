@@ -1,0 +1,42 @@
+import React, { useEffect } from "react";
+import debounce from "lodash/debounce.js";
+import { useDocumentEditor } from "~/DocumentEditor/index.js";
+import { useUpdatePage } from "~/features/pages/index.js";
+
+const PageAutoSaveAction = () => {
+    const editor = useDocumentEditor();
+
+    const { updatePage } = useUpdatePage();
+
+    const savePage = debounce(page => {
+        return updatePage(page);
+    }, 500);
+
+    useEffect(() => {
+        return editor.onDocumentStateChange(async event => {
+            const isReadOnly = editor.getEditorState().read().isReadOnly;
+            if (isReadOnly) {
+                return;
+            }
+
+            editor.updateEditor(state => {
+                state.autoSaving = true;
+            });
+            const { state } = event;
+
+            await savePage(state);
+
+            setTimeout(() => {
+                editor.updateEditor(state => {
+                    state.autoSaving = false;
+                });
+            }, 500);
+        });
+    }, []);
+
+    return null;
+};
+
+export const PageAutoSave = () => {
+    return <PageAutoSaveAction />;
+};

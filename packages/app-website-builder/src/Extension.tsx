@@ -4,11 +4,11 @@ import {
     ReactComponent as PagesIcon,
     ReactComponent as PermissionsIcon
 } from "@webiny/icons/table_chart.svg";
-import { PageEditor } from "~/modules/pages/PageEditor.js";
+import { PageEditor } from "~/presentation/pages/PageEditor/PageEditor.js";
 import { PagesList } from "~/presentation/pages/PageList/components/PagesList.js";
 import { useSettingsDialog } from "~/modules/settings/useSettingsDialog.js";
 import { useIntegrationsDialog } from "./modules/integrations/useIntegrationsDialog.js";
-import { PagesListConfig } from "~/modules/pages/PagesListConfig.js";
+import { PagesListConfig } from "~/presentation/pages/PageList/components/PagesListConfig.js";
 import { RedirectsList } from "~/presentation/redirects/RedirectList/components/RedirectsList.js";
 import { RedirectsListConfig } from "~/presentation/redirects/RedirectList/components/RedirectsListConfig.js";
 import { Routes } from "~/routes.js";
@@ -35,7 +35,7 @@ import { SharedPageInfrastructureFeature } from "~/features/pages/shared/feature
 import { CreatePageConfig } from "./presentation/pages/CreatePage/CreatePageConfig.js";
 import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
 import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
-import { PageSettingsFeature } from "~/modules/pages/PageEditor/PageSettings/feature.js";
+import { PageSettingsFeature } from "~/presentation/pages/PageEditor/PageSettings/feature.js";
 import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/index.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
