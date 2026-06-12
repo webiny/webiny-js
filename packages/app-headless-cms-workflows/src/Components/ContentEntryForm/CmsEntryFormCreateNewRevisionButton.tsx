@@ -6,6 +6,7 @@ import { useContentEntryForm } from "@webiny/app-headless-cms/admin/components/C
 import { usePersistEntry } from "@webiny/app-headless-cms/admin/hooks/usePersistEntry.js";
 import { ReactComponent as NewReleaseIcon } from "@webiny/icons/new_releases.svg";
 import { IsModelPublishable } from "@webiny/app-headless-cms/exports/admin/cms.js";
+import { OptionsMenuItem } from "@webiny/app-admin";
 
 const { Actions } = ContentEntryEditorConfig;
 
@@ -13,7 +14,6 @@ const CreateNewRevisionMenuItem = () => {
     const toast = useToast();
     const { setRouteParams } = useRoute();
     const { canEdit } = usePermission();
-    const { OptionsMenuItem } = Actions.MenuItemAction.useOptionsMenuItem();
     const { entry } = useContentEntryForm();
     const { persistEntry } = usePersistEntry({
         addItemToListCache: true
