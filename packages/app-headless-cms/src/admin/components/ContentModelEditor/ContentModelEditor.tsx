@@ -180,13 +180,16 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                                 )}
                                 {activeTab === "preview" && (
                                     <div
-                                        className={"bg-neutral-base px-xxl py-lg"}
+                                        className={"px-xxl py-lg"}
                                         data-testid={"cms.editor.tab.preview"}
                                     >
                                         <ContentEntryEditorWithConfig>
                                             <ContentEntriesProvider contentModel={data}>
                                                 <ContentEntryProvider readonly={true}>
-                                                    <PreviewTab activeTab={true} />
+                                                    <PreviewTab
+                                                        activeTab={true}
+                                                        onSwitchToEdit={() => setActiveTab("edit")}
+                                                    />
                                                 </ContentEntryProvider>
                                             </ContentEntriesProvider>
                                         </ContentEntryEditorWithConfig>
