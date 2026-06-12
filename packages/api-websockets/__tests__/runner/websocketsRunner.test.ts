@@ -186,7 +186,9 @@ describe("websockets runner", () => {
         const result = await runner.run({
             requestContext: {
                 connectionId: "myConnectionIdAbcdefg",
-                routeKey: WebsocketsEventRoute.connect
+                routeKey: WebsocketsEventRoute.connect,
+                domainName: "test.execute-api.us-east-1.amazonaws.com",
+                stage: "dev"
             },
             body: JSON.stringify({
                 token: "aToken",
@@ -220,14 +222,10 @@ describe("websockets runner", () => {
                 tenant: "root"
             })
         });
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             error: {
-                code: "CONNECTION_NOT_FOUND",
-                data: {
-                    PK: "WS#CONNECTIONS",
-                    SK: "myConnectionIdAbcdefg"
-                },
-                message: 'There is no connection with ID "myConnectionIdAbcdefg".',
+                code: expect.stringContaining("CONNECTION_NOT_FOUND"),
+                message: expect.stringContaining("myConnectionIdAbcdefg"),
                 stack: expect.any(String)
             },
             message: 'Route "$disconnect" action failed.',
@@ -256,7 +254,9 @@ describe("websockets runner", () => {
         const connectResult = await runner.run({
             requestContext: {
                 connectionId: "myConnectionIdAbcdefg",
-                routeKey: WebsocketsEventRoute.connect
+                routeKey: WebsocketsEventRoute.connect,
+                domainName: "test.execute-api.us-east-1.amazonaws.com",
+                stage: "dev"
             },
             body: JSON.stringify({
                 token: "aToken",

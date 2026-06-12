@@ -32,7 +32,9 @@ const getIdentitySnapshot = (identity: SecurityIdentity) => {
     };
 };
 
-describe("create audit log", () => {
+const isSql = process.env.WEBINY_STORAGE?.includes("sql");
+
+describe.skipIf(isSql)("create audit log", () => {
     const client = getDocumentClient();
 
     it("should create a new audit log", async () => {

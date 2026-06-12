@@ -3,14 +3,18 @@ import { registerSqlStorageOperations } from "../../src/index.js";
 import { createCmsEntryFieldSortingPlugin } from "@webiny/api-headless-cms-storage/plugins/CmsEntryFieldSortingPlugin.js";
 import knexLib from "knex";
 
-/* Create one shared knex instance so all handlers use the same in-memory database. */
-const knex = knexLib({
-    client: "better-sqlite3",
-    connection: {
-        filename: ":memory:"
-    },
-    useNullAsDefault: true
-});
+import { registerSQLCore } from "@webiny/api-core-sql";
+
+/* Reuse existing knex instance so all SQL presets share the same in-memory database. */
+const knex =
+    global.__testKnex ||
+    knexLib({
+        client: "better-sqlite3",
+        connection: {
+            filename: ":memory:"
+        },
+        useNullAsDefault: true
+    });
 
 global.__testKnex = knex;
 
@@ -18,6 +22,9 @@ const tableNamePrefix = process.env.SQL_TABLE_PREFIX || process.env.WEBINY_SQL_T
 
 setStorageOps("cms", () => {
     const plugins = [
+        registerSQLCore({
+            knex
+        }),
         ...registerSqlStorageOperations({ knex, tableNamePrefix }),
         createCmsEntryFieldSortingPlugin({
             canUse: params => {

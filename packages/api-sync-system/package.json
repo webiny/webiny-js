@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
+    "@webiny/api-core": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@faker-js/faker": "^10.4.0",
     "@types/lodash": "^4.17.24",
+    "@webiny/api-core-ddb": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "aws-sdk-client-mock": "^4.1.0",

@@ -11,12 +11,10 @@ import { EntryTableManagerFeature } from "~/features/entryTableManager/feature.j
 import { GroupSchemaManager } from "~/features/groupSchemaManager/abstractions.js";
 import { ModelSchemaManager } from "~/features/modelSchemaManager/abstractions.js";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
-import { KnexInstance } from "~/features/knexInstance/abstractions.js";
 import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js";
 import { TableNameResolverConfig } from "~/features/tableNameResolver/abstractions.js";
 import type { Knex } from "knex";
 import { TableNameResolverFeature } from "~/features/tableNameResolver/feature.js";
-import { KnexInstanceFeature } from "~/features/knexInstance/feature.js";
 import { ValueFilterFeature } from "@webiny/db-utils";
 import {
     createFilterCreatePlugins,
@@ -24,11 +22,12 @@ import {
     createLocationFolderIdPathPlugin,
     createDatetimeTransformValuePlugin
 } from "@webiny/api-headless-cms-storage";
+import { KnexClient } from "@webiny/api-core-sql";
 
 const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
     const { container, plugins } = params;
 
-    const knex = container.resolve(KnexInstance);
+    const knex = container.resolve(KnexClient);
     const tableNameResolver = container.resolve(TableNameResolver);
     const groupSchemaManager = container.resolve(GroupSchemaManager);
     const modelSchemaManager = container.resolve(ModelSchemaManager);
@@ -73,7 +72,6 @@ interface ISqlStorageOperationsConfig {
 class SqlStorageOperationsFactoryImpl implements StorageOperationsFactoryAbstraction.Interface {
     public async create(context: CmsContext) {
         return createSqlStorageOperations({
-            knex: context.container.resolve(KnexInstance),
             plugins: context.plugins,
             container: context.container
         });
@@ -92,7 +90,6 @@ export const registerSqlStorageOperations = (config: ISqlStorageOperationsConfig
                 tableNameSuffix: config.tableNameSuffix
             });
 
-            KnexInstanceFeature.register(container, config.knex);
             TableNameResolverFeature.register(container);
             ValueFilterFeature.register(container);
             GroupSchemaManagerFeature.register(container);

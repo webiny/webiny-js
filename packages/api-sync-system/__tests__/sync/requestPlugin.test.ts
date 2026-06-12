@@ -8,7 +8,8 @@ import { OnRequestResponseSendPlugin } from "@webiny/handler/plugins/OnRequestRe
 import { OnRequestTimeoutPlugin } from "@webiny/handler/plugins/OnRequestTimeoutPlugin.js";
 import { createMockManifest, createMockManifestInDynamoDb } from "~tests/mocks/manifest.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { ServiceDiscovery } from "@webiny/api";
+import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
+import { DdbServiceManifestLoader } from "@webiny/api-core-ddb";
 import { mockClient } from "aws-sdk-client-mock";
 import {
     createEventBridgeClient,
@@ -20,7 +21,7 @@ describe("requestPlugin", () => {
     let client: DynamoDBDocument;
     beforeEach(() => {
         client = getDocumentClient({});
-        ServiceDiscovery.setDocumentClient(client);
+        ServiceDiscovery.setLoader(new DdbServiceManifestLoader(client));
         ServiceDiscovery.clear();
     });
 

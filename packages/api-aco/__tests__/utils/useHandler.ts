@@ -7,10 +7,9 @@ import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-
 import { createAco } from "~/index";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createIdentity } from "./identity";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -21,10 +20,10 @@ export interface UseHandlerParams {
 }
 
 export const useHandler = (params: UseHandlerParams = {}) => {
-    const documentClient = getDocumentClient();
     const { permissions, plugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiAcoStorage = getStorageOps<ApiCoreStorageOperations>("aco");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = createTestWcpLicense();
@@ -35,12 +34,13 @@ export const useHandler = (params: UseHandlerParams = {}) => {
                 storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
             }),
+            ...apiAcoStorage.plugins,
             ...cmsStorage.plugins,
             createGraphQLHandler(),
             ...createTenancyAndSecurity({ permissions, identity: createIdentity() }),
             createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
-            createAco({ documentClient }),
+            createAco(),
             createEventHandler<any, AcoContext, AcoContext>(async ({ context }) => {
                 return context;
             }),

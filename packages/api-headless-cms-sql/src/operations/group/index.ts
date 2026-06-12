@@ -9,14 +9,14 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import type { IGroupRow } from "./types.js";
 import { GROUP_COLUMNS } from "./types.js";
-import { KnexInstance } from "~/features/knexInstance/abstractions.js";
 import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js";
 import { GroupSchemaManager } from "~/features/groupSchemaManager/abstractions.js";
 import { groupToRow } from "./mappers.js";
 import { rowToGroup } from "./mappers.js";
+import { KnexClient } from "@webiny/api-core-sql";
 
 export const createGroupsStorageOperations = (
-    knex: KnexInstance.Interface,
+    knex: KnexClient.Interface,
     tableNameResolver: TableNameResolver.Interface,
     groupSchemaManager: GroupSchemaManager.Interface
 ): CmsGroupStorageOperations => {
@@ -27,7 +27,7 @@ export const createGroupsStorageOperations = (
     };
 
     const query = () => {
-        return knex<IGroupRow>(tableName);
+        return knex.client<IGroupRow>(tableName);
     };
 
     const get = async (params: CmsGroupStorageOperationsGetParams): Promise<CmsGroup | null> => {

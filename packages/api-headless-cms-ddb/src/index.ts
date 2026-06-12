@@ -1,4 +1,3 @@
-import { registerExtension as registerDynamoDbExtension } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "./dynamoDb/index.js";
 import type { CmsContext, StorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
@@ -13,12 +12,15 @@ import { createTable } from "~/definitions/table.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { DynamoDBClient } from "@webiny/db-dynamodb";
 
 export * from "./plugins/index.js";
 
 const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
-    const { table, documentClient, plugins, container } = params;
+    const { table, plugins, container } = params;
+
+    const db = container.resolve(DynamoDBClient);
+    const documentClient = db.client;
 
     const tableInstance = createTable({
         name: table,
@@ -80,7 +82,6 @@ class DynamoDbStorageOperationsFactoryImpl
 {
     public async create(context: CmsContext) {
         return createDynamoDbStorageOperations({
-            documentClient: context.db.driver.getClient() as DynamoDBDocument,
             plugins: context.plugins,
             container: context.container
         });
@@ -101,7 +102,6 @@ const storageOperationsFeature = createFeature({
 
 export const registerDynamoDbStorageOperations = () => {
     return [
-        registerDynamoDbExtension(),
         createRegisterExtensionPlugin(context => {
             return storageOperationsFeature.register(context.container);
         })

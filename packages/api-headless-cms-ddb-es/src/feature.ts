@@ -1,8 +1,7 @@
-import { createTable, registerExtension as registerDynamoDbExtension } from "@webiny/db-dynamodb";
+import { createTable, DynamoDBClient } from "@webiny/db-dynamodb";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import type { CmsContext, StorageOperationsFactory as IStorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import {
@@ -43,7 +42,10 @@ import {
 } from "~/features/CmsEntryOpenSearchFilter/index.js";
 
 const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
-    const { table, esTable, documentClient, elasticsearch, plugins, container } = params;
+    const { table, esTable, elasticsearch, plugins, container } = params;
+
+    const db = container.resolve(DynamoDBClient);
+    const documentClient = db.client;
 
     const tableInstance = createTable({
         name: table || (process.env.DB_TABLE as string),
@@ -172,7 +174,6 @@ class OpenSearchStorageOperationsFactoryImpl
 {
     public async create(context: CmsContext) {
         return createOpenSearchStorageOperations({
-            documentClient: context.db.driver.getClient() as DynamoDBDocument,
             elasticsearch: context.opensearch,
             plugins: context.plugins,
             container: context.container
@@ -200,7 +201,6 @@ const storageOperationsFeature = createFeature({
 
 export const registerCmsOpenSearchStorageOperations = () => {
     return [
-        registerDynamoDbExtension(),
         createRegisterExtensionPlugin(context => {
             return storageOperationsFeature.register(context.container);
         })

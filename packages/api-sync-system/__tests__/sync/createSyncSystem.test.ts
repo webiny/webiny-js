@@ -1,7 +1,8 @@
 import { createSyncSystem } from "~/sync/createSyncSystem.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
-import { ServiceDiscovery } from "@webiny/api";
+import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
+import { DdbServiceManifestLoader } from "@webiny/api-core-ddb";
 import { createMockSystem } from "~tests/mocks/system.js";
 import {
     createEventBridgeClient,
@@ -15,7 +16,7 @@ describe("createSyncSystem", () => {
     let client: DynamoDBDocument;
     beforeEach(() => {
         client = getDocumentClient({});
-        ServiceDiscovery.setDocumentClient(client);
+        ServiceDiscovery.setLoader(new DdbServiceManifestLoader(client));
         ServiceDiscovery.clear();
     });
 

@@ -74,6 +74,7 @@ export const fullRelease = createWorkflow({
         }),
         createDocsBranch: createJob({
             name: "Trigger release notes generation (docs.webiny.com)",
+            needs: ["createWebinyJsBranch"],
             checkout: false,
             env: {
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}"

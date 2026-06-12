@@ -4,7 +4,7 @@ import graphqlPlugins from "@webiny/handler-graphql";
 import { createApiCore } from "@webiny/api-core";
 import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { createOpenSearchContext, createOpenSearchClient } from "@webiny/api-opensearch";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
@@ -13,12 +13,15 @@ import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-
 import { registerCmsOpenSearchStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import { createHcmsTasks } from "@webiny/api-headless-cms-tasks-ddb-es";
 import { createAco } from "@webiny/api-aco";
+import { registerAcoDdbStorageOperations } from "@webiny/api-aco-ddb";
 import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
 import securityPlugins from "./security.js";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
+import { registerAuditLogsDdbStorageOperations } from "@webiny/api-audit-logs-ddb";
 import { createAuditLogs } from "@webiny/api-audit-logs";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-os";
 import { createWebsockets } from "@webiny/api-websockets";
+import { registerWebsocketsDdbStorageOperations } from "@webiny/api-websockets-ddb";
 import { createRecordLocking } from "@webiny/api-record-locking";
 import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { createScheduler } from "@webiny/api-scheduler";
@@ -50,6 +53,7 @@ const openSearchClient = createOpenSearchClient(openSearchClientOptions);
 
 export const handler = createHandler({
     plugins: [
+        registerDynamoDBCore({ documentClient }),
         createApiCore({
             storageOperations: createApiCoreDdb({ documentClient })
         }),
@@ -61,6 +65,7 @@ export const handler = createHandler({
         }),
         securityPlugins(),
         createWebsockets(),
+        registerWebsocketsDdbStorageOperations({ documentClient }),
         registerCmsOpenSearchStorageOperations(),
         createHeadlessCmsContext(),
         createHeadlessCmsGraphQL(),
@@ -74,10 +79,14 @@ export const handler = createHandler({
         createFileManagerAco(),
         createAssetDelivery(),
         createFileManagerS3(),
-        createAco({ documentClient }),
+        registerAcoDdbStorageOperations({ documentClient }),
+        createAco(),
         createWorkflows(),
         createHeadlessCmsWorkflows(),
         createWebsiteBuilderWorkflows(),
+        registerAuditLogsDdbStorageOperations({
+            documentClient
+        }),
         createAuditLogs(),
         createAcoHcmsContext(),
         createHcmsTasks(),

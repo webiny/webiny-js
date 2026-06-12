@@ -4,8 +4,8 @@ import {
 } from "./abstractions.js";
 
 class TableNameResolverImpl implements TableNameResolverAbstraction.Interface {
-    private readonly prefix: string;
-    private readonly suffix: string;
+    private readonly prefix;
+    private readonly suffix;
 
     constructor(private readonly config: TableNameResolverConfig.Interface) {
         this.prefix = config.tableNamePrefix ? `${this.sanitize(config.tableNamePrefix)}_` : "";

@@ -1,13 +1,13 @@
+import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager as EntryTableManagerAbstraction } from "./abstractions.js";
-import { KnexInstance } from "~/features/knexInstance/abstractions.js";
 import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js";
 
 class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
-    private readonly knex: KnexInstance.Interface;
-    private readonly tableName: string;
+    private readonly knex;
+    private readonly tableName;
     private initialized = false;
 
-    constructor(knex: KnexInstance.Interface, tableNameResolver: TableNameResolver.Interface) {
+    constructor(knex: KnexClient.Interface, tableNameResolver: TableNameResolver.Interface) {
         this.knex = knex;
         this.tableName = tableNameResolver.resolve("entries");
 
@@ -25,7 +25,7 @@ class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
             return;
         }
 
-        const exists = await this.knex.schema.hasTable(this.tableName);
+        const exists = await this.knex.client.schema.hasTable(this.tableName);
 
         if (!exists) {
             await this.createTable();
@@ -39,7 +39,7 @@ class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
     }
 
     private async createTable(): Promise<void> {
-        await this.knex.schema.createTable(this.tableName, table => {
+        await this.knex.client.schema.createTable(this.tableName, table => {
             table.text("id").primary();
             table.text("entryId").notNullable();
             table.text("modelId").notNullable();
@@ -59,5 +59,5 @@ class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
 
 export const EntryTableManager = EntryTableManagerAbstraction.createImplementation({
     implementation: EntryTableManagerImpl,
-    dependencies: [KnexInstance, TableNameResolver]
+    dependencies: [KnexClient, TableNameResolver]
 });
