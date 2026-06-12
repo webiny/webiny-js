@@ -9,3 +9,4 @@ export const createAco = () => {
 };
 
 export * from "./folder/createFolderModelModifier.js";
+export { AcoFeature } from "./AcoFeature.js";

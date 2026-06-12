@@ -201,6 +201,8 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             },
             body
         });
+        if (response.statusCode !== 200) {
+        }
         return [response.body, response];
     };
 

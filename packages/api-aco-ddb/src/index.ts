@@ -16,3 +16,4 @@ export const registerAcoDdbStorageOperations = (params: RegisterAcoDdbStorageOpe
         context.container.registerInstance(FlpStorageOperations, flpStorageOperations);
     });
 };
+export { AcoDdbFeature } from "./AcoDdbFeature.js";

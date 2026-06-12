@@ -15,6 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/background-tasks": "0.0.0",
+    "@webiny/di": "^1.0.1",
+    "@webiny/feature": "0.0.0",
     "@webiny/plugins": "0.0.0"
   },
   "devDependencies": {

@@ -7,3 +7,4 @@ import {
 export const createBackgroundTasks = (): Plugin[] => {
     return [...createBackgroundTaskContext(), ...createBackgroundTaskGraphQL()];
 };
+export { BackgroundTasksDdbFeature } from "./BackgroundTasksDdbFeature.js";

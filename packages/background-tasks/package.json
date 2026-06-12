@@ -26,6 +26,7 @@
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
+    "@webiny/di": "^1.0.1",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
