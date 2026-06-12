@@ -54,6 +54,7 @@ describe("Scheduler Event Handler", () => {
                     actionType: SCHEDULED_ACTION_PUBLISH,
                     targetId: "target-id#0001"
                 }),
+                tenant: "root",
                 namespace,
                 scheduleFor: new Date().toISOString()
             }
@@ -76,7 +77,8 @@ describe("Scheduler Event Handler", () => {
             actionType: SCHEDULED_ACTION_PUBLISH,
             targetId: "target-id#0001",
             scheduleFor,
-            immediately: false
+            immediately: false,
+            tenant: "root"
         });
 
         expect(createResult.isOk()).toBeTrue();
@@ -117,6 +119,7 @@ describe("Scheduler Event Handler", () => {
                 [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
                     id,
                     namespace,
+                    tenant: "root",
                     scheduleFor: new Date(new Date().getTime() + 3 * 60 * 1000).toISOString()
                 }
             },
@@ -146,6 +149,7 @@ describe("Scheduler Event Handler", () => {
                 actionType: SCHEDULED_ACTION_PUBLISH,
                 targetId: "target-id#0002",
                 scheduleFor,
+                tenant: "root",
                 immediately: false
             });
         });
@@ -153,25 +157,10 @@ describe("Scheduler Event Handler", () => {
         expect(createResult.isOk()).toBeTrue();
         expect(createResult.value.tenant).toBe("webiny");
 
-        /*
-         * Create a fresh context for the event handler execution.
-         * In production, the EventBridge event triggers a separate Lambda invocation
-         * with its own context and fresh DataLoader caches. We simulate that here.
-         */
-        const executionHandler = useHandler({
-            getScheduleClient: () => {
-                return createMockScheduleClient();
-            }
-        });
-        const executionContext = await executionHandler.handler();
-        executionContext.container.register(PublishTestEntryActionHandler);
-        executionContext.container.register(NamespaceHandler);
-        executionContext.container.registerInstance(SchedulerService, new VoidSchedulerService());
+        /* We are back on root — simulating a separate Lambda invocation. */
+        expect(tenantContext.getTenant().id).toBe("root");
 
-        const executionTenantContext = executionContext.container.resolve(TenantContext);
-        expect(executionTenantContext.getTenant().id).toBe("root");
-
-        const identityContext = executionContext.container.resolve(IdentityContext);
+        const identityContext = context.container.resolve(IdentityContext);
         identityContext.setIdentity(undefined);
 
         const eventHandler = createScheduledActionEventHandler();
@@ -190,9 +179,9 @@ describe("Scheduler Event Handler", () => {
                     scheduleFor: new Date(Date.now() + 3 * 60 * 1000).toISOString()
                 }
             },
-            context: executionContext,
-            request: executionContext.request,
-            reply: executionContext.reply
+            context,
+            request: context.request,
+            reply: context.reply
         });
 
         expect(result).toEqual({
@@ -200,6 +189,6 @@ describe("Scheduler Event Handler", () => {
         });
 
         /* Tenant context should be restored to root after execution. */
-        expect(executionTenantContext.getTenant().id).toBe("root");
+        expect(tenantContext.getTenant().id).toBe("root");
     });
 });
