@@ -5,10 +5,11 @@ import { extendTailwindMerge } from "tailwind-merge";
 import { cva, type VariantProps } from "class-variance-authority";
 export { makeDecoratable } from "@webiny/react-composition";
 
+const BORDER_WIDTHS = ["sm", "md", "none"];
+
 const twMerge = extendTailwindMerge({
     override: {
         classGroups: {
-            "border-w": ["border-w-sm", "border-w-md", "border-w-none"],
             "border-color": [
                 "border-transparent",
                 "border-white",
@@ -62,6 +63,17 @@ const twMerge = extendTailwindMerge({
         }
     },
     extend: {
+        classGroups: {
+            "border-w": [{ border: BORDER_WIDTHS }],
+            "border-w-x": [{ "border-x": BORDER_WIDTHS }],
+            "border-w-y": [{ "border-y": BORDER_WIDTHS }],
+            "border-w-t": [{ "border-t": BORDER_WIDTHS }],
+            "border-w-r": [{ "border-r": BORDER_WIDTHS }],
+            "border-w-b": [{ "border-b": BORDER_WIDTHS }],
+            "border-w-l": [{ "border-l": BORDER_WIDTHS }],
+            "border-w-s": [{ "border-s": BORDER_WIDTHS }],
+            "border-w-e": [{ "border-e": BORDER_WIDTHS }]
+        },
         theme: {
             spacing: [
                 "3xl",
