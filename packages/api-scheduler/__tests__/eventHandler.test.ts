@@ -20,6 +20,8 @@ import {
 } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 
 describe("Scheduler Event Handler", () => {
     const lambdaContext = {} as LambdaContext;
@@ -125,5 +127,79 @@ describe("Scheduler Event Handler", () => {
         expect(result).toEqual({
             success: true
         });
+    });
+
+    it("should execute a scheduled action created on a non-root tenant", async () => {
+        const tenantContext = context.container.resolve(TenantContext);
+        const getTenantById = context.container.resolve(GetTenantByIdUseCase);
+
+        const tenantResult = await getTenantById.execute("webiny");
+        expect(tenantResult.isOk()).toBeTrue();
+        const webinyTenant = tenantResult.value;
+
+        /* Schedule action while on the "webiny" tenant. */
+        const scheduleFor = new Date(Date.now() + 5 * 60 * 1000);
+        const createResult = await tenantContext.withTenant(webinyTenant, async () => {
+            const scheduleActionUseCase = context.container.resolve(ScheduleActionUseCase);
+            return scheduleActionUseCase.execute({
+                namespace: PublishTestEntryActionHandlerImpl.name,
+                actionType: SCHEDULED_ACTION_PUBLISH,
+                targetId: "target-id#0002",
+                scheduleFor,
+                immediately: false
+            });
+        });
+
+        expect(createResult.isOk()).toBeTrue();
+        expect(createResult.value.tenant).toBe("webiny");
+
+        /*
+         * Create a fresh context for the event handler execution.
+         * In production, the EventBridge event triggers a separate Lambda invocation
+         * with its own context and fresh DataLoader caches. We simulate that here.
+         */
+        const executionHandler = useHandler({
+            getScheduleClient: () => {
+                return createMockScheduleClient();
+            }
+        });
+        const executionContext = await executionHandler.handler();
+        executionContext.container.register(PublishTestEntryActionHandler);
+        executionContext.container.register(NamespaceHandler);
+        executionContext.container.registerInstance(SchedulerService, new VoidSchedulerService());
+
+        const executionTenantContext = executionContext.container.resolve(TenantContext);
+        expect(executionTenantContext.getTenant().id).toBe("root");
+
+        const identityContext = executionContext.container.resolve(IdentityContext);
+        identityContext.setIdentity(undefined);
+
+        const eventHandler = createScheduledActionEventHandler();
+
+        /*
+         * Fire the event with tenant in the payload.
+         * Without the tenant-aware handler this would fail with "ScheduledAction/NotFound"
+         * because the CMS entry lives under the "webiny" tenant.
+         */
+        const result = await eventHandler.cb({
+            payload: {
+                [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
+                    id: createResult.value.id,
+                    namespace: PublishTestEntryActionHandlerImpl.name,
+                    tenant: "webiny",
+                    scheduleFor: new Date(Date.now() + 3 * 60 * 1000).toISOString()
+                }
+            },
+            context: executionContext,
+            request: executionContext.request,
+            reply: executionContext.reply
+        });
+
+        expect(result).toEqual({
+            success: true
+        });
+
+        /* Tenant context should be restored to root after execution. */
+        expect(executionTenantContext.getTenant().id).toBe("root");
     });
 });
