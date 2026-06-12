@@ -28,6 +28,8 @@ export const FragmentSelectorInputRenderer = ({
 
     return (
         <Select
+            size={"md"}
+            variant={"secondary"}
             value={value}
             onChange={newValue => {
                 onChange(({ value }) => {

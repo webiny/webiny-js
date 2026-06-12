@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "webiny": {
-      "command": "npx",
-      "args": ["webiny-mcp", "serve", "--skills=./skills"]
-    }
-  }
-}

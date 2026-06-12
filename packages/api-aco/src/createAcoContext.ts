@@ -1,9 +1,8 @@
 import { ContextPlugin } from "@webiny/api";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { createAcoStorageOperations } from "~/createAcoStorageOperations.js";
-import type { AcoContext } from "~/types.js";
+import { createFilterOperations } from "~/filter/filter.so.js";
 import { createFilterCrudMethods } from "~/filter/filter.crud.js";
+import type { AcoContext } from "~/types.js";
 import { createFlpCrudMethods } from "~/flp/index.js";
 import {
     FolderLevelPermissions,
@@ -23,7 +22,10 @@ import { CreateFlpFeature } from "~/features/flp/CreateFlp/index.js";
 import { DeleteFlpFeature } from "~/features/flp/DeleteFlp/index.js";
 import { UpdateFlpFeature } from "~/features/flp/UpdateFlp/index.js";
 import { EnsureFolderIsEmptyOnDeleteFeature } from "~/features/folder/EnsureFolderIsEmptyOnDelete/index.js";
-import { FilterStorageOperations } from "~/features/folder/shared/abstractions.js";
+import {
+    FilterStorageOperations,
+    FlpStorageOperations
+} from "~/features/folder/shared/abstractions.js";
 import { ListFlpsFeature } from "~/features/flp/ListFlps/feature.js";
 import { GetFlpFeature } from "~/features/flp/GetFlp/feature.js";
 import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folder/ListFolderLevelPermissionsTargets/feature.js";
@@ -36,101 +38,67 @@ import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpt
 import { FOLDER_MODEL_ID, FolderModel } from "~/domain/folder/folder.model.js";
 import { FilterPrivateModel } from "~/filter/filter.model.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
+import type { AcoStorageOperations } from "~/types.js";
 
-interface CreateAcoContextParams {
-    useFolderLevelPermissions?: boolean;
-    documentClient: DynamoDBDocument;
-}
+const setupAcoContext = async (context: AcoContext): Promise<void> => {
+    const { tenancy, security, cms, container } = context;
 
-const setupAcoContext = async (
-    context: AcoContext,
-    setupAcoContextParams: CreateAcoContextParams
-): Promise<void> => {
-    const { tenancy, security } = context;
+    const getModel = container.resolve(GetModelUseCase);
 
-    const getModel = context.container.resolve(GetModelUseCase);
-
-    await context.security.withoutAuthorization(async () => {
+    await security.withoutAuthorization(async () => {
         const folderModel = await getModel.execute(FOLDER_MODEL_ID);
-        context.container.registerInstance(FolderModelAbstraction, folderModel.value);
+        container.registerInstance(FolderModelAbstraction, folderModel.value);
     });
 
     const getTenant = (): Tenant => {
         return tenancy.getCurrentTenant();
     };
 
-    const storageOperations = await createAcoStorageOperations({
-        /**
-         * TODO: We need to figure out a way to pass "cms" from outside (e.g. apps/api/graphql)
-         */
-        cms: context.cms,
-        container: context.container,
-        documentClient: setupAcoContextParams.documentClient,
-        security
-    });
+    const flpSo = container.resolve(FlpStorageOperations);
+    const filterSo = createFilterOperations({ cms, security, container });
+
+    const storageOperations: AcoStorageOperations = {
+        filter: filterSo,
+        flp: flpSo
+    };
 
     const flpCrudMethods = createFlpCrudMethods({
         getTenant,
         storageOperations
     });
 
-    FolderLevelPermissionsFeature.register(context.container);
+    FolderLevelPermissionsFeature.register(container);
 
-    /**
-     * Register legacy dependencies via abstractions
-     */
-    context.container.registerInstance(FilterStorageOperations, storageOperations.filter);
+    container.registerInstance(FilterStorageOperations, storageOperations.filter);
 
-    /**
-     * Register folder features into DI container
-     */
-    CreateFolderFeature.register(context.container);
+    CreateFolderFeature.register(container);
+    UpdateFolderFeature.register(container);
+    DeleteFolderFeature.register(container);
+    GetFolderFeature.register(container);
+    ListFoldersFeature.register(container);
+    ListFolderLevelPermissionsTargetsFeature.register(container);
+    GetFolderHierarchyFeature.register(container);
+    GetAncestorsFeature.register(container);
+    EnsureFolderIsEmptyFeature.register(container);
 
-    UpdateFolderFeature.register(context.container);
+    CreateFlpFeature.register(container, { context });
+    UpdateFlpFeature.register(container, { context });
+    DeleteFlpFeature.register(container, { context });
+    ListFlpsFeature.register(container, flpCrudMethods);
+    GetFlpFeature.register(container, flpCrudMethods);
 
-    DeleteFolderFeature.register(context.container);
+    CreateFlpOnFolderCreatedFeature.register(container);
+    UpdateFlpOnFolderUpdatedFeature.register(container);
+    DeleteFlpOnFolderDeletedFeature.register(container);
 
-    GetFolderFeature.register(context.container);
+    EnsureFolderIsEmptyOnDeleteFeature.register(container);
+    EnsureHcmsFolderIsEmptyOnDeleteFeature.register(container);
 
-    ListFoldersFeature.register(context.container);
-
-    ListFolderLevelPermissionsTargetsFeature.register(context.container);
-
-    GetFolderHierarchyFeature.register(context.container);
-
-    GetAncestorsFeature.register(context.container);
-
-    EnsureFolderIsEmptyFeature.register(context.container);
-
-    /**
-     * Register FLP use cases and event handlers
-     */
-    CreateFlpFeature.register(context.container, { context });
-    UpdateFlpFeature.register(context.container, { context });
-    DeleteFlpFeature.register(context.container, { context });
-    ListFlpsFeature.register(context.container, flpCrudMethods);
-    GetFlpFeature.register(context.container, flpCrudMethods);
-
-    CreateFlpOnFolderCreatedFeature.register(context.container);
-
-    UpdateFlpOnFolderUpdatedFeature.register(context.container);
-
-    DeleteFlpOnFolderDeletedFeature.register(context.container);
-
-    /**
-     * Register folder event handlers
-     */
-    EnsureFolderIsEmptyOnDeleteFeature.register(context.container);
-    EnsureHcmsFolderIsEmptyOnDeleteFeature.register(context.container);
-
-    /**
-     * Setup legacy context
-     */
-    const folderLevelPermissions = context.container.resolve(FolderLevelPermissions);
+    const folderLevelPermissions = container.resolve(FolderLevelPermissions);
 
     context.aco = {
         filter: createFilterCrudMethods({
-            container: context.container,
+            container,
             getTenant,
             storageOperations,
             folderLevelPermissions
@@ -139,26 +107,23 @@ const setupAcoContext = async (
     };
 
     if (context.wcp.canUseFolderLevelPermissions()) {
-        CmsFlpFeature.register(context.container);
+        CmsFlpFeature.register(container);
     }
 };
 
-export const createAcoContext = (params: CreateAcoContextParams) => {
+export const createAcoContext = () => {
     const modelsPlugin = createRegisterExtensionPlugin(context => {
         context.container.register(FolderModel);
         context.container.register(FilterPrivateModel);
     });
 
     const acoContextPlugin = new ContextPlugin<AcoContext>(async context => {
-        /**
-         * We can skip the ACO initialization if the installation is pending.
-         */
         if (!(await isHeadlessCmsReady(context))) {
             return;
         }
 
         await context.benchmark.measure("aco.context.setup", async () => {
-            await setupAcoContext(context, params);
+            await setupAcoContext(context);
         });
     });
 

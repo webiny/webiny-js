@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { createExpressions, Expression } from "~/operations/entry/filtering/createExpressions";
+import { ValueFilterRegistry } from "@webiny/db-utils";
+import { createExpressions, type Expression, type Field } from "@webiny/api-headless-cms-storage";
 import { PluginsContainer } from "@webiny/plugins";
-import { Field } from "~/operations/entry/filtering/types";
 import { createPluginsContainer } from "../../helpers/pluginsContainer";
 import { createFields } from "./mocks/fields";
 import { createTestContainer } from "../../helpers/createTestContainer";
@@ -9,11 +9,12 @@ import { createTestContainer } from "../../helpers/createTestContainer";
 describe("create expressions from where conditions", () => {
     let plugins: PluginsContainer;
     let fields: Record<string, Field>;
-    let container: ReturnType<typeof createTestContainer>;
+    let valueFilterRegistry: ValueFilterRegistry.Interface;
 
     beforeEach(() => {
         plugins = createPluginsContainer();
-        container = createTestContainer();
+        const container = createTestContainer();
+        valueFilterRegistry = container.resolve(ValueFilterRegistry);
         fields = createFields({
             plugins
         });
@@ -22,7 +23,7 @@ describe("create expressions from where conditions", () => {
     it("should convert simple root level where into expression", () => {
         const result = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 values: {
@@ -73,7 +74,7 @@ describe("create expressions from where conditions", () => {
     it("should convert root level AND where into expression", async () => {
         const andWhereResult = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 AND: [
@@ -132,7 +133,7 @@ describe("create expressions from where conditions", () => {
 
         const rootWithAndWhereResult = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 values: {
@@ -222,7 +223,7 @@ describe("create expressions from where conditions", () => {
     it("should convert nested AND where to expression", async () => {
         const oneLevelAndWhereResult = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 values: {
@@ -306,7 +307,7 @@ describe("create expressions from where conditions", () => {
 
         const twoLevelAndWhereResult = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 values: {
@@ -462,7 +463,7 @@ describe("create expressions from where conditions", () => {
     it("should convert root level OR into expression", async () => {
         const result = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 OR: [
@@ -523,7 +524,7 @@ describe("create expressions from where conditions", () => {
     it("should convert one level OR into expressions", async () => {
         const result = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 OR: [
@@ -612,7 +613,7 @@ describe("create expressions from where conditions", () => {
     it("should convert two levels OR into expressions", async () => {
         const result = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 OR: [
@@ -717,7 +718,7 @@ describe("create expressions from where conditions", () => {
     it("should convert two levels OR into expressions - sibling OR", async () => {
         const result = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 OR: [
@@ -852,7 +853,7 @@ describe("create expressions from where conditions", () => {
     it("should convert three levels OR into expressions", async () => {
         const result = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 OR: [
@@ -1033,7 +1034,7 @@ describe("create expressions from where conditions", () => {
     it("should convert four levels OR into expressions", async () => {
         const result = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 OR: [
@@ -1281,7 +1282,7 @@ describe("create expressions from where conditions", () => {
     it("should convert a simple root level AND and OR into expression", async () => {
         const result = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 values: {
@@ -1361,7 +1362,7 @@ describe("create expressions from where conditions", () => {
     it("should convert complex OR / AND where into expression", async () => {
         const rootOrResult = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 OR: [
@@ -1662,7 +1663,7 @@ describe("create expressions from where conditions", () => {
 
         const rootAndResult = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 AND: [
@@ -1963,7 +1964,7 @@ describe("create expressions from where conditions", () => {
 
         const rootAndOrResult = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 AND: [
@@ -2332,7 +2333,7 @@ describe("create expressions from where conditions", () => {
     it("test for product conditional test", async () => {
         const result = createExpressions({
             plugins,
-            container,
+            valueFilterRegistry,
             fields,
             where: {
                 OR: [

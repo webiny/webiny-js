@@ -14,7 +14,7 @@ import type { CmsEditorFieldsLayout, CmsModelField, DragSource } from "~/types.j
 import type { CmsLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
 import { isLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
-import { cn, Icon } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -148,28 +148,20 @@ const Editor = () => {
                             } /* RowContainer start - includes drag handle, drop zones and the Row itself. */
                         ) => (
                             <div
-                                className={cn([
-                                    "flex flex-column",
-                                    "relative",
-                                    "mb-md last-of-type:mb-none",
-                                    "bg-neutral-dimmed",
-                                    isDragging ? "opacity-30" : "opacity-100"
-                                ])}
+                                className={`group flex flex-column relative mb-sm-extra last-of-type:mb-none ${isDragging ? "opacity-50" : "opacity-100"}`}
                             >
                                 <div
-                                    className={cn([
-                                        "cursor-grab",
-                                        "absolute left-sm-plus top-sm-plus z-10"
-                                    ])}
+                                    className={
+                                        "cursor-grab absolute left-[0] top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible"
+                                    }
                                     ref={element => {
                                         drag(element);
                                     }}
                                 >
-                                    <Icon
+                                    <IconButton
                                         icon={<DragIcon />}
-                                        label={"Drag to move this row"}
-                                        color={"neutral-light"}
-                                        size={"sm"}
+                                        variant={"secondary"}
+                                        size={"xs"}
                                     />
                                 </div>
                                 <Horizontal
@@ -179,10 +171,7 @@ const Editor = () => {
                                 />
                                 {/* Row start - includes field drop zones and fields */}
                                 <div
-                                    className={cn([
-                                        "w-full flex justify-between",
-                                        "pl-xl pr-sm py-sm"
-                                    ])}
+                                    className={"w-full flex justify-between gap-x-sm-extra"}
                                     data-testid={"cms.editor.field-row"}
                                 >
                                     {row.map((cell, fieldIndex) => {
@@ -203,15 +192,11 @@ const Editor = () => {
                                                             ref={element => {
                                                                 drag(element);
                                                             }}
-                                                            className={cn([
-                                                                "relative",
-                                                                "flex-1 basis-full",
-                                                                "mx-sm"
-                                                            ])}
+                                                            className={"relative flex-1 min-w-0"}
                                                         >
                                                             <div
                                                                 className={
-                                                                    "cursor-grab bg-neutral-base p-md shadow-sm rounded-xs"
+                                                                    "cursor-grab bg-neutral-base drop-shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-lg pl-md pr-sm py-sm"
                                                                 }
                                                             >
                                                                 <LayoutCell
@@ -243,11 +228,7 @@ const Editor = () => {
                                                 >
                                                     {({ drag }) => (
                                                         <div
-                                                            className={cn([
-                                                                "relative",
-                                                                "flex-1 basis-full",
-                                                                "mx-sm"
-                                                            ])}
+                                                            className={"relative flex-1 min-w-0"}
                                                             ref={element => {
                                                                 drag(element);
                                                             }}
@@ -277,7 +258,7 @@ const Editor = () => {
 
                                                             <div
                                                                 className={
-                                                                    "cursor-grab bg-neutral-base p-md shadow-sm rounded-xs"
+                                                                    "cursor-grab bg-neutral-base drop-shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-lg pl-md pr-sm py-sm"
                                                                 }
                                                             >
                                                                 <Field

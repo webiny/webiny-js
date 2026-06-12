@@ -5,12 +5,10 @@ import {
     EntryAfterUpdateRevisionDescriptionEvent,
     EntryBeforeUpdateRevisionDescriptionEvent
 } from "./events.js";
-import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import { EntryLockedError, EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { UpdateEntryRepository } from "../UpdateEntry/index.js";
 
 class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -18,9 +16,6 @@ class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interfa
         private eventPublisher: EventPublisher.Interface,
         private repository: UpdateEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
-        private cmsContext: CmsContext.Interface,
-        private tenantContext: TenantContext.Interface,
-        private identityContext: IdentityContext.Interface,
         private getRevisionByIdUseCase: GetRevisionByIdUseCase.Interface
     ) {}
 
@@ -43,11 +38,6 @@ class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interfa
             }
 
             const originalEntry = result.value;
-
-            // Check if entry is locked
-            if (originalEntry.locked) {
-                return Result.fail(new EntryLockedError());
-            }
 
             const entry = {
                 ...originalEntry,
@@ -102,13 +92,5 @@ class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interfa
 export const UpdateRevisionDescriptionUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: UpdateRevisionDescriptionUseCaseImpl,
-    dependencies: [
-        EventPublisher,
-        UpdateEntryRepository,
-        AccessControl,
-        CmsContext,
-        TenantContext,
-        IdentityContext,
-        GetRevisionByIdUseCase
-    ]
+    dependencies: [EventPublisher, UpdateEntryRepository, AccessControl, GetRevisionByIdUseCase]
 });

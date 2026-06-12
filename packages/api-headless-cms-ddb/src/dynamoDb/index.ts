@@ -1,6 +1,6 @@
-import { createPlainObjectPathPlugin } from "./path/plainObject.js";
-import { createDatetimeTransformValuePlugin } from "./transformValue/datetime.js";
-import { createLocationFolderIdPathPlugin } from "~/dynamoDb/path/locationFolderId.js";
+import { createPlainObjectPathPlugin } from "@webiny/api-headless-cms-storage";
+import { createLocationFolderIdPathPlugin } from "@webiny/api-headless-cms-storage";
+import { createDatetimeTransformValuePlugin } from "@webiny/api-headless-cms-storage";
 
 export default () => [
     createPlainObjectPathPlugin(),

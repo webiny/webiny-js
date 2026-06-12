@@ -32,6 +32,7 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
                 code: String
                 message: String
                 data: JSON
+                stack: String
             }
 
             type WebhookListMeta {

@@ -27,6 +27,8 @@ export const NumberInputRenderer = ({
     return (
         <Input
             type={"number"}
+            size={"md"}
+            variant={"secondary"}
             value={value}
             onChange={localOnChange}
             label={label}

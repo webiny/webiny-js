@@ -7,7 +7,7 @@
     "./*": "./*"
   },
   "dependencies": {
-    "lexical": "^0.44.0"
+    "lexical": "^0.45.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0"

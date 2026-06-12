@@ -7,7 +7,7 @@
   "bin": "./src/index.js",
   "main": "./src/index.js",
   "dependencies": {
-    "@webiny/stdlib": "^0.0.4",
+    "@webiny/stdlib": "^0.0.7",
     "chalk": "^5.6.2",
     "execa": "^5.1.1",
     "fs-extra": "^11.3.5",
@@ -15,7 +15,7 @@
     "load-json-file": "^7.0.1",
     "node-notifier": "^10.0.1",
     "serialize-error": "^13.0.1",
-    "tsx": "4.21.0",
+    "tsx": "4.22.4",
     "write-json-file": "^7.0.0",
     "yargs": "^18.0.0"
   },

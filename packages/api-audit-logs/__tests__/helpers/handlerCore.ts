@@ -12,7 +12,6 @@ import { createAco } from "@webiny/api-aco";
 import { createAuditLogs } from "~/index";
 import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createMailerContext } from "@webiny/api-mailer";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
@@ -46,9 +45,10 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
         bottomPlugins = []
     } = params || {};
 
-    const documentClient = getDocumentClient();
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiAcoStorage = getStorageOps<ApiCoreStorageOperations>("aco");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const auditLogsStorage = getStorageOps("auditLogs");
 
     const testProjectLicense = createTestWcpLicense();
     testProjectLicense.package.features["auditLogs"].enabled = true;
@@ -56,14 +56,15 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,
-        documentClient,
         plugins: [
             topPlugins,
             createApiCore({
                 storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
             }),
+            ...apiAcoStorage.plugins,
             ...cmsStorage.plugins,
+            ...auditLogsStorage.plugins,
             ...createTenancyAndSecurity({
                 permissions: createPermissions(permissions),
                 identity
@@ -103,7 +104,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
             createFileManagerContext(),
             createHeadlessCmsGraphQL(),
             createWebsiteBuilder(),
-            createAco({ documentClient }),
+            createAco(),
             createAuditLogs(),
             plugins,
             graphQLHandlerPlugins(),

@@ -1,4 +1,4 @@
-import { ServiceDiscovery } from "@webiny/api";
+import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { CloudFront } from "@webiny/aws-sdk/client-cloudfront/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { executeWithRetry } from "@webiny/utils";

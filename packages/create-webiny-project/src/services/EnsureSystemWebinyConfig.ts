@@ -2,7 +2,7 @@ import os from "os";
 import path from "path";
 import { loadJsonFileSync } from "load-json-file";
 import { writeJsonFileSync } from "write-json-file";
-import { v4 as uuidv4 } from "uuid";
+import { uuid as uuidv4 } from "@webiny/stdlib";
 
 const configPath = path.join(os.homedir(), ".webiny", "config");
 

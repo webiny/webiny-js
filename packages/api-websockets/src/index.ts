@@ -12,6 +12,7 @@ export * from "./transport/index.js";
 export * from "./runner/index.js";
 export * from "./registry/index.js";
 export * from "./context/index.js";
+export * from "./features/ConnectionRegistry/abstractions.js";
 
 export * from "./plugins/index.js";
 export type * from "./types.js";

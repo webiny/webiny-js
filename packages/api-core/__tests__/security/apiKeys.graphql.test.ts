@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { mockCreateGetWcpProjectEnvironment } from "./aacl/mocks/mockCreateGetWcpProjectEnvironment.js";
-import { mockCreateGetWcpProjectLicense } from "./aacl/mocks/mockCreateGetWcpProjectLicense.js";
+import { mockCreateGetWcpProjectEnvironment } from "./mocks/mockCreateGetWcpProjectEnvironment.js";
+import { mockCreateGetWcpProjectLicense } from "./mocks/mockCreateGetWcpProjectLicense.js";
 import { useGqlHandler } from "../useGqlHandler.js";
 import apiKeyAuthentication from "~/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "~/legacy/security/plugins/apiKeyAuthorization.js";
