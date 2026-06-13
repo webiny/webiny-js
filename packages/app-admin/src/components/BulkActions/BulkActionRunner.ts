@@ -10,7 +10,7 @@ export interface BulkActionViewModel {
 
 interface BulkActionHandlers<T> {
     onItem: (item: T, report: Report) => Promise<void>;
-    onBulk: (items: T[]) => Promise<void>;
+    onBulk?: (items: T[]) => Promise<void>;
 }
 
 /**
@@ -59,7 +59,7 @@ export class BulkActionRunner<T> {
         await this.worker.resetResults();
 
         try {
-            if (allSelected) {
+            if (allSelected && handlers.onBulk) {
                 await handlers.onBulk(items);
             } else {
                 await this.worker.processInSeries(items, ({ item, report }) =>

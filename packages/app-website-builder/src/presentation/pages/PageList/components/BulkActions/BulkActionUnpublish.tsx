@@ -1,66 +1,47 @@
-import React, { useMemo } from "react";
-import { Tooltip } from "@webiny/admin-ui";
-import { ReactComponent as UnpublishIcon } from "@webiny/icons/visibility_off.svg";
+import React from "react";
 import { observer } from "mobx-react-lite";
-import { getPagesLabel } from "~/presentation/pages/PageList/components/BulkActions/BulkActions.js";
-import { useUnpublishPage } from "~/features/pages/index.js";
-import { PageListConfig } from "~/presentation/pages/PageList/configs/index.js";
+import { ReactComponent as UnpublishIcon } from "@webiny/icons/visibility_off.svg";
+import { useFeature } from "@webiny/app";
+import {
+    BulkActionButton,
+    useBulkActionDialog
+} from "@webiny/app-admin/components/BulkActions/index.js";
+import { usePageListPresenter } from "../../PageListPresenterProvider.js";
+import { BulkUnpublishFeature } from "~/presentation/pages/bulkActions/feature.js";
 
 export const BulkActionUnpublish = observer(() => {
-    const { useWorker, useButtons, useDialog } = PageListConfig.Browser.BulkAction;
-    const { ButtonDefault } = useButtons();
-    const worker = useWorker();
+    const presenter = usePageListPresenter();
+    const { presenter: bulkUnpublish } = useFeature(BulkUnpublishFeature);
+    const { showConfirmationDialog, showResultsDialog } = useBulkActionDialog();
 
-    const { showConfirmationDialog, showResultsDialog } = useDialog();
-
-    const { unpublishPage } = useUnpublishPage();
-
-    const pagesLabel = useMemo(() => {
-        return getPagesLabel(worker.items.length);
-    }, [worker.items.length]);
+    const selection = presenter.list.vm.selection;
+    const selectedItems = presenter.list.vm.rows.filter(row => {
+        return selection.selectedIds.has(row.entryId);
+    });
 
     const openUnpublishDialog = () =>
         showConfirmationDialog({
             title: "Unpublish pages",
-            message: `You are about to unpublish ${pagesLabel}. Are you sure you want to continue?`,
-            loadingLabel: `Processing ${pagesLabel}...`,
+            message: `You are about to unpublish ${selection.label}. Are you sure you want to continue?`,
+            loadingLabel: `Processing ${selection.label}`,
             execute: async () => {
-                await worker.processInSeries(async ({ item, report }) => {
-                    try {
-                        await unpublishPage({ id: item.id });
-
-                        report.success({
-                            title: item.properties.title,
-                            message: "Page successfully unpublished."
-                        });
-                    } catch (e) {
-                        report.error({
-                            title: item.properties.title,
-                            message: e.message
-                        });
-                    }
-                });
-
-                worker.resetItems();
+                await bulkUnpublish.execute(selectedItems);
+                presenter.list.actions.selection.deselectAll();
 
                 showResultsDialog({
-                    results: worker.results,
+                    results: bulkUnpublish.vm.results,
                     title: "Unpublish pages",
-                    message: "Finished unpublishing pages! See full report below:",
-                    onCancel: worker.resetResults
+                    message: "Finished unpublishing pages! See full report below:"
                 });
             }
         });
 
     return (
-        <Tooltip
-            side={"bottom"}
-            content={`Unpublish ${pagesLabel}`}
-            trigger={
-                <ButtonDefault icon={<UnpublishIcon />} onAction={openUnpublishDialog} size={"sm"}>
-                    {`Unpublish`}
-                </ButtonDefault>
-            }
+        <BulkActionButton
+            text="Unpublish"
+            tooltipContent={`Unpublish ${selection.label}`}
+            icon={<UnpublishIcon />}
+            onClick={openUnpublishDialog}
         />
     );
 });

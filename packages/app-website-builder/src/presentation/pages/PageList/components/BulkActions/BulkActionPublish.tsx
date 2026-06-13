@@ -1,66 +1,47 @@
-import React, { useMemo } from "react";
-import { Tooltip } from "@webiny/admin-ui";
-import { ReactComponent as PublishIcon } from "@webiny/icons/visibility.svg";
+import React from "react";
 import { observer } from "mobx-react-lite";
-import { getPagesLabel } from "~/presentation/pages/PageList/components/BulkActions/BulkActions.js";
-import { usePublishPage } from "~/features/pages/index.js";
-import { PageListConfig } from "~/presentation/pages/PageList/configs/index.js";
+import { ReactComponent as PublishIcon } from "@webiny/icons/visibility.svg";
+import { useFeature } from "@webiny/app";
+import {
+    BulkActionButton,
+    useBulkActionDialog
+} from "@webiny/app-admin/components/BulkActions/index.js";
+import { usePageListPresenter } from "../../PageListPresenterProvider.js";
+import { BulkPublishFeature } from "~/presentation/pages/bulkActions/feature.js";
 
 export const BulkActionPublish = observer(() => {
-    const { useWorker, useButtons, useDialog } = PageListConfig.Browser.BulkAction;
-    const { ButtonDefault } = useButtons();
-    const worker = useWorker();
+    const presenter = usePageListPresenter();
+    const { showConfirmationDialog, showResultsDialog } = useBulkActionDialog();
+    const { presenter: bulkPublish } = useFeature(BulkPublishFeature);
 
-    const { showConfirmationDialog, showResultsDialog } = useDialog();
-
-    const { publishPage } = usePublishPage();
-
-    const pagesLabel = useMemo(() => {
-        return getPagesLabel(worker.items.length);
-    }, [worker.items.length]);
+    const selection = presenter.list.vm.selection;
+    const selectedItems = presenter.list.vm.rows.filter(row => {
+        return selection.selectedIds.has(row.entryId);
+    });
 
     const openPublishDialog = () =>
         showConfirmationDialog({
             title: "Publish pages",
-            message: `You are about to publish ${pagesLabel}. Are you sure you want to continue?`,
-            loadingLabel: `Processing ${pagesLabel}...`,
+            message: `You are about to publish ${selection.label}. Are you sure you want to continue?`,
+            loadingLabel: `Processing ${selection.label}`,
             execute: async () => {
-                await worker.processInSeries(async ({ item, report }) => {
-                    try {
-                        await publishPage({ id: item.id });
-
-                        report.success({
-                            title: item.properties.title,
-                            message: "Page successfully published."
-                        });
-                    } catch (e) {
-                        report.error({
-                            title: item.properties.title,
-                            message: e.message
-                        });
-                    }
-                });
-
-                worker.resetItems();
+                await bulkPublish.execute(selectedItems);
+                presenter.list.actions.selection.deselectAll();
 
                 showResultsDialog({
-                    results: worker.results,
+                    results: bulkPublish.vm.results,
                     title: "Publish pages",
-                    message: "Finished publishing pages! See full report below:",
-                    onCancel: worker.resetResults
+                    message: "Finished publishing pages! See full report below:"
                 });
             }
         });
 
     return (
-        <Tooltip
-            side={"bottom"}
-            content={`Publish ${pagesLabel}`}
-            trigger={
-                <ButtonDefault icon={<PublishIcon />} onAction={openPublishDialog} size={"sm"}>
-                    {`Publish`}
-                </ButtonDefault>
-            }
+        <BulkActionButton
+            text="Publish"
+            tooltipContent={`Publish ${selection.label}`}
+            icon={<PublishIcon />}
+            onClick={openPublishDialog}
         />
     );
 });

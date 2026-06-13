@@ -15,6 +15,13 @@ import { MovePageFeature } from "~/features/pages/movePage/feature.js";
 import { DuplicatePageFeature } from "~/features/pages/duplicatePage/feature.js";
 import { WbTrashBinFeature } from "~/features/pages/trashBin/feature.js";
 import { PageListPresenterFeature } from "~/presentation/pages/PageList/feature.js";
+import {
+    BulkPublishFeature,
+    BulkUnpublishFeature,
+    BulkDeleteFeature,
+    BulkDuplicateFeature,
+    BulkMoveFeature
+} from "~/presentation/pages/bulkActions/feature.js";
 import { WB_PAGE_APP } from "~/constants.js";
 import { Routes } from "~/routes.js";
 import { PageListWithConfig } from "../configs/index.js";
@@ -80,6 +87,11 @@ export const PagesList = () => {
         MovePageFeature.register(child);
         DuplicatePageFeature.register(child);
         WbTrashBinFeature.register(child);
+        BulkPublishFeature.register(child);
+        BulkUnpublishFeature.register(child);
+        BulkDeleteFeature.register(child);
+        BulkDuplicateFeature.register(child);
+        BulkMoveFeature.register(child);
         PageListPresenterFeature.register(child);
 
         return child;
