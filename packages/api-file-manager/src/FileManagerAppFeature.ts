@@ -2,20 +2,23 @@ import { createFeature } from "@webiny/feature/api";
 import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
 import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
 import type { Container } from "@webiny/di";
-import {
-    createFileManagerContext,
-    createFileManagerGraphQL,
-    createAssetDelivery
-} from "./index.js";
+import { createFileManagerContext, createFileManagerGraphQL } from "./index.js";
+import { AssetDeliveryFeature } from "~/features/assetDelivery/feature.js";
+import { AssetDeliveryRoute } from "./delivery/AssetDeliveryRoute.js";
 
 export const FileManagerAppFeature = createFeature({
     name: "FileManagerApp",
     register(container: Container) {
-        const plugins = [
-            ...createFileManagerContext(),
-            createFileManagerGraphQL(),
-            ...createAssetDelivery()
-        ].flat(Infinity as 1);
+        // Register DI abstractions for asset delivery (resolvers, processor, output strategy)
+        AssetDeliveryFeature.register(container);
+
+        // Register asset delivery as a proper IHttpRoute (GET /files/*)
+        // Replaces the Fastify-based setupAssetDelivery() from the old plugin system
+        container.register(AssetDeliveryRoute);
+
+        const plugins = [...createFileManagerContext(), createFileManagerGraphQL()].flat(
+            Infinity as 1
+        );
 
         let initialized = false;
 
