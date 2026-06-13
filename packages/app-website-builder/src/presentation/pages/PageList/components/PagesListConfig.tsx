@@ -24,12 +24,14 @@ import {
 } from "~/presentation/pages/PageList/components/BulkActions/index.js";
 import { FilterByStatus } from "~/presentation/pages/PageList/components/Filters/index.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
+import { WbTrashBin } from "~/presentation/pages/TrashBin/WbTrashBin.js";
 
 const { Browser } = InternalPageListConfig;
 
 export const PagesListConfig = () => {
     return (
         <InternalPageListConfig>
+            <Browser.Sidebar.Footer name={"trash"} element={<WbTrashBin />} />
             <Browser.Filter name={"status"} element={<FilterByStatus />} />
             <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
             <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />

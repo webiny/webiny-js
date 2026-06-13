@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { Table as AcoTable } from "@webiny/app-aco";
 import { useListViewTableProps } from "@webiny/app-admin";
-import { usePageListPresenter } from "../../../PageListPresenterProvider.js";
+import { usePageListPresenter } from "../../PageListPresenterProvider.js";
 import { usePageListConfig } from "../../configs/index.js";
 import type { TableRow } from "./TableRowMapper.js";
 import { TableRowMapper } from "./TableRowMapper.js";

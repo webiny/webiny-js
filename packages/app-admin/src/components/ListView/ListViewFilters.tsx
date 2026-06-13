@@ -31,7 +31,11 @@ const ListViewFilters = observer(({ filters, filtersToWhere, children }: ListVie
         );
 
         for (const [key, value] of Object.entries(convertedFilters)) {
-            actions.filter.set(key, value);
+            if (value === undefined || value === null || value === "") {
+                actions.filter.clear(key);
+            } else {
+                actions.filter.set(key, value);
+            }
         }
     };
 

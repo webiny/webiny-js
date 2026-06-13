@@ -6,13 +6,13 @@ import { TrashBinOverlay } from "@webiny/app-admin/presentation/trashBin/compone
 import type { TrashBinItem } from "@webiny/app-admin/presentation/trashBin/abstractions.js";
 import { Sidebar } from "@webiny/admin-ui";
 import { ReactComponent as Delete } from "@webiny/icons/delete.svg";
-import { useNavigateFolder } from "@webiny/app-aco";
+import { usePageListPresenter } from "~/presentation/pages/PageList/PageListPresenterProvider.js";
 import { usePermissions } from "~/presentation/security/usePermissions.js";
 
 export const WbTrashBin = observer(() => {
     const [open, setOpen] = useState(false);
     const { canDelete } = usePermissions();
-    const { navigateToFolder } = useNavigateFolder();
+    const { folders } = usePageListPresenter();
 
     const { presenter } = useFeature(TrashBinFeature);
 
@@ -32,10 +32,10 @@ export const WbTrashBin = observer(() => {
         async (item: TrashBinItem) => {
             handleClose();
             if (item.location.folderId) {
-                navigateToFolder(item.location.folderId);
+                folders.selectFolder(item.location.folderId);
             }
         },
-        [handleClose, navigateToFolder]
+        [handleClose, folders]
     );
 
     if (!canDelete("page")) {

@@ -12,7 +12,6 @@ import { usePageListPresenter } from "../PageListPresenterProvider.js";
 import { usePageListConfig } from "../configs/index.js";
 import { useCreatePageDialog } from "~/presentation/pages/CreatePage/CreatePageDialog.js";
 import { usePermissions } from "~/presentation/security/usePermissions.js";
-import { WbTrashBin } from "~/presentation/pages/TrashBin/WbTrashBin.js";
 import { Table } from "./Table/Table.js";
 
 interface PageEmptyProps {
@@ -134,9 +133,7 @@ export const DocumentList = observer(() => {
             namespace="wb/page/list"
             showingFilters={list.vm.showingFilters}
             onToggleFilters={() => {
-                list.vm.showingFilters
-                    ? list.actions.filter.hide()
-                    : list.actions.filter.show();
+                list.vm.showingFilters ? list.actions.filter.hide() : list.actions.filter.show();
             }}
             sidebar={
                 <ListView.Sidebar title="Pages">
@@ -149,9 +146,15 @@ export const DocumentList = observer(() => {
                             enableCreate={true}
                         />
                     </ListView.Sidebar.Section>
-                    <ListView.Sidebar.Section>
-                        <WbTrashBin />
-                    </ListView.Sidebar.Section>
+                    {browser.sidebarFooter.length > 0 && (
+                        <ListView.Sidebar.Section scrollable={false}>
+                            <div className={"px-xs py-sm bg-neutral-base"}>
+                                {browser.sidebarFooter.map(footer =>
+                                    React.cloneElement(footer.element, { key: footer.name })
+                                )}
+                            </div>
+                        </ListView.Sidebar.Section>
+                    )}
                 </ListView.Sidebar>
             }
             header={
@@ -169,7 +172,6 @@ export const DocumentList = observer(() => {
                                     variant={"secondary"}
                                     onClick={onCreateFolder}
                                     text={"New folder"}
-                                    size={"sm"}
                                 />
                             ) : null}
                             {canCreatePage ? (
@@ -177,16 +179,13 @@ export const DocumentList = observer(() => {
                                     variant={"primary"}
                                     onClick={onCreateDocument}
                                     text={"New page"}
-                                    size={"sm"}
                                 />
                             ) : null}
                         </>
                     }
                 />
             }
-            bulkActions={
-                <ListView.BulkActions itemLabel="page" actions={browser.bulkActions} />
-            }
+            bulkActions={<ListView.BulkActions itemLabel="page" actions={browser.bulkActions} />}
             filters={
                 <ListView.Filters
                     filters={browser.filters}

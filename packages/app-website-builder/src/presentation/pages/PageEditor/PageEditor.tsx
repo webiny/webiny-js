@@ -4,15 +4,15 @@ import { DocumentEditor } from "~/DocumentEditor/DocumentEditor.js";
 import { useGetPage } from "~/features/pages/index.js";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { useGetWebsiteBuilderSettings } from "~/features/index.js";
-import { DefaultPageEditorConfig } from "./PageEditor/DefaultPageEditorConfig.js";
+import { DefaultPageEditorConfig } from "./DefaultPageEditorConfig.js";
 import { DefaultEditorConfig } from "~/BaseEditor/index.js";
 import { EDITOR_NAME } from "~/presentation/pages/PageEditor/constants.js";
 import type { EditorPage } from "@webiny/website-builder-sdk";
 import type { Page } from "~/domain/Page/index.js";
 import { Routes } from "~/routes.js";
 import { WbPageStatus } from "~/constants.js";
-import { RevisionListDrawer } from "./PageEditor/Revisions/RevisionListDrawer.js";
-import { PageEditorDrawerProvider } from "./PageEditor/Revisions/usePageEditorDrawer.js";
+import { RevisionListDrawer } from "./Revisions/RevisionListDrawer.js";
+import { PageEditorDrawerProvider } from "./Revisions/usePageEditorDrawer.js";
 
 const getPageDataFromPage = (page: Page): EditorPage => {
     return {

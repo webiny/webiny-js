@@ -1,12 +1,13 @@
 import React, { useCallback, useMemo } from "react";
 import { ReactComponent as MoveIcon } from "@webiny/icons/exit_to_app.svg";
 import { type NodeDto, Tooltip } from "@webiny/admin-ui";
-import { useMoveToFolderDialog, useNavigateFolder } from "@webiny/app-aco";
+import { useMoveToFolderDialog } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { getPagesLabel } from "~/presentation/pages/PageList/components/BulkActions/BulkActions.js";
 import { useMovePage } from "~/features/pages/index.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import { PageListConfig } from "~/presentation/pages/PageList/configs/index.js";
+import { usePageListPresenter } from "../../PageListPresenterProvider.js";
 
 export const BulkActionMovePage = observer(() => {
     const { useWorker, useButtons, useDialog } = PageListConfig.Browser.BulkAction;
@@ -17,7 +18,8 @@ export const BulkActionMovePage = observer(() => {
     const { showDialog: showMoveDialog } = useMoveToFolderDialog();
 
     const { movePage } = useMovePage();
-    const { currentFolderId } = useNavigateFolder();
+    const { folders } = usePageListPresenter();
+    const currentFolderId = folders.vm.currentFolderId;
 
     const pagesLabel = useMemo(() => {
         return getPagesLabel(worker.items.length);

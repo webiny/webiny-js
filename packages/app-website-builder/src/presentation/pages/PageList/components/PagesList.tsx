@@ -38,28 +38,28 @@ const PagesListInner = observer(() => {
                 <PageListPresenterProvider presenter={presenter}>
                     <DocumentList />
                     <RouteParamsSync
-                    route={Routes.Pages.List}
-                    fields={fields => [
-                        fields.create<string>({
-                            param: "folderId",
-                            read: () => presenter.folders.vm.currentFolderId ?? undefined,
-                            write: value => {
-                                presenter.folders.selectFolder(value ?? null);
-                            }
-                        }),
-                        fields.create<string>({
-                            param: "search",
-                            read: () => presenter.list.vm.search || undefined,
-                            write: value => {
-                                if (value) {
-                                    presenter.list.actions.search.set(value);
-                                } else {
-                                    presenter.list.actions.search.clear();
+                        route={Routes.Pages.List}
+                        fields={fields => [
+                            fields.create<string>({
+                                param: "folderId",
+                                read: () => presenter.folders.vm.currentFolderId ?? undefined,
+                                write: value => {
+                                    presenter.folders.selectFolder(value ?? null);
                                 }
-                            }
-                        })
-                    ]}
-                />
+                            }),
+                            fields.create<string>({
+                                param: "search",
+                                read: () => presenter.list.vm.search || undefined,
+                                write: value => {
+                                    if (value) {
+                                        presenter.list.actions.search.set(value);
+                                    } else {
+                                        presenter.list.actions.search.clear();
+                                    }
+                                }
+                            })
+                        ]}
+                    />
                 </PageListPresenterProvider>
             </PageListWithConfig>
         </DialogsProvider>

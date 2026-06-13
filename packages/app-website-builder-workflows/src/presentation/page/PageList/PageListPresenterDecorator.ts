@@ -1,46 +1,56 @@
-import { makeAutoObservable } from "mobx";
 import {
-    IDocumentListPresenterInit,
-    IDocumentListVm,
-    PageListPresenter
+    PageListPresenter,
+    type IPageListPresenter,
+    type IPageListViewModel,
+    type IPageListInitConfig
 } from "@webiny/app-website-builder/presentation/pages/PageList/index.js";
-import type { PageDto } from "@webiny/app-website-builder/domain/Page/index.js";
+import type { IListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
+import type { IFolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import type { Page } from "@webiny/app-website-builder/domain/Page/Page.js";
 
-class PageListPresenterWithWorkflows implements PageListPresenter.Interface {
-    private readonly decoratee;
+class PageListPresenterWithWorkflows implements IPageListPresenter {
+    constructor(private decoratee: IPageListPresenter) {}
 
-    public constructor(decoratee: PageListPresenter.Interface) {
-        this.decoratee = decoratee;
-        makeAutoObservable(this);
+    get vm(): IPageListViewModel {
+        return this.decoratee.vm;
     }
 
-    public get vm(): IDocumentListVm {
-        const vm = this.decoratee.vm;
-        return {
-            ...vm,
-            data: vm.data.map(page => {
-                return this.decoratePage(page);
-            })
-        };
+    // TODO: intercept list.vm.rows to set $selectable=false on TableRow for pages with active workflow state.
+    // Currently $selectable is set in TableRowMapper.fromPage(), which always returns true.
+    get list(): IListPresenter<Page> {
+        return this.decoratee.list;
     }
 
-    public init(params: IDocumentListPresenterInit): void {
-        this.decoratee.init(params);
+    get folders(): IFolderTreePresenter {
+        return this.decoratee.folders;
     }
 
-    public showFilters(show: boolean): void {
-        this.decoratee.showFilters(show);
+    init(config?: IPageListInitConfig): void {
+        this.decoratee.init(config);
     }
 
-    private decoratePage(page: PageDto): PageDto {
-        return {
-            ...page,
-            system: {
-                ...page.system,
-                workflow: page.system?.workflow || null
-            },
-            $selectable: !page.system?.workflow?.state
-        };
+    dispose(): void {
+        this.decoratee.dispose();
+    }
+
+    deletePage(id: string): Promise<boolean> {
+        return this.decoratee.deletePage(id);
+    }
+
+    publishPage(id: string): Promise<boolean> {
+        return this.decoratee.publishPage(id);
+    }
+
+    unpublishPage(id: string): Promise<boolean> {
+        return this.decoratee.unpublishPage(id);
+    }
+
+    movePage(id: string, folderId: string): Promise<boolean> {
+        return this.decoratee.movePage(id, folderId);
+    }
+
+    duplicatePage(id: string): Promise<boolean> {
+        return this.decoratee.duplicatePage(id);
     }
 }
 
