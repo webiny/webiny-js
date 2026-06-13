@@ -1,5 +1,6 @@
 import { makeAutoObservable, runInAction, toJS } from "mobx";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
+import { EventPublisher } from "@webiny/app/features/eventPublisher/abstractions.js";
 import { ListWorkflowsUseCase } from "~/features/listWorkflows/abstractions.js";
 import { GetTargetWorkflowStateUseCase } from "~/features/getTargetWorkflowState/abstractions.js";
 import { RequestReviewUseCase } from "~/features/requestReview/abstractions.js";
@@ -9,6 +10,7 @@ import { RejectStepUseCase } from "~/features/rejectStep/abstractions.js";
 import { TakeOverStepUseCase } from "~/features/takeOverStep/abstractions.js";
 import { CancelWorkflowStateUseCase } from "~/features/cancelWorkflowState/abstractions.js";
 import { WorkflowStateModel } from "~/domain/index.js";
+import { WorkflowStateChangedEvent } from "~/domain/events.js";
 import type { IWorkflowStateModel } from "~/domain/abstractions/WorkflowStateModel.js";
 import type { IWorkflow, IWorkflowState } from "~/types.js";
 import { WorkflowStateValue } from "~/types.js";
@@ -40,7 +42,8 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
         private rejectStepUseCase: RejectStepUseCase.Interface,
         private takeOverStepUseCase: TakeOverStepUseCase.Interface,
         private cancelWorkflowStateUseCase: CancelWorkflowStateUseCase.Interface,
-        private identityContext: IdentityContext.Interface
+        private identityContext: IdentityContext.Interface,
+        private eventPublisher: EventPublisher.Interface
     ) {
         makeAutoObservable<
             WorkflowStatePresenterImpl,
@@ -53,6 +56,7 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
             | "takeOverStepUseCase"
             | "cancelWorkflowStateUseCase"
             | "identityContext"
+            | "eventPublisher"
         >(this, {
             listWorkflows: false,
             getTargetWorkflowState: false,
@@ -62,7 +66,8 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
             rejectStepUseCase: false,
             takeOverStepUseCase: false,
             cancelWorkflowStateUseCase: false,
-            identityContext: false
+            identityContext: false,
+            eventPublisher: false
         });
     }
 
@@ -188,6 +193,16 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
         this._state = state ? WorkflowStateModel.create(state) : null;
     }
 
+    private publishStateChanged(state: IWorkflowState | null) {
+        this.eventPublisher.publish(
+            new WorkflowStateChangedEvent({
+                app: this._app,
+                targetRevisionId: this._targetRevisionId,
+                state
+            })
+        );
+    }
+
     requestReview = async () => {
         this._executing = true;
         try {
@@ -201,6 +216,7 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
                 this._dialog = null;
                 this._executing = false;
             });
+            this.publishStateChanged(data);
         } catch (err) {
             runInAction(() => {
                 this._error = {
@@ -221,6 +237,7 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
                 this._dialog = { type: "start:success" };
                 this._executing = false;
             });
+            this.publishStateChanged(data);
         } catch (err) {
             runInAction(() => {
                 this._error = {
@@ -241,6 +258,7 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
                 this._dialog = { type: "approve:success" };
                 this._executing = false;
             });
+            this.publishStateChanged(data);
         } catch (err) {
             runInAction(() => {
                 this._error = {
@@ -261,6 +279,7 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
                 this._dialog = { type: "reject:success" };
                 this._executing = false;
             });
+            this.publishStateChanged(data);
         } catch (err) {
             runInAction(() => {
                 this._error = {
@@ -281,6 +300,7 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
                 this._dialog = null;
                 this._executing = false;
             });
+            this.publishStateChanged(null);
         } catch (err) {
             runInAction(() => {
                 this._error = {
@@ -301,6 +321,7 @@ class WorkflowStatePresenterImpl implements IWorkflowStatePresenter {
                 this._dialog = { type: "takeOver:success", step: null };
                 this._executing = false;
             });
+            this.publishStateChanged(data);
         } catch (err) {
             runInAction(() => {
                 this._error = {
@@ -360,6 +381,7 @@ export const WorkflowStatePresenterImplementation = Abstraction.createImplementa
         RejectStepUseCase,
         TakeOverStepUseCase,
         CancelWorkflowStateUseCase,
-        IdentityContext
+        IdentityContext,
+        EventPublisher
     ]
 });

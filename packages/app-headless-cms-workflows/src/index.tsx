@@ -10,11 +10,13 @@ import { CmsEntriesWorkflowStateListFooterMenu } from "~/Components/CmsEntriesWo
 import { ListOpenInNewWindow } from "~/Components/OptionItem/OpenInNewWindow.js";
 import { CmsEntryFormCreateNewRevisionButton } from "~/Components/ContentEntryForm/CmsEntryFormCreateNewRevisionButton.js";
 import { CmsWorkflowsFeature } from "~/presentation/feature.js";
+import { CmsWorkflowsCacheFeature } from "~/features/feature.js";
 
 export const CmsWorkflows = () => {
     return (
         <Wcp.CanUseWorkflows>
             <RegisterFeature feature={CmsWorkflowsFeature} />
+            <RegisterFeature feature={CmsWorkflowsCacheFeature} />
             <ListOpenInNewWindow />
             <CmsEntriesWorkflowStateListFooterMenu />
             <CmsWorkflowsEditor />
