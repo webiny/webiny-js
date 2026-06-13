@@ -2,14 +2,16 @@ import React, { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { Table as AcoTable } from "@webiny/app-aco";
 import { useListViewTableProps } from "@webiny/app-admin";
+import { useContainer } from "@webiny/app";
 import { usePageListPresenter } from "../../PageListPresenterProvider.js";
 import { usePageListConfig } from "../../configs/index.js";
-import type { TableRow } from "./TableRowMapper.js";
-import { TableRowMapper } from "./TableRowMapper.js";
+import { TableRowMapper, folderToTableRow, type TableRow } from "./TableRowMapper.js";
 
 export const Table = observer(() => {
     const { vm, folders, list } = usePageListPresenter();
     const { browser } = usePageListConfig();
+    const container = useContainer();
+    const mapper = container.resolve(TableRowMapper);
 
     const tableProps = useListViewTableProps({
         namespace: "wb/page/list",
@@ -17,11 +19,11 @@ export const Table = observer(() => {
     });
 
     const data = useMemo<TableRow[]>(() => {
-        const pageRows = list.vm.rows.map(r => TableRowMapper.fromPage(r));
+        const pageRows = list.vm.rows.map(r => mapper.fromPage(r));
         if (!vm.showFolders) {
             return pageRows;
         }
-        const folderRows = (folders.vm.childFolders ?? []).map(f => TableRowMapper.fromFolder(f));
+        const folderRows = (folders.vm.childFolders ?? []).map(f => folderToTableRow(f));
         return [...folderRows, ...pageRows];
     }, [list.vm.rows, folders.vm.childFolders, vm.showFolders]);
 

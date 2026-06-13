@@ -5,11 +5,7 @@ import type { WithWorkflows } from "~/types.js";
 const decoratePage = (page: PageDto): WithWorkflows<PageDto> => {
     return {
         ...page,
-        workflows: {
-            // @ts-expect-error
-            ...page.workflows
-        },
-        $selectable: false
+        workflow: page.system?.workflow ?? null
     };
 };
 
