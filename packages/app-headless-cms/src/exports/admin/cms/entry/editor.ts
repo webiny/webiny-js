@@ -4,7 +4,7 @@ export { ContentEntryFormPreview } from "~/admin/components/ContentEntryForm/Con
 export { useContentEntryForm } from "~/admin/components/ContentEntryForm/useContentEntryForm.js";
 export { DefaultLayout as ContentEntryFormLayout } from "~/admin/components/ContentEntryForm/DefaultLayout.js";
 export { useContentEntry as useContentEntryEditor } from "~/admin/views/contentEntries/hooks/index.js";
-export { useContentEntryFormPresenter } from "~/presentation/contentEntries/views/ContentEntryFormPresenterProvider.js";
+export { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 export { useModel } from "~/admin/components/ModelProvider/index.js";
 export { ContentEntry as ContentEntryEditor } from "~/admin/views/contentEntries/ContentEntry.js";
 export { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";

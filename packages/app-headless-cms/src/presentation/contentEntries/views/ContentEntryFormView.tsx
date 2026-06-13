@@ -11,8 +11,8 @@ import { useContentEntryEditorConfig } from "~/admin/config/contentEntries/index
 import { Routes } from "~/routes.js";
 import { Container, ScrollArea, Content, ContentFormInner } from "./layout/index.js";
 import { RevisionsListFeature } from "../revisionsList/feature.js";
-import { useContentEntriesPresenter } from "./ContentEntriesPresenterProvider.js";
-import { useContentEntryFormPresenter } from "./ContentEntryFormPresenterProvider.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
+import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { RevisionDrawer } from "./RevisionDrawer.js";
 import { FormErrors } from "@webiny/app-admin";
 

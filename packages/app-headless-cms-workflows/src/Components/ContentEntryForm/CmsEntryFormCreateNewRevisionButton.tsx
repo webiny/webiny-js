@@ -3,7 +3,7 @@ import { useFeature } from "@webiny/app";
 import { useRoute } from "@webiny/app";
 import { useToast } from "@webiny/admin-ui";
 import { ContentEntryEditorConfig, usePermission } from "@webiny/app-headless-cms";
-import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/views/ContentEntryFormPresenterProvider.js";
+import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { RevisionsListFeature } from "@webiny/app-headless-cms/presentation/contentEntries/revisionsList/feature.js";
 import { ReactComponent as NewReleaseIcon } from "@webiny/icons/new_releases.svg";
 import { IsModelPublishable } from "@webiny/app-headless-cms/exports/admin/cms.js";

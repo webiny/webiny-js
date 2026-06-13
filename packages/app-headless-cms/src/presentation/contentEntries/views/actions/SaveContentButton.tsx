@@ -2,8 +2,8 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { Button, useToast } from "@webiny/admin-ui";
 import { usePermission } from "~/admin/hooks/usePermission.js";
-import { useContentEntryFormPresenter } from "../ContentEntryFormPresenterProvider.js";
-import { useContentEntriesPresenter } from "../ContentEntriesPresenterProvider.js";
+import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 
 export const SaveContentButton = observer(() => {
     const { canEdit } = usePermission();

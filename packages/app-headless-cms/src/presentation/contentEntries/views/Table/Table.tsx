@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { Table as AcoTable } from "@webiny/app-aco";
 import { useListViewTableProps } from "@webiny/app-admin";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries/list/ContentEntryListConfig.js";
-import { useContentEntriesPresenter } from "../ContentEntriesPresenterProvider.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 import { TableRowMapper, type TableRow } from "./TableRowMapper.js";
 
 export const Table = observer(() => {

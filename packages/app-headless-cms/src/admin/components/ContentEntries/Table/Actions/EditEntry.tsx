@@ -1,7 +1,7 @@
 import React from "react";
 import { ReactComponent as Edit } from "@webiny/icons/edit.svg";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
-import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 import { useEntry, usePermission } from "~/admin/hooks/index.js";
 
 export const EditEntry = () => {

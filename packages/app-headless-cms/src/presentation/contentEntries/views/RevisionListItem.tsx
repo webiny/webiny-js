@@ -13,7 +13,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import type { CmsContentEntryRevision } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { usePermission } from "~/admin/hooks/usePermission.js";
-import { useContentEntryFormPresenter } from "./ContentEntryFormPresenterProvider.js";
+import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { RevisionsListFeature } from "../revisionsList/feature.js";
 import { Routes } from "~/routes.js";
 

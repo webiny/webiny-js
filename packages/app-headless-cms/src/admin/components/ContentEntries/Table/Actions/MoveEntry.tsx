@@ -4,7 +4,7 @@ import { useMoveToFolderDialog } from "@webiny/app-aco";
 import { useToast } from "@webiny/admin-ui";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { useEntry } from "~/admin/hooks/index.js";
-import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 
 export const MoveEntry = () => {
     const { entry } = useEntry();

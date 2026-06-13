@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
-import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 import { BulkDeleteFeature } from "~/presentation/contentEntries/bulkActions/feature.js";
 import {
     BulkActionButton,

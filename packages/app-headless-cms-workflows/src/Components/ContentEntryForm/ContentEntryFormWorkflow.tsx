@@ -2,7 +2,7 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { Alert } from "@webiny/admin-ui";
 import { Content } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
-import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/views/ContentEntryFormPresenterProvider.js";
+import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { useWorkflowState } from "@webiny/app-workflows";
 import { Components } from "@webiny/app-workflows";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
@@ -25,7 +25,7 @@ export const ContentEntryFormWorkflow = Content.createDecorator(Original => {
 
         return (
             <>
-                <div className={"max-w-screen bg-white p-sm"}>
+                <div className={"max-w-screen bg-white p-sm border-solid border-b-sm border-neutral-dimmed"}>
                     <WorkflowStateBar />
                     {presenter.vm.hasState ? (
                         <Alert type="danger" className={"mt-sm"}>

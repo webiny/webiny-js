@@ -15,7 +15,6 @@ import { MovePageFeature } from "~/features/pages/movePage/feature.js";
 import { DuplicatePageFeature } from "~/features/pages/duplicatePage/feature.js";
 import { WbTrashBinFeature } from "~/features/pages/trashBin/feature.js";
 import { PageListPresenterFeature } from "~/presentation/pages/PageList/feature.js";
-import { PageListPresenterProvider } from "../PageListPresenterProvider.js";
 import { WB_PAGE_APP } from "~/constants.js";
 import { Routes } from "~/routes.js";
 import { PageListWithConfig } from "../configs/index.js";
@@ -35,32 +34,30 @@ const PagesListInner = observer(() => {
     return (
         <DialogsProvider>
             <PageListWithConfig>
-                <PageListPresenterProvider presenter={presenter}>
-                    <DocumentList />
-                    <RouteParamsSync
-                        route={Routes.Pages.List}
-                        fields={fields => [
-                            fields.create<string>({
-                                param: "folderId",
-                                read: () => presenter.folders.vm.currentFolderId ?? undefined,
-                                write: value => {
-                                    presenter.folders.selectFolder(value ?? null);
+                <DocumentList />
+                <RouteParamsSync
+                    route={Routes.Pages.List}
+                    fields={fields => [
+                        fields.create<string>({
+                            param: "folderId",
+                            read: () => presenter.folders.vm.currentFolderId ?? undefined,
+                            write: value => {
+                                presenter.folders.selectFolder(value ?? null);
+                            }
+                        }),
+                        fields.create<string>({
+                            param: "search",
+                            read: () => presenter.list.vm.search || undefined,
+                            write: value => {
+                                if (value) {
+                                    presenter.list.actions.search.set(value);
+                                } else {
+                                    presenter.list.actions.search.clear();
                                 }
-                            }),
-                            fields.create<string>({
-                                param: "search",
-                                read: () => presenter.list.vm.search || undefined,
-                                write: value => {
-                                    if (value) {
-                                        presenter.list.actions.search.set(value);
-                                    } else {
-                                        presenter.list.actions.search.clear();
-                                    }
-                                }
-                            })
-                        ]}
-                    />
-                </PageListPresenterProvider>
+                            }
+                        })
+                    ]}
+                />
             </PageListWithConfig>
         </DialogsProvider>
     );

@@ -3,7 +3,7 @@ import { ReactComponent as Publish } from "@webiny/icons/visibility.svg";
 import { ReactComponent as Unpublish } from "@webiny/icons/visibility_off.svg";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { useEntry, usePermission } from "~/admin/hooks/index.js";
-import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 import { useToast } from "@webiny/admin-ui";
 
 export const ChangeEntryStatus = () => {

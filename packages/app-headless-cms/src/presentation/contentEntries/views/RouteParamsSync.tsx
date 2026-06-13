@@ -2,7 +2,7 @@ import React from "react";
 import { RouteParamsSync as GenericRouteParamsSync } from "@webiny/app/presentation/router/components/RouteParamsSync.js";
 import { Routes } from "~/routes.js";
 import { createLastVisitedFolderKey } from "~/admin/constants.js";
-import { useContentEntriesPresenter } from "./ContentEntriesPresenterProvider.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 
 interface RouteParamsSyncProps {
     modelId: string;

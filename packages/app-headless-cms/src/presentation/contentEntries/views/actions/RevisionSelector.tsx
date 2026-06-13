@@ -6,7 +6,7 @@ import { useRoute, useRouter } from "@webiny/app-admin";
 import { ReactComponent as DownButton } from "@webiny/icons/keyboard_arrow_down.svg";
 import { statuses } from "~/admin/constants.js";
 import { Routes } from "~/routes.js";
-import { useContentEntryFormPresenter } from "../ContentEntryFormPresenterProvider.js";
+import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { RevisionsListFeature } from "../../revisionsList/feature.js";
 
 const getStatusLabel = (status: string): string => {

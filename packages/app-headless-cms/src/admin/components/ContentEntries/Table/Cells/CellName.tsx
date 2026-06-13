@@ -7,7 +7,7 @@ import { ReactComponent as FolderShared } from "@webiny/icons/folder_shared.svg"
 import { ReactComponent as File } from "@webiny/icons/description.svg";
 
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
-import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 import { usePermission } from "~/admin/hooks/index.js";
 
 import type { CmsContentEntry } from "~/types.js";

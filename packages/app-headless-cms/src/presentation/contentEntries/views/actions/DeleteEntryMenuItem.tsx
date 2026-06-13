@@ -6,7 +6,7 @@ import { OptionsMenuItem } from "@webiny/app-admin";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { usePermission } from "~/admin/hooks/index.js";
 import { Routes } from "~/routes.js";
-import { useContentEntryFormPresenter } from "../ContentEntryFormPresenterProvider.js";
+import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 
 export const DeleteEntryMenuItem = observer(() => {
     const presenter = useContentEntryFormPresenter();

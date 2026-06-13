@@ -2,10 +2,7 @@ import React, { useEffect } from "react";
 import { useFeature } from "@webiny/app";
 import type { CmsModel } from "~/types.js";
 import { ContentEntriesPresenterFeature } from "../list/feature.js";
-import { ContentEntryFormPresenterFeature } from "../form/feature.js";
 import { ContentEntriesPresenter } from "../list/abstractions.js";
-import { ContentEntriesPresenterProvider } from "./ContentEntriesPresenterProvider.js";
-import { ContentEntryFormPresenterProvider } from "./ContentEntryFormPresenterProvider.js";
 import {
     ContentEntryListWithConfig,
     useContentEntryListConfig
@@ -24,7 +21,6 @@ interface ListViewProps {
 
 export const ListView = ({ model, initialFolderId, initialSearch, syncToUrl }: ListViewProps) => {
     const { presenter: listPresenter } = useFeature(ContentEntriesPresenterFeature);
-    const { presenter: formPresenter } = useFeature(ContentEntryFormPresenterFeature);
 
     return (
         <ModelProvider model={model}>
@@ -36,12 +32,8 @@ export const ListView = ({ model, initialFolderId, initialSearch, syncToUrl }: L
                         initialFolderId={initialFolderId}
                         initialSearch={initialSearch}
                     >
-                        <ContentEntriesPresenterProvider presenter={listPresenter}>
-                            <ContentEntryFormPresenterProvider presenter={formPresenter}>
-                                <ContentEntriesListLayout />
-                                {syncToUrl && <RouteParamsSync modelId={model.modelId} />}
-                            </ContentEntryFormPresenterProvider>
-                        </ContentEntriesPresenterProvider>
+                        <ContentEntriesListLayout />
+                        {syncToUrl && <RouteParamsSync modelId={model.modelId} />}
                     </ListViewInit>
                 </ContentEntryEditorWithConfig>
             </ContentEntryListWithConfig>

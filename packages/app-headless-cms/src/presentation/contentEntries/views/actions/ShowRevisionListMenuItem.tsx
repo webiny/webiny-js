@@ -3,7 +3,7 @@ import { useFeature } from "@webiny/app";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as ListIcon } from "@webiny/icons/checklist.svg";
 import { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
-import { useContentEntryFormPresenter } from "../ContentEntryFormPresenterProvider.js";
+import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { RevisionsListFeature } from "../../revisionsList/feature.js";
 
 export const ShowRevisionListMenuItem = observer(() => {

@@ -10,7 +10,7 @@ import {
     useBulkActionDialog
 } from "@webiny/app-admin/components/BulkActions/index.js";
 import { ROOT_FOLDER } from "~/admin/constants.js";
-import { useContentEntriesPresenter } from "~/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 import { BulkMoveFeature } from "~/presentation/contentEntries/bulkActions/feature.js";
 
 export const ActionMove = observer(() => {

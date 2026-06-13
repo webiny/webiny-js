@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useContainer } from "@webiny/app";
-import { useContentEntriesPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/views/ContentEntriesPresenterProvider.js";
+import { useContentEntriesPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/list/useContentEntriesPresenter.js";
 import { ListLockRecordsPresenter } from "../abstractions.js";
 
 export const ListLockRecordsSync = observer(() => {

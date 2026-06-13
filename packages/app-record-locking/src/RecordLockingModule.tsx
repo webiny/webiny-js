@@ -9,7 +9,7 @@ import { Content } from "@webiny/app-headless-cms/presentation/contentEntries/vi
 import { RecordLockingPresenter } from "~/presentation/entryLocking/abstractions.js";
 import { LockedEntryOverlay } from "~/presentation/entryLocking/components/LockedEntryOverlay.js";
 import { RecordLockingCellActionsDecorator } from "~/presentation/listLocking/components/LockIndicatorCell.js";
-import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/views/ContentEntryFormPresenterProvider.js";
+import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import type { IKickOutData } from "~/presentation/entryLocking/abstractions.js";
 import type { IncomingGenericData } from "@webiny/app-websockets";
 
