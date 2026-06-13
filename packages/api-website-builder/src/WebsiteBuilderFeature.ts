@@ -3,10 +3,15 @@ import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
 import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
 import type { Container } from "@webiny/di";
 import { createWebsiteBuilder } from "./index.js";
+import { WebsiteBuilderRedirectsRoute } from "./rest/WebsiteBuilderRedirectsRoute.js";
+import { GetActiveRedirectsFeature } from "./features/redirects/GetActiveRedirects/feature.js";
 
 export const WebsiteBuilderFeature = createFeature({
     name: "WebsiteBuilder",
     register(container: Container) {
+        GetActiveRedirectsFeature.register(container);
+        container.register(WebsiteBuilderRedirectsRoute);
+
         const plugins = createWebsiteBuilder().flat(Infinity as 1);
         let initialized = false;
 
