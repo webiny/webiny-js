@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { ILoadingRepository, IMetaRepository } from "@webiny/app-utils";
-import type { IListCache } from "~/shared/cache/IListCache.js";
+import type { IListCache } from "@webiny/app-admin/features/listCache/index.js";
 import type { IListCache as IRevisionListCache } from "~/domain/PageRevision/ListCache.js";
 import type { Page } from "~/domain/Page/Page.js";
 import type { PageRevision } from "~/domain/PageRevision/PageRevision.js";

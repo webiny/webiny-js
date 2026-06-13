@@ -6,7 +6,7 @@ import type {
 import type { IGetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import type { Page } from "~/domain/Page/Page.js";
 import type { IListPagesUseCase } from "~/features/pages/listPages/abstractions.js";
-import type { IListCache } from "~/shared/cache/IListCache.js";
+import type { IListCache } from "@webiny/app-admin/features/listCache/index.js";
 
 export class PageListDataSource extends FolderAwareDataSource<Page> {
     constructor(
