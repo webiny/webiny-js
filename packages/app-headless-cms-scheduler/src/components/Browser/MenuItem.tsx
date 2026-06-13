@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
-import { useApolloClient } from "@apollo/react-hooks";
 import { useScheduleDialog } from "@webiny/app-scheduler";
 import { ContentEntryListConfig } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
 import { useEntry } from "@webiny/app-headless-cms";
@@ -14,10 +13,8 @@ export const MenuItem = observer(() => {
     const { entry } = useEntry();
 
     const { canPublish, canUnpublish } = usePermissions();
-    const client = useApolloClient();
 
     const { showDialog: showSchedulerDialog } = useScheduleDialog({
-        client,
         namespace: createNamespace({ modelId: model.modelId }),
         target: {
             id: entry.id,

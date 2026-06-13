@@ -3,7 +3,6 @@ import { observer } from "mobx-react-lite";
 import { OptionsMenuItem } from "@webiny/app-admin";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
 import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
-import { useApolloClient } from "@apollo/react-hooks";
 import { useScheduleDialog } from "@webiny/app-scheduler";
 import { usePermissions } from "~/hooks/usePermissions.js";
 import { createNamespace } from "~/utils/index.js";
@@ -23,10 +22,7 @@ const MenuItemWithId = ({
     modelId,
     loading
 }: MenuItemWithIdProps) => {
-    const client = useApolloClient();
-
     const { showDialog: showSchedulerDialog } = useScheduleDialog({
-        client,
         namespace: createNamespace({ modelId }),
         target: {
             id: entryId,

@@ -3,9 +3,9 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../admin-ui" },
+    { "path": "../app-admin" },
     { "path": "../app-headless-cms" },
     { "path": "../app-headless-cms-common" },
-    { "path": "../app-admin" },
     { "path": "../app-scheduler" }
   ],
   "compilerOptions": {
@@ -17,12 +17,12 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/admin-ui/*": ["../admin-ui/src/*"],
       "@webiny/admin-ui": ["../admin-ui/src"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-headless-cms/*": ["../app-headless-cms/src/*"],
       "@webiny/app-headless-cms": ["../app-headless-cms/src"],
       "@webiny/app-headless-cms-common/*": ["../app-headless-cms-common/src/*"],
       "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
-      "@webiny/app-admin/*": ["../app-admin/src/*"],
-      "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-scheduler/*": ["../app-scheduler/src/*"],
       "@webiny/app-scheduler": ["../app-scheduler/src"]
     }
