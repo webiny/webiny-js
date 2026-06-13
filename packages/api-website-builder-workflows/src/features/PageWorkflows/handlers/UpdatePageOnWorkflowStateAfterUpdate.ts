@@ -15,11 +15,9 @@ class UpdatePageOnWorkflowStateAfterUpdateImpl
             return;
         }
 
-        const values = getStateValues(state);
-
         await this.updatePage.execute(state.targetRevisionId, {
             system: {
-                workflow: values
+                workflow: state.isActive ? getStateValues(state) : null
             }
         });
     }

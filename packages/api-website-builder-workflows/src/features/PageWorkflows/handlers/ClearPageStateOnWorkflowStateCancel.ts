@@ -14,7 +14,7 @@ class ClearPageStateOnWorkflowStateCancelImpl implements WorkflowStateCancelHand
 
         await this.updatePage.execute(state.targetRevisionId, {
             system: {
-                workflow: undefined
+                workflow: null
             }
         });
     }

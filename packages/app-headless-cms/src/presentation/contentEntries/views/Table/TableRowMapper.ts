@@ -1,3 +1,4 @@
+import { createAbstraction } from "@webiny/feature/admin";
 import type { FolderDto } from "@webiny/app-aco";
 import type { CmsContentEntry } from "~/types.js";
 
@@ -15,21 +16,21 @@ export interface FolderTableRow extends BaseTableRow<FolderDto> {
 
 export interface EntryTableRow extends BaseTableRow<CmsContentEntry> {
     $type: "RECORD";
-    $selectable: true;
 }
 
 export type TableRow = FolderTableRow | EntryTableRow;
 
-export const TableRowMapper = {
-    fromFolder(folder: FolderDto): FolderTableRow {
-        return {
-            id: folder.id,
-            $type: "FOLDER",
-            $selectable: false,
-            data: folder
-        };
-    },
+export interface ITableRowMapper {
+    fromEntry(entry: CmsContentEntry): EntryTableRow;
+}
 
+export const TableRowMapper = createAbstraction<ITableRowMapper>("Cms/EntryTableRowMapper");
+
+export namespace TableRowMapper {
+    export type Interface = ITableRowMapper;
+}
+
+class TableRowMapperImpl implements ITableRowMapper {
     fromEntry(entry: CmsContentEntry): EntryTableRow {
         return {
             id: entry.id,
@@ -38,4 +39,18 @@ export const TableRowMapper = {
             data: entry
         };
     }
-};
+}
+
+export const TableRowMapperImplementation = TableRowMapper.createImplementation({
+    implementation: TableRowMapperImpl,
+    dependencies: []
+});
+
+export function folderToTableRow(folder: FolderDto): FolderTableRow {
+    return {
+        id: folder.id,
+        $type: "FOLDER",
+        $selectable: false,
+        data: folder
+    };
+}

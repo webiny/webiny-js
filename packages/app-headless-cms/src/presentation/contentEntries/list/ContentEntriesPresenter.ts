@@ -137,6 +137,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
 
     deselectEntry(): void {
         this._selectedEntryId = null;
+        this._listPresenter.actions.refresh();
     }
 
     createEntry(): void {

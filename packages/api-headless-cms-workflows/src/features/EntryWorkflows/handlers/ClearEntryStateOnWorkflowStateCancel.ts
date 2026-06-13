@@ -23,11 +23,12 @@ class ClearEntryStateOnWorkflowStateCancelImpl implements WorkflowStateCancelHan
         }
 
         const model = modelResult.value;
-        await this.updateEntry.execute(model, state.targetRevisionId, {
-            system: {
-                workflow: undefined
-            }
-        });
+        await this.updateEntry.execute(
+            model,
+            state.targetRevisionId,
+            { system: { workflow: null } },
+            { skipValidation: true }
+        );
     }
 }
 

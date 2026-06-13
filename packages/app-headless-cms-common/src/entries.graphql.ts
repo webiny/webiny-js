@@ -22,7 +22,7 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
     status
 `;
 
-const createEntrySystemFields = (model: CmsModel) => {
+export const createEntrySystemFields = (model: CmsModel) => {
     const isSingletonModel = model.tags.includes(CMS_MODEL_SINGLETON_TAG);
 
     let optionalFields = "";

@@ -1,7 +1,13 @@
+import gql from "graphql-tag";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsContentEntry, CmsErrorResponse } from "~/types.js";
-import { createReadQuery } from "@webiny/app-headless-cms-common";
-import { GetEntryGateway as GatewayAbstraction, type IGetEntryParams } from "./abstractions.js";
+import { createEntrySystemFields, createFieldsList } from "@webiny/app-headless-cms-common";
+import {
+    GetEntryGateway as GatewayAbstraction,
+    GetEntryGraphQLFieldSelection,
+    type IGetEntryParams,
+    type IGetEntryGraphQLFieldSelection
+} from "./abstractions.js";
 
 interface GetEntryResponse {
     content: {
@@ -10,11 +16,41 @@ interface GetEntryResponse {
     };
 }
 
+const ERROR_FIELD = /* GraphQL */ `
+    {
+        message
+        code
+        data
+    }
+`;
+
 class GetEntryGatewayImpl implements GatewayAbstraction.Interface {
-    constructor(private client: CmsGraphQLClient.Interface) {}
+    constructor(
+        private client: CmsGraphQLClient.Interface,
+        private fieldSelections: IGetEntryGraphQLFieldSelection[]
+    ) {}
 
     async execute({ model, id }: IGetEntryParams) {
-        const query = createReadQuery(model);
+        const extraSelection: string[] = [];
+        for (const selection of this.fieldSelections) {
+            extraSelection.push(...selection.getSelection());
+        }
+
+        const query = gql`
+            query CmsEntriesGet${model.singularApiName}($revision: ID, $entryId: ID) {
+                content: get${model.singularApiName}(revision: $revision, entryId: $entryId) {
+                    data {
+                        ${createEntrySystemFields(model)}
+                        ${extraSelection.join("\n")}
+                        values {
+                            ${createFieldsList({ model, fields: model.fields })}
+                        }
+                    }
+                    error ${ERROR_FIELD}
+                }
+            }
+        `;
+
         const isRevisionId = id.includes("#");
 
         const response = await this.client.execute<GetEntryResponse>({
@@ -34,5 +70,5 @@ class GetEntryGatewayImpl implements GatewayAbstraction.Interface {
 
 export const GetEntryGateway = GatewayAbstraction.createImplementation({
     implementation: GetEntryGatewayImpl,
-    dependencies: [CmsGraphQLClient]
+    dependencies: [CmsGraphQLClient, [GetEntryGraphQLFieldSelection, { multiple: true }]]
 });

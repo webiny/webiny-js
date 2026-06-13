@@ -28,11 +28,12 @@ class UpdateEntryOnWorkflowStateAfterCreateImpl
         }
 
         const model = modelResult.value;
-        await this.updateEntry.execute(model, state.targetRevisionId, {
-            system: {
-                workflow: values
-            }
-        });
+        await this.updateEntry.execute(
+            model,
+            state.targetRevisionId,
+            { system: { workflow: values } },
+            { skipValidation: true }
+        );
     }
 }
 

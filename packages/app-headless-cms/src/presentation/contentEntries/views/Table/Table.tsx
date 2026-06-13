@@ -2,13 +2,16 @@ import React, { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { Table as AcoTable } from "@webiny/app-aco";
 import { useListViewTableProps } from "@webiny/app-admin";
+import { useContainer } from "@webiny/app";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries/list/ContentEntryListConfig.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
-import { TableRowMapper, type TableRow } from "./TableRowMapper.js";
+import { TableRowMapper, folderToTableRow, type TableRow } from "./TableRowMapper.js";
 
 export const Table = observer(() => {
     const presenter = useContentEntriesPresenter();
     const { browser } = useContentEntryListConfig();
+    const container = useContainer();
+    const mapper = container.resolve(TableRowMapper);
 
     const tableProps = useListViewTableProps({
         namespace: `cms/${presenter.vm.model.modelId}/list`,
@@ -16,15 +19,13 @@ export const Table = observer(() => {
     });
 
     const data = useMemo<TableRow[]>(() => {
-        const entryRows = presenter.list.vm.rows.map(entry => TableRowMapper.fromEntry(entry));
+        const entryRows = presenter.list.vm.rows.map(entry => mapper.fromEntry(entry));
 
         if (!presenter.vm.showFolders) {
             return entryRows;
         }
 
-        const folderRows = (presenter.folders.vm.childFolders ?? []).map(f =>
-            TableRowMapper.fromFolder(f)
-        );
+        const folderRows = (presenter.folders.vm.childFolders ?? []).map(f => folderToTableRow(f));
         return [...folderRows, ...entryRows];
     }, [presenter.list.vm.rows, presenter.folders.vm.childFolders, presenter.vm.showFolders]);
 

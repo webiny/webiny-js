@@ -25,7 +25,11 @@ export const ContentEntryFormWorkflow = Content.createDecorator(Original => {
 
         return (
             <>
-                <div className={"max-w-screen bg-white p-sm border-solid border-b-sm border-neutral-dimmed"}>
+                <div
+                    className={
+                        "max-w-screen bg-white p-sm border-solid border-b-sm border-neutral-dimmed"
+                    }
+                >
                     <WorkflowStateBar />
                     {presenter.vm.hasState ? (
                         <Alert type="danger" className={"mt-sm"}>

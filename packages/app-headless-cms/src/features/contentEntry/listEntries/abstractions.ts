@@ -1,6 +1,19 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { CmsContentEntry, CmsMetaResponse, CmsModel } from "~/types.js";
 
+// Extension point for field selection
+
+export interface IListEntriesGraphQLFieldSelection {
+    getSelection(): string[];
+}
+
+export const ListEntriesGraphQLFieldSelection =
+    createAbstraction<IListEntriesGraphQLFieldSelection>("ListEntriesGraphQLFieldSelection");
+
+export namespace ListEntriesGraphQLFieldSelection {
+    export type Interface = IListEntriesGraphQLFieldSelection;
+}
+
 // Gateway
 
 export interface IListEntriesGatewayParams {
