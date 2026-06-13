@@ -5,3 +5,4 @@ export * from "./SnsEventType.js";
 export * from "./EventBridgeEventType.js";
 export * from "./DynamoDBEventType.js";
 export * from "./FunctionUrlEventType.js";
+export * from "./eventTypes/BackgroundTaskEventType.js";

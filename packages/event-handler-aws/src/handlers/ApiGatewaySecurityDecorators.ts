@@ -53,6 +53,9 @@ class ApiGatewayTenantDecoratorImpl implements ApiGatewayEventHandler.Interface 
         const result = await this.getTenantById.execute(tenantId);
         if (result.isOk()) {
             this.tenantCtx.setTenant(result.value);
+        } else {
+            // Tenant not found — continue anyway; downstream code will handle missing tenant
+            console.warn(`[ApiGatewayTenantDecorator] Tenant "${tenantId}" not found.`);
         }
 
         return this.inner.execute(ctx, next);

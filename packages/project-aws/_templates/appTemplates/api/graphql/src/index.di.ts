@@ -6,8 +6,11 @@ import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js
 import {
     createLambdaHandler,
     ApiGatewayFeature,
-    ApiGatewaySecurityFeature
+    ApiGatewaySecurityFeature,
+    BackgroundTaskEventType
 } from "@webiny/event-handler-aws";
+import { BackgroundTaskLambdaHandler } from "@webiny/background-tasks/api";
+import { registerLegacyPlugins } from "@webiny/event-handler-core";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { DbFeature } from "@webiny/handler-db";
 import { ApiCoreFeature } from "@webiny/api-core";
@@ -46,6 +49,10 @@ export const handler = createLambdaHandler({
         // ── Transport ──────────────────────────────────────────────
         ApiGatewayFeature.register(container);
         ApiGatewaySecurityFeature.register(container);
+
+        // Background task invocations (Step Functions → Lambda directly)
+        container.register(BackgroundTaskEventType);
+        container.register(BackgroundTaskLambdaHandler);
 
         // ── Database ───────────────────────────────────────────────
         DbFeature.register(container, {
@@ -103,9 +110,9 @@ export const handler = createLambdaHandler({
         });
         CmsSchedulerFeature.register(container);
 
-        // ── Extensions ─────────────────────────────────────────────
-        // TODO: extensions() — user-defined plugins, needs migration path
-        // extensions()
+        // ── Extensions (legacy escape hatch) ──────────────────────
+        // Custom plugins not yet migrated to createFeature() can use registerLegacyPlugins()
+        registerLegacyPlugins(container, extensions());
 
         // ── GraphQL engine (always last) ───────────────────────────
         GraphQLEngineFeature.register(container);

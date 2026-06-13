@@ -1,6 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { Db } from "@webiny/db";
-import { DynamoDbDriver, DynamoDBClientFeature } from "@webiny/db-dynamodb";
+import { DynamoDbDriver, DynamoDBClientFeature, FilterUtilFeature } from "@webiny/db-dynamodb";
+import { ValueFilterFeature } from "@webiny/db-utils";
 import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
 import type { Container } from "@webiny/di";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
@@ -19,6 +20,10 @@ export const DbFeature = createFeature({
 
         // Register DynamoDBClient abstraction (Bruno's pattern: { client: DynamoDBDocument })
         DynamoDBClientFeature.register(container, config.documentClient);
+
+        // DDB filter/query utilities — required for CMS entry filtering
+        FilterUtilFeature.register(container);
+        ValueFilterFeature.register(container);
 
         // Register the full Db instance for code that needs driver + key-value store
         container.registerInstance(DbInstance, db as Db<unknown>);

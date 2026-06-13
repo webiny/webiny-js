@@ -13450,6 +13450,8 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/event-handler-aws": "npm:0.0.0"
+    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
@@ -13683,7 +13685,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/event-handler-aws@workspace:packages/event-handler-aws":
+"@webiny/event-handler-aws@npm:0.0.0, @webiny/event-handler-aws@workspace:packages/event-handler-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/event-handler-aws@workspace:packages/event-handler-aws"
   dependencies:
@@ -13812,6 +13814,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/db-utils": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
