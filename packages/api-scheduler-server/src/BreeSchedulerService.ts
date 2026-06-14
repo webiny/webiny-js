@@ -18,10 +18,10 @@ export interface IBreeSchedulerServiceParams {
 
 /* One-shot bree job per scheduled action — mirrors EventBridge behavior. */
 export class BreeSchedulerService implements SchedulerService.Interface {
-    private readonly bree: Bree;
+    private readonly bree;
     private readonly namespaces = new Map<string, string>();
-    private readonly logger: Logger.Interface;
-    private readonly onTrigger: IBreeSchedulerServiceParams["onTrigger"];
+    private readonly logger;
+    private readonly onTrigger;
 
     public constructor(params: IBreeSchedulerServiceParams) {
         this.logger = params.logger;
