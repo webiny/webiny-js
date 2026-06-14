@@ -7,10 +7,12 @@ import {
     type ISchedulerServiceUpdateParams,
     SchedulerService
 } from "@webiny/api-scheduler/shared/abstractions.js";
+import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const jobsDir = join(dirname(fileURLToPath(import.meta.url)), "jobs");
 
 export interface IBreeSchedulerServiceParams {
+    logger: Logger.Interface;
     onTrigger: (id: string, namespace: string) => Promise<void>;
 }
 
@@ -18,9 +20,11 @@ export interface IBreeSchedulerServiceParams {
 export class BreeSchedulerService implements SchedulerService.Interface {
     private readonly bree: Bree;
     private readonly namespaces = new Map<string, string>();
+    private readonly logger: Logger.Interface;
     private readonly onTrigger: IBreeSchedulerServiceParams["onTrigger"];
 
     public constructor(params: IBreeSchedulerServiceParams) {
+        this.logger = params.logger;
         this.onTrigger = params.onTrigger;
 
         this.bree = new Bree({
@@ -69,7 +73,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
         await this.bree.add({
             name: id,
             date: scheduleFor,
-            path: join(__dirname, "jobs", "pollWorker.js")
+            path: join(jobsDir, "pollWorker.js")
         });
 
         await this.bree.start(id);
@@ -121,7 +125,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
             await this.bree.add({
                 name: action.id,
                 date: action.scheduledFor,
-                path: join(__dirname, "jobs", "pollWorker.js")
+                path: join(jobsDir, "pollWorker.js")
             });
 
             await this.bree.start(action.id);
@@ -134,13 +138,15 @@ export class BreeSchedulerService implements SchedulerService.Interface {
         try {
             await this.bree.stop(id);
         } catch {
-            /* Job may have already fired. */
+            this.logger.debug(`Could not stop bree job "${id}" — it may have already fired.`);
         }
 
         try {
             await this.bree.remove(id);
         } catch {
-            /* Job may have already been removed. */
+            this.logger.debug(
+                `Could not remove bree job "${id}" — it may have already been removed.`
+            );
         }
     }
 }

@@ -14,6 +14,7 @@ import { SchedulerPermissionsFeature } from "@webiny/api-scheduler/features/perm
 import { NamespaceHandlerExecutioner } from "@webiny/api-scheduler/features/NamespaceHandler/NamespaceHandlerExecutioner.js";
 import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/index.js";
 import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
+import { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { BreeSchedulerService } from "~/BreeSchedulerService.js";
 
@@ -30,16 +31,17 @@ export const createSchedulerContext = () => {
             return;
         }
 
+        const logger = context.container.resolve(Logger);
         const executeScheduledAction = context.container.resolve(ExecuteScheduledActionUseCase);
 
         const service = new BreeSchedulerService({
+            logger,
             onTrigger: async (id, namespace) => {
                 const result = await executeScheduledAction.execute({ id, namespace });
 
                 if (result.isFail()) {
-                    console.error(
-                        `Scheduled action "${id}" execution failed:`,
-                        result.error.message
+                    logger.error(
+                        `Scheduled action "${id}" execution failed: ${result.error.message}`
                     );
                 }
             }
