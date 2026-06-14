@@ -1,7 +1,7 @@
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import zod from "zod";
 import { createZodError } from "@webiny/utils/createZodError.js";
-import { schedulerEntrySchema } from "~/features/schema/schedulerEntry.js";
+import { schedulerEntrySchema } from "~/domain/schedulerEntry.js";
 import { SCHEDULER_ENTRY_FIELDS, ERROR_FIELDS } from "~/features/graphqlFields.js";
 import {
     ScheduleUnpublishActionGateway as GatewayAbstraction,
