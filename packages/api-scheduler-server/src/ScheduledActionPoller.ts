@@ -1,6 +1,10 @@
-import { schedule, type ScheduledTask } from "node-cron";
+import Bree from "bree";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
 import type { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/index.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export interface IScheduledActionPollerParams {
     cronExpression: string;
@@ -10,20 +14,34 @@ export interface IScheduledActionPollerParams {
 
 /* Polls the database for due scheduled actions and executes them. */
 export class ScheduledActionPoller {
-    private task: ScheduledTask | undefined;
+    private bree: Bree | undefined;
 
-    public start(params: IScheduledActionPollerParams): void {
+    public async start(params: IScheduledActionPollerParams): Promise<void> {
         const { cronExpression, listScheduledActions, executeScheduledAction } = params;
 
-        this.task = schedule(cronExpression, async () => {
+        this.bree = new Bree({
+            root: false,
+            jobs: [
+                {
+                    name: "poll-scheduled-actions",
+                    cron: cronExpression,
+                    path: join(__dirname, "jobs", "pollWorker.js")
+                }
+            ],
+            logger: false
+        });
+
+        this.bree.on("worker message", async () => {
             await this.poll(listScheduledActions, executeScheduledAction);
         });
+
+        await this.bree.start();
     }
 
-    public stop(): void {
-        if (this.task) {
-            this.task.stop();
-            this.task = undefined;
+    public async stop(): Promise<void> {
+        if (this.bree) {
+            await this.bree.stop();
+            this.bree = undefined;
         }
     }
 

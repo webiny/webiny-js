@@ -24,10 +24,9 @@
     "@webiny/api-scheduler": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/plugins": "0.0.0",
-    "node-cron": "^3.0.3"
+    "bree": "9.2.9"
   },
   "devDependencies": {
-    "@types/node-cron": "^3.0.11",
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "typescript": "6.0.3"

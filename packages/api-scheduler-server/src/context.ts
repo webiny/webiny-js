@@ -57,7 +57,7 @@ export const createSchedulerContext = (params?: ICreateSchedulerContextParams) =
         const listScheduledActions = context.container.resolve(ListScheduledActionsUseCase);
         const executeScheduledAction = context.container.resolve(ExecuteScheduledActionUseCase);
 
-        poller.start({
+        await poller.start({
             cronExpression,
             listScheduledActions,
             executeScheduledAction
