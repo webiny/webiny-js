@@ -1,6 +1,6 @@
 import type { Plugin } from "@webiny/plugins/types.js";
-import { createSchedulerContext, type ICreateSchedulerContextParams } from "~/context.js";
+import { createSchedulerContext } from "~/context.js";
 
-export const createScheduler = (params?: ICreateSchedulerContextParams): Plugin[] => {
-    return [...createSchedulerContext(params)];
+export const createScheduler = (): Plugin[] => {
+    return [...createSchedulerContext()];
 };
