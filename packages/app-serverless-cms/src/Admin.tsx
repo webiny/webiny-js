@@ -13,7 +13,7 @@ import { createApolloClient } from "./apolloClientFactory.js";
 import apolloLinks from "./apolloLinks.js";
 import { AuditLogs } from "@webiny/app-audit-logs";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
-import { Module as MailerSettings } from "@webiny/app-mailer";
+import { Extension as MailerSettings } from "@webiny/app-mailer";
 import { Websockets } from "@webiny/app-websockets";
 import { RecordLocking } from "@webiny/app-record-locking";
 import { TrashBinConfigs } from "@webiny/app-admin/presentation/trashBin/index.js";

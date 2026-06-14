@@ -13,19 +13,13 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@apollo/react-components": "^3.1.5",
     "@webiny/admin-ui": "0.0.0",
+    "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
-    "@webiny/form": "0.0.0",
-    "@webiny/validation": "0.0.0",
-    "apollo-cache": "^1.3.5",
-    "apollo-client": "^2.6.10",
-    "apollo-link": "^1.2.14",
-    "apollo-utilities": "^1.3.4",
-    "graphql": "^16.14.2",
-    "graphql-tag": "^2.12.6",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "@webiny/feature": "0.0.0",
+    "mobx": "^6.13.7",
+    "mobx-react-lite": "^4.1.0",
+    "react": "18.3.1"
   },
   "devDependencies": {
     "@types/react": "18.3.31",

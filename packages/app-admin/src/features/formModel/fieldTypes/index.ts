@@ -6,3 +6,4 @@ export { FileFieldType, FileFieldBuilder } from "./FileFieldType.js";
 export { FileUrlFieldType, FileUrlFieldBuilder } from "./FileUrlFieldType.js";
 export { ObjectFieldType, ObjectFieldBuilder } from "./ObjectFieldType.js";
 export { LexicalFieldType, LexicalFieldBuilder } from "./LexicalFieldType.js";
+export { PasswordFieldType, PasswordFieldBuilder } from "./PasswordFieldType.js";

@@ -22,9 +22,7 @@ const SchedulerListViewInner = observer(function SchedulerListViewInner(
         presenter.init({ namespace: props.namespace });
     }, [presenter, props.namespace]);
 
-    return (
-        <SchedulerOverlay presenter={presenter} onExited={props.onClose} title={props.title} />
-    );
+    return <SchedulerOverlay presenter={presenter} onExited={props.onClose} title={props.title} />;
 });
 
 export const SchedulerListView = (props: SchedulerListViewProps) => {

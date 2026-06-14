@@ -21,3 +21,4 @@ import "../../base/Base/FieldRenderers/HiddenRenderer.js";
 import "../../base/Base/FieldRenderers/FilePickerRenderer.js";
 import "../../base/Base/FieldRenderers/CodeEditorRenderer.js";
 import "../../base/Base/FieldRenderers/LexicalRenderer.js";
+import "../../base/Base/FieldRenderers/PasswordInputRenderer.js";
