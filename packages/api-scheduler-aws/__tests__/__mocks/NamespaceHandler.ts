@@ -1,4 +1,4 @@
-import { NamespaceHandler as NamespaceHandlerAbstraction } from "~/features/NamespaceHandler/index.js";
+import { NamespaceHandler as NamespaceHandlerAbstraction } from "@webiny/api-scheduler/features/NamespaceHandler/index.js";
 import { PublishTestEntryActionHandlerImpl } from "./PublishTestEntryActionHandler";
 import { Result } from "@webiny/feature/api/index.js";
 

@@ -24,7 +24,7 @@ import { createWebsockets } from "@webiny/api-websockets";
 import { registerWebsocketsDdbStorageOperations } from "@webiny/api-websockets-ddb";
 import { createRecordLocking } from "@webiny/api-record-locking";
 import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
-import { createScheduler } from "@webiny/api-scheduler";
+import { createScheduler } from "@webiny/api-scheduler-aws";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
 import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
 import { createWorkflows } from "@webiny/api-workflows";

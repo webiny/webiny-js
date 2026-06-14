@@ -1,5 +1,5 @@
-import { ScheduledActionHandler } from "~/shared/abstractions.js";
-import { SCHEDULED_ACTION_PUBLISH } from "~/constants.js";
+import { ScheduledActionHandler } from "@webiny/api-scheduler/shared/abstractions.js";
+import { SCHEDULED_ACTION_PUBLISH } from "@webiny/api-scheduler/constants.js";
 
 /**
  * Handler for publishing CMS entries

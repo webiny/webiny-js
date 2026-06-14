@@ -5,24 +5,27 @@ import type {
 } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { getManifest } from "~/manifest.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import { SCHEDULE_MODEL_ID } from "./constants.js";
-import { ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js";
+import { SCHEDULE_MODEL_ID } from "@webiny/api-scheduler/constants.js";
+import {
+    ScheduledActionModel,
+    SchedulerService
+} from "@webiny/api-scheduler/shared/abstractions.js";
 import { EventBridgeSchedulerService } from "~/features/SchedulerService/EventBridgeSchedulerService.js";
-import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
-import { SchedulePrivateModel } from "~/domain/SchedulePrivateModel.js";
-import { SchedulerFeature } from "./features/SchedulerFeature.js";
+import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
+import { SchedulePrivateModel } from "@webiny/api-scheduler/domain/SchedulePrivateModel.js";
+import { SchedulerFeature } from "@webiny/api-scheduler/features/SchedulerFeature.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { SchedulerGraphQLFactory } from "~/graphql/index.js";
-import { SchedulerPermissionsFeature } from "~/features/permissions/feature.js";
-import { NamespaceHandlerExecutioner } from "~/features/NamespaceHandler/NamespaceHandlerExecutioner.js";
+import { SchedulerGraphQLFactory } from "@webiny/api-scheduler/graphql/index.js";
+import { SchedulerPermissionsFeature } from "@webiny/api-scheduler/features/permissions/feature.js";
+import { NamespaceHandlerExecutioner } from "@webiny/api-scheduler/features/NamespaceHandler/NamespaceHandlerExecutioner.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 
-export interface ICreateHeadlessCmsSchedulerContextParams {
+export interface ICreateSchedulerContextParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
 }
 
-export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContextParams) => {
+export const createSchedulerContext = (params: ICreateSchedulerContextParams) => {
     const modelsPlugin = createRegisterExtensionPlugin(context => {
         context.container.register(SchedulePrivateModel);
     });
@@ -40,7 +43,6 @@ export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContex
         if (manifest.error) {
             context.container.registerInstance(SchedulerService, new VoidSchedulerService());
         } else {
-            // TODO: in the future, extract AWS specific implementation into a separate package
             context.container.registerInstance(
                 SchedulerService,
                 new EventBridgeSchedulerService(params.getClient, {
@@ -59,7 +61,6 @@ export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContex
             context.container.registerInstance(ScheduledActionModel, schedulerModel.value);
         });
 
-        // Register all features
         SchedulerFeature.register(context.container);
     });
 

@@ -6,14 +6,17 @@ import {
 } from "~/createEventHandler.js";
 import { registry } from "@webiny/handler-aws/registry.js";
 import type { LambdaContext } from "@webiny/handler-aws/types.js";
-import { SCHEDULED_ACTION_EVENT_IDENTIFIER, SCHEDULED_ACTION_PUBLISH } from "~/constants.js";
-import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
+import {
+    SCHEDULED_ACTION_EVENT_IDENTIFIER,
+    SCHEDULED_ACTION_PUBLISH
+} from "@webiny/api-scheduler/constants.js";
+import { ScheduledActionId } from "@webiny/api-scheduler/domain/ScheduledActionId.js";
 import { useHandler } from "./__mocks/handler/useHandler.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
-import { SchedulerService } from "~/shared/abstractions.js";
-import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
-import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
+import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
+import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
+import { ScheduleActionUseCase } from "@webiny/api-scheduler/features/ScheduleAction/index.js";
 import {
     PublishTestEntryActionHandler,
     PublishTestEntryActionHandlerImpl

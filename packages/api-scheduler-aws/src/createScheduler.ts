@@ -6,12 +6,7 @@ import { createScheduledActionEventHandler } from "~/createEventHandler.js";
 export interface ICreateSchedulerParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
 }
+
 export const createScheduler = (params: ICreateSchedulerParams): Plugin[] => {
-    return [
-        /**
-         * Handler for the Scheduled Action Event.
-         */
-        createScheduledActionEventHandler(),
-        ...createSchedulerContext(params)
-    ];
+    return [createScheduledActionEventHandler(), ...createSchedulerContext(params)];
 };

@@ -3,7 +3,7 @@ import {
     type ISchedulerServiceCreateParams,
     type ISchedulerServiceUpdateParams,
     SchedulerService
-} from "~/shared/abstractions.js";
+} from "@webiny/api-scheduler/shared/abstractions.js";
 import {
     CreateScheduleCommand,
     DeleteScheduleCommand,
@@ -11,7 +11,7 @@ import {
     type SchedulerClient,
     UpdateScheduleCommand
 } from "@webiny/aws-sdk/client-scheduler/index.js";
-import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
+import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "@webiny/api-scheduler/constants.js";
 import type { IScheduledActionEventPayload } from "~/createEventHandler.js";
 
 export interface ISchedulerConfig {
@@ -19,14 +19,6 @@ export interface ISchedulerConfig {
     roleArn: string;
 }
 
-/**
- * AWS EventBridge Scheduler implementation
- *
- * This is the AWS-specific implementation of the cloud-agnostic SchedulerService abstraction.
- *
- * Manages schedules in AWS EventBridge Scheduler for triggering Lambda functions
- * at specified future times.
- */
 export class EventBridgeSchedulerService implements SchedulerService.Interface {
     public constructor(
         private getClient: (config?: any) => Pick<SchedulerClient, "send">,
@@ -36,7 +28,6 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
     public async create(params: ISchedulerServiceCreateParams): Promise<void> {
         const { id, scheduleFor } = params;
 
-        // Validate date is in future
         if (scheduleFor <= new Date()) {
             throw new WebinyError(
                 `Cannot create a schedule for "${id}" with date in the past`,
@@ -50,7 +41,6 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
 
         const client = this.getClient();
 
-        // Check if schedule already exists (for auto-update logic)
         const exists = await this.exists(id);
         if (exists) {
             return this.update(params);
@@ -68,7 +58,7 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
                     RoleArn: this.config.roleArn,
                     Input: this.createScheduledActionEventInput(params)
                 },
-                ActionAfterCompletion: "DELETE" // Auto-cleanup after execution
+                ActionAfterCompletion: "DELETE"
             })
         );
     }
@@ -76,7 +66,6 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
     public async update(params: ISchedulerServiceUpdateParams): Promise<void> {
         const { id, scheduleFor } = params;
 
-        // Validate date is in future
         if (scheduleFor <= new Date()) {
             throw new WebinyError(
                 `Cannot update an existing schedule for "${id}" with date in the past`,
@@ -140,7 +129,6 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
     }
 
     private createScheduleExpression(scheduleFor: Date): string {
-        // Format: at(YYYY-MM-DDTHH:mm:ss) - EventBridge expects this format
         return `at(${scheduleFor.toISOString().replace(/\.\d{3}Z$/, "")})`;
     }
 

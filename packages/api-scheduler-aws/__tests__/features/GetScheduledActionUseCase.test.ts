@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { useHandler } from "~tests/__mocks/handler/useHandler.js";
 import { createMockScheduleClient } from "~tests/__mocks/scheduleClient.js";
-import { SchedulerService } from "~/shared/abstractions.js";
-import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
-import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/index.js";
+import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
+import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
+import { GetScheduledActionUseCase } from "@webiny/api-scheduler/features/GetScheduledAction/index.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
 import { PublishTestEntryActionHandler } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 

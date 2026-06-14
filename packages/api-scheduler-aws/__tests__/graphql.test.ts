@@ -9,7 +9,7 @@ import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { useHandler } from "~tests/__mocks/handler/useHandler.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
 import { ContextPlugin } from "@webiny/api";
-import { SCHEDULED_ACTION_PUBLISH } from "~/constants.js";
+import { SCHEDULED_ACTION_PUBLISH } from "@webiny/api-scheduler/constants.js";
 
 describe("Scheduler GraphQL", () => {
     const targetId = "target-id#0001";
