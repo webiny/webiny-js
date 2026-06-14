@@ -12139,6 +12139,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     bree: "npm:9.2.9"
     typescript: "npm:6.0.3"
+    vitest: "npm:^4.1.8"
   languageName: unknown
   linkType: soft
 

@@ -10,6 +10,7 @@ import {
 import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 
 const jobsDir = join(dirname(fileURLToPath(import.meta.url)), "jobs");
+const workerPath = join(jobsDir, "pollWorker.js");
 
 export interface IBreeSchedulerServiceParams {
     logger: Logger.Interface;
@@ -30,17 +31,16 @@ export class BreeSchedulerService implements SchedulerService.Interface {
         this.bree = new Bree({
             root: false,
             jobs: [],
-            logger: false
-        });
+            logger: false,
+            workerMessageHandler: async ({ name }) => {
+                const namespace = this.namespaces.get(name);
+                if (!namespace) {
+                    return;
+                }
 
-        this.bree.on("worker message", async (_name: string) => {
-            const namespace = this.namespaces.get(_name);
-            if (!namespace) {
-                return;
+                this.namespaces.delete(name);
+                await this.onTrigger(name, namespace);
             }
-
-            this.namespaces.delete(_name);
-            await this.onTrigger(_name, namespace);
         });
     }
 
@@ -73,7 +73,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
         await this.bree.add({
             name: id,
             date: scheduleFor,
-            path: join(jobsDir, "pollWorker.js")
+            path: workerPath
         });
 
         await this.bree.start(id);
@@ -125,7 +125,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
             await this.bree.add({
                 name: action.id,
                 date: action.scheduledFor,
-                path: join(jobsDir, "pollWorker.js")
+                path: workerPath
             });
 
             await this.bree.start(action.id);
