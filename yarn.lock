@@ -12117,6 +12117,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-scheduler-server@workspace:packages/api-scheduler-server":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-scheduler-server@workspace:packages/api-scheduler-server"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-scheduler": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    typescript: "npm:6.0.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-scheduler@npm:0.0.0, @webiny/api-scheduler@workspace:packages/api-scheduler":
   version: 0.0.0-use.local
   resolution: "@webiny/api-scheduler@workspace:packages/api-scheduler"
