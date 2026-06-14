@@ -5,7 +5,7 @@ import {
     ScheduledActionModel,
     SchedulerService
 } from "@webiny/api-scheduler/shared/abstractions.js";
-import { TimerSchedulerService } from "~/TimerSchedulerService.js";
+import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
 import { SchedulePrivateModel } from "@webiny/api-scheduler/domain/SchedulePrivateModel.js";
 import { SchedulerFeature } from "@webiny/api-scheduler/features/SchedulerFeature.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -14,9 +14,20 @@ import { SchedulerGraphQLFactory } from "@webiny/api-scheduler/graphql/index.js"
 import { SchedulerPermissionsFeature } from "@webiny/api-scheduler/features/permissions/feature.js";
 import { NamespaceHandlerExecutioner } from "@webiny/api-scheduler/features/NamespaceHandler/NamespaceHandlerExecutioner.js";
 import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/index.js";
+import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { ScheduledActionPoller } from "~/ScheduledActionPoller.js";
 
-export const createSchedulerContext = () => {
+export interface ICreateSchedulerContextParams {
+    cronExpression?: string;
+}
+
+const DEFAULT_CRON_EXPRESSION = "* * * * *";
+
+export const createSchedulerContext = (params?: ICreateSchedulerContextParams) => {
+    const cronExpression = params?.cronExpression ?? DEFAULT_CRON_EXPRESSION;
+    const poller = new ScheduledActionPoller();
+
     const modelsPlugin = createRegisterExtensionPlugin(context => {
         context.container.register(SchedulePrivateModel);
     });
@@ -29,24 +40,8 @@ export const createSchedulerContext = () => {
             return;
         }
 
-        const service = new TimerSchedulerService({
-            onTrigger: async (id, namespace) => {
-                const executeUseCase = context.container.resolve(ExecuteScheduledActionUseCase);
-                const result = await executeUseCase.execute({
-                    id,
-                    namespace
-                });
-
-                if (result.isFail()) {
-                    console.error(
-                        `Scheduled action "${id}" execution failed:`,
-                        result.error.message
-                    );
-                }
-            }
-        });
-
-        context.container.registerInstance(SchedulerService, service);
+        /* The DB entry is the schedule; the poller is the trigger. */
+        context.container.registerInstance(SchedulerService, new VoidSchedulerService());
 
         SchedulerPermissionsFeature.register(context.container);
         context.container.register(SchedulerGraphQLFactory);
@@ -58,6 +53,15 @@ export const createSchedulerContext = () => {
         });
 
         SchedulerFeature.register(context.container);
+
+        const listScheduledActions = context.container.resolve(ListScheduledActionsUseCase);
+        const executeScheduledAction = context.container.resolve(ExecuteScheduledActionUseCase);
+
+        poller.start({
+            cronExpression,
+            listScheduledActions,
+            executeScheduledAction
+        });
     });
 
     return [schedulerContextPlugin, modelsPlugin];

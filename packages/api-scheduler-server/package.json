@@ -15,18 +15,19 @@
     "scheduler:server"
   ],
   "author": "Webiny Ltd",
-  "description": "Server-side timer-based implementation for the Webiny action scheduler.",
+  "description": "Server-side cron-based implementation for the Webiny action scheduler.",
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
-    "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/plugins": "0.0.0"
+    "@webiny/plugins": "0.0.0",
+    "node-cron": "^3.0.3"
   },
   "devDependencies": {
+    "@types/node-cron": "^3.0.11",
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "typescript": "6.0.3"
