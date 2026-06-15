@@ -5,11 +5,12 @@ import "tsx/esm";
 import "./utils/suppressPunycodeWarnings.js";
 
 import { Cli } from "@webiny/cli-core";
+import { registerAwsFeatures } from "@webiny/cli-aws";
 import { ensureSystemRequirements } from "@webiny/system-requirements";
 
 // Ensure system requirements are met.
 ensureSystemRequirements();
 
-const cli = await Cli.init();
+const cli = await Cli.init({}, registerAwsFeatures);
 
 await cli.run();

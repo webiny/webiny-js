@@ -1,4 +1,5 @@
 export * from "./ArgvParserService/index.js";
+export * from "./DefaultAppsService/index.js";
 export * from "./CliParamsService/index.js";
 export * from "./CommandsRegistryService/index.js";
 export * from "./GetArgvService/index.js";

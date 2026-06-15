@@ -1,4 +1,4 @@
-import { createAbstraction } from "@webiny/project/abstractions/createAbstraction";
+import { createAbstraction } from "@webiny/project/abstractions/createAbstraction.js";
 
 export interface IInvokeLambdaFunctionParams {
     functionName: string;

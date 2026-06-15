@@ -47,31 +47,38 @@ export class ProjectSdk {
         this.container = container;
     }
 
-    static async init(params: Partial<ProjectSdkParamsService.Params> = {}) {
+    static async init(
+        params: Partial<ProjectSdkParamsService.Params> = {},
+        register?: (container: Container) => void
+    ) {
         // If no params provided, check if we have context from parent process via env var
         const envContext = getProjectSdkContextFromEnv();
         if (envContext && Object.keys(params).length === 0) {
             params = envContext;
         }
 
-        const cacheKey = ProjectSdk.getCacheKey(params);
+        const cacheKey = ProjectSdk.getCacheKey(params, register);
 
         if (projectSdkCache.has(cacheKey)) {
             return projectSdkCache.get(cacheKey)!;
         }
 
-        const container = await createProjectSdkContainer(params);
+        const container = await createProjectSdkContainer(params, register);
         const instance = new ProjectSdk(container);
         projectSdkCache.set(cacheKey, instance);
 
         return instance;
     }
 
-    private static getCacheKey(params: Partial<ProjectSdkParamsService.Params>): string {
+    private static getCacheKey(
+        params: Partial<ProjectSdkParamsService.Params>,
+        register?: (container: Container) => void
+    ): string {
         const env = params.env || "";
         const variant = params.variant || "";
         const region = params.region || "";
-        return `${env}:${variant}:${region}`;
+        const flavour = register?.name || "";
+        return `${env}:${variant}:${region}:${flavour}`;
     }
 
     // Project-related methods.

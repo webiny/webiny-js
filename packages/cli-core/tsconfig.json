@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [{ "path": "../feature" }, { "path": "../project" }, { "path": "../pulumi-sdk" }],
+  "references": [{ "path": "../feature" }, { "path": "../project" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -14,9 +14,7 @@
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/project/*": ["../project/src/*"],
-      "@webiny/project": ["../project/src"],
-      "@webiny/pulumi-sdk/*": ["../pulumi-sdk/src/*"],
-      "@webiny/pulumi-sdk": ["../pulumi-sdk/src"]
+      "@webiny/project": ["../project/src"]
     }
   }
 }

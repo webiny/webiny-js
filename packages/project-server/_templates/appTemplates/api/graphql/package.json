@@ -1,0 +1,20 @@
+{
+  "name": "api-graphql",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "@webiny/api-aco": "latest",
+    "@webiny/api-core": "latest",
+    "@webiny/api-file-manager": "latest",
+    "@webiny/api-headless-cms": "latest",
+    "@webiny/api-headless-cms-aco": "latest",
+    "@webiny/api-mailer": "latest",
+    "@webiny/api-record-locking": "latest",
+    "@webiny/api-website-builder": "latest",
+    "@webiny/api-websockets": "latest",
+    "@webiny/api-workflows": "latest",
+    "@webiny/build-tools": "latest",
+    "@webiny/handler-graphql": "latest"
+  }
+}

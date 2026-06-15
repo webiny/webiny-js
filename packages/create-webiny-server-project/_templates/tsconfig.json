@@ -1,0 +1,9 @@
+{
+  "extends": "webiny/configs/tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["webiny-env.d.ts", "webiny.config.tsx", "extensions"]
+}

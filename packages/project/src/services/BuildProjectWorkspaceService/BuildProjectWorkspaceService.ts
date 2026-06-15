@@ -4,9 +4,7 @@ import {
     GetProjectService,
     LoggerService
 } from "~/abstractions/index.js";
-import path from "path";
 import fs from "fs";
-import { getTemplatesFolderPath } from "~/utils/index.js";
 
 export class DefaultBuildProjectWorkspaceService implements BuildProjectWorkspaceService.Interface {
     constructor(
@@ -16,19 +14,13 @@ export class DefaultBuildProjectWorkspaceService implements BuildProjectWorkspac
 
     async execute() {
         this.loggerService.trace("Building project workspace...");
-        const templatesFolderPath = getTemplatesFolderPath();
-
-        const webinyConfigBaseTemplateFilePath = path.join(
-            templatesFolderPath,
-            "webiny.config.base.tsx"
-        );
 
         const project = this.getProjectService.execute();
-        const internalWebinyConfigFilePath = project.paths.workspaceFolder
-            .join("webiny.config.base.tsx")
-            .toString();
+        const workspaceFolder = project.paths.workspaceFolder.toString();
 
-        fs.cpSync(webinyConfigBaseTemplateFilePath, internalWebinyConfigFilePath);
+        if (!fs.existsSync(workspaceFolder)) {
+            fs.mkdirSync(workspaceFolder, { recursive: true });
+        }
     }
 }
 

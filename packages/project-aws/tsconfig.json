@@ -7,6 +7,7 @@
     { "path": "../cli-core" },
     { "path": "../project" },
     { "path": "../pulumi" },
+    { "path": "../pulumi-sdk" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -26,6 +27,8 @@
       "@webiny/project": ["../project/src"],
       "@webiny/pulumi/*": ["../pulumi/src/*"],
       "@webiny/pulumi": ["../pulumi/src"],
+      "@webiny/pulumi-sdk/*": ["../pulumi-sdk/src/*"],
+      "@webiny/pulumi-sdk": ["../pulumi-sdk/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

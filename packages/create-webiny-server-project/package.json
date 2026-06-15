@@ -1,0 +1,21 @@
+{
+  "name": "create-webiny-server-project",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": "./bin.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Create a new Webiny server-flavour project.",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^11.3.0"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
