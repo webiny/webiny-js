@@ -199,6 +199,7 @@ function createMockFileDetailsPresenter(): IFileDetailsPresenter {
             form: {
                 layout: [],
                 errors: [],
+                hasErrors: false,
                 isDirty: false,
                 isValid: null,
                 submitCount: 0,

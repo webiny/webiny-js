@@ -115,6 +115,7 @@ function createMockFormModel(): IFormModel {
             isDirty: false,
             isValid: null,
             errors: [],
+            hasErrors: false,
             submitCount: 0,
             focusField: vi.fn(),
             getData: vi.fn(() => ({})),

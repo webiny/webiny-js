@@ -84,18 +84,12 @@ export const DefaultFieldRenderers = () => {
                 name={"passwordInput"}
                 component={PasswordInputRenderer}
             />
-            <AdminConfig.Form.FieldRenderer
-                name={"permissions"}
-                component={PermissionsRenderer}
-            />
+            <AdminConfig.Form.FieldRenderer name={"permissions"} component={PermissionsRenderer} />
             <AdminConfig.Form.FieldRenderer
                 name={"rolesMultiSelect"}
                 component={RolesMultiSelectRenderer}
             />
-            <AdminConfig.Form.FieldRenderer
-                name={"apiKeyToken"}
-                component={ApiKeyTokenRenderer}
-            />
+            <AdminConfig.Form.FieldRenderer name={"apiKeyToken"} component={ApiKeyTokenRenderer} />
         </AdminConfig>
     );
 };
