@@ -3,6 +3,11 @@
   "version": "0.0.0",
   "type": "module",
   "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "types": "index.d.ts",
   "description": "Node.js HTTP adapter for @webiny/event-handler.",
   "repository": {
     "type": "git",
@@ -26,7 +31,9 @@
     "vitest": "^3.2.4"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }

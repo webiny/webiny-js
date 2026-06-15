@@ -68,7 +68,7 @@ export const handler = createLambdaHandler({
 
         // ── DDB storage registries ─────────────────────────────────
         HeadlessCmsDdbFeature.register(container);
-        AuditLogsDdbFeature.register(container);
+        AuditLogsDdbFeature.register(container, {});
         AcoDdbFeature.register(container);
         WebsocketsDdbFeature.register(container);
     },
@@ -83,7 +83,7 @@ export const handler = createLambdaHandler({
         // ── File Manager ───────────────────────────────────────────
         FileManagerAppFeature.register(container);
         FileManagerAcoFeature.register(container);
-        FileManagerS3Feature.register(container);
+        FileManagerS3Feature.register(container, {});
 
         // ── Website Builder ────────────────────────────────────────
         WebsiteBuilderFeature.register(container);
@@ -95,8 +95,8 @@ export const handler = createLambdaHandler({
 
         // ── Supporting services ────────────────────────────────────
         MailerFeature.register(container);
-        RecordLockingAppFeature.register(container);
-        AuditLogsFeature.register(container);
+        RecordLockingAppFeature.register(container, {});
+        AuditLogsFeature.register(container, {});
         WebhooksFeature.register(container);
         BackgroundTasksFeature.register(container);
 
@@ -111,7 +111,6 @@ export const handler = createLambdaHandler({
         CmsSchedulerFeature.register(container);
 
         // ── Extensions (legacy escape hatch) ──────────────────────
-        // Custom plugins not yet migrated to createFeature() can use registerLegacyPlugins()
         registerLegacyPlugins(container, extensions());
 
         // ── GraphQL engine (always last) ───────────────────────────

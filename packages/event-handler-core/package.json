@@ -5,8 +5,10 @@
   "main": "index.js",
   "exports": {
     ".": "./index.js",
-    "./testing": "./testing/index.js"
+    "./testing": "./testing/index.js",
+    "./*": "./*"
   },
+  "types": "index.d.ts",
   "description": "Cloud-agnostic handler chain for building cloud functions with Dependency Injection.",
   "repository": {
     "type": "git",
@@ -30,7 +32,9 @@
     "vitest": "^3.2.4"
   },
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
   }
 }
