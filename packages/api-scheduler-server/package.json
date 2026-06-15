@@ -23,7 +23,6 @@
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
     "@webiny/error": "0.0.0",
-    "@webiny/handler": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "bree": "9.2.9"
   },

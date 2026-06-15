@@ -1,31 +1,16 @@
 import { ContextPlugin } from "@webiny/api";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import { SCHEDULE_MODEL_ID } from "@webiny/api-scheduler/constants.js";
-import {
-    ScheduledActionModel,
-    SchedulerService
-} from "@webiny/api-scheduler/shared/abstractions.js";
-import { SchedulePrivateModel } from "@webiny/api-scheduler/domain/SchedulePrivateModel.js";
-import { SchedulerFeature } from "@webiny/api-scheduler/features/SchedulerFeature.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { SchedulerGraphQLFactory } from "@webiny/api-scheduler/graphql/index.js";
-import { SchedulerPermissionsFeature } from "@webiny/api-scheduler/features/permissions/feature.js";
-import { NamespaceHandlerExecutioner } from "@webiny/api-scheduler/features/NamespaceHandler/NamespaceHandlerExecutioner.js";
+import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/index.js";
 import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
 import { Logger } from "@webiny/api-core/features/logger/abstractions.js";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { createSchedulerContext } from "@webiny/api-scheduler/context.js";
 import { BreeSchedulerService } from "~/BreeSchedulerService.js";
 
-export const createSchedulerContext = () => {
-    const modelsPlugin = createRegisterExtensionPlugin(context => {
-        context.container.register(SchedulePrivateModel);
-    });
-
-    const schedulerContextPlugin = new ContextPlugin<CmsContext>(async context => {
+export const createServerSchedulerContext = () => {
+    const servicePlugin = new ContextPlugin<CmsContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
-        const getModel = context.container.resolve(GetModelUseCase);
 
         if (!tenantContext.getTenant()) {
             return;
@@ -48,17 +33,16 @@ export const createSchedulerContext = () => {
         });
 
         context.container.registerInstance(SchedulerService, service);
+    });
 
-        SchedulerPermissionsFeature.register(context.container);
-        context.container.register(SchedulerGraphQLFactory);
-        context.container.register(NamespaceHandlerExecutioner);
+    const postInitPlugin = new ContextPlugin<CmsContext>(async context => {
+        const tenantContext = context.container.resolve(TenantContext);
 
-        await context.security.withoutAuthorization(async () => {
-            const schedulerModel = await getModel.execute(SCHEDULE_MODEL_ID);
-            context.container.registerInstance(ScheduledActionModel, schedulerModel.value);
-        });
+        if (!tenantContext.getTenant()) {
+            return;
+        }
 
-        SchedulerFeature.register(context.container);
+        const service = context.container.resolve(SchedulerService) as BreeSchedulerService;
 
         /* Start bree and recover pending actions from DB. */
         await service.start();
@@ -80,5 +64,5 @@ export const createSchedulerContext = () => {
         }
     });
 
-    return [schedulerContextPlugin, modelsPlugin];
+    return [servicePlugin, ...createSchedulerContext(), postInitPlugin];
 };

@@ -7,3 +7,5 @@ export {
 export type { IScheduledAction } from "./shared/abstractions.js";
 
 export { ScheduledActionId } from "./domain/ScheduledActionId.js";
+
+export { createSchedulerContext } from "./context.js";
