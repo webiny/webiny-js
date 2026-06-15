@@ -7,22 +7,19 @@ import { createPermissions } from "./helpers";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import type {
-    SchedulerClient,
-    SchedulerClientConfig
-} from "@webiny/aws-sdk/client-scheduler/index.js";
-import { createSchedulerManifestPlugin } from "../schedulerManifestPlugin.js";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import { createApiCore } from "@webiny/api-core";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import { createScheduler } from "@webiny/api-scheduler";
+import { registerSchedulerExtension, SchedulerService } from "@webiny/api-scheduler";
+import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
+import { ContextPlugin } from "@webiny/api";
+import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
 import { createMockBackgroundTasks } from "../mockBackgroundTasks.js";
 
 export interface CreateHandlerCoreParams {
-    getScheduleClient: (config?: SchedulerClientConfig) => Pick<SchedulerClient, "send">;
     setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
     identity?: IdentityData;
@@ -59,7 +56,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                 permissions: createPermissions(permissions),
                 identity
             }),
-            createSchedulerManifestPlugin(),
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             createCmsExtension(),
@@ -67,10 +63,9 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             createWebsiteBuilder(),
             plugins,
             graphQLHandlerPlugins(),
-            createScheduler({
-                getClient: config => {
-                    return params.getScheduleClient(config);
-                }
+            registerSchedulerExtension(),
+            new ContextPlugin<CmsContext>(async context => {
+                context.container.registerInstance(SchedulerService, new VoidSchedulerService());
             }),
             bottomPlugins
         ]
