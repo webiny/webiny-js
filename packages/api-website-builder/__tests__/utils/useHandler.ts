@@ -1,7 +1,7 @@
 import { createApiCore } from "@webiny/api-core";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import { createEventHandler, createHandler } from "@webiny/handler-aws/raw";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -11,7 +11,7 @@ import type { ApiCoreContext, ApiCoreStorageOperations } from "@webiny/api-core/
 import { createContextPlugin } from "@webiny/api";
 import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
 import { createTenancyAndSecurity } from "./tenancySecurity.js";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { createWebsiteBuilder } from "~/index.js";
 import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
@@ -33,6 +33,12 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
     const testProjectLicense = createTestWcpLicense();
 
+    const languagesExtensionPlugin = createRegisterExtensionPlugin(context => {
+        LanguagesExtension.register(context.container);
+    });
+
+    languagesExtensionPlugin.name = "test-languages-extension-plugin";
+
     const handler = createHandler<any, ApiCoreContext>({
         plugins: [
             createApiCore({
@@ -45,16 +51,13 @@ export const useHandler = (params: UseHandlerParams = {}) => {
                 permissions,
                 identity: identity === undefined ? createIdentity() : identity
             }),
-            createHeadlessCmsContext(),
+            createCmsExtension(),
             createBackgroundTasks(),
-            createHeadlessCmsGraphQL(),
             createWebsiteBuilder(),
             createContextPlugin(context => {
                 context.container.register(InvalidateCloudfrontCacheTaskDefinition);
             }),
-            createRegisterExtensionPlugin(context => {
-                LanguagesExtension.register(context.container);
-            }),
+            languagesExtensionPlugin,
             createEventHandler<any, ApiCoreContext, ApiCoreContext>(async ({ context }) => {
                 return context;
             }),

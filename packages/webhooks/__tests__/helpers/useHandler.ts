@@ -1,4 +1,4 @@
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
@@ -41,6 +41,21 @@ export const useHandler = (params?: UseHandlerParams) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
+    const webhookPlugin = createRegisterExtensionPlugin(context => {
+        if (params?.encryptionPassphrase) {
+            context.container.register(createEncryptionBuildParam(params.encryptionPassphrase));
+        }
+
+        /* Register noop external services before the webhooks Extension. */
+        NoopTaskServiceFeature.register(context.container);
+        TestWebhookProviderFeature.register(context.container);
+
+        /* Register all webhooks features. */
+        Extension.register(context.container);
+    });
+
+    webhookPlugin.name = "test-context-webhooks-extension-plugin";
+
     const handler = createRawHandler<any, any>({
         plugins: [
             createApiCore({
@@ -51,23 +66,9 @@ export const useHandler = (params?: UseHandlerParams) => {
                 permissions: createPermissions(params?.permissions),
                 identity: createIdentity(params?.identity)
             }),
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
+            createCmsExtension(),
             graphQLHandlerPlugins(),
-            createRegisterExtensionPlugin(context => {
-                if (params?.encryptionPassphrase) {
-                    context.container.register(
-                        createEncryptionBuildParam(params.encryptionPassphrase)
-                    );
-                }
-
-                /* Register noop external services before the webhooks Extension. */
-                NoopTaskServiceFeature.register(context.container);
-                TestWebhookProviderFeature.register(context.container);
-
-                /* Register all webhooks features. */
-                Extension.register(context.container);
-            }),
+            webhookPlugin,
             createRawEventHandler(async ({ context }) => {
                 return context;
             }),

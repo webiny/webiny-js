@@ -200,9 +200,11 @@ const storageOperationsFeature = createFeature({
 });
 
 export const registerCmsOpenSearchStorageOperations = () => {
-    return [
-        createRegisterExtensionPlugin(context => {
-            return storageOperationsFeature.register(context.container);
-        })
-    ];
+    const plugin = createRegisterExtensionPlugin(context => {
+        return storageOperationsFeature.register(context.container);
+    });
+
+    plugin.name = "cms.registerOpenSearchStorageOperations";
+
+    return [plugin];
 };

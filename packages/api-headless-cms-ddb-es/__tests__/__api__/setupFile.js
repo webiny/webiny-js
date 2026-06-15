@@ -79,6 +79,31 @@ setStorageOps("cms", () => {
     createOrRefreshIndexSubscription.name =
         "headlessCmsDdbEs.context.createOrRefreshIndexSubscription";
 
+    const fruitModifierPlugin = createRegisterExtensionPlugin(({ container }) => {
+        const FruitBodyModifier = CmsEntryOpenSearchBodyModifier.createImplementation({
+            implementation: class {
+                modelId = "fruit";
+                modifyBody({ body }) {
+                    if (!body.sort.customSorter) {
+                        return;
+                    }
+                    const order = body.sort.customSorter.order;
+                    delete body.sort.customSorter;
+                    body.sort = {
+                        createdOn: {
+                            order,
+                            unmapped_type: "date"
+                        }
+                    };
+                }
+            },
+            dependencies: []
+        });
+        container.register(FruitBodyModifier);
+    });
+
+    fruitModifierPlugin.name = "headlessCmsDdbEs.plugins.fruitModifierPlugin";
+
     return {
         storageOperations: {},
         plugins: [
@@ -90,28 +115,7 @@ setStorageOps("cms", () => {
             ...initializedDbPlugins,
             createOrRefreshIndexSubscription,
             getOpenSearchOperators(),
-            createRegisterExtensionPlugin(({ container }) => {
-                const FruitBodyModifier = CmsEntryOpenSearchBodyModifier.createImplementation({
-                    implementation: class {
-                        modelId = "fruit";
-                        modifyBody({ body }) {
-                            if (!body.sort.customSorter) {
-                                return;
-                            }
-                            const order = body.sort.customSorter.order;
-                            delete body.sort.customSorter;
-                            body.sort = {
-                                createdOn: {
-                                    order,
-                                    unmapped_type: "date"
-                                }
-                            };
-                        }
-                    },
-                    dependencies: []
-                });
-                container.register(FruitBodyModifier);
-            })
+            fruitModifierPlugin
         ]
     };
 });

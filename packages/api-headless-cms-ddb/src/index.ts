@@ -101,9 +101,10 @@ const storageOperationsFeature = createFeature({
 });
 
 export const registerDynamoDbStorageOperations = () => {
-    return [
-        createRegisterExtensionPlugin(context => {
-            return storageOperationsFeature.register(context.container);
-        })
-    ];
+    const plugin = createRegisterExtensionPlugin(context => {
+        return storageOperationsFeature.register(context.container);
+    });
+    plugin.name = "cms.registerDynamoDbStorageOperations";
+
+    return [plugin];
 };

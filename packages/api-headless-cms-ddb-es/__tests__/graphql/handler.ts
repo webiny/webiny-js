@@ -2,12 +2,12 @@ import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.j
 import dbPlugins from "@webiny/handler-db";
 import { PluginCollection } from "@webiny/plugins/types";
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
+import { CmsParametersPlugin, createCmsExtension } from "@webiny/api-headless-cms";
 import { CmsContext } from "~/types";
 import { createSecurity } from "~tests/graphql/security";
 import { createTable, DynamoDbDriver } from "@webiny/db-dynamodb";
 import { createIndexConfigurationPlugin } from "~tests/graphql/createIndexConfigurationPlugin";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
@@ -62,7 +62,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
                 })
             }),
             createSecurity(),
-            createHeadlessCmsContext(),
+            createCmsExtension(),
             createRawEventHandler(async ({ context }) => {
                 return context;
             }),

@@ -1,4 +1,3 @@
-import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createRevisionIdScalarPlugin } from "~/graphql/scalars/RevisionIdScalarPlugin.js";
 import {
     createContextParameterPlugin,
@@ -13,23 +12,20 @@ import { createFieldConverters } from "~/fieldConverters/index.js";
 export type ICreateCmsExtensionParams = CreateGraphQLParams;
 
 export const createCmsExtension = (params: ICreateCmsExtensionParams = {}) => {
-    return createRegisterExtensionPlugin(async context => {
-        context.plugins.register([
-            ...createRevisionIdScalarPlugin(),
-            /**
-             * PathParameter plugins are used to determine the type of the cms endpoint
-             */
-            createPathParameterPlugin(),
-            createHeaderParameterPlugin(),
-            createContextParameterPlugin(),
-            /**
-             * At this point we can create, or not create, CMS GraphQL Schema.
-             */
-            ...baseCreateGraphQL(params),
-            createExportGraphQL(),
-            //
-            createContextPlugin(),
-            createFieldConverters()
-        ]);
-    });
+    return [
+        createContextPlugin(),
+        createFieldConverters(),
+        ...createRevisionIdScalarPlugin(),
+        /**
+         * PathParameter plugins are used to determine the type of the cms endpoint
+         */
+        createPathParameterPlugin(),
+        createHeaderParameterPlugin(),
+        createContextParameterPlugin(),
+        /**
+         * At this point we can create, or not create, CMS GraphQL Schema.
+         */
+        ...baseCreateGraphQL(params),
+        createExportGraphQL()
+    ];
 };
