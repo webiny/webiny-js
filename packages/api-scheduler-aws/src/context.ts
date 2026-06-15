@@ -16,7 +16,8 @@ export interface IRegisterSchedulerAwsExtensionParams {
 }
 
 export const registerSchedulerAwsExtension = (params: IRegisterSchedulerAwsExtensionParams) => {
-    const servicePlugin = createRegisterExtensionPlugin<CmsContext>(async context => {
+    return createRegisterExtensionPlugin<CmsContext>(async context => {
+        context.plugins.register(createScheduledActionEventHandler());
         const tenantContext = context.container.resolve(TenantContext);
 
         if (!tenantContext.getTenant()) {
@@ -37,6 +38,4 @@ export const registerSchedulerAwsExtension = (params: IRegisterSchedulerAwsExten
             );
         }
     });
-
-    return [createScheduledActionEventHandler(), servicePlugin];
 };

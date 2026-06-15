@@ -12,6 +12,12 @@ import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 const jobsDir = join(dirname(fileURLToPath(import.meta.url)), "jobs");
 const workerPath = join(jobsDir, "pollWorker.js");
 
+export interface IPendingAction {
+    id: string;
+    namespace: string;
+    scheduledFor: Date;
+}
+
 export interface IBreeSchedulerServiceParams {
     logger: Logger.Interface;
     onTrigger: (id: string, namespace: string) => Promise<void>;
@@ -44,8 +50,12 @@ export class BreeSchedulerService implements SchedulerService.Interface {
         });
     }
 
-    public async start(): Promise<void> {
+    public async start(pendingActions?: IPendingAction[]): Promise<void> {
         await this.bree.start();
+
+        if (pendingActions) {
+            await this.recover(pendingActions);
+        }
     }
 
     public async stop(): Promise<void> {
@@ -107,10 +117,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
         return this.namespaces.has(id);
     }
 
-    /* Re-register pending actions from DB after a restart. */
-    public async recover(
-        pendingActions: Array<{ id: string; namespace: string; scheduledFor: Date }>
-    ): Promise<void> {
+    private async recover(pendingActions: IPendingAction[]): Promise<void> {
         const now = new Date();
 
         for (const action of pendingActions) {

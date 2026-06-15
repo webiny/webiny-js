@@ -8,7 +8,7 @@ import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { BreeSchedulerService } from "~/BreeSchedulerService.js";
 
 export const registerSchedulerServerExtension = () => {
-    const servicePlugin = createRegisterExtensionPlugin<CmsContext>(async context => {
+    return createRegisterExtensionPlugin<CmsContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
 
         if (!tenantContext.getTenant()) {
@@ -33,25 +33,20 @@ export const registerSchedulerServerExtension = () => {
 
         context.container.registerInstance(SchedulerService, service);
 
-        /* Start bree and recover pending actions from DB. */
-        await service.start();
-
         const listScheduledActions = context.container.resolve(ListScheduledActionsUseCase);
         const listResult = await listScheduledActions.execute({
             where: {},
             limit: 1000
         });
 
-        if (listResult.isOk() && listResult.value.items.length > 0) {
-            const pendingActions = listResult.value.items.map(action => ({
-                id: action.id,
-                namespace: action.namespace,
-                scheduledFor: action.scheduledFor
-            }));
+        const pendingActions = listResult.isOk()
+            ? listResult.value.items.map(action => ({
+                  id: action.id,
+                  namespace: action.namespace,
+                  scheduledFor: action.scheduledFor
+              }))
+            : undefined;
 
-            await service.recover(pendingActions);
-        }
+        await service.start(pendingActions);
     });
-
-    return [servicePlugin];
 };
