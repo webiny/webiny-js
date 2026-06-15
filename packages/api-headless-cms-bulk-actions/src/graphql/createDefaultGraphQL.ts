@@ -1,10 +1,10 @@
 import type { HcmsBulkActionsContext } from "~/types.js";
 import { CmsGraphQLSchemaPlugin, isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
-import { BeforeHandlerPlugin } from "@webiny/handler/plugins/BeforeHandlerPlugin.js";
+import { ContextPlugin } from "@webiny/api";
 
 export const createDefaultGraphQL = () => {
-    return new BeforeHandlerPlugin<HcmsBulkActionsContext>(async context => {
+    return new ContextPlugin<HcmsBulkActionsContext>(async context => {
         const tenant = context.tenancy.getCurrentTenant();
 
         if (!(await isHeadlessCmsReady(context))) {

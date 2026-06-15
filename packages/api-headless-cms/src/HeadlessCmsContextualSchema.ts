@@ -10,7 +10,7 @@ class HeadlessCmsContextualSchemaImpl implements IGraphQLContextualSchema {
         const getTenant = () => cmsCtx.tenancy.getCurrentTenant();
 
         return cmsCtx.security.withoutAuthorization(() => {
-            return getSchema({ context: cmsCtx, getTenant, type: cmsCtx.cms.type });
+            return getSchema({ context: cmsCtx, getTenant, type: cmsCtx.cms.type! });
         });
     }
 }

@@ -6,11 +6,12 @@ export const createPathParameterPlugin = () => {
         /**
          * If any of the properties is not defined, just ignore this plugin
          */
-        if (!context.request?.params) {
+        const request = (context as any).request;
+        if (!request?.params) {
             return null;
         }
 
-        const { type } = context.request.params as Record<string, string | null>;
+        const { type } = request.params as Record<string, string | null>;
 
         if (!type) {
             return null;

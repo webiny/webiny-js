@@ -49,9 +49,9 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
             : this.buildSchema(staticSchema, ctx));
 
         const parsed = bm?.measure
-            ? await bm.measure("headlessCms.graphql.createRequestBody", () =>
+            ? ((await bm.measure("headlessCms.graphql.createRequestBody", async () =>
                   createRequestBody(body)
-              )
+              )) as ReturnType<typeof createRequestBody>)
             : createRequestBody(body);
 
         const executeAll = async () =>

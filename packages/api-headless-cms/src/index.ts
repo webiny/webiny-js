@@ -51,7 +51,6 @@ export const createHeadlessCmsContext = () => {
 };
 export * from "~/plugins/index.js";
 export * from "~/utils/incrementEntryIdVersion.js";
-export * from "./graphql/handleRequest.js";
 export * from "./features/contentEntry/ContentEntryTraverser/ContentEntryTraverser.js";
 export { ContentEntryTraverserProvider } from "./features/contentEntry/ContentEntryTraverser/abstractions.js";
 export * from "./utils/contentModelAst/index.js";

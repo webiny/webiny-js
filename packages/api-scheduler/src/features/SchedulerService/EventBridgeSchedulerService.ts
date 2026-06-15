@@ -12,7 +12,7 @@ import {
     UpdateScheduleCommand
 } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
-import type { IScheduledActionEventPayload } from "~/createEventHandler.js";
+import type { IScheduledActionEventPayload } from "@webiny/event-handler-aws/eventTypes/ScheduledActionEventType.js";
 
 export interface ISchedulerConfig {
     lambdaArn: string;

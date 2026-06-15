@@ -113,7 +113,7 @@ class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
 
         const storageOperationsFactory = this.container.resolve(StorageOperationsFactory);
         const storageOperations = await storageOperationsFactory.create(ctx);
-        await storageOperations.beforeInit(ctx);
+        await storageOperations.beforeInit(ctx as CmsContext);
 
         const getTenant = () => ctx.tenancy.getCurrentTenant();
 
@@ -216,7 +216,7 @@ class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
         });
 
         if (storageOperations.init) {
-            await storageOperations.init(ctx);
+            await storageOperations.init(ctx as CmsContext);
         }
 
         // Apply ContextPlugin instances from extraPlugins (they may register event handlers etc.)

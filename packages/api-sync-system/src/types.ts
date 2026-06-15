@@ -1,5 +1,3 @@
-import type { Context as BaseContext } from "@webiny/handler-aws/types.js";
-
 export type CommandType = "put" | "delete";
 export type ExtendedCommandType = "put" | "delete" | "update";
 export type AllCommandType = ExtendedCommandType | "batchWrite" | "null";
@@ -9,8 +7,6 @@ export enum DynamoDBTableType {
     OPENSEARCH = "opensearch",
     UNKNOWN = "unknown"
 }
-
-export type Context = BaseContext;
 
 export interface IFileLambdaPayloadInfo {
     bucket: string;

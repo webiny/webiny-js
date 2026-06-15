@@ -1,59 +1,23 @@
-import "@fastify/cookie";
-import type {
-    FastifyRequest,
-    FastifyReply,
-    HTTPMethods as BaseHttpMethods,
-    RouteHandlerMethod
-} from "fastify";
-export type { FastifyInstance } from "fastify";
-import type { Context as BaseContext } from "@webiny/api/types.js";
+import type { Container } from "@webiny/di";
+import type { PluginsContainer } from "@webiny/plugins";
 
-export interface RouteMethodOptions {
-    override?: boolean;
+export interface Request {
+    headers: Record<string, string | undefined>;
+    body?: unknown;
+    params?: Record<string, string>;
+    query?: Record<string, string | string[]>;
+    path?: string;
+    [key: string]: unknown;
 }
 
-export type RouteMethodPath = `/${string}` | "*";
-export interface RouteMethod {
-    (path: RouteMethodPath, handler: RouteHandlerMethod, options?: RouteMethodOptions): void;
+export interface Reply {
+    send(data?: unknown): void | Promise<void>;
+    code(statusCode: number): Reply;
+    headers(headers: Record<string, string>): Reply;
+    [key: string]: unknown;
 }
 
-export type Request = FastifyRequest;
-export type Reply = FastifyReply;
-
-export type HTTPMethods = Uppercase<BaseHttpMethods>;
-
-export type DefinedContextRoutes = Record<HTTPMethods, string[]>;
-
-export interface ContextRoutes {
-    defined: DefinedContextRoutes;
-    onGet: RouteMethod;
-    onPost: RouteMethod;
-    onPut: RouteMethod;
-    onPatch: RouteMethod;
-    onDelete: RouteMethod;
-    onOptions: RouteMethod;
-    onAll: RouteMethod;
-    onHead: RouteMethod;
-}
-
-export interface Context extends BaseContext {
-    /**
-     * Current request. Must be set only once!
-     */
-    request: FastifyRequest;
-    /**
-     * Current reply. Must be set only once!
-     */
-    reply: FastifyReply;
-    /**
-     * @internal
-     */
-    routes: ContextRoutes;
-}
-
-declare module "fastify" {
-    interface FastifyInstance {
-        webiny: Context;
-        __webiny_raw_result: any;
-    }
+export interface Context {
+    plugins: PluginsContainer;
+    container: Container;
 }

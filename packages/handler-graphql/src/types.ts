@@ -5,7 +5,6 @@ import type {
 } from "graphql";
 import type { Plugin } from "@webiny/plugins/types.js";
 import type { Context, GenericRecord } from "@webiny/api/types.js";
-import type { RouteMethodPath } from "@webiny/handler/types.js";
 import type { ResolversComposition } from "@graphql-tools/resolvers-composition";
 import type { IResolvers, TypeSource } from "@graphql-tools/utils";
 
@@ -15,7 +14,7 @@ export interface GraphQLScalarPlugin extends Plugin {
 }
 
 export interface HandlerGraphQLOptions {
-    path?: RouteMethodPath;
+    path?: string;
     debug?: boolean | string;
 }
 

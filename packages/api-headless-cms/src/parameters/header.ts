@@ -10,11 +10,12 @@ export const createHeaderParameterPlugin = () => {
         /**
          * If any of the properties is not defined, just ignore this plugin
          */
-        if (!context.request?.headers) {
+        const request = (context as any).request;
+        if (!request?.headers) {
             return null;
         }
 
-        const headers = context.request.headers;
+        const headers = request.headers as Record<string, string>;
 
         const type = headers[HeaderKeys.TYPE];
 

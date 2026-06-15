@@ -1,63 +1,84 @@
-import { createEventBridgeEventHandler } from "@webiny/handler-aws";
-import { createHandlerOnRequest } from "@webiny/handler";
+import type { Container } from "@webiny/di";
 import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
+import {
+    EventBridgeEventHandler,
+    type EventBridgeResult
+} from "@webiny/event-handler-aws/abstractions/handlers/EventBridgeEventHandler.js";
+import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { RequestContainer } from "@webiny/event-handler-core";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
+import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
+import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
+import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import type { GuardDutyEvent } from "./types.js";
 import { processThreatScanResult } from "./processThreatScanResult.js";
 import { ObjectKey } from "./ObjectKey.js";
+import type { GuardDutyEvent } from "./types.js";
 
-const detailType = "GuardDuty Malware Protection Object Scan Result";
+const DETAIL_TYPE = "GuardDuty Malware Protection Object Scan Result";
 
-export const createThreatDetectionEventHandler = () => {
-    const handlerOnRequest = createHandlerOnRequest(async (request, _, context) => {
-        const payload = request.body as EventBridgeEvent<string, GuardDutyEvent>;
+class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHandler.Interface {
+    constructor(
+        private container: Container,
+        private tenantCtx: ITenantContext,
+        private getTenantById: IGetTenantByIdUseCase
+    ) {}
 
-        if (payload["detail-type"] !== detailType) {
-            return;
+    async execute(
+        eventCtx: EventContext<EventBridgeEvent<string, GuardDutyEvent>>,
+        _next: NextFunction
+    ): Promise<EventBridgeResult> {
+        const payload = eventCtx.event;
+        if (payload["detail-type"] !== DETAIL_TYPE) {
+            return { success: true };
+        }
+
+        const ctx: Record<string, any> = { container: this.container };
+        for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
+            await enhancer.enhance(ctx);
+        }
+        const context = ctx as ApiCoreContext;
+
+        if (!context.wcp?.canUseFileManagerThreatDetection()) {
+            return { success: true };
         }
 
         const objectKey = payload.detail.s3ObjectDetails.objectKey;
         const keyValueStore = context.container.resolve(GlobalKeyValueStore);
 
         try {
-            // Extract file id from the absolute S3 object key
             const fileId = ObjectKey.from(objectKey).id();
             const result = await keyValueStore.get<{ tenant: string }>(
                 `FileManager/File/${fileId}/Metadata`
             );
 
-            if (result.isFail()) {
-                return;
+            if (result.isOk()) {
+                const tenantResult = await this.getTenantById.execute(result.value.tenant);
+                if (tenantResult.isOk()) {
+                    this.tenantCtx.setTenant(tenantResult.value);
+                }
             }
-
-            request.headers = {
-                ...request.headers,
-                "x-tenant": result.value.tenant
-            };
         } catch {
-            // If metadata can't be loaded, we ignore the file.
-            // Most likely it's because the file is a rendition of the original file,
-            // so we don't need to do anything with it.
+            // If metadata can't be loaded, ignore — likely a rendition file.
         }
-    });
-    // Guard Duty event handler.
-    const threatScanEventHandler = createEventBridgeEventHandler<typeof detailType, GuardDutyEvent>(
-        async ({ payload, next, ...rest }) => {
-            const context = rest.context as ApiCoreContext;
 
-            const threatDetectionEnabled = context.wcp.canUseFileManagerThreatDetection();
+        await processThreatScanResult(context, payload.detail);
+        return { success: true };
+    }
+}
 
-            if (!threatDetectionEnabled || payload["detail-type"] !== detailType) {
-                return next();
-            }
+export const ThreatDetectionEventBridgeLambdaHandler = EventBridgeEventHandler.createImplementation(
+    {
+        implementation: ThreatDetectionEventBridgeLambdaHandlerImpl,
+        dependencies: [RequestContainer, TenantContext, GetTenantByIdUseCase]
+    }
+);
 
-            await processThreatScanResult(context, payload.detail);
-        }
-    );
-
-    // Assign a human-readable name for easier debugging.
-    threatScanEventHandler.name = threatScanEventHandler.type + ".threatDetectionEventHandler";
-
-    return [handlerOnRequest, threatScanEventHandler];
+/**
+ * @deprecated Use ThreatDetectionEventBridgeLambdaHandler instead.
+ */
+export const createThreatDetectionEventHandler = () => {
+    return [];
 };
