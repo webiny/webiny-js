@@ -22,7 +22,7 @@
       "@webiny/api": ["../api/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/event-handler-core/testing": ["../event-handler-core/src/features/testing/index.ts"],
+      "@webiny/event-handler-core/testing": ["../event-handler-core/src/testing/index.js"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/api": ["../feature/src/api/index.js"],

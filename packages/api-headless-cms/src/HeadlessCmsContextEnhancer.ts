@@ -56,7 +56,7 @@ export const HeadlessCmsEnhancerConfig = new Abstraction<IHeadlessCmsEnhancerCon
     "HeadlessCmsEnhancerConfig"
 );
 
-class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
+export class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
     private initialized = false;
 
     constructor(

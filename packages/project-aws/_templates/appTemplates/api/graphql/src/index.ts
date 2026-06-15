@@ -38,7 +38,7 @@ import { WebsiteBuilderSchedulerFeature } from "@webiny/api-website-builder-sche
 import { FileManagerAppFeature } from "@webiny/api-file-manager";
 import { FileManagerAcoFeature } from "@webiny/api-file-manager-aco";
 import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
-import { WebsiteBuilderFeature } from "@webiny/api-website-builder";
+import { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "@webiny/api-website-builder";
 
 import { extensions } from "./extensions";
 
@@ -87,6 +87,7 @@ export const handler = createLambdaHandler({
 
         // ── Website Builder ────────────────────────────────────────
         WebsiteBuilderFeature.register(container);
+        await setupWebsiteBuilderModels(container);
         WebsiteBuilderWorkflowsFeature.register(container);
         WebsiteBuilderSchedulerFeature.register(container);
 

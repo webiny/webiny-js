@@ -24,7 +24,7 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
             target: "node",
             minify: true,
             sourceMap: {
-                js: isDebugEnabled ? "source-map" : false
+                js: isDebugEnabled || mode === "development" ? "source-map" : false
             },
             filename: {
                 js: pathData => {

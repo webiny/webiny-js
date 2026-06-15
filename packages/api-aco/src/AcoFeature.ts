@@ -14,6 +14,8 @@ import { UpdateFlpTask } from "~/flp/tasks/updateFlp.task.js";
 import { DeleteFlpTask } from "~/flp/tasks/deleteFlp.task.js";
 import { SyncFlpTask } from "~/flp/tasks/syncFlp.task.js";
 import type { AcoContext } from "~/types.js";
+import { FolderModel } from "~/domain/folder/folder.model.js";
+import { FilterPrivateModel } from "~/filter/filter.model.js";
 
 class AcoContextEnhancerImpl implements IGraphQLContextEnhancer {
     private initialized = false;
@@ -121,6 +123,8 @@ const AcoSchemaFactory = GraphQLSchemaFactory.createImplementation({
 export const AcoFeature = createFeature({
     name: "Aco",
     register(container: Container) {
+        container.register(FolderModel);
+        container.register(FilterPrivateModel);
         container.register(AcoContextEnhancer);
         container.register(AcoSchemaFactory);
     }

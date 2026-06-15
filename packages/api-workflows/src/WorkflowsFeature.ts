@@ -4,10 +4,15 @@ import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
 import type { Container } from "@webiny/di";
 import type { Plugin } from "@webiny/plugins";
 import { createWorkflows } from "./index.js";
+import { WorkflowModel } from "./domain/workflow/workflowModel.js";
+import { WorkflowStateModel } from "./domain/workflowState/stateModel.js";
 
 export const WorkflowsFeature = createFeature({
     name: "Workflows",
     register(container: Container) {
+        container.register(WorkflowModel);
+        container.register(WorkflowStateModel);
+
         let initialized = false;
 
         const contextPlugins: Plugin[] = [...createWorkflows()];

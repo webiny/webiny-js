@@ -1,4 +1,3 @@
-import sharp from "sharp";
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import type {
     Asset,
@@ -13,6 +12,16 @@ import { CallableContentsReader } from "./transformation/CallableContentsReader.
 import { AssetKeyGenerator } from "./transformation/AssetKeyGenerator.js";
 import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { IS3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
+
+import type sharpType from "sharp";
+type SharpFn = typeof sharpType;
+let sharpCache: SharpFn | undefined;
+async function loadSharp(): Promise<SharpFn> {
+    if (!sharpCache) {
+        sharpCache = (await import("sharp")).default as SharpFn;
+    }
+    return sharpCache;
+}
 
 export class SharpTransform implements AssetTransformationStrategy {
     private readonly s3: S3;
@@ -79,6 +88,7 @@ export class SharpTransform implements AssetTransformationStrategy {
 
                 console.log(`Resize the asset (width: ${width})`);
                 const buffer = await optimizedImage.getContents();
+                const sharp = await loadSharp();
                 const transformedBuffer = await sharp(buffer, {
                     animated: this.isAssetAnimated(asset)
                 })
@@ -141,7 +151,10 @@ export class SharpTransform implements AssetTransformationStrategy {
             console.log("Create an optimized version of the original asset", asset.getKey());
             const buffer = await asset.getContents();
 
-            const optimizationMap: Record<string, ((buffer: Buffer) => sharp.Sharp) | undefined> = {
+            const optimizationMap: Record<
+                string,
+                ((buffer: Buffer) => Promise<Buffer>) | undefined
+            > = {
                 "image/png": (buffer: Buffer) => this.optimizePng(buffer),
                 "image/jpeg": (buffer: Buffer) => this.optimizeJpeg(buffer),
                 "image/jpg": (buffer: Buffer) => this.optimizeJpeg(buffer)
@@ -154,7 +167,7 @@ export class SharpTransform implements AssetTransformationStrategy {
                 return asset;
             }
 
-            const optimizedBuffer = await optimization(buffer).toBuffer();
+            const optimizedBuffer = await optimization(buffer);
 
             console.log("Optimized asset size", optimizedBuffer.length);
 
@@ -176,18 +189,22 @@ export class SharpTransform implements AssetTransformationStrategy {
         return ["gif", "webp"].includes(asset.getExtension());
     }
 
-    private optimizePng(buffer: Buffer) {
+    private async optimizePng(buffer: Buffer): Promise<Buffer> {
+        const sharp = await loadSharp();
         return sharp(buffer)
             .resize({ width: 2560, withoutEnlargement: true, fit: "inside" })
             .png({ compressionLevel: 9, adaptiveFiltering: true, force: true })
-            .withMetadata();
+            .withMetadata()
+            .toBuffer();
     }
 
-    private optimizeJpeg(buffer: Buffer) {
+    private async optimizeJpeg(buffer: Buffer): Promise<Buffer> {
+        const sharp = await loadSharp();
         return sharp(buffer)
             .resize({ width: 2560, withoutEnlargement: true, fit: "inside" })
             .withMetadata()
-            .toFormat("jpeg", { quality: 90 });
+            .toFormat("jpeg", { quality: 90 })
+            .toBuffer();
     }
 }
 

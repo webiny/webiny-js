@@ -112,4 +112,4 @@ const createContext = () => {
 export const createWebsiteBuilder = () => {
     return [...createContext(), createGraphQL()];
 };
-export { WebsiteBuilderFeature } from "./WebsiteBuilderFeature.js";
+export { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "./WebsiteBuilderFeature.js";

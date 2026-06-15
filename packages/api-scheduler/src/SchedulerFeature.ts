@@ -8,6 +8,7 @@ import type {
     SchedulerClientConfig
 } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { createSchedulerContext } from "./context.js";
+import { SchedulePrivateModel } from "./domain/SchedulePrivateModel.js";
 
 export interface ISchedulerFeatureConfig {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
@@ -16,6 +17,8 @@ export interface ISchedulerFeatureConfig {
 export const SchedulerFeature = createFeature({
     name: "Scheduler",
     register(container: Container, config: ISchedulerFeatureConfig) {
+        container.register(SchedulePrivateModel);
+
         let initialized = false;
 
         const contextPlugins: Plugin[] = [

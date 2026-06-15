@@ -1,9 +1,11 @@
 import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
 import {
-    HeadlessCmsContextEnhancer,
+    HeadlessCmsContextEnhancerImpl,
     HeadlessCmsEnhancerConfig
 } from "./HeadlessCmsContextEnhancer.js";
+import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { RequestContainer } from "@webiny/event-handler-core";
 import { HeadlessCmsContextualSchema } from "./HeadlessCmsContextualSchema.js";
 import { StorageOperationsFactory } from "~/features/shared/abstractions.js";
 import { CmsBaseErrorTypeFactory } from "~/graphql/schema/cms/CmsBaseErrorTypeFactory.js";
@@ -65,7 +67,15 @@ export const HeadlessCmsFeature = createFeature({
             type: config.type,
             extraPlugins: config.extraPlugins
         });
-        container.register(HeadlessCmsContextEnhancer);
+        // Use registerInstance (not register) so that HeadlessCmsContextEnhancer is an
+        // instance registration. Instance registrations are resolved before class registrations
+        // in resolveAll(), ensuring this enhancer runs first — before any other feature
+        // enhancers that depend on ctx.cms or CmsContext being set.
+        const enhancer = container.resolveWithDependencies({
+            implementation: HeadlessCmsContextEnhancerImpl,
+            dependencies: [RequestContainer, HeadlessCmsEnhancerConfig]
+        });
+        container.registerInstance(GraphQLContextEnhancer, enhancer);
         container.register(HeadlessCmsContextualSchema);
     }
 });

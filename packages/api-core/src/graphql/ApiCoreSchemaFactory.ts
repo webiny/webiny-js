@@ -15,6 +15,7 @@ import {
 import { createSecurityGraphQL } from "~/graphql/security/index.js";
 import { createSystemGraphQL } from "~/graphql/system/createSystemGraphQL.js";
 import { createUsersGraphQL } from "~/graphql/users/user.gql.js";
+import { createWcpGraphQL } from "~/graphql/wcp/graphql.js";
 
 const BASE_TYPES = `
     type Query
@@ -114,7 +115,8 @@ class ApiCoreSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
         const plugins = [
             ...createSecurityGraphQL(),
             ...createUsersGraphQL(),
-            createSystemGraphQL()
+            createSystemGraphQL(),
+            createWcpGraphQL()
         ] as unknown as IGraphQLSchemaPlugin[];
 
         addPluginsToBuilder(plugins, builder);
