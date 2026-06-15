@@ -1,6 +1,6 @@
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { createIdentity, createPermissions } from "./helpers";
@@ -46,8 +46,7 @@ export const useHandler = (params?: UseHandlerParams) => {
                 permissions: createPermissions(),
                 identity: createIdentity()
             }),
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
+            createCmsExtension(),
             graphQLHandlerPlugins(),
             ...createBackgroundTaskContext(),
             createRawEventHandler(async ({ context }) => {

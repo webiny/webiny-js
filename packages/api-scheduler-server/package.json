@@ -18,12 +18,12 @@
   "description": "Server-side cron-based implementation for the Webiny action scheduler.",
   "license": "MIT",
   "dependencies": {
+    "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
     "@webiny/error": "0.0.0",
-    "@webiny/handler": "0.0.0",
-    "bree": "9.2.9"
+    "bree": "^9.2.9"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

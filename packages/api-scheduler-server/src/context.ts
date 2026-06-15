@@ -4,11 +4,11 @@ import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/Ex
 import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
 import { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { BreeSchedulerService } from "~/BreeSchedulerService.js";
+import { ContextPlugin } from "@webiny/api";
 
 export const registerSchedulerServerExtension = () => {
-    return createRegisterExtensionPlugin<CmsContext>(async context => {
+    const plugin = new ContextPlugin<CmsContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
 
         if (!tenantContext.getTenant()) {
@@ -49,4 +49,8 @@ export const registerSchedulerServerExtension = () => {
 
         await service.start(pendingActions);
     });
+
+    plugin.name = "scheduler.server.extension";
+
+    return plugin;
 };

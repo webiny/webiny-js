@@ -7,9 +7,8 @@ import { createApiCoreSql, registerSQLCore } from "@webiny/api-core-sql";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAssetDelivery, createFileManagerS3 } from "@webiny/api-file-manager-s3";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { registerSqlStorageOperations } from "@webiny/api-headless-cms-sql";
-import { createHcmsTasks } from "@webiny/api-headless-cms-tasks-sql";
 import { createAco } from "@webiny/api-aco";
 import { registerAcoSqlStorageOperations } from "@webiny/api-aco-sql";
 import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
@@ -55,9 +54,10 @@ export const handler = createHandler({
         securityPlugins(),
         createWebsockets(),
         registerWebsocketsSqlStorageOperations({ knex }),
-        registerSqlStorageOperations(),
-        createHeadlessCmsContext(),
-        createHeadlessCmsGraphQL(),
+        registerSqlStorageOperations({
+            knex
+        }),
+        createCmsExtension(),
         createMailerContext(),
         createMailerGraphQL(),
         createWebsiteBuilder(),
@@ -78,7 +78,6 @@ export const handler = createHandler({
         }),
         createAuditLogs(),
         createAcoHcmsContext(),
-        createHcmsTasks(),
         registerSchedulerExtension(),
         registerSchedulerServerExtension(),
         createHeadlessCmsScheduler(),

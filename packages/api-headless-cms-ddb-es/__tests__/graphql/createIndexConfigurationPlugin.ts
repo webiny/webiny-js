@@ -12,7 +12,7 @@ class CustomOpenSearchIndex implements CmsEntryOpenSearchIndex.Interface {
                 ...body,
                 mappings: {
                     ...body.mappings,
-                    dynamic_templates: (body.mappings.dynamic_templates || [])
+                    dynamic_templates: (body.mappings?.dynamic_templates || [])
                         .map(template => {
                             /**
                              * This part replaces the default numbers mapping with the one containing keyword field.
@@ -58,7 +58,7 @@ class CustomOpenSearchIndex implements CmsEntryOpenSearchIndex.Interface {
 }
 
 export const createIndexConfigurationPlugin = () => {
-    return createRegisterExtensionPlugin(({ container }) => {
+    const plugin = createRegisterExtensionPlugin(({ container }) => {
         container.register(
             CmsEntryOpenSearchIndex.createImplementation({
                 implementation: CustomOpenSearchIndex,
@@ -66,4 +66,8 @@ export const createIndexConfigurationPlugin = () => {
             })
         );
     });
+
+    plugin.name = "test-cms-entry-opensearch-index-plugin";
+
+    return plugin;
 };
