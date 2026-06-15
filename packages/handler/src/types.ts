@@ -14,6 +14,8 @@ export interface Reply {
     send(data?: unknown): void | Promise<void>;
     code(statusCode: number): Reply;
     headers(headers: Record<string, string>): Reply;
+    header(name: string, value: string): Reply;
+    setCookie(name: string, value: string, options?: Record<string, unknown>): Reply;
     [key: string]: unknown;
 }
 

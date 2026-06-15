@@ -1,4 +1,3 @@
-export * from "./eventHandler.js";
 export * from "./execute.js";
 export * from "./executeWithRetry.js";
 export * from "./marshall.js";

@@ -4,7 +4,7 @@ import {
 } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
-import type { AttributeValue } from "@webiny/handler-aws/types.js";
+import type { AttributeValue } from "@webiny/aws-sdk/types/index.js";
 
 export interface MarshalledValue {
     [key: string]: AttributeValue;

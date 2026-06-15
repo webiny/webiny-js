@@ -1,5 +1,5 @@
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { DynamoDBRecord, Context as HandlerContext } from "@webiny/handler-aws/types.js";
+import type { DynamoDBRecord, Context as HandlerContext } from "@webiny/aws-sdk/types/index.js";
 import type { OpenSearchContext } from "@webiny/api-opensearch/types.js";
 
 export interface IOperationsBuilderBuildParams {
