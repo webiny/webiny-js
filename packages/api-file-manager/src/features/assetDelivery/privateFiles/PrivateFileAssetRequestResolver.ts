@@ -10,7 +10,7 @@ export class PrivateFileAssetRequestResolver implements IAssetRequestResolver {
     }
 
     async resolve(request: Request): Promise<AssetRequest | undefined> {
-        if (!request.url.startsWith("/private/")) {
+        if (!request.url?.startsWith("/private/")) {
             return this.resolver.resolve(request);
         }
 
@@ -22,7 +22,7 @@ export class PrivateFileAssetRequestResolver implements IAssetRequestResolver {
         return new AssetRequest({
             key: decodeURI(path).replace("/private/", ""),
             context: {
-                url: request.url,
+                url: request.url ?? "",
                 private: true
             },
             options: {
