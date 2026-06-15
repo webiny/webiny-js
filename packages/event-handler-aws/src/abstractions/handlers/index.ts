@@ -5,4 +5,5 @@ export * from "./S3EventHandler.js";
 export * from "./EventBridgeEventHandler.js";
 export * from "./DynamoDBEventHandler.js";
 export * from "./RawEventHandler.js";
-export * from "./abstractions/handlers/BackgroundTaskEventHandler.js";
+export * from "./BackgroundTaskEventHandler.js";
+export * from "./WebSocketEventHandler.js";

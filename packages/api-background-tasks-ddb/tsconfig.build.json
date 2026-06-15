@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../background-tasks/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -16,6 +17,10 @@
       "@webiny/background-tasks/admin/*": ["../background-tasks/src/admin/*"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     }

@@ -8,6 +8,7 @@
     { "path": "../api-workflows" },
     { "path": "../error" },
     { "path": "../feature" },
+    { "path": "../handler-graphql" },
     { "path": "../plugins" },
     { "path": "../testing" },
     { "path": "../wcp" }
@@ -33,6 +34,8 @@
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/testing/*": ["../testing/src/*"],

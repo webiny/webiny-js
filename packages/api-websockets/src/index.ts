@@ -17,3 +17,4 @@ export * from "./features/ConnectionRegistry/abstractions.js";
 export * from "./plugins/index.js";
 export type * from "./types.js";
 export { WebsocketsFeature } from "./WebsocketsFeature.js";
+export { WebSocketLambdaHandler } from "./WebSocketLambdaHandler.js";

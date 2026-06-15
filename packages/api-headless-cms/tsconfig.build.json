@@ -15,6 +15,7 @@
     { "path": "../project/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../sdk/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
@@ -54,6 +55,8 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/sdk/*": ["../sdk/src/*"],
       "@webiny/sdk": ["../sdk/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

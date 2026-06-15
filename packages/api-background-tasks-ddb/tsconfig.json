@@ -1,7 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [{ "path": "../background-tasks" }, { "path": "../plugins" }],
+  "references": [
+    { "path": "../background-tasks" },
+    { "path": "../feature" },
+    { "path": "../plugins" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -13,6 +17,10 @@
       "@webiny/background-tasks/admin/*": ["../background-tasks/src/admin/*"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     }

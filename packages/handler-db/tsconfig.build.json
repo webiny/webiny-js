@@ -5,6 +5,7 @@
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../db/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../db-utils/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" }
@@ -22,6 +23,8 @@
       "@webiny/db": ["../db/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/db-utils/*": ["../db-utils/src/*"],
+      "@webiny/db-utils": ["../db-utils/src"],
       "@webiny/feature/api": ["../feature/src/api/index.js"],
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],

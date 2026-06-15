@@ -42,7 +42,7 @@ export const ApiGatewayAuthDecorator = ApiGatewayEventHandler.createDecorator({
 class ApiGatewayTenantDecoratorImpl implements ApiGatewayEventHandler.Interface {
     constructor(
         private tenantCtx: ITenantContext,
-        private getTenantById: IGetTenantByIdUseCase.Interface,
+        private getTenantById: IGetTenantByIdUseCase,
         private inner: ApiGatewayEventHandler.Interface
     ) {}
 
