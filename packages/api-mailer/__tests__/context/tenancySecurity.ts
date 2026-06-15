@@ -1,5 +1,5 @@
 import { ContextPlugin } from "@webiny/api";
-import { BeforeHandlerPlugin } from "@webiny/handler";
+
 import { createPermissions } from "./helpers";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { SecurityPermission } from "@webiny/api-core/types/security";
@@ -56,7 +56,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
                 return permissions || [{ name: "*" }];
             });
         }),
-        new BeforeHandlerPlugin<ApiCoreContext>(context => {
+        new ContextPlugin<ApiCoreContext>(context => {
             const { headers = {} } = context.request || {};
             if (headers["authorization"]) {
                 return context.security.authenticate(headers["authorization"]);

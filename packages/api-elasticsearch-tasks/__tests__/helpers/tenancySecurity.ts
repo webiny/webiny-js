@@ -1,6 +1,6 @@
 import type { Plugin } from "@webiny/plugins/Plugin";
 import { ContextPlugin } from "@webiny/api";
-import { BeforeHandlerPlugin } from "@webiny/handler";
+
 import type { Context } from "@webiny/background-tasks/api/types";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -39,7 +39,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
                 return permissions || [{ name: "*" }];
             });
         }),
-        new BeforeHandlerPlugin<Context>(context => {
+        new ContextPlugin<Context>(context => {
             const { headers = {} } = context.request || {};
             if (headers["authorization"]) {
                 return context.security.authenticate(headers["authorization"]);

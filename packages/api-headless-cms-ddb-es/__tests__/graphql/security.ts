@@ -1,6 +1,6 @@
 import { ContextPlugin } from "@webiny/api";
 import { Tenant } from "@webiny/api-core/types/tenancy";
-import { BeforeHandlerPlugin } from "@webiny/handler";
+
 import type { CmsContext } from "~/types";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
@@ -30,7 +30,7 @@ export const createSecurity = () => {
                 return [{ name: "*" }];
             });
         }),
-        new BeforeHandlerPlugin<CmsContext>(context => {
+        new ContextPlugin<CmsContext>(context => {
             const { headers = {} } = context.request || {};
             if (headers["authorization"]) {
                 return context.security.authenticate(headers["authorization"]);

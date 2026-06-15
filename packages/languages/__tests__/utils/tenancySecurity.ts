@@ -1,5 +1,5 @@
 import { ContextPlugin } from "@webiny/api";
-import { BeforeHandlerPlugin } from "@webiny/handler";
+
 import {
     AuthenticatedIdentity,
     type IdentityData
@@ -36,7 +36,7 @@ export const createTenancyAndSecurity = () => {
                 return [{ name: "*" }];
             });
         }),
-        new BeforeHandlerPlugin<ApiCoreContext>(context => {
+        new ContextPlugin<ApiCoreContext>(context => {
             return context.security.authenticate("");
         })
     ];

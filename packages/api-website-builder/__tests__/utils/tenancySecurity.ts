@@ -1,6 +1,6 @@
 import { ContextPlugin } from "@webiny/api";
 import { SecurityPermission } from "@webiny/api-core/types/security.js";
-import { BeforeHandlerPlugin } from "@webiny/handler";
+
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
@@ -42,7 +42,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
                 return typeof permissions === "undefined" ? [{ name: "*" }] : permissions;
             });
         }),
-        new BeforeHandlerPlugin<ApiCoreContext>(context => {
+        new ContextPlugin<ApiCoreContext>(context => {
             return context.security.authenticate("");
         })
     ];
