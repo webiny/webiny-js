@@ -3,8 +3,9 @@ import type {
     IWorkflowStatesWidgetPresenter,
     IWorkflowStatesWidgetPresenterViewModel
 } from "~/Presenters/index.js";
-import { Loader, Tabs } from "@webiny/admin-ui";
+import { Tabs } from "@webiny/admin-ui";
 import { WorkflowStateList } from "../List/WorkflowStateList.js";
+import { WorkflowStateListSkeleton } from "../List/WorkflowStateListSkeleton.js";
 import { observer } from "mobx-react-lite";
 import { WorkflowStateValue } from "~/types.js";
 
@@ -69,8 +70,12 @@ export const WorkflowStatesWidgetCardTabs = observer(
 
         const activeTab = getActiveTab(presenter.vm);
 
-        if (presenter.vm.loading) {
-            return <Loader />;
+        // `loading` flips to `false` as soon as the queries resolve, but `vm.values` is
+        // populated a tick later. Until we have a resolved active tab, render the loader so
+        // the uncontrolled `Tabs` doesn't mount with an `undefined` default (which leaves all
+        // tabs inactive and their content hidden until the user clicks one).
+        if (presenter.vm.loading || !activeTab) {
+            return <WorkflowStateListSkeleton />;
         }
 
         return (
