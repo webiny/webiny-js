@@ -2,6 +2,8 @@ import type { Container } from "@webiny/di";
 import type { PluginsContainer } from "@webiny/plugins";
 
 export interface Request {
+    url?: string;
+    method?: string;
     headers: Record<string, string | undefined>;
     body?: unknown;
     params?: Record<string, string>;
