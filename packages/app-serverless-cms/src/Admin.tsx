@@ -6,7 +6,6 @@ import { AdminUI } from "@webiny/app-admin-ui";
 import { FileManager } from "@webiny/app-file-manager/app.js";
 import { GraphQLPlayground } from "@webiny/app-graphql-playground";
 import { SdkPlayground } from "@webiny/app-sdk-playground";
-import { AccessManagement } from "@webiny/app-security-access-management";
 import { imagePlugin } from "@webiny/app/plugins/index.js";
 import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
 import { createApolloClient } from "./apolloClientFactory.js";
@@ -48,7 +47,6 @@ const App = (props: AdminProps) => {
             createLegacyPlugins={createLegacyPlugins}
         >
             <AdminUI />
-            <AccessManagement />
             <SystemInstallerProvider />
             <FileManager />
             <GraphQLPlayground createApolloClient={createApolloClient} />
