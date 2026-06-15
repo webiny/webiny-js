@@ -8,7 +8,7 @@ import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 import { EventBridgeSchedulerService } from "~/features/SchedulerService/EventBridgeSchedulerService.js";
 import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { createScheduledActionEventHandler } from "~/createEventHandler.js";
 
 export interface IRegisterSchedulerAwsExtensionParams {
@@ -16,7 +16,7 @@ export interface IRegisterSchedulerAwsExtensionParams {
 }
 
 export const registerSchedulerAwsExtension = (params: IRegisterSchedulerAwsExtensionParams) => {
-    return createRegisterExtensionPlugin<CmsContext>(async context => {
+    const plugin = new ContextPlugin<CmsContext>(async context => {
         context.plugins.register(createScheduledActionEventHandler());
         const tenantContext = context.container.resolve(TenantContext);
 
@@ -38,4 +38,8 @@ export const registerSchedulerAwsExtension = (params: IRegisterSchedulerAwsExten
             );
         }
     });
+
+    plugin.name = "scheduler.aws.extension";
+
+    return plugin;
 };

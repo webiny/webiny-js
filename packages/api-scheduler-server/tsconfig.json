@@ -2,11 +2,11 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../api" },
     { "path": "../api-core" },
     { "path": "../api-headless-cms" },
     { "path": "../api-scheduler" },
-    { "path": "../error" },
-    { "path": "../handler" }
+    { "path": "../error" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -15,6 +15,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
@@ -22,9 +24,7 @@
       "@webiny/api-scheduler/*": ["../api-scheduler/src/*"],
       "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/error": ["../error/src"]
     }
   }
 }

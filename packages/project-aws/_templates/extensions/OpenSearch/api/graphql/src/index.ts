@@ -9,7 +9,7 @@ import { createOpenSearchContext, createOpenSearchClient } from "@webiny/api-ope
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAssetDelivery, createFileManagerS3 } from "@webiny/api-file-manager-s3";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { registerCmsOpenSearchStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import { createHcmsTasks } from "@webiny/api-headless-cms-tasks-ddb-es";
 import { createAco } from "@webiny/api-aco";
@@ -68,8 +68,7 @@ export const handler = createHandler({
         createWebsockets(),
         registerWebsocketsDdbStorageOperations({ documentClient }),
         registerCmsOpenSearchStorageOperations(),
-        createHeadlessCmsContext(),
-        createHeadlessCmsGraphQL(),
+        createCmsExtension(),
         createMailerContext(),
         createMailerGraphQL(),
         createWebsiteBuilder(),

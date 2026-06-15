@@ -8,10 +8,10 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { SchedulerGraphQLFactory } from "~/graphql/index.js";
 import { SchedulerPermissionsFeature } from "~/features/permissions/feature.js";
 import { NamespaceHandlerExecutioner } from "~/features/NamespaceHandler/NamespaceHandlerExecutioner.js";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 
 export const registerSchedulerExtension = () => {
-    return createRegisterExtensionPlugin<CmsContext>(async context => {
+    const plugin = new ContextPlugin<CmsContext>(async context => {
         context.container.register(SchedulePrivateModel);
         const tenantContext = context.container.resolve(TenantContext);
         const getModel = context.container.resolve(GetModelUseCase);
@@ -31,4 +31,8 @@ export const registerSchedulerExtension = () => {
 
         SchedulerFeature.register(context.container);
     });
+
+    plugin.name = "scheduler.base.extension";
+
+    return plugin;
 };

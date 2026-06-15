@@ -24,11 +24,11 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "email-addresses": "^5.0.0",
-    "nodemailer": "^8.0.10",
+    "nodemailer": "^8.0.11",
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@types/nodemailer": "^8.0.0",
+    "@types/nodemailer": "^8.0.1",
     "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/handler": "0.0.0",

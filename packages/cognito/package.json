@@ -25,7 +25,7 @@
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
     "@webiny/validation": "0.0.0",
-    "aws-amplify": "^6.17.0",
+    "aws-amplify": "^6.18.0",
     "graphql": "^16.14.2",
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.3",
