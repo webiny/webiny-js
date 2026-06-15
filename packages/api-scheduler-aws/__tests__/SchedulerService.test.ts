@@ -9,7 +9,7 @@ import {
     UpdateScheduleCommand
 } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { describe, expect, it, vi } from "vitest";
-import type { ISchedulerService } from "~/shared/abstractions.js";
+import type { ISchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 
 type SchedulerServiceCreateInput = Parameters<ISchedulerService["create"]>[0];
 

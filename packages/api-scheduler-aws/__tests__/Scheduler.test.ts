@@ -2,25 +2,31 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
-import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/abstractions.js";
-import { ScheduleActionUseCase } from "~/features/ScheduleAction/abstractions.js";
-import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
-import { ScheduledActionHandler, SchedulerService } from "~/shared/abstractions.js";
-import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
+import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/abstractions.js";
+import { ScheduleActionUseCase } from "@webiny/api-scheduler/features/ScheduleAction/abstractions.js";
+import { GetScheduledActionUseCase } from "@webiny/api-scheduler/features/GetScheduledAction/abstractions.js";
+import {
+    ScheduledActionHandler,
+    SchedulerService
+} from "@webiny/api-scheduler/shared/abstractions.js";
+import { ScheduledActionId } from "@webiny/api-scheduler/domain/ScheduledActionId.js";
 import {
     type IListScheduledActionsResponse,
     ListScheduledActionsUseCase
-} from "~/features/ListScheduledActions/index.js";
-import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
+} from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
+import { CancelScheduledActionUseCase } from "@webiny/api-scheduler/features/CancelScheduledAction/index.js";
 import { useHandler } from "./__mocks/handler/useHandler.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { mockClient } from "aws-sdk-client-mock";
 import { SchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
 import { PublishTestEntryActionHandlerImpl } from "~tests/__mocks/PublishTestEntryActionHandler.js";
-import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
+import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import { SCHEDULED_ACTION_PUBLISH, SCHEDULED_ACTION_UNPUBLISH } from "~/constants.js";
+import {
+    SCHEDULED_ACTION_PUBLISH,
+    SCHEDULED_ACTION_UNPUBLISH
+} from "@webiny/api-scheduler/constants.js";
 
 describe("Scheduler", () => {
     const targetId = "target-id#0001";

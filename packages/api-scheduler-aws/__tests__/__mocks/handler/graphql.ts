@@ -1,5 +1,5 @@
-import type { Identity, ScheduledActionType } from "~/shared/abstractions.js";
-import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/index.js";
+import type { Identity, ScheduledActionType } from "@webiny/api-scheduler/shared/abstractions.js";
+import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
 
 export interface IScheduledAction {
     id: string;

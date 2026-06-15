@@ -17,7 +17,8 @@ import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKey
 import { createApiCore } from "@webiny/api-core";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import { createSchedulerContext } from "~/context.js";
+import { registerSchedulerExtension } from "@webiny/api-scheduler";
+import { registerSchedulerAwsExtension } from "~/context.js";
 
 export interface CreateHandlerCoreParams {
     getScheduleClient: (config?: SchedulerClientConfig) => Pick<SchedulerClient, "send">;
@@ -64,7 +65,8 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             createHeadlessCmsGraphQL(),
             plugins,
             graphQLHandlerPlugins(),
-            createSchedulerContext({
+            registerSchedulerExtension(),
+            registerSchedulerAwsExtension({
                 getClient: config => {
                     return params.getScheduleClient(config);
                 }

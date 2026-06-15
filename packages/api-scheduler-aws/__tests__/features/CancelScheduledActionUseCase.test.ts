@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { useHandler } from "~tests/__mocks/handler/useHandler.js";
 import { createMockScheduleClient } from "~tests/__mocks/scheduleClient.js";
-import { SchedulerService } from "~/shared/abstractions.js";
-import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
-import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
+import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
+import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
+import { CancelScheduledActionUseCase } from "@webiny/api-scheduler/features/CancelScheduledAction/index.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { Result } from "@webiny/feature/api/index.js";
 import { EntryPersistenceError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
@@ -12,9 +12,9 @@ import {
     PublishTestEntryActionHandler,
     PublishTestEntryActionHandlerImpl
 } from "~tests/__mocks/PublishTestEntryActionHandler.js";
-import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
+import { ScheduleActionUseCase } from "@webiny/api-scheduler/features/ScheduleAction/index.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
-import { SCHEDULED_ACTION_PUBLISH } from "~/constants.js";
+import { SCHEDULED_ACTION_PUBLISH } from "@webiny/api-scheduler/constants.js";
 
 describe("CancelScheduledActionUseCase", () => {
     let context: CmsContext;
