@@ -1,4 +1,3 @@
-import { ContextPlugin } from "@webiny/api";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { SCHEDULE_MODEL_ID } from "~/constants.js";
 import { ScheduledActionModel } from "~/shared/abstractions.js";
@@ -11,30 +10,23 @@ import { SchedulerPermissionsFeature } from "~/features/permissions/feature.js";
 import { NamespaceHandlerExecutioner } from "~/features/NamespaceHandler/NamespaceHandlerExecutioner.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 
-export const createSchedulerContext = () => {
-    const modelsPlugin = createRegisterExtensionPlugin(context => {
-        context.container.register(SchedulePrivateModel);
+export const createSchedulerContext = createRegisterExtensionPlugin<CmsContext>(async context => {
+    context.container.register(SchedulePrivateModel);
+    const tenantContext = context.container.resolve(TenantContext);
+    const getModel = context.container.resolve(GetModelUseCase);
+
+    if (!tenantContext.getTenant()) {
+        return;
+    }
+
+    SchedulerPermissionsFeature.register(context.container);
+    context.container.register(SchedulerGraphQLFactory);
+    context.container.register(NamespaceHandlerExecutioner);
+
+    await context.security.withoutAuthorization(async () => {
+        const schedulerModel = await getModel.execute(SCHEDULE_MODEL_ID);
+        context.container.registerInstance(ScheduledActionModel, schedulerModel.value);
     });
 
-    const schedulerContextPlugin = new ContextPlugin<CmsContext>(async context => {
-        const tenantContext = context.container.resolve(TenantContext);
-        const getModel = context.container.resolve(GetModelUseCase);
-
-        if (!tenantContext.getTenant()) {
-            return;
-        }
-
-        SchedulerPermissionsFeature.register(context.container);
-        context.container.register(SchedulerGraphQLFactory);
-        context.container.register(NamespaceHandlerExecutioner);
-
-        await context.security.withoutAuthorization(async () => {
-            const schedulerModel = await getModel.execute(SCHEDULE_MODEL_ID);
-            context.container.registerInstance(ScheduledActionModel, schedulerModel.value);
-        });
-
-        SchedulerFeature.register(context.container);
-    });
-
-    return [modelsPlugin, schedulerContextPlugin];
-};
+    SchedulerFeature.register(context.container);
+});

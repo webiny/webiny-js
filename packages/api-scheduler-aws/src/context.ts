@@ -38,5 +38,5 @@ export const createAwsSchedulerContext = (params: ICreateSchedulerContextParams)
         }
     });
 
-    return [servicePlugin, ...createSchedulerContext()];
+    return [servicePlugin, createSchedulerContext];
 };

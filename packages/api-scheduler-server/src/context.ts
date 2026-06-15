@@ -64,5 +64,5 @@ export const createServerSchedulerContext = () => {
         }
     });
 
-    return [servicePlugin, ...createSchedulerContext(), postInitPlugin];
+    return [servicePlugin, createSchedulerContext, postInitPlugin];
 };
