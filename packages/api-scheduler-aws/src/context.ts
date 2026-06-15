@@ -1,4 +1,3 @@
-import { ContextPlugin } from "@webiny/api";
 import type {
     SchedulerClient,
     SchedulerClientConfig
@@ -9,14 +8,15 @@ import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 import { EventBridgeSchedulerService } from "~/features/SchedulerService/EventBridgeSchedulerService.js";
 import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { createSchedulerContext } from "@webiny/api-scheduler/context.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { createScheduledActionEventHandler } from "~/createEventHandler.js";
 
-export interface ICreateSchedulerContextParams {
+export interface IRegisterSchedulerAwsExtensionParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
 }
 
-export const createAwsSchedulerContext = (params: ICreateSchedulerContextParams) => {
-    const servicePlugin = new ContextPlugin<CmsContext>(async context => {
+export const registerSchedulerAwsExtension = (params: IRegisterSchedulerAwsExtensionParams) => {
+    const servicePlugin = createRegisterExtensionPlugin<CmsContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
 
         if (!tenantContext.getTenant()) {
@@ -38,5 +38,5 @@ export const createAwsSchedulerContext = (params: ICreateSchedulerContextParams)
         }
     });
 
-    return [servicePlugin, createSchedulerContext];
+    return [createScheduledActionEventHandler(), servicePlugin];
 };

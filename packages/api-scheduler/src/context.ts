@@ -10,23 +10,25 @@ import { SchedulerPermissionsFeature } from "~/features/permissions/feature.js";
 import { NamespaceHandlerExecutioner } from "~/features/NamespaceHandler/NamespaceHandlerExecutioner.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 
-export const createSchedulerContext = createRegisterExtensionPlugin<CmsContext>(async context => {
-    context.container.register(SchedulePrivateModel);
-    const tenantContext = context.container.resolve(TenantContext);
-    const getModel = context.container.resolve(GetModelUseCase);
+export const registerSchedulerExtension = () => {
+    return createRegisterExtensionPlugin<CmsContext>(async context => {
+        context.container.register(SchedulePrivateModel);
+        const tenantContext = context.container.resolve(TenantContext);
+        const getModel = context.container.resolve(GetModelUseCase);
 
-    if (!tenantContext.getTenant()) {
-        return;
-    }
+        if (!tenantContext.getTenant()) {
+            return;
+        }
 
-    SchedulerPermissionsFeature.register(context.container);
-    context.container.register(SchedulerGraphQLFactory);
-    context.container.register(NamespaceHandlerExecutioner);
+        SchedulerPermissionsFeature.register(context.container);
+        context.container.register(SchedulerGraphQLFactory);
+        context.container.register(NamespaceHandlerExecutioner);
 
-    await context.security.withoutAuthorization(async () => {
-        const schedulerModel = await getModel.execute(SCHEDULE_MODEL_ID);
-        context.container.registerInstance(ScheduledActionModel, schedulerModel.value);
+        await context.security.withoutAuthorization(async () => {
+            const schedulerModel = await getModel.execute(SCHEDULE_MODEL_ID);
+            context.container.registerInstance(ScheduledActionModel, schedulerModel.value);
+        });
+
+        SchedulerFeature.register(context.container);
     });
-
-    SchedulerFeature.register(context.container);
-});
+};

@@ -1,1 +1,1 @@
-export { createScheduler } from "./createScheduler.js";
+export { registerSchedulerServerExtension } from "./context.js";

@@ -21,7 +21,8 @@ import { createBackgroundTasks } from "@webiny/api-background-tasks-os";
 import { createWebsockets } from "@webiny/api-websockets";
 import { registerWebsocketsSqlStorageOperations } from "@webiny/api-websockets-sql";
 import { createRecordLocking } from "@webiny/api-record-locking";
-import { createScheduler } from "@webiny/api-scheduler-server";
+import { registerSchedulerExtension } from "@webiny/api-scheduler";
+import { registerSchedulerServerExtension } from "@webiny/api-scheduler-server";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
 import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
 import { createWorkflows } from "@webiny/api-workflows";
@@ -78,7 +79,8 @@ export const handler = createHandler({
         createAuditLogs(),
         createAcoHcmsContext(),
         createHcmsTasks(),
-        createScheduler(),
+        registerSchedulerExtension(),
+        registerSchedulerServerExtension(),
         createHeadlessCmsScheduler(),
         createWebsiteBuilderScheduler(),
         createWebhooks(),

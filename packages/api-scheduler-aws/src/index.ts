@@ -1,2 +1,2 @@
-export { createScheduler } from "./createScheduler.js";
-export type { ICreateSchedulerParams } from "./createScheduler.js";
+export { registerSchedulerAwsExtension } from "./context.js";
+export type { IRegisterSchedulerAwsExtensionParams } from "./context.js";

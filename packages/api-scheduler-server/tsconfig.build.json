@@ -7,6 +7,7 @@
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../api-scheduler/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -26,6 +27,8 @@
       "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     }
