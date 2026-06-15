@@ -20,6 +20,7 @@ import type { HcmsBulkActionsContext } from "~/types.js";
 export type * from "./abstractions/index.js";
 export { createHandlers } from "./handlers/index.js";
 export { createEmptyTrashBinsTask } from "./tasks/index.js";
+export { BulkActionsEventBridgeLambdaHandler } from "./BulkActionsEventBridgeLambdaHandler.js";
 
 interface BulkActionsConfig {
     batchSize?: number;

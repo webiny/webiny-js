@@ -61,7 +61,13 @@ class AssetDeliveryRouteImpl {
         const processedAsset = await this.assetProcessor.process(resolvedRequest, resolvedAsset);
         const assetReply = await processedAsset.output();
 
-        const headers = assetReply.getHeaders().getHeaders();
+        const rawHeaders = assetReply.getHeaders().getHeaders();
+        const headers: Record<string, string> = {};
+        for (const [k, v] of Object.entries(rawHeaders)) {
+            if (v !== undefined) {
+                headers[k] = String(v);
+            }
+        }
         headers["x-webiny-base64-encoded"] = "true";
 
         const body = await assetReply.getBody();

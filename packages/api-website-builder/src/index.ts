@@ -2,7 +2,6 @@ import { createContextPlugin } from "@webiny/api";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { createGraphQL } from "./graphql/createGraphQL.js";
-import { createRedirectsRoute } from "./rest/getRedirects.js";
 import { GetRedirectByIdFeature } from "./features/redirects/GetRedirectById/feature.js";
 import { ListRedirectsFeature } from "./features/redirects/ListRedirects/feature.js";
 import { GetActiveRedirectsFeature } from "./features/redirects/GetActiveRedirects/feature.js";
@@ -111,6 +110,6 @@ const createContext = () => {
 };
 
 export const createWebsiteBuilder = () => {
-    return [...createContext(), createGraphQL(), createRedirectsRoute()];
+    return [...createContext(), createGraphQL()];
 };
 export { WebsiteBuilderFeature } from "./WebsiteBuilderFeature.js";

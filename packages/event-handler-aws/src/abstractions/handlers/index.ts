@@ -7,3 +7,4 @@ export * from "./DynamoDBEventHandler.js";
 export * from "./RawEventHandler.js";
 export * from "./BackgroundTaskEventHandler.js";
 export * from "./WebSocketEventHandler.js";
+export * from "./ScheduledActionEventHandler.js";

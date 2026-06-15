@@ -1,5 +1,3 @@
-import "./handler/register.js";
-
 export { createBackgroundTaskGraphQL } from "./graphql/index.js";
 export { createBackgroundTaskContext } from "./context.js";
 

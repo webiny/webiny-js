@@ -10,3 +10,4 @@ export { ScheduledActionId } from "./domain/ScheduledActionId.js";
 export { createScheduler } from "./createScheduler.js";
 export { SchedulerFeature } from "./SchedulerFeature.js";
 export type { ISchedulerFeatureConfig } from "./SchedulerFeature.js";
+export { ScheduledActionLambdaHandler } from "./ScheduledActionLambdaHandler.js";
