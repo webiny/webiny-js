@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import orderBy from "lodash/orderBy.js";
 import { useFeature } from "@webiny/app";
-import { Bind, Form, useForm, useGenerateSlug } from "@webiny/form";
-import { validation } from "@webiny/validation";
 import {
     SplitView,
     LeftPanel,
@@ -13,13 +11,13 @@ import {
     SimpleFormContent,
     SimpleFormFooter,
     EmptyView,
-    RolesMultiAutocomplete,
     useSnackbar,
     useConfirmationDialog,
     SearchUI,
     useRouter,
     useRoute
 } from "~/index.js";
+import { FormView } from "~/features/formModel/FormView.js";
 import {
     Alert,
     Button,
@@ -27,11 +25,9 @@ import {
     DataListModal,
     DeleteIcon,
     Grid,
-    Input,
     List,
     OverlayLoader,
     Select,
-    Textarea,
     Tooltip
 } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
@@ -39,6 +35,7 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { TeamsPresenterFeature } from "../feature.js";
 import { Routes } from "../../routes.js";
 import type { Team } from "~/features/accessManagement/types.js";
+import { FormErrors } from "~/index.js";
 
 const SORTERS = [
     { label: "Newest to oldest", sorter: "createdOn_DESC" },
@@ -107,6 +104,7 @@ const TeamsDataList = observer(({ activeId }: { activeId: string | undefined }) 
     return (
         <DataList
             title={"Teams"}
+            refresh={null}
             actions={
                 <Button
                     text={"New"}
@@ -179,166 +177,86 @@ const TeamsDataList = observer(({ activeId }: { activeId: string | undefined }) 
     );
 });
 
-interface FormContentProps {
-    systemTeam: boolean;
-    pluginTeam: boolean;
-    canModifyTeam: boolean;
-    newEntry: boolean;
-}
+const TeamsForm = observer(({ newEntry, id }: { newEntry: boolean; id: string | undefined }) => {
+    const { presenter } = useFeature(TeamsPresenterFeature);
+    const { goToRoute } = useRouter();
+    const { showSnackbar } = useSnackbar();
+    const { vm } = presenter;
 
-const FormContent = ({ systemTeam, pluginTeam, canModifyTeam, newEntry }: FormContentProps) => {
-    const form = useForm();
-    const { generateSlug } = useGenerateSlug(form, "name", "slug");
+    useEffect(() => {
+        if (id) {
+            presenter.selectTeam(id);
+        } else if (newEntry) {
+            presenter.createNew();
+        } else {
+            presenter.deselect();
+        }
+    }, [id, newEntry]);
+
+    const handleSave = useCallback(async () => {
+        const team = await presenter.save();
+        if (team) {
+            if (!vm.selectedTeam || vm.selectedTeam.id !== team.id) {
+                goToRoute(Routes.Teams.List, { id: team.id });
+            }
+            showSnackbar("Team saved successfully!");
+        }
+    }, [presenter, vm.selectedTeam]);
+
+    if (!vm.showForm) {
+        return (
+            <EmptyView
+                icon={<SettingsIcon />}
+                title={"Click on the left side list to display team details or create a..."}
+                action={
+                    <Button
+                        text={"New Team"}
+                        icon={<AddIcon />}
+                        data-testid="new-record-button"
+                        onClick={() => goToRoute(Routes.Teams.List, { new: true })}
+                    />
+                }
+            />
+        );
+    }
 
     return (
-        <Grid>
-            {systemTeam ? (
-                <Grid.Column span={12}>
+        <SimpleForm>
+            {vm.loading || vm.saving ? <OverlayLoader /> : null}
+            <SimpleFormHeader
+                title={vm.selectedTeam ? vm.selectedTeam.name || "Untitled" : "Untitled"}
+            />
+            <SimpleFormContent>
+                {vm.selectedTeam && vm.selectedTeam.system ? (
                     <Alert type={"info"} title={"Permissions are locked"}>
                         This is a protected system team and you can&apos;t modify its permissions.
                     </Alert>
-                </Grid.Column>
-            ) : null}
-            {pluginTeam ? (
-                <Grid.Column span={12}>
+                ) : null}
+                {vm.selectedTeam && vm.selectedTeam.plugin ? (
                     <Alert type={"info"} title={"Important"}>
                         This team is registered via an extension, and cannot be modified.
                     </Alert>
-                </Grid.Column>
-            ) : null}
-            <Grid.Column span={6}>
-                <Bind name="name" validators={validation.create("required,minLength:1")}>
-                    <Input
-                        required
-                        onBlur={generateSlug}
-                        disabled={!canModifyTeam}
-                        label={"Name"}
-                        data-testid="admin.am.team.new.name"
-                    />
-                </Bind>
-            </Grid.Column>
-            <Grid.Column span={6}>
-                <Bind name="slug" validators={validation.create("required,minLength:1")}>
-                    <Input
-                        required
-                        disabled={!canModifyTeam || !newEntry}
-                        label={"Slug"}
-                        data-testid="admin.am.team.new.slug"
-                    />
-                </Bind>
-            </Grid.Column>
-            <Grid.Column span={12}>
-                <Bind
-                    name="description"
-                    validators={validation.create("maxLength:500")}
-                    defaultValue={""}
-                >
-                    <Textarea
-                        disabled={!canModifyTeam}
-                        label={"Description"}
-                        rows={3}
-                        data-testid="admin.am.team.new.description"
-                    />
-                </Bind>
-            </Grid.Column>
-            <Grid.Column span={12}>
-                <Bind name="roles" validators={validation.create("required")}>
-                    <RolesMultiAutocomplete
-                        disabled={!canModifyTeam}
-                        label={"Roles"}
-                        data-testid="admin.am.team.new.roles"
-                    />
-                </Bind>
-            </Grid.Column>
-        </Grid>
-    );
-};
-
-const TeamsForm = observer(
-    ({ newEntry, id }: { newEntry: boolean; id: string | undefined }) => {
-        const { presenter } = useFeature(TeamsPresenterFeature);
-        const { goToRoute } = useRouter();
-        const { showSnackbar } = useSnackbar();
-        const { vm } = presenter;
-
-        useEffect(() => {
-            if (id) {
-                presenter.selectTeam(id);
-            } else if (newEntry) {
-                presenter.createNew();
-            } else {
-                presenter.deselect();
-            }
-        }, [id, newEntry]);
-
-        const onSubmit = useCallback(
-            async (formData: Record<string, any>) => {
-                const team = await presenter.save(formData);
-                if (team) {
-                    if (!vm.selectedTeam || vm.selectedTeam.id !== team.id) {
-                        goToRoute(Routes.Teams.List, { id: team.id });
-                    }
-                    showSnackbar("Team saved successfully!");
-                }
-            },
-            [presenter, vm.selectedTeam]
-        );
-
-        if (!vm.showForm) {
-            return (
-                <EmptyView
-                    icon={<SettingsIcon />}
-                    title={
-                        "Click on the left side list to display team details or create a..."
-                    }
-                    action={
-                        <Button
-                            text={"New Team"}
-                            icon={<AddIcon />}
-                            data-testid="new-record-button"
-                            onClick={() => goToRoute(Routes.Teams.List, { new: true })}
-                        />
-                    }
+                ) : null}
+                <FormErrors form={vm.form} className={"mb-md"} />
+                <FormView name={"Team"} form={vm.form} />
+            </SimpleFormContent>
+            <SimpleFormFooter>
+                <Button
+                    variant={"secondary"}
+                    text={"Cancel"}
+                    onClick={() => goToRoute(Routes.Teams.List)}
                 />
-            );
-        }
-
-        const data = vm.selectedTeam || {};
-
-        return (
-            <Form data={data} onSubmit={onSubmit}>
-                {({ data, form }) => (
-                    <SimpleForm>
-                        {(vm.loading || vm.saving) && <OverlayLoader />}
-                        <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
-                        <SimpleFormContent>
-                            <FormContent
-                                systemTeam={!!(vm.selectedTeam && vm.selectedTeam.system)}
-                                pluginTeam={!!(vm.selectedTeam && vm.selectedTeam.plugin)}
-                                canModifyTeam={vm.canModify}
-                                newEntry={newEntry}
-                            />
-                        </SimpleFormContent>
-                        <SimpleFormFooter>
-                            <Button
-                                variant={"secondary"}
-                                text={"Cancel"}
-                                onClick={() => goToRoute(Routes.Teams.List)}
-                            />
-                            {vm.canModify && (
-                                <Button
-                                    text={"Save"}
-                                    data-testid="admin.am.team.new.save"
-                                    onClick={ev => form.submit(ev)}
-                                />
-                            )}
-                        </SimpleFormFooter>
-                    </SimpleForm>
-                )}
-            </Form>
-        );
-    }
-);
+                {vm.canModify ? (
+                    <Button
+                        text={"Save"}
+                        data-testid="admin.am.team.new.save"
+                        onClick={handleSave}
+                    />
+                ) : null}
+            </SimpleFormFooter>
+        </SimpleForm>
+    );
+});
 
 export const TeamsView = observer(() => {
     const { presenter } = useFeature(TeamsPresenterFeature);

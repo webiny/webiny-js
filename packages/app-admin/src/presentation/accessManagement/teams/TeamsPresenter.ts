@@ -1,5 +1,8 @@
 import { makeAutoObservable, runInAction, computed } from "mobx";
+import slugify from "slugify";
 import { ListPresenter } from "~/presentation/listPresenter/abstractions.js";
+import { FormModelFactory } from "~/features/formModel/abstractions.js";
+import type { IFormModel } from "~/features/formModel/abstractions.js";
 import type { Team } from "~/features/accessManagement/types.js";
 import {
     ListTeamsUseCase,
@@ -21,9 +24,12 @@ class TeamsPresenterImpl implements ITeamsPresenter {
     private _loading = false;
     private _saving = false;
     private _showForm = false;
+    private _form: IFormModel;
+    private _isNew = false;
 
     constructor(
         private _listPresenter: ListPresenter.Interface<Team>,
+        private formModelFactory: FormModelFactory.Interface,
         private listTeamsUseCase: ListTeamsUseCase.Interface,
         private getTeamUseCase: GetTeamUseCase.Interface,
         private createTeamUseCase: CreateTeamUseCase.Interface,
@@ -31,8 +37,10 @@ class TeamsPresenterImpl implements ITeamsPresenter {
         private deleteTeamUseCase: DeleteTeamUseCase.Interface,
         private cache: TeamsListCache.Interface
     ) {
+        this._form = this.buildForm(false, true);
         makeAutoObservable<
             TeamsPresenterImpl,
+            | "formModelFactory"
             | "listTeamsUseCase"
             | "getTeamUseCase"
             | "createTeamUseCase"
@@ -40,6 +48,7 @@ class TeamsPresenterImpl implements ITeamsPresenter {
             | "deleteTeamUseCase"
             | "cache"
         >(this, {
+            formModelFactory: false,
             listTeamsUseCase: false,
             getTeamUseCase: false,
             createTeamUseCase: false,
@@ -60,7 +69,8 @@ class TeamsPresenterImpl implements ITeamsPresenter {
             loading: this._loading,
             saving: this._saving,
             showForm: this._showForm,
-            canModify: !systemTeam && !pluginTeam
+            canModify: !systemTeam && !pluginTeam,
+            form: this._form.vm
         };
     }
 
@@ -82,12 +92,24 @@ class TeamsPresenterImpl implements ITeamsPresenter {
         runInAction(() => {
             this._loading = true;
             this._showForm = true;
+            this._isNew = false;
         });
 
         try {
             const team = await this.getTeamUseCase.execute(id);
+            const systemTeam = team.system === true;
+            const pluginTeam = team.plugin ?? false;
+            const canModify = !systemTeam && !pluginTeam;
+
             runInAction(() => {
                 this._selectedTeam = team;
+                this._form = this.buildForm(false, canModify);
+                this._form.setData({
+                    name: team.name,
+                    slug: team.slug,
+                    description: team.description,
+                    roles: team.roles || []
+                });
             });
         } finally {
             runInAction(() => {
@@ -98,6 +120,8 @@ class TeamsPresenterImpl implements ITeamsPresenter {
 
     createNew(): void {
         this._selectedTeam = null;
+        this._isNew = true;
+        this._form = this.buildForm(true, true);
         this._showForm = true;
     }
 
@@ -106,19 +130,26 @@ class TeamsPresenterImpl implements ITeamsPresenter {
         this._showForm = false;
     }
 
-    async save(data: Record<string, any>): Promise<Team | null> {
+    async save(): Promise<Team | null> {
+        const data = await this._form.submit();
+        if (!data) {
+            return null;
+        }
+
         runInAction(() => {
             this._saving = true;
         });
 
         try {
-            const roles = (data.roles || []).map((r: any) => (typeof r === "string" ? r : r.id));
+            const roles = ((data.roles as any[]) || []).map((r: any) =>
+                typeof r === "string" ? r : r.id
+            );
             const isUpdate = this._selectedTeam !== null && this._selectedTeam.createdOn;
 
             if (isUpdate) {
                 const team = await this.updateTeamUseCase.execute(this._selectedTeam!.id, {
-                    name: data.name,
-                    description: data.description,
+                    name: data.name as string,
+                    description: data.description as string,
                     roles
                 });
                 runInAction(() => {
@@ -127,13 +158,21 @@ class TeamsPresenterImpl implements ITeamsPresenter {
                 return team;
             } else {
                 const team = await this.createTeamUseCase.execute({
-                    name: data.name,
-                    slug: data.slug,
-                    description: data.description,
+                    name: data.name as string,
+                    slug: data.slug as string,
+                    description: data.description as string,
                     roles
                 });
                 runInAction(() => {
                     this._selectedTeam = team;
+                    this._isNew = false;
+                    this._form = this.buildForm(false, true);
+                    this._form.setData({
+                        name: team.name,
+                        slug: team.slug,
+                        description: team.description,
+                        roles: team.roles || []
+                    });
                 });
                 return team;
             }
@@ -156,12 +195,59 @@ class TeamsPresenterImpl implements ITeamsPresenter {
             }
         });
     }
+
+    private buildForm(isNew: boolean, canModify: boolean): IFormModel {
+        return this.formModelFactory.create({
+            fields: fields => ({
+                name: fields
+                    .text()
+                    .label("Name")
+                    .required("Name is required.")
+                    .disabled(!canModify)
+                    .onBlur((value, form) => {
+                        const slugValue = form.field("slug").getValue();
+                        if (slugValue || !value) {
+                            return;
+                        }
+                        form.field("slug").setValue(
+                            slugify(String(value), {
+                                replacement: "-",
+                                lower: true,
+                                remove: /[*#?<>_{}[\]+~.()'"!:;@]/g,
+                                trim: false
+                            })
+                        );
+                    }),
+                slug: fields
+                    .text()
+                    .label("Slug")
+                    .required("Slug is required.")
+                    .disabled(!isNew || !canModify),
+                description: fields
+                    .text()
+                    .label("Description")
+                    .renderer("textarea")
+                    .disabled(!canModify),
+                roles: fields
+                    .rolesMultiSelect()
+                    .label("Roles")
+                    .required("Roles are required.")
+                    .disabled(!canModify)
+            }),
+            layout: layout => [
+                layout.row("name", "slug"),
+                layout.row("description"),
+                layout.row("roles")
+            ]
+        });
+    }
 }
 
 export const TeamsPresenterImplementation = Abstraction.createImplementation({
     implementation: TeamsPresenterImpl,
     dependencies: [
         ListPresenter,
+        FormModelFactory,
         ListTeamsUseCase,
         GetTeamUseCase,
         CreateTeamUseCase,

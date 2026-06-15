@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
+import type { IFormVM } from "~/features/formModel/abstractions.js";
 import type { IListPresenter } from "~/presentation/listPresenter/abstractions.js";
 import type { Team } from "~/features/accessManagement/types.js";
 
@@ -8,6 +9,7 @@ export interface ITeamsPresenterViewModel {
     saving: boolean;
     showForm: boolean;
     canModify: boolean;
+    form: IFormVM;
 }
 
 export interface ITeamsPresenter {
@@ -17,7 +19,7 @@ export interface ITeamsPresenter {
     selectTeam(id: string): Promise<void>;
     createNew(): void;
     deselect(): void;
-    save(data: Record<string, any>): Promise<Team | null>;
+    save(): Promise<Team | null>;
     deleteTeam(id: string): Promise<void>;
 }
 

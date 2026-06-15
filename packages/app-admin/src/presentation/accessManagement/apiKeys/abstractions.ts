@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
+import type { IFormVM } from "~/features/formModel/abstractions.js";
 import type { IListPresenter } from "~/presentation/listPresenter/abstractions.js";
 import type { ApiKey } from "~/features/accessManagement/types.js";
 
@@ -7,6 +8,7 @@ export interface IApiKeysPresenterViewModel {
     loading: boolean;
     saving: boolean;
     showForm: boolean;
+    form: IFormVM;
 }
 
 export interface IApiKeysPresenter {
@@ -16,7 +18,7 @@ export interface IApiKeysPresenter {
     selectApiKey(id: string): Promise<void>;
     createNew(): void;
     deselect(): void;
-    save(data: Record<string, any>): Promise<ApiKey | null>;
+    save(): Promise<ApiKey | null>;
     deleteApiKey(id: string): Promise<void>;
 }
 

@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import orderBy from "lodash/orderBy.js";
 import { useFeature } from "@webiny/app";
-import { Bind, Form, useForm, useGenerateSlug } from "@webiny/form";
-import { validation } from "@webiny/validation";
 import {
     SplitView,
     LeftPanel,
@@ -13,29 +11,24 @@ import {
     SimpleFormContent,
     SimpleFormFooter,
     EmptyView,
-    Permissions,
     useSnackbar,
     useConfirmationDialog,
     SearchUI,
     useRouter,
     useRoute
 } from "~/index.js";
+import { FormView } from "~/features/formModel/FormView.js";
 import {
-    Alert,
     Button,
-    CopyButton,
     DataList,
     DataListModal,
     DeleteIcon,
     Grid,
     Icon,
     IconButton,
-    Input,
-    Label,
     List,
     OverlayLoader,
     Select,
-    Textarea,
     Tooltip,
     useToast
 } from "@webiny/admin-ui";
@@ -47,6 +40,7 @@ import { ApiKeysPresenterFeature } from "../feature.js";
 import { Routes } from "../../routes.js";
 import type { ApiKey } from "~/features/accessManagement/types.js";
 import type { GenericRecord } from "@webiny/app/types.js";
+import { FormErrors } from "~/index.js";
 
 const SORTERS = [
     { label: "Newest to oldest", sorter: "createdOn_DESC" },
@@ -199,172 +193,81 @@ const CopyPermissionsToJson = ({ permissions }: { permissions: GenericRecord[] }
     );
 };
 
-const ApiKeyFormContent = ({ newEntry }: { newEntry: boolean }) => {
-    const form = useForm();
+const ApiKeyForm = observer(({ newEntry, id }: { newEntry: boolean; id: string | undefined }) => {
+    const { presenter } = useFeature(ApiKeysPresenterFeature);
+    const { goToRoute } = useRouter();
     const toast = useToast();
-    const { generateSlug } = useGenerateSlug(form, "name", "slug");
-    const data = form.data;
+    const { vm } = presenter;
 
-    return (
-        <Grid>
-            <Grid.Column span={6}>
-                <Bind name="name" validators={validation.create("required")}>
-                    <Input
-                        label={"Name"}
-                        data-testid="sam.key.new.form.name"
-                        onBlur={generateSlug}
-                    />
-                </Bind>
-            </Grid.Column>
-            <Grid.Column span={6}>
-                <Bind name="slug" validators={validation.create("required")}>
-                    <Input
-                        label={"Slug"}
-                        data-testid="sam.key.new.form.slug"
-                        disabled={!newEntry}
-                    />
-                </Bind>
-            </Grid.Column>
-            <Grid.Column span={12}>
-                <Bind name="description" validators={validation.create("required")}>
-                    <Textarea
-                        size={"lg"}
-                        label={"Description"}
-                        rows={4}
-                        data-testid="sam.key.new.form.description"
-                    />
-                </Bind>
-            </Grid.Column>
-            <Grid.Column span={12}>
-                <div>
-                    <Label text={"Token"} />
-                    {data.token ? (
-                        <div
-                            className={
-                                "py-sm pl-sm-extra pr-xs rounded-md mt-xs bg-neutral-disabled flex justify-between items-center"
-                            }
-                        >
-                            <div>{data.token}</div>
-                            <CopyButton
-                                variant={"ghost"}
-                                value={data.token}
-                                onCopy={() => {
-                                    toast.showSuccessToast({ title: "Successfully copied!" });
-                                }}
-                            />
-                        </div>
-                    ) : (
-                        <Alert className={"mt-xs"}>
-                            {"Your token will be shown once you submit the form."}
-                        </Alert>
-                    )}
-                </div>
-            </Grid.Column>
-        </Grid>
-    );
-};
-
-const ApiKeyForm = observer(
-    ({ newEntry, id }: { newEntry: boolean; id: string | undefined }) => {
-        const { presenter } = useFeature(ApiKeysPresenterFeature);
-        const { goToRoute } = useRouter();
-        const toast = useToast();
-        const { vm } = presenter;
-
-        useEffect(() => {
-            if (id) {
-                presenter.selectApiKey(id);
-            } else if (newEntry) {
-                presenter.createNew();
-            } else {
-                presenter.deselect();
-            }
-        }, [id, newEntry]);
-
-        const onSubmit = useCallback(
-            async (formData: Record<string, any>) => {
-                if (!formData.permissions || !formData.permissions.length) {
-                    toast.showWarningToast({
-                        title: "You must configure permissions before saving!",
-                        duration: Infinity
-                    });
-                    return;
-                }
-
-                const apiKey = await presenter.save(formData);
-                if (apiKey) {
-                    if (!vm.selectedApiKey || vm.selectedApiKey.id !== apiKey.id) {
-                        goToRoute(Routes.ApiKeys.List, { id: apiKey.id });
-                    }
-                    toast.showSuccessToast({ title: "API key saved successfully." });
-                }
-            },
-            [presenter, vm.selectedApiKey]
-        );
-
-        if (!vm.showForm) {
-            return (
-                <EmptyView
-                    icon={<SettingsIcon />}
-                    title={
-                        "Click on the left side list to display API key details or create a..."
-                    }
-                    action={
-                        <Button
-                            icon={<AddIcon />}
-                            text={"New API Key"}
-                            data-testid="new-record-button"
-                            onClick={() => goToRoute(Routes.ApiKeys.List, { new: true })}
-                        />
-                    }
-                />
-            );
+    useEffect(() => {
+        if (id) {
+            presenter.selectApiKey(id);
+        } else if (newEntry) {
+            presenter.createNew();
+        } else {
+            presenter.deselect();
         }
+    }, [id, newEntry]);
 
-        const data = vm.selectedApiKey || {};
+    const handleSave = useCallback(async () => {
+        const apiKey = await presenter.save();
+        if (apiKey) {
+            if (!vm.selectedApiKey || vm.selectedApiKey.id !== apiKey.id) {
+                goToRoute(Routes.ApiKeys.List, { id: apiKey.id });
+            }
+            toast.showSuccessToast({ title: "API key saved successfully." });
+        }
+    }, [presenter, vm.selectedApiKey]);
 
+    if (!vm.showForm) {
         return (
-            <Form data={data} onSubmit={onSubmit}>
-                {({ data, form, Bind }) => (
-                    <SimpleForm size={"lg"}>
-                        {(vm.loading || vm.saving) && <OverlayLoader />}
-                        <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
-                        <SimpleFormContent>
-                            <ApiKeyFormContent newEntry={newEntry} />
-                        </SimpleFormContent>
-                        <SimpleFormHeader title={"Permissions"} rounded={false}>
-                            <div className={"flex justify-end"}>
-                                <CopyPermissionsToJson permissions={data.permissions || []} />
-                            </div>
-                        </SimpleFormHeader>
-                        <SimpleFormContent>
-                            <Grid>
-                                <Grid.Column span={12}>
-                                    <Bind name={"permissions"} defaultValue={[]}>
-                                        {bind => <Permissions id={data.id || "new"} {...bind} />}
-                                    </Bind>
-                                </Grid.Column>
-                            </Grid>
-                        </SimpleFormContent>
-                        <SimpleFormFooter>
-                            <Button
-                                variant={"secondary"}
-                                text={"Cancel"}
-                                onClick={() => goToRoute(Routes.ApiKeys.List)}
-                                data-testid="sam.key.new.form.button.cancel"
-                            />
-                            <Button
-                                text={"Save"}
-                                data-testid="sam.key.new.form.button.save"
-                                onClick={form.submit}
-                            />
-                        </SimpleFormFooter>
-                    </SimpleForm>
-                )}
-            </Form>
+            <EmptyView
+                icon={<SettingsIcon />}
+                title={"Click on the left side list to display API key details or create a..."}
+                action={
+                    <Button
+                        icon={<AddIcon />}
+                        text={"New API Key"}
+                        data-testid="new-record-button"
+                        onClick={() => goToRoute(Routes.ApiKeys.List, { new: true })}
+                    />
+                }
+            />
         );
     }
-);
+
+    const permissions = vm.selectedApiKey ? vm.selectedApiKey.permissions : [];
+
+    return (
+        <SimpleForm size={"lg"}>
+            {vm.loading || vm.saving ? <OverlayLoader /> : null}
+            <SimpleFormHeader
+                title={vm.selectedApiKey ? vm.selectedApiKey.name || "Untitled" : "Untitled"}
+            >
+                <div className={"flex justify-end"}>
+                    <CopyPermissionsToJson permissions={permissions} />
+                </div>
+            </SimpleFormHeader>
+            <SimpleFormContent>
+                <FormErrors form={vm.form} className={"mb-md"} />
+                <FormView name={"API Key"} form={vm.form} />
+            </SimpleFormContent>
+            <SimpleFormFooter>
+                <Button
+                    variant={"secondary"}
+                    text={"Cancel"}
+                    onClick={() => goToRoute(Routes.ApiKeys.List)}
+                    data-testid="sam.key.new.form.button.cancel"
+                />
+                <Button
+                    text={"Save"}
+                    data-testid="sam.key.new.form.button.save"
+                    onClick={handleSave}
+                />
+            </SimpleFormFooter>
+        </SimpleForm>
+    );
+});
 
 export const ApiKeysView = observer(() => {
     const { presenter } = useFeature(ApiKeysPresenterFeature);

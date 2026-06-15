@@ -419,6 +419,7 @@ export class FormModel implements IFormModel {
         return {
             layout: this._layoutResolver.resolve(this._layout),
             errors: this.errors,
+            hasErrors: this.errors.length > 0,
             isDirty: this.isDirty,
             isValid: this._isValid,
             submitCount: this._submitCount,

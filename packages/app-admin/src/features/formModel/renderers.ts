@@ -22,3 +22,6 @@ import "../../base/Base/FieldRenderers/FilePickerRenderer.js";
 import "../../base/Base/FieldRenderers/CodeEditorRenderer.js";
 import "../../base/Base/FieldRenderers/LexicalRenderer.js";
 import "../../base/Base/FieldRenderers/PasswordInputRenderer.js";
+import "../../base/Base/FieldRenderers/PermissionsRenderer.js";
+import "../../base/Base/FieldRenderers/RolesMultiSelectRenderer.js";
+import "../../base/Base/FieldRenderers/ApiKeyTokenRenderer.js";

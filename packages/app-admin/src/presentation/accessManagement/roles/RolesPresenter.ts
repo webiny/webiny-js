@@ -1,5 +1,8 @@
 import { makeAutoObservable, runInAction, computed } from "mobx";
+import slugify from "slugify";
 import { ListPresenter } from "~/presentation/listPresenter/abstractions.js";
+import { FormModelFactory } from "~/features/formModel/abstractions.js";
+import type { IFormModel } from "~/features/formModel/abstractions.js";
 import type { Role } from "~/features/accessManagement/types.js";
 import {
     ListRolesUseCase,
@@ -21,9 +24,11 @@ class RolesPresenterImpl implements IRolesPresenter {
     private _loading = false;
     private _saving = false;
     private _showForm = false;
+    private _form: IFormModel;
 
     constructor(
         private _listPresenter: ListPresenter.Interface<Role>,
+        private formModelFactory: FormModelFactory.Interface,
         private listRolesUseCase: ListRolesUseCase.Interface,
         private getRoleUseCase: GetRoleUseCase.Interface,
         private createRoleUseCase: CreateRoleUseCase.Interface,
@@ -31,8 +36,10 @@ class RolesPresenterImpl implements IRolesPresenter {
         private deleteRoleUseCase: DeleteRoleUseCase.Interface,
         private cache: RolesListCache.Interface
     ) {
+        this._form = this.buildForm(false, false);
         makeAutoObservable<
             RolesPresenterImpl,
+            | "formModelFactory"
             | "listRolesUseCase"
             | "getRoleUseCase"
             | "createRoleUseCase"
@@ -40,6 +47,7 @@ class RolesPresenterImpl implements IRolesPresenter {
             | "deleteRoleUseCase"
             | "cache"
         >(this, {
+            formModelFactory: false,
             listRolesUseCase: false,
             getRoleUseCase: false,
             createRoleUseCase: false,
@@ -52,15 +60,17 @@ class RolesPresenterImpl implements IRolesPresenter {
 
     get vm(): IRolesPresenterViewModel {
         const role = this._selectedRole;
-        const systemRole = role !== null && (role.slug === "full-access" || role.system === true);
-        const pluginRole = role !== null && (role.plugin ?? false);
+        const isSystemRole = role !== null && (role.slug === "full-access" || role.system === true);
+        const isPluginRole = role !== null && (role.plugin ?? false);
 
         return {
             selectedRole: this._selectedRole,
             loading: this._loading,
             saving: this._saving,
             showForm: this._showForm,
-            canModify: !systemRole && !pluginRole
+            canModify: !isSystemRole && !isPluginRole,
+            isSystemRole,
+            form: this._form.vm
         };
     }
 
@@ -86,8 +96,19 @@ class RolesPresenterImpl implements IRolesPresenter {
 
         try {
             const role = await this.getRoleUseCase.execute(id);
+            const isSystemRole = role.slug === "full-access" || role.system === true;
+            const isPluginRole = role.plugin ?? false;
+            const canModify = !isSystemRole && !isPluginRole;
+
             runInAction(() => {
                 this._selectedRole = role;
+                this._form = this.buildForm(false, canModify, role.id);
+                this._form.setData({
+                    name: role.name,
+                    slug: role.slug,
+                    description: role.description,
+                    permissions: role.permissions || []
+                });
             });
         } finally {
             runInAction(() => {
@@ -98,6 +119,7 @@ class RolesPresenterImpl implements IRolesPresenter {
 
     createNew(): void {
         this._selectedRole = null;
+        this._form = this.buildForm(true, true, "new");
         this._showForm = true;
     }
 
@@ -106,7 +128,12 @@ class RolesPresenterImpl implements IRolesPresenter {
         this._showForm = false;
     }
 
-    async save(data: Record<string, any>): Promise<Role | null> {
+    async save(): Promise<Role | null> {
+        const data = await this._form.submit<Role>();
+        if (!data) {
+            return null;
+        }
+
         runInAction(() => {
             this._saving = true;
         });
@@ -116,8 +143,8 @@ class RolesPresenterImpl implements IRolesPresenter {
 
             if (isUpdate) {
                 const role = await this.updateRoleUseCase.execute(this._selectedRole!.id, {
-                    name: data.name,
-                    description: data.description,
+                    name: data.name as string,
+                    description: data.description as string,
                     permissions: data.permissions
                 });
                 runInAction(() => {
@@ -126,13 +153,20 @@ class RolesPresenterImpl implements IRolesPresenter {
                 return role;
             } else {
                 const role = await this.createRoleUseCase.execute({
-                    name: data.name,
-                    slug: data.slug,
-                    description: data.description,
+                    name: data.name as string,
+                    slug: data.slug as string,
+                    description: data.description as string,
                     permissions: data.permissions
                 });
                 runInAction(() => {
                     this._selectedRole = role;
+                    this._form = this.buildForm(false, true, role.id);
+                    this._form.setData({
+                        name: role.name,
+                        slug: role.slug,
+                        description: role.description,
+                        permissions: role.permissions || []
+                    });
                 });
                 return role;
             }
@@ -155,12 +189,64 @@ class RolesPresenterImpl implements IRolesPresenter {
             }
         });
     }
+
+    private buildForm(isNew: boolean, canModify: boolean, entityId?: string): IFormModel {
+        return this.formModelFactory.create({
+            fields: fields => ({
+                name: fields
+                    .text()
+                    .label("Name")
+                    .required("Name is required.")
+                    .disabled(!canModify)
+                    .onBlur((value, form) => {
+                        const slugValue = form.field("slug").getValue();
+                        if (slugValue || !value) {
+                            return;
+                        }
+                        form.field("slug").setValue(
+                            slugify(String(value), {
+                                replacement: "-",
+                                lower: true,
+                                remove: /[*#?<>_{}[\]+~.()'"!:;@]/g,
+                                trim: false
+                            })
+                        );
+                    }),
+                slug: fields
+                    .text()
+                    .label("Slug")
+                    .required("Slug is required.")
+                    .disabled(!isNew || !canModify),
+                description: fields
+                    .text()
+                    .label("Description")
+                    .renderer("textarea")
+                    .disabled(!canModify),
+                permissions: fields
+                    .permissions()
+                    .label("Permissions")
+                    .renderer("permissions", { id: entityId || "new" })
+                    .hiddenWhen(() => {
+                        const role = this._selectedRole;
+                        return (
+                            role !== null && (role.slug === "full-access" || role.system === true)
+                        );
+                    })
+            }),
+            layout: layout => [
+                layout.row("name", "slug"),
+                layout.row("description"),
+                layout.row("permissions")
+            ]
+        });
+    }
 }
 
 export const RolesPresenterImplementation = Abstraction.createImplementation({
     implementation: RolesPresenterImpl,
     dependencies: [
         ListPresenter,
+        FormModelFactory,
         ListRolesUseCase,
         GetRoleUseCase,
         CreateRoleUseCase,

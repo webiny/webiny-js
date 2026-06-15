@@ -629,6 +629,7 @@ export interface IFormError {
 export interface IFormVM {
     layout: LayoutNodeVM[];
     errors: IFormError[];
+    hasErrors: boolean;
     isDirty: boolean;
     isValid: boolean | null;
     submitCount: number;

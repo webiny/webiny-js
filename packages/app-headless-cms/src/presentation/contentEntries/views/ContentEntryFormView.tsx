@@ -91,9 +91,7 @@ export const ContentEntryFormView = observer(() => {
                         <div className={"bg-neutral-base rounded-lg p-lg"}>
                             {vm.form ? (
                                 <>
-                                    <div className={"mb-md"}>
-                                        <FormErrors form={vm.form} />
-                                    </div>
+                                    <FormErrors form={vm.form} className={"mb-md"} />
                                     <FormView name="ContentEntryForm" form={vm.form} />
                                 </>
                             ) : null}

@@ -25,6 +25,9 @@ import { MultiFilePickerRenderer } from "~/base/Base/FieldRenderers/MultiFilePic
 import { CodeEditorRenderer } from "~/base/Base/FieldRenderers/CodeEditorRenderer.js";
 import { LexicalRenderer } from "~/base/Base/FieldRenderers/LexicalRenderer.js";
 import { PasswordInputRenderer } from "~/base/Base/FieldRenderers/PasswordInputRenderer.js";
+import { PermissionsRenderer } from "~/base/Base/FieldRenderers/PermissionsRenderer.js";
+import { RolesMultiSelectRenderer } from "~/base/Base/FieldRenderers/RolesMultiSelectRenderer.js";
+import { ApiKeyTokenRenderer } from "~/base/Base/FieldRenderers/ApiKeyTokenRenderer.js";
 
 export const DefaultFieldRenderers = () => {
     return (
@@ -80,6 +83,18 @@ export const DefaultFieldRenderers = () => {
             <AdminConfig.Form.FieldRenderer
                 name={"passwordInput"}
                 component={PasswordInputRenderer}
+            />
+            <AdminConfig.Form.FieldRenderer
+                name={"permissions"}
+                component={PermissionsRenderer}
+            />
+            <AdminConfig.Form.FieldRenderer
+                name={"rolesMultiSelect"}
+                component={RolesMultiSelectRenderer}
+            />
+            <AdminConfig.Form.FieldRenderer
+                name={"apiKeyToken"}
+                component={ApiKeyTokenRenderer}
             />
         </AdminConfig>
     );

@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
+import type { IFormVM } from "~/features/formModel/abstractions.js";
 import type { IListPresenter } from "~/presentation/listPresenter/abstractions.js";
 import type { Role } from "~/features/accessManagement/types.js";
 
@@ -8,6 +9,8 @@ export interface IRolesPresenterViewModel {
     saving: boolean;
     showForm: boolean;
     canModify: boolean;
+    isSystemRole: boolean;
+    form: IFormVM;
 }
 
 export interface IRolesPresenter {
@@ -17,7 +20,7 @@ export interface IRolesPresenter {
     selectRole(id: string): Promise<void>;
     createNew(): void;
     deselect(): void;
-    save(data: Record<string, any>): Promise<Role | null>;
+    save(): Promise<Role | null>;
     deleteRole(id: string): Promise<void>;
 }
 
