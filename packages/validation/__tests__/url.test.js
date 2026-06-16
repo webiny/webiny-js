@@ -84,6 +84,46 @@ describe("url test", () => {
         );
     });
 
+    it("should pass - valid IPv4 addresses", async () => {
+        await expect(validation.validate("http://192.168.1.1", "url")).resolves.toBe(true);
+        await expect(validation.validate("https://10.0.0.1", "url")).resolves.toBe(true);
+        await expect(validation.validate("http://255.255.255.255", "url")).resolves.toBe(true);
+        await expect(validation.validate("http://0.0.0.0", "url")).resolves.toBe(true);
+        await expect(validation.validate("http://192.168.1.1:8080/path", "url")).resolves.toBe(
+            true
+        );
+    });
+
+    it("should fail - IPv4 rejected with noIp", async () => {
+        await expect(validation.validate("http://192.168.1.1", "url:noIp")).rejects.toThrow(
+            ValidationError
+        );
+        await expect(validation.validate("https://10.0.0.1", "url:noIp")).rejects.toThrow(
+            ValidationError
+        );
+        await expect(
+            validation.validate("http://192.168.1.1:8080/path", "url:noIp")
+        ).rejects.toThrow(ValidationError);
+    });
+
+    it("should pass - valid IPv6 addresses", async () => {
+        await expect(validation.validate("http://[::1]", "url")).resolves.toBe(true);
+        await expect(validation.validate("https://[::1]:3000", "url")).resolves.toBe(true);
+        await expect(validation.validate("http://[2001:db8::1]/path", "url")).resolves.toBe(true);
+    });
+
+    it("should fail - IPv6 rejected with noIp", async () => {
+        await expect(validation.validate("http://[::1]", "url:noIp")).rejects.toThrow(
+            ValidationError
+        );
+        await expect(validation.validate("https://[::1]:3000", "url:noIp")).rejects.toThrow(
+            ValidationError
+        );
+        await expect(validation.validate("http://[2001:db8::1]/path", "url:noIp")).rejects.toThrow(
+            ValidationError
+        );
+    });
+
     it("should pass - Google Maps embed URL (with exclamation mark)", async () => {
         await expect(
             validation.validate(

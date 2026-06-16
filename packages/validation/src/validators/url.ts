@@ -5,6 +5,9 @@ const RELATIVE_REGEX = /^\/.*$/;
 const HREF_REGEX = /^(#|mailto:|tel:)\S*$/;
 
 const isIpHostname = (hostname: string): boolean => {
+    if (hostname.includes(":")) {
+        return true;
+    }
     const parts = hostname.split(".");
     return parts.length === 4 && parts.every(part => IP_OCTET.test(part));
 };
