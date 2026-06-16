@@ -56,11 +56,12 @@ import {
 
 import { awsWatch } from "./features/Watch/AwsWatch.js";
 import { BuildProjectWorkspace } from "./extensions/ProjectAws/BuildProjectWorkspace.js";
+import { BuildAppWorkspace } from "./extensions/ProjectAws/BuildAppWorkspace.js";
 
 export const registerAwsProjectFeatures = (container: Container): void => {
-    // Workspace decorator: copies webiny.config.base.tsx from @webiny/project-aws-template.
-    // Must be registered before BuildProjectWorkspaceService executes.
+    // Workspace decorators — must be registered before workspace services execute.
     container.registerDecorator(BuildProjectWorkspace);
+    container.registerDecorator(BuildAppWorkspace);
     // Pulumi/Lambda services.
     container.register(getPulumiService).inSingletonScope();
     container.register(isRemotePulumiBackendService).inSingletonScope();

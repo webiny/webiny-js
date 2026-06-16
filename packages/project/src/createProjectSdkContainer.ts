@@ -9,6 +9,9 @@ import {
     apiAfterBuild,
     apiBeforeBuild,
     apiBeforeWatch,
+    coreAfterBuild,
+    coreBeforeBuild,
+    coreBeforeWatch,
     buildApp,
     getApp,
     getLogger,
@@ -134,6 +137,9 @@ export const createProjectSdkContainer = async (
     container.registerComposite(adminBeforeBuild);
     container.registerComposite(adminBeforeWatch);
     container.registerComposite(adminAfterBuild);
+    container.registerComposite(coreBeforeBuild);
+    container.registerComposite(coreAfterBuild);
+    container.registerComposite(coreBeforeWatch);
 
     // Initialize project SDK.
     container.resolve(ProjectSdkParamsService).set(params);

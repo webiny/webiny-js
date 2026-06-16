@@ -28,14 +28,9 @@ export class ServerBuildAppWorkspaceService implements BuildAppWorkspaceService.
 
         const app = this.getApp.execute(appName);
 
+        // Always rebuild: the workspace may have been left by the AWS flavor (different
+        // webiny.config.ts), so we must overwrite it unconditionally.
         if (app.paths.workspaceFolder.existsSync()) {
-            if (options.forceRebuild !== true) {
-                this.loggerService.debug(
-                    { appName },
-                    "Server app workspace already exists, skipping rebuild."
-                );
-                return;
-            }
             fs.rmSync(app.paths.workspaceFolder.toString(), { recursive: true, force: true });
         }
 

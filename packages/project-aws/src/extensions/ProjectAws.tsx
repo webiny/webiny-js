@@ -9,7 +9,6 @@ import {
     DatabaseSetup,
     ExtensionDefinitions,
     Project,
-    ProjectDecorator,
     ProjectImplementation
 } from "@webiny/project/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
@@ -22,7 +21,6 @@ export const ProjectAws = () => {
     return (
         <>
             <Project />
-            <ProjectDecorator src={p("ProjectAws/BuildAppWorkspace.js")} />
 
             {/* Database Setup - default to DynamoDB only */}
             <DatabaseSetup setupName="ddb" />
