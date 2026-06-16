@@ -17,9 +17,11 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api-websockets": "0.0.0",
-    "@webiny/feature": "0.0.0"
+    "@webiny/feature": "0.0.0",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@types/ws": "^8.18.1",
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "rimraf": "^6.1.3",
