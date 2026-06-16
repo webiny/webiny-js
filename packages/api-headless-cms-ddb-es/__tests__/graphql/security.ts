@@ -22,21 +22,11 @@ export const createSecurity = () => {
             });
 
             context.security.addAuthorizer(async () => {
-                const { headers = {} } = context.request || {};
-                if (headers["authorization"]) {
-                    return null;
-                }
-
                 return [{ name: "*" }];
             });
         }),
-        new ContextPlugin<CmsContext>(context => {
-            const { headers = {} } = context.request || {};
-            if (headers["authorization"]) {
-                return context.security.authenticate(headers["authorization"]);
-            }
-
-            return context.security.authenticate("");
+        new ContextPlugin<CmsContext>(async context => {
+            await context.security.authenticate("");
         }),
         apiKeyAuthentication({ identityType: "api-key" }),
         apiKeyAuthorization({ identityType: "api-key" })

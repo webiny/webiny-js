@@ -30,11 +30,6 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
         });
 
         context.security.addAuthorizer(async () => {
-            const { headers = {} } = context.request || {};
-            if (headers["authorization"]) {
-                return null;
-            }
-
             return permissions || [{ name: "*" }];
         });
     });
@@ -42,13 +37,8 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
 
     return [
         mockSecurityContextPlugin,
-        new ContextPlugin<Context>(context => {
-            const { headers = {} } = context.request || {};
-            if (headers["authorization"]) {
-                return context.security.authenticate(headers["authorization"]);
-            }
-
-            return context.security.authenticate("");
+        new ContextPlugin<Context>(async context => {
+            await context.security.authenticate("");
         })
     ].filter(Boolean) as Plugin[];
 };

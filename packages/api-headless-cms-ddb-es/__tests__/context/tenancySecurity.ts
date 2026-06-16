@@ -86,21 +86,11 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
             });
 
             context.security.addAuthorizer(async () => {
-                const { headers = {} } = context.request || {};
-                if (headers["authorization"]) {
-                    return null;
-                }
-
                 return permissions || [{ name: "*" }];
             });
         }),
-        new ContextPlugin<CmsContext>(context => {
-            const { headers = {} } = context.request || {};
-            if (headers["authorization"]) {
-                return context.security.authenticate(headers["authorization"]);
-            }
-
-            return context.security.authenticate("");
+        new ContextPlugin<CmsContext>(async context => {
+            await context.security.authenticate("");
         })
     ].filter(Boolean) as Plugin[];
 };

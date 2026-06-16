@@ -64,21 +64,11 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
             });
 
             context.security.addAuthorizer(async () => {
-                const { headers = {} } = context.request || {};
-                if (headers["authorization"]) {
-                    return null;
-                }
-
                 return permissions || [{ name: "*" }];
             });
         }),
-        new ContextPlugin<HcmsTasksContext>(context => {
-            const { headers = {} } = context.request || {};
-            if (headers["authorization"]) {
-                return context.security.authenticate(headers["authorization"]);
-            }
-
-            return context.security.authenticate("");
+        new ContextPlugin<HcmsTasksContext>(async context => {
+            await context.security.authenticate("");
         })
     ].filter(Boolean) as Plugin[];
 };

@@ -4,10 +4,6 @@ import type { ApiCoreContext } from "~/types/core.js";
 export const customAuthenticator = () => {
     return new ContextPlugin<ApiCoreContext>(context => {
         context.security.addAuthenticator(async () => {
-            if ("authorization" in context.request.headers) {
-                return null;
-            }
-
             return {
                 id: "123456789",
                 displayName: "John Doe",
