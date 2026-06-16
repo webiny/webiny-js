@@ -3,20 +3,15 @@ import {
     DeleteConnectionCommand,
     PostToConnectionCommand
 } from "@webiny/aws-sdk/client-apigatewaymanagementapi/index.js";
-import type {
-    IWebsocketsTransport,
-    IWebsocketsTransportDisconnectConnection,
-    IWebsocketsTransportSendConnection,
-    IWebsocketsTransportSendData
-} from "@webiny/api-websockets";
+import { WebsocketsTransport } from "@webiny/api-websockets";
 import type { GenericRecord } from "@webiny/api/types.js";
 
-export class AwsWebsocketsTransport implements IWebsocketsTransport {
+class AwsWebsocketsTransportImpl implements WebsocketsTransport.Interface {
     private readonly clients = new Map<string, ApiGatewayManagementApiClient>();
 
     public async send<T extends GenericRecord = GenericRecord>(
-        connections: IWebsocketsTransportSendConnection[],
-        data: IWebsocketsTransportSendData<T>
+        connections: WebsocketsTransport.SendConnection[],
+        data: WebsocketsTransport.SendData<T>
     ): Promise<void> {
         for (const connection of connections) {
             try {
@@ -36,7 +31,7 @@ export class AwsWebsocketsTransport implements IWebsocketsTransport {
         }
     }
 
-    public async disconnect(connections: IWebsocketsTransportDisconnectConnection[]) {
+    public async disconnect(connections: WebsocketsTransport.DisconnectConnection[]) {
         for (const connection of connections) {
             try {
                 const client = this.getClient(connection.endpoint);
@@ -65,3 +60,9 @@ export class AwsWebsocketsTransport implements IWebsocketsTransport {
         return newClient;
     }
 }
+
+export const AwsWebsocketsTransport = WebsocketsTransport.createImplementation({
+    implementation: AwsWebsocketsTransportImpl,
+    dependencies: []
+});
+

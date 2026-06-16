@@ -10,7 +10,7 @@ import type { PluginCollection } from "@webiny/plugins/types.js";
 import type { HandlerCallable, HandlerParams } from "./types.js";
 import { getEventValues } from "./headers.js";
 import { AwsWebsocketsEventValidator } from "~/validator/AwsWebsocketsEventValidator.js";
-import { AwsWebsocketsTransport } from "~/transport/AwsWebsocketsTransport.js";
+import { WebsocketsTransport } from "@webiny/api-websockets";
 
 const url = "/webiny-websockets";
 
@@ -83,7 +83,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                         event.requestContext || {};
                     if (connectionId && domainName && stage && eventType === "MESSAGE") {
                         try {
-                            const transport = new AwsWebsocketsTransport();
+                            const transport = context.container.resolve(WebsocketsTransport);
                             const endpoint = `https://${domainName}/${stage}`;
                             await transport.send([{ connectionId, endpoint }], errorResult);
                         } catch {
