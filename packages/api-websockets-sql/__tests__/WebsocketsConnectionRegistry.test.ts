@@ -74,11 +74,14 @@ describe("WebsocketsConnectionRegistry (SQL)", () => {
     });
 
     describe("listStale", () => {
-        it("should return connections where lastSeen is NULL", async () => {
+        it("should return connections where lastSeen is older than the threshold", async () => {
+            /* Connections now get lastSeen set at registration time, so we need a future
+               threshold to find them as stale (the orWhereNull branch remains for AWS rows). */
             await registry.register(makeRegisterParams("conn-null-1"));
             await registry.register(makeRegisterParams("conn-null-2"));
 
-            const stale = await registry.listStale(new Date());
+            const futureThreshold = new Date(Date.now() + 60_000);
+            const stale = await registry.listStale(futureThreshold);
             const ids = stale.map(c => c.connectionId);
             expect(ids).toContain("conn-null-1");
             expect(ids).toContain("conn-null-2");
@@ -114,22 +117,24 @@ describe("WebsocketsConnectionRegistry (SQL)", () => {
             expect(stale).toEqual([]);
         });
 
-        it("should mix NULL and old lastSeen correctly", async () => {
+        it("should mix old and recent lastSeen correctly", async () => {
             await registry.register(makeRegisterParams("conn-a"));
             await registry.register(makeRegisterParams("conn-b"));
             await registry.register(makeRegisterParams("conn-c"));
 
-            /* conn-b gets an old lastSeen, conn-c gets a recent one. */
+            /* conn-a gets an old lastSeen, conn-b gets another old one, conn-c keeps its recent one. */
+            await knex("WebsocketsConnections")
+                .where("connectionId", "conn-a")
+                .update({ lastSeen: new Date("2020-01-01T00:00:00.000Z").toISOString() });
             await knex("WebsocketsConnections")
                 .where("connectionId", "conn-b")
                 .update({ lastSeen: new Date("2020-01-01T00:00:00.000Z").toISOString() });
-            await registry.updateLastSeen("conn-c");
 
             const threshold = new Date("2021-01-01T00:00:00.000Z");
             const stale = await registry.listStale(threshold);
             const ids = stale.map(c => c.connectionId);
 
-            /* conn-a is NULL → stale, conn-b is old → stale, conn-c is recent → not stale. */
+            /* conn-a is old → stale, conn-b is old → stale, conn-c is recent → not stale. */
             expect(ids).toContain("conn-a");
             expect(ids).toContain("conn-b");
             expect(ids).not.toContain("conn-c");

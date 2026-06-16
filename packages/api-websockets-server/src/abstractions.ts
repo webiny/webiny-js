@@ -1,5 +1,6 @@
 import type { Server as HttpServer } from "node:http";
 import type { IncomingMessage } from "node:http";
+import type { Duplex } from "node:stream";
 import type { IWebsocketsIdentity } from "@webiny/api-websockets";
 import { createAbstraction } from "@webiny/feature/api";
 
@@ -12,6 +13,7 @@ export interface IWebsocketsServerAdapter<TSocket> {
     onError(socket: TSocket, cb: (error: Error) => void): void;
     send(socket: TSocket, data: string): Promise<void>;
     close(socket: TSocket, code?: number, reason?: string): void;
+    handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): void;
 }
 
 export const WebsocketsServerAdapter =
@@ -62,6 +64,7 @@ export interface IWebsocketsConnectionManager<TSocket> {
     getMetadata(connectionId: string): IWebsocketsConnectionManagerMetadata | undefined;
     updateLastSeen(connectionId: string): Promise<void>;
     cleanup(maxAge: number): Promise<string[]>;
+    getActiveConnectionIds(): string[];
 }
 
 export const WebsocketsConnectionManager = createAbstraction<IWebsocketsConnectionManager<unknown>>(

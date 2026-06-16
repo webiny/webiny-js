@@ -1,4 +1,6 @@
 import type { Server as HttpServer } from "node:http";
+import type { IncomingMessage } from "node:http";
+import type { Duplex } from "node:stream";
 import { WebSocketServer } from "ws";
 import { WebSocket } from "ws";
 import { WebsocketsServerAdapter } from "~/abstractions.js";
@@ -13,8 +15,16 @@ class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> 
         return this.wss;
     }
 
-    public start(server: HttpServer): void {
-        this.wss = new WebSocketServer({ server });
+    /* The server param is kept for interface compliance but not used —
+       the HTTP upgrade event is handled externally via handleUpgrade(). */
+    public start(_server: HttpServer): void {
+        this.wss = new WebSocketServer({ noServer: true });
+    }
+
+    public handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): void {
+        this.getWss().handleUpgrade(request, socket, head, ws => {
+            this.getWss().emit("connection", ws, request);
+        });
     }
 
     public stop(): Promise<void> {

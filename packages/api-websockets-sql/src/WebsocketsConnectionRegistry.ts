@@ -52,7 +52,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
                 tenant: event.tenant,
                 endpoint: event.endpoint,
                 connectedOn: event.connectedOn,
-                lastSeen: null
+                lastSeen: new Date().toISOString()
             };
 
             await this.knex<ConnectionRow>(this.tableName).insert(row);

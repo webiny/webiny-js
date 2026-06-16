@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { createServer } from "node:http";
-import type { Server as HttpServer } from "node:http";
+import type { Server as HttpServer, IncomingMessage } from "node:http";
+import type { Duplex } from "node:stream";
 import { WebSocket } from "ws";
 import { NodeWsAdapterImpl } from "~/adapter/NodeWsAdapter.js";
 
@@ -37,6 +38,13 @@ describe("NodeWsAdapter", () => {
         adapter = new NodeWsAdapterImpl();
         port = await listenOnRandomPort(httpServer);
         adapter.start(httpServer);
+
+        /* With noServer: true the adapter does not auto-accept upgrades.
+           Wire the HTTP upgrade event to handleUpgrade so the adapter can
+           accept test connections. */
+        httpServer.on("upgrade", (request: IncomingMessage, socket: Duplex, head: Buffer) => {
+            adapter.handleUpgrade(request, socket, head);
+        });
     });
 
     afterEach(async () => {

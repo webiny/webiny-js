@@ -59,6 +59,10 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
         }
         return removed;
     }
+
+    public getActiveConnectionIds(): string[] {
+        return Array.from(this.sockets.keys());
+    }
 }
 
 export const ServerConnectionManager = WebsocketsConnectionManager.createImplementation({

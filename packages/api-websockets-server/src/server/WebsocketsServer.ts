@@ -1,6 +1,7 @@
-import { randomUUID } from "node:crypto";
 import { createServer } from "node:http";
 import type { Server as HttpServer, IncomingMessage } from "node:http";
+import type { Duplex } from "node:stream";
+import { mdbid } from "@webiny/utils";
 import { NodeWsAdapterImpl } from "~/adapter/NodeWsAdapter.js";
 import { DefaultUpgradeHandlerImpl } from "~/upgradeHandler/DefaultUpgradeHandler.js";
 import { ServerConnectionManagerImpl } from "~/connectionManager/ServerConnectionManager.js";
@@ -85,6 +86,13 @@ class WebsocketsServer implements IWebsocketsServer {
 
         await this.adapter.stop();
 
+        if (this.connectionManager) {
+            const activeIds = this.connectionManager.getActiveConnectionIds();
+            for (const connectionId of activeIds) {
+                await this.connectionManager.remove(connectionId);
+            }
+        }
+
         if (this.ownsHttpServer) {
             await this.closeHttpServer();
         }
@@ -99,12 +107,31 @@ class WebsocketsServer implements IWebsocketsServer {
     }
 
     private wireEvents(): void {
+        this.httpServer.on(
+            "upgrade",
+            async (request: IncomingMessage, socket: Duplex, head: Buffer) => {
+                if (this.shuttingDown) {
+                    socket.destroy();
+                    return;
+                }
+
+                const decision = await this.upgradeHandler.shouldUpgrade(request);
+                if (!decision.allowed) {
+                    socket.write(`HTTP/1.1 ${decision.statusCode} ${decision.reason}\r\n\r\n`);
+                    socket.destroy();
+                    return;
+                }
+
+                this.adapter.handleUpgrade(request, socket, head);
+            }
+        );
+
         this.adapter.onConnection((socket, request) => {
             if (this.shuttingDown) {
                 return;
             }
 
-            const connectionId = randomUUID();
+            const connectionId = mdbid();
             const connectedAt = Date.now();
             const host = request.headers.host || "localhost";
             const headers = toHeaders(request.headers);
@@ -197,7 +224,7 @@ class WebsocketsServer implements IWebsocketsServer {
             if (this.shuttingDown) {
                 return;
             }
-            this.connectionManager?.cleanup(this.heartbeatInterval);
+            this.connectionManager?.cleanup(5 * this.heartbeatInterval);
         }, this.heartbeatInterval);
     }
 
