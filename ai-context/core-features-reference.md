@@ -82,7 +82,30 @@ This document provides the correct import paths and type definitions for commonl
 
 - **Import:** `import { WebsocketsTransport } from "@webiny/api-websockets"`
 - **Interface Type:** See `packages/api-websockets/src/transport/abstractions/WebsocketsTransport.ts`
-- **Usage:** DI abstraction for the WebSocket transport layer. Namespace types: `WebsocketsTransport.Interface`, `.SendConnection`, `.DisconnectConnection`, `.SendData<T>`. AWS implementation registered via `createAwsWebsockets()` from `@webiny/api-websockets-aws`. Implement for other platforms (Docker, EC2) by calling `WebsocketsTransport.createImplementation({ implementation: MyTransportImpl, dependencies: [] })`.
+- **Usage:** DI abstraction for the WebSocket transport layer. Namespace types: `WebsocketsTransport.Interface`, `.SendConnection`, `.DisconnectConnection`, `.SendData<T>`. AWS implementation registered via `createAwsWebsockets()` from `@webiny/api-websockets-aws`. Server implementation registered via `createServerWebsockets()` from `@webiny/api-websockets-server`.
+
+### WebsocketsServerAdapter
+
+- **Import:** `import { WebsocketsServerAdapter } from "@webiny/api-websockets-server"`
+- **Interface Type:** See `packages/api-websockets-server/src/abstractions.ts`
+- **Usage:** DI abstraction wrapping the WebSocket library. Default implementation uses Node built-in `ws`. Namespace types: `WebsocketsServerAdapter.Interface<TSocket>`. Swap to use a different WS library (uWebSockets, etc.) via `WebsocketsServerAdapter.createImplementation(...)`.
+
+### WebsocketsUpgradeHandler
+
+- **Import:** `import { WebsocketsUpgradeHandler } from "@webiny/api-websockets-server"`
+- **Interface Type:** See `packages/api-websockets-server/src/abstractions.ts`
+- **Usage:** Pre-connection filtering during HTTP upgrade (CORS, rate limiting, IP allowlists). Default accepts all. Namespace types: `WebsocketsUpgradeHandler.Interface`, `.Decision`. Swap via `WebsocketsUpgradeHandler.createImplementation(...)`.
+
+### WebsocketsConnectionManager
+
+- **Import:** `import { WebsocketsConnectionManager } from "@webiny/api-websockets-server"`
+- **Interface Type:** See `packages/api-websockets-server/src/abstractions.ts`
+- **Usage:** Manages local socket map, syncs with SQL connection registry, handles heartbeat/TTL updates. Namespace types: `WebsocketsConnectionManager.Interface<TSocket>`, `.AddParams<TSocket>`, `.ConnectionMetadata`.
+
+### Server Factory Functions
+
+- **Import:** `import { createWebsocketsServer, attachWebsocketsServer } from "@webiny/api-websockets-server"`
+- **Usage:** `createWebsocketsServer({ port, host, plugins, heartbeatInterval })` for standalone mode (creates HTTP+WS server). `attachWebsocketsServer({ server, plugins, heartbeatInterval })` for attach mode (uses existing HTTP server). Both return `IWebsocketsServer` with `start()`/`stop()`/`port()`.
 
 ### FileAfterCreateEventHandler (File Manager)
 
