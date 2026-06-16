@@ -78,6 +78,12 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-websockets/src/features/WebsocketService/abstractions.ts`
 - **Usage:** Send real-time messages to connected clients. Use `send({ id: userId }, { action, data })` for a specific user or `sendToConnections(connections, { action, data })` for multiple. List connections with `listConnections({ where: { identityId } })`. Make optional with `[WebsocketService, { optional: true }]`.
 
+### WebsocketsTransport
+
+- **Import:** `import { WebsocketsTransport } from "@webiny/api-websockets"`
+- **Interface Type:** See `packages/api-websockets/src/transport/abstractions/WebsocketsTransport.ts`
+- **Usage:** DI abstraction for the WebSocket transport layer. Namespace types: `WebsocketsTransport.Interface`, `.SendConnection`, `.DisconnectConnection`, `.SendData<T>`. AWS implementation registered via `createAwsWebsockets()` from `@webiny/api-websockets-aws`. Implement for other platforms (Docker, EC2) by calling `WebsocketsTransport.createImplementation({ implementation: MyTransportImpl, dependencies: [] })`.
+
 ### FileAfterCreateEventHandler (File Manager)
 
 - **Import:** `import { FileAfterCreateEventHandler } from "@webiny/api-file-manager/features/file/CreateFile/events.js"`
