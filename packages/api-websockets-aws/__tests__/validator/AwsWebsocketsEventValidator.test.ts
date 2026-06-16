@@ -1,19 +1,22 @@
 import { describe, it, expect } from "vitest";
-import { WebsocketsEventValidator } from "~/validator/WebsocketsEventValidator.js";
-import { WebsocketsEventRequestContextEventType } from "~/handler/types.js";
+import { AwsWebsocketsEventValidator } from "~/validator/AwsWebsocketsEventValidator.js";
+import {
+    WebsocketsEventRequestContextEventType,
+    WebsocketsEventRoute
+} from "~/handler/types.js";
 
 const connectedAt = new Date().getTime() / 1000;
 
-describe("WebsocketsEventValidator", () => {
+describe("AwsWebsocketsEventValidator", () => {
     it("should pass the validation", async () => {
-        const validator = new WebsocketsEventValidator();
+        const validator = new AwsWebsocketsEventValidator();
 
         const result = await validator.validate({
             requestContext: {
                 stage: "dev",
                 domainName: "localhost",
                 eventType: WebsocketsEventRequestContextEventType.connect,
-                routeKey: "$connect",
+                routeKey: WebsocketsEventRoute.connect,
                 connectionId: "123",
                 connectedAt
             },
@@ -27,13 +30,14 @@ describe("WebsocketsEventValidator", () => {
         });
 
         expect(result).toEqual({
-            requestContext: {
-                stage: "dev",
-                domainName: "localhost",
-                eventType: WebsocketsEventRequestContextEventType.connect,
-                routeKey: "$connect",
+            headers: undefined,
+            context: {
                 connectionId: "123",
-                connectedAt
+                connectedAt,
+                host: "localhost",
+                eventType: "connect",
+                route: "connect",
+                endpoint: "https://localhost/dev"
             },
             body: {
                 token: "token",
@@ -46,14 +50,14 @@ describe("WebsocketsEventValidator", () => {
     });
 
     it("should pass the validation on connect and disconnect - without body", async () => {
-        const validator = new WebsocketsEventValidator();
+        const validator = new AwsWebsocketsEventValidator();
 
         const resultConnect = await validator.validate({
             requestContext: {
                 stage: "dev",
                 domainName: "localhost",
                 eventType: WebsocketsEventRequestContextEventType.connect,
-                routeKey: "$connect",
+                routeKey: WebsocketsEventRoute.connect,
                 connectionId: "123",
                 connectedAt
             },
@@ -61,13 +65,14 @@ describe("WebsocketsEventValidator", () => {
         });
 
         expect(resultConnect).toEqual({
-            requestContext: {
-                stage: "dev",
-                domainName: "localhost",
-                eventType: WebsocketsEventRequestContextEventType.connect,
-                routeKey: "$connect",
+            headers: undefined,
+            context: {
                 connectionId: "123",
-                connectedAt
+                connectedAt,
+                host: "localhost",
+                eventType: "connect",
+                route: "connect",
+                endpoint: "https://localhost/dev"
             },
             body: {}
         });
@@ -77,20 +82,21 @@ describe("WebsocketsEventValidator", () => {
                 stage: "dev",
                 domainName: "localhost",
                 eventType: WebsocketsEventRequestContextEventType.disconnect,
-                routeKey: "$disconnect",
+                routeKey: WebsocketsEventRoute.disconnect,
                 connectionId: "123",
                 connectedAt
             }
         });
 
         expect(resultDisconnect).toEqual({
-            requestContext: {
-                stage: "dev",
-                domainName: "localhost",
-                eventType: WebsocketsEventRequestContextEventType.disconnect,
-                routeKey: "$disconnect",
+            headers: undefined,
+            context: {
                 connectionId: "123",
-                connectedAt
+                connectedAt,
+                host: "localhost",
+                eventType: "disconnect",
+                route: "disconnect",
+                endpoint: "https://localhost/dev"
             },
             body: {}
         });
@@ -98,7 +104,7 @@ describe("WebsocketsEventValidator", () => {
 
     it("should fail on body validation - wrong body type - null", async () => {
         expect.assertions(3);
-        const validator = new WebsocketsEventValidator();
+        const validator = new AwsWebsocketsEventValidator();
 
         try {
             await validator.validate({
@@ -106,7 +112,7 @@ describe("WebsocketsEventValidator", () => {
                     stage: "dev",
                     domainName: "localhost",
                     eventType: WebsocketsEventRequestContextEventType.connect,
-                    routeKey: "$connect",
+                    routeKey: WebsocketsEventRoute.connect,
                     connectionId: "123",
                     connectedAt
                 },
@@ -131,7 +137,7 @@ describe("WebsocketsEventValidator", () => {
 
     it("should fail on body validation - wrong body type - malformed string", async () => {
         expect.assertions(3);
-        const validator = new WebsocketsEventValidator();
+        const validator = new AwsWebsocketsEventValidator();
 
         try {
             await validator.validate({
@@ -139,7 +145,7 @@ describe("WebsocketsEventValidator", () => {
                     stage: "dev",
                     domainName: "localhost",
                     eventType: WebsocketsEventRequestContextEventType.connect,
-                    routeKey: "$connect",
+                    routeKey: WebsocketsEventRoute.connect,
                     connectionId: "123",
                     connectedAt
                 },
@@ -164,7 +170,7 @@ describe("WebsocketsEventValidator", () => {
 
     it("should fail on body validation - no body sent", async () => {
         expect.assertions(3);
-        const validator = new WebsocketsEventValidator();
+        const validator = new AwsWebsocketsEventValidator();
 
         try {
             await validator.validate({
@@ -196,7 +202,7 @@ describe("WebsocketsEventValidator", () => {
 
     it("should fail on body validation - wrong body.data type", async () => {
         expect.assertions(3);
-        const validator = new WebsocketsEventValidator();
+        const validator = new AwsWebsocketsEventValidator();
 
         try {
             await validator.validate({
@@ -204,7 +210,7 @@ describe("WebsocketsEventValidator", () => {
                     stage: "dev",
                     domainName: "localhost",
                     eventType: WebsocketsEventRequestContextEventType.connect,
-                    routeKey: "$connect",
+                    routeKey: WebsocketsEventRoute.connect,
                     connectionId: "123",
                     connectedAt
                 },

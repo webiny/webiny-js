@@ -1,5 +1,4 @@
 import { describe, it, expect, vi } from "vitest";
-import { WebsocketsTransport } from "~/transport/WebsocketsTransport";
 import { GenericRecord } from "@webiny/api/types";
 
 vi.mock("@webiny/aws-sdk/client-apigatewaymanagementapi", () => {
@@ -39,14 +38,15 @@ interface ConsoleLogs {
     log: GenericRecord[];
 }
 
-describe("WebsocketsTransport", () => {
+describe("AwsWebsocketsTransport", () => {
     it("should log an error when trying to send a message", async () => {
         const consoleLogs: ConsoleLogs = {
             error: [],
             log: []
         };
 
-        const transport = new WebsocketsTransport();
+        const { AwsWebsocketsTransport } = await import("~/transport/AwsWebsocketsTransport.js");
+        const transport = new AwsWebsocketsTransport();
 
         vi.spyOn(console, "error").mockImplementation((error: string) => {
             consoleLogs.error.push(error);
@@ -59,8 +59,7 @@ describe("WebsocketsTransport", () => {
             [
                 {
                     connectionId: "123",
-                    domainName: "domain",
-                    stage: "stage"
+                    endpoint: "https://domain/stage"
                 }
             ],
             {}
@@ -81,7 +80,8 @@ describe("WebsocketsTransport", () => {
             log: []
         };
 
-        const transport = new WebsocketsTransport();
+        const { AwsWebsocketsTransport } = await import("~/transport/AwsWebsocketsTransport.js");
+        const transport = new AwsWebsocketsTransport();
 
         vi.spyOn(console, "error").mockImplementation((error: string) => {
             consoleLogs.error.push(error);
@@ -93,8 +93,7 @@ describe("WebsocketsTransport", () => {
         await transport.disconnect([
             {
                 connectionId: "123",
-                domainName: "domain",
-                stage: "stage"
+                endpoint: "https://domain/stage"
             }
         ]);
 

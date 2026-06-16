@@ -32,8 +32,7 @@ describe("websockets context", () => {
                 displayName: "John Doe",
                 type: "admin"
             },
-            domainName: "https://webiny.com",
-            stage: "dev",
+            endpoint: "https://webiny.com/dev",
             connectedOn: new Date().toISOString()
         });
 
@@ -51,8 +50,7 @@ describe("websockets context", () => {
                     displayName: "John Doe",
                     type: "admin"
                 },
-                domainName: "https://webiny.com",
-                stage: "dev",
+                endpoint: "https://webiny.com/dev",
                 connectedOn: expect.any(String)
             }
         ]);
@@ -74,8 +72,7 @@ describe("websockets context", () => {
                 displayName: "John Doe",
                 type: "admin"
             },
-            domainName: "https://webiny.com",
-            stage: "dev",
+            endpoint: "https://webiny.com/dev",
             connectedOn: new Date().toISOString()
         });
 

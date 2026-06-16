@@ -52,8 +52,7 @@ const insertConnections = async (
                 displayName: `Admin ${i}`,
                 ...identity
             },
-            domainName: "https://webiny.com",
-            stage: "dev",
+            endpoint: "https://webiny.com/dev",
             connectedOn: new Date().toISOString()
         };
         await registry.register(connection);

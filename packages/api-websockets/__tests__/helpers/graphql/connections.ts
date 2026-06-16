@@ -25,8 +25,7 @@ export const LIST_CONNECTIONS = /* GraphQL */ `
             listConnections(where: $where) {
                 data {
                     connectionId
-                    domainName
-                    stage
+                    endpoint
                     identity {
                         id
                         type
@@ -69,8 +68,7 @@ export const DISCONNECT_IDENTITY_CONNECTIONS = /* GraphQL */ `
             disconnectIdentity(identityId: $identityId) {
                 data {
                     connectionId
-                    domainName
-                    stage
+                    endpoint
                     identity {
                         id
                         type
@@ -113,8 +111,7 @@ export const DISCONNECT_TENANT_CONNECTIONS = /* GraphQL */ `
             disconnectTenant(tenant: $tenant) {
                 data {
                     connectionId
-                    domainName
-                    stage
+                    endpoint
                     identity {
                         id
                         type
@@ -157,8 +154,7 @@ export const DISCONNECT_CONNECTIONS = /* GraphQL */ `
             disconnect(connections: $connections) {
                 data {
                     connectionId
-                    domainName
-                    stage
+                    endpoint
                     identity {
                         id
                         type
@@ -198,8 +194,7 @@ export const DISCONNECT_ALL_CONNECTIONS = /* GraphQL */ `
             disconnectAll {
                 data {
                     connectionId
-                    domainName
-                    stage
+                    endpoint
                     identity {
                         id
                         type

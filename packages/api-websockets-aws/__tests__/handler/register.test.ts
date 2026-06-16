@@ -5,7 +5,7 @@ import { createMockLambdaContext } from "~tests/mocks/lambdaContext";
 
 describe("handler register", () => {
     it("should register source handler", async () => {
-        /**
+        /*
          * Unfortunately it needs to be any because the registry.getHandler method expects certain built-in types.
          */
         const event: any = createMockEvent();
