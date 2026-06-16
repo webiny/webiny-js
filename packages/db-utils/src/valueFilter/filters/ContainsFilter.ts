@@ -32,18 +32,20 @@ const createValues = (initialValue: string | string[] | object): string[] => {
     return result.filter(Boolean);
 };
 
+const escapeRegex = (value: string): string => {
+    return value.replace(/[\\^$.*+?()[\]{}|/]/g, "\\$&");
+};
+
 const createCompareValues = (value: string) => {
     return value
         .replace(/\s+/g, " ")
         .trim()
-        .replace(/\?/g, `\\?`)
-        .replace(/\//g, `\\/`)
-        .replace(/:/g, ``)
-        .replace(/-/g, `\\-`)
+        .replace(/:/g, "")
         .split(" ")
         .filter(val => {
             return val.length > 0;
-        });
+        })
+        .map(escapeRegex);
 };
 
 class ContainsFilterImpl implements ValueFilter.Interface {
