@@ -9,5 +9,3 @@ export const createAwsWebsockets = () => {
     plugin.name = "websockets.aws.transport";
     return [plugin];
 };
-
-export type * from "./handler/types.js";

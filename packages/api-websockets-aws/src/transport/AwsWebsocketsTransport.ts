@@ -65,4 +65,3 @@ export const AwsWebsocketsTransport = WebsocketsTransport.createImplementation({
     implementation: AwsWebsocketsTransportImpl,
     dependencies: []
 });
-

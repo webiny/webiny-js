@@ -3,17 +3,17 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api" },
-    { "path": "../api-core" },
-    { "path": "../api-headless-cms" },
     { "path": "../api-websockets" },
     { "path": "../aws-sdk" },
     { "path": "../error" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
-    { "path": "../handler-db" },
-    { "path": "../handler-graphql" },
     { "path": "../plugins" },
-    { "path": "../utils" }
+    { "path": "../utils" },
+    { "path": "../api-core" },
+    { "path": "../api-headless-cms" },
+    { "path": "../handler-db" },
+    { "path": "../handler-graphql" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -24,10 +24,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
-      "@webiny/api-core/*": ["../api-core/src/*"],
-      "@webiny/api-core": ["../api-core/src"],
-      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
-      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
       "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
@@ -38,14 +34,18 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-db": ["../handler-db/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"]
     }
   }
 }

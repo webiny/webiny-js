@@ -193,7 +193,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
             return;
         }
 
-        await this.knex.schema.alterTable(this.tableName, (table) => {
+        await this.knex.schema.alterTable(this.tableName, table => {
             table.text("endpoint").nullable();
         });
 
@@ -201,7 +201,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
             endpoint: this.knex.raw("'https://' || \"domainName\" || '/' || \"stage\"")
         });
 
-        await this.knex.schema.alterTable(this.tableName, (table) => {
+        await this.knex.schema.alterTable(this.tableName, table => {
             table.text("endpoint").notNullable().alter();
             table.dropColumn("domainName");
             table.dropColumn("stage");

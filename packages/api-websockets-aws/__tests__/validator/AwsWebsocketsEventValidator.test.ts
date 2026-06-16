@@ -1,9 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { AwsWebsocketsEventValidator } from "~/validator/AwsWebsocketsEventValidator.js";
-import {
-    WebsocketsEventRequestContextEventType,
-    WebsocketsEventRoute
-} from "~/handler/types.js";
+import { WebsocketsEventRequestContextEventType, WebsocketsEventRoute } from "~/handler/types.js";
 
 const connectedAt = new Date().getTime() / 1000;
 

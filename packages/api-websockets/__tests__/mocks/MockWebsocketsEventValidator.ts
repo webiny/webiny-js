@@ -1,8 +1,5 @@
 import type { IWebsocketsEventValidator } from "~/validator/abstractions/IWebsocketsEventValidator";
-import type {
-    IWebsocketsEvent,
-    IWebsocketsEventData
-} from "~/types";
+import type { IWebsocketsEvent, IWebsocketsEventData } from "~/types";
 
 export class MockWebsocketsEventValidator implements IWebsocketsEventValidator {
     public async validate<T extends IWebsocketsEventData = IWebsocketsEventData>(

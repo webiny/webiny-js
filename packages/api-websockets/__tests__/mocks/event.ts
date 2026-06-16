@@ -1,9 +1,5 @@
 import type { PartialDeep } from "type-fest";
-import type {
-    IWebsocketsEvent,
-    IWebsocketsEventContext,
-    IWebsocketsEventData
-} from "~/types";
+import type { IWebsocketsEvent, IWebsocketsEventContext, IWebsocketsEventData } from "~/types";
 
 export interface CreateMockEventInput extends PartialDeep<IWebsocketsEvent> {
     tenant?: string;
