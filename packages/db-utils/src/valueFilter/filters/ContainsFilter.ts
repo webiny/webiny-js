@@ -70,6 +70,9 @@ class ContainsFilterImpl implements ValueFilter.Interface {
         }
         const values = createValues(initialValue);
         const compareValues = createCompareValues(initialCompareValue);
+        if (compareValues.length === 0) {
+            return false;
+        }
         return values.some(target => {
             return compareValues.every(compareValue => {
                 return target.match(new RegExp(compareValue, "gi")) !== null;

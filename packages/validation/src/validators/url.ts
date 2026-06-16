@@ -1,6 +1,7 @@
 import ValidationError from "~/validationError.js";
 
 const IP_OCTET = /^(25[0-5]|2[0-4]\d|[01]?\d\d?)$/;
+const CONTROL_CHARS = /[\x00-\x1f\x7f]/;
 const RELATIVE_REGEX = /^\/.*$/;
 const HREF_REGEX = /^(#|mailto:|tel:)\S*$/;
 
@@ -18,6 +19,9 @@ const isValidUrl = (value: string): boolean => {
         if (url.protocol !== "http:" && url.protocol !== "https:") {
             return false;
         }
+        if (url.username || url.password) {
+            return false;
+        }
         const hostname = url.hostname;
         return hostname === "localhost" || isIpHostname(hostname) || hostname.includes(".");
     } catch {
@@ -30,6 +34,10 @@ export default (value: any, params?: string[]) => {
         return;
     }
     value = value + "";
+
+    if (CONTROL_CHARS.test(value)) {
+        throw new ValidationError("Value must be a valid URL.");
+    }
 
     if (isValidUrl(value)) {
         if (!params.includes("noIp")) {

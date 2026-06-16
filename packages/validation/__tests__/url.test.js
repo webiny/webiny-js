@@ -124,6 +124,33 @@ describe("url test", () => {
         );
     });
 
+    it("should fail - URLs with control characters", async () => {
+        await expect(validation.validate("http://evil.com\ninjected", "url")).rejects.toThrow(
+            ValidationError
+        );
+        await expect(
+            validation.validate("http://evil.com\r\nSet-Cookie: hacked=1", "url")
+        ).rejects.toThrow(ValidationError);
+        await expect(validation.validate("http://evil.com\t/path", "url")).rejects.toThrow(
+            ValidationError
+        );
+        await expect(validation.validate("http://evil.com\x00null", "url")).rejects.toThrow(
+            ValidationError
+        );
+    });
+
+    it("should fail - URLs with credentials", async () => {
+        await expect(validation.validate("http://user:pass@evil.com", "url")).rejects.toThrow(
+            ValidationError
+        );
+        await expect(validation.validate("http://trusted.com@evil.com", "url")).rejects.toThrow(
+            ValidationError
+        );
+        await expect(validation.validate("http://admin:admin@127.0.0.1", "url")).rejects.toThrow(
+            ValidationError
+        );
+    });
+
     it("should pass - Google Maps embed URL (with exclamation mark)", async () => {
         await expect(
             validation.validate(
