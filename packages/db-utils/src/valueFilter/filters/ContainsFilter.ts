@@ -32,18 +32,20 @@ const createValues = (initialValue: string | string[] | object): string[] => {
     return result.filter(Boolean);
 };
 
+const escapeRegex = (value: string): string => {
+    return value.replace(/[\\^$.*+?()[\]{}|/]/g, "\\$&");
+};
+
 const createCompareValues = (value: string) => {
     return value
         .replace(/\s+/g, " ")
         .trim()
-        .replace(/\?/g, `\\?`)
-        .replace(/\//g, `\\/`)
-        .replace(/:/g, ``)
-        .replace(/-/g, `\\-`)
+        .replace(/:/g, "")
         .split(" ")
         .filter(val => {
             return val.length > 0;
-        });
+        })
+        .map(escapeRegex);
 };
 
 class ContainsFilterImpl implements ValueFilter.Interface {
@@ -68,6 +70,9 @@ class ContainsFilterImpl implements ValueFilter.Interface {
         }
         const values = createValues(initialValue);
         const compareValues = createCompareValues(initialCompareValue);
+        if (compareValues.length === 0) {
+            return false;
+        }
         return values.some(target => {
             return compareValues.every(compareValue => {
                 return target.match(new RegExp(compareValue, "gi")) !== null;
