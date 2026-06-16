@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Container } from "@webiny/di";
-import { Result } from "@webiny/feature/api";
+import { Container, Result } from "@webiny/feature/api";
 import { TaskDefinition } from "@webiny/api-core/exports/api/tasks.js";
 import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";

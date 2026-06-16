@@ -1,4 +1,4 @@
-import type { Container } from "@webiny/di";
+import type { Container } from "@webiny/feature/api";
 import type { PluginsContainer } from "@webiny/plugins";
 
 export interface Request {

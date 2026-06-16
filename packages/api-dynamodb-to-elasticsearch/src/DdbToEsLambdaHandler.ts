@@ -1,4 +1,4 @@
-import type { Container } from "@webiny/di";
+import type { Container } from "@webiny/feature/api";
 import type { DynamoDBStreamEvent } from "@webiny/aws-sdk/types/index.js";
 import {
     DynamoDBEventHandler,

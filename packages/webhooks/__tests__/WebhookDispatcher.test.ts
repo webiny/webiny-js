@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Container } from "@webiny/di";
-import { Result } from "@webiny/feature/api";
+import { Container, Result } from "@webiny/feature/api";
 import { WebhookDispatcher, WebhookProvider } from "@webiny/api-core/features/webhooks/index.js";
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
 import { WebhookDispatcherFeature } from "~/api/features/WebhookDispatcher/feature.js";

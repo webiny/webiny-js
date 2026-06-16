@@ -34,7 +34,6 @@
     "@webiny/db-dynamodb": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/form": "0.0.0",
-    "@webiny/handler": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/languages": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",

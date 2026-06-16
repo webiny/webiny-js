@@ -1,9 +1,8 @@
-import { createFeature } from "@webiny/feature/api";
+import { type Container, createFeature } from "@webiny/feature/api";
 import { DynamoDBClient } from "@webiny/db-dynamodb";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import { AuditLogsStorage } from "@webiny/api-audit-logs/abstractions.js";
-import type { Container } from "@webiny/di";
 import { createStorage } from "./Storage.js";
 
 export interface AuditLogsDdbFeatureConfig {

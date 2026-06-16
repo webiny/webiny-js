@@ -3,7 +3,7 @@ import { PluginsContainer } from "@webiny/plugins";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import { Benchmark } from "~/Benchmark.js";
 import { BenchmarkPlugin } from "~/plugins/BenchmarkPlugin.js";
-import { Container } from "@webiny/di";
+import { Container } from "@webiny/feature/api";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 
 interface Waiter {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Container } from "@webiny/di";
+import { Container } from "@webiny/feature/api";
 import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
 import { WebhookSignPayloadFeature } from "~/api/features/WebhookSignPayload/feature.js";
 

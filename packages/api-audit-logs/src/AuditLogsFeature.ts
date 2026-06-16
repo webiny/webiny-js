@@ -1,9 +1,8 @@
-import { createFeature } from "@webiny/feature/api";
+import { createFeature, type Container } from "@webiny/feature/api";
 import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import type { Container } from "@webiny/di";
 import { AuditLogsContext, AuditLogsStorage } from "./abstractions.js";
 import { createAuditLogsContextValue } from "./context/AuditLogsContextValue.js";
 import { createSubscriptionHooks } from "./subscriptions/index.js";

@@ -29,7 +29,6 @@
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/event-handler-aws": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
@@ -53,5 +52,8 @@
   "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
   "webiny": {
     "publishFrom": "dist"
+  },
+  "dependencies": {
+    "@webiny/feature": "0.0.0"
   }
 }

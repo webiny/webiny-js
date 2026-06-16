@@ -1,7 +1,6 @@
-import { createFeature } from "@webiny/feature/api";
+import { type Container, createFeature } from "@webiny/feature/api";
 import { DynamoDBClient } from "@webiny/db-dynamodb";
 import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
-import type { Container } from "@webiny/di";
 import { WebsocketsConnectionRegistry } from "./WebsocketsConnectionRegistry.js";
 
 export const WebsocketsDdbFeature = createFeature({

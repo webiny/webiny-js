@@ -1,7 +1,6 @@
-import { createFeature } from "@webiny/feature/api";
+import { type Container, createFeature } from "@webiny/feature/api";
 import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
 import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
-import type { Container } from "@webiny/di";
 import { createFileManagerS3 } from "./index.js";
 import { createS3AssetDeliveryFeature } from "./assetDelivery/feature.js";
 import type { AssetDeliveryParams } from "./assetDelivery/types.js";

@@ -23,7 +23,6 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-headless-cms": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "@webiny/handler": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",

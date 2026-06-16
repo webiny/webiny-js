@@ -1,7 +1,6 @@
-import { createFeature } from "@webiny/feature/api";
+import { type Container, createFeature } from "@webiny/feature/api";
 import { DynamoDBClient } from "@webiny/db-dynamodb";
 import { FlpStorageOperations } from "@webiny/api-aco/features/folder/shared/abstractions.js";
-import type { Container } from "@webiny/di";
 import { FolderLevelPermissionsStorageOperations } from "./FolderLevelPermissionsStorageOperations.js";
 
 export const AcoDdbFeature = createFeature({

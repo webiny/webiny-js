@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-aco/tsconfig.build.json" },
     { "path": "../api-audit-logs/tsconfig.build.json" },
@@ -32,6 +33,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],

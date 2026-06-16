@@ -41,7 +41,6 @@
   "devDependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.0.1",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",

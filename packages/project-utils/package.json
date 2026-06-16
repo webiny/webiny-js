@@ -16,6 +16,8 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
+    "@webiny/event-handler-aws": "0.0.0",
+    "@webiny/event-handler-core": "0.0.0",
     "get-yarn-workspaces": "1.0.2",
     "lodash": "^4.18.1"
   },

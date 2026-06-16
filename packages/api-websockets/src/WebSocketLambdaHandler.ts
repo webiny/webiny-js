@@ -1,4 +1,4 @@
-import type { Container } from "@webiny/di";
+import type { Container } from "@webiny/feature/api";
 import { WebSocketEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/WebSocketEventHandler.js";
 import type { IWebSocketEvent } from "@webiny/event-handler-aws/eventTypes/WebSocketEventType.js";
 import { GraphQLContextEnhancer } from "@webiny/handler-graphql";

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { Container } from "@webiny/di";
+import { Container } from "@webiny/feature/api";
 import { WebhookDeliver } from "~/api/features/WebhookDeliver/abstractions.js";
 import { WebhookDeliverFeature } from "~/api/features/WebhookDeliver/feature.js";
 import type { IWebhookDeliverInput } from "~/api/features/WebhookDeliver/abstractions.js";

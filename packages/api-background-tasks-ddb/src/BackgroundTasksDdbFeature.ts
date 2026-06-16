@@ -1,5 +1,4 @@
-import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di";
+import { type Container, createFeature } from "@webiny/feature/api";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 
 export const BackgroundTasksDdbFeature = createFeature({

@@ -1,4 +1,4 @@
-import type { Container } from "@webiny/di";
+import type { Container } from "@webiny/feature/api";
 import { BackgroundTaskEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/BackgroundTaskEventHandler.js";
 import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
 import { RequestContainer } from "@webiny/event-handler-core";

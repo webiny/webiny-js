@@ -5,7 +5,8 @@
     { "path": "../api-core" },
     { "path": "../aws-sdk" },
     { "path": "../event-handler-core" },
-    { "path": "../feature" }
+    { "path": "../feature" },
+    { "path": "../handler-graphql" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -21,7 +22,9 @@
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
-      "@webiny/feature": ["../feature/src"]
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"]
     }
   }
 }

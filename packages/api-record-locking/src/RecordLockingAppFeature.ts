@@ -1,4 +1,4 @@
-import { createFeature } from "@webiny/feature/api";
+import { type Container, createFeature } from "@webiny/feature/api";
 import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
 import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
@@ -11,7 +11,6 @@ import { RecordLockingModel, RECORD_LOCKING_MODEL_ID } from "~/domain/RecordLock
 import { getTimeout } from "~/utils/getTimeout.js";
 import { RecordLockingFeature } from "~/features/RecordLockingFeature.js";
 import { createGraphQLSchema } from "~/graphql/schema.js";
-import type { Container } from "@webiny/di";
 
 export interface IRecordLockingAppFeatureParams {
     /**

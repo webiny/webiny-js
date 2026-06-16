@@ -1,5 +1,4 @@
-import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di";
+import { type Container, createFeature } from "@webiny/feature/api";
 import { SetLocationOnEntryRestoreFeature } from "~/features/SetLocationOnEntryRestore/index.js";
 
 export const AcoHcmsFeature = createFeature({
