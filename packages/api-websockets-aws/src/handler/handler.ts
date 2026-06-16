@@ -3,18 +3,11 @@ import { createHandler as createBaseHandler } from "@webiny/handler";
 import { registerDefaultPlugins } from "@webiny/handler-aws/plugins/index.js";
 import { execute } from "@webiny/handler-aws/execute.js";
 import { PluginsContainer } from "@webiny/plugins";
-import {
-    createWebsocketsRoutePlugins,
-    WebsocketsRunner,
-    Transport
-} from "@webiny/api-websockets";
+import { createWebsocketsRoutePlugins, WebsocketsRunner, Transport } from "@webiny/api-websockets";
 import { WebsocketsResponse } from "@webiny/api-websockets/response/WebsocketsResponse.js";
 import type { Context } from "@webiny/api-websockets";
 import type { PluginCollection } from "@webiny/plugins/types.js";
-import type {
-    HandlerCallable,
-    HandlerParams
-} from "./types.js";
+import type { HandlerCallable, HandlerParams } from "./types.js";
 import { getEventValues } from "./headers.js";
 import { AwsWebsocketsEventValidator } from "~/validator/AwsWebsocketsEventValidator.js";
 import { AwsWebsocketsTransport } from "~/transport/AwsWebsocketsTransport.js";
@@ -94,10 +87,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                         try {
                             const transport = new AwsWebsocketsTransport();
                             const endpoint = `https://${domainName}/${stage}`;
-                            await transport.send(
-                                [{ connectionId, endpoint }],
-                                errorResult
-                            );
+                            await transport.send([{ connectionId, endpoint }], errorResult);
                         } catch {
                             /* best effort. */
                         }

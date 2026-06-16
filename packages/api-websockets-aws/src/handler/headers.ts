@@ -18,7 +18,10 @@ const getEventBody = (event: IAwsWebsocketsIncomingEvent): IWebsocketsEventData 
     return {};
 };
 
-const getToken = (body: IWebsocketsEventData, event: IAwsWebsocketsIncomingEvent): string | null => {
+const getToken = (
+    body: IWebsocketsEventData,
+    event: IAwsWebsocketsIncomingEvent
+): string | null => {
     return body?.token || event.queryStringParameters?.token || null;
 };
 

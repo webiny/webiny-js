@@ -69,6 +69,8 @@ export interface IAwsWebsocketsEvent<T extends IWebsocketsEventData = IWebsocket
     body?: T;
 }
 
-export interface IAwsWebsocketsIncomingEvent extends PartialDeep<Omit<IAwsWebsocketsEvent, "body">> {
+export interface IAwsWebsocketsIncomingEvent extends PartialDeep<
+    Omit<IAwsWebsocketsEvent, "body">
+> {
     body?: string | GenericRecord;
 }

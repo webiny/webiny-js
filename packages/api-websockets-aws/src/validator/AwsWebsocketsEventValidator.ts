@@ -15,9 +15,9 @@ const eventTypeMap: Record<WebsocketsEventRequestContextEventType, WebsocketsEve
 };
 
 const routeKeyMap: Record<string, string> = {
-    "$connect": "connect",
-    "$disconnect": "disconnect",
-    "$default": "default"
+    $connect: "connect",
+    $disconnect: "disconnect",
+    $default: "default"
 };
 
 const validation = zod
