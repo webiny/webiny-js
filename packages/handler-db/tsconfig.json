@@ -25,8 +25,6 @@
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/db-utils/*": ["../db-utils/src/*"],
       "@webiny/db-utils": ["../db-utils/src"],
-      "@webiny/feature/api": ["../feature/src/api/index.js"],
-      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],

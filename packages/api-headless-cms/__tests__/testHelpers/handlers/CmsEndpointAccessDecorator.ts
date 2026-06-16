@@ -1,4 +1,4 @@
-import { TestHttpEventHandler } from "@webiny/event-handler-core/testing";
+import { TestHttpEventHandler } from "@webiny/event-handler-core/features/testing";
 import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsContextEnhancer.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";

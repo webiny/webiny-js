@@ -27,6 +27,10 @@ async function output(target, content) {
  * development and build. TypeScript's project references handle building dependencies in the correct
  * order, so each package always compiles against the source of its dependencies, not their built
  * output.
+ *
+ * Each workspace dependency gets just two path mappings: `<dep>` -> `src` and `<dep>/*` -> `src/*`.
+ * Subpath exports don't need their own mappings — the `<dep>/*` mapping already resolves them to the
+ * matching source folder.
  */
 
 (async () => {
@@ -53,34 +57,6 @@ async function output(target, content) {
             .filter(name => workspaces.find(pkg => pkg.packageJson.name === name).isTs)
             .map(name => workspaces.find(pkg => pkg.packageJson.name === name));
 
-        // Generate path mappings for dependencies with package.json exports
-        function generateExportPaths(dep, folder) {
-            const paths = {};
-            const relPath = getRelativePath(wpObject.packageFolder, dep.packageFolder);
-
-            // Check if the dependency has exports defined
-            if (dep.packageJson.exports && typeof dep.packageJson.exports === "object") {
-                Object.keys(dep.packageJson.exports).forEach(exportPath => {
-                    if (exportPath === "." || exportPath === "./*") {
-                        return; // Skip root exports, handled by base paths
-                    }
-
-                    const exportTarget = dep.packageJson.exports[exportPath];
-                    if (typeof exportTarget === "string") {
-                        // Trim leading "./" from export path
-                        const cleanExportPath = exportPath.replace(/^\.\//, "");
-                        // Trim leading "./" from target path, keep the extension as-is
-                        const sourcePath = exportTarget.replace(/^\.\//, "");
-                        paths[`${dep.name}/${cleanExportPath}`] = [
-                            `${relPath}/${folder}/${sourcePath}`
-                        ];
-                    }
-                });
-            }
-
-            return paths;
-        }
-
         // Generate `tsconfig.json`
         const tsconfigJson = {
             extends: "../../tsconfig.json",
@@ -97,9 +73,6 @@ async function output(target, content) {
                     "~tests/*": ["./__tests__/*"],
                     ...dependencies.reduce((acc, dep) => {
                         const relPath = getRelativePath(wpObject.packageFolder, dep.packageFolder);
-                        // Add export-based paths first (more specific)
-                        Object.assign(acc, generateExportPaths(dep, "src"));
-                        // Add base paths (less specific, used as fallback)
                         acc[`${dep.name}/*`] = [`${relPath}/src/*`];
                         acc[`${dep.name}`] = [`${relPath}/src`];
                         return acc;
@@ -129,9 +102,6 @@ async function output(target, content) {
                     "~tests/*": ["./__tests__/*"],
                     ...dependencies.reduce((acc, dep) => {
                         const relPath = getRelativePath(wpObject.packageFolder, dep.packageFolder);
-                        // Add export-based paths first (more specific)
-                        Object.assign(acc, generateExportPaths(dep, "src"));
-                        // Add base paths (less specific, used as fallback)
                         acc[`${dep.name}/*`] = [`${relPath}/src/*`];
                         acc[`${dep.name}`] = [`${relPath}/src`];
                         return acc;

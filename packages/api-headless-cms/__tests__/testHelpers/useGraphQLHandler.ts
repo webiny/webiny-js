@@ -1,5 +1,5 @@
 import { getIntrospectionQuery } from "graphql";
-import { createTestHttpHandler } from "@webiny/event-handler-core/testing";
+import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { GraphQLContextEnhancer, GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { HeadlessCmsFeature } from "~/index";

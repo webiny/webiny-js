@@ -81,8 +81,6 @@
       "@webiny/app-websockets": ["../app-websockets/src"],
       "@webiny/app-workflows/*": ["../app-workflows/src/*"],
       "@webiny/app-workflows": ["../app-workflows/src"],
-      "@webiny/background-tasks/api": ["../background-tasks/src/api/index.js"],
-      "@webiny/background-tasks/admin/*": ["../background-tasks/src/admin/*"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/lexical-editor-actions/*": ["../lexical-editor-actions/src/*"],
@@ -91,8 +89,6 @@
       "@webiny/lexical-theme": ["../lexical-theme/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/webhooks/api": ["../webhooks/src/api/index.js"],
-      "@webiny/webhooks/admin/*": ["../webhooks/src/admin/*"],
       "@webiny/webhooks/*": ["../webhooks/src/*"],
       "@webiny/webhooks": ["../webhooks/src"]
     }
