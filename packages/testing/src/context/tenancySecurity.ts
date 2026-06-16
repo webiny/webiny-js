@@ -1,6 +1,5 @@
 import type { Plugin } from "@webiny/plugins";
 import { ContextPlugin } from "@webiny/api";
-import { BeforeHandlerPlugin } from "@webiny/handler";
 import { RoleFactory } from "@webiny/api-core/features/security/roles/shared/abstractions.js";
 import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
 import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -108,21 +107,11 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
             });
 
             context.security.addAuthorizer(async () => {
-                const { headers = {} } = context.request || {};
-                if (headers["authorization"]) {
-                    return null;
-                }
-
                 return permissions || [{ name: "*" }];
             });
         }),
-        new BeforeHandlerPlugin<ApiCoreContext>(context => {
-            const { headers = {} } = context.request || {};
-            if (headers["authorization"]) {
-                return context.security.authenticate(headers["authorization"]);
-            }
-
-            return context.security.authenticate("");
+        new ContextPlugin<ApiCoreContext>(async context => {
+            await context.security.authenticate("");
         })
     ].filter(Boolean) as Plugin[];
 };

@@ -1,8 +1,10 @@
 import type { CreateHandlerCoreParams } from "./plugins.js";
 import { createHandlerCore } from "./plugins.js";
-import { createHandler } from "@webiny/handler-aws";
+import { createLambdaHandler, ApiGatewayFeature } from "@webiny/event-handler-aws";
+import { registerLegacyPlugins } from "@webiny/event-handler-core";
+import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { defaultIdentity } from "./tenancySecurity.js";
-import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types.js";
+import type { LambdaContext } from "@webiny/handler-aws/types.js";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
 import { getIntrospectionQuery } from "graphql";
 import type { GenericRecord } from "@webiny/api/types.js";
@@ -28,9 +30,14 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     const core = createHandlerCore(params);
 
     const plugins = [...core.plugins];
-    const handler = createHandler({
-        plugins,
-        debug: process.env.DEBUG === "true"
+    const handler = createLambdaHandler({
+        root: async container => {
+            ApiGatewayFeature.register(container);
+        },
+        request: async container => {
+            registerLegacyPlugins(container, plugins);
+            GraphQLEngineFeature.register(container);
+        }
     });
 
     const invoke = async <T = any>({
@@ -41,9 +48,6 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     }: InvokeParams): Promise<[T, any]> => {
         const response: IResponse = await handler(
             {
-                /**
-                 * If no path defined, use /graphql as we want to make request to main api
-                 */
                 path: path ? `/cms/${path}` : "/graphql",
                 httpMethod,
                 headers: {
@@ -53,10 +57,9 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as unknown as APIGatewayEvent,
+            },
             {} as unknown as LambdaContext
         );
-        // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body || "{}"), response];
     };
 

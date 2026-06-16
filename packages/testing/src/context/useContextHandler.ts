@@ -1,5 +1,6 @@
-import type { LambdaContext } from "@webiny/handler-aws/types.js";
-import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
+import { Container } from "@webiny/di";
+import { RequestContainer, registerLegacyPlugins } from "@webiny/event-handler-core";
+import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
 import type { CreateHandlerCoreParams } from "./plugins.js";
 import { createHandlerCore } from "./plugins.js";
@@ -20,39 +21,29 @@ export interface UseContextHandlerParams extends CreateHandlerCoreParams {
 export const useContextHandler = <C extends CmsContext = CmsContext>(
     params: UseContextHandlerParams = {}
 ) => {
-    const debug = params.debug || process.env.DEBUG === "true";
-    if (debug) {
-        process.env.DEBUG = "true";
-    }
     const core = createHandlerCore(params);
-
-    const plugins = [...core.plugins].concat([
-        createRawEventHandler<HandlerEvent, C, C>(async ({ context }) => {
-            return context;
-        })
-    ]);
 
     const { elasticsearchClient } = getElasticsearchClient({ name: "testing-ddb-es" });
 
     return {
-        plugins,
+        plugins: core.plugins,
         identity: params.identity || defaultIdentity,
         tenant: core.tenant,
         elasticsearch: elasticsearchClient,
-        context: (input?: HandlerEvent) => {
-            const handler = createRawHandler<HandlerEvent, C>({
-                plugins,
-                debug
-            });
-            const payload: HandlerEvent = {
-                path: "/cms/manage/en-US",
-                headers: {
-                    "x-webiny-cms-endpoint": "manage",
-                    "x-tenant": "root"
-                },
-                ...input
-            };
-            return handler(payload, {} as LambdaContext);
+        context: async (_input?: HandlerEvent): Promise<C> => {
+            const root = new Container();
+            const child = root.createChildContainer();
+            child.registerInstance(RequestContainer, child);
+
+            registerLegacyPlugins(child, core.plugins);
+
+            const ctx: Record<string, any> = { container: child };
+            const enhancers = child.resolveAll(GraphQLContextEnhancer);
+            for (const enhancer of enhancers) {
+                await enhancer.enhance(ctx);
+            }
+
+            return ctx as unknown as C;
         }
     };
 };

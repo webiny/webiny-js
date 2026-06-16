@@ -3,8 +3,9 @@ import path from "path";
 import { ContextPlugin } from "@webiny/api";
 import { createOpenSearchContext, getOpenSearchOperators } from "@webiny/api-opensearch";
 import { logger } from "../logger";
-import { createHandler } from "@webiny/handler-aws";
-import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
+import { createLambdaHandler, DynamoDBEventType } from "@webiny/event-handler-aws";
+import { DdbToEsLambdaHandler } from "@webiny/api-dynamodb-to-elasticsearch";
+import { registerLegacyPlugins } from "@webiny/event-handler-core";
 import { elasticIndexManager } from "../helpers/elasticIndexManager";
 import type { ElasticsearchClient } from "./createClient";
 import { createElasticsearchClient } from "./createClient";
@@ -74,12 +75,15 @@ export class ElasticsearchClientConfig {
             await elasticsearchClientContext.apply(context);
         });
 
-        const dynamoDbHandler = createHandler({
-            plugins: [
-                simulationContext,
-                createMockApiLogContextPlugin(),
-                createDynamoDBToElasticsearchEventHandler()
-            ]
+        const dynamoDbHandler = createLambdaHandler({
+            root: async container => {
+                container.register(DynamoDBEventType);
+                container.register(DdbToEsLambdaHandler);
+                registerLegacyPlugins(container, [
+                    simulationContext,
+                    createMockApiLogContextPlugin()
+                ]);
+            }
         });
         simulateStream(documentClient, dynamoDbHandler);
 
