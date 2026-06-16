@@ -3,7 +3,7 @@ import { createHandler as createBaseHandler } from "@webiny/handler";
 import { registerDefaultPlugins } from "@webiny/handler-aws/plugins/index.js";
 import { execute } from "@webiny/handler-aws/execute.js";
 import { PluginsContainer } from "@webiny/plugins";
-import { createWebsocketsRoutePlugins, WebsocketsRunner, Transport } from "@webiny/api-websockets";
+import { createWebsocketsRoutePlugins, WebsocketsRunner } from "@webiny/api-websockets";
 import { WebsocketsResponse } from "@webiny/api-websockets/response/WebsocketsResponse.js";
 import type { Context } from "@webiny/api-websockets";
 import type { PluginCollection } from "@webiny/plugins/types.js";
@@ -57,8 +57,6 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
             wsApp.post(url, async (_, reply) => {
                 const { response } = params;
                 const context = app.webiny as Context;
-
-                context.container.registerInstance(Transport, new AwsWebsocketsTransport());
 
                 const responseObj = response || new WebsocketsResponse();
                 const runner = new WebsocketsRunner(

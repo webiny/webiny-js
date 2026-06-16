@@ -1,1 +1,1 @@
-export type * from "./abstractions/IWebsocketsTransport.js";
+export * from "./abstractions/WebsocketsTransport.js";

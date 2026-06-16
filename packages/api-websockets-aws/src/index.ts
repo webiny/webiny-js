@@ -1,13 +1,26 @@
 import "./handler/register.js";
-import type { Plugin } from "@webiny/plugins/types.js";
-import { ContextPlugin } from "@webiny/handler";
-import { Transport } from "@webiny/api-websockets";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { createFeature } from "@webiny/feature/api/index.js";
+import { WebsocketsTransport } from "@webiny/api-websockets";
 import { AwsWebsocketsTransport } from "~/transport/AwsWebsocketsTransport.js";
-import type { Context } from "@webiny/api-websockets";
 
-export const createAwsWebsockets = (): Plugin[] => {
-    const plugin = new ContextPlugin<Context>(async context => {
-        context.container.registerInstance(Transport, new AwsWebsocketsTransport());
+class AwsWebsocketsTransportImpl extends AwsWebsocketsTransport implements WebsocketsTransport.Interface {}
+
+const AwsTransport = WebsocketsTransport.createImplementation({
+    implementation: AwsWebsocketsTransportImpl,
+    dependencies: []
+});
+
+const transportFeature = createFeature({
+    name: "websockets.aws.transport",
+    register: container => {
+        container.register(AwsTransport).inSingletonScope();
+    }
+});
+
+export const createAwsWebsockets = () => {
+    const plugin = createRegisterExtensionPlugin(context => {
+        return transportFeature.register(context.container);
     });
     plugin.name = "websockets.aws.transport";
     return [plugin];
