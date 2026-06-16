@@ -20,7 +20,6 @@ export interface IWebsocketsTransportSendConnection {
     endpoint: string;
 }
 
-
 export interface IWebsocketsTransportDisconnectConnection {
     connectionId: string;
     endpoint: string;

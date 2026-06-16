@@ -18,6 +18,7 @@ import { createAuditLogs } from "@webiny/api-audit-logs";
 import { registerAuditLogsSqlStorageOperations } from "@webiny/api-audit-logs-sql";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-os";
 import { createWebsockets } from "@webiny/api-websockets";
+import { createAwsWebsockets } from "@webiny/api-websockets-aws";
 import { registerWebsocketsSqlStorageOperations } from "@webiny/api-websockets-sql";
 import { createRecordLocking } from "@webiny/api-record-locking";
 import { registerSchedulerExtension } from "@webiny/api-scheduler";
@@ -53,6 +54,7 @@ export const handler = createHandler({
         graphqlPlugins({ debug }),
         securityPlugins(),
         createWebsockets(),
+        createAwsWebsockets(),
         registerWebsocketsSqlStorageOperations({ knex }),
         registerSqlStorageOperations({
             knex

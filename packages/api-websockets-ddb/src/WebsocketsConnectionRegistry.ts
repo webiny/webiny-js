@@ -23,14 +23,13 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
     public async register(
         params: IWebsocketsConnectionRegistryRegisterParams
     ): Promise<IWebsocketsConnectionRegistryData> {
-        const { connectionId, tenant, identity, domainName, stage, connectedOn } = params;
+        const { connectionId, tenant, identity, endpoint, connectedOn } = params;
 
         const data: IWebsocketsConnectionRegistryData = {
             connectionId,
             identity,
             tenant,
-            domainName,
-            stage,
+            endpoint,
             connectedOn
         };
         await this.store(data);

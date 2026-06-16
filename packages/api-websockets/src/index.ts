@@ -7,7 +7,7 @@ export const createWebsockets = (): Plugin[] => {
 };
 
 export type * from "./validator/index.js";
-export * from "./transport/index.js";
+export {WebsocketsTransport} from "./transport/index.js";
 export * from "./runner/index.js";
 export * from "./registry/index.js";
 export * from "./context/index.js";

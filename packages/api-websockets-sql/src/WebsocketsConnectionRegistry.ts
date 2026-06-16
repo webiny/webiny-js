@@ -13,8 +13,7 @@ interface ConnectionRow {
     identityDisplayName: string;
     identityType: string;
     tenant: string;
-    domainName: string;
-    stage: string;
+    endpoint: string;
     connectedOn: string;
 }
 
@@ -41,6 +40,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
     ): Promise<IWebsocketsConnectionRegistryData> {
         try {
             await this.ensureTable();
+            await this.migrateTable();
 
             const row: ConnectionRow = {
                 connectionId: event.connectionId,
@@ -48,8 +48,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
                 identityDisplayName: event.identity.displayName,
                 identityType: event.identity.type,
                 tenant: event.tenant,
-                domainName: event.domainName,
-                stage: event.stage,
+                endpoint: event.endpoint,
                 connectedOn: event.connectedOn
             };
 
@@ -68,6 +67,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
     public async unregister(event: IWebsocketsConnectionRegistryUnregisterParams): Promise<void> {
         try {
             await this.ensureTable();
+            await this.migrateTable();
 
             const existing = await this.knex<ConnectionRow>(this.tableName)
                 .where("connectionId", event.connectionId)
@@ -98,6 +98,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
     ): Promise<IWebsocketsConnectionRegistryData[]> {
         try {
             await this.ensureTable();
+            await this.migrateTable();
 
             const rows = await this.knex<ConnectionRow>(this.tableName).whereIn(
                 "connectionId",
@@ -117,6 +118,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
     public async listViaIdentity(identity: string): Promise<IWebsocketsConnectionRegistryData[]> {
         try {
             await this.ensureTable();
+            await this.migrateTable();
 
             const rows = await this.knex<ConnectionRow>(this.tableName).where(
                 "identityId",
@@ -136,6 +138,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
     public async listViaTenant(tenant: string): Promise<IWebsocketsConnectionRegistryData[]> {
         try {
             await this.ensureTable();
+            await this.migrateTable();
 
             const rows = await this.knex<ConnectionRow>(this.tableName).where("tenant", tenant);
 
@@ -152,6 +155,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
     public async listAll(): Promise<IWebsocketsConnectionRegistryData[]> {
         try {
             await this.ensureTable();
+            await this.migrateTable();
 
             const rows = await this.knex<ConnectionRow>(this.tableName).select("*");
 
@@ -176,11 +180,31 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
             table.text("identityDisplayName").notNullable();
             table.text("identityType").notNullable();
             table.text("tenant").notNullable();
-            table.text("domainName").notNullable();
-            table.text("stage").notNullable();
+            table.text("endpoint").notNullable();
             table.datetime("connectedOn").notNullable();
             table.index(["identityId"]);
             table.index(["tenant"]);
+        });
+    }
+
+    private async migrateTable(): Promise<void> {
+        const hasEndpoint = await this.knex.schema.hasColumn(this.tableName, "endpoint");
+        if (hasEndpoint) {
+            return;
+        }
+
+        await this.knex.schema.alterTable(this.tableName, (table) => {
+            table.text("endpoint").nullable();
+        });
+
+        await this.knex(this.tableName).update({
+            endpoint: this.knex.raw("'https://' || \"domainName\" || '/' || \"stage\"")
+        });
+
+        await this.knex.schema.alterTable(this.tableName, (table) => {
+            table.text("endpoint").notNullable().alter();
+            table.dropColumn("domainName");
+            table.dropColumn("stage");
         });
     }
 
@@ -193,8 +217,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
                 type: row.identityType
             },
             tenant: row.tenant,
-            domainName: row.domainName,
-            stage: row.stage,
+            endpoint: row.endpoint,
             connectedOn: row.connectedOn
         };
     }

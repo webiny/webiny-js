@@ -21,6 +21,7 @@ import { registerAuditLogsDdbStorageOperations } from "@webiny/api-audit-logs-dd
 import { createAuditLogs } from "@webiny/api-audit-logs";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-os";
 import { createWebsockets } from "@webiny/api-websockets";
+import { createAwsWebsockets } from "@webiny/api-websockets-aws";
 import { registerWebsocketsDdbStorageOperations } from "@webiny/api-websockets-ddb";
 import { createRecordLocking } from "@webiny/api-record-locking";
 import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
@@ -66,6 +67,7 @@ export const handler = createHandler({
         }),
         securityPlugins(),
         createWebsockets(),
+        createAwsWebsockets(),
         registerWebsocketsDdbStorageOperations({ documentClient }),
         registerCmsOpenSearchStorageOperations(),
         createCmsExtension(),
