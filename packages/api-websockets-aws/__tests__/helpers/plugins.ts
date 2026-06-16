@@ -2,6 +2,7 @@ import { createWebsocketsRoutePlugins } from "@webiny/api-websockets";
 import { createTenancyAndSecurity } from "~tests/helpers/tenancySecurity";
 import { createIdentity, createPermissions } from "~tests/helpers/helpers";
 import { createWebsockets } from "@webiny/api-websockets";
+import { createAwsWebsockets } from "~/index";
 import { createCmsExtension } from "@webiny/api-headless-cms";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createRawEventHandler } from "@webiny/handler-aws";
@@ -37,6 +38,7 @@ export const createPlugins = (params?: Params): PluginsContainer => {
             permissions: permissions || createPermissions(),
             identity: createIdentity()
         }),
+        ...createAwsWebsockets(),
         createWebsockets(),
         ...websocketsStorage.plugins,
         createCmsExtension(),

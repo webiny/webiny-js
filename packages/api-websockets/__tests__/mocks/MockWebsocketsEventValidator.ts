@@ -10,7 +10,18 @@ export class MockWebsocketsEventValidator implements IWebsocketsEventValidator {
             context: {
                 ...(raw?.context || {})
             },
-            body: raw?.body ? (typeof raw.body === "string" ? JSON.parse(raw.body) : raw.body) : {}
+            body: raw?.body
+                ? (() => {
+                      if (typeof raw.body !== "string") {
+                          return raw.body;
+                      }
+                      try {
+                          return JSON.parse(raw.body);
+                      } catch {
+                          return {};
+                      }
+                  })()
+                : {}
         } as unknown as IWebsocketsEvent<T>;
     }
 }
