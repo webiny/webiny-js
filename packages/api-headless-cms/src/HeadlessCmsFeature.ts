@@ -5,8 +5,12 @@ import {
     HeadlessCmsEnhancerConfig
 } from "./HeadlessCmsContextEnhancer.js";
 import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { GraphQLEngine } from "@webiny/handler-graphql/engine/abstractions.js";
+import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
 import { HeadlessCmsContextualSchema } from "./HeadlessCmsContextualSchema.js";
+import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import type { IGraphQLEngine } from "@webiny/handler-graphql/engine/abstractions.js";
+import type { ApiEndpoint } from "~/types/index.js";
 import { StorageOperationsFactory } from "~/features/shared/abstractions.js";
 import { CmsBaseErrorTypeFactory } from "~/graphql/schema/cms/CmsBaseErrorTypeFactory.js";
 import {
@@ -26,7 +30,35 @@ import {
     UnpublishEntryRevisionResolverImpl
 } from "~/graphql/schema/cms/resolvers/index.js";
 import type { IHeadlessCmsStorageOperationsFactory } from "~/features/shared/abstractions.js";
-import type { ApiEndpoint } from "~/types/index.js";
+
+const CMS_PATHS: Record<ApiEndpoint, string> = {
+    manage: "/cms/manage",
+    read: "/cms/read",
+    preview: "/cms/preview"
+};
+
+function createCmsRoute(type: ApiEndpoint) {
+    class CmsGraphQLRoute implements HttpRoute.Interface {
+        readonly method = "POST";
+        readonly path = CMS_PATHS[type];
+
+        constructor(private engine: IGraphQLEngine) {}
+
+        async handle(request: IHttpRequest): Promise<IHttpResponse> {
+            const result = await this.engine.execute(request.body);
+            return {
+                statusCode: 200,
+                headers: { "Content-Type": "application/json" },
+                body: result
+            };
+        }
+    }
+
+    return HttpRoute.createImplementation({
+        implementation: CmsGraphQLRoute,
+        dependencies: [GraphQLEngine]
+    });
+}
 
 export interface HeadlessCmsConfig {
     /**
@@ -77,5 +109,6 @@ export const HeadlessCmsFeature = createFeature({
         });
         container.registerInstance(GraphQLContextEnhancer, enhancer);
         container.register(HeadlessCmsContextualSchema);
+        container.register(createCmsRoute(config.type));
     }
 });

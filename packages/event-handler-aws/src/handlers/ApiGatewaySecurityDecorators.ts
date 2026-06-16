@@ -23,7 +23,9 @@ class ApiGatewayAuthDecoratorImpl implements ApiGatewayEventHandler.Interface {
 
     async execute(ctx: EventContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
         const headers = ctx.event.headers ?? {};
-        const token = headers["authorization"] ?? headers["Authorization"] ?? "";
+        const raw = headers["authorization"] ?? headers["Authorization"] ?? "";
+        // Strip "Bearer " prefix if present (the Authorization header standard uses this format)
+        const token = raw.replace(/^Bearer\s+/i, "");
         const identity = await this.authCtx.authenticate(token);
         this.identityCtx.setIdentity(identity);
         return this.inner.execute(ctx, next);

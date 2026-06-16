@@ -74,7 +74,11 @@ class CreateTenantSchema implements GraphQLSchemaFactory.Interface {
         }
 
         const models = modelsResult.value;
-        const model = models.find(m => m.modelId === TENANT_MODEL_ID)!;
+        const model = models.find(m => m.modelId === TENANT_MODEL_ID);
+
+        if (!model) {
+            return [{ typeDefs: "", fields: "extensions: JSON" }];
+        }
 
         const inputCreateFields = renderInputFields({
             models,
