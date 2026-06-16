@@ -7,8 +7,7 @@ export const createTypeDefs = () => {
         }
         type WebsocketsConnection {
             connectionId: String!
-            domainName: String!
-            stage: String!
+            endpoint: String!
             identity: WebsocketsIdentity!
             connectedOn: DateTime!
             tenant: String!
