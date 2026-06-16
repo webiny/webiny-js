@@ -5,19 +5,14 @@ export interface IWebsocketsConnectionRegistryData {
     identity: IWebsocketsIdentity;
     tenant: string;
     connectedOn: string;
-    domainName: string;
-    stage: string;
+    endpoint: string;
 }
 
 export interface IWebsocketsConnectionRegistryRegisterParams {
     connectionId: string;
     tenant: string;
     identity: IWebsocketsIdentity;
-    domainName: string;
-    stage: string;
-    /**
-     * A DateTime.toISOString() format.
-     */
+    endpoint: string;
     connectedOn: string;
 }
 

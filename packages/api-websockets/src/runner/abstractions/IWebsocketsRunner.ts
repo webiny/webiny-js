@@ -1,4 +1,4 @@
-import type { IWebsocketsIncomingEvent } from "~/handler/types.js";
+import type { IWebsocketsEvent } from "~/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface IWebsocketsResponseError {
@@ -7,6 +7,7 @@ export interface IWebsocketsResponseError {
     data?: GenericRecord<string> | null;
     stack?: string;
 }
+
 export interface IWebsocketsRunnerResponse {
     statusCode: number;
     message?: string;
@@ -14,5 +15,5 @@ export interface IWebsocketsRunnerResponse {
 }
 
 export interface IWebsocketsRunner {
-    run(params: IWebsocketsIncomingEvent): Promise<IWebsocketsRunnerResponse>;
+    run(event: IWebsocketsEvent): Promise<IWebsocketsRunnerResponse>;
 }

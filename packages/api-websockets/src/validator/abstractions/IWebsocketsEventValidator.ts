@@ -1,16 +1,10 @@
 import type {
     IWebsocketsEvent,
-    IWebsocketsEventData,
-    IWebsocketsIncomingEvent
-} from "~/handler/types.js";
-
-export type IWebsocketsEventValidatorValidateParams = IWebsocketsIncomingEvent;
+    IWebsocketsEventData
+} from "~/types.js";
 
 export interface IWebsocketsEventValidator {
-    /**
-     * @throws {Error}
-     */
     validate<T extends IWebsocketsEventData = IWebsocketsEventData>(
-        params: IWebsocketsEventValidatorValidateParams
+        input: unknown
     ): Promise<IWebsocketsEvent<T>>;
 }

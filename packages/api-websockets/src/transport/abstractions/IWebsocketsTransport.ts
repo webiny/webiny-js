@@ -17,12 +17,12 @@ export interface IWebsocketsTransportSendData<T extends GenericRecord> {
 
 export type IWebsocketsTransportSendConnection = Pick<
     IWebsocketsConnectionRegistryData,
-    "connectionId" | "domainName" | "stage"
+    "connectionId" | "endpoint"
 >;
 
 export type IWebsocketsTransportDisconnectConnection = Pick<
     IWebsocketsConnectionRegistryData,
-    "connectionId" | "domainName" | "stage"
+    "connectionId" | "endpoint"
 >;
 
 export interface IWebsocketsTransport {
