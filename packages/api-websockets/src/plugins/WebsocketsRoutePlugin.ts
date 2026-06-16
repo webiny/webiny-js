@@ -2,8 +2,8 @@ import { Plugin } from "@webiny/plugins";
 import type {
     IWebsocketsEvent,
     IWebsocketsEventData,
-    WebsocketsEventRoute
-} from "~/handler/types.js";
+    WebsocketsRoute
+} from "~/types.js";
 import type { Context } from "~/types.js";
 import type { IWebsocketsRunnerResponse } from "~/runner/index.js";
 import type { IWebsocketsConnectionRegistry } from "~/registry/index.js";
@@ -39,11 +39,11 @@ export class WebsocketsRoutePlugin<
 > extends Plugin {
     public static override readonly type: string = "websockets.route";
 
-    public readonly route: WebsocketsEventRoute | string;
+    public readonly route: WebsocketsRoute | string;
     private readonly cb: IWebsocketsRoutePluginCallable<C, R, T>;
 
     public constructor(
-        route: WebsocketsEventRoute | string,
+        route: WebsocketsRoute | string,
         cb: IWebsocketsRoutePluginCallable<C, R, T>
     ) {
         super();
@@ -61,7 +61,7 @@ export const createWebsocketsRoutePlugin = <
     R extends IWebsocketsRunnerResponse = IWebsocketsRunnerResponse,
     T extends IWebsocketsEventData = IWebsocketsEventData
 >(
-    route: WebsocketsEventRoute | string,
+    route: WebsocketsRoute | string,
     cb: IWebsocketsRoutePluginCallable<C, R, T>
 ) => {
     return new WebsocketsRoutePlugin<C, R, T>(route, cb);
