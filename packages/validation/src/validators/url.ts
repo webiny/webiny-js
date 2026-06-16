@@ -1,14 +1,32 @@
 import ValidationError from "~/validationError.js";
 
-const regex = {
-    base: new RegExp(
-        /^(https?:\/\/)((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=!-]*)?(#[-a-z\d_]*)?$/i
-    ),
-    ip: new RegExp(
-        /^(https?:\/\/)(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
-    ),
-    relative: new RegExp(/^\/.*$/),
-    href: new RegExp(/^(#|mailto:|tel:)\S*$/)
+const IP_OCTET = /^(25[0-5]|2[0-4]\d|[01]?\d\d?)$/;
+const CONTROL_CHARS = /[\x00-\x1f\x7f]/;
+const RELATIVE_REGEX = /^\/.*$/;
+const HREF_REGEX = /^(#|mailto:|tel:)\S*$/;
+
+const isIpHostname = (hostname: string): boolean => {
+    if (hostname.includes(":")) {
+        return true;
+    }
+    const parts = hostname.split(".");
+    return parts.length === 4 && parts.every(part => IP_OCTET.test(part));
+};
+
+const isValidUrl = (value: string): boolean => {
+    try {
+        const url = new URL(value);
+        if (url.protocol !== "http:" && url.protocol !== "https:") {
+            return false;
+        }
+        if (url.username || url.password) {
+            return false;
+        }
+        const hostname = url.hostname;
+        return hostname === "localhost" || isIpHostname(hostname) || hostname.includes(".");
+    } catch {
+        return false;
+    }
 };
 
 export default (value: any, params?: string[]) => {
@@ -17,28 +35,29 @@ export default (value: any, params?: string[]) => {
     }
     value = value + "";
 
-    if (value.startsWith("http://localhost") || value.startsWith("https://localhost")) {
-        value = value.replace("//localhost", "//localhost.com");
+    if (CONTROL_CHARS.test(value)) {
+        throw new ValidationError("Value must be a valid URL.");
     }
 
-    if (regex.base.test(value)) {
+    if (isValidUrl(value)) {
         if (!params.includes("noIp")) {
             return;
         }
 
-        if (!regex.ip.test(value)) {
+        const url = new URL(value);
+        if (!isIpHostname(url.hostname)) {
             return;
         }
     }
 
     if (params.includes("allowRelative")) {
-        if (regex.relative.test(value)) {
+        if (RELATIVE_REGEX.test(value)) {
             return;
         }
     }
 
     if (params.includes("allowHref")) {
-        if (regex.href.test(value)) {
+        if (HREF_REGEX.test(value)) {
             return;
         }
     }
