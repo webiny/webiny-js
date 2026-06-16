@@ -30,4 +30,7 @@ export interface IWebsocketsConnectionRegistry {
     listViaIdentity(identity: string): Promise<IWebsocketsConnectionRegistryData[]>;
     listViaTenant(tenant: string): Promise<IWebsocketsConnectionRegistryData[]>;
     listAll(): Promise<IWebsocketsConnectionRegistryData[]>;
+
+    updateLastSeen(connectionId: string): Promise<void>;
+    listStale(olderThan: Date): Promise<IWebsocketsConnectionRegistryData[]>;
 }

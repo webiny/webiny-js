@@ -15,6 +15,7 @@ interface ConnectionRow {
     tenant: string;
     endpoint: string;
     connectedOn: string;
+    lastSeen: string | null;
 }
 
 const BASE_TABLE_NAME = "WebsocketsConnections";
@@ -41,6 +42,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         try {
             await this.ensureTable();
             await this.migrateTable();
+            await this.migrateLastSeen();
 
             const row: ConnectionRow = {
                 connectionId: event.connectionId,
@@ -49,7 +51,8 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
                 identityType: event.identity.type,
                 tenant: event.tenant,
                 endpoint: event.endpoint,
-                connectedOn: event.connectedOn
+                connectedOn: event.connectedOn,
+                lastSeen: null
             };
 
             await this.knex<ConnectionRow>(this.tableName).insert(row);
@@ -68,6 +71,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         try {
             await this.ensureTable();
             await this.migrateTable();
+            await this.migrateLastSeen();
 
             const existing = await this.knex<ConnectionRow>(this.tableName)
                 .where("connectionId", event.connectionId)
@@ -99,6 +103,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         try {
             await this.ensureTable();
             await this.migrateTable();
+            await this.migrateLastSeen();
 
             const rows = await this.knex<ConnectionRow>(this.tableName).whereIn(
                 "connectionId",
@@ -119,6 +124,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         try {
             await this.ensureTable();
             await this.migrateTable();
+            await this.migrateLastSeen();
 
             const rows = await this.knex<ConnectionRow>(this.tableName).where(
                 "identityId",
@@ -139,6 +145,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         try {
             await this.ensureTable();
             await this.migrateTable();
+            await this.migrateLastSeen();
 
             const rows = await this.knex<ConnectionRow>(this.tableName).where("tenant", tenant);
 
@@ -156,6 +163,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         try {
             await this.ensureTable();
             await this.migrateTable();
+            await this.migrateLastSeen();
 
             const rows = await this.knex<ConnectionRow>(this.tableName).select("*");
 
@@ -164,6 +172,46 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
             throw WebinyError.from(err, {
                 message: "Could not list all websockets connections.",
                 code: "LIST_ALL_CONNECTIONS_ERROR"
+            });
+        }
+    }
+
+    public async updateLastSeen(connectionId: string): Promise<void> {
+        try {
+            await this.ensureTable();
+            await this.migrateTable();
+            await this.migrateLastSeen();
+
+            await this.knex<ConnectionRow>(this.tableName)
+                .where("connectionId", connectionId)
+                .update({ lastSeen: new Date().toISOString() });
+        } catch (err) {
+            throw WebinyError.from(err, {
+                message: "Could not update lastSeen for websockets connection.",
+                code: "UPDATE_LAST_SEEN_ERROR",
+                data: { connectionId }
+            });
+        }
+    }
+
+    public async listStale(olderThan: Date): Promise<IWebsocketsConnectionRegistryData[]> {
+        try {
+            await this.ensureTable();
+            await this.migrateTable();
+            await this.migrateLastSeen();
+
+            const threshold = olderThan.toISOString();
+
+            const rows = await this.knex<ConnectionRow>(this.tableName).where(qb => {
+                qb.where("lastSeen", "<", threshold).orWhereNull("lastSeen");
+            });
+
+            return rows.map(row => this.toData(row));
+        } catch (err) {
+            throw WebinyError.from(err, {
+                message: "Could not list stale websockets connections.",
+                code: "LIST_STALE_CONNECTIONS_ERROR",
+                data: { olderThan }
             });
         }
     }
@@ -182,6 +230,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
             table.text("tenant").notNullable();
             table.text("endpoint").notNullable();
             table.datetime("connectedOn").notNullable();
+            table.datetime("lastSeen").nullable();
             table.index(["identityId"]);
             table.index(["tenant"]);
         });
@@ -205,6 +254,17 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
             table.text("endpoint").notNullable().alter();
             table.dropColumn("domainName");
             table.dropColumn("stage");
+        });
+    }
+
+    private async migrateLastSeen(): Promise<void> {
+        const hasLastSeen = await this.knex.schema.hasColumn(this.tableName, "lastSeen");
+        if (hasLastSeen) {
+            return;
+        }
+
+        await this.knex.schema.alterTable(this.tableName, table => {
+            table.datetime("lastSeen").nullable();
         });
     }
 

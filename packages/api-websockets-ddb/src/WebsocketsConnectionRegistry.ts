@@ -134,6 +134,16 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         });
     }
 
+    /* No-op: heartbeat-based tracking is server-only; DDB registry does not track lastSeen. */
+    public async updateLastSeen(_connectionId: string): Promise<void> {
+        return;
+    }
+
+    /* No-op: stale connection cleanup is server-only; DDB registry always returns empty. */
+    public async listStale(_olderThan: Date): Promise<IWebsocketsConnectionRegistryData[]> {
+        return [];
+    }
+
     private async store(data: IWebsocketsConnectionRegistryData) {
         const { connectionId, tenant, identity } = data;
         const item = {

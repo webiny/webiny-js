@@ -68,14 +68,14 @@ The interface is generic over `TSocket` — each adapter implementation binds it
 
 ```typescript
 interface IWebsocketsServerAdapter<TSocket> {
-    start(server: HttpServer): void;
-    stop(): Promise<void>;
-    onConnection(cb: (socket: TSocket, request: IncomingMessage) => void): void;
-    onMessage(socket: TSocket, cb: (data: Buffer) => void): void;
-    onClose(socket: TSocket, cb: (code: number, reason: Buffer) => void): void;
-    onError(socket: TSocket, cb: (error: Error) => void): void;
-    send(socket: TSocket, data: string): Promise<void>;
-    close(socket: TSocket, code?: number, reason?: string): void;
+  start(server: HttpServer): void;
+  stop(): Promise<void>;
+  onConnection(cb: (socket: TSocket, request: IncomingMessage) => void): void;
+  onMessage(socket: TSocket, cb: (data: Buffer) => void): void;
+  onClose(socket: TSocket, cb: (code: number, reason: Buffer) => void): void;
+  onError(socket: TSocket, cb: (error: Error) => void): void;
+  send(socket: TSocket, data: string): Promise<void>;
+  close(socket: TSocket, code?: number, reason?: string): void;
 }
 ```
 
@@ -85,12 +85,10 @@ Pre-connection filtering during HTTP upgrade. Not for auth (that stays in route 
 
 ```typescript
 interface IWebsocketsUpgradeHandler {
-    shouldUpgrade(request: IncomingMessage): Promise<UpgradeDecision>;
+  shouldUpgrade(request: IncomingMessage): Promise<UpgradeDecision>;
 }
 
-type UpgradeDecision =
-    | { allowed: true }
-    | { allowed: false; statusCode: number; reason: string };
+type UpgradeDecision = { allowed: true } | { allowed: false; statusCode: number; reason: string };
 ```
 
 Default implementation accepts all connections.
@@ -101,35 +99,35 @@ Owns the local `Map<connectionId, TSocket>`, coordinates with the SQL connection
 
 ```typescript
 interface IWebsocketsConnectionManager<TSocket> {
-    add(params: WebsocketsConnectionManager.AddParams<TSocket>): Promise<void>;
-    remove(connectionId: string): Promise<void>;
-    getSocket(connectionId: string): TSocket | undefined;
-    getMetadata(connectionId: string): WebsocketsConnectionManager.ConnectionMetadata | undefined;
-    updateLastSeen(connectionId: string): Promise<void>;
-    cleanup(maxAge: number): Promise<string[]>;
+  add(params: WebsocketsConnectionManager.AddParams<TSocket>): Promise<void>;
+  remove(connectionId: string): Promise<void>;
+  getSocket(connectionId: string): TSocket | undefined;
+  getMetadata(connectionId: string): WebsocketsConnectionManager.ConnectionMetadata | undefined;
+  updateLastSeen(connectionId: string): Promise<void>;
+  cleanup(maxAge: number): Promise<string[]>;
 }
 ```
 
 ```typescript
 namespace WebsocketsConnectionManager {
-    interface AddParams<TSocket> {
-        connectionId: string;
-        socket: TSocket;
-        endpoint: string;
-        identity: IWebsocketsIdentity;
-        tenant: string;
-        connectedAt: number;
-        host: string;
-        headers: Record<string, string>;
-    }
+  interface AddParams<TSocket> {
+    connectionId: string;
+    socket: TSocket;
+    endpoint: string;
+    identity: IWebsocketsIdentity;
+    tenant: string;
+    connectedAt: number;
+    host: string;
+    headers: Record<string, string>;
+  }
 
-    interface ConnectionMetadata {
-        connectionId: string;
-        endpoint: string;
-        connectedAt: number;
-        host: string;
-        headers: Record<string, string>;
-    }
+  interface ConnectionMetadata {
+    connectionId: string;
+    endpoint: string;
+    connectedAt: number;
+    host: string;
+    headers: Record<string, string>;
+  }
 }
 ```
 
@@ -160,6 +158,7 @@ The validator receives a pre-built internal event object from the `WebsocketsSer
 Three scenarios:
 
 **Connect** — WebSocket connection opens:
+
 - `eventType: "connect"`, `route: "connect"`
 - `connectionId` generated via `mdbid()`
 - `connectedAt` set to `Date.now()`
@@ -169,12 +168,14 @@ Three scenarios:
 - `body: undefined`
 
 **Message** — incoming message:
+
 - `eventType: "message"`, `route: "default"` (or custom from `body.action`)
 - `connectionId`, `connectedAt`, `host`, `endpoint` retrieved from `connectionManager.getMetadata()`
 - `headers` also from stored metadata
 - `body` is `JSON.parse(rawMessage)` — malformed JSON rejected with error response
 
 **Disconnect** — connection closes:
+
 - `eventType: "disconnect"`, `route: "disconnect"`
 - `connectionId`, `connectedAt`, `host`, `endpoint` retrieved from `connectionManager.getMetadata()`
 - `body: undefined`
@@ -245,14 +246,14 @@ All implementations are created via `createImplementation` on their respective a
 
 ```typescript
 export const createServerWebsockets = () => {
-    const plugin = createRegisterExtensionPlugin(context => {
-        context.container.register(ServerWebsocketsTransport).inSingletonScope();
-        context.container.register(NodeWsAdapter).inSingletonScope();
-        context.container.register(DefaultUpgradeHandler).inSingletonScope();
-        context.container.register(ServerConnectionManager).inSingletonScope();
-    });
-    plugin.name = "websockets.server.transport";
-    return [plugin];
+  const plugin = createRegisterExtensionPlugin(context => {
+    context.container.register(ServerWebsocketsTransport).inSingletonScope();
+    context.container.register(NodeWsAdapter).inSingletonScope();
+    context.container.register(DefaultUpgradeHandler).inSingletonScope();
+    context.container.register(ServerConnectionManager).inSingletonScope();
+  });
+  plugin.name = "websockets.server.transport";
+  return [plugin];
 };
 ```
 
@@ -260,23 +261,23 @@ Where each constant is the result of `AbstractionToken.createImplementation(...)
 
 ```typescript
 export const ServerWebsocketsTransport = WebsocketsTransport.createImplementation({
-    implementation: ServerWebsocketsTransportImpl,
-    dependencies: [WebsocketsConnectionManager, WebsocketsServerAdapter]
+  implementation: ServerWebsocketsTransportImpl,
+  dependencies: [WebsocketsConnectionManager, WebsocketsServerAdapter]
 });
 
 export const NodeWsAdapter = WebsocketsServerAdapter.createImplementation({
-    implementation: NodeWsAdapterImpl,
-    dependencies: []
+  implementation: NodeWsAdapterImpl,
+  dependencies: []
 });
 
 export const DefaultUpgradeHandler = WebsocketsUpgradeHandler.createImplementation({
-    implementation: DefaultUpgradeHandlerImpl,
-    dependencies: []
+  implementation: DefaultUpgradeHandlerImpl,
+  dependencies: []
 });
 
 export const ServerConnectionManager = WebsocketsConnectionManager.createImplementation({
-    implementation: ServerConnectionManagerImpl,
-    dependencies: [ConnectionRegistry]
+  implementation: ServerConnectionManagerImpl,
+  dependencies: [ConnectionRegistry]
 });
 ```
 
@@ -320,6 +321,7 @@ New nullable `datetime` column on the existing `WebsocketsConnections` SQL table
 ### Graceful shutdown
 
 `server.stop()`:
+
 1. Set a `shuttingDown` flag — suppresses the normal event flow for `onClose` callbacks. Without this, closing sockets in step 3 would trigger the disconnect route plugin for every active connection, running business logic (notifications, etc.) that should only fire on genuine client disconnects.
 2. Stop accepting new connections.
 3. Stop heartbeat timer.
@@ -329,18 +331,18 @@ New nullable `datetime` column on the existing `WebsocketsConnections` SQL table
 
 ## Decisions
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| WS library | Built-in Node `ws` with adapter abstraction | Pluggable without lock-in |
-| Server modes | Standalone + attach | Simple default, flexible for advanced users |
-| Source handler registry | Skip | Server owns lifecycle, no event sniffing needed |
-| Auth | Route plugins only | Same flow as AWS, no upgrade-level auth |
-| Endpoint field | Server's own address | Useful for storage consistency and future multi-server |
-| Multi-server | Out of scope | Single-instance covers Docker/self-hosted use case |
-| Connection tracking | Local map + SQL registry | Map for socket refs, registry for queryable metadata |
-| Cleanup | Lazy (on send fail) + TTL (heartbeat) | Belt and suspenders — catches all stale entries |
-| Abstraction approach | Full stack (B) | Three abstractions: adapter, upgrade handler, connection manager |
-| Validator | Plain class, direct instantiation | Matches AWS pattern — not a DI abstraction |
-| Context lifecycle | Single shared instance at startup | Tenant/identity resolved per-event in route plugins |
-| Naming | `Websockets*` prefix | Matches codebase convention |
-| Socket type | Generic `TSocket` on adapter/manager/transport | Flows through stack, no casts needed |
+| Decision                | Choice                                         | Rationale                                                        |
+| ----------------------- | ---------------------------------------------- | ---------------------------------------------------------------- |
+| WS library              | Built-in Node `ws` with adapter abstraction    | Pluggable without lock-in                                        |
+| Server modes            | Standalone + attach                            | Simple default, flexible for advanced users                      |
+| Source handler registry | Skip                                           | Server owns lifecycle, no event sniffing needed                  |
+| Auth                    | Route plugins only                             | Same flow as AWS, no upgrade-level auth                          |
+| Endpoint field          | Server's own address                           | Useful for storage consistency and future multi-server           |
+| Multi-server            | Out of scope                                   | Single-instance covers Docker/self-hosted use case               |
+| Connection tracking     | Local map + SQL registry                       | Map for socket refs, registry for queryable metadata             |
+| Cleanup                 | Lazy (on send fail) + TTL (heartbeat)          | Belt and suspenders — catches all stale entries                  |
+| Abstraction approach    | Full stack (B)                                 | Three abstractions: adapter, upgrade handler, connection manager |
+| Validator               | Plain class, direct instantiation              | Matches AWS pattern — not a DI abstraction                       |
+| Context lifecycle       | Single shared instance at startup              | Tenant/identity resolved per-event in route plugins              |
+| Naming                  | `Websockets*` prefix                           | Matches codebase convention                                      |
+| Socket type             | Generic `TSocket` on adapter/manager/transport | Flows through stack, no casts needed                             |
