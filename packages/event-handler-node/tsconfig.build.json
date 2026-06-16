@@ -9,7 +9,7 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/event-handler-core/testing": ["../event-handler-core/src/testing/index.js"],
+      "@webiny/event-handler-core/testing": ["../event-handler-core/src/features/testing/index.js"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"]
     }

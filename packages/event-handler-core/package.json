@@ -5,7 +5,7 @@
   "main": "index.js",
   "exports": {
     ".": "./index.js",
-    "./testing": "./testing/index.js",
+    "./testing": "./features/testing/index.js",
     "./*": "./*"
   },
   "types": "index.d.ts",
