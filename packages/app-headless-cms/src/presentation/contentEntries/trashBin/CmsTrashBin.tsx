@@ -3,7 +3,6 @@ import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { TrashBinFeature } from "@webiny/app-admin/presentation/trashBin/feature.js";
 import { TrashBinOverlay } from "@webiny/app-admin/presentation/trashBin/components/TrashBinOverlay.js";
-import type { TrashBinItem } from "@webiny/app-admin/presentation/trashBin/abstractions.js";
 import { Sidebar } from "@webiny/admin-ui";
 import { ReactComponent as Delete } from "@webiny/icons/delete.svg";
 import { useModel } from "@webiny/app-headless-cms-common";
@@ -22,17 +21,10 @@ export const CmsTrashBin = observer(() => {
         setOpen(true);
     }, [model, presenter]);
 
-    const handleClose = useCallback(() => {
+    const handleClose = useCallback(async () => {
         setOpen(false);
         presenter.dispose();
     }, [presenter]);
-
-    const handleItemAfterRestore = useCallback(
-        async (_item: TrashBinItem) => {
-            handleClose();
-        },
-        [handleClose]
-    );
 
     return (
         <>
@@ -48,7 +40,6 @@ export const CmsTrashBin = observer(() => {
                     presenter={presenter}
                     title={`Trash - ${model.name}`}
                     onExited={handleClose}
-                    onItemAfterRestore={handleItemAfterRestore}
                 />
             ) : null}
         </>

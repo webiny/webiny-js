@@ -6,7 +6,7 @@ import { FolderTreePresenterFeature } from "@webiny/app-aco/presentation/folderT
 import { CmsModelAccessor } from "~/features/contentEntry/CmsModelAccessor.js";
 import { ContentEntriesPresenterFeature } from "../list/feature.js";
 import { ContentEntryFormPresenterFeature } from "../form/feature.js";
-import { SingletonEntryPresenterFeature } from "../singleton/feature.js";
+import { SingleEntryPresenterFeature } from "../singleEntry/feature.js";
 import {
     BulkPublishFeature,
     BulkUnpublishFeature,
@@ -41,7 +41,7 @@ export const ContentEntriesView = ({
         ContentEntriesPresenterFeature.register(child);
         ContentEntryFormPresenterFeature.register(child);
         RevisionsListFeature.register(child);
-        SingletonEntryPresenterFeature.register(child);
+        SingleEntryPresenterFeature.register(child);
         BulkPublishFeature.register(child);
         BulkUnpublishFeature.register(child);
         BulkDeleteFeature.register(child);

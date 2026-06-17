@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { Alert } from "@webiny/admin-ui";
-import { Content } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
+import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { useWorkflowState } from "@webiny/app-workflows";
 import { Components } from "@webiny/app-workflows";
@@ -11,7 +11,7 @@ const {
     ContentReview: { WorkflowStateBar }
 } = Components;
 
-export const ContentEntryFormWorkflow = Content.createDecorator(Original => {
+export const ContentEntryFormWorkflow = ContentEntryFormContent.createDecorator(Original => {
     return observer(function ContentEntryFormWorkflowDecorator(props) {
         const formPresenter = useContentEntryFormPresenter();
         const { presenter } = useWorkflowState();
@@ -19,7 +19,7 @@ export const ContentEntryFormWorkflow = Content.createDecorator(Original => {
 
         const isSingleton = model.tags.includes(CMS_MODEL_SINGLETON_TAG);
 
-        if (isSingleton || formPresenter.vm.isNewEntry) {
+        if (isSingleton || formPresenter.vm.isNewEntry || !presenter.vm.hasWorkflow) {
             return <Original {...props} />;
         }
 

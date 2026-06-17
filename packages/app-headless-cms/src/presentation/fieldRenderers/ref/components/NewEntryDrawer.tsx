@@ -110,12 +110,8 @@ const NewEntryDrawerContent = observer(
                     </LeftPanel>
                     <RightPanel span={9}>
                         <div className={"p-md relative"}>
-                            {vm.loading ? (
-                                <OverlayLoader text={"Creating entry..."} />
-                            ) : null}
-                            {vm.form ? (
-                                <FormView name="NewRefEntryForm" form={vm.form} />
-                            ) : null}
+                            {vm.loading ? <OverlayLoader text={"Creating entry..."} /> : null}
+                            {vm.form ? <FormView name="NewRefEntryForm" form={vm.form} /> : null}
                         </div>
                     </RightPanel>
                 </SplitView>

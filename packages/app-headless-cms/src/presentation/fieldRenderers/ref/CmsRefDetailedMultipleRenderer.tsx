@@ -151,10 +151,7 @@ const RefDetailedMultipleInner = observer(({ field }: InnerFieldProps) => {
                 <FormComponentLabel text={field.label} invalid={invalid} disabled={disabled} />
             </div>
             <div className={"webiny_ref-field-container"}>
-                <EntryList
-                    entries={orderedEntries}
-                    loadMore={() => presenter.loadMore()}
-                >
+                <EntryList entries={orderedEntries} loadMore={() => presenter.loadMore()}>
                     {(entry, index) => {
                         const isFirst = index === 0;
                         const isLast = index >= values.length - 1;

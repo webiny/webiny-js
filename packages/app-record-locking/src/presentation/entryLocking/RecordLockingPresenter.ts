@@ -77,7 +77,7 @@ class RecordLockingPresenterImpl implements IRecordLockingPresenter {
 
         try {
             const lockRecord = await this.checkLockStatusUseCase.execute({
-                id: entryId,
+                id,
                 type
             });
 
@@ -90,7 +90,7 @@ class RecordLockingPresenterImpl implements IRecordLockingPresenter {
             }
 
             const acquired = await this.acquireLockUseCase.execute({
-                id: entryId,
+                id,
                 type
             });
 
@@ -99,7 +99,7 @@ class RecordLockingPresenterImpl implements IRecordLockingPresenter {
                 this._lockRecord = acquired;
             });
 
-            this.startHeartbeat(entryId, type);
+            this.startHeartbeat(id, type);
         } catch {
             runInAction(() => {
                 this._status = "error";

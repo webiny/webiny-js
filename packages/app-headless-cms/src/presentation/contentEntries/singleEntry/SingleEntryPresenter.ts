@@ -7,12 +7,12 @@ import { UpdateSingletonEntryUseCase } from "~/features/contentEntry/singletonEn
 import { CmsFormModelBuilder } from "~/features/formModel/abstractions.js";
 import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
 import {
-    SingletonEntryPresenter as Abstraction,
-    type ISingletonEntryPresenter,
-    type ISingletonEntryViewModel
+    SingleEntryPresenter as Abstraction,
+    type ISingleEntryPresenter,
+    type ISingleEntryViewModel
 } from "./abstractions.js";
 
-class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
+class SingleEntryPresenterImpl implements ISingleEntryPresenter {
     private _entry: CmsContentEntry | null = null;
     private _form: IFormModel | null = null;
     private _loading: string | null = null;
@@ -25,7 +25,7 @@ class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
         private updateSingletonEntryUseCase: UpdateSingletonEntryUseCase.Interface
     ) {
         makeAutoObservable<
-            SingletonEntryPresenterImpl,
+            SingleEntryPresenterImpl,
             | "formModelFactory"
             | "cmsFormModelBuilder"
             | "modelAccessor"
@@ -45,7 +45,7 @@ class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
         return this.modelAccessor.getModel();
     }
 
-    get vm(): ISingletonEntryViewModel {
+    get vm(): ISingleEntryViewModel {
         return {
             loading: this._loading,
             entry: this._entry,
@@ -70,7 +70,9 @@ class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
         try {
             const entry = await this.updateSingletonEntryUseCase.execute({
                 model: this.model,
-                data: data as Record<string, unknown>
+                data: {
+                    values: data
+                }
             });
 
             runInAction(() => {
@@ -117,8 +119,8 @@ class SingletonEntryPresenterImpl implements ISingletonEntryPresenter {
     }
 }
 
-export const SingletonEntryPresenterImplementation = Abstraction.createImplementation({
-    implementation: SingletonEntryPresenterImpl,
+export const SingleEntryPresenter = Abstraction.createImplementation({
+    implementation: SingleEntryPresenterImpl,
     dependencies: [
         FormModelFactory,
         CmsFormModelBuilder,

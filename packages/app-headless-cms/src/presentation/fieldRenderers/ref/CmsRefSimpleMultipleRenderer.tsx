@@ -14,21 +14,23 @@ declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     }
 }
 
-export const CmsRefSimpleMultipleRenderer = createFieldRenderer<"refSimpleMultiple">(({ field }) => {
-    const parentContainer = useContainer();
+export const CmsRefSimpleMultipleRenderer = createFieldRenderer<"refSimpleMultiple">(
+    ({ field }) => {
+        const parentContainer = useContainer();
 
-    const scopedContainer = useMemo(() => {
-        const child = parentContainer.createChildContainer();
-        RefSimplePresenterFeature.register(child);
-        return child;
-    }, []);
+        const scopedContainer = useMemo(() => {
+            const child = parentContainer.createChildContainer();
+            RefSimplePresenterFeature.register(child);
+            return child;
+        }, []);
 
-    return (
-        <DiContainerProvider container={scopedContainer}>
-            <RefSimpleMultipleInner field={field} />
-        </DiContainerProvider>
-    );
-});
+        return (
+            <DiContainerProvider container={scopedContainer}>
+                <RefSimpleMultipleInner field={field} />
+            </DiContainerProvider>
+        );
+    }
+);
 
 interface InnerFieldProps {
     field: IFieldVM & { rendererSettings: RefFieldRendererSettings };

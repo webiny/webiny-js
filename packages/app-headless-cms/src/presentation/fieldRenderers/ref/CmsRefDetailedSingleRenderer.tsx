@@ -19,21 +19,23 @@ declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     }
 }
 
-export const CmsRefDetailedSingleRenderer = createFieldRenderer<"refDetailedSingle">(({ field }) => {
-    const parentContainer = useContainer();
+export const CmsRefDetailedSingleRenderer = createFieldRenderer<"refDetailedSingle">(
+    ({ field }) => {
+        const parentContainer = useContainer();
 
-    const scopedContainer = useMemo(() => {
-        const child = parentContainer.createChildContainer();
-        RefDetailedPresenterFeature.register(child);
-        return child;
-    }, []);
+        const scopedContainer = useMemo(() => {
+            const child = parentContainer.createChildContainer();
+            RefDetailedPresenterFeature.register(child);
+            return child;
+        }, []);
 
-    return (
-        <DiContainerProvider container={scopedContainer}>
-            <RefDetailedSingleInner field={field} />
-        </DiContainerProvider>
-    );
-});
+        return (
+            <DiContainerProvider container={scopedContainer}>
+                <RefDetailedSingleInner field={field} />
+            </DiContainerProvider>
+        );
+    }
+);
 
 interface InnerFieldProps {
     field: IFieldVM & { rendererSettings: RefFieldRendererSettings };
@@ -105,10 +107,11 @@ const RefDetailedSingleInner = observer(({ field }: InnerFieldProps) => {
                 {entry && (
                     <EntryCard
                         model={
-                            presenter.vm.models.find(m => m.modelId === entry.model.modelId) || {
+                            presenter.vm.models.find(m => m.modelId === entry.model.modelId) ||
+                            ({
                                 modelId: entry.model.modelId,
                                 name: entry.model.name
-                            } as CmsModel
+                            } as CmsModel)
                         }
                         placement="singleRefField"
                         index={0}

@@ -100,10 +100,7 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
                     name={"cmsMultiFilePicker"}
                     component={CmsMultiFilePickerRenderer}
                 />
-                <AdminConfig.Form.FieldRenderer
-                    name={"refInput"}
-                    component={CmsRefInputRenderer}
-                />
+                <AdminConfig.Form.FieldRenderer name={"refInput"} component={CmsRefInputRenderer} />
                 <AdminConfig.Form.FieldRenderer
                     name={"refInputs"}
                     component={CmsRefInputsRenderer}

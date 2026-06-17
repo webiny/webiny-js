@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "@webiny/admin-ui";
 import { makeDecoratable } from "@webiny/react-composition";
 
-export const Content = makeDecoratable(
+export const ContentEntryFormContent = makeDecoratable(
     "Content",
     ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
         return (

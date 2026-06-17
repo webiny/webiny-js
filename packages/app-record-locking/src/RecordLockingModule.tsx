@@ -5,10 +5,11 @@ import { useWebsockets } from "@webiny/app-websockets";
 import { useDialogs } from "@webiny/app-admin";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { parseIdentifier } from "@webiny/utils";
-import { Content } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
+import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { RecordLockingPresenter } from "~/presentation/entryLocking/abstractions.js";
 import { LockedEntryOverlay } from "~/presentation/entryLocking/components/LockedEntryOverlay.js";
 import { RecordLockingCellActionsDecorator } from "~/presentation/listLocking/components/LockIndicatorCell.js";
+import { SingleEntryContentDecorator } from "~/presentation/entryLocking/SingleEntryContentDecorator.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import type { IKickOutData } from "~/presentation/entryLocking/abstractions.js";
 import type { IncomingGenericData } from "@webiny/app-websockets";
@@ -17,7 +18,7 @@ interface KickOutMessage extends IncomingGenericData {
     data: IKickOutData;
 }
 
-const ContentDecorator = Content.createDecorator(Original => {
+const ContentDecorator = ContentEntryFormContent.createDecorator(Original => {
     return observer(function RecordLockingContent(props) {
         const container = useContainer();
         const formPresenter = useContentEntryFormPresenter();
@@ -109,6 +110,7 @@ export const RecordLockingModule = () => {
     return (
         <>
             <ContentDecorator />
+            <SingleEntryContentDecorator />
             <RecordLockingCellActionsDecorator />
         </>
     );

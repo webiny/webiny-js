@@ -7,14 +7,19 @@ import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { HeaderBar, Heading, Icon, IconButton, OverlayLoader, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as BackIcon } from "@webiny/icons/arrow_back.svg";
 import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
+import { FormErrors } from "@webiny/app-admin";
 import { useContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
 import { Routes } from "~/routes.js";
-import { Container, ScrollArea, Content, ContentFormInner } from "./layout/index.js";
+import {
+    Container,
+    ScrollArea,
+    ContentEntryFormContent,
+    ContentFormInner
+} from "./layout/index.js";
 import { RevisionsListFeature } from "../revisionsList/feature.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { RevisionDrawer } from "./RevisionDrawer.js";
-import { FormErrors } from "@webiny/app-admin";
 
 export const ContentEntryFormView = observer(() => {
     const listPresenter = useContentEntriesPresenter();
@@ -86,7 +91,7 @@ export const ContentEntryFormView = observer(() => {
             />
             <ScrollArea>
                 {vm.loading ? <OverlayLoader text={vm.loading} /> : null}
-                <Content>
+                <ContentEntryFormContent>
                     <ContentFormInner width={width}>
                         <div className={"bg-neutral-base rounded-lg p-lg"}>
                             {vm.form ? (
@@ -97,7 +102,7 @@ export const ContentEntryFormView = observer(() => {
                             ) : null}
                         </div>
                     </ContentFormInner>
-                </Content>
+                </ContentEntryFormContent>
             </ScrollArea>
             <RevisionDrawer />
         </Container>
