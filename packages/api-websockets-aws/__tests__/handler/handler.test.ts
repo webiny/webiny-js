@@ -5,6 +5,7 @@ import { createMockLambdaContext } from "~tests/mocks/lambdaContext";
 import { createPlugins } from "~tests/helpers/plugins";
 import { createMockEvent } from "~tests/mocks/event";
 import { useHandler } from "~tests/helpers/useHandler";
+import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/features/ListConnections/abstractions.js";
 
 vi.mock("@webiny/aws-sdk/client-apigatewaymanagementapi", () => {
     return {
@@ -67,7 +68,8 @@ describe("handler", () => {
         const contextHandler = useHandler();
         const context = await contextHandler.handle();
 
-        const connectionsBeforeConnect = await context.websockets.listConnections({
+        const listConnectionsUseCase = context.container.resolve(WebsocketsListConnectionsUseCase);
+        const connectionsBeforeConnect = await listConnectionsUseCase.execute({
             where: {
                 identityId: "id-12345678"
             }
@@ -97,7 +99,7 @@ describe("handler", () => {
             }
         });
 
-        const connectionsAfterConnect = await context.websockets.listConnections({
+        const connectionsAfterConnect = await listConnectionsUseCase.execute({
             where: {
                 identityId: "id-12345678"
             }
@@ -112,7 +114,8 @@ describe("handler", () => {
         const contextHandler = useHandler();
         const context = await contextHandler.handle();
 
-        const connectionsBeforeConnect = await context.websockets.listConnections({
+        const listConnectionsUseCase2 = context.container.resolve(WebsocketsListConnectionsUseCase);
+        const connectionsBeforeConnect = await listConnectionsUseCase2.execute({
             where: {
                 identityId: "id-12345678"
             }
@@ -142,7 +145,7 @@ describe("handler", () => {
             }
         });
 
-        const connectionsAfterConnect = await context.websockets.listConnections({
+        const connectionsAfterConnect = await listConnectionsUseCase2.execute({
             where: {
                 identityId: "id-12345678"
             }
@@ -172,7 +175,7 @@ describe("handler", () => {
             }
         });
 
-        const connectionsAfterDisconnect = await context.websockets.listConnections({
+        const connectionsAfterDisconnect = await listConnectionsUseCase2.execute({
             where: {
                 identityId: "id-12345678"
             }
@@ -187,7 +190,8 @@ describe("handler", () => {
         const contextHandler = useHandler();
         const context = await contextHandler.handle();
 
-        const connectionsBeforeDisconnect = await context.websockets.listConnections({
+        const listConnectionsUseCase3 = context.container.resolve(WebsocketsListConnectionsUseCase);
+        const connectionsBeforeDisconnect = await listConnectionsUseCase3.execute({
             where: {
                 identityId: "id-12345678"
             }

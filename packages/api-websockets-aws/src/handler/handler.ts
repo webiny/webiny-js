@@ -59,11 +59,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                 const context = app.webiny as Context;
 
                 const responseObj = response || new WebsocketsResponse();
-                const runner = new WebsocketsRunner(
-                    context,
-                    context.websockets.registry,
-                    responseObj
-                );
+                const runner = new WebsocketsRunner(context, responseObj);
 
                 let validatedEvent;
                 try {
