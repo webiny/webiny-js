@@ -5,7 +5,6 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 import { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
 import { WebsocketsDisconnectUseCase } from "~/features/Disconnect/abstractions.js";
-import type { IWebsocketsListConnectionsParams } from "~/features/ListConnections/abstractions.js";
 import type { WebsocketsPermission } from "~/types.js";
 
 interface IDisconnectConnectionsArgs {
@@ -116,7 +115,7 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
             }
         });
 
-        builder.addResolver<IWebsocketsListConnectionsParams>({
+        builder.addResolver<WebsocketsListConnectionsUseCase.Params>({
             path: "WebsocketsQuery.listConnections",
             dependencies: [IdentityContext, WebsocketsListConnectionsUseCase],
             resolver: (
