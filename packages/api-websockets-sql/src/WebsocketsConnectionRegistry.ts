@@ -16,7 +16,7 @@ interface ConnectionRow {
 
 const BASE_TABLE_NAME = "WebsocketsConnections";
 
-class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
+export class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
     private readonly knex;
     private readonly tableName;
 

@@ -1,10 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import knexLib from "knex";
 import type { Knex } from "knex";
-import { WebsocketsConnectionRegistry } from "../src/WebsocketsConnectionRegistry.js";
-import type { IWebsocketsConnectionRegistryRegisterParams } from "@webiny/api-websockets";
+import { WebsocketsConnectionRegistryImpl } from "../src/WebsocketsConnectionRegistry.js";
+import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import type { KnexClient } from "@webiny/api-core-sql";
+import { TableName } from "../src/TableName/TableName.js";
 
-const makeRegisterParams = (connectionId: string): IWebsocketsConnectionRegistryRegisterParams => ({
+const makeRegisterParams = (connectionId: string): ConnectionRegistry.RegisterParams => ({
     connectionId,
     tenant: "root",
     identity: {
@@ -18,7 +20,7 @@ const makeRegisterParams = (connectionId: string): IWebsocketsConnectionRegistry
 
 describe("WebsocketsConnectionRegistry (SQL)", () => {
     let knex: Knex;
-    let registry: WebsocketsConnectionRegistry;
+    let registry: WebsocketsConnectionRegistryImpl;
 
     beforeEach(() => {
         knex = knexLib({
@@ -28,7 +30,10 @@ describe("WebsocketsConnectionRegistry (SQL)", () => {
             },
             useNullAsDefault: true
         });
-        registry = new WebsocketsConnectionRegistry({ knex });
+
+        const knexClient: KnexClient.Interface = { client: knex };
+        const tableName = new TableName();
+        registry = new WebsocketsConnectionRegistryImpl(knexClient, tableName);
     });
 
     afterEach(async () => {
