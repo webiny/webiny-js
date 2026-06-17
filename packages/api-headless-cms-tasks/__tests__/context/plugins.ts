@@ -15,8 +15,6 @@ import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks
 import type { ApiKey } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
-import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface CreateHandlerCoreParams {
@@ -92,8 +90,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
                     };
                 }
             } as ContextPlugin<HcmsTasksContext>,
-            apiKeyAuthentication({ identityType: "api-key" }),
-            apiKeyAuthorization({ identityType: "api-key" }),
             createHeadlessCmsContext(),
             createBackgroundTaskContext(),
             createHeadlessCmsGraphQL(),

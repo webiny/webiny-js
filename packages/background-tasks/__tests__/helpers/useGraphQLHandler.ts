@@ -34,8 +34,6 @@ import {
 import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
-import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
-import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface InvokeParams {
@@ -96,8 +94,6 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
                     };
                 }
             } as ContextPlugin<Context>,
-            apiKeyAuthentication({ identityType: "api-key" }),
-            apiKeyAuthorization({ identityType: "api-key" }),
             createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             graphQLHandlerPlugins(),

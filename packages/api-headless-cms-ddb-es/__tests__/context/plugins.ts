@@ -10,8 +10,6 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { createBackgroundTaskContext } from "@webiny/background-tasks/api";
 import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ApiKey } from "@webiny/api-core/types/security";
-import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
-import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import { createApiCore } from "@webiny/api-core";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -92,8 +90,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                     };
                 }
             } as ContextPlugin<CmsContext>,
-            apiKeyAuthentication({ identityType: "api-key" }),
-            apiKeyAuthorization({ identityType: "api-key" }),
             createHeadlessCmsContext(),
             createBackgroundTaskContext(),
             createHeadlessCmsGraphQL(),

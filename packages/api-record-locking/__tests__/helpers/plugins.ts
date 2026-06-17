@@ -10,8 +10,6 @@ import { createPermissions } from "./permissions";
 import { createRecordLocking } from "~/index";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createApiCore } from "@webiny/api-core";
-import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
-import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface CreateHandlerCoreParams {
@@ -58,8 +56,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                 permissions: createPermissions(permissions),
                 identity
             }),
-            apiKeyAuthentication({ identityType: "api-key" }),
-            apiKeyAuthorization({ identityType: "api-key" }),
             graphQLHandlerPlugins(),
             createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),

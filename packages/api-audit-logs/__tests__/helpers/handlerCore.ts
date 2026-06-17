@@ -17,8 +17,6 @@ import type { IdentityData } from "@webiny/api-core/features/security/IdentityCo
 import type { ApiKey } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
-import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface CreateHandlerCoreParams {
@@ -97,8 +95,6 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
                     };
                 }
             } as ContextPlugin<AuditLogsContext>,
-            apiKeyAuthentication({ identityType: "api-key" }),
-            apiKeyAuthorization({ identityType: "api-key" }),
             createHeadlessCmsContext(),
             createMailerContext(),
             createFileManagerContext(),

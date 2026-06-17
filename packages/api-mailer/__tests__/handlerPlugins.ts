@@ -9,9 +9,6 @@ import type { PermissionsArg } from "./context/helpers";
 import { createPermissions } from "./context/helpers";
 import { contextSecurity } from "./graphQLHandler";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
-import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
-
 export interface CreateHandlerParams {
     permissions?: PermissionsArg[];
     identity?: IdentityData;
@@ -36,8 +33,6 @@ export const createHandlerPlugins = (params?: CreateHandlerParams) => {
             identity
         }),
         contextSecurity({ tenant, identity }),
-        apiKeyAuthentication({ identityType: "api-key" }),
-        apiKeyAuthorization({ identityType: "api-key" }),
         /**
          * We're using ddb-only storageOperations here because current jest setup doesn't allow
          * usage of more than one storageOperations at a time with the help of --keyword flag.

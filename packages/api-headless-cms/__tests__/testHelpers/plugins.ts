@@ -1,5 +1,4 @@
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "~/index";
 import { createTenancyAndSecurity } from "~tests/testHelpers/tenancySecurity";
 import type { PermissionsArg } from "~tests/testHelpers/helpers";
@@ -12,8 +11,6 @@ import type { HeadlessCmsStorageOperations } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createApiCore } from "@webiny/api-core";
-import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication";
-import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { GetApiKeyByTokenUseCase } from "@webiny/api-core/features/security/apiKeys/GetApiKeyByToken/index.js";
@@ -93,12 +90,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
                     });
                 }
             } as ContextPlugin<TestContext>,
-            createRegisterExtensionPlugin(context => {
-                apiKeyAuthentication({ identityType: "api-key" })(context.container);
-            }),
-            createRegisterExtensionPlugin(context => {
-                apiKeyAuthorization({ identityType: "api-key" })(context.container);
-            }),
             createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             plugins,

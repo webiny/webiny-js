@@ -12,8 +12,6 @@ import type {
     SchedulerClientConfig
 } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { createSchedulerManifestPlugin } from "../schedulerManifestPlugin.js";
-import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
-import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import { createApiCore } from "@webiny/api-core";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -58,8 +56,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                 identity
             }),
             createSchedulerManifestPlugin(),
-            apiKeyAuthentication({ identityType: "api-key" }),
-            apiKeyAuthorization({ identityType: "api-key" }),
             createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             plugins,
