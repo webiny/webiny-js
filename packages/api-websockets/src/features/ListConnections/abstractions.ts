@@ -27,4 +27,5 @@ export namespace WebsocketsListConnectionsUseCase {
     export type Interface = IListConnectionsUseCase;
     export type Params = IWebsocketsListConnectionsParams;
     export type ParamsWhere = IWebsocketsListConnectionsParamsWhere;
+    export type RegistryData = IWebsocketsConnectionRegistryData;
 }

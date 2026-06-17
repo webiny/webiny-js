@@ -1,11 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
-import type { IWebsocketsConnectionRegistry } from "~/registry/index.js";
-import type { IWebsocketsConnectionRegistryData } from "~/registry/index.js";
-import type { IWebsocketsTransport } from "~/transport/index.js";
-import type { IListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
-import type { IDisconnectUseCase } from "./abstractions.js";
-import type { IWebsocketsDisconnectParams } from "./abstractions.js";
 import { WebsocketsDisconnectUseCase } from "./abstractions.js";
 import type { WebsocketsError } from "~/features/shared/errors.js";
 import { WebsocketForceDisconnectError } from "~/features/shared/errors.js";
@@ -14,25 +7,17 @@ import { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abs
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 import { WebsocketsTransport } from "~/transport/index.js";
 
-class DisconnectUseCaseImpl implements IDisconnectUseCase {
-    private readonly listConnections: IListConnectionsUseCase;
-    private readonly registry: IWebsocketsConnectionRegistry;
-    private readonly transport: IWebsocketsTransport;
-
+class DisconnectUseCaseImpl implements WebsocketsDisconnectUseCase.Interface {
     public constructor(
-        listConnections: IListConnectionsUseCase,
-        registry: IWebsocketsConnectionRegistry,
-        transport: IWebsocketsTransport
-    ) {
-        this.listConnections = listConnections;
-        this.registry = registry;
-        this.transport = transport;
-    }
+        private readonly listConnections: WebsocketsListConnectionsUseCase.Interface,
+        private readonly registry: ConnectionRegistry.Interface,
+        private readonly transport: WebsocketsTransport.Interface
+    ) {}
 
     public async execute(
-        params?: IWebsocketsDisconnectParams,
+        params?: WebsocketsDisconnectUseCase.Params,
         notify = true
-    ): Promise<Result<IWebsocketsConnectionRegistryData[], WebsocketsError>> {
+    ): Promise<Result<WebsocketsListConnectionsUseCase.RegistryData[], WebsocketsError>> {
         const result = await this.listConnections.execute(params);
         if (result.isFail()) {
             return Result.fail(result.error);
@@ -68,8 +53,7 @@ class DisconnectUseCaseImpl implements IDisconnectUseCase {
     }
 }
 
-export const DisconnectUseCase = createImplementation({
-    abstraction: WebsocketsDisconnectUseCase,
+export const DisconnectUseCase = WebsocketsDisconnectUseCase.createImplementation({
     implementation: DisconnectUseCaseImpl,
     dependencies: [WebsocketsListConnectionsUseCase, ConnectionRegistry, WebsocketsTransport]
 });

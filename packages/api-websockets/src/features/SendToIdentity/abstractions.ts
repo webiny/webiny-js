@@ -18,4 +18,6 @@ export const WebsocketsSendToIdentityUseCase = createAbstraction<ISendToIdentity
 
 export namespace WebsocketsSendToIdentityUseCase {
     export type Interface = ISendToIdentityUseCase;
+    export type Identity = Pick<IWebsocketsIdentity, "id">;
+    export type Data<T extends GenericRecord> = IWebsocketsTransportSendData<T>;
 }

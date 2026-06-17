@@ -1,25 +1,16 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
-import type { IWebsocketsConnectionRegistry } from "~/registry/index.js";
-import type { IWebsocketsConnectionRegistryData } from "~/registry/index.js";
-import type { IListConnectionsUseCase } from "./abstractions.js";
-import type { IWebsocketsListConnectionsParams } from "./abstractions.js";
 import { WebsocketsListConnectionsUseCase } from "./abstractions.js";
 import type { WebsocketsError } from "~/features/shared/errors.js";
 import { WebsocketServiceError } from "~/features/shared/errors.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 
-class ListConnectionsUseCaseImpl implements IListConnectionsUseCase {
-    private readonly registry: IWebsocketsConnectionRegistry;
-
-    public constructor(registry: IWebsocketsConnectionRegistry) {
-        this.registry = registry;
-    }
+class ListConnectionsUseCaseImpl implements WebsocketsListConnectionsUseCase.Interface {
+    public constructor(private readonly registry: ConnectionRegistry.Interface) {}
 
     public async execute(
-        params?: IWebsocketsListConnectionsParams
-    ): Promise<Result<IWebsocketsConnectionRegistryData[], WebsocketsError>> {
-        let connections: IWebsocketsConnectionRegistryData[] = [];
+        params?: WebsocketsListConnectionsUseCase.Params
+    ): Promise<Result<WebsocketsListConnectionsUseCase.RegistryData[], WebsocketsError>> {
+        let connections: WebsocketsListConnectionsUseCase.RegistryData[] = [];
 
         try {
             const where = params?.where || {};
@@ -43,8 +34,7 @@ class ListConnectionsUseCaseImpl implements IListConnectionsUseCase {
     }
 }
 
-export const ListConnectionsUseCase = createImplementation({
-    abstraction: WebsocketsListConnectionsUseCase,
+export const ListConnectionsUseCase = WebsocketsListConnectionsUseCase.createImplementation({
     implementation: ListConnectionsUseCaseImpl,
     dependencies: [ConnectionRegistry]
 });
