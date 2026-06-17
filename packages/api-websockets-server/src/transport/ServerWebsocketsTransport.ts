@@ -1,4 +1,4 @@
-import { WebsocketsTransport } from "@webiny/api-websockets";
+import { WebsocketsTransport } from "@webiny/api-websockets/exports/api.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { WebsocketsConnectionManager, WebsocketsServerAdapter } from "~/abstractions.js";
 

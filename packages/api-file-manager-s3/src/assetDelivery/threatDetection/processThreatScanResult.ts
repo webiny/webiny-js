@@ -1,9 +1,11 @@
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { DeleteFileUseCase } from "@webiny/api-file-manager/features/file/DeleteFile/index.js";
-import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/features/ListConnections/abstractions.js";
-import { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/features/SendToConnections/abstractions.js";
-import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
+import {
+    WebsocketsListConnectionsUseCase,
+    WebsocketsSendToConnectionsUseCase,
+    ConnectionRegistry
+} from "@webiny/api-websockets/exports/api.js";
 import type { GuardDutyEvent } from "./types.js";
 import { ObjectKey } from "./ObjectKey.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";

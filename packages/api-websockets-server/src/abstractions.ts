@@ -1,7 +1,7 @@
 import type { Server as HttpServer } from "node:http";
 import type { IncomingMessage } from "node:http";
 import type { Duplex } from "node:stream";
-import type { IWebsocketsIdentity } from "@webiny/api-websockets";
+import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import { createAbstraction } from "@webiny/feature/api";
 
 export interface IWebsocketsServerAdapter<TSocket> {
@@ -42,7 +42,7 @@ export interface IWebsocketsConnectionManagerAddParams<TSocket> {
     connectionId: string;
     socket: TSocket;
     endpoint: string;
-    identity: IWebsocketsIdentity;
+    identity: ConnectionRegistry.Identity;
     tenant: string;
     connectedAt: number;
     host: string;

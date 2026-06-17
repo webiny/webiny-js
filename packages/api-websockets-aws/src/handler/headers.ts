@@ -1,7 +1,7 @@
-import type { IWebsocketsEventData } from "@webiny/api-websockets";
+import type { WebsocketsRunner } from "@webiny/api-websockets/exports/api.js";
 import type { IAwsWebsocketsIncomingEvent } from "~/handler/types.js";
 
-const getEventBody = (event: IAwsWebsocketsIncomingEvent): IWebsocketsEventData => {
+const getEventBody = (event: IAwsWebsocketsIncomingEvent): WebsocketsRunner.EventData => {
     if (!event.body) {
         return {};
     } else if (typeof event.body === "object") {
@@ -19,13 +19,16 @@ const getEventBody = (event: IAwsWebsocketsIncomingEvent): IWebsocketsEventData 
 };
 
 const getToken = (
-    body: IWebsocketsEventData,
+    body: WebsocketsRunner.EventData,
     event: IAwsWebsocketsIncomingEvent
 ): string | null => {
     return body?.token || event.queryStringParameters?.token || null;
 };
 
-const getTenant = (body: IWebsocketsEventData, event: IAwsWebsocketsIncomingEvent): string => {
+const getTenant = (
+    body: WebsocketsRunner.EventData,
+    event: IAwsWebsocketsIncomingEvent
+): string => {
     return body?.tenant || event.queryStringParameters?.tenant || "root";
 };
 

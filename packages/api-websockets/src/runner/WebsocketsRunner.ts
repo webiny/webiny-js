@@ -1,12 +1,15 @@
 import WebinyError from "@webiny/error";
-import type { IWebsocketsEvent } from "~/types.js";
-import type { IWebsocketsEventContext } from "~/types.js";
-import type { IWebsocketsEventData } from "~/types.js";
-import type { WebsocketsRoute } from "~/types.js";
-import type { Context } from "~/types.js";
-import type { IWebsocketsIdentity } from "~/types.js";
-import type { IWebsocketsRunner } from "./abstractions/IWebsocketsRunner.js";
-import type { IWebsocketsRunnerResponse } from "./abstractions/IWebsocketsRunner.js";
+import type {
+    IWebsocketsEvent,
+    IWebsocketsEventContext,
+    IWebsocketsEventData,
+    WebsocketsRoute,
+    WebsocketsEventType,
+    Context
+} from "~/types.js";
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
+import type { IWebsocketsRunner } from "./abstractions/WebsocketsRunner.js";
+import type { IWebsocketsRunnerResponse } from "./abstractions/WebsocketsRunner.js";
 import type { IWebsocketsRoutePluginCallableParams } from "~/plugins/index.js";
 import { WebsocketsRoutePlugin } from "~/plugins/index.js";
 import { middleware } from "~/utils/middleware.js";
@@ -14,7 +17,6 @@ import type { IWebsocketsResponse } from "~/response/index.js";
 import type { IWebsocketsResponseErrorResult } from "~/response/index.js";
 import type { IWebsocketsResponseOkResult } from "~/response/index.js";
 import { WebsocketsTransport } from "~/transport/index.js";
-import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 import { WebsocketsSendToConnectionsUseCase } from "~/features/SendToConnections/abstractions.js";
 
 type MiddlewareParams<C extends Context = Context> = Pick<
@@ -111,7 +113,7 @@ export class WebsocketsRunner implements IWebsocketsRunner {
             return tenant?.id || null;
         };
 
-        const getIdentity = (): IWebsocketsIdentity | null => {
+        const getIdentity = (): ConnectionRegistry.Identity | null => {
             const identity = this.context.security.getIdentity();
             return identity || null;
         };
@@ -175,4 +177,13 @@ export class WebsocketsRunner implements IWebsocketsRunner {
         };
         await this.sendToConnections.execute([connection], dataToSend);
     }
+}
+
+export namespace WebsocketsRunner {
+    export type Event<T extends IWebsocketsEventData = IWebsocketsEventData> = IWebsocketsEvent<T>;
+    export type EventData = IWebsocketsEventData;
+    export type EventContext = IWebsocketsEventContext;
+    export type EventType = WebsocketsEventType;
+    export type Route = WebsocketsRoute;
+    export type Response = IWebsocketsRunnerResponse;
 }

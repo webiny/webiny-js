@@ -3,14 +3,17 @@ import { createHandler as createBaseHandler } from "@webiny/handler";
 import { registerDefaultPlugins } from "@webiny/handler-aws/plugins/index.js";
 import { execute } from "@webiny/handler-aws/execute.js";
 import { PluginsContainer } from "@webiny/plugins";
-import { createWebsocketsRoutePlugins, WebsocketsRunner } from "@webiny/api-websockets";
+import {
+    createWebsocketsRoutePlugins,
+    WebsocketsRunner,
+    WebsocketsTransport
+} from "@webiny/api-websockets/exports/api.js";
 import { WebsocketsResponse } from "@webiny/api-websockets/response/WebsocketsResponse.js";
-import type { Context } from "@webiny/api-websockets";
+import type { Context } from "@webiny/api-websockets/types.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import type { HandlerCallable, HandlerParams } from "./types.js";
 import { getEventValues } from "./headers.js";
 import { AwsWebsocketsEventValidator } from "~/validator/AwsWebsocketsEventValidator.js";
-import { WebsocketsTransport } from "@webiny/api-websockets";
 
 const url = "/webiny-websockets";
 

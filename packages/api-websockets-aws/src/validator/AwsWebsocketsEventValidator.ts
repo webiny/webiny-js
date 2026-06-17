@@ -1,14 +1,9 @@
 import zod from "zod";
-import type {
-    IWebsocketsEvent,
-    IWebsocketsEventData,
-    WebsocketsEventType
-} from "@webiny/api-websockets";
-import type { IWebsocketsEventValidator } from "@webiny/api-websockets";
+import { WebsocketsEventValidator, WebsocketsRunner } from "@webiny/api-websockets/exports/api.js";
 import { WebsocketsEventRequestContextEventType } from "~/handler/types.js";
 import { createZodError } from "@webiny/utils";
 
-const eventTypeMap: Record<WebsocketsEventRequestContextEventType, WebsocketsEventType> = {
+const eventTypeMap: Record<WebsocketsEventRequestContextEventType, WebsocketsRunner.EventType> = {
     [WebsocketsEventRequestContextEventType.message]: "message",
     [WebsocketsEventRequestContextEventType.connect]: "connect",
     [WebsocketsEventRequestContextEventType.disconnect]: "disconnect"
@@ -37,7 +32,7 @@ const validation = zod
         }),
         body: zod
             .string()
-            .transform<IWebsocketsEventData>((value, context) => {
+            .transform<WebsocketsRunner.EventData>((value, context) => {
                 if (!value) {
                     return undefined;
                 }
@@ -80,10 +75,10 @@ const bodyValidation = zod
     })
     .optional();
 
-export class AwsWebsocketsEventValidator implements IWebsocketsEventValidator {
-    public async validate<T extends IWebsocketsEventData = IWebsocketsEventData>(
+export class AwsWebsocketsEventValidator implements WebsocketsEventValidator.Interface {
+    public async validate<T extends WebsocketsRunner.EventData = WebsocketsRunner.EventData>(
         input: unknown
-    ): Promise<IWebsocketsEvent<T>> {
+    ): Promise<WebsocketsRunner.Event<T>> {
         const result = await validation.safeParseAsync(input);
         if (!result.success) {
             throw createZodError(result.error);

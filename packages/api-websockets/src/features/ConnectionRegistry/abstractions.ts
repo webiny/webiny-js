@@ -41,6 +41,7 @@ export const ConnectionRegistry =
 
 export namespace ConnectionRegistry {
     export type Interface = IWebsocketsConnectionRegistry;
+    export type Identity = IWebsocketsIdentity;
     export type Data = IWebsocketsConnectionRegistryData;
     export type RegisterParams = IWebsocketsConnectionRegistryRegisterParams;
     export type UnregisterParams = IWebsocketsConnectionRegistryUnregisterParams;

@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { ConnectionRegistry } from "@webiny/api-websockets";
+import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import { createEntity } from "./entity.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";

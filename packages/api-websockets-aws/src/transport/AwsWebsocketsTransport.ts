@@ -3,7 +3,7 @@ import {
     DeleteConnectionCommand,
     PostToConnectionCommand
 } from "@webiny/aws-sdk/client-apigatewaymanagementapi/index.js";
-import { WebsocketsTransport } from "@webiny/api-websockets";
+import { WebsocketsTransport } from "@webiny/api-websockets/exports/api.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 class AwsWebsocketsTransportImpl implements WebsocketsTransport.Interface {

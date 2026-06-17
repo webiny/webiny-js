@@ -1,6 +1,6 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createStandardEntity, createTable } from "@webiny/db-dynamodb";
-import { ConnectionRegistry } from "@webiny/api-websockets";
+import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 
 const name = "SocketsConnectionRegistry";
 

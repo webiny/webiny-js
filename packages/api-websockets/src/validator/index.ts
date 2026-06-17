@@ -1,1 +1,2 @@
-export type * from "./abstractions/IWebsocketsEventValidator.js";
+export { WebsocketsEventValidator } from "./abstractions/WebsocketsEventValidator.js";
+export type { IWebsocketsEventValidator } from "./abstractions/WebsocketsEventValidator.js";

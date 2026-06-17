@@ -1,6 +1,6 @@
 import type { Knex } from "knex";
 import { WebinyError } from "@webiny/error";
-import { ConnectionRegistry } from "@webiny/api-websockets";
+import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 
 interface ConnectionRow {
     connectionId: string;

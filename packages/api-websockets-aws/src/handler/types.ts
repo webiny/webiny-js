@@ -4,7 +4,7 @@ import type {
     APIGatewayProxyResult,
     Context as LambdaContext
 } from "@webiny/aws-sdk/types/index.js";
-import type { IWebsocketsEventData } from "@webiny/api-websockets";
+import type { WebsocketsRunner } from "@webiny/api-websockets/exports/api.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { PartialDeep } from "type-fest";
 
@@ -62,7 +62,9 @@ export interface IAwsWebsocketsEventQueryStringParameters {
     token?: string;
 }
 
-export interface IAwsWebsocketsEvent<T extends IWebsocketsEventData = IWebsocketsEventData> {
+export interface IAwsWebsocketsEvent<
+    T extends WebsocketsRunner.EventData = WebsocketsRunner.EventData
+> {
     headers?: IAwsWebsocketsEventHeaders;
     queryStringParameters?: IAwsWebsocketsEventQueryStringParameters;
     requestContext: IAwsWebsocketsEventRequestContext;

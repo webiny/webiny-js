@@ -1,10 +1,9 @@
 import { Plugin } from "@webiny/plugins";
-import type { IWebsocketsEvent, IWebsocketsEventData, WebsocketsRoute } from "~/types.js";
 import type { Context } from "~/types.js";
 import type { IWebsocketsRunnerResponse } from "~/runner/index.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 import type { IWebsocketsResponse } from "~/response/abstractions/IWebsocketsResponse.js";
-import type { IWebsocketsIdentity } from "~/types.js";
+import type { IWebsocketsEvent, IWebsocketsEventData, WebsocketsRoute } from "~/types.js";
 
 export interface IWebsocketsRoutePluginCallableParams<
     C extends Context = Context,
@@ -16,7 +15,7 @@ export interface IWebsocketsRoutePluginCallableParams<
     context: C;
     response: IWebsocketsResponse;
     getTenant: () => string | null;
-    getIdentity: () => IWebsocketsIdentity | null;
+    getIdentity: () => ConnectionRegistry.Identity | null;
     next: () => Promise<R>;
 }
 
