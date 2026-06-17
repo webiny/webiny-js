@@ -20,25 +20,32 @@ const makeRegisterParams = (connectionId: string): ConnectionRegistry.RegisterPa
     connectedOn: new Date("2024-01-01T00:00:00.000Z").toISOString()
 });
 
+const createKnex = (): Knex => {
+    return knexLib({
+        client: "better-sqlite3",
+        connection: {
+            filename: ":memory:"
+        },
+        useNullAsDefault: true
+    });
+};
+
+const createRegistry = (knex: Knex, prefix?: string): ConnectionRegistry.Interface => {
+    const container = new Container();
+    container.registerInstance(KnexClient, { client: knex });
+    container.registerInstance(TableName, new TableNameImpl(prefix));
+    container.register(WebsocketsConnectionRegistry);
+
+    return container.resolve(ConnectionRegistry);
+};
+
 describe("WebsocketsConnectionRegistry (SQL)", () => {
     let knex: Knex;
     let registry: ConnectionRegistry.Interface;
 
     beforeEach(() => {
-        knex = knexLib({
-            client: "better-sqlite3",
-            connection: {
-                filename: ":memory:"
-            },
-            useNullAsDefault: true
-        });
-
-        const container = new Container();
-        container.registerInstance(KnexClient, { client: knex });
-        container.registerInstance(TableName, new TableNameImpl());
-        container.register(WebsocketsConnectionRegistry);
-
-        registry = container.resolve(ConnectionRegistry);
+        knex = createKnex();
+        registry = createRegistry(knex);
     });
 
     afterEach(async () => {
@@ -148,6 +155,34 @@ describe("WebsocketsConnectionRegistry (SQL)", () => {
             expect(ids).toContain("conn-a");
             expect(ids).toContain("conn-b");
             expect(ids).not.toContain("conn-c");
+        });
+    });
+
+    describe("tableNamePrefix", () => {
+        it("should create the table with the prefix applied", async () => {
+            const prefixedRegistry = createRegistry(knex, "myapp");
+            await prefixedRegistry.register(makeRegisterParams("conn-prefixed"));
+
+            const hasUnprefixed = await knex.schema.hasTable("WebsocketsConnections");
+            expect(hasUnprefixed).toBe(false);
+
+            const hasPrefixed = await knex.schema.hasTable("myapp_WebsocketsConnections");
+            expect(hasPrefixed).toBe(true);
+
+            const rows = await knex("myapp_WebsocketsConnections").select("connectionId");
+            expect(rows).toHaveLength(1);
+            expect(rows[0].connectionId).toBe("conn-prefixed");
+        });
+
+        it("should use unprefixed table name when no prefix is provided", async () => {
+            await registry.register(makeRegisterParams("conn-default"));
+
+            const hasTable = await knex.schema.hasTable("WebsocketsConnections");
+            expect(hasTable).toBe(true);
+
+            const rows = await knex("WebsocketsConnections").select("connectionId");
+            expect(rows).toHaveLength(1);
+            expect(rows[0].connectionId).toBe("conn-default");
         });
     });
 });

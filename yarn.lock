@@ -12571,6 +12571,7 @@ __metadata:
     "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.0.1"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
