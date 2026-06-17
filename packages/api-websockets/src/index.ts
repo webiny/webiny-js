@@ -6,6 +6,7 @@ export const createWebsockets = (): Plugin[] => {
 };
 
 export { WebsocketsFeature } from "./features/feature.js";
+export { ConnectionRegistry } from "./features/ConnectionRegistry/abstractions.js";
 
 export type * from "./validator/index.js";
 export { WebsocketsTransport } from "./transport/index.js";
