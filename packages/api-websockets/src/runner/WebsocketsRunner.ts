@@ -20,7 +20,7 @@ import type {
     IWebsocketsResponseOkResult
 } from "~/response/index.js";
 import type { IWebsocketsTransportSendConnection } from "~/transport/index.js";
-import type { IWebsocketsIdentity } from "~/context/index.js";
+import type { IWebsocketsIdentity } from "~/types.js";
 
 type MiddlewareParams<C extends Context = Context> = Pick<
     IWebsocketsRoutePluginCallableParams<C>,

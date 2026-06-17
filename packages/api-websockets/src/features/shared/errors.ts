@@ -32,3 +32,8 @@ export class WebsocketForceDisconnectError extends BaseError<{ error: Error }> {
         });
     }
 }
+
+export type WebsocketsError =
+    | WebsocketServiceError
+    | WebsocketForceDisconnectNotificationError
+    | WebsocketForceDisconnectError;

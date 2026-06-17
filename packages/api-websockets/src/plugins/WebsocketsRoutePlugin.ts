@@ -4,7 +4,7 @@ import type { Context } from "~/types.js";
 import type { IWebsocketsRunnerResponse } from "~/runner/index.js";
 import type { IWebsocketsConnectionRegistry } from "~/registry/index.js";
 import type { IWebsocketsResponse } from "~/response/abstractions/IWebsocketsResponse.js";
-import type { IWebsocketsIdentity } from "~/context/index.js";
+import type { IWebsocketsIdentity } from "~/types.js";
 
 export interface IWebsocketsRoutePluginCallableParams<
     C extends Context = Context,

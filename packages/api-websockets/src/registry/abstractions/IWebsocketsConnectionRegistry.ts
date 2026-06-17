@@ -1,4 +1,4 @@
-import type { IWebsocketsIdentity } from "~/context/abstractions/IWebsocketsContext.js";
+import type { IWebsocketsIdentity } from "~/types.js";
 
 export interface IWebsocketsConnectionRegistryData {
     connectionId: string;
