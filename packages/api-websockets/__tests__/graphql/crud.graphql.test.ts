@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useGraphQLHandler } from "~tests/helpers/useGraphQLHandler";
-import type { IWebsocketsConnectionRegistry, IWebsocketsConnectionRegistryData } from "~/registry";
-import type { IWebsocketsIdentity } from "~/context";
+import type { IWebsocketsConnectionRegistry } from "~/registry";
+import type { IWebsocketsConnectionRegistryData } from "~/registry";
+import type { IWebsocketsIdentity } from "~/types.js";
 import { useHandler } from "~tests/helpers/useHandler";
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 
 vi.mock("@webiny/aws-sdk/client-apigatewaymanagementapi", () => {
     return {
@@ -67,7 +69,7 @@ describe("crud graphql", () => {
     beforeEach(async () => {
         const { handle } = useHandler();
         const ctx = await handle();
-        registry = ctx.websockets.registry;
+        registry = ctx.container.resolve(ConnectionRegistry);
     });
 
     it("should list all connections", async () => {

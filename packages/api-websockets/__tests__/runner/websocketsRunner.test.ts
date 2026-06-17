@@ -2,23 +2,19 @@ import { describe, it, expect } from "vitest";
 import { WebsocketsRunner } from "~/runner";
 import { useHandler } from "~tests/helpers/useHandler";
 import { MockWebsocketsEventValidator } from "~tests/mocks/MockWebsocketsEventValidator";
-import { WebsocketsContext } from "~/context/WebsocketsContext.js";
-import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport";
 import { createWebsocketsRoutePlugin } from "~/plugins";
 import { WebsocketsResponse } from "~/response";
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 
 describe("websockets runner", () => {
     it("should run and fail the route action - missing route", async () => {
         const handler = useHandler();
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
         const validator = new MockWebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
-
-        const runner = new WebsocketsRunner(context, registry, response);
+        const runner = new WebsocketsRunner(context, response);
 
         const rawEvent = {
             context: {
@@ -50,13 +46,10 @@ describe("websockets runner", () => {
         const handler = useHandler();
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
         const validator = new MockWebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
-
-        const runner = new WebsocketsRunner(context, registry, response);
+        const runner = new WebsocketsRunner(context, response);
 
         const rawEvent = {
             context: {
@@ -79,13 +72,10 @@ describe("websockets runner", () => {
         const handler = useHandler();
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
         const validator = new MockWebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
-
-        const runner = new WebsocketsRunner(context, registry, response);
+        const runner = new WebsocketsRunner(context, response);
 
         const rawEvent = {
             context: {
@@ -110,13 +100,10 @@ describe("websockets runner", () => {
         const handler = useHandler();
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
         const validator = new MockWebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
-
-        const runner = new WebsocketsRunner(context, registry, response);
+        const runner = new WebsocketsRunner(context, response);
 
         const rawEvent = {
             context: {
@@ -146,13 +133,11 @@ describe("websockets runner", () => {
         const handler = useHandler();
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
+        const registry = context.container.resolve(ConnectionRegistry);
         const validator = new MockWebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
-
-        const runner = new WebsocketsRunner(context, registry, response);
+        const runner = new WebsocketsRunner(context, response);
 
         const beforeConnectConnectionsViaTenant = await registry.listViaTenant("root");
         expect(beforeConnectConnectionsViaTenant).toHaveLength(0);
@@ -228,13 +213,10 @@ describe("websockets runner", () => {
         });
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
         const validator = new MockWebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
-
-        const runner = new WebsocketsRunner(context, registry, response);
+        const runner = new WebsocketsRunner(context, response);
 
         const rawEvent = {
             context: {
@@ -257,13 +239,10 @@ describe("websockets runner", () => {
         const handler = useHandler();
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
         const validator = new MockWebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
-
-        const runner = new WebsocketsRunner(context, registry, response);
+        const runner = new WebsocketsRunner(context, response);
 
         const rawEvent = {
             context: {
