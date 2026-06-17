@@ -1,7 +1,8 @@
 import { Result } from "@webiny/feature/api";
 import type { IWebsocketsConnectionRegistry } from "~/registry/index.js";
 import type { IWebsocketsConnectionRegistryData } from "~/registry/index.js";
-import type { IListConnectionsUseCase, IWebsocketsListConnectionsParams } from "./abstractions.js";
+import type { IListConnectionsUseCase } from "./abstractions.js";
+import type { IWebsocketsListConnectionsParams } from "./abstractions.js";
 import type { WebsocketsError } from "~/features/shared/errors.js";
 import { WebsocketServiceError } from "~/features/shared/errors.js";
 
