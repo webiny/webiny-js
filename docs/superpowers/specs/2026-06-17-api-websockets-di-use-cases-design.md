@@ -16,7 +16,7 @@ The current `WebsocketsContext` class bundles 4 distinct responsibilities (send 
 - **Stale filter stays inline:** The 3-hour stale connection filter remains in `ListConnectionsUseCase`.
 - **ConnectionRegistry resolved from container:** The runner and AWS handler resolve `ConnectionRegistry` from DI instead of accessing `context.websockets.registry`.
 - **WebsocketsTransport unchanged:** The existing `WebsocketsTransport` DI token stays as-is. It is already resolved from the container in `handler.ts`.
-- **IWebsocketsIdentity rehomed to `types.ts`:** The `IWebsocketsIdentity` type alias moves from the deleted `context/abstractions/IWebsocketsContext.ts` to `types.ts`, where other shared types already live. Files that import it from the old path must be updated: `registry/abstractions/IWebsocketsConnectionRegistry.ts`, `plugins/WebsocketsRoutePlugin.ts`, `runner/WebsocketsRunner.ts`.
+- **IWebsocketsIdentity rehomed to `types.ts`:** The `IWebsocketsIdentity` type alias moves from the deleted `context/abstractions/IWebsocketsContext.ts` to `types.ts`, where other shared types already live. Three surviving files import it from old paths and must be updated: `registry/abstractions/IWebsocketsConnectionRegistry.ts` (imports from `~/context/abstractions/IWebsocketsContext.js`), `plugins/WebsocketsRoutePlugin.ts` (imports from `~/context/index.js`), `runner/WebsocketsRunner.ts` (imports from `~/context/index.js`). The deleted `context/WebsocketsContext.ts` also imports it but is self-resolving since that file is removed.
 - **Method rename:** The current `send()` method on `IWebsocketsContextObject` becomes `SendToIdentityUseCase.execute()`. The old name is not preserved.
 
 ## Feature Structure
@@ -164,7 +164,7 @@ const disconnect = context.container.resolve(WebsocketsDisconnectUseCase);
 const result = await disconnect.execute({ where: { connections: args.connections } });
 ```
 
-The type import `IWebsocketsContextListConnectionsParams` from `~/context/index.js` is replaced with `IWebsocketsListConnectionsParams` from `~/features/ListConnections/abstractions.js`.
+The type import `IWebsocketsContextListConnectionsParams` from `~/context/index.js` is replaced with `IWebsocketsListConnectionsParams` from `~/features/ListConnections/abstractions.js`. The resolver arg type annotation `args: IWebsocketsContextListConnectionsParams` becomes `args: IWebsocketsListConnectionsParams`.
 
 ### WebsocketsRunner (runner/WebsocketsRunner.ts)
 
@@ -192,6 +192,8 @@ await this.sendToConnections.execute([connection], dataToSend);
 ```
 
 The `MiddlewareParams` type keeps its `registry` field — it just comes from `this.registry` (resolved from container) instead of a constructor param.
+
+The `IWebsocketsRunner` abstraction in `runner/abstractions/IWebsocketsRunner.ts` must also be updated if it declares a constructor signature or factory method with the old 3-argument form. Callers that construct `WebsocketsRunner` directly (e.g., `api-websockets-aws/handler.ts`) must drop the `registry` argument.
 
 ### AWS Handler (api-websockets-aws/handler.ts)
 
@@ -269,7 +271,7 @@ Test files that need migration:
 
 - `packages/api-websockets/__tests__/runner/websocketsRunner.test.ts` — directly instantiates `WebsocketsContext`, passes `registry` to `WebsocketsRunner` constructor. Must switch to DI-based setup: register `WebsocketsFeature`, resolve use cases from container.
 - `packages/api-websockets/__tests__/registry/websocketsConnectionRegistry.test.ts` — accesses `context.websockets.registry`. Must resolve `ConnectionRegistry` from `context.container`.
-- `packages/api-websockets-aws/__tests__/handler/handler.test.ts` — uses `context.websockets.listConnections()`. Must resolve `WebsocketsListConnectionsUseCase` from the container.
+- `packages/api-websockets-aws/__tests__/handler/handler.test.ts` — multiple call sites (6+) use `context.websockets.listConnections()`. All must resolve `WebsocketsListConnectionsUseCase` from the container.
 
 ## External Consumer Migration
 
@@ -281,15 +283,15 @@ Calls `websocketService.send()`. Migrate to resolve `WebsocketsSendToIdentityUse
 
 ### `packages/ai-powerups` — AiImageEnrichmentTask
 
-Calls `websocketService.listConnections()` and `websocketService.sendToConnections()`. Migrate to resolve `WebsocketsListConnectionsUseCase` and `WebsocketsSendToConnectionsUseCase`.
+Calls `websocketService.listConnections()` and `websocketService.sendToConnections()`. The current `WebsocketService` dependency is registered as optional (`{ optional: true }`). Migrate to resolve `WebsocketsListConnectionsUseCase` and `WebsocketsSendToConnectionsUseCase` — both must preserve the optional flag so the task works in environments without websockets configured.
 
 ### `packages/ai-powerups` — WbGeneratePageContentTask
 
-Calls `websocketService.sendToConnections()`. Migrate to resolve `WebsocketsSendToConnectionsUseCase`.
+Calls `websocketService.send()` (the identity-based send). Migrate to resolve `WebsocketsSendToIdentityUseCase` and call `.execute()`.
 
 ### `packages/api-file-manager-s3` — processThreatScanResult
 
-Resolves `WebsocketService` from container, calls `listConnections()` and `sendToConnections()`. Migrate to resolve `WebsocketsListConnectionsUseCase` and `WebsocketsSendToConnectionsUseCase`.
+Resolves `WebsocketService` from container, calls `listConnections()` and `sendToConnections()`. Also uses the `WebsocketService.Connection` type alias (which maps to `IWebsocketsConnectionRegistryData`). Migrate to resolve `WebsocketsListConnectionsUseCase` and `WebsocketsSendToConnectionsUseCase`, and replace `WebsocketService.Connection` with a direct import of `IWebsocketsConnectionRegistryData` from `@webiny/api-websockets/registry`.
 
 ### `packages/webiny/src/api.ts`
 
