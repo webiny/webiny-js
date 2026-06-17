@@ -1,1 +1,1 @@
-export * from "./SetAdminCustomDomains.js";
+export * from "./DefaultSetAdminCustomDomains.js";

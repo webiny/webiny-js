@@ -1,1 +1,1 @@
-export * from "./SetApiCustomDomains.js";
+export * from "./DefaultSetApiCustomDomains.js";
