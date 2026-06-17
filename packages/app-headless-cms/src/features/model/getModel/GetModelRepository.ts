@@ -28,8 +28,6 @@ class GetModelRepositoryImpl implements RepositoryAbstraction.Interface {
                 }
                 return item;
             });
-        } else {
-            this.cache.addItems([model]);
         }
 
         return model;

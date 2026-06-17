@@ -24,8 +24,8 @@ const CMS_TO_FORM_RENDERER: Record<string, string> = {
     "ref-inputs": "refInputs",
     "ref-simple-single": "refSimpleSingle",
     "ref-simple-multiple": "refSimpleMultiple",
-    "ref-detailed-single": "refDetailedSingle",
-    "ref-detailed-multiple": "refDetailedMultiple"
+    "ref-advanced-single": "refDetailedSingle",
+    "ref-advanced-multiple": "refDetailedMultiple"
 };
 
 export function mapCmsRendererName(cmsRendererName: string): string | undefined {

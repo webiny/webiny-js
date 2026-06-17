@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import type { ListCmsModelsQueryResponse } from "~/admin/viewsGraphql.js";
 import * as GQL from "~/admin/viewsGraphql.js";
-import { withoutBeingDeletedModels } from "~/admin/viewsGraphql.js";
+import { isModelBeingDeleted } from "~/admin/viewsGraphql.js";
 import type {
     BindComponentRenderProp,
     CmsContentEntry,
@@ -20,6 +20,7 @@ import { Entries } from "./Entries.js";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog.js";
 import { FormComponentErrorMessage, FormComponentLabel } from "@webiny/admin-ui";
 import { CanEditField, useFieldEffectiveRules } from "@webiny/app-headless-cms-common";
+import { isModelHidden } from "~/admin/viewsGraphql.js";
 
 interface AdvancedMultipleReferenceFieldProps extends CmsModelFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue[] | undefined | null>;
@@ -57,7 +58,9 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
             showSnackbar(data.listContentModels.error.message);
             return;
         }
-        setLoadedModels(withoutBeingDeletedModels(data.listContentModels.data));
+        setLoadedModels(
+            data.listContentModels.data.filter(isModelBeingDeleted).filter(isModelHidden)
+        );
     }, [data]);
 
     const onNewRecord = useCallback(

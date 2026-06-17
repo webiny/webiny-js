@@ -17,8 +17,7 @@ class ListModelsRepositoryImpl implements RepositoryAbstraction.Interface {
 
         const items = await this.gateway.execute();
 
-        this.cache.clear();
-        this.cache.addItems(items);
+        this.cache.setItems(items);
 
         return this.cache.getItems();
     }

@@ -23,6 +23,11 @@ class ContentEntryFormPresenterWithLocking implements IContentEntryFormPresenter
 
     get vm(): IContentEntryFormViewModel {
         const base = this.original.vm;
+
+        if (base.isNewEntry) {
+            return base;
+        }
+
         const canEdit = this.lockingPresenter.vm.canEdit;
 
         return {

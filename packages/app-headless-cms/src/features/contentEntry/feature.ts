@@ -15,6 +15,8 @@ import { SingletonEntryFeature } from "./singletonEntry/feature.js";
 import { MoveEntryFeature } from "./moveEntry/feature.js";
 import { BulkActionFeature } from "./bulkAction/feature.js";
 import { CmsTrashBinFeature } from "./trashBin/feature.js";
+import { SearchContentEntriesFeature } from "./searchContentEntries/feature.js";
+import { GetContentEntriesFeature } from "./getContentEntries/feature.js";
 
 export const ContentEntryFeature = createFeature({
     name: "CmsContentEntry",
@@ -23,6 +25,8 @@ export const ContentEntryFeature = createFeature({
 
         GetEntryFeature.register(container);
         ListEntriesFeature.register(container);
+        SearchContentEntriesFeature.register(container);
+        GetContentEntriesFeature.register(container);
         CreateEntryFeature.register(container);
         UpdateEntryFeature.register(container);
         PublishEntryFeature.register(container);

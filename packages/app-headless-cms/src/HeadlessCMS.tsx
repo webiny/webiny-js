@@ -19,6 +19,12 @@ import { CmsFormModelFeature } from "~/features/formModel/feature.js";
 import { ContentEntryFeature } from "~/features/contentEntry/feature.js";
 import { CmsFilePickerRenderer } from "~/presentation/fieldRenderers/CmsFilePickerRenderer.js";
 import { CmsMultiFilePickerRenderer } from "~/presentation/fieldRenderers/CmsMultiFilePickerRenderer.js";
+import { CmsRefInputRenderer } from "~/presentation/fieldRenderers/ref/CmsRefInputRenderer.js";
+import { CmsRefInputsRenderer } from "~/presentation/fieldRenderers/ref/CmsRefInputsRenderer.js";
+import { CmsRefSimpleSingleRenderer } from "~/presentation/fieldRenderers/ref/CmsRefSimpleSingleRenderer.js";
+import { CmsRefSimpleMultipleRenderer } from "~/presentation/fieldRenderers/ref/CmsRefSimpleMultipleRenderer.js";
+import { CmsRefDetailedSingleRenderer } from "~/presentation/fieldRenderers/ref/CmsRefDetailedSingleRenderer.js";
+import { CmsRefDetailedMultipleRenderer } from "~/presentation/fieldRenderers/ref/CmsRefDetailedMultipleRenderer.js";
 
 interface HeadlessCMSProvider {
     children: React.ReactNode;
@@ -93,6 +99,30 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
                 <AdminConfig.Form.FieldRenderer
                     name={"cmsMultiFilePicker"}
                     component={CmsMultiFilePickerRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"refInput"}
+                    component={CmsRefInputRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"refInputs"}
+                    component={CmsRefInputsRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"refSimpleSingle"}
+                    component={CmsRefSimpleSingleRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"refSimpleMultiple"}
+                    component={CmsRefSimpleMultipleRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"refDetailedSingle"}
+                    component={CmsRefDetailedSingleRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"refDetailedMultiple"}
+                    component={CmsRefDetailedMultipleRenderer}
                 />
             </AdminConfig>
         </Fragment>

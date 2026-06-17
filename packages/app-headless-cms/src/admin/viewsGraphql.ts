@@ -107,8 +107,15 @@ const createListContentModelsQuery = (includeBeingDeleted: boolean) => {
 
 export const LIST_CONTENT_MODELS = createListContentModelsQuery(true);
 
-export const withoutBeingDeletedModels = (models: CmsModel[]): CmsModel[] => {
-    return models.filter(model => !model.isBeingDeleted);
+export const isModelBeingDeleted = (model: CmsModel): boolean => {
+    return !model.isBeingDeleted;
+};
+
+export const isModelHidden = (model: Pick<CmsModel, "tags">) => {
+    if (!model.tags?.length) {
+        return false;
+    }
+    return model.tags.includes("$hidden:true") === false;
 };
 
 /**

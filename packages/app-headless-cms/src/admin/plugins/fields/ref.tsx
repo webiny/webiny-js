@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import type { ListCmsModelsQueryResponse } from "../../viewsGraphql.js";
-import { LIST_CONTENT_MODELS, withoutBeingDeletedModels } from "../../viewsGraphql.js";
+import { LIST_CONTENT_MODELS, isModelHidden, isModelBeingDeleted } from "../../viewsGraphql.js";
 import { validation, ValidationError } from "@webiny/validation";
 import { useSnackbar } from "@webiny/app-admin";
 import type { CmsModel, CmsModelFieldTypePlugin } from "~/types.js";
@@ -29,15 +29,23 @@ const RefFieldSettings = () => {
         if (!data?.listContentModels?.data) {
             return [];
         }
-        const models = withoutBeingDeletedModels(data.listContentModels.data);
+        const models = data.listContentModels.data;
         return (
             models
                 /**
                  * Remove singleton models from the list of options.
                  */
                 .filter(model => {
-                    return !model.tags?.includes(CMS_MODEL_SINGLETON_TAG);
+                    if (model.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {
+                        return false;
+                    }
+                    if (model.modelId.startsWith("wby")) {
+                        return false;
+                    }
+                    return true;
                 })
+                .filter(isModelHidden)
+                .filter(isModelBeingDeleted)
                 .map(model => {
                     return { value: model.modelId, label: model.name };
                 })

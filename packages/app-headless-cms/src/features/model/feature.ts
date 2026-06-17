@@ -8,7 +8,7 @@ import { ListModelsFeature } from "./listModels/feature.js";
 export const ModelFeature = createFeature({
     name: "CmsModel",
     register(container) {
-        container.registerInstance(ModelsCache, new ListCache<CmsModel>());
+        container.registerInstance(ModelsCache, new ListCache<CmsModel>("modelId"));
 
         GetModelFeature.register(container);
         ListModelsFeature.register(container);
