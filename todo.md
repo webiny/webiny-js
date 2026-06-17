@@ -14,3 +14,14 @@ What remains: `RegisterExtensionPlugin`, `Request`/`Reply`/`ResponseHeaders`, an
 - `EventPlugin` → deleted; `handler-aws/__tests__/raw.test.ts` still imports it (update or remove the test)
 
 Once all imports are migrated, the package can be deleted.
+
+## Migrate / delete `@webiny/handler-aws`
+
+Same situation. All Fastify AWS event handlers deleted. What remains: `utils/composedHandler` and `utils/timer`.
+
+Source files still importing dead exports:
+
+- `createHandler`, `createRawEventHandler`, `createRawHandler`, `createApiGatewayHandler` — all deleted, callers are broken and need updating
+- `timerFactory` / `ITimer` — the only live exports; move to `@webiny/event-handler-aws` or `@webiny/utils`
+
+Once all imports are migrated, the package can be deleted.
