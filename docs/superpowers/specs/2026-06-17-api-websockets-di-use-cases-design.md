@@ -16,7 +16,7 @@ The current `WebsocketsContext` class bundles 4 distinct responsibilities (send 
 - **Stale filter stays inline:** The 3-hour stale connection filter remains in `ListConnectionsUseCase`.
 - **ConnectionRegistry resolved from container:** The runner and AWS handler resolve `ConnectionRegistry` from DI instead of accessing `context.websockets.registry`.
 - **WebsocketsTransport unchanged:** The existing `WebsocketsTransport` DI token stays as-is. It is already resolved from the container in `handler.ts`.
-- **IWebsocketsIdentity rehomed to `types.ts`:** The `IWebsocketsIdentity` type alias moves from the deleted `context/abstractions/IWebsocketsContext.ts` to `types.ts`, where other shared types already live.
+- **IWebsocketsIdentity rehomed to `types.ts`:** The `IWebsocketsIdentity` type alias moves from the deleted `context/abstractions/IWebsocketsContext.ts` to `types.ts`, where other shared types already live. Files that import it from the old path must be updated: `registry/abstractions/IWebsocketsConnectionRegistry.ts`, `plugins/WebsocketsRoutePlugin.ts`, `runner/WebsocketsRunner.ts`.
 - **Method rename:** The current `send()` method on `IWebsocketsContextObject` becomes `SendToIdentityUseCase.execute()`. The old name is not preserved.
 
 ## Feature Structure
@@ -112,6 +112,8 @@ interface IDisconnectUseCase {
 }
 ```
 
+Implementation note: the current `disconnect()` silently swallows `registry.unregister()` failures per connection (empty `catch` block). This is intentional — a failed unregister for one connection should not prevent disconnecting others. The `DisconnectUseCase` implementation must preserve this behavior.
+
 ## Dependency Graph
 
 ```
@@ -147,14 +149,22 @@ This replaces the `createWebsocketsContext` ContextPlugin.
 
 ### GraphQL Resolvers (createResolvers.ts)
 
+5 call sites total — 1 `listConnections` + 4 `disconnect` variants (by connections, by identity, by tenant, all):
+
 ```typescript
 /* Before */
 const result = await context.websockets.listConnections(args);
+const result = await context.websockets.disconnect({ where: { connections: args.connections } });
 
 /* After */
 const listConnections = context.container.resolve(WebsocketsListConnectionsUseCase);
 const result = await listConnections.execute(args);
+
+const disconnect = context.container.resolve(WebsocketsDisconnectUseCase);
+const result = await disconnect.execute({ where: { connections: args.connections } });
 ```
+
+The type import `IWebsocketsContextListConnectionsParams` from `~/context/index.js` is replaced with `IWebsocketsListConnectionsParams` from `~/features/ListConnections/abstractions.js`.
 
 ### WebsocketsRunner (runner/WebsocketsRunner.ts)
 
@@ -231,7 +241,15 @@ This union type is re-exported from `exports/api.ts` alongside the 4 use case ab
 
 ### `index.ts` (package entry point)
 
-`createWebsockets()` currently returns `[createWebsocketsContext(), createWebsocketsGraphQL()]`. After migration, `createWebsocketsContext()` no longer exists — feature registration happens via `WebsocketsFeature`. `createWebsockets()` is updated to return `[createWebsocketsGraphQL()]` and the `WebsocketsFeature` is exported separately for container registration. The `export * from "./context/index.js"` line is removed; `IWebsocketsIdentity` is now re-exported from `types.ts`.
+`createWebsockets()` currently returns `[createWebsocketsContext(), createWebsocketsGraphQL()]`. After migration, `createWebsocketsContext()` no longer exists — feature registration happens via `WebsocketsFeature`. `createWebsockets()` is updated to return `[createWebsocketsGraphQL()]` and the `WebsocketsFeature` is exported separately for container registration.
+
+The `export * from "./context/index.js"` line is removed. Types previously re-exported through that barrel:
+- `IWebsocketsContextObject` — deleted (no replacement)
+- `IWebsocketsContextListConnectionsParams` — renamed, now exported from `features/ListConnections/abstractions.ts`
+- `IWebsocketsContextListConnectionsParamsWhere` — renamed, now exported from `features/ListConnections/abstractions.ts`
+- `IWebsocketsContextDisconnectConnectionsParams` — renamed to `IWebsocketsDisconnectParams`, now exported from `features/Disconnect/abstractions.ts`
+- `IWebsocketsIdentity` — moved to `types.ts`
+- `createWebsocketsContext` — deleted (replaced by `WebsocketsFeature`)
 
 ## Deleted Files
 
@@ -247,8 +265,45 @@ This union type is re-exported from `exports/api.ts` alongside the 4 use case ab
 
 Existing tests update to resolve use cases from the container instead of accessing `context.websockets`. Each use case can be tested independently by mocking its direct DI dependencies. The `WebsocketsFeature` replaces `createWebsocketsContext()` in test setup.
 
-Tests in `packages/api-websockets-aws/__tests__/handler/handler.test.ts` also use `context.websockets.listConnections()` — these must be updated to resolve `WebsocketsListConnectionsUseCase` from the container.
+Test files that need migration:
+
+- `packages/api-websockets/__tests__/runner/websocketsRunner.test.ts` — directly instantiates `WebsocketsContext`, passes `registry` to `WebsocketsRunner` constructor. Must switch to DI-based setup: register `WebsocketsFeature`, resolve use cases from container.
+- `packages/api-websockets/__tests__/registry/websocketsConnectionRegistry.test.ts` — accesses `context.websockets.registry`. Must resolve `ConnectionRegistry` from `context.container`.
+- `packages/api-websockets-aws/__tests__/handler/handler.test.ts` — uses `context.websockets.listConnections()`. Must resolve `WebsocketsListConnectionsUseCase` from the container.
+
+## External Consumer Migration
+
+The following packages resolve `WebsocketService` from the DI container and call methods on it. Each must be updated to resolve the individual use case abstractions instead.
+
+### `packages/api-record-locking` — KickOutCurrentUserUseCase
+
+Calls `websocketService.send()`. Migrate to resolve `WebsocketsSendToIdentityUseCase` and call `.execute()`.
+
+### `packages/ai-powerups` — AiImageEnrichmentTask
+
+Calls `websocketService.listConnections()` and `websocketService.sendToConnections()`. Migrate to resolve `WebsocketsListConnectionsUseCase` and `WebsocketsSendToConnectionsUseCase`.
+
+### `packages/ai-powerups` — WbGeneratePageContentTask
+
+Calls `websocketService.sendToConnections()`. Migrate to resolve `WebsocketsSendToConnectionsUseCase`.
+
+### `packages/api-file-manager-s3` — processThreatScanResult
+
+Resolves `WebsocketService` from container, calls `listConnections()` and `sendToConnections()`. Migrate to resolve `WebsocketsListConnectionsUseCase` and `WebsocketsSendToConnectionsUseCase`.
+
+### `packages/webiny/src/api.ts`
+
+Re-exports `WebsocketService as Websockets`. Must be updated to re-export the 4 individual use case abstractions from their new paths.
 
 ## Scope
 
-This design covers `packages/api-websockets` and the consumer updates in `packages/api-websockets-aws`. It does not cover `packages/api-websockets-server` (the new Docker/self-hosted package from the current branch).
+This design covers `packages/api-websockets` and all packages that consume the `WebsocketService` DI token or `context.websockets`:
+
+- `packages/api-websockets` (primary)
+- `packages/api-websockets-aws`
+- `packages/api-record-locking`
+- `packages/ai-powerups`
+- `packages/api-file-manager-s3`
+- `packages/webiny` (re-export)
+
+It does not cover `packages/api-websockets-server` (the new Docker/self-hosted package from the current branch).
