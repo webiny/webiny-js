@@ -3,10 +3,12 @@ import { ListConnectionsUseCase } from "~/features/ListConnections/ListConnectio
 import { SendToConnectionsUseCase } from "~/features/SendToConnections/SendToConnectionsUseCase.js";
 import { SendToIdentityUseCase } from "~/features/SendToIdentity/SendToIdentityUseCase.js";
 import { DisconnectUseCase } from "~/features/Disconnect/DisconnectUseCase.js";
+import { NullWebsocketsTransport } from "~/transport/NullWebsocketsTransport.js";
 
 export const WebsocketsFeature = createFeature({
     name: "Websockets",
     register(container) {
+        container.register(NullWebsocketsTransport);
         container.register(ListConnectionsUseCase);
         container.register(SendToConnectionsUseCase);
         container.register(SendToIdentityUseCase);
