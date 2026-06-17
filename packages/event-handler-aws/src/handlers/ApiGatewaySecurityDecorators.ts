@@ -37,6 +37,50 @@ export const ApiGatewayAuthDecorator = ApiGatewayEventHandler.createDecorator({
     dependencies: [AuthenticationContext, IdentityContext]
 });
 
+function parseCookieHeader(cookieHeader: string): Record<string, string> {
+    return cookieHeader.split(";").reduce<Record<string, string>>((acc, pair) => {
+        const idx = pair.indexOf("=");
+        if (idx > 0) {
+            acc[pair.slice(0, idx).trim()] = decodeURIComponent(pair.slice(idx + 1).trim());
+        }
+        return acc;
+    }, {});
+}
+
+/**
+ * Falls back to cookie-based authentication if the Bearer header did not yield an identity.
+ * Reads the `wby-id-token` cookie and calls authenticate() with it.
+ */
+class ApiGatewayCookieAuthDecoratorImpl implements ApiGatewayEventHandler.Interface {
+    constructor(
+        private authCtx: IAuthenticationContext,
+        private identityCtx: IIdentityContext,
+        private inner: ApiGatewayEventHandler.Interface
+    ) {}
+
+    async execute(ctx: EventContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
+        if (!this.identityCtx.getIdentity().isAnonymous()) {
+            return this.inner.execute(ctx, next);
+        }
+
+        const headers = ctx.event.headers ?? {};
+        const cookieHeader = headers["cookie"] ?? headers["Cookie"] ?? "";
+        const token = parseCookieHeader(cookieHeader)["wby-id-token"];
+
+        if (token) {
+            const identity = await this.authCtx.authenticate(token);
+            this.identityCtx.setIdentity(identity);
+        }
+
+        return this.inner.execute(ctx, next);
+    }
+}
+
+export const ApiGatewayCookieAuthDecorator = ApiGatewayEventHandler.createDecorator({
+    decorator: ApiGatewayCookieAuthDecoratorImpl,
+    dependencies: [AuthenticationContext, IdentityContext]
+});
+
 /**
  * Reads the x-tenant header from the API Gateway event, loads the full Tenant
  * from storage, and sets it in TenantContext. Falls back to "root".
