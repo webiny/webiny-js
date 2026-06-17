@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import type { InputAstNode } from "@webiny/website-builder-sdk";
 import { useInputRenderer } from "./useInputRenderer.js";
 import { useInputValue } from "./useInputValue.js";
@@ -7,9 +7,13 @@ import type { DocumentElement, DocumentElementBindings } from "@webiny/website-b
 import { InheritanceLabel } from "../InheritanceLabel.js";
 import { buildDefaultObject } from "./buildDefaultObject.js";
 import {
-    ObjectFieldShell,
-    ObjectListShell,
-    type ObjectListItem
+    ObjectAddButton,
+    ObjectEmptyState,
+    ObjectFieldPanel,
+    ObjectFieldHeader,
+    ObjectRow,
+    ObjectRowActions,
+    useDrawerDepth
 } from "~/inputRenderers/ObjectInput.js";
 
 interface InputFieldProps {
@@ -66,9 +70,8 @@ export function InputField({ element, node, bindings }: InputFieldProps) {
 }
 
 /**
- * Renders a single (non-list) object field by recursing into its child inputs. Each child is a
- * regular `InputField` with its own fully-qualified (nested) path, so values, breakpoints and the
- * change pipeline all work exactly as they do for top-level inputs.
+ * A single (non-list) object field. Rendered as one row that opens a drawer containing the
+ * object's child inputs, recursed through `InputField`.
  */
 interface ObjectFieldProps {
     node: InputAstNode;
@@ -77,19 +80,34 @@ interface ObjectFieldProps {
 }
 
 function ObjectField({ element, node, bindings }: ObjectFieldProps) {
+    const [open, setOpen] = useState(false);
+    const depth = useDrawerDepth();
+    const label = node.input.label ?? node.name;
+
     return (
-        <ObjectFieldShell label={node.input.label} description={node.input.description}>
-            {node.children.map(child => (
-                <InputField key={child.path} element={element} node={child} bindings={bindings} />
-            ))}
-        </ObjectFieldShell>
+        <div className={"flex flex-col gap-xs"}>
+            <ObjectFieldHeader description={node.input.description} />
+            <ObjectRow title={label} onOpen={() => setOpen(true)} />
+            {open ? (
+                <ObjectFieldPanel open onClose={() => setOpen(false)} title={label} depth={depth}>
+                    {node.children.map(child => (
+                        <InputField
+                            key={child.path}
+                            element={element}
+                            node={child}
+                            bindings={bindings}
+                        />
+                    ))}
+                </ObjectFieldPanel>
+            ) : null}
+        </div>
     );
 }
 
 /**
- * Renders a repeatable (list) object field. The list value is the deep array resolved by
- * `useInputValue` for the container node; add / remove / reorder rewrite the whole array and
- * commit it through the container's `onChange`. Each item's fields are rendered as nested
+ * A repeatable (list) object field. Rendered as a list of rows (one per item) plus an "Add"
+ * button; clicking a row opens that item's drawer. Add / remove / reorder rewrite the whole array
+ * and commit it through the container's `onChange`. Each item's fields are rendered as nested
  * `InputField`s with index-qualified paths (e.g. `items/0/label`).
  */
 interface ObjectListFieldProps {
@@ -102,6 +120,9 @@ interface ObjectListFieldProps {
 
 function ObjectListField({ element, node, bindings, value, onChange }: ObjectListFieldProps) {
     const items: any[] = Array.isArray(value) ? value : [];
+    const [openIndex, setOpenIndex] = useState<number | null>(null);
+    const depth = useDrawerDepth();
+    const label = node.input.label ?? node.name;
 
     const commit = (next: any[]) => {
         onChange(({ value }) => {
@@ -114,6 +135,7 @@ function ObjectListField({ element, node, bindings, value, onChange }: ObjectLis
     };
 
     const handleRemove = (index: number) => {
+        setOpenIndex(null);
         commit(items.filter((_, i) => i !== index));
     };
 
@@ -135,32 +157,79 @@ function ObjectListField({ element, node, bindings, value, onChange }: ObjectLis
         commit(next);
     };
 
-    const listItems: ObjectListItem[] = items.map((_, index) => ({
-        key: `${node.path}/${index}`,
-        content: node.children.map(child => {
-            const indexedChild = withIndexedPath(child, node.path, index);
-            return (
-                <InputField
-                    key={indexedChild.path}
-                    element={element}
-                    node={indexedChild}
-                    bindings={bindings}
-                />
-            );
-        })
-    }));
-
     return (
-        <ObjectListShell
-            label={node.input.label}
-            description={node.input.description}
-            items={listItems}
-            onAdd={handleAdd}
-            onRemove={handleRemove}
-            onMoveUp={handleMoveUp}
-            onMoveDown={handleMoveDown}
-        />
+        <div className={"flex flex-col gap-xs"}>
+            <ObjectFieldHeader label={label} description={node.input.description} />
+
+            {items.length === 0 ? (
+                <ObjectEmptyState onAdd={handleAdd} />
+            ) : (
+                <>
+                    {items.map((item, index) => (
+                        <ObjectRow
+                            key={`${node.path}/${index}`}
+                            title={deriveItemTitle(node, item, index)}
+                            onOpen={() => setOpenIndex(index)}
+                            actions={
+                                <ObjectRowActions
+                                    onMoveUp={() => handleMoveUp(index)}
+                                    onMoveDown={() => handleMoveDown(index)}
+                                    onRemove={() => handleRemove(index)}
+                                    canMoveUp={index > 0}
+                                    canMoveDown={index < items.length - 1}
+                                />
+                            }
+                        />
+                    ))}
+                    <ObjectAddButton onClick={handleAdd} />
+                </>
+            )}
+
+            {openIndex !== null && items[openIndex] !== undefined ? (
+                <ObjectFieldPanel
+                    open
+                    onClose={() => setOpenIndex(null)}
+                    title={deriveItemTitle(node, items[openIndex], openIndex)}
+                    depth={depth}
+                >
+                    {node.children.map(child => {
+                        const indexedChild = withIndexedPath(child, node.path, openIndex);
+                        return (
+                            <InputField
+                                key={indexedChild.path}
+                                element={element}
+                                node={indexedChild}
+                                bindings={bindings}
+                            />
+                        );
+                    })}
+                </ObjectFieldPanel>
+            ) : null}
+        </div>
     );
+}
+
+/**
+ * Derives a human-readable title for a list item: the first non-empty text value found among its
+ * fields, falling back to "<label> #<n>".
+ */
+function deriveItemTitle(node: InputAstNode, item: any, index: number): string {
+    const label = node.input.label ?? node.name;
+
+    if (item && typeof item === "object") {
+        for (const child of node.children) {
+            const childValue = item[child.name];
+            if (
+                (child.type === "text" || child.type === "longText") &&
+                typeof childValue === "string" &&
+                childValue.trim()
+            ) {
+                return childValue;
+            }
+        }
+    }
+
+    return `${label} #${index + 1}`;
 }
 
 /**
