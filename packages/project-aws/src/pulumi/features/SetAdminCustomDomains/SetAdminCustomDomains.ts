@@ -3,12 +3,9 @@ import { applyCustomDomain, type CustomDomainParams } from "~/pulumi/apps/custom
 import type { AdminPulumiApp } from "~/pulumi/apps/admin/createAdminPulumiApp.js";
 
 export class DefaultSetAdminCustomDomains implements SetAdminCustomDomains.Interface {
-    execute(app: AdminPulumiApp, params: CustomDomainParams) {
-        applyCustomDomain(app.resources.cloudfront, params);
+    constructor(private app: AdminPulumiApp) {}
+
+    execute(params: CustomDomainParams) {
+        applyCustomDomain(this.app.resources.cloudfront, params);
     }
 }
-
-export const setAdminCustomDomains = SetAdminCustomDomains.createImplementation({
-    implementation: DefaultSetAdminCustomDomains,
-    dependencies: []
-});
