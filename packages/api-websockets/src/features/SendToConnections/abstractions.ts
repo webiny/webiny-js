@@ -18,4 +18,6 @@ export const WebsocketsSendToConnectionsUseCase = createAbstraction<ISendToConne
 
 export namespace WebsocketsSendToConnectionsUseCase {
     export type Interface = ISendToConnectionsUseCase;
+    export type Connection = IWebsocketsTransportSendConnection;
+    export type Data<T extends GenericRecord> = IWebsocketsTransportSendData<T>;
 }
