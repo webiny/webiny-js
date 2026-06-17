@@ -91,7 +91,7 @@ describe("ServerWebsocketsEventValidator", () => {
         expect(result.body).toBeUndefined();
     });
 
-    it("throws WebinyError with VALIDATION_FAILED_NO_BODY when message event has no body", async () => {
+    it("throws a validation error when message event has no body", async () => {
         const validator = new ServerWebsocketsEventValidator();
         const event: IWebsocketsEvent = {
             headers: { host: "localhost:8080" },
@@ -107,8 +107,15 @@ describe("ServerWebsocketsEventValidator", () => {
         };
 
         await expect(validator.validate(event)).rejects.toMatchObject({
-            message: "Message event must have a body.",
-            code: "VALIDATION_FAILED_NO_BODY"
+            message: "Validation failed.",
+            code: "VALIDATION_FAILED_INVALID_FIELDS",
+            data: {
+                invalidFields: {
+                    body: {
+                        message: "Message event must have a body."
+                    }
+                }
+            }
         });
     });
 });
