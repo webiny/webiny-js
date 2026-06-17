@@ -18,6 +18,8 @@ export interface IRefDetailedPresenter {
     readonly vm: IRefDetailedViewModel;
     init(config: IRefDetailedPresenterInitConfig): Promise<void>;
     resolveValues(values: CmsReferenceValue[]): Promise<void>;
+    addEntries(entries: CmsReferenceEntry[]): void;
+    removeEntry(entryId: string): void;
     loadMore(): void;
     dispose(): void;
 }

@@ -54,13 +54,23 @@ class RefDetailedPresenterImpl implements Abstraction.Interface {
     async resolveValues(values: CmsReferenceValue[]): Promise<void> {
         this._allValues = values;
         this._currentPage = 0;
-        this._entries = [];
 
         if (values.length === 0) {
+            this._entries = [];
             return;
         }
 
         await this.loadPage(0);
+    }
+
+    addEntries(entries: CmsReferenceEntry[]): void {
+        const existingIds = new Set(this._entries.map(e => e.entryId));
+        const newEntries = entries.filter(e => !existingIds.has(e.entryId));
+        this._entries = [...this._entries, ...newEntries];
+    }
+
+    removeEntry(entryId: string): void {
+        this._entries = this._entries.filter(e => e.entryId !== entryId);
     }
 
     loadMore(): void {

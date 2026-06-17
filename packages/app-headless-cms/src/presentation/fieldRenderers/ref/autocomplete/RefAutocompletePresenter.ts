@@ -23,8 +23,8 @@ function toOption(entry: CmsReferenceEntry): IRefEntryOption {
 
 class RefAutocompletePresenterImpl implements Abstraction.Interface {
     private _loading = false;
-    private _options: IRefEntryOption[] = [];
     private _defaultOptions: IRefEntryOption[] = [];
+    private _searchOptions: IRefEntryOption[] = [];
     private _resolvedValue: IRefEntryOption | null = null;
     private _resolvedValues: IRefEntryOption[] = [];
     private _modelIds: string[] = [];
@@ -45,12 +45,48 @@ class RefAutocompletePresenterImpl implements Abstraction.Interface {
     }
 
     get vm(): IRefAutocompleteViewModel {
-        const options = this._searchQuery ? this._options : this._defaultOptions;
+        const searchActive = this._searchQuery.length > 0;
+        const baseOptions = searchActive ? this._searchOptions : this._defaultOptions;
+
+        const seen = new Set<string>();
+        const merged: IRefEntryOption[] = [];
+
+        if (this._resolvedValue) {
+            seen.add(this._resolvedValue.entryId);
+            merged.push(this._resolvedValue);
+        }
+
+        for (const opt of this._resolvedValues) {
+            if (!seen.has(opt.entryId)) {
+                seen.add(opt.entryId);
+                merged.push(opt);
+            }
+        }
+
+        for (const opt of baseOptions) {
+            if (!seen.has(opt.entryId)) {
+                seen.add(opt.entryId);
+                merged.push(opt);
+            }
+        }
+
+        const dropdownOptions = merged.map(opt => ({
+            label: opt.name,
+            value: opt.entryId
+        }));
+
+        const singleValue = this._resolvedValue ? this._resolvedValue.entryId : undefined;
+
+        const multipleEntryIds = this._resolvedValues.map(v => v.entryId);
+        const canShowMultipleValues = this._resolvedValues.length > 0;
+
         return {
             loading: this._loading,
-            options,
-            resolvedValue: this._resolvedValue,
-            resolvedValues: this._resolvedValues
+            dropdownOptions,
+            singleValue,
+            multipleValues: canShowMultipleValues ? multipleEntryIds : [],
+            canShowMultipleValues,
+            canReset: this._resolvedValue !== null
         };
     }
 
@@ -63,7 +99,7 @@ class RefAutocompletePresenterImpl implements Abstraction.Interface {
         this._searchQuery = query;
 
         if (!query) {
-            this._options = [];
+            this._searchOptions = [];
             return;
         }
 
@@ -75,13 +111,44 @@ class RefAutocompletePresenterImpl implements Abstraction.Interface {
                 limit: 10
             });
             runInAction(() => {
-                this._options = result.data.map(toOption);
+                this._searchOptions = result.data.map(toOption);
             });
         } finally {
             runInAction(() => {
                 this._loading = false;
             });
         }
+    }
+
+    selectValue(entryId: string): CmsReferenceValue | null {
+        this._searchQuery = "";
+        this._searchOptions = [];
+
+        const all = this.getAllKnownOptions();
+        const opt = all.find(o => o.entryId === entryId);
+        if (!opt) {
+            return null;
+        }
+
+        this._resolvedValue = opt;
+        return { id: opt.id, modelId: opt.modelId };
+    }
+
+    selectValues(entryIds: string[]): CmsReferenceValue[] {
+        this._searchQuery = "";
+        this._searchOptions = [];
+
+        const all = this.getAllKnownOptions();
+        const selected = entryIds
+            .map(entryId => all.find(o => o.entryId === entryId))
+            .filter((o): o is IRefEntryOption => o != null);
+
+        this._resolvedValues = selected;
+        return selected.map(opt => ({ id: opt.id, modelId: opt.modelId }));
+    }
+
+    clearValue(): void {
+        this._resolvedValue = null;
     }
 
     async resolveValue(value: CmsReferenceValue | null): Promise<void> {
@@ -129,6 +196,29 @@ class RefAutocompletePresenterImpl implements Abstraction.Interface {
 
     dispose(): void {
         // Cleanup if needed
+    }
+
+    private getAllKnownOptions(): IRefEntryOption[] {
+        const seen = new Set<string>();
+        const result: IRefEntryOption[] = [];
+
+        const sources = [
+            this._resolvedValues,
+            this._resolvedValue ? [this._resolvedValue] : [],
+            this._searchOptions,
+            this._defaultOptions
+        ];
+
+        for (const source of sources) {
+            for (const opt of source) {
+                if (!seen.has(opt.entryId)) {
+                    seen.add(opt.entryId);
+                    result.push(opt);
+                }
+            }
+        }
+
+        return result;
     }
 
     private async loadDefaults(): Promise<void> {

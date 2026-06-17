@@ -5,7 +5,7 @@ import type { IFieldVM } from "@webiny/app-admin/features/formModel/abstractions
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { FormComponentErrorMessage, FormComponentLabel } from "@webiny/admin-ui";
 import type { CmsModel } from "~/types.js";
-import type { CmsReferenceValue } from "~/features/contentEntry/refTypes.js";
+import type { CmsReferenceEntry, CmsReferenceValue } from "~/features/contentEntry/refTypes.js";
 import type { RefFieldRendererSettings } from "./types.js";
 import { RefDetailedPresenterFeature } from "./detailed/feature.js";
 import { EntryCard } from "./components/EntryCard.js";
@@ -52,15 +52,14 @@ const RefDetailedMultipleInner = observer(({ field }: InnerFieldProps) => {
     const settings = field.rendererSettings;
     const modelIds = (settings.models || []).map(m => m.modelId);
 
-    useEffect(() => {
-        presenter.init({ modelIds, multiSelect: true });
-    }, []);
-
     const values: CmsReferenceValue[] = Array.isArray(field.value) ? field.value : [];
 
     useEffect(() => {
-        presenter.resolveValues(values);
-    }, [values.map(v => v.id).join(",")]);
+        presenter.init({ modelIds, multiSelect: true });
+        if (values.length > 0) {
+            presenter.resolveValues(values);
+        }
+    }, []);
 
     const onRemove = useCallback(
         (id: string) => {
@@ -127,7 +126,8 @@ const RefDetailedMultipleInner = observer(({ field }: InnerFieldProps) => {
     );
 
     const onDialogSave = useCallback(
-        (selectedValues: CmsReferenceValue[]) => {
+        (selectedValues: CmsReferenceValue[], entries: CmsReferenceEntry[]) => {
+            presenter.addEntries(entries);
             field.onChange(selectedValues.length > 0 ? selectedValues : null);
         },
         []
@@ -137,6 +137,14 @@ const RefDetailedMultipleInner = observer(({ field }: InnerFieldProps) => {
     const invalid = validation.isValid === false;
     const disabled = field.disabled;
 
+    const entryMap = new Map(presenter.vm.entries.map(e => [e.entryId, e]));
+    const orderedEntries = values
+        .map(v => {
+            const entryId = v.id.split("#")[0];
+            return entryMap.get(entryId);
+        })
+        .filter((e): e is CmsReferenceEntry => e != null);
+
     return (
         <div className={"@container"}>
             <div className={"flex items-center justify-between"}>
@@ -144,7 +152,7 @@ const RefDetailedMultipleInner = observer(({ field }: InnerFieldProps) => {
             </div>
             <div className={"webiny_ref-field-container"}>
                 <EntryList
-                    entries={presenter.vm.entries}
+                    entries={orderedEntries}
                     loadMore={() => presenter.loadMore()}
                 >
                     {(entry, index) => {

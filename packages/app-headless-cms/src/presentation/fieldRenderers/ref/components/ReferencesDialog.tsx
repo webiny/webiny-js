@@ -16,7 +16,7 @@ import { parseIdentifier } from "@webiny/utils";
 interface ReferencesDialogProps {
     model: CmsModel;
     values: CmsReferenceValue[];
-    onSave: (values: CmsReferenceValue[]) => void;
+    onSave: (values: CmsReferenceValue[], entries: CmsReferenceEntry[]) => void;
     onClose: () => void;
     multiple: boolean;
 }
@@ -53,7 +53,7 @@ export const ReferencesDialog = ({
 interface ReferencesDialogContentProps {
     model: CmsModel;
     initialValues: CmsReferenceValue[];
-    onSave: (values: CmsReferenceValue[]) => void;
+    onSave: (values: CmsReferenceValue[], entries: CmsReferenceEntry[]) => void;
     onClose: () => void;
     multiple: boolean;
 }
@@ -79,7 +79,15 @@ const ReferencesDialogContent = observer(
         };
 
         const onDialogSave = () => {
-            onSave(presenter.save());
+            const savedValues = presenter.save();
+            const rows = presenter.list.vm.rows;
+            const selectedEntries = savedValues
+                .map(v => {
+                    const { id: entryId } = parseIdentifier(v.id);
+                    return rows.find(r => r.entryId === entryId);
+                })
+                .filter((e): e is CmsReferenceEntry => e != null);
+            onSave(savedValues, selectedEntries);
             onClose();
         };
 

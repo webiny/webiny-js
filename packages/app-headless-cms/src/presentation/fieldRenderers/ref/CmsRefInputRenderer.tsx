@@ -39,23 +39,18 @@ const RefInputInner = observer(({ field }: InnerFieldProps) => {
 
     const settings = field.rendererSettings;
     const modelIds = (settings.models || []).map(m => m.modelId);
-
-    useEffect(() => {
-        presenter.init({ modelIds });
-    }, []);
-
     const value = field.value as CmsReferenceValue | null;
 
     useEffect(() => {
-        presenter.resolveValue(value);
-    }, [value?.id]);
+        (async () => {
+            await presenter.init({ modelIds });
+            if (value) {
+                await presenter.resolveValue(value);
+            }
+        })();
+    }, []);
 
-    const resolved = presenter.vm.resolvedValue;
-
-    const options = presenter.vm.options.map(opt => ({
-        label: opt.name,
-        value: opt.id
-    }));
+    const vm = presenter.vm;
 
     return (
         <AutoComplete
@@ -64,23 +59,27 @@ const RefInputInner = observer(({ field }: InnerFieldProps) => {
             note={field.note}
             hint={field.help}
             disabled={field.disabled}
-            loading={presenter.vm.loading}
-            value={resolved?.id}
-            options={options}
+            loading={vm.loading}
+            value={vm.singleValue}
+            options={vm.dropdownOptions}
             validation={field.validation}
             onValueSearch={query => presenter.search(query)}
-            onValueChange={selectedId => {
-                if (!selectedId) {
+            onValueChange={selectedEntryId => {
+                if (!selectedEntryId) {
+                    presenter.clearValue();
                     field.onChange(null);
                     return;
                 }
-                const opt = presenter.vm.options.find(o => o.id === selectedId);
-                if (opt) {
-                    field.onChange({ id: opt.id, modelId: opt.modelId });
+                const ref = presenter.selectValue(selectedEntryId);
+                if (ref) {
+                    field.onChange(ref);
                 }
             }}
-            onValueReset={() => field.onChange(null)}
-            displayResetAction={resolved !== null}
+            onValueReset={() => {
+                presenter.clearValue();
+                field.onChange(null);
+            }}
+            displayResetAction={vm.canReset}
         />
     );
 });

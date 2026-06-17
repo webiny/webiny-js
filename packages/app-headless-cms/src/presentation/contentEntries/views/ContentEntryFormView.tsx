@@ -142,7 +142,7 @@ const EntryFormHeaderRight = observer(() => {
     const { canSave, canPublish, canUnpublish, canDelete } = presenter.vm;
 
     if (!canSave && !canPublish && !canUnpublish && !canDelete) {
-        return null;
+        return <div />;
     }
 
     return (

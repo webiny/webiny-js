@@ -39,23 +39,18 @@ const RefInputsInner = observer(({ field }: InnerFieldProps) => {
 
     const settings = field.rendererSettings;
     const modelIds = (settings.models || []).map(m => m.modelId);
-
-    useEffect(() => {
-        presenter.init({ modelIds });
-    }, []);
-
     const values: CmsReferenceValue[] = Array.isArray(field.value) ? field.value : [];
 
     useEffect(() => {
-        presenter.resolveValues(values);
-    }, [values.map(v => v.id).join(",")]);
+        (async () => {
+            await presenter.init({ modelIds });
+            if (values.length > 0) {
+                await presenter.resolveValues(values);
+            }
+        })();
+    }, []);
 
-    const options = presenter.vm.options.map(opt => ({
-        label: opt.name,
-        value: opt.id
-    }));
-
-    const selectedIds = presenter.vm.resolvedValues.map(v => v.id);
+    const vm = presenter.vm;
 
     return (
         <MultiAutoComplete
@@ -64,26 +59,20 @@ const RefInputsInner = observer(({ field }: InnerFieldProps) => {
             note={field.note}
             hint={field.help}
             disabled={field.disabled}
-            loading={presenter.vm.loading}
-            values={selectedIds}
-            options={options}
+            loading={vm.loading}
+            values={vm.multipleValues}
+            options={vm.dropdownOptions}
+            uniqueValues
             validation={field.validation}
             onValueSearch={query => presenter.search(query)}
-            onValuesChange={selectedValueIds => {
-                const allOptions = [...presenter.vm.options, ...presenter.vm.resolvedValues];
-                const refs = selectedValueIds
-                    .map(id => {
-                        const opt = allOptions.find(o => o.id === id);
-                        if (opt) {
-                            return { id: opt.id, modelId: opt.modelId };
-                        }
-                        return null;
-                    })
-                    .filter((r): r is CmsReferenceValue => r !== null);
-
+            onValuesChange={entryIds => {
+                const refs = presenter.selectValues(entryIds);
                 field.onChange(refs.length > 0 ? refs : null);
             }}
-            onValuesReset={() => field.onChange(null)}
+            onValuesReset={() => {
+                presenter.selectValues([]);
+                field.onChange(null);
+            }}
         />
     );
 });

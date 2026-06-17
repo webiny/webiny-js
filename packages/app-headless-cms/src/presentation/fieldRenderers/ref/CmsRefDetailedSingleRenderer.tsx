@@ -5,7 +5,7 @@ import type { IFieldVM } from "@webiny/app-admin/features/formModel/abstractions
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { FormComponentErrorMessage, FormComponentLabel, OverlayLoader } from "@webiny/admin-ui";
 import type { CmsModel } from "~/types.js";
-import type { CmsReferenceValue } from "~/features/contentEntry/refTypes.js";
+import type { CmsReferenceEntry, CmsReferenceValue } from "~/features/contentEntry/refTypes.js";
 import type { RefFieldRendererSettings } from "./types.js";
 import { RefDetailedPresenterFeature } from "./detailed/feature.js";
 import { EntryCard } from "./components/EntryCard.js";
@@ -81,7 +81,8 @@ const RefDetailedSingleInner = observer(({ field }: InnerFieldProps) => {
     );
 
     const onDialogSave = useCallback(
-        (values: CmsReferenceValue[]) => {
+        (values: CmsReferenceValue[], entries: CmsReferenceEntry[]) => {
+            presenter.addEntries(entries);
             if (values.length === 0) {
                 field.onChange(null);
             } else {

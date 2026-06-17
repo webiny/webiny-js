@@ -20,7 +20,7 @@ import { useFieldRenderers } from "~/features/formModel/useFieldRenderers.js";
 import { useLayoutRenderers } from "~/features/formModel/useLayoutRenderers.js";
 
 export function renderTabIcon(icon: Icon | undefined): React.ReactElement | undefined {
-    if (!icon) {
+    if (!icon || typeof icon.name !== "string") {
         return undefined;
     }
     return <FontAwesomeIcon icon={icon.name.split("/") as IconProp} />;
