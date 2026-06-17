@@ -26,6 +26,7 @@ import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFr
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
 import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
+import { setApiCustomDomains } from "~/pulumi/features/SetApiCustomDomains/index.js";
 import { ApiCustomDomains as apiCustomDomainsExt } from "~/pulumi/extensions/ApiCustomDomains.js";
 import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 
@@ -142,6 +143,12 @@ export const createApiPulumiApp = () => {
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied to late.
             sdk.getContainer().registerComposite(apiPulumi);
+
+            // Make the `SetApiCustomDomains` service injectable into user-defined `ApiPulumi`
+            // implementations. This allows applying custom domains using dynamically created
+            // Pulumi resources (e.g. ACM certificates), from within a single implementation file.
+            sdk.getContainer().register(setApiCustomDomains).inSingletonScope();
+
             const pulumiHandlers = sdk.getContainer().resolve(ApiPulumi);
 
             app.addHandler(() => {

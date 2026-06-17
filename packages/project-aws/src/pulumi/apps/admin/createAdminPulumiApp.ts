@@ -2,6 +2,7 @@ import { createReactPulumiApp } from "~/pulumi/apps/index.js";
 import { getProjectSdk } from "@webiny/project";
 import { AdminPulumi } from "~/abstractions/features/pulumi/index.js";
 import { adminPulumi } from "~/pulumi/features/AdminPulumi/index.js";
+import { setAdminCustomDomains } from "~/pulumi/features/SetAdminCustomDomains/index.js";
 import { AdminCustomDomains as adminCustomDomainsExt } from "~/pulumi/extensions/AdminCustomDomains.js";
 import { withServiceManifest } from "~/pulumi/index.js";
 
@@ -28,14 +29,22 @@ export const createAdminPulumiApp = async () => {
             return undefined;
         },
         pulumi: async app => {
-            // Overrides must be applied via a handler, registered at the very start of the program.
-            // By doing this, we're ensuring user's adjustments are not applied to late.
             sdk.getContainer().registerComposite(adminPulumi);
+
+            // Make the `SetAdminCustomDomains` service injectable into user-defined `AdminPulumi`
+            // implementations. This allows applying custom domains using dynamically created
+            // Pulumi resources (e.g. ACM certificates), from within a single implementation file.
+            sdk.getContainer().register(setAdminCustomDomains).inSingletonScope();
+
             const pulumiHandlers = sdk.getContainer().resolve(AdminPulumi);
 
-            app.addHandler(() => {
-                return pulumiHandlers.execute(app as AdminPulumiApp);
-            });
+            // This callback itself runs as a handler that is registered before the CloudFront
+            // distribution resource. We must therefore execute the user's handlers directly
+            // (instead of scheduling another handler via `app.addHandler`), so that any adjustments
+            // they make to existing resources' configuration - e.g. applying custom domains to the
+            // CloudFront distribution via `SetAdminCustomDomains` - are applied before those
+            // resources get instantiated.
+            await pulumiHandlers.execute(app as AdminPulumiApp);
         }
     });
 
