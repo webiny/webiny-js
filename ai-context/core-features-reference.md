@@ -72,35 +72,59 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-core/src/features/task/TaskService/abstractions.ts`
 - **Usage:** Trigger and abort background tasks. Call `taskService.trigger({ definition: "taskId", input: {...} })`. Inject as DI dependency via `TaskService`.
 
+### ConnectionRegistry
+
+- **Import:** `import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js"`
+- **Interface Type:** See `packages/api-websockets/src/features/ConnectionRegistry/abstractions.ts`
+- **Usage:** DI abstraction for websocket connection storage. Namespace types: `ConnectionRegistry.Interface`, `.Identity`, `.Data`, `.RegisterParams`, `.UnregisterParams`. DDB implementation in `@webiny/api-websockets-ddb`, SQL in `@webiny/api-websockets-sql`.
+
 ### WebsocketsListConnectionsUseCase
 
-- **Import:** `import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/features/ListConnections/abstractions.js"`
+- **Import:** `import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/exports/api.js"`
 - **Interface Type:** See `packages/api-websockets/src/features/ListConnections/abstractions.ts`
-- **Usage:** List active WebSocket connections. Call `.execute({ where: { identityId } })` to filter by identity, tenant, or connection IDs. Returns `Result<IWebsocketsConnectionRegistryData[], WebsocketsError>`. Filters out stale connections (>3 hours).
+- **Usage:** List active WebSocket connections. Namespace types: `.Interface`, `.Params`, `.ParamsWhere`, `.RegistryData`. Call `.execute({ where: { identityId } })` to filter. Returns `Result<ConnectionRegistry.Data[], WebsocketsError>`. Filters out stale connections (>3 hours).
 
 ### WebsocketsSendToIdentityUseCase
 
-- **Import:** `import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js"`
+- **Import:** `import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js"`
 - **Interface Type:** See `packages/api-websockets/src/features/SendToIdentity/abstractions.ts`
-- **Usage:** Send a message to all connections for a given identity. Call `.execute({ id: userId }, { action, data })`. Resolves connections via ListConnectionsUseCase internally. Make optional with `[WebsocketsSendToIdentityUseCase, { optional: true }]`.
+- **Usage:** Send a message to all connections for a given identity. Namespace types: `.Interface`, `.Identity`, `.Data<T>`. Call `.execute({ id: userId }, { action, data })`. Make optional with `[WebsocketsSendToIdentityUseCase, { optional: true }]`.
 
 ### WebsocketsSendToConnectionsUseCase
 
-- **Import:** `import { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/features/SendToConnections/abstractions.js"`
+- **Import:** `import { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/exports/api.js"`
 - **Interface Type:** See `packages/api-websockets/src/features/SendToConnections/abstractions.ts`
-- **Usage:** Send a message to specific connections. Call `.execute(connections, { action, data })`. Use when you already have the connection list (e.g., from ListConnectionsUseCase).
+- **Usage:** Send a message to specific connections. Namespace types: `.Interface`, `.Connection`, `.Data<T>`. Call `.execute(connections, { action, data })`.
 
 ### WebsocketsDisconnectUseCase
 
-- **Import:** `import { WebsocketsDisconnectUseCase } from "@webiny/api-websockets/features/Disconnect/abstractions.js"`
+- **Import:** `import { WebsocketsDisconnectUseCase } from "@webiny/api-websockets/exports/api.js"`
 - **Interface Type:** See `packages/api-websockets/src/features/Disconnect/abstractions.ts`
-- **Usage:** Disconnect WebSocket connections. Call `.execute({ where: { identityId } }, notify?)` to disconnect by filter. Unregisters from registry, optionally notifies clients, then force-disconnects.
+- **Usage:** Disconnect WebSocket connections. Namespace types: `.Interface`, `.Params`. Call `.execute({ where: { identityId } }, notify?)` to disconnect by filter.
 
 ### WebsocketsTransport
 
-- **Import:** `import { WebsocketsTransport } from "@webiny/api-websockets"`
+- **Import:** `import { WebsocketsTransport } from "@webiny/api-websockets/exports/api.js"`
 - **Interface Type:** See `packages/api-websockets/src/transport/abstractions/WebsocketsTransport.ts`
-- **Usage:** DI abstraction for the WebSocket transport layer. Namespace types: `WebsocketsTransport.Interface`, `.SendConnection`, `.DisconnectConnection`, `.SendData<T>`. AWS implementation registered via `createAwsWebsockets()` from `@webiny/api-websockets-aws`. Server implementation registered via `createServerWebsockets()` from `@webiny/api-websockets-server`.
+- **Usage:** DI abstraction for the WebSocket transport layer. Namespace types: `.Interface`, `.SendConnection`, `.DisconnectConnection`, `.SendData<T>`. NullWebsocketsTransport registered by default; AWS and server packages override.
+
+### WebsocketsResponse
+
+- **Import:** `import { WebsocketsResponse } from "@webiny/api-websockets/exports/api.js"`
+- **Interface Type:** See `packages/api-websockets/src/response/abstractions/WebsocketsResponse.ts`
+- **Usage:** DI abstraction for websocket response formatting. Namespace types: `.Interface`, `.OkParams`, `.OkResult`, `.ErrorParams`, `.ErrorResult`, `.ErrorResultError`. Default implementation auto-registered.
+
+### WebsocketsEventValidator
+
+- **Import:** `import { WebsocketsEventValidator } from "@webiny/api-websockets/exports/api.js"`
+- **Interface Type:** See `packages/api-websockets/src/validator/abstractions/WebsocketsEventValidator.ts`
+- **Usage:** DI abstraction for event validation. Namespace types: `.Interface`. AWS and server packages provide implementations.
+
+### WebsocketsRunner
+
+- **Import:** `import { WebsocketsRunner } from "@webiny/api-websockets/exports/api.js"`
+- **Interface Type:** See `packages/api-websockets/src/runner/WebsocketsRunner.ts`
+- **Usage:** Processes websocket events through route plugins. Namespace types: `.Event<T>`, `.EventData`, `.EventContext`, `.EventType`, `.Route`, `.Response`.
 
 ### WebsocketsServerAdapter
 
