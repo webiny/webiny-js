@@ -43,8 +43,8 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
         private ai: Ai.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private encryption: Encryption.Interface,
-        private listConnections?: WebsocketsListConnectionsUseCase.Interface,
-        private sendToConnections?: WebsocketsSendToConnectionsUseCase.Interface
+        private listConnections: WebsocketsListConnectionsUseCase.Interface,
+        private sendToConnections: WebsocketsSendToConnectionsUseCase.Interface
     ) {}
 
     async run({
@@ -142,18 +142,16 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
             });
         }
 
-        if (this.listConnections && this.sendToConnections) {
-            const connectionsResult = await this.listConnections.execute();
-            if (connectionsResult.isOk() && connectionsResult.value.length > 0) {
-                await this.sendToConnections.execute(connectionsResult.value, {
-                    action: "fm.file.enrichment",
-                    data: {
-                        id: file.id,
-                        tags: mergedTags,
-                        description
-                    }
-                });
-            }
+        const connectionsResult = await this.listConnections.execute();
+        if (connectionsResult.isOk() && connectionsResult.value.length > 0) {
+            await this.sendToConnections.execute(connectionsResult.value, {
+                action: "fm.file.enrichment",
+                data: {
+                    id: file.id,
+                    tags: mergedTags,
+                    description
+                }
+            });
         }
 
         return controller.response.done("AI image enrichment completed successfully.");
@@ -169,7 +167,7 @@ export const AiImageEnrichmentTask = TaskDefinition.createImplementation({
         Ai,
         GetSettingsUseCase,
         Encryption,
-        [WebsocketsListConnectionsUseCase, { optional: true }],
-        [WebsocketsSendToConnectionsUseCase, { optional: true }]
+        WebsocketsListConnectionsUseCase,
+        WebsocketsSendToConnectionsUseCase
     ]
 });
