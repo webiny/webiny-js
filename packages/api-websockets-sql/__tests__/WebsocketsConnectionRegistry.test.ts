@@ -1,10 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import knexLib from "knex";
 import type { Knex } from "knex";
-import { WebsocketsConnectionRegistryImpl } from "../src/WebsocketsConnectionRegistry.js";
-import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
-import type { KnexClient } from "@webiny/api-core-sql";
-import { TableName } from "../src/TableName/TableName.js";
+import { Container } from "@webiny/di";
+import { KnexClient } from "@webiny/api-core-sql";
+import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { TableName } from "../src/TableName/abstractions.js";
+import { TableName as TableNameImpl } from "../src/TableName/TableName.js";
+import { WebsocketsConnectionRegistry } from "../src/WebsocketsConnectionRegistry.js";
 
 const makeRegisterParams = (connectionId: string): ConnectionRegistry.RegisterParams => ({
     connectionId,
@@ -20,7 +22,7 @@ const makeRegisterParams = (connectionId: string): ConnectionRegistry.RegisterPa
 
 describe("WebsocketsConnectionRegistry (SQL)", () => {
     let knex: Knex;
-    let registry: WebsocketsConnectionRegistryImpl;
+    let registry: ConnectionRegistry.Interface;
 
     beforeEach(() => {
         knex = knexLib({
@@ -31,9 +33,12 @@ describe("WebsocketsConnectionRegistry (SQL)", () => {
             useNullAsDefault: true
         });
 
-        const knexClient: KnexClient.Interface = { client: knex };
-        const tableName = new TableName();
-        registry = new WebsocketsConnectionRegistryImpl(knexClient, tableName);
+        const container = new Container();
+        container.registerInstance(KnexClient, { client: knex });
+        container.registerInstance(TableName, new TableNameImpl());
+        container.register(WebsocketsConnectionRegistry);
+
+        registry = container.resolve(ConnectionRegistry);
     });
 
     afterEach(async () => {
