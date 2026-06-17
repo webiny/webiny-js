@@ -18,12 +18,12 @@
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
-    "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@types/ws": "^8.18.1",

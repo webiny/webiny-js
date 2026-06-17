@@ -12551,7 +12551,6 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
@@ -12561,6 +12560,7 @@ __metadata:
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.8"
     ws: "npm:^8.18.0"
+    zod: "npm:4.4.3"
   languageName: unknown
   linkType: soft
 

@@ -4,7 +4,6 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-websockets" },
-    { "path": "../error" },
     { "path": "../feature" },
     { "path": "../handler" },
     { "path": "../plugins" },
@@ -21,8 +20,6 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
       "@webiny/api-websockets": ["../api-websockets/src"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
       "@webiny/feature/api": ["../feature/src/api/index.js"],
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
