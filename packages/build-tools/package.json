@@ -17,7 +17,7 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@rsbuild/core": "^2.0.12",
+    "@rsbuild/core": "^2.0.14",
     "@rsbuild/plugin-react": "^2.0.1",
     "@rsbuild/plugin-sass": "^1.5.3",
     "@rsbuild/plugin-svgr": "^2.0.3",
