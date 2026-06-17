@@ -51,7 +51,6 @@ interface RefFieldOptionsProps {
 
 export const RefFieldOptions = observer(
     ({ models, onNewRecord, onLinkExistingRecord }: RefFieldOptionsProps) => {
-        console.log("models", models);
         const hasMultipleModels = models.length > 1;
 
         const onSingleNewRecord = useCallback(() => {

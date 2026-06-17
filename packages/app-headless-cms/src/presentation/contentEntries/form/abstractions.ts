@@ -23,6 +23,7 @@ export interface IContentEntryFormPresenter {
     publishRevision(): Promise<boolean>;
     unpublishRevision(): Promise<boolean>;
     deleteEntry(): Promise<boolean>;
+    setFolderId(folderId: string | null): void;
     newEntry(): void;
     reset(): void;
 }

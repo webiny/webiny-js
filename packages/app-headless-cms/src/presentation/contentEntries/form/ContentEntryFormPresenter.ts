@@ -25,6 +25,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     private _entry: CmsContentEntry | null = null;
     private _form: FormModel.Interface | null = null;
     private _loading: string | null = null;
+    private _folderId: string | null = null;
 
     constructor(
         private formModelFactory: FormModelFactory.Interface,
@@ -125,11 +126,14 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
                     this._form!.reset();
                 });
             } else {
+                const createData: Record<string, unknown> = { values: data };
+                if (this._folderId) {
+                    createData.wbyAco_location = { folderId: this._folderId };
+                }
+
                 const entry = await this.createEntryUseCase.execute({
                     model: this.model,
-                    data: {
-                        values: data
-                    },
+                    data: createData,
                     options: { skipValidation }
                 });
 
@@ -272,6 +276,10 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
                 this._loading = null;
             });
         }
+    }
+
+    setFolderId(folderId: string | null): void {
+        this._folderId = folderId;
     }
 
     newEntry(): void {

@@ -65,6 +65,10 @@ class ContentEntryFormPresenterWithLocking implements IContentEntryFormPresenter
         return this.original.loadRevision(id);
     }
 
+    setFolderId(folderId: string | null): void {
+        this.original.setFolderId(folderId);
+    }
+
     newEntry(): void {
         return this.original.newEntry();
     }

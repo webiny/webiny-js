@@ -67,6 +67,10 @@ class ContentEntryFormPresenterWithWorkflow implements IContentEntryFormPresente
         return this.original.deleteEntry();
     }
 
+    setFolderId(folderId: string | null): void {
+        this.original.setFolderId(folderId);
+    }
+
     newEntry(): void {
         return this.original.newEntry();
     }

@@ -2,12 +2,15 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { Drawer, OverlayLoader } from "@webiny/admin-ui";
+import { SplitView, LeftPanel, RightPanel, DialogsProvider } from "@webiny/app-admin";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { FoldersFeature } from "@webiny/app-aco/features/folders/feature.js";
 import { FolderTreePresenterFeature } from "@webiny/app-aco/presentation/folderTree/feature.js";
+import { FolderTree } from "@webiny/app-aco/presentation/folderTree/FolderTree.js";
 import { ContentEntryFeature } from "~/features/contentEntry/feature.js";
 import { CmsModelAccessor } from "~/features/contentEntry/CmsModelAccessor.js";
 import { ContentEntryFormPresenterFeature } from "~/presentation/contentEntries/form/feature.js";
+import { NewEntryPresenterFeature } from "../newEntry/feature.js";
 import { GenericModelLoader } from "~/presentation/contentEntries/views/GenericModelLoader.js";
 import type { CmsModel } from "~/types.js";
 import type { CmsReferenceValue } from "~/features/contentEntry/refTypes.js";
@@ -28,16 +31,23 @@ export const NewEntryDrawer = ({ modelId, onClose, onChange }: NewEntryDrawerPro
         FoldersFeature.register(child, { type: `cms:${modelId}` });
         FolderTreePresenterFeature.register(child);
         ContentEntryFormPresenterFeature.register(child);
+        NewEntryPresenterFeature.register(child);
         return child;
     }, [modelId]);
 
     return (
         <DiContainerProvider container={dialogContainer}>
-            <GenericModelLoader modelId={modelId}>
-                {model => (
-                    <NewEntryDrawerContent model={model} onClose={onClose} onChange={onChange} />
-                )}
-            </GenericModelLoader>
+            <DialogsProvider>
+                <GenericModelLoader modelId={modelId}>
+                    {model => (
+                        <NewEntryDrawerContent
+                            model={model}
+                            onClose={onClose}
+                            onChange={onChange}
+                        />
+                    )}
+                </GenericModelLoader>
+            </DialogsProvider>
         </DiContainerProvider>
     );
 };
@@ -50,24 +60,25 @@ interface NewEntryDrawerContentProps {
 
 const NewEntryDrawerContent = observer(
     ({ model, onClose, onChange }: NewEntryDrawerContentProps) => {
-        const { presenter } = useFeature(ContentEntryFormPresenterFeature);
+        const { presenter } = useFeature(NewEntryPresenterFeature);
 
         useEffect(() => {
-            presenter.newEntry();
+            presenter.init();
+            return () => presenter.dispose();
         }, []);
 
         const onSave = useCallback(async () => {
-            const saved = await presenter.saveRevision({ skipValidation: false });
-            if (saved && presenter.vm.entry) {
+            const saved = await presenter.form.saveRevision({ skipValidation: false });
+            if (saved && presenter.form.vm.entry) {
                 onChange({
-                    id: presenter.vm.entry.id,
+                    id: presenter.form.vm.entry.id,
                     modelId: model.modelId
                 });
                 onClose();
             }
         }, [model.modelId]);
 
-        const vm = presenter.vm;
+        const vm = presenter.form.vm;
 
         return (
             <Drawer
@@ -86,10 +97,28 @@ const NewEntryDrawerContent = observer(
                     </>
                 }
             >
-                <div className={"p-md relative"}>
-                    {vm.loading ? <OverlayLoader text={"Creating entry..."} /> : null}
-                    {vm.form ? <FormView name="NewRefEntryForm" form={vm.form} /> : null}
-                </div>
+                <SplitView>
+                    <LeftPanel span={3}>
+                        <div className={"px-sm-extra py-sm"}>
+                            <FolderTree
+                                vm={presenter.folders.vm}
+                                actions={presenter.folders}
+                                enableActions={true}
+                                enableCreate={true}
+                            />
+                        </div>
+                    </LeftPanel>
+                    <RightPanel span={9}>
+                        <div className={"p-md relative"}>
+                            {vm.loading ? (
+                                <OverlayLoader text={"Creating entry..."} />
+                            ) : null}
+                            {vm.form ? (
+                                <FormView name="NewRefEntryForm" form={vm.form} />
+                            ) : null}
+                        </div>
+                    </RightPanel>
+                </SplitView>
             </Drawer>
         );
     }

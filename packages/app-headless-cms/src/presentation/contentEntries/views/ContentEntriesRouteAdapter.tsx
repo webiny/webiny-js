@@ -19,6 +19,7 @@ export const ContentEntriesRouteAdapter = () => {
 
     return (
         <ContentEntriesView
+            key={modelId}
             modelId={modelId}
             initialFolderId={initialFolderId}
             initialSearch={search}
