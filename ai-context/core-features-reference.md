@@ -72,11 +72,29 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-core/src/features/task/TaskService/abstractions.ts`
 - **Usage:** Trigger and abort background tasks. Call `taskService.trigger({ definition: "taskId", input: {...} })`. Inject as DI dependency via `TaskService`.
 
-### WebsocketService
+### WebsocketsListConnectionsUseCase
 
-- **Import:** `import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js"`
-- **Interface Type:** See `packages/api-websockets/src/features/WebsocketService/abstractions.ts`
-- **Usage:** Send real-time messages to connected clients. Use `send({ id: userId }, { action, data })` for a specific user or `sendToConnections(connections, { action, data })` for multiple. List connections with `listConnections({ where: { identityId } })`. Make optional with `[WebsocketService, { optional: true }]`.
+- **Import:** `import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/features/ListConnections/abstractions.js"`
+- **Interface Type:** See `packages/api-websockets/src/features/ListConnections/abstractions.ts`
+- **Usage:** List active WebSocket connections. Call `.execute({ where: { identityId } })` to filter by identity, tenant, or connection IDs. Returns `Result<IWebsocketsConnectionRegistryData[], WebsocketsError>`. Filters out stale connections (>3 hours).
+
+### WebsocketsSendToIdentityUseCase
+
+- **Import:** `import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js"`
+- **Interface Type:** See `packages/api-websockets/src/features/SendToIdentity/abstractions.ts`
+- **Usage:** Send a message to all connections for a given identity. Call `.execute({ id: userId }, { action, data })`. Resolves connections via ListConnectionsUseCase internally. Make optional with `[WebsocketsSendToIdentityUseCase, { optional: true }]`.
+
+### WebsocketsSendToConnectionsUseCase
+
+- **Import:** `import { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/features/SendToConnections/abstractions.js"`
+- **Interface Type:** See `packages/api-websockets/src/features/SendToConnections/abstractions.ts`
+- **Usage:** Send a message to specific connections. Call `.execute(connections, { action, data })`. Use when you already have the connection list (e.g., from ListConnectionsUseCase).
+
+### WebsocketsDisconnectUseCase
+
+- **Import:** `import { WebsocketsDisconnectUseCase } from "@webiny/api-websockets/features/Disconnect/abstractions.js"`
+- **Interface Type:** See `packages/api-websockets/src/features/Disconnect/abstractions.ts`
+- **Usage:** Disconnect WebSocket connections. Call `.execute({ where: { identityId } }, notify?)` to disconnect by filter. Unregisters from registry, optionally notifies clients, then force-disconnects.
 
 ### WebsocketsTransport
 
