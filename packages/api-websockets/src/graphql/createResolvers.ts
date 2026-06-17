@@ -1,6 +1,7 @@
 import type { Resolvers } from "@webiny/handler-graphql/types.js";
 import type { Context } from "~/types.js";
-import { emptyResolver, resolve } from "./utils.js";
+import { emptyResolver } from "./utils.js";
+import { resolve } from "./utils.js";
 import type { IWebsocketsListConnectionsParams } from "~/features/ListConnections/abstractions.js";
 import { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
 import { WebsocketsDisconnectUseCase } from "~/features/Disconnect/abstractions.js";
