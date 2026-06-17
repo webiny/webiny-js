@@ -13,7 +13,10 @@ export {
     GlobalKeyValueStore,
     KeyValueStore
 } from "@webiny/api-core/features/keyValueStore/index.js";
-export { WebsocketService as Websockets } from "@webiny/api-websockets/features/WebsocketService/index.js";
+export { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/features/ListConnections/abstractions.js";
+export { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
+export { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/features/SendToConnections/abstractions.js";
+export { WebsocketsDisconnectUseCase } from "@webiny/api-websockets/features/Disconnect/abstractions.js";
 export { createFeature, createAbstraction, Result, BaseError } from "@webiny/feature/api/index.js";
 export { Route } from "@webiny/handler/abstractions/Route.js";
 export { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
