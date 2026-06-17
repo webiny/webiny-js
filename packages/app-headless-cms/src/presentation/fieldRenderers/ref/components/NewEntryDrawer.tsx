@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { Drawer, OverlayLoader } from "@webiny/admin-ui";
@@ -8,7 +8,7 @@ import { FolderTreePresenterFeature } from "@webiny/app-aco/presentation/folderT
 import { ContentEntryFeature } from "~/features/contentEntry/feature.js";
 import { CmsModelAccessor } from "~/features/contentEntry/CmsModelAccessor.js";
 import { ContentEntryFormPresenterFeature } from "~/presentation/contentEntries/form/feature.js";
-import { ListModelsUseCase } from "~/features/model/listModels/abstractions.js";
+import { GenericModelLoader } from "~/presentation/contentEntries/views/GenericModelLoader.js";
 import type { CmsModel } from "~/types.js";
 import type { CmsReferenceValue } from "~/features/contentEntry/refTypes.js";
 
@@ -20,38 +20,24 @@ interface NewEntryDrawerProps {
 
 export const NewEntryDrawer = ({ modelId, onClose, onChange }: NewEntryDrawerProps) => {
     const parentContainer = useContainer();
-    const [model, setModel] = useState<CmsModel | null>(null);
-
-    useEffect(() => {
-        const listModels = parentContainer.resolve(ListModelsUseCase);
-        listModels.execute().then(models => {
-            const found = models.find(m => m.modelId === modelId);
-            if (found) {
-                setModel(found);
-            }
-        });
-    }, [modelId]);
 
     const dialogContainer = useMemo(() => {
-        if (!model) {
-            return null;
-        }
         const child = parentContainer.createChildContainer();
         ContentEntryFeature.register(child);
         child.register(CmsModelAccessor).inSingletonScope();
-        FoldersFeature.register(child, { type: `cms:${model.modelId}` });
+        FoldersFeature.register(child, { type: `cms:${modelId}` });
         FolderTreePresenterFeature.register(child);
         ContentEntryFormPresenterFeature.register(child);
         return child;
-    }, [model]);
-
-    if (!model || !dialogContainer) {
-        return null;
-    }
+    }, [modelId]);
 
     return (
         <DiContainerProvider container={dialogContainer}>
-            <NewEntryDrawerContent model={model} onClose={onClose} onChange={onChange} />
+            <GenericModelLoader modelId={modelId}>
+                {model => (
+                    <NewEntryDrawerContent model={model} onClose={onClose} onChange={onChange} />
+                )}
+            </GenericModelLoader>
         </DiContainerProvider>
     );
 };

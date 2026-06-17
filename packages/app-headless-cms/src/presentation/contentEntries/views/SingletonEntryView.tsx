@@ -7,12 +7,10 @@ import { ContentEntryFeature } from "~/features/contentEntry/feature.js";
 import { CmsGraphQLClientFeature } from "~/features/graphQLClient/feature.js";
 import { CmsFormModelFeature } from "~/features/formModel/feature.js";
 import { ModelFeature } from "~/features/model/feature.js";
-import { GetModelFeature } from "~/features/model/getModel/feature.js";
-import type { IGetModelUseCase } from "~/features/model/getModel/abstractions.js";
-import { CmsModelAccessor as CmsModelAccessorAbstraction } from "~/features/contentEntry/abstractions.js";
 import { CmsModelAccessor } from "~/features/contentEntry/CmsModelAccessor.js";
 import { SingletonEntryPresenterFeature } from "../singleton/feature.js";
 import type { ISingletonEntryPresenter } from "../singleton/abstractions.js";
+import { GenericModelLoader } from "./GenericModelLoader.js";
 
 export interface SingletonEntryViewProps {
     modelId: string;
@@ -20,20 +18,12 @@ export interface SingletonEntryViewProps {
 }
 
 const SingletonEntryViewInner = observer(({ modelId }: SingletonEntryViewProps) => {
-    const container = useContainer();
     const { presenter } = useFeature(SingletonEntryPresenterFeature) as {
         presenter: ISingletonEntryPresenter;
     };
-    const { useCase: getModelUseCase } = useFeature(GetModelFeature) as {
-        useCase: IGetModelUseCase;
-    };
 
     useEffect(() => {
-        getModelUseCase.execute({ modelId }).then(model => {
-            container.resolve(CmsModelAccessorAbstraction).setModel(model);
-            presenter.init();
-        });
-
+        presenter.init();
         return () => presenter.dispose();
     }, [modelId]);
 
@@ -80,7 +70,11 @@ export const SingletonEntryView = ({ modelId, children }: SingletonEntryViewProp
 
     return (
         <DiContainerProvider container={scopedContainer}>
-            <SingletonEntryViewInner modelId={modelId}>{children}</SingletonEntryViewInner>
+            <GenericModelLoader modelId={modelId}>
+                {() => (
+                    <SingletonEntryViewInner modelId={modelId}>{children}</SingletonEntryViewInner>
+                )}
+            </GenericModelLoader>
         </DiContainerProvider>
     );
 };
