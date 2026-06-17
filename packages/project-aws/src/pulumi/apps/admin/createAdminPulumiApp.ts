@@ -2,7 +2,7 @@ import { createReactPulumiApp } from "~/pulumi/apps/index.js";
 import { getProjectSdk } from "@webiny/project";
 import { AdminPulumi, SetAdminCustomDomains } from "~/abstractions/features/pulumi/index.js";
 import { adminPulumi } from "~/pulumi/features/AdminPulumi/index.js";
-import { DefaultSetAdminCustomDomains } from "~/pulumi/features/SetAdminCustomDomains/index.js";
+import { DefaultSetAdminCustomDomains } from "~/pulumi/features/DefaultSetAdminCustomDomains.js";
 import { AdminCustomDomains as adminCustomDomainsExt } from "~/pulumi/extensions/AdminCustomDomains.js";
 import { withServiceManifest } from "~/pulumi/index.js";
 
