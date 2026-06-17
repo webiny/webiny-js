@@ -377,7 +377,7 @@ export const push = createWorkflow({
                         { name: "Lint", run: "yarn lint" },
                         {
                             name: "Check Package Node Modules",
-                            run: "yarn check-package-dependencies"
+                            run: "yarn check:node-modules:ci"
                         }
                     ],
                     { "working-directory": DIR_WEBINY_JS }

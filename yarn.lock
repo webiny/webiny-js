@@ -33,16 +33,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ai-sdk/gateway@npm:3.0.130":
-  version: 3.0.130
-  resolution: "@ai-sdk/gateway@npm:3.0.130"
+"@ai-sdk/gateway@npm:3.0.131":
+  version: 3.0.131
+  resolution: "@ai-sdk/gateway@npm:3.0.131"
   dependencies:
     "@ai-sdk/provider": "npm:3.0.10"
     "@ai-sdk/provider-utils": "npm:4.0.29"
     "@vercel/oidc": "npm:3.2.0"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10/1d1b883af03ce72ac099f3f5794222000186cd815a25816b06dcaf3ea74cfb58b15542ee80b2552551a9ea1df7dd7f5727513a3e589226953409989cc106ec09
+  checksum: 10/499b2505fec61d6a6f53983772a45d5d4f1b0fe9875bf8171335e78883af8ab0a36d3791d3f855e0b06ccd1261187f3709415a01008a57114996e89f55fc80f0
   languageName: node
   linkType: hard
 
@@ -2898,15 +2898,15 @@ __metadata:
   linkType: hard
 
 "@csstools/css-color-parser@npm:^4.1.0":
-  version: 4.1.3
-  resolution: "@csstools/css-color-parser@npm:4.1.3"
+  version: 4.1.4
+  resolution: "@csstools/css-color-parser@npm:4.1.4"
   dependencies:
     "@csstools/color-helpers": "npm:^6.0.2"
     "@csstools/css-calc": "npm:^3.2.1"
   peerDependencies:
     "@csstools/css-parser-algorithms": ^4.0.0
     "@csstools/css-tokenizer": ^4.0.0
-  checksum: 10/8fc39d3a7d91208dbd03b5976ed1305518e6bb4d4c55d9be7d8365449e0c8d31f3b8ce7a5e741413745d98445b7c8753110dee41efd2ea604cb1bd35426d488d
+  checksum: 10/6960bc559989b2abbc891917dd627c5547e100d14fe029544d45a7a3b019c59eed7b6edee61441f9a59f31bb352eb8eea514e433892242c6528dd19584c0ff32
   languageName: node
   linkType: hard
 
@@ -8628,15 +8628,15 @@ __metadata:
   linkType: hard
 
 "@rollup/rollup-linux-x64-gnu@npm:^4.24.0":
-  version: 4.61.1
-  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.61.1"
+  version: 4.62.0
+  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.62.0"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rsbuild/core@npm:^2.0.12, @rsbuild/core@npm:~2.0.12":
-  version: 2.0.12
-  resolution: "@rsbuild/core@npm:2.0.12"
+"@rsbuild/core@npm:^2.0.14, @rsbuild/core@npm:~2.0.12":
+  version: 2.0.14
+  resolution: "@rsbuild/core@npm:2.0.14"
   dependencies:
     "@rspack/core": "npm:~2.0.8"
     "@swc/helpers": "npm:^0.5.23"
@@ -8647,7 +8647,7 @@ __metadata:
       optional: true
   bin:
     rsbuild: ./bin/rsbuild.js
-  checksum: 10/bc7dfef1ed8ee01fe5215da0dd5ffcd6a7b266e54ffca5f41dc9aba42f568ac620631e33ba08fb883cd5edde9be1db619d5a98ff723e1803a03ff7461b649f50
+  checksum: 10/884e6060e5edfb9edb6306bcecf945b92202228cd8f5b49b0cf9d905d969dfc2566e34206441ad2d0ac30b90b3b904bf686f510a87cf1559b1172ed57c554750
   languageName: node
   linkType: hard
 
@@ -11534,7 +11534,7 @@ __metadata:
     "@minoru/react-dnd-treeview": "npm:^3.5.4"
     "@monaco-editor/react": "npm:^4.7.0"
     "@radix-ui/react-scroll-area": "npm:^1.2.11"
-    "@rsbuild/core": "npm:^2.0.12"
+    "@rsbuild/core": "npm:^2.0.14"
     "@rsbuild/plugin-svgr": "npm:^2.0.3"
     "@storybook/addon-a11y": "npm:^10.4.4"
     "@storybook/addon-docs": "npm:^10.4.4"
@@ -11605,7 +11605,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    ai: "npm:^6.0.204"
+    ai: "npm:^6.0.205"
     front-matter: "npm:^4.0.2"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.16.1"
@@ -11645,7 +11645,7 @@ __metadata:
     "@webiny/error": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    better-sqlite3: "npm:^12.10.0"
+    better-sqlite3: "npm:^12.10.1"
     knex: "npm:^3.2.10"
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.3"
@@ -11711,7 +11711,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    better-sqlite3: "npm:^12.10.0"
+    better-sqlite3: "npm:^12.10.1"
     knex: "npm:^3.2.10"
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.3"
@@ -11801,7 +11801,7 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    better-sqlite3: "npm:^12.10.0"
+    better-sqlite3: "npm:^12.10.1"
     knex: "npm:^3.2.10"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.8"
@@ -11829,7 +11829,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    ai: "npm:^6.0.204"
+    ai: "npm:^6.0.205"
     dataloader: "npm:^2.2.3"
     jose: "npm:^6.2.3"
     jsonwebtoken: "npm:^9.0.3"
@@ -12138,7 +12138,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    better-sqlite3: "npm:^12.10.0"
+    better-sqlite3: "npm:^12.10.1"
     knex: "npm:^3.2.10"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.8"
@@ -12525,7 +12525,7 @@ __metadata:
     "@webiny/error": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    better-sqlite3: "npm:^12.10.0"
+    better-sqlite3: "npm:^12.10.1"
     knex: "npm:^3.2.10"
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.3"
@@ -13509,7 +13509,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/build-tools@workspace:packages/build-tools"
   dependencies:
-    "@rsbuild/core": "npm:^2.0.12"
+    "@rsbuild/core": "npm:^2.0.14"
     "@rsbuild/plugin-react": "npm:^2.0.1"
     "@rsbuild/plugin-sass": "npm:^1.5.3"
     "@rsbuild/plugin-svgr": "npm:^2.0.3"
@@ -14855,17 +14855,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ai@npm:^6.0.204":
-  version: 6.0.204
-  resolution: "ai@npm:6.0.204"
+"ai@npm:^6.0.205":
+  version: 6.0.205
+  resolution: "ai@npm:6.0.205"
   dependencies:
-    "@ai-sdk/gateway": "npm:3.0.130"
+    "@ai-sdk/gateway": "npm:3.0.131"
     "@ai-sdk/provider": "npm:3.0.10"
     "@ai-sdk/provider-utils": "npm:4.0.29"
     "@opentelemetry/api": "npm:^1.9.0"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10/923d26473d2100c3a1d2e124b4c3eee363a8be5dbb71862e50a8c62e4e366c0241d59d37b2acdb918162eeead2fb215b32b45f448c24ab95d9212165c1a63689
+  checksum: 10/785cc705a8e1180de938117e51d6b29fb1782f442a6d8f8779b1f017bca83ce8d85d45e7037850606374398b25b8b5901c63f776d93a1ae1b84abd7702724f70
   languageName: node
   linkType: hard
 
@@ -15626,14 +15626,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3@npm:^12.10.0":
-  version: 12.10.0
-  resolution: "better-sqlite3@npm:12.10.0"
+"better-sqlite3@npm:^12.10.1":
+  version: 12.10.1
+  resolution: "better-sqlite3@npm:12.10.1"
   dependencies:
     bindings: "npm:^1.5.0"
     node-gyp: "npm:latest"
     prebuild-install: "npm:^7.1.1"
-  checksum: 10/99e213e78f15a7f40d5cb666b56781223a6b83ffc317c93846e2b63b694592978c1e3762e81afd6ce851e0e3c24ebc9d0c42341158ea93c8a39987e5e19602f8
+  checksum: 10/d7dd56a1ffe2e613ee22c47caff44ab081e4ce431e32d6fd59e4423839822e0768d7f3b2e1af2018b10997a1c3ef890a7b5034bbee940b8aae235dd399d904e5
   languageName: node
   linkType: hard
 
@@ -25588,13 +25588,13 @@ __metadata:
   linkType: hard
 
 "regjsparser@npm:^0.13.0":
-  version: 0.13.1
-  resolution: "regjsparser@npm:0.13.1"
+  version: 0.13.2
+  resolution: "regjsparser@npm:0.13.2"
   dependencies:
     jsesc: "npm:~3.1.0"
   bin:
     regjsparser: bin/parser
-  checksum: 10/3383e9dab8bc8cd09efcd9538191b1e194b1921438ca69fce833d1a447d0625635229464cbc6cb03f33e5d342f2d343e2738fdac9132e2470bca621e480c02ec
+  checksum: 10/291aecbd47371cee347a96c47ccaae729ba50b7b2cb2a5de7e088e2ab835fe133569422f06ae28f5ff0830ac03f3196a35ba493f23ecda086d82e3e326f14074
   languageName: node
   linkType: hard
 

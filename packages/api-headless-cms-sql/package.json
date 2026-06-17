@@ -35,7 +35,7 @@
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "better-sqlite3": "^12.10.0",
+    "better-sqlite3": "^12.10.1",
     "typescript": "6.0.3",
     "vitest": "^4.1.8"
   },
