@@ -9,7 +9,10 @@ import {
     WebsocketsTransport,
     WebsocketsResponse
 } from "@webiny/api-websockets/exports/api.js";
-import type { Context } from "@webiny/api-websockets/types.js";
+import type { DbContext } from "@webiny/handler-db/types.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+
+type Context = DbContext & ApiCoreContext;
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import type { HandlerCallable, HandlerParams } from "./types.js";
 import { getEventValues } from "./headers.js";
