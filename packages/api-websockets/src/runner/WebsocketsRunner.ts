@@ -1,26 +1,23 @@
 import WebinyError from "@webiny/error";
-import type {
-    IWebsocketsEvent,
-    IWebsocketsEventContext,
-    IWebsocketsEventData,
-    WebsocketsRoute
-} from "~/types.js";
+import type { IWebsocketsEvent } from "~/types.js";
+import type { IWebsocketsEventContext } from "~/types.js";
+import type { IWebsocketsEventData } from "~/types.js";
+import type { WebsocketsRoute } from "~/types.js";
 import type { Context } from "~/types.js";
-import type {
-    IWebsocketsRunner,
-    IWebsocketsRunnerResponse
-} from "./abstractions/IWebsocketsRunner.js";
+import type { IWebsocketsIdentity } from "~/types.js";
+import type { IWebsocketsRunner } from "./abstractions/IWebsocketsRunner.js";
+import type { IWebsocketsRunnerResponse } from "./abstractions/IWebsocketsRunner.js";
 import type { IWebsocketsRoutePluginCallableParams } from "~/plugins/index.js";
 import { WebsocketsRoutePlugin } from "~/plugins/index.js";
 import { middleware } from "~/utils/middleware.js";
 import type { IWebsocketsConnectionRegistry } from "~/registry/index.js";
-import type {
-    IWebsocketsResponse,
-    IWebsocketsResponseErrorResult,
-    IWebsocketsResponseOkResult
-} from "~/response/index.js";
+import type { IWebsocketsResponse } from "~/response/index.js";
+import type { IWebsocketsResponseErrorResult } from "~/response/index.js";
+import type { IWebsocketsResponseOkResult } from "~/response/index.js";
 import type { IWebsocketsTransportSendConnection } from "~/transport/index.js";
-import type { IWebsocketsIdentity } from "~/types.js";
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
+import { WebsocketsSendToConnectionsUseCase } from "~/features/SendToConnections/abstractions.js";
+import type { ISendToConnectionsUseCase } from "~/features/SendToConnections/abstractions.js";
 
 type MiddlewareParams<C extends Context = Context> = Pick<
     IWebsocketsRoutePluginCallableParams<C>,
@@ -39,15 +36,13 @@ export class WebsocketsRunner implements IWebsocketsRunner {
     private readonly context: Context;
     private readonly registry: IWebsocketsConnectionRegistry;
     private readonly response: IWebsocketsResponse;
+    private readonly sendToConnections: ISendToConnectionsUseCase;
 
-    public constructor(
-        context: Context,
-        registry: IWebsocketsConnectionRegistry,
-        response: IWebsocketsResponse
-    ) {
+    public constructor(context: Context, response: IWebsocketsResponse) {
         this.context = context;
-        this.registry = registry;
+        this.registry = context.container.resolve(ConnectionRegistry);
         this.response = response;
+        this.sendToConnections = context.container.resolve(WebsocketsSendToConnectionsUseCase);
     }
 
     public async run<T extends IWebsocketsEventData = IWebsocketsEventData>(
@@ -180,6 +175,6 @@ export class WebsocketsRunner implements IWebsocketsRunner {
             ...result,
             messageId
         };
-        await this.context.websockets.sendToConnections([connection], dataToSend);
+        await this.sendToConnections.execute([connection], dataToSend);
     }
 }

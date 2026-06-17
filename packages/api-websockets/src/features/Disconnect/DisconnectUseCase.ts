@@ -1,21 +1,25 @@
 import { Result } from "@webiny/feature/api";
+import { createImplementation } from "@webiny/feature/api";
 import type { IWebsocketsConnectionRegistry } from "~/registry/index.js";
 import type { IWebsocketsConnectionRegistryData } from "~/registry/index.js";
 import type { IWebsocketsTransport } from "~/transport/index.js";
 import type { IListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
-import type { IDisconnectUseCase, IWebsocketsDisconnectParams } from "./abstractions.js";
+import type { IDisconnectUseCase } from "./abstractions.js";
+import type { IWebsocketsDisconnectParams } from "./abstractions.js";
+import { WebsocketsDisconnectUseCase } from "./abstractions.js";
 import type { WebsocketsError } from "~/features/shared/errors.js";
-import {
-    WebsocketForceDisconnectError,
-    WebsocketForceDisconnectNotificationError
-} from "~/features/shared/errors.js";
+import { WebsocketForceDisconnectError } from "~/features/shared/errors.js";
+import { WebsocketForceDisconnectNotificationError } from "~/features/shared/errors.js";
+import { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
+import { WebsocketsTransport } from "~/transport/index.js";
 
-export class DisconnectUseCase implements IDisconnectUseCase {
+class DisconnectUseCaseImpl implements IDisconnectUseCase {
     private readonly listConnections: IListConnectionsUseCase;
     private readonly registry: IWebsocketsConnectionRegistry;
     private readonly transport: IWebsocketsTransport;
 
-    constructor(
+    public constructor(
         listConnections: IListConnectionsUseCase,
         registry: IWebsocketsConnectionRegistry,
         transport: IWebsocketsTransport
@@ -63,3 +67,9 @@ export class DisconnectUseCase implements IDisconnectUseCase {
         return Result.ok(connections);
     }
 }
+
+export const DisconnectUseCase = createImplementation({
+    abstraction: WebsocketsDisconnectUseCase,
+    implementation: DisconnectUseCaseImpl,
+    dependencies: [WebsocketsListConnectionsUseCase, ConnectionRegistry, WebsocketsTransport]
+});

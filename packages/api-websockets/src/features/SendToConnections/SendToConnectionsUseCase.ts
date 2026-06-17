@@ -1,16 +1,19 @@
 import { Result } from "@webiny/feature/api";
+import { createImplementation } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { IWebsocketsTransport } from "~/transport/index.js";
 import type { IWebsocketsTransportSendConnection } from "~/transport/index.js";
 import type { IWebsocketsTransportSendData } from "~/transport/index.js";
 import type { ISendToConnectionsUseCase } from "./abstractions.js";
+import { WebsocketsSendToConnectionsUseCase } from "./abstractions.js";
 import type { WebsocketsError } from "~/features/shared/errors.js";
 import { WebsocketServiceError } from "~/features/shared/errors.js";
+import { WebsocketsTransport } from "~/transport/index.js";
 
-export class SendToConnectionsUseCase implements ISendToConnectionsUseCase {
+class SendToConnectionsUseCaseImpl implements ISendToConnectionsUseCase {
     private readonly transport: IWebsocketsTransport;
 
-    constructor(transport: IWebsocketsTransport) {
+    public constructor(transport: IWebsocketsTransport) {
         this.transport = transport;
     }
 
@@ -27,3 +30,9 @@ export class SendToConnectionsUseCase implements ISendToConnectionsUseCase {
         return Result.ok();
     }
 }
+
+export const SendToConnectionsUseCase = createImplementation({
+    abstraction: WebsocketsSendToConnectionsUseCase,
+    implementation: SendToConnectionsUseCaseImpl,
+    dependencies: [WebsocketsTransport]
+});

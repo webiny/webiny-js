@@ -1,15 +1,18 @@
 import { Result } from "@webiny/feature/api";
+import { createImplementation } from "@webiny/feature/api";
 import type { IWebsocketsConnectionRegistry } from "~/registry/index.js";
 import type { IWebsocketsConnectionRegistryData } from "~/registry/index.js";
 import type { IListConnectionsUseCase } from "./abstractions.js";
 import type { IWebsocketsListConnectionsParams } from "./abstractions.js";
+import { WebsocketsListConnectionsUseCase } from "./abstractions.js";
 import type { WebsocketsError } from "~/features/shared/errors.js";
 import { WebsocketServiceError } from "~/features/shared/errors.js";
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 
-export class ListConnectionsUseCase implements IListConnectionsUseCase {
+class ListConnectionsUseCaseImpl implements IListConnectionsUseCase {
     private readonly registry: IWebsocketsConnectionRegistry;
 
-    constructor(registry: IWebsocketsConnectionRegistry) {
+    public constructor(registry: IWebsocketsConnectionRegistry) {
         this.registry = registry;
     }
 
@@ -39,3 +42,9 @@ export class ListConnectionsUseCase implements IListConnectionsUseCase {
         return Result.ok(connections);
     }
 }
+
+export const ListConnectionsUseCase = createImplementation({
+    abstraction: WebsocketsListConnectionsUseCase,
+    implementation: ListConnectionsUseCaseImpl,
+    dependencies: [ConnectionRegistry]
+});

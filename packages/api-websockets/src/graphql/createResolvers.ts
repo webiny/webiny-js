@@ -1,7 +1,9 @@
 import type { Resolvers } from "@webiny/handler-graphql/types.js";
 import type { Context } from "~/types.js";
 import { emptyResolver, resolve } from "./utils.js";
-import type { IWebsocketsContextListConnectionsParams } from "~/context/index.js";
+import type { IWebsocketsListConnectionsParams } from "~/features/ListConnections/abstractions.js";
+import { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
+import { WebsocketsDisconnectUseCase } from "~/features/Disconnect/abstractions.js";
 import type { IWebsocketsConnectionRegistryData } from "~/registry/index.js";
 import { checkPermissions } from "~/graphql/checkPermissions.js";
 
@@ -26,10 +28,13 @@ export const createResolvers = (): Resolvers<Context> => {
             websockets: emptyResolver
         },
         WebsocketsQuery: {
-            listConnections: async (_, args: IWebsocketsContextListConnectionsParams, context) => {
+            listConnections: async (_, args: IWebsocketsListConnectionsParams, context) => {
                 return resolve(async () => {
                     await checkPermissions(context);
-                    const result = await context.websockets.listConnections(args);
+                    const listConnections = context.container.resolve(
+                        WebsocketsListConnectionsUseCase
+                    );
+                    const result = await listConnections.execute(args);
 
                     if (result.isFail()) {
                         throw result.error;
@@ -43,7 +48,8 @@ export const createResolvers = (): Resolvers<Context> => {
             disconnect: async (_, args: IWebsocketsMutationDisconnectConnectionsArgs, context) => {
                 return resolve(async () => {
                     await checkPermissions(context);
-                    const result = await context.websockets.disconnect({
+                    const disconnect = context.container.resolve(WebsocketsDisconnectUseCase);
+                    const result = await disconnect.execute({
                         where: {
                             connections: args.connections
                         }
@@ -63,7 +69,8 @@ export const createResolvers = (): Resolvers<Context> => {
             ) => {
                 return resolve<IWebsocketsConnectionRegistryData[]>(async () => {
                     await checkPermissions(context);
-                    const result = await context.websockets.disconnect({
+                    const disconnect = context.container.resolve(WebsocketsDisconnectUseCase);
+                    const result = await disconnect.execute({
                         where: {
                             identityId: args.identityId
                         }
@@ -79,7 +86,8 @@ export const createResolvers = (): Resolvers<Context> => {
             disconnectTenant: async (_, args: IWebsocketsMutationDisconnectTenantArgs, context) => {
                 return resolve<IWebsocketsConnectionRegistryData[]>(async () => {
                     await checkPermissions(context);
-                    const result = await context.websockets.disconnect({
+                    const disconnect = context.container.resolve(WebsocketsDisconnectUseCase);
+                    const result = await disconnect.execute({
                         where: {
                             tenant: args.tenant
                         }
@@ -95,7 +103,8 @@ export const createResolvers = (): Resolvers<Context> => {
             disconnectAll: async (_, __, context) => {
                 return resolve<IWebsocketsConnectionRegistryData[]>(async () => {
                     await checkPermissions(context);
-                    const result = await context.websockets.disconnect();
+                    const disconnect = context.container.resolve(WebsocketsDisconnectUseCase);
+                    const result = await disconnect.execute();
 
                     if (result.isFail()) {
                         throw result.error;
