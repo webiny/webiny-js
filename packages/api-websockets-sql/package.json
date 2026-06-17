@@ -20,8 +20,10 @@
     "./*": "./*"
   },
   "dependencies": {
+    "@webiny/api-core-sql": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
     "@webiny/error": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "knex": "^3.2.10"
   },

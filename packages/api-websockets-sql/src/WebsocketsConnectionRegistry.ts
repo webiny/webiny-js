@@ -1,6 +1,7 @@
-import type { Knex } from "knex";
 import { WebinyError } from "@webiny/error";
+import { KnexClient } from "@webiny/api-core-sql";
 import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { TableName } from "~/TableName/abstractions.js";
 
 interface ConnectionRow {
     connectionId: string;
@@ -15,20 +16,13 @@ interface ConnectionRow {
 
 const BASE_TABLE_NAME = "WebsocketsConnections";
 
-export interface WebsocketsConnectionRegistryConfig {
-    knex: Knex;
-    tableNamePrefix?: string;
-}
+class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
+    private readonly knex;
+    private readonly tableName;
 
-export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interface {
-    private readonly knex: Knex;
-    private readonly tableName: string;
-
-    public constructor({ knex, tableNamePrefix }: WebsocketsConnectionRegistryConfig) {
+    public constructor(knex: KnexClient.Interface, tableName: TableName.Interface) {
         this.knex = knex;
-        this.tableName = tableNamePrefix
-            ? `${tableNamePrefix}_${BASE_TABLE_NAME}`
-            : BASE_TABLE_NAME;
+        this.tableName = tableName.resolve(BASE_TABLE_NAME);
     }
 
     public async register(
@@ -50,7 +44,7 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
                 lastSeen: new Date().toISOString()
             };
 
-            await this.knex<ConnectionRow>(this.tableName).insert(row);
+            await this.knex.client<ConnectionRow>(this.tableName).insert(row);
 
             return this.toData(row);
         } catch (err) {
@@ -68,7 +62,8 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
             await this.migrateTable();
             await this.migrateLastSeen();
 
-            const existing = await this.knex<ConnectionRow>(this.tableName)
+            const existing = await this.knex
+                .client<ConnectionRow>(this.tableName)
                 .where("connectionId", event.connectionId)
                 .first();
 
@@ -80,7 +75,8 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
                 );
             }
 
-            await this.knex<ConnectionRow>(this.tableName)
+            await this.knex
+                .client<ConnectionRow>(this.tableName)
                 .where("connectionId", event.connectionId)
                 .delete();
         } catch (err) {
@@ -98,10 +94,9 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
             await this.migrateTable();
             await this.migrateLastSeen();
 
-            const rows = await this.knex<ConnectionRow>(this.tableName).whereIn(
-                "connectionId",
-                connections
-            );
+            const rows = await this.knex
+                .client<ConnectionRow>(this.tableName)
+                .whereIn("connectionId", connections);
 
             return rows.map(row => this.toData(row));
         } catch (err) {
@@ -119,10 +114,9 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
             await this.migrateTable();
             await this.migrateLastSeen();
 
-            const rows = await this.knex<ConnectionRow>(this.tableName).where(
-                "identityId",
-                identity
-            );
+            const rows = await this.knex
+                .client<ConnectionRow>(this.tableName)
+                .where("identityId", identity);
 
             return rows.map(row => this.toData(row));
         } catch (err) {
@@ -140,7 +134,9 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
             await this.migrateTable();
             await this.migrateLastSeen();
 
-            const rows = await this.knex<ConnectionRow>(this.tableName).where("tenant", tenant);
+            const rows = await this.knex
+                .client<ConnectionRow>(this.tableName)
+                .where("tenant", tenant);
 
             return rows.map(row => this.toData(row));
         } catch (err) {
@@ -158,7 +154,7 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
             await this.migrateTable();
             await this.migrateLastSeen();
 
-            const rows = await this.knex<ConnectionRow>(this.tableName).select("*");
+            const rows = await this.knex.client<ConnectionRow>(this.tableName).select("*");
 
             return rows.map(row => this.toData(row));
         } catch (err) {
@@ -175,7 +171,8 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
             await this.migrateTable();
             await this.migrateLastSeen();
 
-            await this.knex<ConnectionRow>(this.tableName)
+            await this.knex
+                .client<ConnectionRow>(this.tableName)
                 .where("connectionId", connectionId)
                 .update({ lastSeen: new Date().toISOString() });
         } catch (err) {
@@ -195,7 +192,7 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
 
             const threshold = olderThan.toISOString();
 
-            const rows = await this.knex<ConnectionRow>(this.tableName).where(qb => {
+            const rows = await this.knex.client<ConnectionRow>(this.tableName).where(qb => {
                 qb.where("lastSeen", "<", threshold).orWhereNull("lastSeen");
             });
 
@@ -210,12 +207,12 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
     }
 
     private async ensureTable(): Promise<void> {
-        const exists = await this.knex.schema.hasTable(this.tableName);
+        const exists = await this.knex.client.schema.hasTable(this.tableName);
         if (exists) {
             return;
         }
 
-        await this.knex.schema.createTable(this.tableName, table => {
+        await this.knex.client.schema.createTable(this.tableName, table => {
             table.text("connectionId").notNullable().primary();
             table.text("identityId").notNullable();
             table.text("identityDisplayName").notNullable();
@@ -230,20 +227,20 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
     }
 
     private async migrateTable(): Promise<void> {
-        const hasEndpoint = await this.knex.schema.hasColumn(this.tableName, "endpoint");
+        const hasEndpoint = await this.knex.client.schema.hasColumn(this.tableName, "endpoint");
         if (hasEndpoint) {
             return;
         }
 
-        await this.knex.schema.alterTable(this.tableName, table => {
+        await this.knex.client.schema.alterTable(this.tableName, table => {
             table.text("endpoint").nullable();
         });
 
-        await this.knex(this.tableName).update({
-            endpoint: this.knex.raw("'https://' || \"domainName\" || '/' || \"stage\"")
+        await this.knex.client(this.tableName).update({
+            endpoint: this.knex.client.raw("'https://' || \"domainName\" || '/' || \"stage\"")
         });
 
-        await this.knex.schema.alterTable(this.tableName, table => {
+        await this.knex.client.schema.alterTable(this.tableName, table => {
             table.text("endpoint").notNullable().alter();
             table.dropColumn("domainName");
             table.dropColumn("stage");
@@ -251,12 +248,12 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
     }
 
     private async migrateLastSeen(): Promise<void> {
-        const hasLastSeen = await this.knex.schema.hasColumn(this.tableName, "lastSeen");
+        const hasLastSeen = await this.knex.client.schema.hasColumn(this.tableName, "lastSeen");
         if (hasLastSeen) {
             return;
         }
 
-        await this.knex.schema.alterTable(this.tableName, table => {
+        await this.knex.client.schema.alterTable(this.tableName, table => {
             table.datetime("lastSeen").nullable();
         });
     }
@@ -275,3 +272,8 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
         };
     }
 }
+
+export const WebsocketsConnectionRegistry = ConnectionRegistry.createImplementation({
+    implementation: WebsocketsConnectionRegistryImpl,
+    dependencies: [KnexClient, TableName]
+});
