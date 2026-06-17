@@ -6,7 +6,7 @@ import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { MultiAutoComplete } from "@webiny/admin-ui";
 import type { CmsReferenceValue } from "~/features/contentEntry/refTypes.js";
 import type { RefFieldRendererSettings } from "./types.js";
-import { RefAutocompletePresenterFeature } from "./autocomplete/feature.js";
+import { RefMultiAutocompletePresenterFeature } from "./autocomplete/multi/feature.js";
 
 declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -19,7 +19,7 @@ export const CmsRefInputsRenderer = createFieldRenderer<"refInputs">(({ field })
 
     const scopedContainer = useMemo(() => {
         const child = parentContainer.createChildContainer();
-        RefAutocompletePresenterFeature.register(child);
+        RefMultiAutocompletePresenterFeature.register(child);
         return child;
     }, []);
 
@@ -35,19 +35,14 @@ interface InnerFieldProps {
 }
 
 const RefInputsInner = observer(({ field }: InnerFieldProps) => {
-    const { presenter } = useFeature(RefAutocompletePresenterFeature);
+    const { presenter } = useFeature(RefMultiAutocompletePresenterFeature);
 
     const settings = field.rendererSettings;
     const modelIds = (settings.models || []).map(m => m.modelId);
     const values: CmsReferenceValue[] = Array.isArray(field.value) ? field.value : [];
 
     useEffect(() => {
-        (async () => {
-            await presenter.init({ modelIds });
-            if (values.length > 0) {
-                await presenter.resolveValues(values);
-            }
-        })();
+        presenter.init({ modelIds, values });
     }, []);
 
     const vm = presenter.vm;
@@ -60,17 +55,17 @@ const RefInputsInner = observer(({ field }: InnerFieldProps) => {
             hint={field.help}
             disabled={field.disabled}
             loading={vm.loading}
-            values={vm.multipleValues}
-            options={vm.dropdownOptions}
+            values={vm.values}
+            options={vm.options}
             uniqueValues
             validation={field.validation}
             onValueSearch={query => presenter.search(query)}
             onValuesChange={entryIds => {
-                const refs = presenter.selectValues(entryIds);
+                const refs = presenter.select(entryIds);
                 field.onChange(refs.length > 0 ? refs : null);
             }}
             onValuesReset={() => {
-                presenter.selectValues([]);
+                presenter.clear();
                 field.onChange(null);
             }}
         />

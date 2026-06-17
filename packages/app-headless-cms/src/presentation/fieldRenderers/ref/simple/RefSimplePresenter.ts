@@ -29,9 +29,9 @@ class RefSimplePresenterImpl implements Abstraction.Interface {
         this._loading = true;
         try {
             const result = await this.searchContentEntriesUseCase.execute({
-                modelIds: config.modelIds,
-                limit: 10000
+                modelIds: config.modelIds
             });
+
             runInAction(() => {
                 this._entries = result.data.map(entry => ({
                     id: entry.id,

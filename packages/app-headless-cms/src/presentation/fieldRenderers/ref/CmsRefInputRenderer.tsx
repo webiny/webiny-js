@@ -6,7 +6,7 @@ import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { AutoComplete } from "@webiny/admin-ui";
 import type { CmsReferenceValue } from "~/features/contentEntry/refTypes.js";
 import type { RefFieldRendererSettings } from "./types.js";
-import { RefAutocompletePresenterFeature } from "./autocomplete/feature.js";
+import { RefSingleAutocompletePresenterFeature } from "./autocomplete/single/feature.js";
 
 declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -19,7 +19,7 @@ export const CmsRefInputRenderer = createFieldRenderer<"refInput">(({ field }) =
 
     const scopedContainer = useMemo(() => {
         const child = parentContainer.createChildContainer();
-        RefAutocompletePresenterFeature.register(child);
+        RefSingleAutocompletePresenterFeature.register(child);
         return child;
     }, []);
 
@@ -35,19 +35,14 @@ interface InnerFieldProps {
 }
 
 const RefInputInner = observer(({ field }: InnerFieldProps) => {
-    const { presenter } = useFeature(RefAutocompletePresenterFeature);
+    const { presenter } = useFeature(RefSingleAutocompletePresenterFeature);
 
     const settings = field.rendererSettings;
     const modelIds = (settings.models || []).map(m => m.modelId);
     const value = field.value as CmsReferenceValue | null;
 
     useEffect(() => {
-        (async () => {
-            await presenter.init({ modelIds });
-            if (value) {
-                await presenter.resolveValue(value);
-            }
-        })();
+        presenter.init({ modelIds, value });
     }, []);
 
     const vm = presenter.vm;
@@ -60,23 +55,23 @@ const RefInputInner = observer(({ field }: InnerFieldProps) => {
             hint={field.help}
             disabled={field.disabled}
             loading={vm.loading}
-            value={vm.singleValue}
-            options={vm.dropdownOptions}
+            value={vm.value}
+            options={vm.options}
             validation={field.validation}
             onValueSearch={query => presenter.search(query)}
             onValueChange={selectedEntryId => {
                 if (!selectedEntryId) {
-                    presenter.clearValue();
+                    presenter.clear();
                     field.onChange(null);
                     return;
                 }
-                const ref = presenter.selectValue(selectedEntryId);
+                const ref = presenter.select(selectedEntryId);
                 if (ref) {
                     field.onChange(ref);
                 }
             }}
             onValueReset={() => {
-                presenter.clearValue();
+                presenter.clear();
                 field.onChange(null);
             }}
             displayResetAction={vm.canReset}
