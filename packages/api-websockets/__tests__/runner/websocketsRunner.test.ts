@@ -3,7 +3,7 @@ import { WebsocketsRunner } from "~/runner";
 import { useHandler } from "~tests/helpers/useHandler";
 import { MockWebsocketsEventValidator } from "~tests/mocks/MockWebsocketsEventValidator";
 import { createWebsocketsRoutePlugin } from "~/plugins";
-import { WebsocketsResponse } from "~/response";
+import { WebsocketsResponse } from "~/response/abstractions/WebsocketsResponse.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 
 describe("websockets runner", () => {
@@ -12,7 +12,7 @@ describe("websockets runner", () => {
 
         const context = await handler.handle();
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
         const runner = new WebsocketsRunner(context, response);
 
@@ -47,7 +47,7 @@ describe("websockets runner", () => {
 
         const context = await handler.handle();
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
         const runner = new WebsocketsRunner(context, response);
 
@@ -73,7 +73,7 @@ describe("websockets runner", () => {
 
         const context = await handler.handle();
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
         const runner = new WebsocketsRunner(context, response);
 
@@ -101,7 +101,7 @@ describe("websockets runner", () => {
 
         const context = await handler.handle();
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
         const runner = new WebsocketsRunner(context, response);
 
@@ -135,7 +135,7 @@ describe("websockets runner", () => {
         const context = await handler.handle();
         const registry = context.container.resolve(ConnectionRegistry);
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
         const runner = new WebsocketsRunner(context, response);
 
@@ -214,7 +214,7 @@ describe("websockets runner", () => {
 
         const context = await handler.handle();
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
         const runner = new WebsocketsRunner(context, response);
 
@@ -240,7 +240,7 @@ describe("websockets runner", () => {
 
         const context = await handler.handle();
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
         const runner = new WebsocketsRunner(context, response);
 

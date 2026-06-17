@@ -1,5 +1,5 @@
 import type { HandlerFactoryParams } from "@webiny/handler-aws/types.js";
-import type { IWebsocketsResponse } from "@webiny/api-websockets/response/abstractions/IWebsocketsResponse.js";
+import type { WebsocketsResponse } from "@webiny/api-websockets/exports/api.js";
 import type {
     APIGatewayProxyResult,
     Context as LambdaContext
@@ -13,7 +13,7 @@ export interface HandlerCallable {
 }
 
 export interface HandlerParams extends HandlerFactoryParams {
-    response?: IWebsocketsResponse;
+    response?: WebsocketsResponse.Interface;
 }
 
 export enum WebsocketsEventRoute {

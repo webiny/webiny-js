@@ -13,9 +13,7 @@ import type { IWebsocketsRunnerResponse } from "./abstractions/WebsocketsRunner.
 import type { IWebsocketsRoutePluginCallableParams } from "~/plugins/index.js";
 import { WebsocketsRoutePlugin } from "~/plugins/index.js";
 import { middleware } from "~/utils/middleware.js";
-import type { IWebsocketsResponse } from "~/response/index.js";
-import type { IWebsocketsResponseErrorResult } from "~/response/index.js";
-import type { IWebsocketsResponseOkResult } from "~/response/index.js";
+import { WebsocketsResponse } from "~/response/index.js";
 import { WebsocketsTransport } from "~/transport/index.js";
 import { WebsocketsSendToConnectionsUseCase } from "~/features/SendToConnections/abstractions.js";
 
@@ -29,16 +27,16 @@ interface IWebsocketsRunnerRespondParams extends Pick<
     "connectionId" | "endpoint" | "eventType"
 > {
     messageId?: string;
-    result: IWebsocketsResponseOkResult | IWebsocketsResponseErrorResult;
+    result: WebsocketsResponse.OkResult | WebsocketsResponse.ErrorResult;
 }
 
 export class WebsocketsRunner implements IWebsocketsRunner {
     private readonly context: Context;
     private readonly registry: ConnectionRegistry.Interface;
-    private readonly response: IWebsocketsResponse;
+    private readonly response: WebsocketsResponse.Interface;
     private readonly sendToConnections: WebsocketsSendToConnectionsUseCase.Interface;
 
-    public constructor(context: Context, response: IWebsocketsResponse) {
+    public constructor(context: Context, response: WebsocketsResponse.Interface) {
         this.context = context;
         this.registry = context.container.resolve(ConnectionRegistry);
         this.response = response;
@@ -48,7 +46,7 @@ export class WebsocketsRunner implements IWebsocketsRunner {
     public async run<T extends IWebsocketsEventData = IWebsocketsEventData>(
         event: IWebsocketsEvent<T>
     ): Promise<IWebsocketsRunnerResponse> {
-        let result: IWebsocketsResponseOkResult | IWebsocketsResponseErrorResult;
+        let result: WebsocketsResponse.OkResult | WebsocketsResponse.ErrorResult;
         try {
             result = await this.executeRoute(event);
         } catch (ex) {

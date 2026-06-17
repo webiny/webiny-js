@@ -8,4 +8,5 @@ export { WebsocketsEventValidator } from "~/validator/index.js";
 export { WebsocketsRunner } from "~/runner/WebsocketsRunner.js";
 export { createWebsocketsRoutePlugins } from "~/runner/routes/index.js";
 export { createWebsocketsRoutePlugin } from "~/plugins/WebsocketsRoutePlugin.js";
+export { WebsocketsResponse } from "~/response/index.js";
 export type { WebsocketsError } from "~/features/shared/errors.js";

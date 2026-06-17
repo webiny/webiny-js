@@ -6,9 +6,9 @@ import { PluginsContainer } from "@webiny/plugins";
 import {
     createWebsocketsRoutePlugins,
     WebsocketsRunner,
-    WebsocketsTransport
+    WebsocketsTransport,
+    WebsocketsResponse
 } from "@webiny/api-websockets/exports/api.js";
-import { WebsocketsResponse } from "@webiny/api-websockets/response/WebsocketsResponse.js";
 import type { Context } from "@webiny/api-websockets/types.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import type { HandlerCallable, HandlerParams } from "./types.js";
@@ -61,7 +61,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                 const { response } = params;
                 const context = app.webiny as Context;
 
-                const responseObj = response || new WebsocketsResponse();
+                const responseObj = response || context.container.resolve(WebsocketsResponse);
                 const runner = new WebsocketsRunner(context, responseObj);
 
                 let validatedEvent;

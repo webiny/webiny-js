@@ -1,3 +1,4 @@
+import { createAbstraction } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface IWebsocketsResponseOkParams {
@@ -33,4 +34,15 @@ export interface IWebsocketsResponseErrorResult {
 export interface IWebsocketsResponse {
     ok(params?: IWebsocketsResponseOkParams): IWebsocketsResponseOkResult;
     error(params: IWebsocketsResponseErrorParams): IWebsocketsResponseErrorResult;
+}
+
+export const WebsocketsResponse = createAbstraction<IWebsocketsResponse>("WebsocketsResponse");
+
+export namespace WebsocketsResponse {
+    export type Interface = IWebsocketsResponse;
+    export type OkParams = IWebsocketsResponseOkParams;
+    export type OkResult = IWebsocketsResponseOkResult;
+    export type ErrorParams = IWebsocketsResponseErrorParams;
+    export type ErrorResult = IWebsocketsResponseErrorResult;
+    export type ErrorResultError = IWebsocketsResponseErrorResultError;
 }
