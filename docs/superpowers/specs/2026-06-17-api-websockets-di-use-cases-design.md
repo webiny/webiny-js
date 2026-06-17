@@ -193,7 +193,7 @@ await this.sendToConnections.execute([connection], dataToSend);
 
 The `MiddlewareParams` type keeps its `registry` field — it just comes from `this.registry` (resolved from container) instead of a constructor param.
 
-The `IWebsocketsRunner` abstraction in `runner/abstractions/IWebsocketsRunner.ts` must also be updated if it declares a constructor signature or factory method with the old 3-argument form. Callers that construct `WebsocketsRunner` directly (e.g., `api-websockets-aws/handler.ts`) must drop the `registry` argument.
+The `IWebsocketsRunner` interface only declares `run(event)` — no constructor signature — so it needs no change. Callers that construct `WebsocketsRunner` directly (e.g., `api-websockets-aws/handler.ts`) must drop the `registry` argument from the constructor call.
 
 ### AWS Handler (api-websockets-aws/handler.ts)
 
@@ -287,11 +287,11 @@ Calls `websocketService.listConnections()` and `websocketService.sendToConnectio
 
 ### `packages/ai-powerups` — WbGeneratePageContentTask
 
-Calls `websocketService.send()` (the identity-based send). Migrate to resolve `WebsocketsSendToIdentityUseCase` and call `.execute()`.
+Calls `websocketService.send()` (the identity-based send). The dependency is non-optional (no `{ optional: true }` flag, task always calls it). Migrate to resolve `WebsocketsSendToIdentityUseCase` and call `.execute()`. Preserve non-optional injection.
 
 ### `packages/api-file-manager-s3` — processThreatScanResult
 
-Resolves `WebsocketService` from container, calls `listConnections()` and `sendToConnections()`. Also uses the `WebsocketService.Connection` type alias (which maps to `IWebsocketsConnectionRegistryData`). Migrate to resolve `WebsocketsListConnectionsUseCase` and `WebsocketsSendToConnectionsUseCase`, and replace `WebsocketService.Connection` with a direct import of `IWebsocketsConnectionRegistryData` from `@webiny/api-websockets/registry`.
+Resolves `WebsocketService` from container (non-optional — no `{ optional: true }` flag; will throw if websockets not registered, matching current behavior). Calls `listConnections()` and `sendToConnections()`. Also uses the `WebsocketService.Connection` type alias (which maps to `IWebsocketsConnectionRegistryData`). Migrate to resolve `WebsocketsListConnectionsUseCase` and `WebsocketsSendToConnectionsUseCase` (non-optional), and replace `WebsocketService.Connection` with a direct import of `IWebsocketsConnectionRegistryData` from `@webiny/api-websockets/registry`.
 
 ### `packages/webiny/src/api.ts`
 
