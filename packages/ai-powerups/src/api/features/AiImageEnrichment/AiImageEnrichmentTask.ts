@@ -140,18 +140,16 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
             });
         }
 
-        if (this.websocketService) {
-            const connectionsResult = await this.websocketService.listConnections();
-            if (connectionsResult.isOk() && connectionsResult.value.length > 0) {
-                await this.websocketService.sendToConnections(connectionsResult.value, {
-                    action: "fm.file.enrichment",
-                    data: {
-                        id: file.id,
-                        tags: mergedTags,
-                        description
-                    }
-                });
-            }
+        const connectionsResult = await this.websocketService.listConnections();
+        if (connectionsResult.isOk() && connectionsResult.value.length > 0) {
+            await this.websocketService.sendToConnections(connectionsResult.value, {
+                action: "fm.file.enrichment",
+                data: {
+                    id: file.id,
+                    tags: mergedTags,
+                    description
+                }
+            });
         }
 
         return controller.response.done("AI image enrichment completed successfully.");
