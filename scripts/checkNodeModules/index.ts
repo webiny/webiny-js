@@ -15,8 +15,8 @@ const workspacePatterns: string[] = Array.isArray(rawWorkspaces)
     ? rawWorkspaces
     : (rawWorkspaces.packages ?? []);
 
-const runWorkspaces = options?.nodeModulesOnly;
-const runNodeModules = options?.workspacesOnly;
+const runWorkspaces = !options.nodeModulesOnly;
+const runNodeModules = !options.workspacesOnly;
 
 console.log("Scanning nested node_modules…");
 
