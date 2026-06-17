@@ -1,15 +1,11 @@
 import { ConnectionRegistry } from "@webiny/api-websockets";
-import type { IWebsocketsConnectionRegistry } from "@webiny/api-websockets";
 import { WebsocketsConnectionManager } from "~/abstractions.js";
 
 export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.Interface<unknown> {
     private readonly sockets = new Map<string, unknown>();
     private readonly metadata = new Map<string, WebsocketsConnectionManager.ConnectionMetadata>();
-    private readonly registry: IWebsocketsConnectionRegistry;
 
-    public constructor(registry: IWebsocketsConnectionRegistry) {
-        this.registry = registry;
-    }
+    public constructor(private readonly registry: ConnectionRegistry.Interface) {}
 
     public async add(params: WebsocketsConnectionManager.AddParams<unknown>): Promise<void> {
         this.sockets.set(params.connectionId, params.socket);

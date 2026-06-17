@@ -1,11 +1,6 @@
 import type { Knex } from "knex";
 import { WebinyError } from "@webiny/error";
-import type {
-    IWebsocketsConnectionRegistry,
-    IWebsocketsConnectionRegistryData,
-    IWebsocketsConnectionRegistryRegisterParams,
-    IWebsocketsConnectionRegistryUnregisterParams
-} from "@webiny/api-websockets";
+import { ConnectionRegistry } from "@webiny/api-websockets";
 
 interface ConnectionRow {
     connectionId: string;
@@ -25,7 +20,7 @@ export interface WebsocketsConnectionRegistryConfig {
     tableNamePrefix?: string;
 }
 
-export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegistry {
+export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interface {
     private readonly knex: Knex;
     private readonly tableName: string;
 
@@ -37,8 +32,8 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
     }
 
     public async register(
-        event: IWebsocketsConnectionRegistryRegisterParams
-    ): Promise<IWebsocketsConnectionRegistryData> {
+        event: ConnectionRegistry.RegisterParams
+    ): Promise<ConnectionRegistry.Data> {
         try {
             await this.ensureTable();
             await this.migrateTable();
@@ -67,7 +62,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         }
     }
 
-    public async unregister(event: IWebsocketsConnectionRegistryUnregisterParams): Promise<void> {
+    public async unregister(event: ConnectionRegistry.UnregisterParams): Promise<void> {
         try {
             await this.ensureTable();
             await this.migrateTable();
@@ -97,9 +92,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         }
     }
 
-    public async listViaConnections(
-        connections: string[]
-    ): Promise<IWebsocketsConnectionRegistryData[]> {
+    public async listViaConnections(connections: string[]): Promise<ConnectionRegistry.Data[]> {
         try {
             await this.ensureTable();
             await this.migrateTable();
@@ -120,7 +113,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         }
     }
 
-    public async listViaIdentity(identity: string): Promise<IWebsocketsConnectionRegistryData[]> {
+    public async listViaIdentity(identity: string): Promise<ConnectionRegistry.Data[]> {
         try {
             await this.ensureTable();
             await this.migrateTable();
@@ -141,7 +134,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         }
     }
 
-    public async listViaTenant(tenant: string): Promise<IWebsocketsConnectionRegistryData[]> {
+    public async listViaTenant(tenant: string): Promise<ConnectionRegistry.Data[]> {
         try {
             await this.ensureTable();
             await this.migrateTable();
@@ -159,7 +152,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         }
     }
 
-    public async listAll(): Promise<IWebsocketsConnectionRegistryData[]> {
+    public async listAll(): Promise<ConnectionRegistry.Data[]> {
         try {
             await this.ensureTable();
             await this.migrateTable();
@@ -194,7 +187,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         }
     }
 
-    public async listStale(olderThan: Date): Promise<IWebsocketsConnectionRegistryData[]> {
+    public async listStale(olderThan: Date): Promise<ConnectionRegistry.Data[]> {
         try {
             await this.ensureTable();
             await this.migrateTable();
@@ -268,7 +261,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
         });
     }
 
-    private toData(row: ConnectionRow): IWebsocketsConnectionRegistryData {
+    private toData(row: ConnectionRow): ConnectionRegistry.Data {
         return {
             connectionId: row.connectionId,
             identity: {

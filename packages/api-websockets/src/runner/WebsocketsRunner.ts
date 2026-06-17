@@ -10,14 +10,12 @@ import type { IWebsocketsRunnerResponse } from "./abstractions/IWebsocketsRunner
 import type { IWebsocketsRoutePluginCallableParams } from "~/plugins/index.js";
 import { WebsocketsRoutePlugin } from "~/plugins/index.js";
 import { middleware } from "~/utils/middleware.js";
-import type { IWebsocketsConnectionRegistry } from "~/registry/index.js";
 import type { IWebsocketsResponse } from "~/response/index.js";
 import type { IWebsocketsResponseErrorResult } from "~/response/index.js";
 import type { IWebsocketsResponseOkResult } from "~/response/index.js";
-import type { IWebsocketsTransportSendConnection } from "~/transport/index.js";
+import { WebsocketsTransport } from "~/transport/index.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 import { WebsocketsSendToConnectionsUseCase } from "~/features/SendToConnections/abstractions.js";
-import type { ISendToConnectionsUseCase } from "~/features/SendToConnections/abstractions.js";
 
 type MiddlewareParams<C extends Context = Context> = Pick<
     IWebsocketsRoutePluginCallableParams<C>,
@@ -34,9 +32,9 @@ interface IWebsocketsRunnerRespondParams extends Pick<
 
 export class WebsocketsRunner implements IWebsocketsRunner {
     private readonly context: Context;
-    private readonly registry: IWebsocketsConnectionRegistry;
+    private readonly registry: ConnectionRegistry.Interface;
     private readonly response: IWebsocketsResponse;
-    private readonly sendToConnections: ISendToConnectionsUseCase;
+    private readonly sendToConnections: WebsocketsSendToConnectionsUseCase.Interface;
 
     public constructor(context: Context, response: IWebsocketsResponse) {
         this.context = context;
@@ -166,7 +164,7 @@ export class WebsocketsRunner implements IWebsocketsRunner {
             console.error(message, JSON.stringify(data));
             throw new WebinyError(message, "GENERAL_ERROR", data);
         }
-        const connection: IWebsocketsTransportSendConnection = {
+        const connection: WebsocketsTransport.SendConnection = {
             connectionId,
             endpoint
         };

@@ -1,16 +1,16 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import type { IWebsocketsConnectionRegistryData } from "~/registry/index.js";
-import type { IWebsocketsListConnectionsParams } from "~/features/ListConnections/abstractions.js";
 import type { WebsocketsError } from "~/features/shared/errors.js";
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
+import { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
 
-export type IWebsocketsDisconnectParams = IWebsocketsListConnectionsParams;
+export type IWebsocketsDisconnectParams = WebsocketsListConnectionsUseCase.Params;
 
 export interface IDisconnectUseCase {
     execute(
         params?: IWebsocketsDisconnectParams,
         notify?: boolean
-    ): Promise<Result<IWebsocketsConnectionRegistryData[], WebsocketsError>>;
+    ): Promise<Result<ConnectionRegistry.Data[], WebsocketsError>>;
 }
 
 export const WebsocketsDisconnectUseCase =

@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import type { IWebsocketsConnectionRegistryData } from "~/registry/index.js";
 import type { WebsocketsError } from "~/features/shared/errors.js";
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 
 export interface IWebsocketsListConnectionsParamsWhere {
     identityId?: string;
@@ -16,7 +16,7 @@ export interface IWebsocketsListConnectionsParams {
 export interface IListConnectionsUseCase {
     execute(
         params?: IWebsocketsListConnectionsParams
-    ): Promise<Result<IWebsocketsConnectionRegistryData[], WebsocketsError>>;
+    ): Promise<Result<ConnectionRegistry.Data[], WebsocketsError>>;
 }
 
 export const WebsocketsListConnectionsUseCase = createAbstraction<IListConnectionsUseCase>(
@@ -27,5 +27,5 @@ export namespace WebsocketsListConnectionsUseCase {
     export type Interface = IListConnectionsUseCase;
     export type Params = IWebsocketsListConnectionsParams;
     export type ParamsWhere = IWebsocketsListConnectionsParamsWhere;
-    export type RegistryData = IWebsocketsConnectionRegistryData;
+    export type RegistryData = ConnectionRegistry.Data;
 }
