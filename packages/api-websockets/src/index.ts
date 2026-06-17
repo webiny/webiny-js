@@ -1,14 +1,15 @@
 import type { Plugin } from "@webiny/plugins/types.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { createWebsocketsGraphQL } from "~/graphql/index.js";
 import { WebsocketsFeature as Feature } from "./features/feature.js";
+import { WebsocketsGraphQLFactoryFeature } from "./graphql/feature.js";
 
 export const createWebsockets = (): Plugin[] => {
     const featurePlugin = createRegisterExtensionPlugin(context => {
         Feature.register(context.container);
+        WebsocketsGraphQLFactoryFeature.register(context.container);
     });
     featurePlugin.name = "websockets.feature";
-    return [featurePlugin, createWebsocketsGraphQL()];
+    return [featurePlugin];
 };
 
 export { WebsocketsFeature } from "./features/feature.js";
