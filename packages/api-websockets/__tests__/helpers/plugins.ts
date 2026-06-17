@@ -4,7 +4,6 @@ import { createIdentity, createPermissions } from "~tests/helpers/helpers";
 import { createWebsockets } from "~/index";
 import { WebsocketsTransport } from "~/transport/index";
 import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport";
-import { WebsocketsFeature } from "~/features/feature.js";
 import { createCmsExtension } from "@webiny/api-headless-cms";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createRawEventHandler } from "@webiny/handler-aws";
@@ -41,11 +40,10 @@ export const createPlugins = (params?: Params): PluginsContainer => {
             permissions: permissions || createPermissions(),
             identity: createIdentity()
         }),
+        createWebsockets(),
         createRegisterExtensionPlugin(context => {
             context.container.registerInstance(WebsocketsTransport, new MockWebsocketsTransport());
-            WebsocketsFeature.register(context.container);
         }),
-        createWebsockets(),
         ...websocketsStorage.plugins,
         createCmsExtension(),
         graphQLHandlerPlugins(),
