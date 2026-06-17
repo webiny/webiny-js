@@ -15,6 +15,9 @@ The current `WebsocketsContext` class bundles 4 distinct responsibilities (send 
 - **Use case dependencies:** `DisconnectUseCase` and `SendToIdentityUseCase` inject `ListConnectionsUseCase` via DI (not duplicated registry logic).
 - **Stale filter stays inline:** The 3-hour stale connection filter remains in `ListConnectionsUseCase`.
 - **ConnectionRegistry resolved from container:** The runner and AWS handler resolve `ConnectionRegistry` from DI instead of accessing `context.websockets.registry`.
+- **WebsocketsTransport unchanged:** The existing `WebsocketsTransport` DI token stays as-is. It is already resolved from the container in `handler.ts`.
+- **IWebsocketsIdentity rehomed to `types.ts`:** The `IWebsocketsIdentity` type alias moves from the deleted `context/abstractions/IWebsocketsContext.ts` to `types.ts`, where other shared types already live.
+- **Method rename:** The current `send()` method on `IWebsocketsContextObject` becomes `SendToIdentityUseCase.execute()`. The old name is not preserved.
 
 ## Feature Structure
 
@@ -34,7 +37,8 @@ packages/api-websockets/src/features/
     DisconnectUseCase.ts         # depends on ListConnections + Registry + Transport
   ConnectionRegistry/            # already exists, unchanged
     abstractions.ts
-  errors.ts                      # moved from WebsocketService/errors.ts
+  shared/
+    errors.ts                    # moved from WebsocketService/errors.ts
   feature.ts                     # createFeature — registers all 4 use cases
 ```
 
@@ -56,6 +60,16 @@ All registered as singletons.
 The param types from `IWebsocketsContextListConnectionsParams` and `IWebsocketsContextListConnectionsParamsWhere` are renamed to drop the "Context" infix: `IWebsocketsListConnectionsParams` and `IWebsocketsListConnectionsParamsWhere`. They live in `ListConnections/abstractions.ts`.
 
 ```typescript
+interface IWebsocketsListConnectionsParamsWhere {
+    identityId?: string;
+    tenant?: string;
+    connections?: string[];
+}
+
+interface IWebsocketsListConnectionsParams {
+    where?: IWebsocketsListConnectionsParamsWhere;
+}
+
 interface IListConnectionsUseCase {
     execute(
         params?: IWebsocketsListConnectionsParams
@@ -87,7 +101,7 @@ interface ISendToConnectionsUseCase {
 
 ### DisconnectUseCase
 
-`IWebsocketsDisconnectParams` is a type alias for `IWebsocketsListConnectionsParams` (same as before — disconnect takes the same filter shape). It lives in `Disconnect/abstractions.ts`.
+`IWebsocketsDisconnectParams` is a type alias for `IWebsocketsListConnectionsParams` (same as before — disconnect takes the same filter shape). It lives in `Disconnect/abstractions.ts` and imports the source type from `ListConnections/abstractions.ts`. This is a one-directional import (Disconnect depends on ListConnections), not circular.
 
 ```typescript
 interface IDisconnectUseCase {
@@ -144,16 +158,30 @@ const result = await listConnections.execute(args);
 
 ### WebsocketsRunner (runner/WebsocketsRunner.ts)
 
+The runner has two migration points:
+
+1. **`respond()` method** calls `this.context.websockets.sendToConnections()` — this is the hot path for every message reply. After migration, the runner resolves `WebsocketsSendToConnectionsUseCase` from the container.
+
+2. **`executeRoute()` method** passes `registry: this.registry` into route plugin callable params via `IWebsocketsRoutePluginCallableParams`. The runner stops receiving `registry` as a constructor param — instead resolves `ConnectionRegistry` from the container and passes the resolved instance to route plugins. The `IWebsocketsRoutePluginCallableParams.registry` field stays (route plugins still receive the registry directly); only the source of truth changes from constructor injection to container resolution.
+
 ```typescript
-/* Before */
-await this.context.websockets.sendToConnections([connection], dataToSend);
+/* Before — constructor */
+constructor(context, registry, response) { ... }
 
 /* After — resolve from container */
-const sendToConnections = this.context.container.resolve(WebsocketsSendToConnectionsUseCase);
-await sendToConnections.execute([connection], dataToSend);
+constructor(context, response) {
+    this.registry = context.container.resolve(ConnectionRegistry);
+    this.sendToConnections = context.container.resolve(WebsocketsSendToConnectionsUseCase);
+}
+
+/* Before — respond() */
+await this.context.websockets.sendToConnections([connection], dataToSend);
+
+/* After — respond() */
+await this.sendToConnections.execute([connection], dataToSend);
 ```
 
-The runner also stops receiving `registry` as a constructor param — resolves `ConnectionRegistry` from the container.
+The `MiddlewareParams` type keeps its `registry` field — it just comes from `this.registry` (resolved from container) instead of a constructor param.
 
 ### AWS Handler (api-websockets-aws/handler.ts)
 
@@ -182,25 +210,44 @@ export { WebsocketsDisconnectUseCase } from "~/features/Disconnect/abstractions.
 
 ## Errors
 
-Existing error classes move from `features/WebsocketService/errors.ts` to `features/errors.ts`:
+Existing error classes move from `features/WebsocketService/errors.ts` to `features/shared/errors.ts`:
 
 - `WebsocketServiceError` — general transport/registry errors
 - `WebsocketForceDisconnectNotificationError` — failed to notify clients
 - `WebsocketForceDisconnectError` — failed to force-disconnect
 
-The error type union currently exposed as `WebsocketService.Error` becomes a standalone union type exported from `features/errors.ts`.
+The error type union currently exposed as `WebsocketService.Error` becomes a standalone type alias named `WebsocketsError`:
+
+```typescript
+export type WebsocketsError =
+    | WebsocketServiceError
+    | WebsocketForceDisconnectNotificationError
+    | WebsocketForceDisconnectError;
+```
+
+This union type is re-exported from `exports/api.ts` alongside the 4 use case abstractions.
+
+## Updated Files
+
+### `index.ts` (package entry point)
+
+`createWebsockets()` currently returns `[createWebsocketsContext(), createWebsocketsGraphQL()]`. After migration, `createWebsocketsContext()` no longer exists — feature registration happens via `WebsocketsFeature`. `createWebsockets()` is updated to return `[createWebsocketsGraphQL()]` and the `WebsocketsFeature` is exported separately for container registration. The `export * from "./context/index.js"` line is removed; `IWebsocketsIdentity` is now re-exported from `types.ts`.
 
 ## Deleted Files
 
 - `context/WebsocketsContext.ts` — monolithic class
 - `context/abstractions/IWebsocketsContext.ts` — monolithic interface
 - `context/index.ts` — ContextPlugin
+- `context/` — entire directory (empty after above deletions)
 - `features/WebsocketService/abstractions.ts` — old DI token
 - `features/WebsocketService/index.ts` — re-export
+- `features/WebsocketService/` — entire directory (errors.ts moved to `features/shared/`)
 
 ## Testing
 
 Existing tests update to resolve use cases from the container instead of accessing `context.websockets`. Each use case can be tested independently by mocking its direct DI dependencies. The `WebsocketsFeature` replaces `createWebsocketsContext()` in test setup.
+
+Tests in `packages/api-websockets-aws/__tests__/handler/handler.test.ts` also use `context.websockets.listConnections()` — these must be updated to resolve `WebsocketsListConnectionsUseCase` from the container.
 
 ## Scope
 
