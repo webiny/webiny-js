@@ -52,6 +52,8 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
             });
         }),
         new ContextPlugin<ApiCoreContext>(async context => {
+            // Triggers the authenticator chain and seats the resolved identity on the legacy
+            // context object so callers using context.security.getIdentity() get the right value.
             await context.security.authenticate("");
         })
     ].filter(Boolean);

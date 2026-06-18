@@ -37,6 +37,8 @@ export const createTenancyAndSecurity = () => {
             });
         }),
         new ContextPlugin<ApiCoreContext>(context => {
+            // Triggers the authenticator chain and seats the resolved identity on the legacy
+            // context object so callers using context.security.getIdentity() get the right value.
             return context.security.authenticate("");
         })
     ];

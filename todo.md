@@ -39,6 +39,12 @@ Once all callers are migrated to DI-native features, `registerLegacyPlugins` its
 
 Note: migrating `getElasticsearchClient.ts` caused `@webiny/project-utils` to gain a direct `@webiny/handler-graphql` dependency. That may be wrong (project-utils is a low-level testing utility; handler-graphql is application-layer). Revisit when tackling that caller.
 
+## Resolve `ApiCoreContext` and the legacy context object
+
+`packages/api-core/src/types/core.ts:9` — `ApiCoreContext` is a type alias intersecting `BaseContext`, `SecurityContext`, `TenancyContext`, `WcpContext`, and `AdminUsersContext`. It is the type of the old plain context object assembled during the `GraphQLContextEnhancer` phase, kept alive purely for backward compatibility so legacy callers doing `context.security.getIdentity()` etc. still work.
+
+Once all callers are migrated to resolve services directly from the DI container, `ApiCoreContext` and the legacy context assembly have no reason to exist. Decide when/how to remove them.
+
 ## Inspect `CreateTenantSchema` model-not-found fallback
 
 `packages/tenant-manager/src/api/graphql/CreateTenantSchema.ts:79` — there are two early-return guards that fall back to `[{ typeDefs: "", fields: "extensions: JSON" }]`:
