@@ -1,11 +1,13 @@
 import type { Server as HttpServer } from "node:http";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { PluginCollection } from "@webiny/plugins/types.js";
+import type { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
 
 interface BaseServerParams {
     plugins?: PluginsContainer | PluginCollection;
     heartbeatInterval?: number;
     debug?: boolean;
+    connectionManager?: WebsocketsConnectionManager.Interface<unknown>;
 }
 
 export interface CreateWebsocketsServerParams extends BaseServerParams {
