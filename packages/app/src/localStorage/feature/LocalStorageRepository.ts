@@ -8,10 +8,7 @@ export class LocalStorageRepository implements ILocalStorageRepository {
     private store = new Map<string, unknown>();
     private unsubscribe?: () => void;
 
-    constructor(
-        private gateway: ILocalStorageGateway,
-        config: ILocalStorageConfig
-    ) {
+    constructor(private gateway: ILocalStorageGateway, config: ILocalStorageConfig) {
         this.prefix = config.prefix || "";
         makeAutoObservable(this);
 
