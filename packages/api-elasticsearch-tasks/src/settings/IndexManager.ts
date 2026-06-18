@@ -1,4 +1,4 @@
-import type { IndexSettingsManager } from "~/settings/IndexSettingsManager.js";
+import type { IndexSettingsManager } from "~/settings/abstractions/IndexSettingsManager.js";
 import { DisableIndexing } from "./DisableIndexing.js";
 import { EnableIndexing } from "./EnableIndexing.js";
 import type { IElasticsearchIndexingTaskValuesSettings, IIndexSettingsValues } from "~/types.js";

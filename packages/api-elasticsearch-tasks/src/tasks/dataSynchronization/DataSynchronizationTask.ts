@@ -6,7 +6,7 @@ import type {
 import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchSynchronize.js";
 import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
-import { IndexSettingsManager } from "~/settings/IndexSettingsManager.js";
+import { IndexSettingsManager } from "~/settings/abstractions/IndexSettingsManager.js";
 import { DataSynchronizationTaskRunner } from "./DataSynchronizationTaskRunner.js";
 import { createFactories } from "./createFactories.js";
 

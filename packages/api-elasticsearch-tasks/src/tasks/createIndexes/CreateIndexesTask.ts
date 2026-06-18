@@ -6,7 +6,7 @@ import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenant
 import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
 import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
-import { IndexSettingsManager } from "~/settings/IndexSettingsManager.js";
+import { IndexSettingsManager } from "~/settings/abstractions/IndexSettingsManager.js";
 import { OnBeforeTrigger } from "./OnBeforeTrigger.js";
 
 class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCreateIndexesTaskInput> {

@@ -1,6 +1,6 @@
 import { IndexingEnableError } from "~/errors/index.js";
 import type { IIndexSettingsValues } from "~/types.js";
-import type { IndexSettingsManager } from "./IndexSettingsManager.js";
+import type { IndexSettingsManager } from "./abstractions/IndexSettingsManager.js";
 
 export class EnableIndexing {
     private readonly settings: IndexSettingsManager.Interface;

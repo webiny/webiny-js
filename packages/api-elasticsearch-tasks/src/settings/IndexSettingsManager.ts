@@ -1,20 +1,10 @@
-import { createAbstraction } from "@webiny/feature/api";
+import {
+    IndexSettingsManager as Abstraction,
+    type IIndexSettingsManager
+} from "./abstractions/IndexSettingsManager.js";
 import { IndexSettingsGetError, IndexSettingsSetError } from "~/errors/index.js";
 import type { IIndexSettingsValues } from "~/types.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-
-export interface IIndexSettingsManager {
-    getSettings(index: string): Promise<IIndexSettingsValues>;
-    setSettings(index: string, settings: IIndexSettingsValues): Promise<void>;
-}
-
-export const IndexSettingsManager = createAbstraction<IIndexSettingsManager>(
-    "ElasticsearchTasks/IndexSettingsManager"
-);
-
-export namespace IndexSettingsManager {
-    export type Interface = IIndexSettingsManager;
-}
 
 class IndexSettingsManagerImpl implements IIndexSettingsManager {
     constructor(private readonly openSearchClient: OpenSearchClient.Interface) {}
@@ -53,7 +43,7 @@ class IndexSettingsManagerImpl implements IIndexSettingsManager {
     }
 }
 
-export const IndexSettingsManagerDI = IndexSettingsManager.createImplementation({
+export const IndexSettingsManager = Abstraction.createImplementation({
     implementation: IndexSettingsManagerImpl,
     dependencies: [OpenSearchClient]
 });

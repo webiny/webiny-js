@@ -2,7 +2,7 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 import type { IElasticsearchIndexingTaskValues } from "~/types.js";
 import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
-import { IndexSettingsManager } from "~/settings/IndexSettingsManager.js";
+import { IndexSettingsManager } from "~/settings/abstractions/IndexSettingsManager.js";
 import { ReindexingTaskRunner } from "./ReindexingTaskRunner.js";
 
 class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElasticsearchIndexingTaskValues> {
