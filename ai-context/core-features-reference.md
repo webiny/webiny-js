@@ -440,6 +440,24 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 - **Interface Type:** See `packages/db/src/features/DbRegistry/abstractions.ts`
 - **Usage:** Registry for DynamoDB entities/tables. Registered as singleton via `DbRegistryFeature`. Provides `register()`, `getOneItem()`, `getItem()`, `getItems()` methods for looking up registered entities by app and tags. Namespace exports `DbRegistry.Interface`, `DbRegistry.RegisterParams`, `DbRegistry.RegistryItem`.
 
+### OpenSearchClient
+
+- **Import:** `import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchClient/abstraction.ts`
+- **Usage:** DI wrapper around the OpenSearch `Client`. Depends on `OpenSearchContext`. Call `use()` to get the raw client. Registered by `registerOpensearchCore()`.
+
+### OpenSearchContext
+
+- **Import:** `import { OpenSearchContext } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchContext/abstraction.ts`
+- **Usage:** Provides access to the opensearch client via `context.opensearch`. Registered as a factory by `registerOpensearchCore()`.
+
+### OpenSearchClientFactory
+
+- **Import:** `import { OpenSearchClientFactory } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchClientFactory/abstraction.ts`
+- **Usage:** Factory for creating new OpenSearch client instances. Registered by `registerOpensearchCore()`.
+
 ---
 
 ## Notes
