@@ -1,19 +1,15 @@
-import { createContextPlugin } from "@webiny/api";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type {
-    Context,
-    IElasticsearchIndexingTaskValues,
-    IElasticsearchTaskConfig
-} from "~/types.js";
-import { getClients } from "~/helpers/getClients.js";
+import type { IElasticsearchIndexingTaskValues } from "~/types.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
 
-class ElasticsearchReindexingTask implements TaskDefinition.Interface<IElasticsearchIndexingTaskValues> {
+class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElasticsearchIndexingTaskValues> {
     id = "elasticsearchReindexing";
     title = "Elasticsearch reindexing";
 
     constructor(
-        private elasticsearchClient: IElasticsearchTaskConfig["elasticsearchClient"],
-        private documentClient: IElasticsearchTaskConfig["documentClient"]
+        private readonly elasticsearchClient: OpenSearchClient.Interface,
+        private readonly documentClient: DynamoDBClient.Interface
     ) {}
 
     async run({ input, controller }: TaskDefinition.RunParams<IElasticsearchIndexingTaskValues>) {
@@ -34,8 +30,8 @@ class ElasticsearchReindexingTask implements TaskDefinition.Interface<IElasticse
         );
 
         const manager = new Manager<IElasticsearchIndexingTaskValues>({
-            elasticsearchClient: this.elasticsearchClient,
-            documentClient: this.documentClient,
+            elasticsearchClient: this.elasticsearchClient.use(),
+            documentClient: this.documentClient.client,
             controller
         });
 
@@ -47,13 +43,7 @@ class ElasticsearchReindexingTask implements TaskDefinition.Interface<IElasticse
     }
 }
 
-export const createElasticsearchReindexingTask = (params?: Partial<IElasticsearchTaskConfig>) => {
-    return createContextPlugin<Context>(context => {
-        const { documentClient, elasticsearchClient } = getClients(context, params);
-
-        context.container.registerFactory(
-            TaskDefinition,
-            () => new ElasticsearchReindexingTask(elasticsearchClient, documentClient)
-        );
-    });
-};
+export const ElasticsearchReindexingTask = TaskDefinition.createImplementation({
+    implementation: ElasticsearchReindexingTaskImpl,
+    dependencies: [OpenSearchClient, DynamoDBClient]
+});

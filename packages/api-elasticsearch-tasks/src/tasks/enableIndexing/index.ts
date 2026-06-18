@@ -1,19 +1,18 @@
-import { createContextPlugin } from "@webiny/api";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type { Context, IElasticsearchTaskConfig } from "~/types.js";
 import type { IElasticsearchEnableIndexingTaskInput } from "./types.js";
 import { Manager } from "../Manager.js";
 import { IndexManager } from "~/settings/index.js";
 import { EnableIndexingTaskRunner } from "./EnableIndexingTaskRunner.js";
-import { getClients } from "~/helpers/getClients.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { DynamoDBClient } from "@webiny/db-dynamodb";
 
-class ElasticsearchEnableIndexingTask implements TaskDefinition.Interface<IElasticsearchEnableIndexingTaskInput> {
+class ElasticsearchEnableIndexingTaskImpl implements TaskDefinition.Interface<IElasticsearchEnableIndexingTaskInput> {
     id = "elasticsearchEnableIndexing";
     title = "Enable Indexing on Elasticsearch Indexes";
 
     constructor(
-        private elasticsearchClient: IElasticsearchTaskConfig["elasticsearchClient"],
-        private documentClient: IElasticsearchTaskConfig["documentClient"]
+        private elasticsearchClient: OpenSearchClient.Interface,
+        private documentClient: DynamoDBClient.Interface
     ) {}
 
     async run({
@@ -25,8 +24,8 @@ class ElasticsearchEnableIndexingTask implements TaskDefinition.Interface<IElast
         }
 
         const manager = new Manager<IElasticsearchEnableIndexingTaskInput>({
-            elasticsearchClient: this.elasticsearchClient,
-            documentClient: this.documentClient,
+            elasticsearchClient: this.elasticsearchClient.use(),
+            documentClient: this.documentClient.client,
             controller
         });
 
@@ -45,16 +44,7 @@ class ElasticsearchEnableIndexingTask implements TaskDefinition.Interface<IElast
     }
 }
 
-export const createEnableIndexingTask = (params?: Partial<IElasticsearchTaskConfig>) => {
-    return createContextPlugin<Context>(context => {
-        const clients = getClients(context, params);
-
-        // Register the task definition
-        context.container.registerFactory(TaskDefinition, () => {
-            return new ElasticsearchEnableIndexingTask(
-                clients.elasticsearchClient,
-                clients.documentClient
-            );
-        });
-    });
-};
+export const ElasticsearchEnableIndexingTask = TaskDefinition.createImplementation({
+    implementation: ElasticsearchEnableIndexingTaskImpl,
+    dependencies: [OpenSearchClient, DynamoDBClient]
+});
