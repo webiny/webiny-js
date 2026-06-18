@@ -1,6 +1,5 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
 import { createFileManagerS3 } from "./index.js";
 import { createS3AssetDeliveryFeature } from "./assetDelivery/feature.js";
 import type { AssetDeliveryParams } from "./assetDelivery/types.js";
@@ -16,26 +15,6 @@ export const FileManagerS3Feature = createFeature({
         // These replace the null implementations from AssetDeliveryFeature in FileManagerAppFeature
         createS3AssetDeliveryFeature(config.assetDelivery).register(container);
 
-        const plugins = createFileManagerS3().flat(Infinity as 1);
-        let initialized = false;
-
-        const enhancer: IGraphQLContextEnhancer = {
-            async enhance(ctx: Record<string, any>): Promise<void> {
-                if (initialized) {
-                    return;
-                }
-                initialized = true;
-
-                for (const plugin of plugins) {
-                    if (plugin && typeof (plugin as any).apply === "function") {
-                        await (plugin as any).apply(ctx);
-                    } else if (ctx.plugins) {
-                        ctx.plugins.register(plugin);
-                    }
-                }
-            }
-        };
-
-        container.registerInstance(GraphQLContextEnhancer, enhancer);
+        registerLegacyPluginsViaGqlContextEnhancer(container, createFileManagerS3());
     }
 });

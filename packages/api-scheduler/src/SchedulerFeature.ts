@@ -1,7 +1,5 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
-import type { Plugin } from "@webiny/plugins";
+import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
 import type {
     SchedulerClient,
     SchedulerClientConfig
@@ -17,30 +15,8 @@ export const SchedulerFeature = createFeature({
     name: "Scheduler",
     register(container: Container, config: ISchedulerFeatureConfig) {
         container.register(SchedulePrivateModel);
-
-        let initialized = false;
-
-        const contextPlugins: Plugin[] = [
+        registerLegacyPluginsViaGqlContextEnhancer(container, [
             ...createSchedulerContext({ getClient: config.getClient })
-        ];
-
-        const enhancer: IGraphQLContextEnhancer = {
-            async enhance(ctx: Record<string, any>): Promise<void> {
-                if (initialized) {
-                    return;
-                }
-                initialized = true;
-
-                for (const plugin of contextPlugins) {
-                    if (typeof (plugin as any).apply === "function") {
-                        await (plugin as any).apply(ctx);
-                    } else if (ctx.plugins) {
-                        ctx.plugins.register(plugin);
-                    }
-                }
-            }
-        };
-
-        container.registerInstance(GraphQLContextEnhancer, enhancer);
+        ]);
     }
 });
