@@ -68,6 +68,12 @@ The surrounding scaffolding (`tsconfig.json`, `webiny.config.ts`) is still in pl
 
 `packages/event-handler-core/src/features/http/abstractions.ts:21` — currently `handle(request: IHttpRequest): Promise<IHttpResponse>`. Consider whether a mutable response object as a second arg makes sense (Express/Fastify style), e.g. for streaming or incremental header writing. Current return-value style is simpler and sufficient for now.
 
+## Move `ctx.benchmark` out of the shared context
+
+`ctx.benchmark` is set by `HeadlessCmsContextEnhancer` (`packages/api-headless-cms/src/HeadlessCmsContextEnhancer.ts:86`) and used throughout CMS crud/schema code. It's a CMS-specific profiling concern that leaked onto the shared `ctx` object. `GraphQLEngineImpl` has to special-case it (`ctx.benchmark as { measure?: ... } | undefined`) even though it's nothing to do with the engine.
+
+When `ctx` is eventually removed, `benchmark` should move to a proper DI service resolved from the container, scoped to the CMS feature.
+
 ## Gzip compression of HTTP responses
 
 The old Fastify setup had `@fastify/compress` for response compression. Not yet implemented in the DI-native HTTP layer. Needs a compressing decorator on `HttpRouter` in `event-handler-core`, similar to `SecureHeadersDecorator`.

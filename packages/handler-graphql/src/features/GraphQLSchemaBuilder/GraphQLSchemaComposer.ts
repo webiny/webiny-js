@@ -48,7 +48,7 @@ class GraphQLSchemaComposerImpl implements Abstraction.Interface {
         }
 
         for (const factory of userSchemas) {
-            await factory.execute(builder, ctx);
+            await factory.execute(builder);
         }
 
         // Include legacy GraphQLSchemaPlugin instances from ctx.plugins.
