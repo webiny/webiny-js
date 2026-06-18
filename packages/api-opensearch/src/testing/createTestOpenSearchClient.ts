@@ -1,15 +1,14 @@
-import type { Client } from "~/types.js";
-import type { OpenSearchClientOptions } from "~/client.js";
-import { createOpenSearchClient } from "~/client.js";
+import { Client } from "@opensearch-project/opensearch";
+import type { ClientOptions } from "@opensearch-project/opensearch";
 
 const OPENSEARCH_PORT = process.env.OPENSEARCH_PORT || 9200;
 
-const getDefaultOptions = (): Partial<OpenSearchClientOptions> => {
+const getDefaultOptions = (): Partial<ClientOptions> => {
     const endpoint = process.env.OPENSEARCH_ENDPOINT;
     const username = process.env.OPENSEARCH_USERNAME;
     const password = process.env.OPENSEARCH_PASSWORD;
 
-    const options: Partial<OpenSearchClientOptions> = {
+    const options: Partial<ClientOptions> = {
         node: `http://localhost:${OPENSEARCH_PORT}`,
         maxRetries: 10,
         pingTimeout: 500
@@ -193,9 +192,9 @@ const attachTestBehavior = (client: Client): TestOpenSearchClient => {
 };
 
 export const createTestOpenSearchClient = (
-    options: Partial<OpenSearchClientOptions> = {}
+    options: Partial<ClientOptions> = {}
 ): TestOpenSearchClient => {
-    const client = createOpenSearchClient({
+    const client = new Client({
         ...getDefaultOptions(),
         ...options
     });
