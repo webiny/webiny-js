@@ -2,23 +2,23 @@ import type {
     IDataSynchronizationInput,
     IDataSynchronizationManager,
     IFactories
-} from "~/tasks/dataSynchronization/types.js";
+} from "./types.js";
 import type { IIndexManager } from "~/settings/types.js";
-import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchSynchronize.js";
-import { ElasticsearchFetcher } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchFetcher.js";
+import { ElasticsearchFetcher } from "./elasticsearch/ElasticsearchFetcher.js";
+import { ElasticsearchSynchronize } from "./elasticsearch/abstractions/ElasticsearchSynchronize.js";
 
 export interface IDataSynchronizationTaskRunnerParams {
     manager: IDataSynchronizationManager;
     indexManager: IIndexManager;
     factories: IFactories;
-    elasticsearchSynchronize: ElasticsearchSynchronize;
+    elasticsearchSynchronize: ElasticsearchSynchronize.Interface;
 }
 
 export class DataSynchronizationTaskRunner {
-    private readonly manager: IDataSynchronizationManager;
-    private readonly indexManager: IIndexManager;
-    private readonly factories: IFactories;
-    private readonly elasticsearchSynchronize: ElasticsearchSynchronize;
+    private readonly manager;
+    private readonly indexManager;
+    private readonly factories;
+    private readonly elasticsearchSynchronize;
 
     public constructor(params: IDataSynchronizationTaskRunnerParams) {
         this.manager = params.manager;

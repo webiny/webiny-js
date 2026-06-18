@@ -3,20 +3,18 @@ import {
     CreateIndexesTask,
     DataSynchronizationTask,
     ElasticsearchEnableIndexingTask,
-    ElasticsearchReindexingTask
+    ElasticsearchReindexingTask,
+    ElasticsearchSynchronize
 } from "~/tasks/index.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import type { Context } from "~/types.js";
-import { DbRegistry } from "@webiny/db/feature/DbRegistry/index.js";
 
 export const createElasticsearchBackgroundTasks = (): PluginCollection => {
     return [
         createContextPlugin<Context>(context => {
-            // @ts-expect-error We are going to remove this DB client.
-            context.container.registerInstance(DbRegistry, context.db.registry);
-
             context.container.register(ElasticsearchReindexingTask);
             context.container.register(ElasticsearchEnableIndexingTask);
+            context.container.register(ElasticsearchSynchronize);
             context.container.register(DataSynchronizationTask);
             context.container.register(CreateIndexesTask);
         })

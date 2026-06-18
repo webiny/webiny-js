@@ -3,10 +3,9 @@ import type {
     IDataSynchronizationInput,
     IDataSynchronizationOutput
 } from "~/tasks/dataSynchronization/types.js";
-import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchSynchronize.js";
+import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchSynchronize.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
-import { DbRegistry } from "@webiny/db/feature/DbRegistry/index.js";
 
 export const DATA_SYNCHRONIZATION_TASK = "dataSynchronization";
 
@@ -24,7 +23,7 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
     constructor(
         private readonly openSearchClient: OpenSearchClient.Interface,
         private readonly dynamoDBClient: DynamoDBClient.Interface,
-        private readonly dbRegistry: DbRegistry.Interface
+        private readonly elasticsearchSynchronize: ElasticsearchSynchronize.Interface
     ) {}
 
     async run({
@@ -60,18 +59,12 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
             /* webpackChunkName: "createFactories" */ "./createFactories.js"
         );
 
-        const elasticsearchSynchronize = new ElasticsearchSynchronize(
-            controller,
-            this.dbRegistry,
-            this.openSearchClient
-        );
-
         try {
             const dataSynchronization = new DataSynchronizationTaskRunner({
                 manager,
                 indexManager,
                 factories: createFactories(),
-                elasticsearchSynchronize
+                elasticsearchSynchronize: this.elasticsearchSynchronize
             });
 
             return await dataSynchronization.run({
@@ -101,5 +94,5 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
 
 export const DataSynchronizationTask = TaskDefinition.createImplementation({
     implementation: DataSynchronizationTaskImpl,
-    dependencies: [OpenSearchClient, DynamoDBClient, DbRegistry]
+    dependencies: [OpenSearchClient, DynamoDBClient, ElasticsearchSynchronize]
 });

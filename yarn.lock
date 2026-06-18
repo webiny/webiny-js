@@ -12499,7 +12499,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-websockets-aws@workspace:packages/api-websockets-aws":
+"@webiny/api-websockets-aws@npm:0.0.0, @webiny/api-websockets-aws@workspace:packages/api-websockets-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/api-websockets-aws@workspace:packages/api-websockets-aws"
   dependencies:
@@ -12543,7 +12543,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-websockets-server@workspace:packages/api-websockets-server":
+"@webiny/api-websockets-server@npm:0.0.0, @webiny/api-websockets-server@workspace:packages/api-websockets-server":
   version: 0.0.0-use.local
   resolution: "@webiny/api-websockets-server@workspace:packages/api-websockets-server"
   dependencies:
@@ -14157,7 +14157,9 @@ __metadata:
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-website-builder-workflows": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/api-websockets-aws": "npm:0.0.0"
     "@webiny/api-websockets-ddb": "npm:0.0.0"
+    "@webiny/api-websockets-server": "npm:0.0.0"
     "@webiny/api-websockets-sql": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
