@@ -3,13 +3,11 @@ import type {
     IDataSynchronizationInput,
     IDataSynchronizationOutput
 } from "~/tasks/dataSynchronization/types.js";
-import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchSynchronize.js";
 import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
 import { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
 import { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
-import { DataSynchronizationTaskRunner } from "./DataSynchronizationTaskRunner.js";
-import { createFactories } from "./createFactories.js";
+import { ElasticsearchToDynamoDbSynchronization } from "./elasticsearch/abstractions/ElasticsearchToDynamoDbSynchronization.js";
 
 export const DATA_SYNCHRONIZATION_TASK = "dataSynchronization";
 
@@ -28,7 +26,7 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
         private readonly manager: Manager.Interface,
         private readonly disableIndexing: DisableIndexing.Interface,
         private readonly enableIndexing: EnableIndexing.Interface,
-        private readonly elasticsearchSynchronize: ElasticsearchSynchronize.Interface
+        private readonly sync: ElasticsearchToDynamoDbSynchronization.Interface
     ) {}
 
     async run({
@@ -47,16 +45,7 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
         );
 
         try {
-            const dataSynchronization = new DataSynchronizationTaskRunner({
-                manager: this.manager,
-                indexManager,
-                factories: createFactories(),
-                elasticsearchSynchronize: this.elasticsearchSynchronize
-            });
-
-            return await dataSynchronization.run({
-                ...input
-            });
+            return await this.sync.run(input, indexManager);
         } catch (ex) {
             return controller.response.error(ex);
         }
@@ -81,5 +70,5 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
 
 export const DataSynchronizationTask = TaskDefinition.createImplementation({
     implementation: DataSynchronizationTaskImpl,
-    dependencies: [Manager, DisableIndexing, EnableIndexing, ElasticsearchSynchronize]
+    dependencies: [Manager, DisableIndexing, EnableIndexing, ElasticsearchToDynamoDbSynchronization]
 });
