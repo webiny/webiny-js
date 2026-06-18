@@ -119,17 +119,17 @@ const attachTestBehavior = (client: Client): TestOpenSearchClient => {
         }
     };
 
-    /* @ts-expect-error */
+    // @ts-expect-error
     client.indices.exists = async (params: any, options: any = {}) => {
         registerIndex(params.index);
-        /* @ts-expect-error */
+        // @ts-expect-error
         return originalExists.apply(client.indices, [params, options]);
     };
 
-    /* @ts-expect-error */
+    // @ts-expect-error
     client.indices.create = async (params: any, options: any = {}) => {
         await deleteIndex(params.index);
-        /* @ts-expect-error */
+        // @ts-expect-error
         const response = await originalCreate.apply(client.indices, [params, options]);
         registeredIndexes.add(params.index);
         await client.indices.refresh({ index: params.index });
@@ -153,7 +153,7 @@ const attachTestBehavior = (client: Client): TestOpenSearchClient => {
     testClient.indices.registerIndex = registerIndex;
 
     const originalSearch = client.search;
-    /* @ts-expect-error */
+    // @ts-expect-error
     client.search = async (...params: any[]) => {
         const [param] = params;
         const index = param?.index;
@@ -161,11 +161,12 @@ const attachTestBehavior = (client: Client): TestOpenSearchClient => {
             await refreshIndex(index);
             dirtyIndexes.delete(index);
         }
+        // @ts-expect-error
         return await originalSearch.apply(client, params);
     };
 
     const originalBulk = client.bulk;
-    /* @ts-expect-error */
+    // @ts-expect-error
     client.bulk = async (...params: any[]) => {
         const [param] = params;
         const { body } = param;
@@ -181,6 +182,7 @@ const attachTestBehavior = (client: Client): TestOpenSearchClient => {
                 }
             }
         }
+        // @ts-expect-error
         const result = await originalBulk.apply(client, params);
         if (deletedIndexes.size > 0) {
             await refreshAll(Array.from(deletedIndexes));
