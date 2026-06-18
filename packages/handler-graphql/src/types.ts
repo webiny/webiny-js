@@ -13,10 +13,6 @@ export interface GraphQLScalarPlugin extends Plugin {
     scalar: GraphQLScalarType;
 }
 
-export interface HandlerGraphQLOptions {
-    path?: string;
-    debug?: boolean | string;
-}
 
 export type GraphQLFieldResolver<
     TSource = any,
