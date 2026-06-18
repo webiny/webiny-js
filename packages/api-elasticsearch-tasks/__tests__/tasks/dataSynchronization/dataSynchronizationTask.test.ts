@@ -1,33 +1,12 @@
-import { describe, expect, it, vi } from "vitest";
-import { createDataSynchronization, DATA_SYNCHRONIZATION_TASK } from "~/tasks";
+import { describe, expect, it } from "vitest";
+import { DATA_SYNCHRONIZATION_TASK } from "~/tasks";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import { useHandler } from "~tests/helpers/useHandler";
-import type { IDataSynchronizationInput, IFactories } from "~/tasks/dataSynchronization/types";
+import type { IDataSynchronizationInput } from "~/tasks/dataSynchronization/types";
 import {
     TaskDefinition,
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-
-vi.mock("~/tasks/dataSynchronization/createFactories", () => {
-    return {
-        createFactories: (): IFactories => {
-            return {
-                elasticsearchToDynamoDb: ({ manager }) => {
-                    return {
-                        run: async input => {
-                            return manager.controller.response.continue({
-                                ...input,
-                                elasticsearchToDynamoDb: {
-                                    finished: true
-                                }
-                            });
-                        }
-                    };
-                }
-            };
-        }
-    };
-});
 
 describe("data synchronization - elasticsearch", () => {
     it("should run a task and end with error due to invalid flow", async () => {
@@ -63,9 +42,7 @@ describe("data synchronization - elasticsearch", () => {
     });
 
     it("should run a task and end with done", async () => {
-        const handler = useHandler({
-            plugins: [createDataSynchronization()]
-        });
+        const handler = useHandler({});
 
         const context = await handler.rawHandle();
 
@@ -92,7 +69,6 @@ describe("data synchronization - elasticsearch", () => {
             webinyTaskId: task.id
         });
 
-        // The new task system returns different response structure
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(result.webinyTaskId).toBe(task.id);
         const taskCheck = await context.tasks.getTask(task.id);
