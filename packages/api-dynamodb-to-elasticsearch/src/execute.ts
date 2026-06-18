@@ -8,8 +8,9 @@ import type { ITimer } from "@webiny/handler-aws";
 import type { ApiResponse } from "@webiny/api-opensearch/types.js";
 
 import { WebinyError } from "@webiny/error";
-import type { Context, IOperations } from "./types.js";
+import type { IOperations } from "./types.js";
 import { shouldShowLogs } from "~/helpers/shouldShowLogs.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 
 export interface BulkOperationsResponseBodyItemIndexError {
     reason?: string;
@@ -32,7 +33,7 @@ export interface IExecuteParams {
     timer: ITimer;
     maxRunningTime: number;
     maxProcessorPercent: number;
-    context: Pick<Context, "opensearch">;
+    opensearch: OpenSearchClient.Client;
     operations: Pick<IOperations, "items" | "total">;
 }
 
@@ -68,7 +69,7 @@ const checkErrors = (result?: ApiResponse): void => {
 
 export const execute = (params: IExecuteParams) => {
     return async (): Promise<void> => {
-        const { context, timer, maxRunningTime, maxProcessorPercent, operations } = params;
+        const { opensearch, timer, maxRunningTime, maxProcessorPercent, operations } = params;
 
         if (operations.total === 0) {
             return;
@@ -84,7 +85,7 @@ export const execute = (params: IExecuteParams) => {
             );
         }
 
-        const healthCheck = createWaitUntilHealthy(context.opensearch, {
+        const healthCheck = createWaitUntilHealthy(opensearch, {
             minClusterHealthStatus: OpenSearchCatClusterHealthStatus.Yellow,
             waitingTimeStep: 30,
             maxProcessorPercent,
@@ -141,7 +142,7 @@ export const execute = (params: IExecuteParams) => {
         }
 
         try {
-            const res = await context.opensearch.bulk({
+            const res = await opensearch.bulk({
                 body: operations.items
             });
             checkErrors(res);

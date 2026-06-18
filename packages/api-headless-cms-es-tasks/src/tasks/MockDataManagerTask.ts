@@ -7,6 +7,8 @@ import { CARS_MODEL_ID } from "~/tasks/MockDataManager/constants.js";
 import { enableIndexing } from "~/utils/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { CmsContext } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { MockDataManager } from "./MockDataManager/MockDataManager.js";
 
 export const MOCK_DATA_MANAGER_TASK_ID = "mockDataManager";
 
@@ -20,19 +22,15 @@ class MockDataManagerTask implements TaskDefinition.Interface<
 
     selfCleanup = "always" as const;
 
-    private readonly context: Context;
-
-    constructor(context: CmsContext.Interface) {
-        this.context = context as Context;
-    }
+    constructor(
+        private readonly context: CmsContext.Interface,
+        private readonly openSearchClient: OpenSearchClient.Interface
+    ) {}
 
     async run(params: TaskDefinition.RunParams<IMockDataManagerInput, IMockDataManagerOutput>) {
-        const { MockDataManager } = await import(
-            /* webpackChunkName: "MockDataManager" */ "./MockDataManager/MockDataManager.js"
-        );
-
         const carsMock = new MockDataManager<IMockDataManagerInput, IMockDataManagerOutput>(
-            this.context as Context
+            this.context as Context,
+            this.openSearchClient
         );
 
         try {
@@ -49,7 +47,7 @@ class MockDataManagerTask implements TaskDefinition.Interface<
     }
     async onError() {
         await enableIndexing({
-            client: this.context.opensearch,
+            client: this.openSearchClient.use(),
             model: {
                 modelId: CARS_MODEL_ID,
                 tenant: "root"
@@ -59,7 +57,7 @@ class MockDataManagerTask implements TaskDefinition.Interface<
 
     async onAbort() {
         await enableIndexing({
-            client: this.context.opensearch,
+            client: this.openSearchClient.use(),
             model: {
                 modelId: CARS_MODEL_ID,
                 tenant: "root"
@@ -70,5 +68,5 @@ class MockDataManagerTask implements TaskDefinition.Interface<
 
 export const MockDataManagerTaskDefinition = TaskDefinition.createImplementation({
     implementation: MockDataManagerTask,
-    dependencies: [CmsContext]
+    dependencies: [CmsContext, OpenSearchClient]
 });

@@ -22,4 +22,3 @@ export * from "./sharedIndex.js";
 export * from "./indexPrefix.js";
 export * from "./db/index.js";
 export * from "./types.js";
-export { OpenSearchClient } from "./features/OpenSearchClient/abstraction.js";

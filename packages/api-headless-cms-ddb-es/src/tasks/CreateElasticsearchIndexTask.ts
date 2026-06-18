@@ -2,12 +2,11 @@ import { OpenSearchTenantIndexFactory } from "@webiny/api-elasticsearch-tasks";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { configurations } from "~/configurations.js";
-import type { CmsContext } from "~/types.js";
 import { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex/index.js";
 
-class CreateElasticsearchIndexTask implements OpenSearchTenantIndexFactory.Interface {
+class CreateElasticsearchIndexTaskImpl implements OpenSearchTenantIndexFactory.Interface {
     constructor(
-        private context: CmsContext,
+        private readonly indexConfigs: CmsEntryOpenSearchIndex.Interface[],
         private listModels: ListModelsUseCase.Interface
     ) {}
 
@@ -19,9 +18,7 @@ class CreateElasticsearchIndexTask implements OpenSearchTenantIndexFactory.Inter
             return [];
         }
 
-        const indexConfigs = this.context.container.resolveAll(CmsEntryOpenSearchIndex);
-
-        const indexes = models.map<OpenSearchTenantIndexFactory.IndexConfig>(model => {
+        return models.map<OpenSearchTenantIndexFactory.IndexConfig>(model => {
             const { index } = configurations.es({
                 model: {
                     modelId: model.modelId,
@@ -31,7 +28,7 @@ class CreateElasticsearchIndexTask implements OpenSearchTenantIndexFactory.Inter
             return {
                 index,
                 settings: configurations.indexSettings({
-                    indexConfigs,
+                    indexConfigs: this.indexConfigs,
                     model: {
                         modelId: model.modelId,
                         tenant: tenant.id,
@@ -40,14 +37,10 @@ class CreateElasticsearchIndexTask implements OpenSearchTenantIndexFactory.Inter
                 })
             };
         });
-
-        return indexes;
     }
 }
 
-export const createCreateIndexTask = (context: CmsContext) => {
-    context.container.registerFactory(OpenSearchTenantIndexFactory, () => {
-        const listModels = context.container.resolve(ListModelsUseCase);
-        return new CreateElasticsearchIndexTask(context, listModels);
-    });
-};
+export const CreateElasticsearchIndexTask = OpenSearchTenantIndexFactory.createImplementation({
+    implementation: CreateElasticsearchIndexTaskImpl,
+    dependencies: [[CmsEntryOpenSearchIndex, { multiple: true }], ListModelsUseCase]
+});

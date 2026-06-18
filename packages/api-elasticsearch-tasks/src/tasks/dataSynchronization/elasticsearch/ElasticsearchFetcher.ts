@@ -12,7 +12,7 @@ import { shouldIgnoreEsResponseError } from "./shouldIgnoreEsResponseError.js";
 import { inspect } from "node:util";
 
 class ElasticsearchFetcherImpl implements Abstraction.Interface {
-    private readonly client: OpenSearchClient.Return;
+    private readonly client: OpenSearchClient.Client;
 
     constructor(openSearchClient: OpenSearchClient.Interface) {
         this.client = openSearchClient.use();
