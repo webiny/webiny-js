@@ -4,7 +4,7 @@ import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
 import { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
 import { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
-import { EnableIndexingTaskRunner } from "./EnableIndexingTaskRunner.js";
+import { EnableIndexingTaskRunner } from "./abstractions/EnableIndexingTaskRunner.js";
 
 class ElasticsearchEnableIndexingTaskImpl implements TaskDefinition.Interface<IElasticsearchEnableIndexingTaskInput> {
     public readonly id = "elasticsearchEnableIndexing";
@@ -13,7 +13,8 @@ class ElasticsearchEnableIndexingTaskImpl implements TaskDefinition.Interface<IE
     constructor(
         private readonly manager: Manager.Interface,
         private readonly disableIndexing: DisableIndexing.Interface,
-        private readonly enableIndexing: EnableIndexing.Interface
+        private readonly enableIndexing: EnableIndexing.Interface,
+        private readonly runner: EnableIndexingTaskRunner.Interface
     ) {}
 
     async run({
@@ -35,13 +36,13 @@ class ElasticsearchEnableIndexingTaskImpl implements TaskDefinition.Interface<IE
             }
         );
 
-        const enableIndexingRunner = new EnableIndexingTaskRunner(this.manager, indexManager);
-
-        return enableIndexingRunner.exec(input.matching);
+        return this.runner.exec(input.matching, indexManager);
     }
 }
 
 export const ElasticsearchEnableIndexingTask = TaskDefinition.createImplementation({
     implementation: ElasticsearchEnableIndexingTaskImpl,
-    dependencies: [Manager, DisableIndexing, EnableIndexing]
+    dependencies: [Manager, DisableIndexing, EnableIndexing, EnableIndexingTaskRunner]
 });
+
+export { EnableIndexingTaskRunner } from "./EnableIndexingTaskRunner.js";

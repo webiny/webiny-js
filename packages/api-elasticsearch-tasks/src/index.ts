@@ -5,6 +5,7 @@ import {
     OnBeforeTrigger,
     DataSynchronizationTask,
     ElasticsearchEnableIndexingTask,
+    EnableIndexingTaskRunner,
     ElasticsearchReindexingTask,
     ElasticsearchSynchronize,
     ElasticsearchFetcher,
@@ -25,6 +26,7 @@ export const createElasticsearchBackgroundTasks = (): PluginCollection => {
             context.container.register(DisableIndexing);
             context.container.register(EnableIndexing);
             context.container.register(ElasticsearchReindexingTask);
+            context.container.register(EnableIndexingTaskRunner);
             context.container.register(ElasticsearchEnableIndexingTask);
             context.container.register(ElasticsearchSynchronize);
             context.container.register(ElasticsearchFetcher);
