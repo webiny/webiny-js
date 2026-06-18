@@ -1,15 +1,15 @@
 import { expect } from "vitest";
 import path from "path";
 import { registerOpensearchCore } from "@webiny/api-opensearch";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { logger } from "../logger";
 import { createHandler } from "@webiny/handler-aws";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 import { elasticIndexManager } from "../helpers/elasticIndexManager";
-import type { ElasticsearchClient } from "./createClient";
-import { createElasticsearchClient } from "./createClient";
 import { getDocumentClient, simulateStream } from "../dynamodb";
 import { getOpenSearchIndexPrefix } from "../../../api-opensearch/src/indexPrefix";
 import { createMockApiLogContextPlugin } from "../mockApiLog";
+import type { TestOpenSearchClient } from "@webiny/api-opensearch/testing";
 
 interface GetElasticsearchClientParams {
     name: string;
@@ -45,12 +45,11 @@ interface OnBeforeEach {
 }
 
 export class ElasticsearchClientConfig {
-    public readonly elasticsearchClient: ElasticsearchClient;
+    public readonly elasticsearchClient: TestOpenSearchClient;
     private onBeforeEach: { name: string; cb: OnBeforeEach }[] = [];
 
     public constructor(prefix: string) {
         if (prefix !== "") {
-            // Prefix will only be handled once, for the first processed storage operations.
             const indexPrefix = getOpenSearchIndexPrefix();
             if (!indexPrefix.includes("api-")) {
                 process.env.OPENSEARCH_INDEX_PREFIX = `${indexPrefix}${prefix}`;
@@ -60,7 +59,7 @@ export class ElasticsearchClientConfig {
         logger.debug(`ES index prefix = "%s"`, getOpenSearchIndexPrefix());
 
         const documentClient = getDocumentClient();
-        this.elasticsearchClient = createElasticsearchClient();
+        this.elasticsearchClient = createTestOpenSearchClient();
 
         const dynamoDbHandler = createHandler({
             plugins: [

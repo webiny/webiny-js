@@ -6,7 +6,8 @@ const esEndpoint = process.env.OPENSEARCH_ENDPOINT;
 const defaultOptions = {
     node: `http://localhost:${OPENSEARCH_PORT}`,
     maxRetries: 10,
-    pingTimeout: 500
+    pingTimeout: 500,
+    auth: null
 };
 const esUsername = process.env.OPENSEARCH_USERNAME;
 const esPassword = process.env.OPENSEARCH_PASSWORD;
@@ -230,11 +231,15 @@ const attachCustomEvents = client => {
 };
 
 module.exports = {
-    createElasticsearchClient: (options = {}) => {
-        const client = createOpenSearchClient({
+    createElasticsearchClient: (inputOptions = {}) => {
+        const options = {
             ...defaultOptions,
-            ...options
+            ...inputOptions
+        };
+        console.log({
+            options
         });
+        const client = createOpenSearchClient(options);
         return attachCustomEvents(client);
     }
 };

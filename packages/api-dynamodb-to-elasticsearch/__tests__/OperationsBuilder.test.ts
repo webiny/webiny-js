@@ -3,7 +3,7 @@ import { OperationsBuilder } from "~/OperationsBuilder";
 import { DynamoDBRecord } from "@webiny/handler-aws/types";
 import { marshall } from "~/marshall";
 import { OperationType } from "~/Operations";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient.js";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import type { OpenSearchContext } from "@webiny/api-opensearch";
 import { createMockContext } from "~tests/mocks/context.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
@@ -14,7 +14,7 @@ describe("OperationsBuilder", () => {
 
     beforeEach(async () => {
         context = createMockContext({
-            elasticsearch: createElasticsearchClient()
+            elasticsearch: createTestOpenSearchClient()
         });
         compressor = context.container.resolve(CompressionHandler);
     });

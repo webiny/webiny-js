@@ -14,10 +14,8 @@ import type { Context } from "~/types";
 import { createElasticsearchBackgroundTasks } from "~/index";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import {
-    getElasticsearchClient,
-    registerOpensearchCoreForTests
-} from "@webiny/project-utils/testing/elasticsearch/index.js";
+import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
+import { registerOpensearchCoreForTests } from "@webiny/api-opensearch/testing";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;

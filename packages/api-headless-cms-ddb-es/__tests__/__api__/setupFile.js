@@ -8,10 +8,8 @@ import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenS
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { configurations } from "../../src/configurations";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
-import {
-    getElasticsearchClient,
-    registerOpensearchCoreForTests
-} from "@webiny/project-utils/testing/elasticsearch";
+import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
+import { registerOpensearchCoreForTests } from "@webiny/api-opensearch/testing";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 
 if (typeof registerCmsOpenSearchStorageOperations !== "function") {
