@@ -1,7 +1,7 @@
-import type { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import type { TestOpenSearchClient } from "@webiny/api-opensearch/testing";
 
 interface Params {
-    client: ElasticsearchClient;
+    client: TestOpenSearchClient;
     index: string;
 }
 

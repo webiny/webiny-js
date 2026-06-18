@@ -4,7 +4,7 @@ import { listIndexes } from "./listIndexes.js";
 import { createIndexFactory } from "./createIndex.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
+import { OpenSearchTenantIndexFactory } from "~/abstractions/OpenSearchTenantIndexFactory.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { CreateIndexesTaskRunner as Abstraction } from "./abstractions/CreateIndexesTaskRunner.js";
 
@@ -14,7 +14,7 @@ class CreateIndexesTaskRunnerImpl implements Abstraction.Interface {
     constructor(
         private readonly tenantContext: TenantContext.Interface,
         private readonly listTenantsUseCase: ListTenantsUseCase.Interface,
-        private readonly indexFactories: OpensearchTenantIndexFactory.Interface[],
+        private readonly indexFactories: OpenSearchTenantIndexFactory.Interface[],
         manager: Manager.Interface
     ) {
         this.controller = manager.controller;
@@ -90,7 +90,7 @@ export const CreateIndexesTaskRunner = Abstraction.createImplementation({
     dependencies: [
         TenantContext,
         ListTenantsUseCase,
-        [OpensearchTenantIndexFactory, { multiple: true }],
+        [OpenSearchTenantIndexFactory, { multiple: true }],
         Manager
     ]
 });

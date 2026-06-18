@@ -5,7 +5,7 @@ import { createApiCore } from "@webiny/api-core";
 import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
-import { OpenSearchClientOptions, registerOpensearchCore } from "@webiny/api-opensearch";
+import { OpenSearchClientOptions, registerOpenSearchCore } from "@webiny/api-opensearch";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAssetDelivery, createFileManagerS3 } from "@webiny/api-file-manager-s3";
@@ -54,7 +54,7 @@ if (osUsername && osPassword) {
 export const handler = createHandler({
     plugins: [
         registerDynamoDBCore({ documentClient }),
-        registerOpensearchCore(openSearchClientOptions),
+        registerOpenSearchCore(openSearchClientOptions),
         createApiCore({
             storageOperations: createApiCoreDdb({ documentClient })
         }),

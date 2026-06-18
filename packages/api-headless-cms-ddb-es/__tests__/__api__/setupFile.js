@@ -8,8 +8,8 @@ import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenS
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { configurations } from "../../src/configurations";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
-import { registerOpensearchCoreForTests } from "@webiny/api-opensearch/testing";
+import { registerOpenSearchCoreForTests } from "@webiny/api-opensearch/testing";
+import { OpenSearchClient, getBaseConfiguration } from "@webiny/api-opensearch";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 
 if (typeof registerCmsOpenSearchStorageOperations !== "function") {
@@ -23,11 +23,6 @@ if (!prefix.includes("api-")) {
 
 setStorageOps("cms", () => {
     const documentClient = getDocumentClient();
-
-    const { elasticsearchClient } = getElasticsearchClient({
-        name: "api-headless-cms-ddb-es",
-        prefix: "api-headless-cms-env-"
-    });
 
     const createIndexName = model => {
         const { index } = configurations.es({
@@ -45,19 +40,20 @@ setStorageOps("cms", () => {
     const createOrRefreshIndexSubscription = new ContextPlugin(async context => {
         context.container.registerFactory(EntryBeforeCreateEventHandler, () => ({
             async handle(event) {
+                const client = context.container.resolve(OpenSearchClient);
                 const { model } = event.payload;
                 const index = createIndexName(model);
                 try {
-                    const response = await elasticsearchClient.indices.exists({
+                    const response = await client.indices.exists({
                         index
                     });
                     if (response.body) {
                         return;
                     }
-                    await elasticsearchClient.indices.create({
+                    await client.indices.create({
                         index,
                         body: {
-                            ...baseIndexConfigurationPlugin.body
+                            ...getBaseConfiguration().body
                         }
                     });
                 } catch {}
@@ -108,7 +104,7 @@ setStorageOps("cms", () => {
             registerDynamoDBCore({
                 documentClient
             }),
-            registerOpensearchCoreForTests(elasticsearchClient),
+            registerOpenSearchCoreForTests(),
             registerCmsOpenSearchStorageOperations(),
             ...initializedDbPlugins,
             createOrRefreshIndexSubscription,

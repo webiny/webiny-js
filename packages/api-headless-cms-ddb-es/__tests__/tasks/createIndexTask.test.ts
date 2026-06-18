@@ -9,7 +9,7 @@ import type { IElasticsearchCreateIndexesTaskInput } from "@webiny/api-elasticse
 import { configurations } from "~/configurations";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
 import type { OpenSearchContext } from "@webiny/api-opensearch/types";
-import { OpensearchTenantIndexFactory } from "@webiny/api-elasticsearch-tasks";
+import { OpenSearchTenantIndexFactory } from "@webiny/api-elasticsearch-tasks";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const createIndexName = (model: Pick<CmsModel, "tenant" | "modelId">): string => {
@@ -35,7 +35,7 @@ describe("Create index task", () => {
             }
         });
 
-        const indexFactories = context.container.resolveAll(OpensearchTenantIndexFactory);
+        const indexFactories = context.container.resolveAll(OpenSearchTenantIndexFactory);
 
         expect(indexFactories).toHaveLength(1);
 

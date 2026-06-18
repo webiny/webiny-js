@@ -1,8 +1,9 @@
-import { registerOpensearchCore } from "./registerOpensearchCore.js";
+export { registerOpenSearchCore } from "./registerOpenSearchCore.js";
 
-export * from "./indexConfiguration/index.js";
+export { getCommonMappings, getBaseConfiguration } from "./indexConfiguration/index.js";
 export * from "./plugins/index.js";
 export * from "./sort.js";
+
 export * from "./indices.js";
 export * from "./where.js";
 export * from "./limit.js";
@@ -21,4 +22,4 @@ export * from "./sharedIndex.js";
 export * from "./indexPrefix.js";
 export * from "./db/index.js";
 export * from "./types.js";
-export { registerOpensearchCore };
+export { OpenSearchClient } from "./features/OpenSearchClient/abstraction.js";

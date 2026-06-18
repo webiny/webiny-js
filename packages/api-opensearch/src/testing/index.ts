@@ -2,5 +2,5 @@ export {
     createTestOpenSearchClient,
     type TestOpenSearchClient
 } from "./createTestOpenSearchClient.js";
-export { registerOpensearchCoreForTests } from "./registerOpensearchCoreForTests.js";
+export { registerOpenSearchCoreForTests } from "./registerOpenSearchCoreForTests.js";
 export { setupTestIndexManager } from "./setupTestIndexManager.js";

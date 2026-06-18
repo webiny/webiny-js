@@ -41,4 +41,4 @@ export const createElasticsearchBackgroundTasks = (): PluginCollection => {
     ];
 };
 
-export * from "./abstractions/OpensearchTenantIndexFactory.js";
+export { OpenSearchTenantIndexFactory } from "./abstractions/OpenSearchTenantIndexFactory.js";

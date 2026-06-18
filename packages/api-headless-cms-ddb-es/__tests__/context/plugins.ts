@@ -15,8 +15,7 @@ import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKey
 import { createApiCore } from "@webiny/api-core";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
-import { registerOpensearchCoreForTests } from "@webiny/api-opensearch/testing";
+import { registerOpenSearchCoreForTests } from "@webiny/api-opensearch/testing";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -45,14 +44,12 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const testProjectLicense = createTestWcpLicense();
-    const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
-
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,
         plugins: [
             topPlugins,
-            registerOpensearchCoreForTests(elasticsearchClient),
+            registerOpenSearchCoreForTests(),
             createApiCore({
                 storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense

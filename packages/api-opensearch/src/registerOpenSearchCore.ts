@@ -7,8 +7,8 @@ import type { OpenSearchContext } from "~/types.js";
 import type { OpenSearchClientOptions } from "~/client.js";
 import { Client, createOpenSearchClient } from "~/client.js";
 
-export const registerOpensearchCore = (params: OpenSearchClientOptions | Client) => {
-    // OpensearchContext is narrower than Context, but we know that the context will be of type OpenSearchContext, so we can safely ignore the TypeScript error here.
+export const registerOpenSearchCore = (params: OpenSearchClientOptions | Client) => {
+    // OpenSearchContext is narrower than Context, but we know that the context will be of type OpenSearchContext, so we can safely ignore the TypeScript error here.
     // TODO remove the context altogether as soon as possible.
     // @ts-expect-error
     return createRegisterExtensionPlugin<OpenSearchContext>(async context => {

@@ -2,13 +2,13 @@ import type { IIndexManager } from "~/settings/types.js";
 import { listIndexes } from "./listIndexes.js";
 import { createIndexFactory } from "~/tasks/createIndexes/createIndex.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
+import { OpenSearchTenantIndexFactory } from "~/abstractions/OpenSearchTenantIndexFactory.js";
 import { OnBeforeTrigger as Abstraction } from "./abstractions/OnBeforeTrigger.js";
 
 class OnBeforeTriggerImpl implements Abstraction.Interface {
     constructor(
         private readonly tenantContext: TenantContext.Interface,
-        private readonly indexFactories: OpensearchTenantIndexFactory.Interface[]
+        private readonly indexFactories: OpenSearchTenantIndexFactory.Interface[]
     ) {}
 
     public async run(targets: string[] | undefined, indexManager: IIndexManager): Promise<void> {
@@ -59,5 +59,5 @@ class OnBeforeTriggerImpl implements Abstraction.Interface {
 
 export const OnBeforeTrigger = Abstraction.createImplementation({
     implementation: OnBeforeTriggerImpl,
-    dependencies: [TenantContext, [OpensearchTenantIndexFactory, { multiple: true }]]
+    dependencies: [TenantContext, [OpenSearchTenantIndexFactory, { multiple: true }]]
 });

@@ -1,13 +1,13 @@
 import { Context as BaseContext } from "@webiny/api";
 import type { Context } from "@webiny/handler/types";
 import { PluginsContainer } from "@webiny/plugins";
-import type { Client } from "@webiny/project-utils/testing/elasticsearch/createClient.js";
+import type { TestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import type { OpenSearchContext } from "@webiny/api-opensearch/types.js";
 import type { Reply, Request } from "@webiny/handler-aws/types.js";
 
 export interface ICreateMockContextParams {
     plugins?: PluginsContainer;
-    elasticsearch: Client;
+    elasticsearch: TestOpenSearchClient;
 }
 
 export const createMockContext = (

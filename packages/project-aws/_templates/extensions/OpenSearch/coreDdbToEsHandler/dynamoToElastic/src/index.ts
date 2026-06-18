@@ -1,5 +1,5 @@
 import { createHandler } from "@webiny/handler-aws";
-import { type OpenSearchClientOptions, registerOpensearchCore } from "@webiny/api-opensearch";
+import { type OpenSearchClientOptions, registerOpenSearchCore } from "@webiny/api-opensearch";
 import { createEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 
 const osUsername = process.env.OPENSEARCH_USERNAME;
@@ -16,7 +16,7 @@ if (osUsername && osPassword) {
 }
 
 export const handler = createHandler({
-    plugins: [registerOpensearchCore(clientOptions), createEventHandler()],
+    plugins: [registerOpenSearchCore(clientOptions), createEventHandler()],
     options: {
         bodyLimit: 536870912 // 512MB
     }
