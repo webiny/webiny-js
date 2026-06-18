@@ -1,8 +1,6 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IProjectModel } from "~/abstractions/models/index.js";
 
-const a = "sd";
-
 type IGetProjectServiceResult = IProjectModel;
 
 interface IGetProjectService {
