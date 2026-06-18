@@ -9,7 +9,6 @@ import { createSystemGraphQL } from "~/graphql/system/createSystemGraphQL.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
 
 export interface ApiCoreConfig {
-    AH;
     storageOperations: ApiCoreStorageOperations;
     testProjectLicense?: DecryptedWcpProjectLicense;
 }
