@@ -54,6 +54,20 @@ Once all callers are migrated to resolve services directly from the DI container
 
 The second guard was required during the migration when the `wbyTenant` CMS model might not exist yet. Now that the model is always registered, the guard may be dead code. Verify that `wbyTenant` is always present when `CreateTenantSchema.enhance()` runs, then decide whether the fallback can be removed or should become a hard error.
 
+## Port deleted extension templates to DI-native
+
+The following extension template `index.ts` files were deleted because they used the old `createHandler` + `createApiCore` plugin-based pattern from `@webiny/handler-aws`:
+
+- `packages/project-aws/_templates/extensions/OpenSearch/api/graphql/src/index.ts`
+- `packages/project-aws/_templates/extensions/OpenSearch/coreDdbToEsHandler/dynamoToElastic/src/index.ts`
+- `packages/project-aws/_templates/extensions/sqlite/api/graphql/src/index.ts` (entire directory gone)
+
+The surrounding scaffolding (`tsconfig.json`, `webiny.config.ts`) is still in place for the OpenSearch templates. All three need to be rewritten using `createLambdaHandler` + `Feature.register()` pattern, following the same approach as `packages/project-aws/_templates/appTemplates/api/graphql/src/index.ts`.
+
+## Consider adding `response` as second arg to `IHttpRoute.handle`
+
+`packages/event-handler-core/src/features/http/abstractions.ts:21` — currently `handle(request: IHttpRequest): Promise<IHttpResponse>`. Consider whether a mutable response object as a second arg makes sense (Express/Fastify style), e.g. for streaming or incremental header writing. Current return-value style is simpler and sufficient for now.
+
 ## Gzip compression of HTTP responses
 
 The old Fastify setup had `@fastify/compress` for response compression. Not yet implemented in the DI-native HTTP layer. Needs a compressing decorator on `HttpRouter` in `event-handler-core`, similar to `SecureHeadersDecorator`.
