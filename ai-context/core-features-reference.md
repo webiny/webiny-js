@@ -432,6 +432,16 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 
 ---
 
+## Database Features
+
+### DbRegistry
+
+- **Import:** `import { DbRegistry } from "@webiny/db/exports/api/db.js"`
+- **Interface Type:** See `packages/db/src/features/DbRegistry/abstractions.ts`
+- **Usage:** Registry for DynamoDB entities/tables. Registered as singleton via `DbRegistryFeature`. Provides `register()`, `getOneItem()`, `getItem()`, `getItems()` methods for looking up registered entities by app and tags. Namespace exports `DbRegistry.Interface`, `DbRegistry.RegisterParams`, `DbRegistry.RegistryItem`.
+
+---
+
 ## Notes
 
 - Always import abstractions from the feature path (not from package root)
