@@ -1,5 +1,5 @@
 import type { IncomingMessage } from "node:http";
-import { WebsocketsUpgradeHandler } from "~/abstractions.js";
+import { WebsocketsUpgradeHandler } from "./abstractions.js";
 
 export class DefaultUpgradeHandlerImpl implements WebsocketsUpgradeHandler.Interface {
     public async shouldUpgrade(

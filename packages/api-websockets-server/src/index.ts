@@ -6,7 +6,9 @@ import { ServerConnectionManager } from "~/connectionManager/ServerConnectionMan
 
 export { createWebsocketsServer, attachWebsocketsServer } from "~/server/WebsocketsServer.js";
 export type { IWebsocketsServer } from "~/server/types.js";
-export * from "~/abstractions.js";
+export * from "~/adapter/abstractions.js";
+export * from "~/upgradeHandler/abstractions.js";
+export * from "~/connectionManager/abstractions.js";
 
 export const createServerWebsockets = () => {
     const plugin = createRegisterExtensionPlugin(context => {

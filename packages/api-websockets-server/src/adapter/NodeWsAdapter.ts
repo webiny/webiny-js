@@ -3,7 +3,7 @@ import type { IncomingMessage } from "node:http";
 import type { Duplex } from "node:stream";
 import { WebSocketServer } from "ws";
 import { WebSocket } from "ws";
-import { WebsocketsServerAdapter } from "~/abstractions.js";
+import { WebsocketsServerAdapter } from "./abstractions.js";
 
 class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> {
     private wss: WebSocketServer | undefined;
