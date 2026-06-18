@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 import path from "path";
-import { getOpenSearchOperators, registerOpensearchCore } from "@webiny/api-opensearch";
+import { registerOpensearchCore } from "@webiny/api-opensearch";
 import { logger } from "../logger";
 import { createHandler } from "@webiny/handler-aws";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
@@ -8,7 +8,6 @@ import { elasticIndexManager } from "../helpers/elasticIndexManager";
 import type { ElasticsearchClient } from "./createClient";
 import { createElasticsearchClient } from "./createClient";
 import { getDocumentClient, simulateStream } from "../dynamodb";
-import type { PluginCollection } from "../environment";
 import { getOpenSearchIndexPrefix } from "../../../api-opensearch/src/indexPrefix";
 import { createMockApiLogContextPlugin } from "../mockApiLog";
 
@@ -47,7 +46,6 @@ interface OnBeforeEach {
 
 export class ElasticsearchClientConfig {
     public readonly elasticsearchClient: ElasticsearchClient;
-    public readonly plugins: PluginCollection;
     private onBeforeEach: { name: string; cb: OnBeforeEach }[] = [];
 
     public constructor(prefix: string) {
@@ -82,8 +80,6 @@ export class ElasticsearchClientConfig {
                 }
             }
         });
-
-        this.plugins = [registerOpensearchCore(this.elasticsearchClient), ...getOpenSearchOperators()];
     }
 
     setOnBeforeEach(name: string, cb: OnBeforeEach) {

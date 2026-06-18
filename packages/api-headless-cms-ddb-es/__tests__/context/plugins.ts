@@ -15,8 +15,10 @@ import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKey
 import { createApiCore } from "@webiny/api-core";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
-import { registerOpensearchCore } from "@webiny/api-opensearch";
+import {
+    getElasticsearchClient,
+    registerOpensearchCoreForTests
+} from "@webiny/project-utils/testing/elasticsearch/index.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -52,7 +54,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
         tenant,
         plugins: [
             topPlugins,
-            registerOpensearchCore(elasticsearchClient),
+            registerOpensearchCoreForTests(elasticsearchClient),
             createApiCore({
                 storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense

@@ -8,11 +8,11 @@ import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenS
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { configurations } from "../../src/configurations";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
 import {
-    getOpenSearchIndexPrefix as getOpenSearchIndexPrefix,
-    getOpenSearchOperators
-} from "@webiny/api-opensearch";
+    getElasticsearchClient,
+    registerOpensearchCoreForTests
+} from "@webiny/project-utils/testing/elasticsearch";
+import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 
 if (typeof registerCmsOpenSearchStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -26,7 +26,7 @@ if (!prefix.includes("api-")) {
 setStorageOps("cms", () => {
     const documentClient = getDocumentClient();
 
-    const { elasticsearchClient, plugins } = getElasticsearchClient({
+    const { elasticsearchClient } = getElasticsearchClient({
         name: "api-headless-cms-ddb-es",
         prefix: "api-headless-cms-env-"
     });
@@ -110,11 +110,10 @@ setStorageOps("cms", () => {
             registerDynamoDBCore({
                 documentClient
             }),
+            registerOpensearchCoreForTests(elasticsearchClient),
             registerCmsOpenSearchStorageOperations(),
-            ...plugins,
             ...initializedDbPlugins,
             createOrRefreshIndexSubscription,
-            getOpenSearchOperators(),
             fruitModifierPlugin
         ]
     };
