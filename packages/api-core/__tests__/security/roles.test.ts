@@ -29,7 +29,7 @@ const testRoleFactory = RoleFactory.createImplementation({
 
 describe("Security Role CRUD Test", () => {
     const { install, securityRole } = useGqlHandler({
-        plugins: [testRoleFactory]
+        registrations: [testRoleFactory]
     });
 
     beforeEach(async () => {

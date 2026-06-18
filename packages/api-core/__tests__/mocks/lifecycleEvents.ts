@@ -87,7 +87,7 @@ class RoleAfterDeleteTrackerHandler implements RoleAfterDeleteEventHandler.Inter
     }
 }
 
-export const assignApiKeyLifecycleEvents = () => [
+export const apiKeyLifecycleEventHandlers = () => [
     ApiKeyBeforeCreateEventHandler.createImplementation({
         implementation: ApiKeyBeforeCreateTrackerHandler,
         dependencies: []
@@ -114,7 +114,7 @@ export const assignApiKeyLifecycleEvents = () => [
     })
 ];
 
-export const assignRoleLifecycleEvents = () => [
+export const roleLifecycleEventHandlers = () => [
     RoleBeforeCreateEventHandler.createImplementation({
         implementation: RoleBeforeCreateTrackerHandler,
         dependencies: []

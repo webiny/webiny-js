@@ -56,7 +56,7 @@ const testTeamFactory = TeamFactory.createImplementation({
 describe("Security Team CRUD Test", () => {
     const { install, securityTeam } = useGqlHandler({
         wcpLicense: createTestWcpLicense(),
-        plugins: [testRoleFactory, testTeamFactory]
+        registrations: [testRoleFactory, testTeamFactory]
     });
 
     beforeEach(async () => {

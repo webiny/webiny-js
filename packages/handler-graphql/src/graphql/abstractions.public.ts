@@ -17,10 +17,7 @@ export interface IGraphQLSchema {
 
 /** Define custom GraphQL schema extensions. */
 export interface IGraphQLSchemaFactory {
-    execute(
-        builder: GraphQLSchemaBuilder.Interface,
-        ctx?: Record<string, any>
-    ): Promise<GraphQLSchemaBuilder.Interface>;
+    execute(builder: GraphQLSchemaBuilder.Interface): Promise<GraphQLSchemaBuilder.Interface>;
 }
 
 /** Define custom GraphQL schema extensions. */

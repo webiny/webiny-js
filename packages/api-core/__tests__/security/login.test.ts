@@ -2,7 +2,7 @@ import { describe, test, expect, beforeEach } from "vitest";
 import { useGqlHandler } from "../useGqlHandler";
 
 describe(`"Login" test`, () => {
-    const { install, securityIdentity } = useGqlHandler({ plugins: [] });
+    const { install, securityIdentity } = useGqlHandler({ registrations: [] });
 
     beforeEach(async () => {
         const [response] = await install.install({

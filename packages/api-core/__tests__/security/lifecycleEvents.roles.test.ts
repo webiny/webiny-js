@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { useGqlHandler } from "../useGqlHandler";
 
-import { assignRoleLifecycleEvents, tracker } from "../mocks/lifecycleEvents";
+import { roleLifecycleEventHandlers, tracker } from "../mocks/lifecycleEvents";
 import mocks from "~tests/mocks/securityRole.js";
 
 describe("Role Lifecycle Events", () => {
     const { install, securityRole } = useGqlHandler({
-        plugins: [...assignRoleLifecycleEvents()]
+        registrations: [...roleLifecycleEventHandlers()]
     });
 
     beforeEach(async () => {

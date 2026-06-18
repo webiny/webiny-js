@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { useGqlHandler } from "../useGqlHandler";
 
-import { assignApiKeyLifecycleEvents, tracker } from "../mocks/lifecycleEvents";
+import { apiKeyLifecycleEventHandlers, tracker } from "../mocks/lifecycleEvents";
 
 describe("API Key Lifecycle Events", () => {
     const { install, securityApiKeys } = useGqlHandler({
-        plugins: [...assignApiKeyLifecycleEvents()]
+        registrations: [...apiKeyLifecycleEventHandlers()]
     });
 
     beforeEach(async () => {

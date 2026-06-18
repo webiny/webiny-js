@@ -54,6 +54,10 @@ Once all callers are migrated to resolve services directly from the DI container
 
 The second guard was required during the migration when the `wbyTenant` CMS model might not exist yet. Now that the model is always registered, the guard may be dead code. Verify that `wbyTenant` is always present when `CreateTenantSchema.enhance()` runs, then decide whether the fallback can be removed or should become a hard error.
 
+## Port DDB stream handler to DI-native
+
+There is no DynamoDB stream handler in the app templates. The OpenSearch one (`packages/project-aws/_templates/extensions/OpenSearch/coreDdbToEsHandler/dynamoToElastic/src/index.ts`) was deleted because it used the old plugin-based pattern. Needs to be rewritten using `createLambdaHandler` + `DynamoDBEventType` + DI-native services. No `ctx` object — handlers at this layer resolve services directly from the container.
+
 ## Port deleted extension templates to DI-native
 
 The following extension template `index.ts` files were deleted because they used the old `createHandler` + `createApiCore` plugin-based pattern from `@webiny/handler-aws`:

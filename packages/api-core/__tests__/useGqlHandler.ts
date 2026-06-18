@@ -39,7 +39,7 @@ import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import { LOGIN } from "./graphql/login";
 
 type UseGqlHandlerParams = {
-    plugins?: any[];
+    registrations?: any[];
     wcpLicense?: DecryptedWcpProjectLicense;
 };
 
@@ -64,13 +64,13 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             });
             GraphQLEngineFeature.register(container);
 
-            for (const plugin of opts.plugins ?? []) {
+            for (const registration of opts.registrations ?? []) {
                 // Arrow functions are setup callbacks; classes (which also have typeof "function")
                 // have a prototype and are DI implementations → register in container
-                if (typeof plugin === "function" && !plugin.prototype) {
-                    await plugin(container);
+                if (typeof registration === "function" && !registration.prototype) {
+                    await registration(container);
                 } else {
-                    container.register(plugin);
+                    container.register(registration);
                 }
             }
         }
