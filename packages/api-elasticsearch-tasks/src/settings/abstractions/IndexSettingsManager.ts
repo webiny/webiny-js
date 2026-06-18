@@ -12,4 +12,5 @@ export const IndexSettingsManager = createAbstraction<IIndexSettingsManager>(
 
 export namespace IndexSettingsManager {
     export type Interface = IIndexSettingsManager;
+    export type Settings = IIndexSettingsValues;
 }

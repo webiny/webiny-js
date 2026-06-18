@@ -1,15 +1,11 @@
-import {
-    IndexSettingsManager as Abstraction,
-    type IIndexSettingsManager
-} from "./abstractions/IndexSettingsManager.js";
+import { IndexSettingsManager as Abstraction } from "./abstractions/IndexSettingsManager.js";
 import { IndexSettingsGetError, IndexSettingsSetError } from "~/errors/index.js";
-import type { IIndexSettingsValues } from "~/types.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 
-class IndexSettingsManagerImpl implements IIndexSettingsManager {
+class IndexSettingsManagerImpl implements Abstraction.Interface {
     constructor(private readonly openSearchClient: OpenSearchClient.Interface) {}
 
-    public async getSettings(index: string): Promise<IIndexSettingsValues> {
+    public async getSettings(index: string): Promise<Abstraction.Settings> {
         try {
             const response = await this.openSearchClient.use().indices.getSettings({
                 index
@@ -26,7 +22,7 @@ class IndexSettingsManagerImpl implements IIndexSettingsManager {
         }
     }
 
-    public async setSettings(index: string, settings: IIndexSettingsValues): Promise<void> {
+    public async setSettings(index: string, settings: Abstraction.Settings): Promise<void> {
         try {
             await this.openSearchClient.use().indices.putSettings({
                 index,
