@@ -113,6 +113,9 @@ export const Node = ({
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
+        if (node.data?.isFocused) {
+            return;
+        }
         if (folder.id !== ROOT_FOLDER) {
             onToggle(folder.id);
         }

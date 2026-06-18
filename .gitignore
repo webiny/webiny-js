@@ -1,4 +1,5 @@
 .idea
+.codegraph
 .webpack
 .webiny
 .artifacts

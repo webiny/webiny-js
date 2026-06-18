@@ -49,6 +49,9 @@ export const NavigateFolderWithRouterProvider = ({
      */
     const navigateToFolder = useCallback(
         (newFolderId: string): void => {
+            if (newFolderId === currentFolderId) {
+                return;
+            }
             const query = new URLSearchParams(location.search);
             query.delete("new");
             query.delete("id");
@@ -59,7 +62,7 @@ export const NavigateFolderWithRouterProvider = ({
                 search: query.toString()
             });
         },
-        [location, folderIdQueryString]
+        [location, folderIdQueryString, currentFolderId]
     );
 
     /**
