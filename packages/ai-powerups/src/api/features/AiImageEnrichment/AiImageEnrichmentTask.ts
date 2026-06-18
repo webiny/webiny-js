@@ -7,6 +7,7 @@ import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/i
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { GetSettingsUseCase as FmGetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
 import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 
 export const AI_IMAGE_ENRICHMENT_TASK_ID = "fmAiImageEnrichment";
@@ -42,7 +43,8 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
         private ai: Ai.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private encryption: Encryption.Interface,
-        private websocketService?: WebsocketService.Interface
+        private identityContext: IdentityContext.Interface,
+        private websocketService: WebsocketService.Interface
     ) {}
 
     async run({
@@ -140,17 +142,18 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
             });
         }
 
-        const connectionsResult = await this.websocketService.listConnections();
-        if (connectionsResult.isOk() && connectionsResult.value.length > 0) {
-            await this.websocketService.sendToConnections(connectionsResult.value, {
+        const identity = this.identityContext.getIdentity();
+        await this.websocketService.send(
+            { id: identity.id },
+            {
                 action: "fm.file.enrichment",
                 data: {
                     id: file.id,
                     tags: mergedTags,
                     description
                 }
-            });
-        }
+            }
+        );
 
         return controller.response.done("AI image enrichment completed successfully.");
     }
@@ -165,6 +168,7 @@ export const AiImageEnrichmentTask = TaskDefinition.createImplementation({
         Ai,
         GetSettingsUseCase,
         Encryption,
-        [WebsocketService, { optional: true }]
+        IdentityContext,
+        WebsocketService
     ]
 });
