@@ -1,7 +1,16 @@
 import type { TestOpenSearchClient } from "./createTestOpenSearchClient.js";
 
+type LifecycleHook = () => Promise<void>;
+
+interface TestGlobal {
+    __beforeEach: LifecycleHook;
+    __afterEach: LifecycleHook;
+    __beforeAll: LifecycleHook;
+    __afterAll: LifecycleHook;
+}
+
 interface SetupTestIndexManagerParams {
-    global: typeof globalThis;
+    global: typeof globalThis & Partial<TestGlobal>;
     client: TestOpenSearchClient;
     onBeforeEach?: () => Promise<void> | void;
 }
@@ -17,22 +26,22 @@ export const setupTestIndexManager = (params: SetupTestIndexManagerParams) => {
         }
     };
 
-    (global as any).__beforeEach = async () => {
+    global.__beforeEach = async () => {
         await clearIndices();
         if (onBeforeEach) {
             await onBeforeEach();
         }
     };
 
-    (global as any).__afterEach = async () => {
+    global.__afterEach = async () => {
         await clearIndices();
     };
 
-    (global as any).__beforeAll = async () => {
+    global.__beforeAll = async () => {
         await clearIndices();
     };
 
-    (global as any).__afterAll = async () => {
+    global.__afterAll = async () => {
         await clearIndices();
     };
 };
