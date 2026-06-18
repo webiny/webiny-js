@@ -4,7 +4,7 @@ import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
 import { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
 import { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
-import { ReindexingTaskRunner } from "./ReindexingTaskRunner.js";
+import { ReindexingTaskRunner } from "./abstractions/ReindexingTaskRunner.js";
 
 class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElasticsearchIndexingTaskValues> {
     public readonly id = "elasticsearchReindexing";
@@ -13,7 +13,8 @@ class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElast
     constructor(
         private readonly manager: Manager.Interface,
         private readonly disableIndexing: DisableIndexing.Interface,
-        private readonly enableIndexing: EnableIndexing.Interface
+        private readonly enableIndexing: EnableIndexing.Interface,
+        private readonly runner: ReindexingTaskRunner.Interface
     ) {}
 
     async run({ input, controller }: TaskDefinition.RunParams<IElasticsearchIndexingTaskValues>) {
@@ -27,14 +28,13 @@ class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElast
             this.enableIndexing,
             input.settings || {}
         );
-        const reindexing = new ReindexingTaskRunner(this.manager, indexManager);
 
         const keys = input.keys || undefined;
-        return await reindexing.exec(keys, input.limit || 100);
+        return await this.runner.exec(keys, input.limit || 100, indexManager);
     }
 }
 
 export const ElasticsearchReindexingTask = TaskDefinition.createImplementation({
     implementation: ElasticsearchReindexingTaskImpl,
-    dependencies: [Manager, DisableIndexing, EnableIndexing]
+    dependencies: [Manager, DisableIndexing, EnableIndexing, ReindexingTaskRunner]
 });

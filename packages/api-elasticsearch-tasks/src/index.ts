@@ -7,6 +7,7 @@ import {
     ElasticsearchEnableIndexingTask,
     EnableIndexingTaskRunner,
     ElasticsearchReindexingTask,
+    ReindexingTaskRunner,
     ElasticsearchSynchronize,
     ElasticsearchFetcher,
     ElasticsearchToDynamoDbSynchronization,
@@ -25,6 +26,7 @@ export const createElasticsearchBackgroundTasks = (): PluginCollection => {
             context.container.register(IndexSettingsManager);
             context.container.register(DisableIndexing);
             context.container.register(EnableIndexing);
+            context.container.register(ReindexingTaskRunner);
             context.container.register(ElasticsearchReindexingTask);
             context.container.register(EnableIndexingTaskRunner);
             context.container.register(ElasticsearchEnableIndexingTask);

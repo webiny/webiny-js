@@ -1,14 +1,15 @@
 import type {
     IDynamoDbElasticsearchRecord,
     IElasticsearchIndexingTaskValues,
-    IElasticsearchIndexingTaskValuesKeys,
-    Manager
+    IElasticsearchIndexingTaskValuesKeys
 } from "~/types.js";
-import type { ITaskResult } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { Manager } from "~/types.js";
+import type { IIndexManager } from "~/settings/types.js";
+import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { scan } from "~/helpers/scan.js";
 import type { ScanResponse } from "@webiny/db-dynamodb";
 import { createTableWriteBatch } from "@webiny/db-dynamodb";
-import type { IIndexManager } from "~/settings/types.js";
+import { ReindexingTaskRunner as Abstraction } from "./abstractions/ReindexingTaskRunner.js";
 
 const getKeys = (results: ScanResponse): IElasticsearchIndexingTaskValuesKeys | undefined => {
     if (results.lastEvaluatedKey?.PK && results.lastEvaluatedKey?.SK) {
@@ -20,20 +21,16 @@ const getKeys = (results: ScanResponse): IElasticsearchIndexingTaskValuesKeys | 
     return undefined;
 };
 
-export class ReindexingTaskRunner {
-    private readonly manager: Manager.Interface;
+class ReindexingTaskRunnerImpl implements Abstraction.Interface {
     private keys?: IElasticsearchIndexingTaskValuesKeys;
-    private readonly indexManager: IIndexManager;
 
-    public constructor(manager: Manager.Interface, indexManager: IIndexManager) {
-        this.manager = manager;
-        this.indexManager = indexManager;
-    }
+    constructor(private readonly manager: Manager.Interface) {}
 
     public async exec(
         keys: IElasticsearchIndexingTaskValuesKeys | undefined = undefined,
-        limit: number
-    ): Promise<ITaskResult<IElasticsearchIndexingTaskValues>> {
+        limit: number,
+        indexManager: IIndexManager
+    ): Promise<TaskDefinition.Result<IElasticsearchIndexingTaskValues>> {
         this.keys = keys;
 
         const isIndexAllowed = (index: string): boolean => {
@@ -58,7 +55,7 @@ export class ReindexingTaskRunner {
                     }
                 });
                 if (results.items.length === 0) {
-                    await this.indexManager.enableIndexing();
+                    await indexManager.enableIndexing();
                     return this.manager.controller.response.done("No more items to process.");
                 }
 
@@ -73,7 +70,7 @@ export class ReindexingTaskRunner {
                     if (isIndexAllowed(item.index) === false) {
                         continue;
                     }
-                    const exists = await this.indexManager.indexExists(item.index);
+                    const exists = await indexManager.indexExists(item.index);
                     if (!exists) {
                         await this.manager.controller.logger.info({
                             message: `Index "${item.index}" does not exist. Skipping the item.`
@@ -85,7 +82,7 @@ export class ReindexingTaskRunner {
                         continue;
                     }
                     const entity = this.manager.getEntity(entityName);
-                    await this.indexManager.disableIndexing(item.index);
+                    await indexManager.disableIndexing(item.index);
                     tableWriteBatch.put(entity.entity, {
                         ...item,
                         TYPE: item.TYPE || "unknown",
@@ -95,11 +92,11 @@ export class ReindexingTaskRunner {
                 await tableWriteBatch.execute();
                 this.keys = getKeys(results);
                 await this.manager.controller.state.updateInput({
-                    settings: this.indexManager.settings,
+                    settings: indexManager.settings,
                     keys: this.keys
                 });
                 if (!this.keys) {
-                    await this.indexManager.enableIndexing();
+                    await indexManager.enableIndexing();
                     return this.manager.controller.response.done(
                         "No more items to process - no last evaluated keys."
                     );
@@ -110,7 +107,7 @@ export class ReindexingTaskRunner {
             });
         } catch (ex) {
             try {
-                await this.indexManager.enableIndexing();
+                await indexManager.enableIndexing();
             } catch (er) {
                 er.data = ex;
                 return this.manager.controller.response.error(er);
@@ -119,3 +116,8 @@ export class ReindexingTaskRunner {
         }
     }
 }
+
+export const ReindexingTaskRunner = Abstraction.createImplementation({
+    implementation: ReindexingTaskRunnerImpl,
+    dependencies: [Manager]
+});
