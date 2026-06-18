@@ -1,13 +1,10 @@
 import { IndexingEnableError } from "~/errors/index.js";
 import type { IIndexSettingsValues } from "~/types.js";
-import type { IndexSettingsManager } from "./abstractions/IndexSettingsManager.js";
+import { IndexSettingsManager } from "./abstractions/IndexSettingsManager.js";
+import { EnableIndexing as Abstraction } from "./abstractions/EnableIndexing.js";
 
-export class EnableIndexing {
-    private readonly settings: IndexSettingsManager.Interface;
-
-    public constructor(settings: IndexSettingsManager.Interface) {
-        this.settings = settings;
-    }
+class EnableIndexingImpl implements Abstraction.Interface {
+    constructor(private readonly settings: IndexSettingsManager.Interface) {}
 
     public async exec(index: string, settings: IIndexSettingsValues): Promise<void> {
         try {
@@ -22,3 +19,8 @@ export class EnableIndexing {
         }
     }
 }
+
+export const EnableIndexing = Abstraction.createImplementation({
+    implementation: EnableIndexingImpl,
+    dependencies: [IndexSettingsManager]
+});

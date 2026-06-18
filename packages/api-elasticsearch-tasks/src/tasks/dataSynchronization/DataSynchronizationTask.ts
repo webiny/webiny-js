@@ -6,7 +6,8 @@ import type {
 import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchSynchronize.js";
 import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
-import { IndexSettingsManager } from "~/settings/abstractions/IndexSettingsManager.js";
+import { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
+import { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
 import { DataSynchronizationTaskRunner } from "./DataSynchronizationTaskRunner.js";
 import { createFactories } from "./createFactories.js";
 
@@ -25,7 +26,8 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
 
     constructor(
         private readonly manager: Manager.Interface,
-        private readonly indexSettingsManager: IndexSettingsManager.Interface,
+        private readonly disableIndexing: DisableIndexing.Interface,
+        private readonly enableIndexing: EnableIndexing.Interface,
         private readonly elasticsearchSynchronize: ElasticsearchSynchronize.Interface
     ) {}
 
@@ -39,7 +41,8 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
 
         const indexManager = new IndexManager(
             this.manager.elasticsearch,
-            this.indexSettingsManager,
+            this.disableIndexing,
+            this.enableIndexing,
             {}
         );
 
@@ -78,5 +81,5 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
 
 export const DataSynchronizationTask = TaskDefinition.createImplementation({
     implementation: DataSynchronizationTaskImpl,
-    dependencies: [Manager, IndexSettingsManager, ElasticsearchSynchronize]
+    dependencies: [Manager, DisableIndexing, EnableIndexing, ElasticsearchSynchronize]
 });

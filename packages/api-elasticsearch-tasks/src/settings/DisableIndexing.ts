@@ -1,13 +1,10 @@
 import { IndexingDisableError } from "~/errors/index.js";
 import type { IIndexSettingsValues } from "~/types.js";
-import type { IndexSettingsManager } from "./abstractions/IndexSettingsManager.js";
+import { IndexSettingsManager } from "./abstractions/IndexSettingsManager.js";
+import { DisableIndexing as Abstraction } from "./abstractions/DisableIndexing.js";
 
-export class DisableIndexing {
-    private readonly settings: IndexSettingsManager.Interface;
-
-    public constructor(settings: IndexSettingsManager.Interface) {
-        this.settings = settings;
-    }
+class DisableIndexingImpl implements Abstraction.Interface {
+    constructor(private readonly settings: IndexSettingsManager.Interface) {}
 
     public async exec(index: string): Promise<IIndexSettingsValues> {
         const settings = await this.settings.getSettings(index);
@@ -24,3 +21,8 @@ export class DisableIndexing {
         return settings;
     }
 }
+
+export const DisableIndexing = Abstraction.createImplementation({
+    implementation: DisableIndexingImpl,
+    dependencies: [IndexSettingsManager]
+});

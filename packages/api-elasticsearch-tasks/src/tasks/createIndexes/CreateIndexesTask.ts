@@ -6,7 +6,8 @@ import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenant
 import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
 import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
-import { IndexSettingsManager } from "~/settings/abstractions/IndexSettingsManager.js";
+import { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
+import { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
 import { OnBeforeTrigger } from "./OnBeforeTrigger.js";
 
 class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCreateIndexesTaskInput> {
@@ -16,7 +17,8 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
 
     constructor(
         private readonly manager: Manager.Interface,
-        private readonly indexSettingsManager: IndexSettingsManager.Interface,
+        private readonly disableIndexing: DisableIndexing.Interface,
+        private readonly enableIndexing: EnableIndexing.Interface,
         private readonly tenantContext: TenantContext.Interface,
         private readonly listTenantsUseCase: ListTenantsUseCase.Interface,
         private readonly indexFactories: OpensearchTenantIndexFactory.Interface[]
@@ -32,7 +34,8 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
 
         const indexManager = new IndexManager(
             this.manager.elasticsearch,
-            this.indexSettingsManager,
+            this.disableIndexing,
+            this.enableIndexing,
             {}
         );
 
@@ -50,7 +53,8 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
     async onBeforeTrigger() {
         const indexManager = new IndexManager(
             this.manager.elasticsearch,
-            this.indexSettingsManager,
+            this.disableIndexing,
+            this.enableIndexing,
             {}
         );
 
@@ -67,7 +71,8 @@ export const CreateIndexesTask = TaskDefinition.createImplementation({
     implementation: CreateIndexesTaskImpl,
     dependencies: [
         Manager,
-        IndexSettingsManager,
+        DisableIndexing,
+        EnableIndexing,
         TenantContext,
         ListTenantsUseCase,
         [OpensearchTenantIndexFactory, { multiple: true }]

@@ -2,7 +2,8 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 import type { IElasticsearchIndexingTaskValues } from "~/types.js";
 import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
-import { IndexSettingsManager } from "~/settings/abstractions/IndexSettingsManager.js";
+import { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
+import { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
 import { ReindexingTaskRunner } from "./ReindexingTaskRunner.js";
 
 class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElasticsearchIndexingTaskValues> {
@@ -11,7 +12,8 @@ class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElast
 
     constructor(
         private readonly manager: Manager.Interface,
-        private readonly indexSettingsManager: IndexSettingsManager.Interface
+        private readonly disableIndexing: DisableIndexing.Interface,
+        private readonly enableIndexing: EnableIndexing.Interface
     ) {}
 
     async run({ input, controller }: TaskDefinition.RunParams<IElasticsearchIndexingTaskValues>) {
@@ -21,7 +23,8 @@ class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElast
 
         const indexManager = new IndexManager(
             this.manager.elasticsearch,
-            this.indexSettingsManager,
+            this.disableIndexing,
+            this.enableIndexing,
             input.settings || {}
         );
         const reindexing = new ReindexingTaskRunner(this.manager, indexManager);
@@ -33,5 +36,5 @@ class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElast
 
 export const ElasticsearchReindexingTask = TaskDefinition.createImplementation({
     implementation: ElasticsearchReindexingTaskImpl,
-    dependencies: [Manager, IndexSettingsManager]
+    dependencies: [Manager, DisableIndexing, EnableIndexing]
 });
