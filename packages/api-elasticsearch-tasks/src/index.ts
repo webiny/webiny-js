@@ -7,7 +7,7 @@ import {
 } from "~/tasks/index.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import type { Context } from "~/types.js";
-import { DbRegistry } from "~/abstractions/DbRegistry.js";
+import { DbRegistry } from "@webiny/db/feature/DbRegistry/index.js";
 
 export const createElasticsearchBackgroundTasks = (): PluginCollection => {
     return [

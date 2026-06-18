@@ -1,7 +1,7 @@
 import type { NonEmptyArray } from "@webiny/api/types.js";
 import type { IRegistryItem } from "@webiny/db";
 import { EntityType } from "./getElasticsearchEntityType.js";
-import { DbRegistry } from "~/abstractions/DbRegistry.js";
+import { DbRegistry } from "@webiny/db/feature/DbRegistry/index.js";
 import type { IEntity, IStandardEntityAttributes } from "@webiny/db-dynamodb";
 
 export interface IGetElasticsearchEntityParams {

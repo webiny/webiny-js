@@ -6,7 +6,7 @@ import type {
 import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchSynchronize.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
-import { DbRegistry } from "~/abstractions/DbRegistry.js";
+import { DbRegistry } from "@webiny/db/feature/DbRegistry/index.js";
 
 export const DATA_SYNCHRONIZATION_TASK = "dataSynchronization";
 

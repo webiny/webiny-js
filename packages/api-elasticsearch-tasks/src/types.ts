@@ -7,7 +7,7 @@ import type { IEntity } from "@webiny/db-dynamodb";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { DbRegistry } from "~/abstractions/DbRegistry.js";
+import { DbRegistry } from "@webiny/db/feature/DbRegistry/index.js";
 
 export interface Context extends OpenSearchContext, TasksContext {}
 

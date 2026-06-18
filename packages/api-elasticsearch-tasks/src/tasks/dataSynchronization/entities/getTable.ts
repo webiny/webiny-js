@@ -1,7 +1,7 @@
 import type { Entity, TableDef } from "@webiny/db-dynamodb/toolbox.js";
 import type { NonEmptyArray } from "@webiny/api/types.js";
 import type { IRegistryItem } from "@webiny/db";
-import type { DbRegistry } from "~/abstractions/DbRegistry.js";
+import type { DbRegistry } from "@webiny/db/feature/DbRegistry/index.js";
 
 export interface IGetTableParams {
     dbRegistry: DbRegistry.Interface;

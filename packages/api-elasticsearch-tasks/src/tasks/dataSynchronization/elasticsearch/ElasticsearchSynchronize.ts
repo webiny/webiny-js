@@ -13,7 +13,7 @@ import type {
     IElasticsearchSynchronizeExecuteResponse
 } from "./abstractions/ElasticsearchSynchronize.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import { DbRegistry } from "~/abstractions/DbRegistry.js";
+import { DbRegistry } from "@webiny/db/feature/DbRegistry/index.js";
 
 interface IDynamoDbItem {
     PK: string;
