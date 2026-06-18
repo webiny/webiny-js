@@ -2,13 +2,12 @@ import type {
     IDynamoDbElasticsearchRecord,
     IElasticsearchIndexingTaskValues,
     IElasticsearchIndexingTaskValuesKeys,
-    IManager
+    Manager
 } from "~/types.js";
 import type { ITaskResult } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { scan } from "~/helpers/scan.js";
 import type { ScanResponse } from "@webiny/db-dynamodb";
 import { createTableWriteBatch } from "@webiny/db-dynamodb";
-import type { IndexManager } from "~/settings/index.js";
 import type { IIndexManager } from "~/settings/types.js";
 
 const getKeys = (results: ScanResponse): IElasticsearchIndexingTaskValuesKeys | undefined => {
@@ -22,23 +21,15 @@ const getKeys = (results: ScanResponse): IElasticsearchIndexingTaskValuesKeys | 
 };
 
 export class ReindexingTaskRunner {
-    private readonly manager: IManager<IElasticsearchIndexingTaskValues>;
+    private readonly manager: Manager.Interface;
     private keys?: IElasticsearchIndexingTaskValuesKeys;
     private readonly indexManager: IIndexManager;
 
-    public constructor(
-        manager: IManager<IElasticsearchIndexingTaskValues>,
-        indexManager: IndexManager
-    ) {
+    public constructor(manager: Manager.Interface, indexManager: IIndexManager) {
         this.manager = manager;
         this.indexManager = indexManager;
     }
 
-    /**
-     * When running the task, we always must check:
-     * * if task is close to timeout
-     * * if task was aborted
-     */
     public async exec(
         keys: IElasticsearchIndexingTaskValuesKeys | undefined = undefined,
         limit: number
@@ -76,9 +67,6 @@ export class ReindexingTaskRunner {
                 });
 
                 for (const item of results.items) {
-                    /**
-                     * No index defined? Impossible but let's skip if really happens.
-                     */
                     if (!item.index) {
                         continue;
                     }
@@ -92,25 +80,12 @@ export class ReindexingTaskRunner {
                         });
                         continue;
                     }
-                    /**
-                     * Is there a possibility that entityName does not exist? What do we do at that point?
-                     */
                     const entityName = item._et || item.entity;
-                    /**
-                     * Let's skip for now.
-                     */
                     if (!entityName) {
                         continue;
                     }
                     const entity = this.manager.getEntity(entityName);
-                    /**
-                     * Disable the indexing for the current index.
-                     * Method does nothing if indexing is already disabled.
-                     */
                     await this.indexManager.disableIndexing(item.index);
-                    /**
-                     * Reindexing will be triggered by the `putBatch` method.
-                     */
                     tableWriteBatch.put(entity.entity, {
                         ...item,
                         TYPE: item.TYPE || "unknown",
@@ -118,18 +93,11 @@ export class ReindexingTaskRunner {
                     });
                 }
                 await tableWriteBatch.execute();
-                /**
-                 * We always store the index settings, so we can restore them later.
-                 * Also, we always want to store what was the last key we processed, just in case something breaks, so we can continue from this point.
-                 */
                 this.keys = getKeys(results);
                 await this.manager.controller.state.updateInput({
                     settings: this.indexManager.settings,
                     keys: this.keys
                 });
-                /**
-                 * We want to make sure that, if there are no last evaluated keys, we enable indexing.
-                 */
                 if (!this.keys) {
                     await this.indexManager.enableIndexing();
                     return this.manager.controller.response.done(
@@ -141,9 +109,6 @@ export class ReindexingTaskRunner {
                 keys: this.keys
             });
         } catch (ex) {
-            /**
-             * We want to enable indexing if there was an error.
-             */
             try {
                 await this.indexManager.enableIndexing();
             } catch (er) {

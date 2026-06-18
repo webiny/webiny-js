@@ -1,17 +1,13 @@
-import type { IManager } from "~/types.js";
+import type { Manager } from "~/types.js";
 import type { ITaskResult } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type { IndexManager } from "~/settings/index.js";
 import type { IIndexManager } from "~/settings/types.js";
 import type { IElasticsearchEnableIndexingTaskInput } from "~/tasks/enableIndexing/types.js";
 
 export class EnableIndexingTaskRunner {
-    private readonly manager: IManager<IElasticsearchEnableIndexingTaskInput>;
+    private readonly manager: Manager.Interface;
     private readonly indexManager: IIndexManager;
 
-    public constructor(
-        manager: IManager<IElasticsearchEnableIndexingTaskInput>,
-        indexManager: IndexManager
-    ) {
+    public constructor(manager: Manager.Interface, indexManager: IIndexManager) {
         this.manager = manager;
         this.indexManager = indexManager;
     }

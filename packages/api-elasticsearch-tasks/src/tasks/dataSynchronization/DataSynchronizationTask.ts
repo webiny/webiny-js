@@ -4,9 +4,7 @@ import type {
     IDataSynchronizationOutput
 } from "~/tasks/dataSynchronization/types.js";
 import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchSynchronize.js";
-import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
-import { Manager } from "../Manager.js";
+import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
 import { DataSynchronizationTaskRunner } from "./DataSynchronizationTaskRunner.js";
 import { createFactories } from "./createFactories.js";
@@ -25,8 +23,7 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
     public readonly databaseLogs = false;
 
     constructor(
-        private readonly openSearchClient: OpenSearchClient.Interface,
-        private readonly dynamoDBClient: DynamoDBClient.Interface,
+        private readonly manager: Manager.Interface,
         private readonly elasticsearchSynchronize: ElasticsearchSynchronize.Interface
     ) {}
 
@@ -38,17 +35,11 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
             return controller.response.aborted();
         }
 
-        const manager = new Manager<IDataSynchronizationInput, IDataSynchronizationOutput>({
-            elasticsearchClient: this.openSearchClient.use(),
-            documentClient: this.dynamoDBClient.client,
-            controller
-        });
-
-        const indexManager = new IndexManager(manager.elasticsearch, {});
+        const indexManager = new IndexManager(this.manager.elasticsearch, {});
 
         try {
             const dataSynchronization = new DataSynchronizationTaskRunner({
-                manager,
+                manager: this.manager,
                 indexManager,
                 factories: createFactories(),
                 elasticsearchSynchronize: this.elasticsearchSynchronize
@@ -81,5 +72,5 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
 
 export const DataSynchronizationTask = TaskDefinition.createImplementation({
     implementation: DataSynchronizationTaskImpl,
-    dependencies: [OpenSearchClient, DynamoDBClient, ElasticsearchSynchronize]
+    dependencies: [Manager, ElasticsearchSynchronize]
 });

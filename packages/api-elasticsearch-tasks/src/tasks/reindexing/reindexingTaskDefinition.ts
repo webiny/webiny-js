@@ -1,8 +1,6 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { IElasticsearchIndexingTaskValues } from "~/types.js";
-import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
-import { Manager } from "../Manager.js";
+import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
 import { ReindexingTaskRunner } from "./ReindexingTaskRunner.js";
 
@@ -10,24 +8,15 @@ class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElast
     public readonly id = "elasticsearchReindexing";
     public readonly title = "Elasticsearch reindexing";
 
-    constructor(
-        private readonly elasticsearchClient: OpenSearchClient.Interface,
-        private readonly documentClient: DynamoDBClient.Interface
-    ) {}
+    constructor(private readonly manager: Manager.Interface) {}
 
     async run({ input, controller }: TaskDefinition.RunParams<IElasticsearchIndexingTaskValues>) {
         if (controller.runtime.isAborted()) {
             return controller.response.aborted();
         }
 
-        const manager = new Manager<IElasticsearchIndexingTaskValues>({
-            elasticsearchClient: this.elasticsearchClient.use(),
-            documentClient: this.documentClient.client,
-            controller
-        });
-
-        const indexManager = new IndexManager(manager.elasticsearch, input.settings || {});
-        const reindexing = new ReindexingTaskRunner(manager, indexManager);
+        const indexManager = new IndexManager(this.manager.elasticsearch, input.settings || {});
+        const reindexing = new ReindexingTaskRunner(this.manager, indexManager);
 
         const keys = input.keys || undefined;
         return await reindexing.exec(keys, input.limit || 100);
@@ -36,5 +25,5 @@ class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElast
 
 export const ElasticsearchReindexingTask = TaskDefinition.createImplementation({
     implementation: ElasticsearchReindexingTaskImpl,
-    dependencies: [OpenSearchClient, DynamoDBClient]
+    dependencies: [Manager]
 });

@@ -4,9 +4,7 @@ import { CreateIndexesTaskRunner } from "~/tasks/createIndexes/CreateIndexesTask
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
-import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
-import { Manager } from "../Manager.js";
+import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
 import { OnBeforeTrigger } from "./OnBeforeTrigger.js";
 
@@ -16,8 +14,7 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
     public readonly maxIterations = 2;
 
     constructor(
-        private readonly openSearchClient: OpenSearchClient.Interface,
-        private readonly dynamoDBClient: DynamoDBClient.Interface,
+        private readonly manager: Manager.Interface,
         private readonly tenantContext: TenantContext.Interface,
         private readonly listTenantsUseCase: ListTenantsUseCase.Interface,
         private readonly indexFactories: OpensearchTenantIndexFactory.Interface[]
@@ -31,19 +28,13 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
             return controller.response.aborted();
         }
 
-        const manager = new Manager<IElasticsearchCreateIndexesTaskInput>({
-            elasticsearchClient: this.openSearchClient.use(),
-            documentClient: this.dynamoDBClient.client,
-            controller
-        });
-
-        const indexManager = new IndexManager(manager.elasticsearch, {});
+        const indexManager = new IndexManager(this.manager.elasticsearch, {});
 
         const createIndexesTaskRunner = new CreateIndexesTaskRunner(
             this.tenantContext,
             this.listTenantsUseCase,
             this.indexFactories,
-            manager,
+            this.manager,
             indexManager
         );
 
@@ -51,7 +42,7 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
     }
 
     async onBeforeTrigger() {
-        const indexManager = new IndexManager(this.openSearchClient.use(), {});
+        const indexManager = new IndexManager(this.manager.elasticsearch, {});
 
         const onBeforeTrigger = new OnBeforeTrigger(
             indexManager,
@@ -65,8 +56,7 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
 export const CreateIndexesTask = TaskDefinition.createImplementation({
     implementation: CreateIndexesTaskImpl,
     dependencies: [
-        OpenSearchClient,
-        DynamoDBClient,
+        Manager,
         TenantContext,
         ListTenantsUseCase,
         [OpensearchTenantIndexFactory, { multiple: true }]

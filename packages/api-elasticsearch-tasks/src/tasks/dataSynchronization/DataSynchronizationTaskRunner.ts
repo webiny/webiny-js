@@ -1,14 +1,11 @@
-import type {
-    IDataSynchronizationInput,
-    IDataSynchronizationManager,
-    IFactories
-} from "./types.js";
+import type { IDataSynchronizationInput, IFactories } from "./types.js";
+import type { Manager } from "~/types.js";
 import type { IIndexManager } from "~/settings/types.js";
 import { ElasticsearchFetcher } from "./elasticsearch/ElasticsearchFetcher.js";
 import { ElasticsearchSynchronize } from "./elasticsearch/abstractions/ElasticsearchSynchronize.js";
 
 export interface IDataSynchronizationTaskRunnerParams {
-    manager: IDataSynchronizationManager;
+    manager: Manager.Interface;
     indexManager: IIndexManager;
     factories: IFactories;
     elasticsearchSynchronize: ElasticsearchSynchronize.Interface;
@@ -29,10 +26,7 @@ export class DataSynchronizationTaskRunner {
 
     public async run(input: IDataSynchronizationInput) {
         this.validateFlow(input);
-        /**
-         * Go through the Elasticsearch and delete records which do not exist in the Elasticsearch table.
-         */
-        //
+
         if (input.flow === "elasticsearchToDynamoDb" && !input.elasticsearchToDynamoDb?.finished) {
             const sync = this.factories.elasticsearchToDynamoDb({
                 manager: this.manager,
@@ -48,9 +42,7 @@ export class DataSynchronizationTaskRunner {
                 return this.manager.controller.response.error(ex);
             }
         }
-        /**
-         * We are done.
-         */
+
         return this.manager.controller.response.done();
     }
 

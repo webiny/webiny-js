@@ -1,4 +1,4 @@
-import type { IManager } from "~/types.js";
+import type { Manager } from "~/types.js";
 import type { PrimitiveValue } from "@webiny/api-opensearch/types.js";
 import type { IIndexManager } from "~/settings/types.js";
 import type { IElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchSynchronize.js";
@@ -33,7 +33,7 @@ export interface ISynchronization {
 }
 
 export interface IElasticsearchSyncParams {
-    manager: IDataSynchronizationManager;
+    manager: Manager.Interface;
     indexManager: IIndexManager;
     synchronize: IElasticsearchSynchronize;
     fetcher: IElasticsearchFetcher;
@@ -44,13 +44,5 @@ export interface IElasticsearchSyncFactory {
 }
 
 export interface IFactories {
-    /**
-     * Delete all the records which are in the Elasticsearch but not in the Elasticsearch DynamoDB table.
-     */
     elasticsearchToDynamoDb: IElasticsearchSyncFactory;
 }
-
-export type IDataSynchronizationManager = IManager<
-    IDataSynchronizationInput,
-    IDataSynchronizationOutput
->;
