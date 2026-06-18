@@ -1,6 +1,6 @@
 import type { Container } from "@webiny/di";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { GraphQLContextEnhancer } from "./engine/index.js";
+import type { IGraphQLContextEnhancer } from "./engine/index.js";
 
 /**
  * Escape hatch for legacy plugin-based code that hasn't been migrated to createFeature() yet.

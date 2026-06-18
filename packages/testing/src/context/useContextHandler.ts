@@ -1,5 +1,6 @@
 import { Container } from "@webiny/feature/api";
-import { RequestContainer, registerLegacyPlugins } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/event-handler-core";
+import { registerLegacyPlugins } from "@webiny/handler-graphql";
 import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
 import type { CreateHandlerCoreParams } from "./plugins.js";

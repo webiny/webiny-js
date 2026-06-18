@@ -8,6 +8,7 @@
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
     { "path": "../api-core" },
+    { "path": "../event-handler-core" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
     { "path": "../handler-db" }
@@ -31,6 +32,8 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],

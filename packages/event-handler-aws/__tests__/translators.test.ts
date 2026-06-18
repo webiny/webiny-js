@@ -1,11 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { createLambdaHandler } from "~/createLambdaHandler.js";
 import { ApiGatewayEventType, FunctionUrlEventType, FunctionUrlTranslator } from "~/index.js";
-import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
 import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHandler.js";
 import { HttpFeature } from "@webiny/event-handler-core";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { HttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { EventHandler } from "@webiny/event-handler-core";

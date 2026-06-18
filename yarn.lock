@@ -12168,6 +12168,8 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:*"
+    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
@@ -13564,7 +13566,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/di@npm:^1.0.1":
+"@webiny/di@npm:*, @webiny/di@npm:^1.0.1":
   version: 1.0.1
   resolution: "@webiny/di@npm:1.0.1"
   dependencies:
@@ -13609,6 +13611,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"

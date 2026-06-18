@@ -26,6 +26,19 @@ Source files still importing dead exports:
 
 Once all imports are migrated, the package can be deleted.
 
+## Audit and remove `registerLegacyPlugins` call sites
+
+`registerLegacyPlugins` is a migration escape hatch. Each call site should eventually be replaced with a proper `Feature` registration. Check all remaining callers:
+
+- `packages/testing/src/context/useGraphQLHandler.ts`
+- `packages/testing/src/context/useContextHandler.ts`
+- `packages/project-utils/testing/elasticsearch/getElasticsearchClient.ts`
+- `packages/project-aws/_templates/appTemplates/api/graphql/src/index.ts`
+
+Once all callers are migrated to DI-native features, `registerLegacyPlugins` itself can be deleted from `handler-graphql`.
+
+Note: migrating `getElasticsearchClient.ts` caused `@webiny/project-utils` to gain a direct `@webiny/handler-graphql` dependency. That may be wrong (project-utils is a low-level testing utility; handler-graphql is application-layer). Revisit when tackling that caller.
+
 ## Gzip compression of HTTP responses
 
 The old Fastify setup had `@fastify/compress` for response compression. Not yet implemented in the DI-native HTTP layer. Needs a compressing decorator on `HttpRouter` in `event-handler-core`, similar to `SecureHeadersDecorator`.
