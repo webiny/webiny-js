@@ -6,6 +6,7 @@ import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenant
 import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
 import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
+import { IndexSettingsManager } from "~/settings/IndexSettingsManager.js";
 import { OnBeforeTrigger } from "./OnBeforeTrigger.js";
 
 class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCreateIndexesTaskInput> {
@@ -15,6 +16,7 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
 
     constructor(
         private readonly manager: Manager.Interface,
+        private readonly indexSettingsManager: IndexSettingsManager.Interface,
         private readonly tenantContext: TenantContext.Interface,
         private readonly listTenantsUseCase: ListTenantsUseCase.Interface,
         private readonly indexFactories: OpensearchTenantIndexFactory.Interface[]
@@ -28,7 +30,11 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
             return controller.response.aborted();
         }
 
-        const indexManager = new IndexManager(this.manager.elasticsearch, {});
+        const indexManager = new IndexManager(
+            this.manager.elasticsearch,
+            this.indexSettingsManager,
+            {}
+        );
 
         const createIndexesTaskRunner = new CreateIndexesTaskRunner(
             this.tenantContext,
@@ -42,7 +48,11 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
     }
 
     async onBeforeTrigger() {
-        const indexManager = new IndexManager(this.manager.elasticsearch, {});
+        const indexManager = new IndexManager(
+            this.manager.elasticsearch,
+            this.indexSettingsManager,
+            {}
+        );
 
         const onBeforeTrigger = new OnBeforeTrigger(
             indexManager,
@@ -57,6 +67,7 @@ export const CreateIndexesTask = TaskDefinition.createImplementation({
     implementation: CreateIndexesTaskImpl,
     dependencies: [
         Manager,
+        IndexSettingsManager,
         TenantContext,
         ListTenantsUseCase,
         [OpensearchTenantIndexFactory, { multiple: true }]

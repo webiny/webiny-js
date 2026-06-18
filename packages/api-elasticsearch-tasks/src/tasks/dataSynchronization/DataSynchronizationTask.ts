@@ -6,6 +6,7 @@ import type {
 import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchSynchronize.js";
 import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
+import { IndexSettingsManager } from "~/settings/IndexSettingsManager.js";
 import { DataSynchronizationTaskRunner } from "./DataSynchronizationTaskRunner.js";
 import { createFactories } from "./createFactories.js";
 
@@ -24,6 +25,7 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
 
     constructor(
         private readonly manager: Manager.Interface,
+        private readonly indexSettingsManager: IndexSettingsManager.Interface,
         private readonly elasticsearchSynchronize: ElasticsearchSynchronize.Interface
     ) {}
 
@@ -35,7 +37,11 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
             return controller.response.aborted();
         }
 
-        const indexManager = new IndexManager(this.manager.elasticsearch, {});
+        const indexManager = new IndexManager(
+            this.manager.elasticsearch,
+            this.indexSettingsManager,
+            {}
+        );
 
         try {
             const dataSynchronization = new DataSynchronizationTaskRunner({
@@ -72,5 +78,5 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
 
 export const DataSynchronizationTask = TaskDefinition.createImplementation({
     implementation: DataSynchronizationTaskImpl,
-    dependencies: [Manager, ElasticsearchSynchronize]
+    dependencies: [Manager, IndexSettingsManager, ElasticsearchSynchronize]
 });

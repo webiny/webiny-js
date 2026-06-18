@@ -1,4 +1,4 @@
-import { IndexSettingsManager } from "~/settings/IndexSettingsManager.js";
+import type { IndexSettingsManager } from "~/settings/IndexSettingsManager.js";
 import { DisableIndexing } from "./DisableIndexing.js";
 import { EnableIndexing } from "./EnableIndexing.js";
 import type { IElasticsearchIndexingTaskValuesSettings, IIndexSettingsValues } from "~/types.js";
@@ -41,13 +41,13 @@ export class IndexManager implements IIndexManager {
 
     public constructor(
         client: Client,
+        indexSettingsManager: IndexSettingsManager.Interface,
         settings: IElasticsearchIndexingTaskValuesSettings,
         defaults?: Partial<IIndexSettingsValues>
     ) {
-        const indexSettings = new IndexSettingsManager(client);
         this.client = client;
-        this.disable = new DisableIndexing(indexSettings);
-        this.enable = new EnableIndexing(indexSettings);
+        this.disable = new DisableIndexing(indexSettingsManager);
+        this.enable = new EnableIndexing(indexSettingsManager);
         this._settings = settings;
         this.defaults = {
             refreshInterval: defaults?.refreshInterval || defaultIndexSettings.refreshInterval,
@@ -78,9 +78,6 @@ export class IndexManager implements IIndexManager {
     }
 
     public async disableIndexing(index: string) {
-        /**
-         * No need to disable indexing if it's already disabled.
-         */
         if (this._settings[index]) {
             return this._settings[index];
         }
