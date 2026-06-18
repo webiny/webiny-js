@@ -101,6 +101,14 @@ Once all five are migrated and `GraphQLContextEnhancer` has no remaining callers
 
 Both return `Plugin[]` and haven't been migrated to DI yet. Once they are, `registerLegacyPlugins` can be dropped from this feature.
 
+## Test background tasks, bulk actions, and scheduler
+
+These packages use the legacy ctx assembly path (`registerLegacyPluginsViaGqlContextEnhancer` / inline `GraphQLContextEnhancer` loop in their Lambda handlers) and haven't been explicitly tested under the DI-native handler. Verify they still work end-to-end:
+
+- `packages/background-tasks` — `BackgroundTaskLambdaHandler` + `BackgroundTasksFeature`
+- `packages/api-headless-cms-bulk-actions` — `BulkActionsEventBridgeLambdaHandler`
+- `packages/api-scheduler` — `SchedulerFeature` + scheduler Lambda
+
 ## Gzip compression of HTTP responses
 
 The old Fastify setup had `@fastify/compress` for response compression. Not yet implemented in the DI-native HTTP layer. Needs a compressing decorator on `HttpRouter` in `event-handler-core`, similar to `SecureHeadersDecorator`.
