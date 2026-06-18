@@ -13947,7 +13947,6 @@ __metadata:
     react-hotkeyz: "npm:^1.0.4"
     rimraf: "npm:^6.0.1"
     slugify: "npm:^1.6.6"
-    store: "npm:^2.0.12"
     typescript: "npm:5.3.3"
     zod: "npm:^3.23.8"
   languageName: unknown
@@ -14077,7 +14076,6 @@ __metadata:
     react-hotkeyz: "npm:^1.0.4"
     react-transition-group: "npm:^4.4.5"
     rimraf: "npm:^6.0.1"
-    store: "npm:^2.0.12"
     typescript: "npm:5.3.3"
   languageName: unknown
   linkType: soft
@@ -14586,6 +14584,7 @@ __metadata:
     "@webiny/form": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/react-router": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
     emotion: "npm:10.0.27"
     react: "npm:18.2.0"
@@ -14787,7 +14786,6 @@ __metadata:
     recoil: "npm:^0.7.7"
     rimraf: "npm:^6.0.1"
     slugify: "npm:^1.6.6"
-    store: "npm:^2.0.12"
     swiper: "npm:^9.3.2"
     typescript: "npm:5.3.3"
     uniqid: "npm:^5.4.0"
@@ -15175,6 +15173,7 @@ __metadata:
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.17.21"
     minimatch: "npm:^5.1.6"
+    mobx: "npm:^6.9.0"
     nanoid: "npm:3.3.11"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"

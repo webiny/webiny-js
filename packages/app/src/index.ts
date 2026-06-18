@@ -19,3 +19,7 @@ export * from "./core/createProvider";
 export * from "./core/createProviderPlugin";
 export * from "./renderApp";
 export * from "./utils/createGenericContext";
+export {
+    useLocalStorage,
+    LocalStorageProvider
+} from "./localStorage/presentation/LocalStorageProvider";

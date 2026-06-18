@@ -1,7 +1,11 @@
-import React, { useState, memo, useMemo } from "react";
-import { useQuery } from "@apollo/react-hooks";
+import React, { useState, memo, useMemo, useCallback } from "react";
 import gql from "graphql-tag";
+import { useQuery } from "@apollo/react-hooks";
+import { LocalStorageProvider } from "@webiny/app";
+import { useLocalStorage } from "@webiny/app";
+import { plugins } from "@webiny/plugins";
 import { GetI18NInformationResponse, I18NCurrentLocaleItem, I18NLocaleItem } from "~/types";
+import { createApolloLinkPlugin } from "~/admin/plugins/apolloLink.js";
 
 export const GET_I18N_INFORMATION = gql`
     query GetI18NInformation {
@@ -27,6 +31,7 @@ export interface I18NContextState {
 
 export interface I18NContextValue {
     refetchLocales(variables?: Record<string, any>): Promise<any>;
+
     updateLocaleStorage: (currentLocales: I18NCurrentLocaleItem[]) => void;
     state: I18NContextState;
     setState: (state: Partial<I18NContextState>) => void;
@@ -55,28 +60,33 @@ export const I18NContext = React.createContext<I18NContextValue>({
 
 const defaultState: I18NContextState = { currentLocales: [], locales: [] };
 
-const updateLocaleStorage = (currentLocales: I18NCurrentLocaleItem[]) => {
-    localStorage.setItem(
-        "webiny_i18n_locale",
-        currentLocales.reduce(
-            (current, { context, locale }) => `${current}${context}:${locale};`,
-            ""
-        )
-    );
-};
-
 const I18NProviderComponent = (props: I18NProviderProps) => {
+    const { localStorage } = useLocalStorage();
     const { children, loader } = props;
     const [state, setState] = useState<I18NContextState>(defaultState);
+
+    const updateLocaleStorage = useCallback(
+        (currentLocales: I18NCurrentLocaleItem[]) => {
+            localStorage.set(
+                "i18n_locale",
+                currentLocales.reduce(
+                    (current, { context, locale }) => `${current}${context}:${locale};`,
+                    ""
+                )
+            );
+        },
+        [localStorage]
+    );
+
     const { loading, refetch } = useQuery<GetI18NInformationResponse>(GET_I18N_INFORMATION, {
         skip: state.locales.length > 0,
         onCompleted(data) {
             const { currentLocales: fetchedCurrentLocales, locales } =
                 data?.i18n?.getI18NInformation || {};
 
-            // wby_i18n_locale: "default:en-US;content:en-US;"
+            // "default:en-US;content:en-US;"
             const parsedLocales: Record<string, string> = {};
-            const webinyI18NLocale = localStorage.getItem("webiny_i18n_locale");
+            const webinyI18NLocale = localStorage.get("i18n_locale");
             if (webinyI18NLocale) {
                 webinyI18NLocale
                     .split(";")
@@ -94,9 +104,20 @@ const I18NProviderComponent = (props: I18NProviderProps) => {
                 };
             });
             updateLocaleStorage(currentLocales);
+
+            plugins.register(createApolloLinkPlugin(() => webinyI18NLocale));
+
             setState({ locales, currentLocales });
         }
     });
+
+    const getContentLocale = () => {
+        const locale = state.currentLocales.find(locale => locale.context === "content");
+        if (!locale) {
+            return undefined;
+        }
+        return locale.locale;
+    };
 
     if (loading && loader) {
         return loader;
@@ -119,7 +140,11 @@ const I18NProviderComponent = (props: I18NProviderProps) => {
         [state]
     );
 
-    return <I18NContext.Provider value={value}>{children}</I18NContext.Provider>;
+    return (
+        <I18NContext.Provider value={value}>
+            <LocalStorageProvider prefix={getContentLocale()}>{children}</LocalStorageProvider>
+        </I18NContext.Provider>
+    );
 };
 
 export const I18NProvider: React.ComponentType<I18NProviderProps> = memo(I18NProviderComponent);
