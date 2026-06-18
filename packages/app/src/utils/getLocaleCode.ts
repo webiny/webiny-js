@@ -18,18 +18,7 @@ export const getLocaleCode = (): string | null => {
     if (locale) {
         return locale;
     }
-
-    // 3. Get locale via `window.localStorage.webiny_i18n_locale`. Used within the Admin app.
-    const localesByContext = window.localStorage.webiny_i18n_locale;
-    if (localesByContext) {
-        // The `localesByContext` is a string that contains locales for all available
-        // "locale contexts", for example: `default:en-US;content:en-US;`. Here, we
-        // want to extract the locale for the "content" locale context.
-        const [, matchedLocale] = localesByContext.match(/content:(.*?);/);
-        return matchedLocale;
-    }
-
-    // 4. Finally, for development purposes, we take the `WEBINY_WEBSITE_LOCALE_CODE`
+    // 3. Finally, for development purposes, we take the `WEBINY_WEBSITE_LOCALE_CODE`
     // and `WEBINY_ADMIN_LOCALE_CODE` environment variables into consideration.
     if (isLocalhost()) {
         return (

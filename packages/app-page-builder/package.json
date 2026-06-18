@@ -81,7 +81,6 @@
     "react-virtualized": "^9.22.5",
     "recoil": "^0.7.7",
     "slugify": "^1.6.6",
-    "store": "^2.0.12",
     "swiper": "^9.3.2",
     "uniqid": "^5.4.0"
   },

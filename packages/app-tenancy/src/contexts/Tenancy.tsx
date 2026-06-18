@@ -3,6 +3,7 @@ import { default as localStorage } from "store";
 import { plugins } from "@webiny/plugins";
 import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin";
 import { useWcp } from "@webiny/app-admin";
+import { LocalStorageProvider } from "@webiny/app-admin";
 
 export interface Tenant {
     id: string;
@@ -11,7 +12,9 @@ export interface Tenant {
 
 export interface TenancyContextValue {
     tenant: string | null;
+
     setTenant(tenant: string | null): void;
+
     isMultiTenant: boolean;
 }
 
@@ -93,7 +96,9 @@ export const TenancyProvider = (props: TenancyProviderProps) => {
 
     return (
         <TenancyContext.Provider value={value}>
-            <Fragment>{props.children}</Fragment>
+            <LocalStorageProvider prefix={value.tenant ? `webiny/${value.tenant}` : undefined}>
+                <Fragment>{props.children}</Fragment>
+            </LocalStorageProvider>
         </TenancyContext.Provider>
     );
 };

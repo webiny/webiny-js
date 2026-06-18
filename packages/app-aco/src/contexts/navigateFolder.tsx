@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from "react";
-import store from "store";
 import { ROOT_FOLDER } from "~/constants";
+import { useLocalStorage } from "@webiny/app";
 
 export interface NavigateFolderContext {
     currentFolderId: string;
@@ -29,6 +29,7 @@ export const NavigateFolderProvider = ({
     createStorageKey,
     ...props
 }: NavigateFolderProviderProps) => {
+    const { localStorage } = useLocalStorage();
     /**
      * Helper function to set the current folderId to local storage:
      * we export this function to call it programmatically when we need it and
@@ -36,7 +37,7 @@ export const NavigateFolderProvider = ({
      */
     const setFolderToStorage = useCallback(
         (newFolderId?: string): void => {
-            store.set(createStorageKey(), newFolderId);
+            localStorage.set(createStorageKey(), newFolderId);
         },
         [createStorageKey]
     );
@@ -47,7 +48,7 @@ export const NavigateFolderProvider = ({
      * we need to return the lowercase value.
      */
     const getFolderFromStorage = useCallback((): string | undefined => {
-        const folderId = store.get(createStorageKey()) as string | undefined;
+        const folderId = localStorage.get(createStorageKey()) as string | undefined;
         return folderId?.toLowerCase();
     }, [createStorageKey]);
 
@@ -75,7 +76,7 @@ export const NavigateFolderProvider = ({
     );
 
     const navigateToListHome = () => {
-        store.remove(createStorageKey());
+        localStorage.remove(createStorageKey());
         props.navigateToListHome();
     };
 

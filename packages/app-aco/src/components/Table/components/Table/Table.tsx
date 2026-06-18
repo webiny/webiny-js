@@ -11,6 +11,7 @@ import { ColumnsVisibilityLocalStorageGateway } from "./gateways";
 import { TablePresenter } from "./TablePresenter";
 import { TableInner } from "./TableInner";
 import { useAcoConfig } from "~/config";
+import { useLocalStorage } from "@webiny/app";
 
 export interface TableProps<T> {
     data: T[];
@@ -29,6 +30,7 @@ export const Table = <T extends Record<string, any> & DefaultData>({
     ...props
 }: TableProps<T>) => {
     const { table } = useAcoConfig();
+    const { localStorage } = useLocalStorage();
 
     const columnsRepo = useMemo(() => {
         return columnsRepositoryFactory.getRepository(
@@ -38,7 +40,10 @@ export const Table = <T extends Record<string, any> & DefaultData>({
     }, [namespace, table.columns]);
 
     const visibilityRepo = useMemo(() => {
-        const columnsVisibilityLocalStorage = new ColumnsVisibilityLocalStorageGateway(namespace);
+        const columnsVisibilityLocalStorage = new ColumnsVisibilityLocalStorageGateway(
+            localStorage,
+            namespace
+        );
 
         return columnsVisibilityRepositoryFactory.getRepository(
             namespace,

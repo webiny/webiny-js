@@ -29,8 +29,7 @@
     "react-dom": "18.2.0",
     "react-helmet": "^6.1.0",
     "react-hotkeyz": "^1.0.4",
-    "react-transition-group": "^4.4.5",
-    "store": "^2.0.12"
+    "react-transition-group": "^4.4.5"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.11.0",

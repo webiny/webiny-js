@@ -17,22 +17,6 @@ interface PageListVariables {
     // [key: string]: any;
 }
 
-export const readPageListVariables = (): PageListVariables => {
-    let variables;
-
-    const item = localStorage.getItem("webiny_pb_pages_list_latest_variables") || "";
-    try {
-        variables = JSON.parse(item);
-    } catch {}
-
-    return variables;
-};
-
-export const writePageListVariablesToLocalStorage = (variables: PageListVariables): void => {
-    // Needs to be refactored. Possibly, with our own GQL client, this is going to be much easier to handle.
-    localStorage.setItem("webiny_pb_pages_list_latest_variables", JSON.stringify(variables));
-};
-
 const extractVariables = (key: string): PageListVariables => {
     // TODO: Find a better way to parse the query/id from cache
     const variables = key.replace("$ROOT_QUERY.pageBuilder.listPages(", "").replace(")", "");

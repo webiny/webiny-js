@@ -1,5 +1,4 @@
 import React, { Fragment, useCallback, useState } from "react";
-import { default as localStorage } from "store";
 import { css } from "emotion";
 import { Transition } from "react-transition-group";
 import classNames from "classnames";
@@ -10,6 +9,8 @@ import { IconButton } from "@webiny/ui/Button";
 import { useNavigation } from "../index";
 import { ReactComponent as UpIcon } from "../icons/round-keyboard_arrow_up-24px.svg";
 import { ReactComponent as DownIcon } from "../icons/round-keyboard_arrow_down-24px.svg";
+import type { ILocalStorage } from "@webiny/app/localStorage/feature/abstractions.js";
+import { useLocalStorage } from "@webiny/app-admin";
 
 const defaultStyle = {
     transform: "translateY(-20px)",
@@ -50,31 +51,32 @@ const menuTitleActive = css({
     backgroundColor: "var(--mdc-theme-background)"
 });
 
-const LOCAL_STORAGE_KEY = "webiny_navigation_groups";
+const LOCAL_STORAGE_KEY = "navigation_groups";
 
-function loadState(): string[] {
+function loadState(localStorage: ILocalStorage): string[] {
     return (localStorage.get(LOCAL_STORAGE_KEY) || "").split(",").filter(Boolean);
 }
 
-function storeState(state: string[]) {
+function storeState(localStorage: ILocalStorage, state: string[]) {
     localStorage.set(LOCAL_STORAGE_KEY, state.join(","));
 }
 
-function getState(id: string | null): boolean {
+function getState(localStorage: ILocalStorage, id: string | null): boolean {
     if (!id) {
         return false;
     }
-    const state = loadState();
+    const state = loadState(localStorage);
     return state.includes(id);
 }
 
 export const MenuGroupRenderer = (PrevMenuItem: React.ComponentType) => {
     return function MenuGroup() {
         const { setVisible } = useNavigation();
+        const { localStorage } = useLocalStorage();
         const { menuItem, depth } = useMenuItem();
         const shouldRender = depth === 0 && menuItem && menuItem.children;
         const [isExpanded, setExpanded] = useState<boolean>(
-            getState(menuItem ? menuItem.name : null)
+            getState(localStorage, menuItem ? menuItem.name : null)
         );
 
         const hideMenu = useCallback(() => setVisible(false), []);
@@ -83,7 +85,7 @@ export const MenuGroupRenderer = (PrevMenuItem: React.ComponentType) => {
             if (!menuItem) {
                 return;
             }
-            const state = loadState();
+            const state = loadState(localStorage);
             if (isExpanded && state.includes(menuItem.name)) {
                 state.splice(state.indexOf(menuItem.name), 1);
             }
@@ -93,7 +95,7 @@ export const MenuGroupRenderer = (PrevMenuItem: React.ComponentType) => {
             }
 
             setExpanded(!isExpanded);
-            storeState(state);
+            storeState(localStorage, state);
         }, [isExpanded, setExpanded]);
 
         if (!shouldRender) {
