@@ -63,11 +63,10 @@ export class ElasticsearchClientConfig {
 
         const documentClient = getDocumentClient();
         this.elasticsearchClient = createElasticsearchClient();
-        const opensearchPlugin = registerOpensearchCore(this.elasticsearchClient);
 
         const dynamoDbHandler = createHandler({
             plugins: [
-                opensearchPlugin,
+                registerOpensearchCore(this.elasticsearchClient),
                 createMockApiLogContextPlugin(),
                 createDynamoDBToElasticsearchEventHandler()
             ]
@@ -84,7 +83,7 @@ export class ElasticsearchClientConfig {
             }
         });
 
-        this.plugins = [opensearchPlugin, ...getOpenSearchOperators()];
+        this.plugins = [registerOpensearchCore(this.elasticsearchClient), ...getOpenSearchOperators()];
     }
 
     setOnBeforeEach(name: string, cb: OnBeforeEach) {
