@@ -13,17 +13,12 @@ export interface GraphQLScalarPlugin extends Plugin {
     scalar: GraphQLScalarType;
 }
 
-
 export type GraphQLFieldResolver<
     TSource = any,
     TArgs = any,
     TContext = Context
 > = BaseGraphQLFieldResolver<TSource, TContext, TArgs>;
 
-/**
- * @deprecated Use `TypeDefs` instead.
- */
-export type Types = TypeDefs;
 export type TypeDefs = TypeSource;
 
 export interface GraphQLSchemaPluginTypeArgs {
