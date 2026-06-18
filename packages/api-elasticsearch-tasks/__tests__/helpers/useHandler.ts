@@ -14,6 +14,10 @@ import type { Context } from "~/types";
 import { createElasticsearchBackgroundTasks } from "~/index";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import {
+    getElasticsearchClient,
+    registerOpensearchCoreForTests
+} from "@webiny/project-utils/testing/elasticsearch/index.js";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -24,8 +28,13 @@ export const useHandler = (params?: UseHandlerParams) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
+    const { elasticsearchClient } = getElasticsearchClient({
+        name: "api-elasticsearch-tasks"
+    });
+
     const plugins = [
         [
+            registerOpensearchCoreForTests(elasticsearchClient),
             createApiCore({
                 storageOperations: apiCoreStorage.storageOperations
             }),

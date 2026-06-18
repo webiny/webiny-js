@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createEventHandler, OperationType } from "~/index";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient.js";
 import type { LambdaContext, Reply, Request } from "@webiny/handler-aws/types";
 import { marshall } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createMockContext } from "~tests/mocks/context";
