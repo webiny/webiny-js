@@ -35,7 +35,7 @@ Once all imports are migrated, the package can be deleted.
 - `packages/project-utils/testing/elasticsearch/getElasticsearchClient.ts`
 - `packages/project-aws/_templates/appTemplates/api/graphql/src/index.ts`
 
-Once all callers are migrated to DI-native features, `registerLegacyPlugins` itself can be deleted from `handler-graphql`.
+Once all callers are migrated to DI-native features, `registerLegacyPlugins` itself can be deleted from `handler-graphql`. At that point `GraphQLContextEnhancer` (the abstraction, its implementations, and the `buildContext()` loop in `GraphQLEngineImpl`) also has no reason to exist — the legacy `ctx` object assembly mechanism can be removed entirely from `handler-graphql`.
 
 Note: migrating `getElasticsearchClient.ts` caused `@webiny/project-utils` to gain a direct `@webiny/handler-graphql` dependency. That may be wrong (project-utils is a low-level testing utility; handler-graphql is application-layer). Revisit when tackling that caller.
 
