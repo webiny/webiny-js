@@ -28,11 +28,11 @@ jobs:
         with:
           role-to-assume: ${{ secrets.PROD_AWS_ROLE_ARN }}
           aws-region: ${{ secrets.PROD_AWS_REGION }}
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Install and cache dependencies.
       - uses: actions/cache@v4
