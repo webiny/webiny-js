@@ -377,9 +377,7 @@ const ContentModelsDataList = ({
                                                                 data-testid={
                                                                     "cms-delete-content-model-button"
                                                                 }
-                                                                className={
-                                                                    "text-destructive-primary! [&_svg]:fill-destructive"
-                                                                }
+                                                                variant={"destructive"}
                                                             />
                                                         )}
                                                     </DropdownMenu>

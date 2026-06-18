@@ -11,6 +11,7 @@ import { LinkComponentProps, useAdminUi } from "~/index.js";
 interface DropdownMenuItemBaseProps {
     icon?: React.ReactNode;
     readOnly?: boolean;
+    variant?: "destructive";
     text?: React.ReactNode;
     disabled?: boolean;
     onClick?: React.MouseEventHandler;
@@ -33,6 +34,9 @@ const variants = cva(
     ],
     {
         variants: {
+            variant: {
+                destructive: ["text-destructive-primary!", "[&_svg]:fill-destructive"]
+            },
             readOnly: {
                 true: "pointer-events-none"
             }
@@ -46,7 +50,7 @@ const variants = cva(
 const DropdownMenuItemBase = React.forwardRef<
     React.ElementRef<typeof DropdownMenuPrimitive.Item>,
     DropdownMenuItemProps
->(({ className, icon, text, readOnly, disabled, onClick, children, ...linkProps }, ref) => {
+>(({ className, icon, text, readOnly, variant, disabled, onClick, children, ...linkProps }, ref) => {
     const { linkComponent: LinkComponent } = useAdminUi();
 
     if (children) {
@@ -87,7 +91,7 @@ const DropdownMenuItemBase = React.forwardRef<
         <DropdownMenuPrimitive.Item
             disabled={disabled}
             ref={ref}
-            className={cn(variants({ readOnly }), className)}
+            className={cn(variants({ readOnly, variant }), className)}
         >
             {content}
         </DropdownMenuPrimitive.Item>
