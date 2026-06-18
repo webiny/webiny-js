@@ -11,6 +11,7 @@ import { LinkComponentProps, useAdminUi } from "~/index.js";
 interface DropdownMenuItemBaseProps {
     icon?: React.ReactNode;
     readOnly?: boolean;
+    variant?: "destructive";
     text?: React.ReactNode;
     disabled?: boolean;
     onClick?: React.MouseEventHandler;
@@ -33,6 +34,9 @@ const variants = cva(
     ],
     {
         variants: {
+            variant: {
+                destructive: ["text-destructive-primary!", "[&_svg]:fill-destructive"]
+            },
             readOnly: {
                 true: "pointer-events-none"
             }
@@ -46,53 +50,58 @@ const variants = cva(
 const DropdownMenuItemBase = React.forwardRef<
     React.ElementRef<typeof DropdownMenuPrimitive.Item>,
     DropdownMenuItemProps
->(({ className, icon, text, readOnly, disabled, onClick, children, ...linkProps }, ref) => {
-    const { linkComponent: LinkComponent } = useAdminUi();
+>(
+    (
+        { className, icon, text, readOnly, variant, disabled, onClick, children, ...linkProps },
+        ref
+    ) => {
+        const { linkComponent: LinkComponent } = useAdminUi();
 
-    if (children) {
+        if (children) {
+            return (
+                <DropdownMenuSubRoot>
+                    <DropdownMenuSubTrigger>
+                        {icon}
+                        <span>{text}</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                        <DropdownMenuSubContent>{children}</DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                </DropdownMenuSubRoot>
+            );
+        }
+        const sharedProps = {
+            className: cn(
+                "flex px-sm py-xs-plus gap-sm-extra items-center text-md rounded-sm transition-colors group-focus:bg-neutral-dimmed",
+                {
+                    "[&_svg]:fill-neutral-disabled!": disabled
+                }
+            )
+        };
+
+        const content = linkProps.to ? (
+            <LinkComponent {...sharedProps} {...linkProps}>
+                {icon}
+                <span>{text}</span>
+            </LinkComponent>
+        ) : (
+            <div {...sharedProps} onClick={onClick}>
+                {icon}
+                <span>{text}</span>
+            </div>
+        );
+
         return (
-            <DropdownMenuSubRoot>
-                <DropdownMenuSubTrigger>
-                    {icon}
-                    <span>{text}</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                    <DropdownMenuSubContent>{children}</DropdownMenuSubContent>
-                </DropdownMenuPortal>
-            </DropdownMenuSubRoot>
+            <DropdownMenuPrimitive.Item
+                disabled={disabled}
+                ref={ref}
+                className={cn(variants({ readOnly, variant }), className)}
+            >
+                {content}
+            </DropdownMenuPrimitive.Item>
         );
     }
-    const sharedProps = {
-        className: cn(
-            "flex px-sm py-xs-plus gap-sm-extra items-center text-md rounded-sm transition-colors group-focus:bg-neutral-dimmed",
-            {
-                "[&_svg]:fill-neutral-disabled!": disabled
-            }
-        )
-    };
-
-    const content = linkProps.to ? (
-        <LinkComponent {...sharedProps} {...linkProps}>
-            {icon}
-            <span>{text}</span>
-        </LinkComponent>
-    ) : (
-        <div {...sharedProps} onClick={onClick}>
-            {icon}
-            <span>{text}</span>
-        </div>
-    );
-
-    return (
-        <DropdownMenuPrimitive.Item
-            disabled={disabled}
-            ref={ref}
-            className={cn(variants({ readOnly }), className)}
-        >
-            {content}
-        </DropdownMenuPrimitive.Item>
-    );
-});
+);
 
 DropdownMenuItemBase.displayName = DropdownMenuPrimitive.Item.displayName;
 
