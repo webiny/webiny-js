@@ -1,7 +1,6 @@
 import { expect } from "vitest";
 import path from "path";
-import { ContextPlugin } from "@webiny/api";
-import { createOpenSearchContext, getOpenSearchOperators } from "@webiny/api-opensearch";
+import { getOpenSearchOperators, registerOpensearchCore } from "@webiny/api-opensearch";
 import { logger } from "../logger";
 import { createHandler } from "@webiny/handler-aws";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
@@ -10,7 +9,6 @@ import type { ElasticsearchClient } from "./createClient";
 import { createElasticsearchClient } from "./createClient";
 import { getDocumentClient, simulateStream } from "../dynamodb";
 import type { PluginCollection } from "../environment";
-import type { OpenSearchContext } from "../../../api-opensearch/src/types";
 import { getOpenSearchIndexPrefix } from "../../../api-opensearch/src/indexPrefix";
 import { createMockApiLogContextPlugin } from "../mockApiLog";
 
@@ -65,18 +63,11 @@ export class ElasticsearchClientConfig {
 
         const documentClient = getDocumentClient();
         this.elasticsearchClient = createElasticsearchClient();
-        const elasticsearchClientContext = createOpenSearchContext(this.elasticsearchClient);
-
-        /**
-         * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-         */
-        const simulationContext = new ContextPlugin<OpenSearchContext>(async context => {
-            await elasticsearchClientContext.apply(context);
-        });
+        const opensearchPlugin = registerOpensearchCore(this.elasticsearchClient);
 
         const dynamoDbHandler = createHandler({
             plugins: [
-                simulationContext,
+                opensearchPlugin,
                 createMockApiLogContextPlugin(),
                 createDynamoDBToElasticsearchEventHandler()
             ]
@@ -93,7 +84,7 @@ export class ElasticsearchClientConfig {
             }
         });
 
-        this.plugins = [elasticsearchClientContext, ...getOpenSearchOperators()];
+        this.plugins = [opensearchPlugin, ...getOpenSearchOperators()];
     }
 
     setOnBeforeEach(name: string, cb: OnBeforeEach) {

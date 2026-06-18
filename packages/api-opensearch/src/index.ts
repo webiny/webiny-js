@@ -1,11 +1,4 @@
-import type { OpenSearchContext } from "./types.js";
-import { ContextPlugin } from "@webiny/api";
-import type { OpenSearchClientOptions } from "./client.js";
-import { Client, createOpenSearchClient } from "./client.js";
-import { getOpenSearchOperators } from "./operators.js";
-import { OpenSearchClientFactoryFeature } from "./features/OpenSearchClientFactory/feature.js";
-import { OpenSearchClientFeature } from "./features/OpenSearchClient/feature.js";
-import { OpenSearchContextFeature } from "~/features/OpenSearchContext/feature.js";
+import { registerOpensearchCore } from "./registerOpensearchCore.js";
 
 export * from "./indexConfiguration/index.js";
 export * from "./plugins/index.js";
@@ -28,26 +21,4 @@ export * from "./sharedIndex.js";
 export * from "./indexPrefix.js";
 export * from "./db/index.js";
 export * from "./types.js";
-
-export const createOpenSearchContext = (
-    params: OpenSearchClientOptions | Client
-): ContextPlugin<OpenSearchContext> => {
-    const plugin = new ContextPlugin<OpenSearchContext>(context => {
-        if (context.opensearch) {
-            throw new Error("OpenSearch context must not be loaded more than once!");
-        }
-        const client = params instanceof Client ? params : createOpenSearchClient(params);
-        context.opensearch = client;
-        context.elasticsearch = client;
-
-        context.plugins.register(getOpenSearchOperators());
-
-        OpenSearchContextFeature.register(context.container, context);
-        OpenSearchClientFeature.register(context.container);
-        OpenSearchClientFactoryFeature.register(context.container);
-    });
-
-    plugin.name = "context.opensearch";
-
-    return plugin;
-};
+export { registerOpensearchCore };

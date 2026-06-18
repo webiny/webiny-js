@@ -40,6 +40,7 @@ import {
     CmsEntryOpenSearchFilterFeature,
     CmsEntryOpenSearchFilterRegistry
 } from "~/features/CmsEntryOpenSearchFilter/index.js";
+import { DbRegistry } from "@webiny/db/exports/api/db.js";
 
 const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const { table, esTable, elasticsearch, plugins, container } = params;
@@ -138,12 +139,14 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     return {
         name: "dynamodb:opensearch",
         beforeInit: async context => {
-            context.db.registry.register({
+            const dbRegistry = context.container.resolve(DbRegistry);
+
+            dbRegistry.register({
                 item: entities.entries,
                 app: "cms",
                 tags: ["regular", entities.entries.name]
             });
-            context.db.registry.register({
+            dbRegistry.register({
                 item: entities.entriesEs,
                 app: "cms",
                 tags: ["es", entities.entriesEs.name]
