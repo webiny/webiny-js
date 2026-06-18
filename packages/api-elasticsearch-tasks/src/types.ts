@@ -6,15 +6,9 @@ import type { BatchReadItem } from "@webiny/db-dynamodb/utils/batch/batchRead.js
 import type { IEntity } from "@webiny/db-dynamodb";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { DbRegistry } from "~/abstractions/DbRegistry.js";
+import { createAbstraction } from "@webiny/feature/api";
 
 export interface Context extends OpenSearchContext, TasksContext {}
-
-export interface IElasticsearchTaskConfig {
-    documentClient: DynamoDBDocument;
-    elasticsearchClient: Client;
-}
 
 export interface IElasticsearchIndexingTaskValuesKeys {
     PK: string;
@@ -54,15 +48,17 @@ export interface IDynamoDbElasticsearchRecord {
     modified: string;
 }
 
-export interface IManager<
-    I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
-    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
-> {
+export interface IManager {
     readonly documentClient: DynamoDBDocument;
     readonly elasticsearch: Client;
     readonly table: ReturnType<typeof createOpenSearchTable>;
-    readonly controller: TaskController.Interface<I, O>;
-    readonly dbRegistry?: DbRegistry.Interface;
-    getEntity: (name: string) => IEntity;
+    readonly controller: TaskController.Interface;
+    getEntity(name: string): IEntity;
     read<T>(items: BatchReadItem[]): Promise<T[]>;
+}
+
+export const Manager = createAbstraction<IManager>("ElasticsearchTasks/Manager");
+
+export namespace Manager {
+    export type Interface = IManager;
 }

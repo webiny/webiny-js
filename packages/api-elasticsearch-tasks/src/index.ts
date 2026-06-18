@@ -1,36 +1,44 @@
 import { createContextPlugin } from "@webiny/api";
 import {
-    createDataSynchronization,
-    createElasticsearchReindexingTask,
-    createEnableIndexingTask,
-    createIndexesTaskDefinition
+    CreateIndexesTask,
+    CreateIndexesTaskRunner,
+    OnBeforeTrigger,
+    DataSynchronizationTask,
+    ElasticsearchEnableIndexingTask,
+    EnableIndexingTaskRunner,
+    ElasticsearchReindexingTask,
+    ReindexingTaskRunner,
+    ElasticsearchSynchronize,
+    ElasticsearchFetcher,
+    ElasticsearchToDynamoDbSynchronization,
+    Manager
 } from "~/tasks/index.js";
+import { IndexSettingsManager } from "~/settings/IndexSettingsManager.js";
+import { DisableIndexing } from "~/settings/DisableIndexing.js";
+import { EnableIndexing } from "~/settings/EnableIndexing.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
-import type { Context, IElasticsearchTaskConfig } from "~/types.js";
-import { DbRegistry } from "~/abstractions/DbRegistry.js";
-import { SynchronizationContext } from "~/abstractions/SynchronizationContext.js";
+import type { Context } from "~/types.js";
 
-export type CreateElasticsearchBackgroundTasksParams = Partial<IElasticsearchTaskConfig>;
-
-export const createElasticsearchBackgroundTasks = (
-    params?: CreateElasticsearchBackgroundTasksParams
-): PluginCollection => {
+export const createElasticsearchBackgroundTasks = (): PluginCollection => {
     return [
         createContextPlugin<Context>(context => {
-            // Register DbRegistry abstraction with the actual context.db.registry implementation
-            // @ts-expect-error We are going to remove this DB client.
-            context.container.registerInstance(DbRegistry, context.db.registry);
-
-            context.container.registerInstance(SynchronizationContext, {
-                opensearch: context.opensearch,
-                elasticsearch: context.opensearch
-            });
-        }),
-        createElasticsearchReindexingTask(params),
-        createEnableIndexingTask(params),
-        createIndexesTaskDefinition(params),
-        createDataSynchronization(params)
+            context.container.register(Manager);
+            context.container.register(IndexSettingsManager);
+            context.container.register(DisableIndexing);
+            context.container.register(EnableIndexing);
+            context.container.register(ReindexingTaskRunner);
+            context.container.register(ElasticsearchReindexingTask);
+            context.container.register(EnableIndexingTaskRunner);
+            context.container.register(ElasticsearchEnableIndexingTask);
+            context.container.register(ElasticsearchSynchronize);
+            context.container.register(ElasticsearchFetcher);
+            context.container.register(ElasticsearchToDynamoDbSynchronization);
+            context.container.register(DataSynchronizationTask);
+            context.container.register(CreateIndexesTaskRunner);
+            context.container.register(OnBeforeTrigger);
+            context.container.register(CreateIndexesTask);
+        })
     ];
 };
 
-export * from "./abstractions/OpensearchTenantIndexFactory.js";
+export { OpenSearchTenantIndexFactory } from "./abstractions/OpenSearchTenantIndexFactory.js";

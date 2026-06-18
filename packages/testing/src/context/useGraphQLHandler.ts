@@ -3,7 +3,7 @@ import { createHandlerCore } from "./plugins.js";
 import { createHandler } from "@webiny/handler-aws";
 import { defaultIdentity } from "./tenancySecurity.js";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types.js";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { getIntrospectionQuery } from "graphql";
 import type { GenericRecord } from "@webiny/api/types.js";
 
@@ -60,9 +60,7 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         return [JSON.parse(response.body || "{}"), response];
     };
 
-    const { elasticsearchClient } = getElasticsearchClient({
-        name: "testing-ddb-es"
-    });
+    const elasticsearchClient = createTestOpenSearchClient();
 
     const createQuery = <
         T extends GenericRecord = GenericRecord,

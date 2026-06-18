@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { OpenSearchContext as OpenSearchContextType } from "~/types.js";
 import { Context } from "@webiny/api";
-import { createOpenSearchContext } from "~/index.js";
+import { registerOpenSearchCore } from "~/index.js";
 import { createOpenSearchClient } from "~tests/helpers.js";
 import { OpenSearchContext } from "~/features/OpenSearchContext/abstraction.js";
 import { OpenSearchClientFactory } from "~/features/OpenSearchClientFactory/abstraction.js";
@@ -17,7 +17,7 @@ describe("opensearch features", () => {
             plugins: [],
             WEBINY_VERSION: "0.0.0"
         });
-        const plugin = createOpenSearchContext(client);
+        const plugin = registerOpenSearchCore(client);
 
         await plugin.apply(context);
     });

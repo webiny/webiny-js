@@ -1,33 +1,36 @@
-import { describe, expect, it, vi } from "vitest";
-import { createDataSynchronization, DATA_SYNCHRONIZATION_TASK } from "~/tasks";
+import { describe, expect, it } from "vitest";
+import { DATA_SYNCHRONIZATION_TASK } from "~/tasks";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import { useHandler } from "~tests/helpers/useHandler";
-import type { IDataSynchronizationInput, IFactories } from "~/tasks/dataSynchronization/types";
+import type { IDataSynchronizationInput } from "~/tasks/dataSynchronization/types";
 import {
     TaskDefinition,
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { ElasticsearchToDynamoDbSynchronization } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchToDynamoDbSynchronization";
+import { Manager } from "~/types";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 
-vi.mock("~/tasks/dataSynchronization/createFactories", () => {
-    return {
-        createFactories: (): IFactories => {
-            return {
-                elasticsearchToDynamoDb: ({ manager }) => {
-                    return {
-                        run: async input => {
-                            return manager.controller.response.continue({
-                                ...input,
-                                elasticsearchToDynamoDb: {
-                                    finished: true
-                                }
-                            });
+const createDummySync = () => {
+    return createRegisterExtensionPlugin(({ container }) => {
+        const DummySync = ElasticsearchToDynamoDbSynchronization.createImplementation({
+            implementation: class {
+                constructor(private readonly manager: Manager.Interface) {}
+
+                async run(input: IDataSynchronizationInput) {
+                    return this.manager.controller.response.continue({
+                        ...input,
+                        elasticsearchToDynamoDb: {
+                            finished: true
                         }
-                    };
+                    });
                 }
-            };
-        }
-    };
-});
+            },
+            dependencies: [Manager]
+        });
+        container.register(DummySync);
+    });
+};
 
 describe("data synchronization - elasticsearch", () => {
     it("should run a task and end with error due to invalid flow", async () => {
@@ -64,7 +67,7 @@ describe("data synchronization - elasticsearch", () => {
 
     it("should run a task and end with done", async () => {
         const handler = useHandler({
-            plugins: [createDataSynchronization()]
+            plugins: [createDummySync()]
         });
 
         const context = await handler.rawHandle();
@@ -92,7 +95,6 @@ describe("data synchronization - elasticsearch", () => {
             webinyTaskId: task.id
         });
 
-        // The new task system returns different response structure
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(result.webinyTaskId).toBe(task.id);
         const taskCheck = await context.tasks.getTask(task.id);

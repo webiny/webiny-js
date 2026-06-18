@@ -7,7 +7,7 @@ DynamoDB Only:
 yarn test packages/api-scheduler -- --storage=ddb
 ```
 
-DynamoDB + Opensearch:
+DynamoDB + OpenSearch:
 
 ```bash
 yarn test packages/api-scheduler -- --storage=ddb-os,ddb
@@ -21,7 +21,7 @@ DynamoDB Only:
 yarn test packages/api-scheduler --coverage --coverage.include="packages/api-scheduler/src/**" -- --storage=ddb
 ```
 
-DynamoDB + Opensearch:
+DynamoDB + OpenSearch:
 
 ```bash
 yarn test packages/api-scheduler --coverage --coverage.include="packages/api-scheduler/src/**" -- --storage=ddb-os,ddb

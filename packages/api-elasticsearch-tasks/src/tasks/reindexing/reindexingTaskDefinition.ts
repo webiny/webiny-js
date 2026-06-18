@@ -1,19 +1,20 @@
-import { createContextPlugin } from "@webiny/api";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type {
-    Context,
-    IElasticsearchIndexingTaskValues,
-    IElasticsearchTaskConfig
-} from "~/types.js";
-import { getClients } from "~/helpers/getClients.js";
+import type { IElasticsearchIndexingTaskValues } from "~/types.js";
+import { Manager } from "~/types.js";
+import { IndexManager } from "~/settings/index.js";
+import { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
+import { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
+import { ReindexingTaskRunner } from "./abstractions/ReindexingTaskRunner.js";
 
-class ElasticsearchReindexingTask implements TaskDefinition.Interface<IElasticsearchIndexingTaskValues> {
-    id = "elasticsearchReindexing";
-    title = "Elasticsearch reindexing";
+class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElasticsearchIndexingTaskValues> {
+    public readonly id = "elasticsearchReindexing";
+    public readonly title = "Elasticsearch reindexing";
 
     constructor(
-        private elasticsearchClient: IElasticsearchTaskConfig["elasticsearchClient"],
-        private documentClient: IElasticsearchTaskConfig["documentClient"]
+        private readonly manager: Manager.Interface,
+        private readonly disableIndexing: DisableIndexing.Interface,
+        private readonly enableIndexing: EnableIndexing.Interface,
+        private readonly runner: ReindexingTaskRunner.Interface
     ) {}
 
     async run({ input, controller }: TaskDefinition.RunParams<IElasticsearchIndexingTaskValues>) {
@@ -21,39 +22,19 @@ class ElasticsearchReindexingTask implements TaskDefinition.Interface<IElasticse
             return controller.response.aborted();
         }
 
-        const { Manager } = await import(
-            /* webpackChunkName: "Manager" */
-            "../Manager.js"
+        const indexManager = new IndexManager(
+            this.manager.elasticsearch,
+            this.disableIndexing,
+            this.enableIndexing,
+            input.settings || {}
         );
-
-        const { IndexManager } = await import(
-            /* webpackChunkName: "IndexManager" */ "~/settings/index.js"
-        );
-        const { ReindexingTaskRunner } = await import(
-            /* webpackChunkName: "ReindexingTaskRunner" */ "./ReindexingTaskRunner.js"
-        );
-
-        const manager = new Manager<IElasticsearchIndexingTaskValues>({
-            elasticsearchClient: this.elasticsearchClient,
-            documentClient: this.documentClient,
-            controller
-        });
-
-        const indexManager = new IndexManager(manager.elasticsearch, input.settings || {});
-        const reindexing = new ReindexingTaskRunner(manager, indexManager);
 
         const keys = input.keys || undefined;
-        return await reindexing.exec(keys, input.limit || 100);
+        return await this.runner.exec(keys, input.limit || 100, indexManager);
     }
 }
 
-export const createElasticsearchReindexingTask = (params?: Partial<IElasticsearchTaskConfig>) => {
-    return createContextPlugin<Context>(context => {
-        const { documentClient, elasticsearchClient } = getClients(context, params);
-
-        context.container.registerFactory(
-            TaskDefinition,
-            () => new ElasticsearchReindexingTask(elasticsearchClient, documentClient)
-        );
-    });
-};
+export const ElasticsearchReindexingTask = TaskDefinition.createImplementation({
+    implementation: ElasticsearchReindexingTaskImpl,
+    dependencies: [Manager, DisableIndexing, EnableIndexing, ReindexingTaskRunner]
+});
