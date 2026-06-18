@@ -39,6 +39,15 @@ Once all callers are migrated to DI-native features, `registerLegacyPlugins` its
 
 Note: migrating `getElasticsearchClient.ts` caused `@webiny/project-utils` to gain a direct `@webiny/handler-graphql` dependency. That may be wrong (project-utils is a low-level testing utility; handler-graphql is application-layer). Revisit when tackling that caller.
 
+## Inspect `CreateTenantSchema` model-not-found fallback
+
+`packages/tenant-manager/src/api/graphql/CreateTenantSchema.ts:79` — there are two early-return guards that fall back to `[{ typeDefs: "", fields: "extensions: JSON" }]`:
+
+1. Line 67: `modelsResult.isFail()` (list models RPC failed)
+2. Line 79: `models.find(m => m.modelId === TENANT_MODEL_ID)` returned undefined
+
+The second guard was required during the migration when the `wbyTenant` CMS model might not exist yet. Now that the model is always registered, the guard may be dead code. Verify that `wbyTenant` is always present when `CreateTenantSchema.enhance()` runs, then decide whether the fallback can be removed or should become a hard error.
+
 ## Gzip compression of HTTP responses
 
 The old Fastify setup had `@fastify/compress` for response compression. Not yet implemented in the DI-native HTTP layer. Needs a compressing decorator on `HttpRouter` in `event-handler-core`, similar to `SecureHeadersDecorator`.

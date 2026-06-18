@@ -1,3 +1,11 @@
+// No createTestHttpHandler here — context tests call use-case methods directly on the
+// context object, bypassing HTTP entirely. createTestHttpHandler spins up an HTTP router
+// and requires a POST /graphql invocation; that overhead is only warranted in graphQLHandler.ts
+// where we're testing the full request/response cycle.
+//
+// TODO: revisit this handler. It works, but the manual container/child setup, tenant seeding,
+// and identity seeding are boilerplate that should probably be extracted into a shared
+// test utility (similar to how createTestHttpHandler abstracts the HTTP side).
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { ApiCoreFeature } from "@webiny/api-core/ApiCoreFeature.js";
