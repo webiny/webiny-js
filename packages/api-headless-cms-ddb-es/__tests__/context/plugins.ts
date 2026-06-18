@@ -15,8 +15,6 @@ import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKey
 import { createApiCore } from "@webiny/api-core";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import { registerOpenSearchCoreForTests } from "@webiny/api-opensearch/testing";
-
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
@@ -49,7 +47,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
         tenant,
         plugins: [
             topPlugins,
-            registerOpenSearchCoreForTests(),
             createApiCore({
                 storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
