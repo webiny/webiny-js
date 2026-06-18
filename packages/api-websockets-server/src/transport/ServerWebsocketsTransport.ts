@@ -1,6 +1,7 @@
 import { WebsocketsTransport } from "@webiny/api-websockets/exports/api.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import { WebsocketsConnectionManager, WebsocketsServerAdapter } from "~/abstractions.js";
+import { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
+import { WebsocketsServerAdapter } from "~/adapter/abstractions.js";
 
 export class ServerWebsocketsTransportImpl implements WebsocketsTransport.Interface {
     private readonly connectionManager: WebsocketsConnectionManager.Interface<unknown>;

@@ -2,10 +2,12 @@ import { createServer } from "node:http";
 import type { Server as HttpServer, IncomingMessage } from "node:http";
 import type { Duplex } from "node:stream";
 import { mdbid } from "@webiny/utils";
+import type { WebsocketsServerAdapter } from "~/adapter/abstractions.js";
+import type { WebsocketsUpgradeHandler } from "~/upgradeHandler/abstractions.js";
+import type { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
 import { NodeWsAdapterImpl } from "~/adapter/NodeWsAdapter.js";
 import { DefaultUpgradeHandlerImpl } from "~/upgradeHandler/DefaultUpgradeHandler.js";
-import { ServerConnectionManagerImpl } from "~/connectionManager/ServerConnectionManager.js";
-import { ServerWebsocketsEventValidator } from "~/validator/ServerWebsocketsEventValidator.js";
+import { HeartbeatManager } from "~/heartbeat/HeartbeatManager.js";
 import type {
     CreateWebsocketsServerParams,
     AttachWebsocketsServerParams,
@@ -22,50 +24,55 @@ const toHeaders = (raw: IncomingMessage["headers"]): Record<string, string> => {
     return headers;
 };
 
+interface WebsocketsServerParams {
+    httpServer: HttpServer;
+    ownsHttpServer: boolean;
+    adapter: WebsocketsServerAdapter.Interface<unknown>;
+    upgradeHandler: WebsocketsUpgradeHandler.Interface;
+    connectionManager?: WebsocketsConnectionManager.Interface<unknown>;
+    heartbeatInterval: number;
+    debug: boolean;
+    port: number;
+    host: string;
+}
+
 class WebsocketsServer implements IWebsocketsServer {
     private readonly httpServer: HttpServer;
     private readonly ownsHttpServer: boolean;
-    private readonly adapter: NodeWsAdapterImpl;
-    private readonly validator: ServerWebsocketsEventValidator;
-    private readonly upgradeHandler: DefaultUpgradeHandlerImpl;
-    private readonly heartbeatInterval: number;
+    private readonly adapter: WebsocketsServerAdapter.Interface<unknown>;
+    private readonly upgradeHandler: WebsocketsUpgradeHandler.Interface;
+    private readonly connectionManager: WebsocketsConnectionManager.Interface<unknown> | undefined;
+    private readonly heartbeat: HeartbeatManager | undefined;
     private readonly debug: boolean;
     private readonly requestedPort: number;
     private readonly requestedHost: string;
 
-    private connectionManager: ServerConnectionManagerImpl | undefined;
-    private heartbeatTimer: ReturnType<typeof setInterval> | undefined;
     private shuttingDown: boolean = false;
     private endpoint: string = "";
     private resolvedPort: number = 0;
 
-    public constructor(params: {
-        httpServer: HttpServer;
-        ownsHttpServer: boolean;
-        heartbeatInterval: number;
-        debug: boolean;
-        port: number;
-        host: string;
-    }) {
+    public constructor(params: WebsocketsServerParams) {
         this.httpServer = params.httpServer;
         this.ownsHttpServer = params.ownsHttpServer;
-        this.heartbeatInterval = params.heartbeatInterval;
+        this.adapter = params.adapter;
+        this.upgradeHandler = params.upgradeHandler;
+        this.connectionManager = params.connectionManager;
         this.debug = params.debug;
         this.requestedPort = params.port;
         this.requestedHost = params.host;
 
-        this.adapter = new NodeWsAdapterImpl();
-        this.validator = new ServerWebsocketsEventValidator();
-        this.upgradeHandler = new DefaultUpgradeHandlerImpl();
-    }
-
-    public setConnectionManager(manager: ServerConnectionManagerImpl): void {
-        this.connectionManager = manager;
+        if (params.connectionManager) {
+            this.heartbeat = new HeartbeatManager(
+                params.connectionManager,
+                params.heartbeatInterval
+            );
+        }
     }
 
     public async start(): Promise<void> {
         this.adapter.start(this.httpServer);
-        this.wireEvents();
+        this.wireUpgradeHandler();
+        this.wireConnectionHandler();
 
         if (this.ownsHttpServer) {
             await this.listen();
@@ -73,7 +80,7 @@ class WebsocketsServer implements IWebsocketsServer {
             this.resolvePortFromExistingServer();
         }
 
-        this.startHeartbeat();
+        this.heartbeat?.start();
 
         if (this.debug) {
             console.log(`[WebsocketsServer] started on ${this.endpoint}`);
@@ -82,7 +89,7 @@ class WebsocketsServer implements IWebsocketsServer {
 
     public async stop(): Promise<void> {
         this.shuttingDown = true;
-        this.stopHeartbeat();
+        this.heartbeat?.stop();
 
         await this.adapter.stop();
 
@@ -106,7 +113,7 @@ class WebsocketsServer implements IWebsocketsServer {
         return this.resolvedPort;
     }
 
-    private wireEvents(): void {
+    private wireUpgradeHandler(): void {
         this.httpServer.on(
             "upgrade",
             async (request: IncomingMessage, socket: Duplex, head: Buffer) => {
@@ -125,7 +132,9 @@ class WebsocketsServer implements IWebsocketsServer {
                 this.adapter.handleUpgrade(request, socket, head);
             }
         );
+    }
 
+    private wireConnectionHandler(): void {
         this.adapter.onConnection((socket, request) => {
             if (this.shuttingDown) {
                 return;
@@ -147,7 +156,7 @@ class WebsocketsServer implements IWebsocketsServer {
                 headers
             });
 
-            this.adapter.onMessage(socket, _data => {
+            this.adapter.onMessage(socket, data => {
                 if (this.shuttingDown) {
                     return;
                 }
@@ -157,16 +166,11 @@ class WebsocketsServer implements IWebsocketsServer {
                     return;
                 }
 
-                let body: unknown;
                 try {
-                    body = JSON.parse(_data.toString());
+                    JSON.parse(data.toString());
                 } catch {
-                    /* Malformed JSON, silently ignore. */
                     return;
                 }
-
-                /* Suppress unused variable warning — body will be used by the runner in Task 9. */
-                void body;
 
                 this.connectionManager?.updateLastSeen(connectionId);
             });
@@ -218,22 +222,6 @@ class WebsocketsServer implements IWebsocketsServer {
             });
         });
     }
-
-    private startHeartbeat(): void {
-        this.heartbeatTimer = setInterval(() => {
-            if (this.shuttingDown) {
-                return;
-            }
-            this.connectionManager?.cleanup(5 * this.heartbeatInterval);
-        }, this.heartbeatInterval);
-    }
-
-    private stopHeartbeat(): void {
-        if (this.heartbeatTimer) {
-            clearInterval(this.heartbeatTimer);
-            this.heartbeatTimer = undefined;
-        }
-    }
 }
 
 export { WebsocketsServer };
@@ -243,6 +231,9 @@ export const createWebsocketsServer = (params: CreateWebsocketsServerParams): IW
     const server = new WebsocketsServer({
         httpServer,
         ownsHttpServer: true,
+        adapter: new NodeWsAdapterImpl(),
+        upgradeHandler: new DefaultUpgradeHandlerImpl(),
+        connectionManager: params.connectionManager,
         heartbeatInterval: params.heartbeatInterval ?? 60_000,
         debug: params.debug ?? false,
         port: params.port ?? 0,
@@ -255,6 +246,9 @@ export const attachWebsocketsServer = (params: AttachWebsocketsServerParams): IW
     const server = new WebsocketsServer({
         httpServer: params.server,
         ownsHttpServer: false,
+        adapter: new NodeWsAdapterImpl(),
+        upgradeHandler: new DefaultUpgradeHandlerImpl(),
+        connectionManager: params.connectionManager,
         heartbeatInterval: params.heartbeatInterval ?? 60_000,
         debug: params.debug ?? false,
         port: 0,

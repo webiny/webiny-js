@@ -4,11 +4,7 @@ import type { Server as HttpServer } from "node:http";
 import { WebSocket } from "ws";
 import type { IWebsocketsConnectionRegistry } from "@webiny/api-websockets";
 import { ServerConnectionManagerImpl } from "~/connectionManager/ServerConnectionManager.js";
-import {
-    WebsocketsServer,
-    createWebsocketsServer,
-    attachWebsocketsServer
-} from "~/server/WebsocketsServer.js";
+import { createWebsocketsServer, attachWebsocketsServer } from "~/server/WebsocketsServer.js";
 import type { IWebsocketsServer } from "~/server/types.js";
 
 const createNoopRegistry = (): IWebsocketsConnectionRegistry => ({
@@ -67,20 +63,17 @@ function closeHttpServer(server: HttpServer): Promise<void> {
 describe("WebsocketsServer", () => {
     describe("standalone mode (createWebsocketsServer)", () => {
         let server: IWebsocketsServer;
-        let manager: ServerConnectionManagerImpl;
 
         beforeEach(async () => {
             const registry = createNoopRegistry();
-            manager = new ServerConnectionManagerImpl(registry);
+            const manager = new ServerConnectionManagerImpl(registry);
 
             server = createWebsocketsServer({
                 port: 0,
                 host: "127.0.0.1",
-                heartbeatInterval: 60_000
+                heartbeatInterval: 60_000,
+                connectionManager: manager
             });
-
-            /* Wire up connection manager before starting. */
-            (server as WebsocketsServer).setConnectionManager(manager);
             await server.start();
         });
 
@@ -122,9 +115,9 @@ describe("WebsocketsServer", () => {
             const trackedServer = createWebsocketsServer({
                 port: 0,
                 host: "127.0.0.1",
-                heartbeatInterval: 60_000
+                heartbeatInterval: 60_000,
+                connectionManager: trackedManager
             });
-            (trackedServer as WebsocketsServer).setConnectionManager(trackedManager);
             await trackedServer.start();
 
             const client = await connectClient(trackedServer.port());
@@ -159,8 +152,10 @@ describe("WebsocketsServer", () => {
             const registry = createNoopRegistry();
             const manager = new ServerConnectionManagerImpl(registry);
 
-            server = attachWebsocketsServer({ server: httpServer });
-            (server as WebsocketsServer).setConnectionManager(manager);
+            server = attachWebsocketsServer({
+                server: httpServer,
+                connectionManager: manager
+            });
             await server.start();
         });
 
