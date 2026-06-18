@@ -1,14 +1,11 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { IElasticsearchCreateIndexesTaskInput } from "~/tasks/createIndexes/types.js";
-import { CreateIndexesTaskRunner } from "~/tasks/createIndexes/CreateIndexesTaskRunner.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
-import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
 import { Manager } from "~/types.js";
 import { IndexManager } from "~/settings/index.js";
 import { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
 import { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
-import { OnBeforeTrigger } from "./OnBeforeTrigger.js";
+import { CreateIndexesTaskRunner } from "./abstractions/CreateIndexesTaskRunner.js";
+import { OnBeforeTrigger } from "./abstractions/OnBeforeTrigger.js";
 
 class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCreateIndexesTaskInput> {
     public readonly id = "elasticsearchCreateIndexes";
@@ -19,9 +16,8 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
         private readonly manager: Manager.Interface,
         private readonly disableIndexing: DisableIndexing.Interface,
         private readonly enableIndexing: EnableIndexing.Interface,
-        private readonly tenantContext: TenantContext.Interface,
-        private readonly listTenantsUseCase: ListTenantsUseCase.Interface,
-        private readonly indexFactories: OpensearchTenantIndexFactory.Interface[]
+        private readonly runner: CreateIndexesTaskRunner.Interface,
+        private readonly onBeforeTriggerRunner: OnBeforeTrigger.Interface
     ) {}
 
     async run({
@@ -39,15 +35,7 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
             {}
         );
 
-        const createIndexesTaskRunner = new CreateIndexesTaskRunner(
-            this.tenantContext,
-            this.listTenantsUseCase,
-            this.indexFactories,
-            this.manager,
-            indexManager
-        );
-
-        return createIndexesTaskRunner.execute(input.matching, Array.from(input.done || []));
+        return this.runner.execute(input.matching, Array.from(input.done || []), indexManager);
     }
 
     async onBeforeTrigger() {
@@ -58,12 +46,7 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
             {}
         );
 
-        const onBeforeTrigger = new OnBeforeTrigger(
-            indexManager,
-            this.tenantContext,
-            this.indexFactories
-        );
-        await onBeforeTrigger.run(["wbytask"]);
+        await this.onBeforeTriggerRunner.run(["wbytask"], indexManager);
     }
 }
 
@@ -73,8 +56,7 @@ export const CreateIndexesTask = TaskDefinition.createImplementation({
         Manager,
         DisableIndexing,
         EnableIndexing,
-        TenantContext,
-        ListTenantsUseCase,
-        [OpensearchTenantIndexFactory, { multiple: true }]
+        CreateIndexesTaskRunner,
+        OnBeforeTrigger
     ]
 });

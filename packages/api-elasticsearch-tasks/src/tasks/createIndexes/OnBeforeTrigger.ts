@@ -1,17 +1,17 @@
-import type { IndexManager } from "~/settings/index.js";
+import type { IIndexManager } from "~/settings/types.js";
 import { listIndexes } from "./listIndexes.js";
 import { createIndexFactory } from "~/tasks/createIndexes/createIndex.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
+import { OnBeforeTrigger as Abstraction } from "./abstractions/OnBeforeTrigger.js";
 
-export class OnBeforeTrigger {
-    public constructor(
-        private indexManager: IndexManager,
-        private tenantContext: TenantContext.Interface,
-        private indexFactories: OpensearchTenantIndexFactory.Interface[]
+class OnBeforeTriggerImpl implements Abstraction.Interface {
+    constructor(
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly indexFactories: OpensearchTenantIndexFactory.Interface[]
     ) {}
 
-    public async run(targets: string[] | undefined): Promise<void> {
+    public async run(targets: string[] | undefined, indexManager: IIndexManager): Promise<void> {
         const tenant = this.tenantContext.getTenant();
         if (!tenant) {
             throw new Error("Something went wrong, tenant not found when triggering a task.");
@@ -41,7 +41,7 @@ export class OnBeforeTrigger {
                 return;
             }
 
-            const createIndex = createIndexFactory(this.indexManager);
+            const createIndex = createIndexFactory(indexManager);
 
             for (const { index, settings } of indexes) {
                 try {
@@ -56,3 +56,8 @@ export class OnBeforeTrigger {
         }
     }
 }
+
+export const OnBeforeTrigger = Abstraction.createImplementation({
+    implementation: OnBeforeTriggerImpl,
+    dependencies: [TenantContext, [OpensearchTenantIndexFactory, { multiple: true }]]
+});

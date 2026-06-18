@@ -1,6 +1,8 @@
 import { createContextPlugin } from "@webiny/api";
 import {
     CreateIndexesTask,
+    CreateIndexesTaskRunner,
+    OnBeforeTrigger,
     DataSynchronizationTask,
     ElasticsearchEnableIndexingTask,
     ElasticsearchReindexingTask,
@@ -28,6 +30,8 @@ export const createElasticsearchBackgroundTasks = (): PluginCollection => {
             context.container.register(ElasticsearchFetcher);
             context.container.register(ElasticsearchToDynamoDbSynchronization);
             context.container.register(DataSynchronizationTask);
+            context.container.register(CreateIndexesTaskRunner);
+            context.container.register(OnBeforeTrigger);
             context.container.register(CreateIndexesTask);
         })
     ];

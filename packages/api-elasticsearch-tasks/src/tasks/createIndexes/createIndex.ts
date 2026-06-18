@@ -1,6 +1,6 @@
-import type { IndexManager } from "~/settings/index.js";
+import type { IIndexManager } from "~/settings/types.js";
 
-export const createIndexFactory = (manager: IndexManager) => {
+export const createIndexFactory = (manager: IIndexManager) => {
     return {
         create: async (index: string, settings?: Record<string, any>): Promise<void> => {
             return manager.createIndex(index, settings);

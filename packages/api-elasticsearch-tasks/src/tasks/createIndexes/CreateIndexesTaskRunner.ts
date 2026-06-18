@@ -1,28 +1,29 @@
-import type { Manager } from "~/types.js";
-import type { IndexManager } from "~/settings/index.js";
+import type { IIndexManager } from "~/settings/types.js";
+import { Manager } from "~/types.js";
 import { listIndexes } from "./listIndexes.js";
 import { createIndexFactory } from "./createIndex.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
+import { CreateIndexesTaskRunner as Abstraction } from "./abstractions/CreateIndexesTaskRunner.js";
 
-export class CreateIndexesTaskRunner {
+class CreateIndexesTaskRunnerImpl implements Abstraction.Interface {
     private readonly controller;
 
-    public constructor(
+    constructor(
         private readonly tenantContext: TenantContext.Interface,
         private readonly listTenantsUseCase: ListTenantsUseCase.Interface,
         private readonly indexFactories: OpensearchTenantIndexFactory.Interface[],
-        manager: Manager.Interface,
-        private readonly indexManager: IndexManager
+        manager: Manager.Interface
     ) {
         this.controller = manager.controller;
     }
 
     public async execute(
         matching: string | undefined,
-        done: string[]
+        done: string[],
+        indexManager: IIndexManager
     ): Promise<TaskDefinition.Result> {
         if (this.indexFactories.length === 0) {
             return this.controller.response.done("No index plugins found.");
@@ -44,7 +45,7 @@ export class CreateIndexesTaskRunner {
             return index.includes(matching);
         };
 
-        const createIndex = createIndexFactory(this.indexManager);
+        const createIndex = createIndexFactory(indexManager);
 
         for (const { index, settings } of indexes) {
             if (this.controller.runtime.isAborted()) {
@@ -60,7 +61,7 @@ export class CreateIndexesTaskRunner {
                 } else if (isIndexAllowed(index) === false) {
                     continue;
                 }
-                const exists = await this.indexManager.indexExists(index);
+                const exists = await indexManager.indexExists(index);
                 if (exists) {
                     continue;
                 }
@@ -83,3 +84,13 @@ export class CreateIndexesTaskRunner {
         });
     }
 }
+
+export const CreateIndexesTaskRunner = Abstraction.createImplementation({
+    implementation: CreateIndexesTaskRunnerImpl,
+    dependencies: [
+        TenantContext,
+        ListTenantsUseCase,
+        [OpensearchTenantIndexFactory, { multiple: true }],
+        Manager
+    ]
+});
