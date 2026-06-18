@@ -6,6 +6,9 @@ import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenant
 import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
+import { Manager } from "../Manager.js";
+import { IndexManager } from "~/settings/index.js";
+import { OnBeforeTrigger } from "./OnBeforeTrigger.js";
 
 class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCreateIndexesTaskInput> {
     public readonly id = "elasticsearchCreateIndexes";
@@ -28,14 +31,6 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
             return controller.response.aborted();
         }
 
-        const { Manager } = await import(
-            /* webpackChunkName: "Manager" */
-            "../Manager.js"
-        );
-        const { IndexManager } = await import(
-            /* webpackChunkName: "IndexManager" */ "~/settings/index.js"
-        );
-
         const manager = new Manager<IElasticsearchCreateIndexesTaskInput>({
             elasticsearchClient: this.openSearchClient.use(),
             documentClient: this.dynamoDBClient.client,
@@ -56,14 +51,7 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface<IElasticsearchCr
     }
 
     async onBeforeTrigger() {
-        const { IndexManager } = await import(
-            /* webpackChunkName: "IndexManager" */ "~/settings/index.js"
-        );
         const indexManager = new IndexManager(this.openSearchClient.use(), {});
-        const { OnBeforeTrigger } = await import(
-            /* webpackChunkName: "OnBeforeTrigger" */
-            "./OnBeforeTrigger.js"
-        );
 
         const onBeforeTrigger = new OnBeforeTrigger(
             indexManager,

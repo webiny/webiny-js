@@ -6,6 +6,10 @@ import type {
 import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchSynchronize.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
+import { Manager } from "../Manager.js";
+import { IndexManager } from "~/settings/index.js";
+import { DataSynchronizationTaskRunner } from "./DataSynchronizationTaskRunner.js";
+import { createFactories } from "./createFactories.js";
 
 export const DATA_SYNCHRONIZATION_TASK = "dataSynchronization";
 
@@ -34,15 +38,6 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
             return controller.response.aborted();
         }
 
-        const { Manager } = await import(
-            /* webpackChunkName: "Manager" */
-            "../Manager.js"
-        );
-
-        const { IndexManager } = await import(
-            /* webpackChunkName: "IndexManager" */ "~/settings/index.js"
-        );
-
         const manager = new Manager<IDataSynchronizationInput, IDataSynchronizationOutput>({
             elasticsearchClient: this.openSearchClient.use(),
             documentClient: this.dynamoDBClient.client,
@@ -50,14 +45,6 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
         });
 
         const indexManager = new IndexManager(manager.elasticsearch, {});
-
-        const { DataSynchronizationTaskRunner } = await import(
-            /* webpackChunkName: "DataSynchronizationTaskRunner" */ "./DataSynchronizationTaskRunner.js"
-        );
-
-        const { createFactories } = await import(
-            /* webpackChunkName: "createFactories" */ "./createFactories.js"
-        );
 
         try {
             const dataSynchronization = new DataSynchronizationTaskRunner({

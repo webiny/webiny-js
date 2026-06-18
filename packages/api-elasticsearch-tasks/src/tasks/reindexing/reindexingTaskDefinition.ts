@@ -2,10 +2,13 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 import type { IElasticsearchIndexingTaskValues } from "~/types.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
+import { Manager } from "../Manager.js";
+import { IndexManager } from "~/settings/index.js";
+import { ReindexingTaskRunner } from "./ReindexingTaskRunner.js";
 
 class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElasticsearchIndexingTaskValues> {
-    id = "elasticsearchReindexing";
-    title = "Elasticsearch reindexing";
+    public readonly id = "elasticsearchReindexing";
+    public readonly title = "Elasticsearch reindexing";
 
     constructor(
         private readonly elasticsearchClient: OpenSearchClient.Interface,
@@ -16,18 +19,6 @@ class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElast
         if (controller.runtime.isAborted()) {
             return controller.response.aborted();
         }
-
-        const { Manager } = await import(
-            /* webpackChunkName: "Manager" */
-            "../Manager.js"
-        );
-
-        const { IndexManager } = await import(
-            /* webpackChunkName: "IndexManager" */ "~/settings/index.js"
-        );
-        const { ReindexingTaskRunner } = await import(
-            /* webpackChunkName: "ReindexingTaskRunner" */ "./ReindexingTaskRunner.js"
-        );
 
         const manager = new Manager<IElasticsearchIndexingTaskValues>({
             elasticsearchClient: this.elasticsearchClient.use(),

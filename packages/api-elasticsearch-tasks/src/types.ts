@@ -7,7 +7,6 @@ import type { IEntity } from "@webiny/db-dynamodb";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { DbRegistry } from "@webiny/db/exports/api/db.js";
 
 export interface Context extends OpenSearchContext, TasksContext {}
 
@@ -57,7 +56,6 @@ export interface IManager<
     readonly elasticsearch: Client;
     readonly table: ReturnType<typeof createOpenSearchTable>;
     readonly controller: TaskController.Interface<I, O>;
-    readonly dbRegistry?: DbRegistry.Interface;
     getEntity: (name: string) => IEntity;
     read<T>(items: BatchReadItem[]): Promise<T[]>;
 }
