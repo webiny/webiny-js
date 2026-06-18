@@ -48,7 +48,7 @@ export class ElasticsearchToDynamoDbSynchronization implements ISynchronization 
                         index: currentIndex,
                         cursor
                     }
-                });
+                }) as ISynchronizationRunResult;
             }
 
             const result = await this.fetcher.fetch({
@@ -78,7 +78,7 @@ export class ElasticsearchToDynamoDbSynchronization implements ISynchronization 
             elasticsearchToDynamoDb: {
                 finished: true
             }
-        });
+        }) as ISynchronizationRunResult;
     }
 
     private async fetchAllIndexes(): Promise<NonEmptyArray<string>> {

@@ -11,4 +11,5 @@ export const EnableIndexing = createAbstraction<IEnableIndexing>(
 
 export namespace EnableIndexing {
     export type Interface = IEnableIndexing;
+    export type Settings = IIndexSettingsValues;
 }

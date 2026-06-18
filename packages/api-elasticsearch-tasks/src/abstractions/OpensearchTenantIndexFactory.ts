@@ -18,4 +18,5 @@ export const OpensearchTenantIndexFactory = createAbstraction<IOpensearchTenantI
 export namespace OpensearchTenantIndexFactory {
     export type Interface = IOpensearchTenantIndexFactory;
     export type IndexConfig = IOpensearchIndexConfig;
+    export type IndexConfigBody = OpenSearchIndexRequestBody;
 }

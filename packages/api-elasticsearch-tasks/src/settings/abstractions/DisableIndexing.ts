@@ -11,4 +11,5 @@ export const DisableIndexing = createAbstraction<IDisableIndexing>(
 
 export namespace DisableIndexing {
     export type Interface = IDisableIndexing;
+    export type Settings = IIndexSettingsValues;
 }

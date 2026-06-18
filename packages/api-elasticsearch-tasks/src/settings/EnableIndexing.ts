@@ -1,12 +1,11 @@
 import { IndexingEnableError } from "~/errors/index.js";
-import type { IIndexSettingsValues } from "~/types.js";
 import { IndexSettingsManager } from "./abstractions/IndexSettingsManager.js";
 import { EnableIndexing as Abstraction } from "./abstractions/EnableIndexing.js";
 
 class EnableIndexingImpl implements Abstraction.Interface {
     constructor(private readonly settings: IndexSettingsManager.Interface) {}
 
-    public async exec(index: string, settings: IIndexSettingsValues): Promise<void> {
+    public async exec(index: string, settings: Abstraction.Settings): Promise<void> {
         try {
             const refreshInterval = parseInt(settings.refreshInterval || "", 10) || 0;
             await this.settings.setSettings(index, {
