@@ -34,6 +34,8 @@ class WebSocketLambdaHandlerImpl implements WebSocketEventHandler.Interface {
         eventCtx: EventContext<IWebSocketEvent>,
         _next: NextFunction
     ): Promise<APIGatewayProxyResult> {
+        // TODO: remove once legacy ctx is gone — already resolves authCtx/identityCtx/tenantCtx
+        // directly from DI; enhancer loop is the remaining legacy dependency.
         const ctx: Record<string, any> = { container: this.container };
         for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
             await enhancer.enhance(ctx);

@@ -16,8 +16,7 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Inte
         eventCtx: EventContext<IBackgroundTaskEvent>,
         _next: NextFunction
     ): Promise<void> {
-        // Build context by running all registered GraphQLContextEnhancers —
-        // this sets up ctx.tasks, ctx.cms, ctx.security, etc.
+        // TODO: remove once legacy ctx is gone — resolve services directly from the container.
         const ctx: Record<string, any> = { container: this.container };
         for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
             await enhancer.enhance(ctx);

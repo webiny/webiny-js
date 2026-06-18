@@ -78,6 +78,20 @@ The surrounding scaffolding (`tsconfig.json`, `webiny.config.ts`) is still in pl
 
 When `ctx` is eventually removed, `benchmark` should move to a proper DI service resolved from the container, scoped to the CMS feature.
 
+## Remove `GraphQLContextEnhancer` loop from non-GQL event handlers
+
+Five non-GQL Lambda handlers manually replay the `GraphQLContextEnhancer` loop to assemble the legacy `ctx` object. This is a smell — `GraphQLContextEnhancer` has no business in non-GraphQL handlers. Each one should resolve services directly from the container instead.
+
+Handlers to migrate:
+
+- `packages/api-dynamodb-to-elasticsearch/src/DdbToEsLambdaHandler.ts` — needs `ctx.opensearch`; blocked on OpenSearch becoming injectable (mate has a WIP PR)
+- `packages/background-tasks/src/api/BackgroundTaskLambdaHandler.ts` — needs `ctx.tasks`, `ctx.cms`, `ctx.security` etc.
+- `packages/api-headless-cms-bulk-actions/src/BulkActionsEventBridgeLambdaHandler.ts` — needs `context.tasks`, `context.tenancy`
+- `packages/api-websockets/src/WebSocketLambdaHandler.ts` — already resolves `authCtx`/`identityCtx`/`tenantCtx` directly; enhancer loop is the last legacy dependency
+- `packages/api-file-manager-s3/src/assetDelivery/threatDetection/createThreatDetectionEventHandler.ts` — needs `context.wcp`
+
+Once all five are migrated and `GraphQLContextEnhancer` has no remaining callers outside `handler-graphql` itself, the abstraction and the `buildContext()` loop in `GraphQLEngineImpl` can be deleted.
+
 ## Gzip compression of HTTP responses
 
 The old Fastify setup had `@fastify/compress` for response compression. Not yet implemented in the DI-native HTTP layer. Needs a compressing decorator on `HttpRouter` in `event-handler-core`, similar to `SecureHeadersDecorator`.

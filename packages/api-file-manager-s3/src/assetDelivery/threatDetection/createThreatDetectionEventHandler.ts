@@ -35,6 +35,7 @@ class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHan
             return { success: true };
         }
 
+        // TODO: remove once legacy ctx is gone — resolve services directly from the container.
         const ctx: Record<string, any> = { container: this.container };
         for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
             await enhancer.enhance(ctx);
