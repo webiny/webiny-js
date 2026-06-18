@@ -9,10 +9,10 @@ import type { IGraphQLContextEnhancer } from "./engine/index.js";
  * applies them via a GraphQLContextEnhancer so they still receive the context object.
  *
  * Usage in createLambdaHandler request callback:
- *   registerLegacyPlugins(container, extensions());
- *   registerLegacyPlugins(container, [myPlugin(), anotherPlugin()]);
+ *   registerLegacyPluginsViaGqlContextEnhancer(container, extensions());
+ *   registerLegacyPluginsViaGqlContextEnhancer(container, [myPlugin(), anotherPlugin()]);
  */
-export function registerLegacyPlugins(container: Container, plugins: any | any[]): void {
+export function registerLegacyPluginsViaGqlContextEnhancer(container: Container, plugins: any | any[]): void {
     const flat = [plugins].flat(Infinity as 1).filter(Boolean);
     let initialized = false;
 

@@ -10,7 +10,7 @@ import {
     BackgroundTaskEventType
 } from "@webiny/event-handler-aws";
 import { BackgroundTaskLambdaHandler } from "@webiny/background-tasks/api";
-import { registerLegacyPlugins } from "@webiny/handler-graphql";
+import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { DbFeature } from "@webiny/handler-db";
 import { ApiCoreFeature } from "@webiny/api-core";
@@ -121,7 +121,7 @@ export const handler = createLambdaHandler({
         CmsSchedulerFeature.register(container);
 
         // ── Extensions (legacy escape hatch) ──────────────────────
-        registerLegacyPlugins(container, extensions());
+        registerLegacyPluginsViaGqlContextEnhancer(container, extensions());
 
         // ── GraphQL engine (always last) ───────────────────────────
         GraphQLEngineFeature.register(container);

@@ -1,5 +1,5 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { registerLegacyPlugins } from "@webiny/handler-graphql";
+import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
 import { createFileManagerContext, createFileManagerGraphQL } from "./index.js";
 import { AssetDeliveryFeature } from "~/features/assetDelivery/feature.js";
 import { AssetDeliveryRoute } from "./delivery/AssetDeliveryRoute.js";
@@ -21,7 +21,7 @@ export const FileManagerAppFeature = createFeature({
         // arrive too late — fileManagerContextPlugin calls GetModelUseCase before modelsPlugin runs.
         container.register(FileModel);
 
-        registerLegacyPlugins(container, [
+        registerLegacyPluginsViaGqlContextEnhancer(container, [
             ...createFileManagerContext(),
             createFileManagerGraphQL()
         ]);

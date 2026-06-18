@@ -5,7 +5,7 @@ import { createOpenSearchContext, getOpenSearchOperators } from "@webiny/api-ope
 import { logger } from "../logger";
 import { createLambdaHandler, DynamoDBEventType } from "@webiny/event-handler-aws";
 import { DdbToEsLambdaHandler } from "@webiny/api-dynamodb-to-elasticsearch";
-import { registerLegacyPlugins } from "@webiny/handler-graphql";
+import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
 import { elasticIndexManager } from "../helpers/elasticIndexManager";
 import type { ElasticsearchClient } from "./createClient";
 import { createElasticsearchClient } from "./createClient";
@@ -79,7 +79,7 @@ export class ElasticsearchClientConfig {
             root: async container => {
                 container.register(DynamoDBEventType);
                 container.register(DdbToEsLambdaHandler);
-                registerLegacyPlugins(container, [
+                registerLegacyPluginsViaGqlContextEnhancer(container, [
                     simulationContext,
                     createMockApiLogContextPlugin()
                 ]);

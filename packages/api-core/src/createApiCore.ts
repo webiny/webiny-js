@@ -13,7 +13,6 @@ export interface ApiCoreConfig {
     testProjectLicense?: DecryptedWcpProjectLicense;
 }
 
-// TODO: delete — legacy factory used only in __tests__/. Production uses ApiCoreFeature directly.
 export const createApiCore = (config: ApiCoreConfig) => {
     return [
         createRegisterExtensionPlugin(context => {

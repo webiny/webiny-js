@@ -1,5 +1,5 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { registerLegacyPlugins } from "@webiny/handler-graphql";
+import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
 import { createBackgroundTaskContext } from "./context.js";
 import { createBackgroundTaskGraphQL } from "./graphql/index.js";
 import { TaskPrivateModel } from "./crud/TaskPrivateModel.js";
@@ -14,7 +14,7 @@ export const BackgroundTasksFeature = createFeature({
         container.register(TaskPrivateModel);
         container.register(TaskLogPrivateModel);
         container.register(BackgroundTaskSettingsModel);
-        registerLegacyPlugins(container, [
+        registerLegacyPluginsViaGqlContextEnhancer(container, [
             ...createBackgroundTaskContext(),
             ...createBackgroundTaskGraphQL()
         ]);

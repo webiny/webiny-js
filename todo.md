@@ -92,6 +92,15 @@ Handlers to migrate:
 
 Once all five are migrated and `GraphQLContextEnhancer` has no remaining callers outside `handler-graphql` itself, the abstraction and the `buildContext()` loop in `GraphQLEngineImpl` can be deleted.
 
+## Migrate `BackgroundTasksFeature` off `registerLegacyPlugins`
+
+`packages/background-tasks/src/api/BackgroundTasksFeature.ts` wraps two old-style plugin factories via `registerLegacyPlugins`:
+
+- `createBackgroundTaskContext()` — registers `ctx.tasks` on the legacy context object
+- `createBackgroundTaskGraphQL()` — registers the GQL schema via the old plugin system
+
+Both return `Plugin[]` and haven't been migrated to DI yet. Once they are, `registerLegacyPlugins` can be dropped from this feature.
+
 ## Gzip compression of HTTP responses
 
 The old Fastify setup had `@fastify/compress` for response compression. Not yet implemented in the DI-native HTTP layer. Needs a compressing decorator on `HttpRouter` in `event-handler-core`, similar to `SecureHeadersDecorator`.

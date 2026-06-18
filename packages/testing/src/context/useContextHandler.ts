@@ -1,6 +1,6 @@
 import { Container } from "@webiny/feature/api";
 import { RequestContainer } from "@webiny/event-handler-core";
-import { registerLegacyPlugins } from "@webiny/handler-graphql";
+import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
 import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
 import type { CreateHandlerCoreParams } from "./plugins.js";
@@ -36,7 +36,7 @@ export const useContextHandler = <C extends CmsContext = CmsContext>(
             const child = root.createChildContainer();
             child.registerInstance(RequestContainer, child);
 
-            registerLegacyPlugins(child, core.plugins);
+            registerLegacyPluginsViaGqlContextEnhancer(child, core.plugins);
 
             const ctx: Record<string, any> = { container: child };
             const enhancers = child.resolveAll(GraphQLContextEnhancer);

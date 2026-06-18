@@ -1,7 +1,7 @@
 import type { CreateHandlerCoreParams } from "./plugins.js";
 import { createHandlerCore } from "./plugins.js";
 import { createLambdaHandler, ApiGatewayFeature } from "@webiny/event-handler-aws";
-import { registerLegacyPlugins } from "@webiny/handler-graphql";
+import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { defaultIdentity } from "./tenancySecurity.js";
 import type { LambdaContext } from "@webiny/handler-aws/types.js";
@@ -35,7 +35,7 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
             ApiGatewayFeature.register(container);
         },
         request: async container => {
-            registerLegacyPlugins(container, plugins);
+            registerLegacyPluginsViaGqlContextEnhancer(container, plugins);
             GraphQLEngineFeature.register(container);
         }
     });
