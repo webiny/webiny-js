@@ -1,7 +1,7 @@
 import { registerOpenSearchCore } from "~/registerOpenSearchCore.js";
-import { createTestOpenSearchClient } from "./createTestOpenSearchClient.js";
+import { getTestOpenSearchClient } from "./createTestOpenSearchClient.js";
 
 export const registerOpenSearchCoreForTests = () => {
-    const client = createTestOpenSearchClient();
+    const client = getTestOpenSearchClient();
     return registerOpenSearchCore(client);
 };

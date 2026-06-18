@@ -202,3 +202,12 @@ export const createTestOpenSearchClient = (
     });
     return attachTestBehavior(client);
 };
+
+let singletonClient: TestOpenSearchClient | null = null;
+
+export const getTestOpenSearchClient = (): TestOpenSearchClient => {
+    if (!singletonClient) {
+        singletonClient = createTestOpenSearchClient();
+    }
+    return singletonClient;
+};

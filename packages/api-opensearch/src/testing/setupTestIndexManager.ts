@@ -1,4 +1,4 @@
-import { createTestOpenSearchClient } from "./createTestOpenSearchClient.js";
+import { getTestOpenSearchClient } from "./createTestOpenSearchClient.js";
 
 type LifecycleHook = () => Promise<void>;
 
@@ -16,7 +16,7 @@ interface SetupTestIndexManagerParams {
 
 export const setupTestIndexManager = (params: SetupTestIndexManagerParams) => {
     const { global, onBeforeEach } = params;
-    const client = createTestOpenSearchClient();
+    const client = getTestOpenSearchClient();
 
     const clearIndices = async () => {
         try {
