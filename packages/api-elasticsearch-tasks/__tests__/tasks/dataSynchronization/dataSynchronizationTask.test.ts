@@ -7,6 +7,30 @@ import {
     TaskDefinition,
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { ElasticsearchToDynamoDbSynchronization } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchToDynamoDbSynchronization";
+import { Manager } from "~/types";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
+
+const createDummySync = () => {
+    return createRegisterExtensionPlugin(({ container }) => {
+        const DummySync = ElasticsearchToDynamoDbSynchronization.createImplementation({
+            implementation: class {
+                constructor(private readonly manager: Manager.Interface) {}
+
+                async run(input: IDataSynchronizationInput) {
+                    return this.manager.controller.response.continue({
+                        ...input,
+                        elasticsearchToDynamoDb: {
+                            finished: true
+                        }
+                    });
+                }
+            },
+            dependencies: [Manager]
+        });
+        container.register(DummySync);
+    });
+};
 
 describe("data synchronization - elasticsearch", () => {
     it("should run a task and end with error due to invalid flow", async () => {
@@ -42,7 +66,9 @@ describe("data synchronization - elasticsearch", () => {
     });
 
     it("should run a task and end with done", async () => {
-        const handler = useHandler({});
+        const handler = useHandler({
+            plugins: [createDummySync()]
+        });
 
         const context = await handler.rawHandle();
 

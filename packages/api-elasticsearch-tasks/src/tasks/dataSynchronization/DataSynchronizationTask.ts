@@ -37,6 +37,10 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
             return controller.response.aborted();
         }
 
+        if (input.elasticsearchToDynamoDb?.finished) {
+            return controller.response.done();
+        }
+
         const indexManager = new IndexManager(
             this.manager.elasticsearch,
             this.disableIndexing,

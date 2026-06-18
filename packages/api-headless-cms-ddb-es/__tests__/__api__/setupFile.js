@@ -1,16 +1,26 @@
 import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { ContextPlugin } from "@webiny/api";
 import { registerCmsOpenSearchStorageOperations } from "../../src/index";
 import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { configurations } from "../../src/configurations";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
-import { registerOpenSearchCoreForTests } from "@webiny/api-opensearch/testing";
-import { OpenSearchClient, getBaseConfiguration } from "@webiny/api-opensearch";
+import {
+    getTestOpenSearchClient,
+    registerOpenSearchCoreForTests
+} from "@webiny/api-opensearch/testing";
+import {
+    registerOpenSearchCore,
+    OpenSearchClient,
+    getBaseConfiguration
+} from "@webiny/api-opensearch";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
+import { createHandler } from "@webiny/handler-aws";
+import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
+import { createMockApiLogContextPlugin } from "@webiny/project-utils/testing/mockApiLog";
 
 if (typeof registerCmsOpenSearchStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -21,9 +31,19 @@ if (!prefix.includes("api-")) {
     process.env.OPENSEARCH_INDEX_PREFIX = `${prefix}api-headless-cms-env-`;
 }
 
-setStorageOps("cms", () => {
-    const documentClient = getDocumentClient();
+const documentClient = getDocumentClient();
+const opensearchClient = getTestOpenSearchClient();
 
+const dynamoDbToEsHandler = createHandler({
+    plugins: [
+        registerOpenSearchCore(opensearchClient),
+        createMockApiLogContextPlugin(),
+        createDynamoDBToElasticsearchEventHandler()
+    ]
+});
+simulateStream(documentClient, dynamoDbToEsHandler);
+
+setStorageOps("cms", () => {
     const createIndexName = model => {
         const { index } = configurations.es({
             model
