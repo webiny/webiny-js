@@ -11,11 +11,6 @@ import { DbRegistry } from "~/abstractions/DbRegistry.js";
 
 export interface Context extends OpenSearchContext, TasksContext {}
 
-export interface IElasticsearchTaskConfig {
-    documentClient: DynamoDBDocument;
-    elasticsearchClient: Client;
-}
-
 export interface IElasticsearchIndexingTaskValuesKeys {
     PK: string;
     SK: string;

@@ -12,7 +12,7 @@ import type {
     IElasticsearchSynchronizeExecuteParams,
     IElasticsearchSynchronizeExecuteResponse
 } from "./abstractions/ElasticsearchSynchronize.js";
-import { SynchronizationContext } from "~/abstractions/SynchronizationContext.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { DbRegistry } from "~/abstractions/DbRegistry.js";
 
 interface IDynamoDbItem {
@@ -22,9 +22,9 @@ interface IDynamoDbItem {
 
 export class ElasticsearchSynchronize implements IElasticsearchSynchronize {
     public constructor(
-        private controller: TaskController.Interface,
-        private dbRegistry: DbRegistry.Interface,
-        private context: SynchronizationContext.Interface
+        private readonly controller: TaskController.Interface,
+        private readonly dbRegistry: DbRegistry.Interface,
+        private readonly openSearchClient: OpenSearchClient.Interface
     ) {}
 
     public async execute(
@@ -56,7 +56,7 @@ export class ElasticsearchSynchronize implements IElasticsearchSynchronize {
         });
 
         const elasticsearchSyncBuilder = createSynchronizationBuilder({
-            context: this.context,
+            context: { opensearch: this.openSearchClient.use() },
             timer: this.controller.runtime
         });
         /**

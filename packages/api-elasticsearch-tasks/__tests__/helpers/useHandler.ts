@@ -52,9 +52,7 @@ export const useHandler = (params?: UseHandlerParams) => {
             createRawEventHandler(async ({ context }) => {
                 return context;
             }),
-            ...createElasticsearchBackgroundTasks({
-                documentClient: getDocumentClient()
-            }),
+            ...createElasticsearchBackgroundTasks(),
             ...initialPlugins
         ]
     ];
