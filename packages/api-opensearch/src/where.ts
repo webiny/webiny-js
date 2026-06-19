@@ -1,5 +1,8 @@
 import type { OpenSearchBoolQueryConfig } from "~/types.js";
-import { OpenSearchFieldPlugin } from "~/plugins/definition/OpenSearchFieldPlugin.js";
+import {
+    OpenSearchField,
+    OpenSearchFieldAll
+} from "~/features/OpenSearchField/abstractions/OpenSearchField.js";
 import type { OpenSearchQueryBuilderOperator } from "~/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperator.js";
 import WebinyError from "@webiny/error";
 
@@ -8,7 +11,7 @@ type Records<T> = Record<string, T>;
 export interface ApplyWhereParams {
     query: OpenSearchBoolQueryConfig;
     where: Records<any>;
-    fields: Records<OpenSearchFieldPlugin>;
+    fields: Records<OpenSearchField.Interface>;
     operators: Records<OpenSearchQueryBuilderOperator.Interface>;
 }
 
@@ -17,9 +20,6 @@ export interface ParseWhereKeyResult {
     operator: string;
 }
 
-/**
- * TODO remove the wbyAco prefix when we move the user fields to the values property.
- */
 const parseWhereKeyRegExp = new RegExp(/^((?:wbyAco_)?[a-zA-Z0-9]+)(_[a-zA-Z0-9_]+)?$/);
 
 export const parseWhereKey = (key: string): ParseWhereKeyResult => {
@@ -40,7 +40,7 @@ export const parseWhereKey = (key: string): ParseWhereKeyResult => {
     return { field, operator };
 };
 
-const ALL = OpenSearchFieldPlugin.ALL;
+const ALL = OpenSearchFieldAll;
 
 export const applyWhere = (params: ApplyWhereParams): void => {
     const { query, where, fields, operators } = params;
@@ -54,7 +54,7 @@ export const applyWhere = (params: ApplyWhereParams): void => {
             continue;
         }
         const { field, operator } = parseWhereKey(key);
-        const fieldPlugin: OpenSearchFieldPlugin = fields[field] || fields[ALL];
+        const fieldPlugin: OpenSearchField.Interface = fields[field] || fields[ALL];
         if (!fieldPlugin) {
             throw new WebinyError(
                 `Missing plugin for the field "${field}".`,

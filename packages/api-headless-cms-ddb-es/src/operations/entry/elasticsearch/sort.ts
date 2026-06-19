@@ -1,5 +1,7 @@
 import type { Sort as OpenSearchSort } from "@webiny/api-opensearch/types.js";
-import { createSort, OpenSearchFieldPlugin } from "@webiny/api-opensearch";
+import { createSort } from "@webiny/api-opensearch";
+import type { OpenSearchField } from "@webiny/api-opensearch/exports/api/opensearch";
+import { OpenSearchFieldImpl } from "@webiny/api-opensearch/features/OpenSearchField/OpenSearchFieldImpl";
 import type { CmsEntryListSort, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { ModelFields } from "./types.js";
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword.js";
@@ -61,11 +63,10 @@ export const createElasticsearchSort = (params: Params): OpenSearchSort => {
 
     const fieldIdToStorageIdIdMap: Record<string, string> = {};
 
-    const sortPlugins = Object.values(modelFields).reduce<Record<string, OpenSearchFieldPlugin>>(
+    const sortPlugins = Object.values(modelFields).reduce<
+        Record<string, OpenSearchField.Interface>
+    >(
         (plugins, field) => {
-            /**
-             * We do not support sorting by nested fields.
-             */
             const isValues = field.parents.length === 1 && field.parents[0].fieldId === "values";
             if (field.parents.length > 0 && !isValues) {
                 return plugins;
@@ -83,10 +84,7 @@ export const createElasticsearchSort = (params: Params): OpenSearchSort => {
                 keyword: false,
                 originalValue: NoValueContainer.create()
             });
-            /**
-             * Plugins must be stored with fieldId as key because it is later used to find the sorting plugin.
-             */
-            plugins[fieldIdPath] = new OpenSearchFieldPlugin({
+            plugins[fieldIdPath] = new OpenSearchFieldImpl({
                 unmappedType: field.unmappedType,
                 keyword: hasKeyword(field),
                 sortable: field.sortable,
@@ -97,8 +95,8 @@ export const createElasticsearchSort = (params: Params): OpenSearchSort => {
             return plugins;
         },
         {
-            ["*"]: new OpenSearchFieldPlugin({
-                field: OpenSearchFieldPlugin.ALL,
+            ["*"]: new OpenSearchFieldImpl({
+                field: "*",
                 keyword: false
             })
         }
