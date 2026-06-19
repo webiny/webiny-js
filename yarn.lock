@@ -13252,6 +13252,7 @@ __metadata:
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"

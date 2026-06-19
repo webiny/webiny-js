@@ -1,11 +1,13 @@
 import React from "react";
-import { Plugins } from "@webiny/app";
-import { HandleWebsocketMessages } from "./HandleWebsocketMessages.js";
+import { RegisterFeature } from "@webiny/app-admin";
+import { AiEnrichmentFeature } from "./feature.js";
+import { AiEnrichmentNotifications } from "./AiEnrichmentNotifications.js";
 
 export const AiEnrichmentModule = () => {
     return (
-        <Plugins>
-            <HandleWebsocketMessages />
-        </Plugins>
+        <>
+            <RegisterFeature feature={AiEnrichmentFeature} />
+            <AiEnrichmentNotifications />
+        </>
     );
 };
