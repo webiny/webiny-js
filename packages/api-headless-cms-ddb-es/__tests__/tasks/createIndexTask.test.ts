@@ -8,7 +8,6 @@ import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
 import type { IElasticsearchCreateIndexesTaskInput } from "@webiny/api-elasticsearch-tasks/tasks/createIndexes/types";
 import { configurations } from "~/configurations";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
-import type { OpenSearchContext } from "@webiny/api-opensearch/types";
 import { OpenSearchTenantIndexFactory } from "@webiny/api-elasticsearch-tasks";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
@@ -19,7 +18,7 @@ const createIndexName = (model: Pick<CmsModel, "tenant" | "modelId">): string =>
     return index;
 };
 
-interface Context extends TasksContext, CmsContext, OpenSearchContext {}
+interface Context extends TasksContext, CmsContext {}
 
 describe("Create index task", () => {
     it("should create an index configuration for each of the models defined", async () => {

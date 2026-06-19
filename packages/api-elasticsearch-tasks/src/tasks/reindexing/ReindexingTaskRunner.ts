@@ -3,7 +3,7 @@ import type {
     IElasticsearchIndexingTaskValues,
     IElasticsearchIndexingTaskValuesKeys
 } from "~/types.js";
-import { Manager } from "~/types.js";
+import { Manager } from "~/abstractions/Manager.js";
 import type { IIndexManager } from "~/settings/types.js";
 import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { scan } from "~/helpers/scan.js";

@@ -4,6 +4,8 @@ import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import type { LambdaContext, Reply, Request } from "@webiny/handler-aws/types";
 import { marshall } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createMockContext } from "~tests/mocks/context";
+import { PluginsContainer } from "@webiny/plugins";
+import { registerOpenSearchCore } from "@webiny/api-opensearch";
 
 describe("transfer data", () => {
     it("should transfer data from event to elasticsearch", async () => {
@@ -11,8 +13,10 @@ describe("transfer data", () => {
 
         const elasticsearch = createTestOpenSearchClient();
 
+        const plugins = new PluginsContainer([registerOpenSearchCore(elasticsearch)]);
+
         const context = createMockContext({
-            elasticsearch
+            plugins
         });
 
         /**

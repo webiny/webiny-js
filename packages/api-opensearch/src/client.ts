@@ -40,11 +40,6 @@ export const createOpenSearchClient = (options: OpenSearchClientOptions): Client
             throw new WebinyError("Missing AWS_REGION environment variable.", "MISSING_AWS_REGION");
         }
 
-        console.log({
-            beforeClientOptions: true,
-            clientOptions
-        });
-
         clientOptions = {
             ...clientOptions,
             ...AwsSigv4Signer({
@@ -67,11 +62,6 @@ export const createOpenSearchClient = (options: OpenSearchClientOptions): Client
             })
         };
     }
-
-    console.log({
-        afterClientOptions: true,
-        clientOptions
-    });
 
     try {
         const client = new Client(clientOptions);

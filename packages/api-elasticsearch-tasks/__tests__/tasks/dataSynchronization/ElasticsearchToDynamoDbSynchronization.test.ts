@@ -1,16 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/helpers/useHandler";
 import { DATA_SYNCHRONIZATION_TASK } from "~/tasks";
-import type { Context } from "@webiny/api-dynamodb-to-elasticsearch";
 import { SynchronizationBuilder } from "@webiny/api-dynamodb-to-elasticsearch";
 import type { ITimer } from "@webiny/handler-aws";
 import type { IIndexManager } from "~/settings/types";
-import { IndexManager } from "~/settings";
 import { timerFactory } from "@webiny/handler-aws/utils";
-import { createRunner } from "@webiny/project-utils/testing/tasks";
+import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition";
-import type { DisableIndexing } from "~/settings/abstractions/DisableIndexing";
-import type { EnableIndexing } from "~/settings/abstractions/EnableIndexing";
+import { IndexManagerFactory } from "~/settings/abstractions/IndexManagerFactory";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch";
 
 const queryAllRecords = (index: string) => {
     return {
@@ -28,15 +26,15 @@ const queryAllRecords = (index: string) => {
 interface ICreateSyncBuilderParams {
     records: number;
     timer: ITimer;
-    context: Pick<Context, "opensearch">;
+    opensearch: OpenSearchClient.Client;
     index: string;
 }
 
 const createRecordsFactory = (params: ICreateSyncBuilderParams) => {
-    const { timer, context, index, records } = params;
+    const { timer, opensearch, index, records } = params;
     const syncBuilder = new SynchronizationBuilder({
         timer,
-        context
+        openSearchClient: opensearch
     });
 
     for (let i = 0; i < records; i++) {
@@ -65,14 +63,6 @@ const getTaskIndex = async (manager: IIndexManager): Promise<string> => {
         throw new Error("No index found.");
     }
     return index;
-};
-
-const noopDisableIndexing: DisableIndexing.Interface = {
-    exec: async () => ({ numberOfReplicas: 1, refreshInterval: "1s" })
-};
-
-const noopEnableIndexing: EnableIndexing.Interface = {
-    exec: async () => {}
 };
 
 describe("ElasticsearchToDynamoDbSynchronization", () => {
@@ -117,17 +107,18 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
             name: "Test Sync With Indexes"
         });
 
-        const indexManager = new IndexManager(
-            context.opensearch,
-            noopDisableIndexing,
-            noopEnableIndexing,
-            {}
-        );
+        const opensearchClient = context.container.resolve(OpenSearchClient);
+        const client = opensearchClient.use();
+
+        const indexManagerFactory = context.container.resolve(IndexManagerFactory);
+        const indexManager = indexManagerFactory.createIndexManager({
+            settings: {}
+        });
         const index = await getTaskIndex(indexManager);
 
         const totalMockItemsToInsert = 101;
         const recordsFactory = createRecordsFactory({
-            context,
+            opensearch: client,
             index,
             timer: timerFactory(),
             records: totalMockItemsToInsert
@@ -135,7 +126,7 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
 
         await recordsFactory.run();
 
-        const response = await context.opensearch.search(queryAllRecords(index));
+        const response = await client.search(queryAllRecords(index));
         expect(response.body.hits.hits).toHaveLength(totalMockItemsToInsert + 1);
 
         const taskDefinitions = context.container.resolveAll(TaskDefinition);
@@ -152,7 +143,7 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
         expect(result.status).toBeDefined();
         expect(result.webinyTaskId).toBe(task.id);
 
-        const afterRunResponse = await context.opensearch.search(queryAllRecords(index));
+        const afterRunResponse = await client.search(queryAllRecords(index));
         expect(afterRunResponse.body.hits.hits).toHaveLength(1);
     });
 });

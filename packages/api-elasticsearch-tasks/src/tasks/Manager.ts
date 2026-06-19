@@ -1,6 +1,6 @@
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch";
-import { Manager as Abstraction } from "~/types.js";
+import { Manager as Abstraction } from "~/abstractions/Manager.js";
 import type { BatchReadItem } from "@webiny/db-dynamodb/utils/batch/batchRead.js";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batch/batchRead.js";
 import type { IEntity } from "@webiny/db-dynamodb";
@@ -10,7 +10,7 @@ import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
 class ManagerImpl implements Abstraction.Interface {
     public readonly controller: TaskController.Interface;
     public readonly documentClient;
-    public readonly elasticsearch;
+    public readonly openSearchClient;
     public readonly table;
 
     private readonly entities: Record<string, IEntity> = {};
@@ -22,7 +22,7 @@ class ManagerImpl implements Abstraction.Interface {
     ) {
         this.controller = controller;
         this.documentClient = dynamoDBClient.client;
-        this.elasticsearch = openSearchClient.use();
+        this.openSearchClient = openSearchClient.use();
 
         this.table = createOpenSearchTable({
             documentClient: this.documentClient

@@ -21,7 +21,6 @@ import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchInd
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex.js";
-import { createCreateIndexTask } from "~/tasks/createIndexTaskPlugin.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
@@ -41,6 +40,12 @@ import {
     CmsEntryOpenSearchFilterRegistry
 } from "~/features/CmsEntryOpenSearchFilter/index.js";
 import { DbRegistry } from "@webiny/db/exports/api/db.js";
+import {
+    OpenSearchClient,
+    OpenSearchFieldFactory,
+    OpenSearchQueryBuilderOperatorRegistry
+} from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { CreateElasticsearchIndexTask } from "~/tasks/CreateElasticsearchIndexTask.js";
 
 const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const { table, esTable, elasticsearch, plugins, container } = params;
@@ -86,6 +91,8 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const fullTextSearches = container.resolveAll(CmsEntryOpenSearchFullTextSearch);
     const valuesModifiers = container.resolveAll(CmsEntryOpenSearchValuesModifier);
     const filterRegistry = container.resolve(CmsEntryOpenSearchFilterRegistry);
+    const operatorRegistry = container.resolve(OpenSearchQueryBuilderOperatorRegistry);
+    const fieldFactory = container.resolve(OpenSearchFieldFactory);
 
     container.registerFactory(ModelAfterCreateEventHandler, () => ({
         async handle(event) {
@@ -123,6 +130,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         entity: entities.entries,
         esEntity: entities.entriesEs,
         plugins,
+        operatorRegistry,
         elasticsearch,
         fieldRegistry,
         fieldIndexRegistry,
@@ -133,7 +141,8 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         valueSearchRegistry,
         fullTextSearches,
         valuesModifiers,
-        filterRegistry
+        filterRegistry,
+        fieldFactory
     });
 
     return {
@@ -151,9 +160,6 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
                 app: "cms",
                 tags: ["es", entities.entriesEs.name]
             });
-            // TODO we know that context is ok, but types are missing elasticsearch/opensearch
-            // @ts-expect-error
-            createCreateIndexTask(context);
 
             entries.dataLoaders.clearAll();
         },
@@ -175,9 +181,11 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
 class OpenSearchStorageOperationsFactoryImpl
     implements StorageOperationsFactoryAbstraction.Interface
 {
+    public constructor(private readonly openSearchClient: OpenSearchClient.Interface) {}
+
     public async create(context: CmsContext) {
         return createOpenSearchStorageOperations({
-            elasticsearch: context.opensearch,
+            elasticsearch: this.openSearchClient.use(),
             plugins: context.plugins,
             container: context.container
         });
@@ -187,7 +195,7 @@ class OpenSearchStorageOperationsFactoryImpl
 const OpenSearchStorageOperationsFactory = StorageOperationsFactoryAbstraction.createImplementation(
     {
         implementation: OpenSearchStorageOperationsFactoryImpl,
-        dependencies: []
+        dependencies: [OpenSearchClient]
     }
 );
 
@@ -198,6 +206,7 @@ const storageOperationsFeature = createFeature({
         CmsEntryOpenSearchFilterFeature.register(container);
         CmsEntryOpenSearchIndexFeature.register(container);
         CmsEntryOpenSearchValueSearchFeature.register(container);
+        container.register(CreateElasticsearchIndexTask);
         container.register(OpenSearchStorageOperationsFactory).inSingletonScope();
     }
 });

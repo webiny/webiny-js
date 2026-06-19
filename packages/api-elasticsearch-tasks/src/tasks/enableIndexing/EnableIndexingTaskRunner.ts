@@ -1,5 +1,5 @@
 import type { IIndexManager } from "~/settings/types.js";
-import { Manager } from "~/types.js";
+import { Manager } from "~/abstractions/Manager.js";
 import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { IElasticsearchEnableIndexingTaskInput } from "~/tasks/enableIndexing/types.js";
 import { EnableIndexingTaskRunner as Abstraction } from "./abstractions/EnableIndexingTaskRunner.js";

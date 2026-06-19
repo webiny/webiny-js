@@ -11,12 +11,9 @@ import { setStorageOps } from "@webiny/project-utils/testing/environment";
 import {
     getTestOpenSearchClient,
     registerOpenSearchCoreForTests
-} from "@webiny/api-opensearch/testing";
-import {
-    registerOpenSearchCore,
-    OpenSearchClient,
-    getBaseConfiguration
-} from "@webiny/api-opensearch";
+} from "@webiny/api-opensearch/testing/index.js";
+import { registerOpenSearchCore, getBaseConfiguration } from "@webiny/api-opensearch";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 import { createHandler } from "@webiny/handler-aws";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";

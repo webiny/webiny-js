@@ -71,7 +71,7 @@ class ElasticsearchSynchronizeImpl implements Abstraction.Interface {
         });
 
         const elasticsearchSyncBuilder = createSynchronizationBuilder({
-            context: { opensearch: this.openSearchClient.use() },
+            openSearchClient: this.openSearchClient.use(),
             timer: this.controller.runtime
         });
         /* We need to find the items we have in the Elasticsearch but not in the DynamoDB-Elasticsearch table. */

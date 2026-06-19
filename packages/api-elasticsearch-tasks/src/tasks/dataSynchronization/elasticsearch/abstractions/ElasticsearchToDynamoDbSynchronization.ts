@@ -16,4 +16,7 @@ export const ElasticsearchToDynamoDbSynchronization =
 
 export namespace ElasticsearchToDynamoDbSynchronization {
     export type Interface = IElasticsearchToDynamoDbSynchronization;
+    export type Input = IDataSynchronizationInput;
+    export type IndexManager = IIndexManager;
+    export type Result = ISynchronizationRunResult;
 }

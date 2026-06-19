@@ -1,19 +1,14 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { IElasticsearchEnableIndexingTaskInput } from "./types.js";
-import { Manager } from "~/types.js";
-import { IndexManager } from "~/settings/index.js";
-import { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
-import { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
 import { EnableIndexingTaskRunner } from "./abstractions/EnableIndexingTaskRunner.js";
+import { IndexManagerFactory } from "~/settings/abstractions/IndexManagerFactory.js";
 
 class ElasticsearchEnableIndexingTaskImpl implements TaskDefinition.Interface<IElasticsearchEnableIndexingTaskInput> {
     public readonly id = "elasticsearchEnableIndexing";
     public readonly title = "Enable Indexing on Elasticsearch Indexes";
 
     constructor(
-        private readonly manager: Manager.Interface,
-        private readonly disableIndexing: DisableIndexing.Interface,
-        private readonly enableIndexing: EnableIndexing.Interface,
+        private readonly indexManagerFactory: IndexManagerFactory.Interface,
         private readonly runner: EnableIndexingTaskRunner.Interface
     ) {}
 
@@ -25,16 +20,13 @@ class ElasticsearchEnableIndexingTaskImpl implements TaskDefinition.Interface<IE
             return controller.response.aborted();
         }
 
-        const indexManager = new IndexManager(
-            this.manager.elasticsearch,
-            this.disableIndexing,
-            this.enableIndexing,
-            {},
-            {
+        const indexManager = this.indexManagerFactory.createIndexManager({
+            settings: {},
+            defaults: {
                 refreshInterval: input.refreshInterval,
                 numberOfReplicas: input.numberOfReplicas
             }
-        );
+        });
 
         return this.runner.exec(input.matching, indexManager);
     }
@@ -42,7 +34,7 @@ class ElasticsearchEnableIndexingTaskImpl implements TaskDefinition.Interface<IE
 
 export const ElasticsearchEnableIndexingTask = TaskDefinition.createImplementation({
     implementation: ElasticsearchEnableIndexingTaskImpl,
-    dependencies: [Manager, DisableIndexing, EnableIndexing, EnableIndexingTaskRunner]
+    dependencies: [IndexManagerFactory, EnableIndexingTaskRunner]
 });
 
 export { EnableIndexingTaskRunner } from "./EnableIndexingTaskRunner.js";

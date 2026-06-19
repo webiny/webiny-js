@@ -1,6 +1,6 @@
-import type { ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types";
+import type { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types";
 
-export const createBlankQuery = (): ElasticsearchBoolQueryConfig => ({
+export const createBlankQuery = (): OpenSearchBoolQueryConfig => ({
     must_not: [],
     must: [],
     filter: [],

@@ -1,5 +1,5 @@
 import type { IIndexManager } from "~/settings/types.js";
-import { Manager } from "~/types.js";
+import { Manager } from "~/abstractions/Manager.js";
 import { listIndexes } from "./listIndexes.js";
 import { createIndexFactory } from "./createIndex.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
