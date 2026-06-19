@@ -1,4 +1,5 @@
 import type { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import type { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type {
     CmsEntryListParams,
     CmsEntryListWhere,
@@ -36,6 +37,7 @@ interface ICreateElasticsearchBodyParams {
     valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
     fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
     filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
+    fieldFactory: OpenSearchFieldFactory.Interface;
     params: Omit<CmsEntryListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
         after?: PrimitiveValue[];
@@ -52,7 +54,8 @@ export const createElasticsearchBody = ({
     queryModifiers,
     valueSearchRegistry,
     fullTextSearches,
-    filterRegistry
+    filterRegistry,
+    fieldFactory
 }: ICreateElasticsearchBodyParams): SearchBody => {
     const { fields, search: term, where, sort: initialSort, after, limit } = params;
     /**
@@ -130,7 +133,8 @@ export const createElasticsearchBody = ({
         sort: initialSort,
         modelFields,
         model,
-        valueSearchRegistry
+        valueSearchRegistry,
+        fieldFactory
     });
 
     for (const modifier of applicableSortModifiers) {

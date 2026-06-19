@@ -40,6 +40,7 @@ import {
 } from "@webiny/api-opensearch";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import type { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
 import { DataLoadersHandler } from "./dataLoaders.js";
 import {
@@ -96,6 +97,7 @@ export interface CreateEntriesStorageOperationsParams {
     fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
     valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
     filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
+    fieldFactory: OpenSearchFieldFactory.Interface;
 }
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
@@ -136,7 +138,8 @@ export const createEntriesStorageOperations = (
         valueSearchRegistry,
         fullTextSearches,
         valuesModifiers,
-        filterRegistry
+        filterRegistry,
+        fieldFactory
     } = params;
 
     let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
@@ -1371,6 +1374,7 @@ export const createEntriesStorageOperations = (
             valueSearchRegistry,
             fullTextSearches,
             filterRegistry,
+            fieldFactory,
             params: {
                 ...params,
                 limit,
@@ -2087,6 +2091,7 @@ export const createEntriesStorageOperations = (
             valueSearchRegistry,
             fullTextSearches,
             filterRegistry,
+            fieldFactory,
             params: {
                 limit: 1,
                 where

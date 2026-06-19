@@ -1,8 +1,9 @@
 import type { Sort as OpenSearchSort } from "@webiny/api-opensearch/types.js";
 import { createSort } from "@webiny/api-opensearch";
 import type { OpenSearchField } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import { OpenSearchFieldImpl } from "@webiny/api-opensearch/features/OpenSearchField/OpenSearchFieldImpl.js";
-import type { CmsEntryListSort, CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { ModelFields } from "./types.js";
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword.js";
 import { createFieldPathFactory } from "~/operations/entry/elasticsearch/filtering/path.js";
@@ -42,10 +43,11 @@ interface Params {
     modelFields: ModelFields;
     model: CmsModel;
     valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
+    fieldFactory: OpenSearchFieldFactory.Interface;
 }
 
 export const createElasticsearchSort = (params: Params): OpenSearchSort => {
-    const { sort, modelFields, valueSearchRegistry } = params;
+    const { sort, modelFields, valueSearchRegistry, fieldFactory } = params;
 
     if (!sort || sort.length === 0) {
         return [
@@ -84,7 +86,7 @@ export const createElasticsearchSort = (params: Params): OpenSearchSort => {
                 keyword: false,
                 originalValue: NoValueContainer.create()
             });
-            plugins[fieldIdPath] = new OpenSearchFieldImpl({
+            plugins[fieldIdPath] = fieldFactory.create({
                 unmappedType: field.unmappedType,
                 keyword: hasKeyword(field),
                 sortable: field.sortable,
@@ -95,7 +97,7 @@ export const createElasticsearchSort = (params: Params): OpenSearchSort => {
             return plugins;
         },
         {
-            ["*"]: new OpenSearchFieldImpl({
+            ["*"]: fieldFactory.create({
                 field: "*",
                 keyword: false
             })
