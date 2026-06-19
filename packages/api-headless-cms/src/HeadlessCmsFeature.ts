@@ -5,11 +5,9 @@ import {
     HeadlessCmsEnhancerConfig
 } from "./HeadlessCmsContextEnhancer.js";
 import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import { GraphQLEngine } from "@webiny/handler-graphql/engine/abstractions.js";
 import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
-import { HeadlessCmsContextualSchema } from "./HeadlessCmsContextualSchema.js";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
-import type { IGraphQLEngine } from "@webiny/handler-graphql/engine/abstractions.js";
+import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
 import type { ApiEndpoint } from "~/types/index.js";
 import { StorageOperationsFactory } from "~/features/shared/abstractions.js";
 import { CmsBaseErrorTypeFactory } from "~/graphql/schema/cms/CmsBaseErrorTypeFactory.js";
@@ -42,10 +40,18 @@ function createCmsRoute(type: ApiEndpoint) {
         readonly method = "POST";
         readonly path = CMS_PATHS[type];
 
-        constructor(private engine: IGraphQLEngine) {}
+        constructor(
+            private container: Container,
+            private enhancers: IGraphQLContextEnhancer[]
+        ) {}
 
         async handle(request: IHttpRequest): Promise<IHttpResponse> {
-            const result = await this.engine.execute(request.body);
+            const ctx: Record<string, any> = { container: this.container };
+            for (const enhancer of this.enhancers) {
+                await enhancer.enhance(ctx);
+            }
+            const execute = await ctx.cms.getExecutableSchema(type);
+            const result = await execute(request.body);
             return {
                 statusCode: 200,
                 headers: { "Content-Type": "application/json" },
@@ -56,7 +62,7 @@ function createCmsRoute(type: ApiEndpoint) {
 
     return HttpRoute.createImplementation({
         implementation: CmsGraphQLRoute,
-        dependencies: [GraphQLEngine]
+        dependencies: [RequestContainer, [GraphQLContextEnhancer, { multiple: true }]]
     });
 }
 
@@ -108,7 +114,6 @@ export const HeadlessCmsFeature = createFeature({
             dependencies: [RequestContainer, HeadlessCmsEnhancerConfig]
         });
         container.registerInstance(GraphQLContextEnhancer, enhancer);
-        container.register(HeadlessCmsContextualSchema);
         container.register(createCmsRoute(config.type));
     }
 });
