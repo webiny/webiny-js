@@ -12,6 +12,8 @@ export const WebsocketsAwsFeature = createFeature({
 
 /** @deprecated use WebsocketsAwsFeature.register(container) */
 export const createAwsWebsockets = () => {
-    console.warn("[api-websockets-aws] createAwsWebsockets() is deprecated. Use WebsocketsAwsFeature.register(container) instead.");
+    console.warn(
+        "[api-websockets-aws] createAwsWebsockets() is deprecated. Use WebsocketsAwsFeature.register(container) instead."
+    );
     return [];
 };

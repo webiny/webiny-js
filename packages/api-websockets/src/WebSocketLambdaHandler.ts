@@ -20,10 +20,7 @@ import { getEventValues } from "~/handler/headers.js";
 import type { IWebsocketsIncomingEvent } from "~/handler/types.js";
 import { WebsocketsEventRequestContextEventType, WebsocketsEventRoute } from "~/handler/types.js";
 
-const toWebsocketsEvent = (
-    raw: IWebsocketsIncomingEvent,
-    endpoint: string
-): IWebsocketsEvent => {
+const toWebsocketsEvent = (raw: IWebsocketsIncomingEvent, endpoint: string): IWebsocketsEvent => {
     const rc = raw.requestContext ?? {};
     const eventTypeMap: Record<string, WebsocketsEventType> = {
         [WebsocketsEventRequestContextEventType.message]: "message",
@@ -41,9 +38,16 @@ const toWebsocketsEvent = (
             route: routeKey ?? WebsocketsEventRoute.default,
             endpoint
         },
-        body: typeof raw.body === "string" ? (() => {
-            try { return JSON.parse(raw.body as string); } catch { return {}; }
-        })() : (raw.body as any)
+        body:
+            typeof raw.body === "string"
+                ? (() => {
+                      try {
+                          return JSON.parse(raw.body as string);
+                      } catch {
+                          return {};
+                      }
+                  })()
+                : (raw.body as any)
     };
 };
 

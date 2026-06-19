@@ -30,4 +30,3 @@ export interface IOperations {
     modify(params: IModifyOperationParams): void;
     delete(params: IDeleteOperationParams): void;
 }
-

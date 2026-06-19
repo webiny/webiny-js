@@ -23,7 +23,6 @@
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
     "@webiny/utils": "0.0.0",
     "p-retry": "^8.0.0"
   },
