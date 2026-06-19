@@ -1,11 +1,11 @@
 import { createHandler } from "~/api/handler";
 import { createTenancyAndSecurity } from "~tests/helpers/tenancySecurity";
 import { createIdentity, createPermissions } from "~tests/helpers/helpers";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createBackgroundTaskContext } from "~/api/context";
 import { createRawEventHandler } from "@webiny/handler-aws";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { PluginCollection } from "@webiny/plugins/types";
 import type { LambdaContext } from "@webiny/handler-aws/types";
@@ -34,8 +34,7 @@ export const useTaskHandler = (params?: UseTaskHandlerParams) => {
                 permissions: createPermissions(),
                 identity: createIdentity()
             }),
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
+            createCmsExtension(),
             graphQLHandlerPlugins(),
             createBackgroundTaskContext(),
             createRawEventHandler(async ({ context }) => {

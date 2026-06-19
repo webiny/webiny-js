@@ -5,7 +5,7 @@ import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-grap
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { defaultIdentity } from "./tenancySecurity.js";
 import type { LambdaContext } from "@webiny/handler-aws/types.js";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { getIntrospectionQuery } from "graphql";
 import type { GenericRecord } from "@webiny/api/types.js";
 
@@ -63,9 +63,7 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         return [JSON.parse(response.body || "{}"), response];
     };
 
-    const { elasticsearchClient } = getElasticsearchClient({
-        name: "testing-ddb-es"
-    });
+    const elasticsearchClient = createTestOpenSearchClient();
 
     const createQuery = <
         T extends GenericRecord = GenericRecord,

@@ -7,7 +7,7 @@
     { "path": "../db-dynamodb" },
     { "path": "../error" },
     { "path": "../feature" },
-    { "path": "../plugins" }
+    { "path": "../handler" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -26,8 +26,8 @@
       "@webiny/error": ["../error/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"]
     }
   }
 }

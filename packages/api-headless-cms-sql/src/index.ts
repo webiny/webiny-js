@@ -102,9 +102,11 @@ export const registerSqlStorageOperations = (config: ISqlStorageOperationsConfig
         }
     });
 
-    return [
-        createRegisterExtensionPlugin(context => {
-            return storageOperationsFeature.register(context.container);
-        })
-    ];
+    const plugin = createRegisterExtensionPlugin(context => {
+        return storageOperationsFeature.register(context.container);
+    });
+
+    plugin.name = "cms.registerSqlStorageOperations";
+
+    return [plugin];
 };

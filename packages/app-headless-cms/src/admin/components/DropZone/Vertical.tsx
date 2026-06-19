@@ -2,7 +2,7 @@ import React from "react";
 import type { IsVisibleCallable } from "../Droppable.js";
 import { Droppable } from "../Droppable.js";
 import type { DragSource } from "~/types.js";
-import { Icon } from "@webiny/admin-ui";
+import { cn, Icon } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 
 interface VerticalProps {
@@ -20,21 +20,21 @@ const Vertical = ({ depth, last, onDrop, isVisible }: VerticalProps) => {
                     ref={element => {
                         drop(element);
                     }}
-                    className={`w-sm-extra h-full absolute top-0 ${last ? "right-0" : "left-0"}`}
+                    className={cn("w-sm-extra h-full absolute top-0", last ? "right-0" : "left-0")}
                     style={{ zIndex: isDragging ? 1000 + (depth || 0) : -1 }}
                 >
                     {isDragging && (
                         <div
-                            className={
-                                "absolute top-0 h-full flex items-center " +
-                                (last ? "right-0" : "left-0")
-                            }
+                            className={cn(
+                                "absolute top-0 h-full flex items-center rounded-xs",
+                                last ? "right-0" : "left-0"
+                            )}
                         >
                             <div
-                                className={
-                                    "h-full w-sm-extra rounded-xs p-xxs transition-colors relative flex items-center justify-center " +
-                                    (isOver ? "bg-warning-muted" : "bg-[#feebb8]")
-                                }
+                                className={cn(
+                                    "h-full w-sm-extra rounded-xs p-xxs transition-colors relative flex items-center justify-center",
+                                    isOver ? "bg-warning-muted" : "bg-warning-muted/60"
+                                )}
                             >
                                 <Icon
                                     icon={<AddIcon />}

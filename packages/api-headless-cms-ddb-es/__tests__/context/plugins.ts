@@ -1,21 +1,18 @@
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import type { PermissionsArg } from "./helpers";
 import { createPermissions } from "./helpers";
 import type { ContextPlugin } from "@webiny/api";
 import type { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { createBackgroundTaskContext } from "@webiny/background-tasks/api";
 import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ApiKey } from "@webiny/api-core/types/security";
 import { createApiCore } from "@webiny/api-core";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
-import { createOpenSearchContext } from "@webiny/api-opensearch";
-
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
@@ -43,14 +40,11 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const testProjectLicense = createTestWcpLicense();
-    const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
-
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,
         plugins: [
             topPlugins,
-            createOpenSearchContext(elasticsearchClient),
             createApiCore({
                 storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
@@ -90,9 +84,8 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                     };
                 }
             } as ContextPlugin<CmsContext>,
-            createHeadlessCmsContext(),
+            createCmsExtension(),
             createBackgroundTaskContext(),
-            createHeadlessCmsGraphQL(),
             plugins,
             graphQLHandlerPlugins(),
             bottomPlugins

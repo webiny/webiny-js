@@ -1,13 +1,13 @@
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import type { PermissionsArg } from "./helpers";
 import { createPermissions } from "./helpers";
 import type { ContextPlugin } from "@webiny/api";
 import type { HcmsTasksContext } from "~/types";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { createBackgroundTaskContext } from "@webiny/background-tasks/api";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createHcmsTasks } from "~/index";
@@ -90,9 +90,8 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
                     };
                 }
             } as ContextPlugin<HcmsTasksContext>,
-            createHeadlessCmsContext(),
+            createCmsExtension(),
             createBackgroundTaskContext(),
-            createHeadlessCmsGraphQL(),
             plugins,
             graphQLHandlerPlugins(),
             createHcmsTasks(),

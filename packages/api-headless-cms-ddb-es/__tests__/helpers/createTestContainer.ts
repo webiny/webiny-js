@@ -7,6 +7,7 @@ import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSea
 import { CmsEntryOpenSearchFieldIndexFeature } from "~/features/CmsEntryOpenSearchFieldIndex/feature.js";
 import { CmsEntryOpenSearchValueSearchFeature } from "~/features/CmsEntryOpenSearchValueSearch/feature.js";
 import { CmsEntryOpenSearchFilterFeature } from "~/features/CmsEntryOpenSearchFilter/feature.js";
+import { OpenSearchQueryBuilderOperatorFeature } from "@webiny/api-opensearch/features/OpenSearchQueryBuilderOperator/feature.js";
 
 export const createTestContainer = () => {
     const container = new Container();
@@ -14,6 +15,7 @@ export const createTestContainer = () => {
     CmsEntryOpenSearchFieldIndexFeature.register(container);
     CmsEntryOpenSearchFilterFeature.register(container);
     CmsEntryOpenSearchValueSearchFeature.register(container);
+    OpenSearchQueryBuilderOperatorFeature.register(container);
     return container;
 };
 

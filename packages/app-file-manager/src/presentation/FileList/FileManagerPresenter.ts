@@ -90,6 +90,8 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
                 isUploading: this.fileUploader.vm.isUploading
             },
             tags: this.tagsRepository.tags,
+            loading: this.isLoading(),
+            empty: this.isEmpty(),
             showFolders: this.shouldShowFolders(),
             viewMode: this._viewMode,
             dragging: this._dragging,
@@ -236,6 +238,26 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             this._disposeReaction();
             this._disposeReaction = null;
         }
+    }
+
+    private isLoading(): boolean {
+        return this.listPresenter.vm.pagination.loading && this.listPresenter.vm.rows.length === 0;
+    }
+
+    private isEmpty(): boolean {
+        if (this.listPresenter.vm.pagination.loading) {
+            return false;
+        }
+
+        if (this.listPresenter.vm.rows.length > 0) {
+            return false;
+        }
+
+        if (this.shouldShowFolders() && this.folderTreePresenter.vm.childFolders.length > 0) {
+            return false;
+        }
+
+        return true;
     }
 
     // Hide folders when the user is actively filtering or searching.

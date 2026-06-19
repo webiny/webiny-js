@@ -4,7 +4,7 @@ import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import type { HcmsTasksContext } from "~/types";
 import { defaultIdentity } from "./tenancySecurity";
 import type { LambdaContext } from "@webiny/handler-aws/types";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 
 interface CmsHandlerEvent {
     path: string;
@@ -29,7 +29,7 @@ export const useHandler = <C extends HcmsTasksContext = HcmsTasksContext>(params
         debug: process.env.DEBUG === "true"
     });
 
-    const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
+    const elasticsearchClient = createTestOpenSearchClient();
 
     return {
         plugins,

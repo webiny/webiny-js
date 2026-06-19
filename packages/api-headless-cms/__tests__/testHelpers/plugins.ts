@@ -1,5 +1,5 @@
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "~/index";
+import { createCmsExtension } from "~/index";
 import { createTenancyAndSecurity } from "~tests/testHelpers/tenancySecurity";
 import type { PermissionsArg } from "~tests/testHelpers/helpers";
 import { createPermissions } from "~tests/testHelpers/helpers";
@@ -8,7 +8,7 @@ import type { TestContext } from "~tests/testHelpers/types";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { enableBenchmarkOnEnvironmentVariable } from "./enableBenchmarkOnEnvironmentVariable";
 import type { HeadlessCmsStorageOperations } from "~/types";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createApiCore } from "@webiny/api-core";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
@@ -90,8 +90,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
                     });
                 }
             } as ContextPlugin<TestContext>,
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
+            createCmsExtension(),
             plugins,
             graphQLHandlerPlugins(),
             bottomPlugins

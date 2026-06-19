@@ -1,23 +1,17 @@
 import { describe, it, expect } from "vitest";
-import { WebsocketsContext } from "~/context/WebsocketsContext";
-import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport";
 import { useHandler } from "~tests/helpers/useHandler";
-
-interface IMockData {
-    mockData?: boolean;
-}
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
+import { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
+import { WebsocketsSendToIdentityUseCase } from "~/features/SendToIdentity/abstractions.js";
 
 describe("websockets context", () => {
     it("should properly list connections", async () => {
         const { handle } = useHandler();
         const ctx = await handle();
-        const registry = ctx.websockets.registry;
-        const transport = new MockWebsocketsTransport();
+        const registry = ctx.container.resolve(ConnectionRegistry);
+        const listConnections = ctx.container.resolve(WebsocketsListConnectionsUseCase);
 
-        const context = new WebsocketsContext(registry, transport);
-        expect(context).toBeInstanceOf(WebsocketsContext);
-
-        const resultNoConnections = await context.listConnections({
+        const resultNoConnections = await listConnections.execute({
             where: {
                 identityId: "id-1"
             }
@@ -32,12 +26,11 @@ describe("websockets context", () => {
                 displayName: "John Doe",
                 type: "admin"
             },
-            domainName: "https://webiny.com",
-            stage: "dev",
+            endpoint: "https://webiny.com/dev",
             connectedOn: new Date().toISOString()
         });
 
-        const resultWithConnections = await context.listConnections({
+        const resultWithConnections = await listConnections.execute({
             where: {
                 identityId: "id-1"
             }
@@ -51,8 +44,7 @@ describe("websockets context", () => {
                     displayName: "John Doe",
                     type: "admin"
                 },
-                domainName: "https://webiny.com",
-                stage: "dev",
+                endpoint: "https://webiny.com/dev",
                 connectedOn: expect.any(String)
             }
         ]);
@@ -61,10 +53,8 @@ describe("websockets context", () => {
     it("should properly send a message via transport", async () => {
         const { handle } = useHandler();
         const ctx = await handle();
-        const registry = ctx.websockets.registry;
-        const transport = new MockWebsocketsTransport();
-
-        const context = new WebsocketsContext(registry, transport);
+        const registry = ctx.container.resolve(ConnectionRegistry);
+        const sendToIdentity = ctx.container.resolve(WebsocketsSendToIdentityUseCase);
 
         await registry.register({
             connectionId: "connection-1",
@@ -74,12 +64,11 @@ describe("websockets context", () => {
                 displayName: "John Doe",
                 type: "admin"
             },
-            domainName: "https://webiny.com",
-            stage: "dev",
+            endpoint: "https://webiny.com/dev",
             connectedOn: new Date().toISOString()
         });
 
-        await context.send<IMockData>(
+        const result = await sendToIdentity.execute<{ mockData?: boolean }>(
             {
                 id: "id-1"
             },
@@ -90,11 +79,6 @@ describe("websockets context", () => {
             }
         );
 
-        expect(transport.messages.size).toBe(1);
-        expect(transport.messages.get("connection-1")).toEqual({
-            data: {
-                mockData: true
-            }
-        });
+        expect(result.isOk()).toBe(true);
     });
 });

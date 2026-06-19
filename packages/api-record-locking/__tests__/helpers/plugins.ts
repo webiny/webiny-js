@@ -1,13 +1,16 @@
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { PermissionsArg } from "./permissions";
 import { createPermissions } from "./permissions";
 import { createRecordLocking } from "~/index";
+import { createWebsockets } from "@webiny/api-websockets";
+import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -57,8 +60,27 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                 identity
             }),
             graphQLHandlerPlugins(),
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
+            createCmsExtension(),
+            createWebsockets(),
+            createRegisterExtensionPlugin(context => {
+                const noop: ConnectionRegistry.Interface = {
+                    register: async () => ({
+                        connectionId: "",
+                        identity: { id: "", displayName: "", type: "" },
+                        tenant: "",
+                        connectedOn: "",
+                        endpoint: ""
+                    }),
+                    unregister: async () => {},
+                    listViaConnections: async () => [],
+                    listViaIdentity: async () => [],
+                    listViaTenant: async () => [],
+                    listAll: async () => [],
+                    updateLastSeen: async () => {},
+                    listStale: async () => []
+                };
+                context.container.registerInstance(ConnectionRegistry, noop);
+            }),
             createRecordLocking(),
             plugins,
             graphQLHandlerPlugins(),

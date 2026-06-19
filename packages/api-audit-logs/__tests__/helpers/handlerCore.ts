@@ -1,11 +1,11 @@
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import type { PermissionsArg } from "./helpers";
 import { createPermissions } from "./helpers";
 import type { ContextPlugin } from "@webiny/api";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { AuditLogsContext } from "~/types";
 import { createAco } from "@webiny/api-aco";
@@ -71,6 +71,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
                 type: "context",
                 name: "context-security-tenant",
                 async apply(context) {
+                    // @ts-expect-error
                     context.security.getApiKeyByToken = async (
                         token: string
                     ): Promise<ApiKey | null> => {
@@ -95,10 +96,9 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
                     };
                 }
             } as ContextPlugin<AuditLogsContext>,
-            createHeadlessCmsContext(),
+            createCmsExtension(),
             createMailerContext(),
             createFileManagerContext(),
-            createHeadlessCmsGraphQL(),
             createWebsiteBuilder(),
             createAco(),
             createAuditLogs(),

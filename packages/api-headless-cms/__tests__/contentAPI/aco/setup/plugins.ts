@@ -1,11 +1,11 @@
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "~/index";
+import { createCmsExtension } from "~/index";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import type { PermissionsArg } from "./helpers";
 import { createPermissions } from "./helpers";
 import type { ContextPlugin } from "@webiny/api";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createApiCore } from "@webiny/api-core";
@@ -86,8 +86,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                     };
                 }
             } as ContextPlugin<CmsContext>,
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
+            createCmsExtension(),
             plugins,
             graphQLHandlerPlugins(),
             bottomPlugins

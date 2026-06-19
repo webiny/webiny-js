@@ -1,18 +1,18 @@
 import WebinyError from "@webiny/error";
 import { transformValueForSearch } from "~/operations/entry/elasticsearch/transformValueForSearch.js";
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword.js";
-import type { OpenSearchQueryBuilderOperatorPlugins } from "~/operations/entry/elasticsearch/types.js";
+import type { OpenSearchQueryBuilderOperators } from "~/operations/entry/elasticsearch/types.js";
 import { createFieldPathFactory } from "~/operations/entry/elasticsearch/filtering/path.js";
 import type { CmsEntryOpenSearchFilter } from "~/features/CmsEntryOpenSearchFilter/index.js";
 import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
 interface CreateParams {
-    operatorPlugins: OpenSearchQueryBuilderOperatorPlugins;
+    operators: OpenSearchQueryBuilderOperators;
     valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
 }
 
 export const createApplyFiltering = ({
-    operatorPlugins,
+    operators,
     valueSearchRegistry
 }: CreateParams): CmsEntryOpenSearchFilter.ApplyFiltering => {
     const createFieldPath = createFieldPathFactory({
@@ -22,7 +22,7 @@ export const createApplyFiltering = ({
     return params => {
         const { key, value: initialValue, query, operator, field } = params;
 
-        const plugin = operatorPlugins[operator];
+        const plugin = operators[operator];
         if (!plugin) {
             throw new WebinyError(
                 `Elasticsearch operator "${operator}" plugin missing.`,

@@ -1,6 +1,6 @@
 import { createContextPlugin } from "@webiny/api";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import {
@@ -91,10 +91,9 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
                     };
                 };
             }),
-            createHeadlessCmsContext(),
+            createCmsExtension(),
             createBackgroundTaskContext(),
             ...createBackgroundTaskGraphQL(),
-            createHeadlessCmsGraphQL(),
             plugins,
             graphQLHandlerPlugins(),
             createMockTaskServicePlugin(),
