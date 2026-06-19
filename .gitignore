@@ -67,3 +67,4 @@ CLAUDE.local.md
 .codegraph
 .mcp.json
 docs/.reports
+tsconfig.check-tests.json

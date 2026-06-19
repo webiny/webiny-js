@@ -3,12 +3,33 @@ import fs from "fs";
 import chalk from "chalk";
 import { Listr, ListrTask } from "listr2";
 import { getPackagesWithTests } from "./getPackagesWithTests.js";
+import { generateTsConfig, removeTsConfig } from "./generateTsConfig.js";
 import { typecheckPackage } from "./typecheckPackage.js";
 import { writeReport, REPORT_DIR } from "./writeReport.js";
 
 const { green, red, yellow } = chalk;
 
 const packages = getPackagesWithTests();
+
+const cleanup = () => {
+    for (const pkg of packages) {
+        removeTsConfig(pkg.packageFolder);
+    }
+};
+
+process.on("SIGINT", () => {
+    cleanup();
+    process.exit(1);
+});
+
+process.on("SIGTERM", () => {
+    cleanup();
+    process.exit(1);
+});
+
+for (const pkg of packages) {
+    generateTsConfig(pkg.packageFolder);
+}
 
 fs.rmSync(REPORT_DIR, { recursive: true, force: true });
 fs.mkdirSync(REPORT_DIR, { recursive: true });
@@ -47,7 +68,11 @@ const tasks = new Listr(
     }
 );
 
-await tasks.run();
+try {
+    await tasks.run();
+} finally {
+    cleanup();
+}
 
 console.log();
 console.log(`Results: ${green(results.passed)} passed, ${red(results.failed)} failed`);
