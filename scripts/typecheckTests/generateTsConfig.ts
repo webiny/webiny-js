@@ -10,8 +10,16 @@ const config = {
         noEmit: true,
         declaration: false,
         declarationDir: null,
-        emitDeclarationOnly: false
+        emitDeclarationOnly: false,
+        outDir: null,
+        rootDir: null,
+        rootDirs: null,
+        paths: {
+            "~/*": ["./src/*"],
+            "~tests/*": ["./__tests__/*"]
+        }
     },
+    include: ["__tests__", "src"],
     references: []
 };
 
