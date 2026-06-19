@@ -1,22 +1,12 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
-import type {
-    SchedulerClient,
-    SchedulerClientConfig
-} from "@webiny/aws-sdk/client-scheduler/index.js";
-import { createSchedulerContext } from "./context.js";
-import { SchedulePrivateModel } from "./domain/SchedulePrivateModel.js";
+import { registerSchedulerExtension } from "./context.js";
 
-export interface ISchedulerFeatureConfig {
-    getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
-}
+export type { ISchedulerFeatureConfig } from "./SchedulerFeature.types.js";
 
 export const SchedulerFeature = createFeature({
     name: "Scheduler",
-    register(container: Container, config: ISchedulerFeatureConfig) {
-        container.register(SchedulePrivateModel);
-        registerLegacyPluginsViaGqlContextEnhancer(container, [
-            ...createSchedulerContext({ getClient: config.getClient })
-        ]);
+    register(container: Container) {
+        registerLegacyPluginsViaGqlContextEnhancer(container, [...registerSchedulerExtension()]);
     }
 });

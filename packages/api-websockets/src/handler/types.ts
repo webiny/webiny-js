@@ -1,11 +1,33 @@
-import type { WebsocketsRunner } from "@webiny/api-websockets/exports/api.js";
+import type { IWebsocketsEventValidator } from "~/validator/index.js";
+import type { IWebsocketsResponse } from "~/response/index.js";
+import type {
+    APIGatewayProxyResult,
+    Context as LambdaContext
+} from "@webiny/aws-sdk/types/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { PartialDeep } from "type-fest";
+
+export interface HandlerCallable {
+    (event: IWebsocketsIncomingEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
+}
+
+export interface HandlerParams {
+    validator?: IWebsocketsEventValidator;
+    response?: IWebsocketsResponse;
+}
 
 export enum WebsocketsEventRoute {
     "connect" = "$connect",
     "disconnect" = "$disconnect",
     "default" = "$default"
+}
+
+export interface IWebsocketsEventData {
+    token?: string;
+    tenant?: string;
+    messageId?: string;
+    action?: string;
+    data?: GenericRecord;
 }
 
 export enum WebsocketsEventRequestContextEventType {
@@ -14,7 +36,7 @@ export enum WebsocketsEventRequestContextEventType {
     "disconnect" = "DISCONNECT"
 }
 
-export interface IAwsWebsocketsEventRequestContext {
+export interface IWebsocketsEventRequestContext {
     connectionId: string;
     connectedAt: number;
     domainName: string;
@@ -23,7 +45,7 @@ export interface IAwsWebsocketsEventRequestContext {
     stage: string;
 }
 
-export interface IAwsWebsocketsEventHeaders {
+export interface IWebsocketsEventHeaders {
     "Accept-Encoding"?: string;
     "Accept-Language"?: string;
     "Cache-Control"?: string;
@@ -43,22 +65,18 @@ export interface IAwsWebsocketsEventHeaders {
     ["x-webiny-cms-endpoint"]?: string;
 }
 
-export interface IAwsWebsocketsEventQueryStringParameters {
+export interface IWebsocketsEventQueryStringParameters {
     tenant?: string;
     token?: string;
 }
 
-export interface IAwsWebsocketsEvent<
-    T extends WebsocketsRunner.EventData = WebsocketsRunner.EventData
-> {
-    headers?: IAwsWebsocketsEventHeaders;
-    queryStringParameters?: IAwsWebsocketsEventQueryStringParameters;
-    requestContext: IAwsWebsocketsEventRequestContext;
+export interface IWebsocketsEvent<T extends IWebsocketsEventData = IWebsocketsEventData> {
+    headers?: IWebsocketsEventHeaders;
+    queryStringParameters?: IWebsocketsEventQueryStringParameters;
+    requestContext: IWebsocketsEventRequestContext;
     body?: T;
 }
 
-export interface IAwsWebsocketsIncomingEvent extends PartialDeep<
-    Omit<IAwsWebsocketsEvent, "body">
-> {
+export interface IWebsocketsIncomingEvent extends PartialDeep<Omit<IWebsocketsEvent, "body">> {
     body?: string | GenericRecord;
 }

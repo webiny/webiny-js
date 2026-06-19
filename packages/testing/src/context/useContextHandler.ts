@@ -2,7 +2,7 @@ import { Container } from "@webiny/feature/api";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
 import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
+import { getTestOpenSearchClient } from "@webiny/api-opensearch/testing/index.js";
 import type { CreateHandlerCoreParams } from "./plugins.js";
 import { createHandlerCore } from "./plugins.js";
 import { defaultIdentity } from "./tenancySecurity.js";
@@ -24,13 +24,13 @@ export const useContextHandler = <C extends CmsContext = CmsContext>(
 ) => {
     const core = createHandlerCore(params);
 
-    const { elasticsearchClient } = getElasticsearchClient({ name: "testing-ddb-es" });
+    const opensearchClient = getTestOpenSearchClient();
 
     return {
         plugins: core.plugins,
         identity: params.identity || defaultIdentity,
         tenant: core.tenant,
-        elasticsearch: elasticsearchClient,
+        opensearch: opensearchClient,
         context: async (_input?: HandlerEvent): Promise<C> => {
             const root = new Container();
             const child = root.createChildContainer();

@@ -33,6 +33,7 @@ import { WorkflowsFeature } from "@webiny/api-workflows";
 import { CmsWorkflowsFeature } from "@webiny/api-headless-cms-workflows";
 import { WebsiteBuilderWorkflowsFeature } from "@webiny/api-website-builder-workflows";
 import { SchedulerFeature } from "@webiny/api-scheduler";
+import { registerSchedulerAwsExtension } from "@webiny/api-scheduler-aws";
 import { CmsSchedulerFeature } from "@webiny/api-headless-cms-scheduler";
 import { WebsiteBuilderSchedulerFeature } from "@webiny/api-website-builder-scheduler";
 import { FileManagerAppFeature } from "@webiny/api-file-manager";
@@ -115,9 +116,10 @@ export const handler = createLambdaHandler({
         CmsWorkflowsFeature.register(container);
 
         // ── Scheduler ──────────────────────────────────────────────
-        SchedulerFeature.register(container, {
-            getClient: config => createSchedulerClient(config)
-        });
+        SchedulerFeature.register(container);
+        registerLegacyPluginsViaGqlContextEnhancer(container, [
+            ...registerSchedulerAwsExtension({ getClient: config => createSchedulerClient(config) })
+        ]);
         CmsSchedulerFeature.register(container);
 
         // ── Extensions (legacy escape hatch) ──────────────────────

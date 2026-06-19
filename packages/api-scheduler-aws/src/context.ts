@@ -9,7 +9,6 @@ import { EventBridgeSchedulerService } from "~/features/SchedulerService/EventBr
 import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { ContextPlugin } from "@webiny/api";
-import { createScheduledActionEventHandler } from "~/createEventHandler.js";
 
 export interface IRegisterSchedulerAwsExtensionParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
@@ -17,7 +16,6 @@ export interface IRegisterSchedulerAwsExtensionParams {
 
 export const registerSchedulerAwsExtension = (params: IRegisterSchedulerAwsExtensionParams) => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
-        context.plugins.register(createScheduledActionEventHandler());
         const tenantContext = context.container.resolve(TenantContext);
 
         if (!tenantContext.getTenant()) {

@@ -4,14 +4,13 @@ import {
     DynamoDBEventHandler,
     type DynamoDBResult
 } from "@webiny/event-handler-aws/abstractions/handlers/DynamoDBEventHandler.js";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { timerFactory } from "@webiny/handler-aws/utils/index.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { OperationsBuilder } from "~/OperationsBuilder.js";
 import { executeWithRetry } from "~/executeWithRetry.js";
-import type { Context } from "~/types.js";
 
 const MAX_RUNNING_TIME = 900;
 
@@ -22,14 +21,12 @@ class DdbToEsLambdaHandlerImpl implements DynamoDBEventHandler.Interface {
         eventCtx: EventContext<DynamoDBStreamEvent>,
         _next: NextFunction
     ): Promise<DynamoDBResult> {
-        const ctx: Record<string, any> = { container: this.container };
-        for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
-            await enhancer.enhance(ctx);
-        }
-
-        if (!(ctx as Context).opensearch) {
-            console.error("Missing opensearch definition on context.");
-            return { success: false, message: "Missing opensearch context." };
+        let client: OpenSearchClient.Interface;
+        try {
+            client = this.container.resolve(OpenSearchClient);
+        } catch {
+            console.error("Missing OpenSearchClient in container.");
+            return { success: false, message: "Missing opensearch client." };
         }
 
         const compressor = this.container.resolve(CompressionHandler);
@@ -43,7 +40,7 @@ class DdbToEsLambdaHandlerImpl implements DynamoDBEventHandler.Interface {
         await executeWithRetry({
             timer: timerFactory(),
             maxRunningTime: MAX_RUNNING_TIME,
-            context: ctx as Context,
+            openSearchClient: client.use(),
             operations
         });
 

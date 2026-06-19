@@ -1,4 +1,4 @@
-import { GraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions";
+import { GraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -122,7 +122,7 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 identityContext: IdentityContext.Interface,
                 listConnections: WebsocketsListConnectionsUseCase.Interface
             ) => {
-                return async ({ args }) => {
+                return async ({ args }: { args: WebsocketsListConnectionsUseCase.Params }) => {
                     try {
                         await checkPermissions(identityContext);
 
@@ -147,7 +147,7 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 identityContext: IdentityContext.Interface,
                 disconnect: WebsocketsDisconnectUseCase.Interface
             ) => {
-                return async ({ args }) => {
+                return async ({ args }: { args: IDisconnectConnectionsArgs }) => {
                     try {
                         await checkPermissions(identityContext);
 
@@ -176,7 +176,7 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 identityContext: IdentityContext.Interface,
                 disconnect: WebsocketsDisconnectUseCase.Interface
             ) => {
-                return async ({ args }) => {
+                return async ({ args }: { args: IDisconnectIdentityArgs }) => {
                     try {
                         await checkPermissions(identityContext);
 
@@ -205,7 +205,7 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 identityContext: IdentityContext.Interface,
                 disconnect: WebsocketsDisconnectUseCase.Interface
             ) => {
-                return async ({ args }) => {
+                return async ({ args }: { args: IDisconnectTenantArgs }) => {
                     try {
                         await checkPermissions(identityContext);
 

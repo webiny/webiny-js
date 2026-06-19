@@ -14,12 +14,38 @@ import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/Ge
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import type { APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
 import { WebsocketsRunner } from "~/runner/index.js";
-import { WebsocketsEventValidator } from "~/validator/index.js";
 import { WebsocketsResponse } from "~/response/index.js";
-import type { Context } from "~/types.js";
+import type { Context, IWebsocketsEvent, WebsocketsEventType } from "~/types.js";
 import { getEventValues } from "~/handler/headers.js";
 import type { IWebsocketsIncomingEvent } from "~/handler/types.js";
-import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
+import { WebsocketsEventRequestContextEventType, WebsocketsEventRoute } from "~/handler/types.js";
+
+const toWebsocketsEvent = (
+    raw: IWebsocketsIncomingEvent,
+    endpoint: string
+): IWebsocketsEvent => {
+    const rc = raw.requestContext ?? {};
+    const eventTypeMap: Record<string, WebsocketsEventType> = {
+        [WebsocketsEventRequestContextEventType.message]: "message",
+        [WebsocketsEventRequestContextEventType.connect]: "connect",
+        [WebsocketsEventRequestContextEventType.disconnect]: "disconnect"
+    };
+    const routeKey = rc.routeKey as string | undefined;
+    return {
+        headers: raw.headers as Record<string, string> | undefined,
+        context: {
+            connectionId: rc.connectionId ?? "",
+            connectedAt: rc.connectedAt ?? 0,
+            host: rc.domainName ?? "",
+            eventType: eventTypeMap[rc.eventType ?? ""] ?? "message",
+            route: routeKey ?? WebsocketsEventRoute.default,
+            endpoint
+        },
+        body: typeof raw.body === "string" ? (() => {
+            try { return JSON.parse(raw.body as string); } catch { return {}; }
+        })() : (raw.body as any)
+    };
+};
 
 class WebSocketLambdaHandlerImpl implements WebSocketEventHandler.Interface {
     constructor(
@@ -41,8 +67,8 @@ class WebSocketLambdaHandlerImpl implements WebSocketEventHandler.Interface {
             await enhancer.enhance(ctx);
         }
 
-        const event = eventCtx.event as IWebsocketsIncomingEvent;
-        const { token, tenant } = getEventValues(event);
+        const raw = eventCtx.event as IWebsocketsIncomingEvent;
+        const { token, tenant, endpoint } = getEventValues(raw);
 
         const identity = await this.authCtx.authenticate(token ?? "");
         this.identityCtx.setIdentity(identity);
@@ -52,14 +78,9 @@ class WebSocketLambdaHandlerImpl implements WebSocketEventHandler.Interface {
             this.tenantCtx.setTenant(tenantResult.value);
         }
 
-        const registry = this.container.resolve(ConnectionRegistry);
-        const runner = new WebsocketsRunner(
-            ctx as Context,
-            registry,
-            new WebsocketsEventValidator(),
-            new WebsocketsResponse()
-        );
-
+        const response = this.container.resolve(WebsocketsResponse);
+        const runner = new WebsocketsRunner(ctx as Context, response);
+        const event = toWebsocketsEvent(raw, endpoint);
         const result = await runner.run(event);
 
         return {
