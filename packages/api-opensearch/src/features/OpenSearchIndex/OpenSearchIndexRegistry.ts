@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { OpenSearchIndex } from "./abstractions/OpenSearchIndex.js";
 import { OpenSearchIndexRegistry as Abstraction } from "./abstractions/OpenSearchIndexRegistry.js";
 
-class OpenSearchIndexRegistryImplClass implements Abstraction.Interface {
+class OpenSearchIndexRegistryImpl implements Abstraction.Interface {
     private readonly indices: OpenSearchIndex.Interface[];
 
     public constructor(indices: OpenSearchIndex.Interface[]) {
@@ -25,7 +25,7 @@ class OpenSearchIndexRegistryImplClass implements Abstraction.Interface {
     }
 }
 
-export const OpenSearchIndexRegistryImpl = Abstraction.createImplementation({
-    implementation: OpenSearchIndexRegistryImplClass,
+export const OpenSearchIndexRegistry = Abstraction.createImplementation({
+    implementation: OpenSearchIndexRegistryImpl,
     dependencies: [[OpenSearchIndex, { multiple: true }]]
 });

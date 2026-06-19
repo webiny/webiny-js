@@ -15,7 +15,6 @@ import { createEntryEntity } from "~/definitions/entry";
 import { LambdaContext } from "@webiny/handler-aws/types";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { OpenSearchContext } from "@webiny/api-opensearch";
 
 interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -42,7 +41,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         entityName: "CmsEntries"
     });
 
-    const handler = createRawHandler<any, CmsContext & OpenSearchContext>({
+    const handler = createRawHandler<any, CmsContext>({
         plugins: [
             createApiCore({
                 storageOperations: apiCoreStorage.storageOperations,
