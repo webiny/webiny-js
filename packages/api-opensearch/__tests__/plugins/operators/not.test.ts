@@ -1,15 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { createBlankQuery } from "../../helpers";
 import { OpenSearchBoolQueryConfig } from "~/types.js";
-import { OpenSearchQueryBuilderOperatorNotPlugin } from "~/plugins/operator/index.js";
+import { Container } from "@webiny/di";
+import { OpenSearchQueryBuilderOperatorFeature } from "~/features/OpenSearchQueryBuilderOperator/feature.js";
+import { OpenSearchQueryBuilderOperatorRegistry } from "~/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperatorRegistry.js";
 
-describe("OpenSearchQueryBuilderOperatorNotPlugin", () => {
-    const plugin = new OpenSearchQueryBuilderOperatorNotPlugin();
+describe("not operator", () => {
+    const container = new Container();
+    OpenSearchQueryBuilderOperatorFeature.register(container);
+    const registry = container.resolve(OpenSearchQueryBuilderOperatorRegistry);
+    const operator = registry.get("not")!;
 
     it("should apply not correctly", () => {
         const query = createBlankQuery();
 
-        plugin.apply(query, {
+        operator.apply(query, {
             name: "name",
             path: "name.keyword",
             basePath: "name",

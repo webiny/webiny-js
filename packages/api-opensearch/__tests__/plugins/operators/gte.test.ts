@@ -1,14 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { createBlankQuery } from "../../helpers";
 import { OpenSearchBoolQueryConfig } from "~/types.js";
-import { OpenSearchQueryBuilderOperatorGreaterThanOrEqualToPlugin } from "~/plugins/operator/index.js";
+import { Container } from "@webiny/di";
+import { OpenSearchQueryBuilderOperatorFeature } from "~/features/OpenSearchQueryBuilderOperator/feature.js";
+import { OpenSearchQueryBuilderOperatorRegistry } from "~/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperatorRegistry.js";
 
-describe("OpenSearchQueryBuilderOperatorGreaterThanOrEqualToPlugin", () => {
-    const plugin = new OpenSearchQueryBuilderOperatorGreaterThanOrEqualToPlugin();
+describe("gte operator", () => {
+    const container = new Container();
+    OpenSearchQueryBuilderOperatorFeature.register(container);
+    const registry = container.resolve(OpenSearchQueryBuilderOperatorRegistry);
+    const operator = registry.get("gte")!;
 
     it("should apply gte correctly", () => {
         const query = createBlankQuery();
-        plugin.apply(query, {
+        operator.apply(query, {
             name: "id",
             value: 100,
             path: "id",
@@ -36,7 +41,7 @@ describe("OpenSearchQueryBuilderOperatorGreaterThanOrEqualToPlugin", () => {
 
     it("should apply multiple gte correctly", () => {
         const query = createBlankQuery();
-        plugin.apply(query, {
+        operator.apply(query, {
             name: "id",
             value: 100,
             path: "id",
@@ -45,7 +50,7 @@ describe("OpenSearchQueryBuilderOperatorGreaterThanOrEqualToPlugin", () => {
         });
 
         const from = new Date().toISOString();
-        plugin.apply(query, {
+        operator.apply(query, {
             name: "id",
             value: from,
             path: "date",

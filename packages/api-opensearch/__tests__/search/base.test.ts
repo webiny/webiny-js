@@ -3,7 +3,9 @@ import { createOpenSearchClient } from "../helpers";
 import { people } from "./base.entries";
 import { getBaseConfiguration } from "~/indexConfiguration/index.js";
 import { OpenSearchBoolQueryConfig } from "~/types.js";
-import { OpenSearchQueryBuilderOperatorContainsPlugin } from "~/plugins/operator/contains.js";
+import { Container } from "@webiny/di";
+import { OpenSearchQueryBuilderOperatorFeature } from "~/features/OpenSearchQueryBuilderOperator/feature.js";
+import { OpenSearchQueryBuilderOperatorRegistry } from "~/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperatorRegistry.js";
 import { getOpenSearchIndexPrefix } from "~/indexPrefix.js";
 
 describe("OpenSearch Base Search", () => {
@@ -13,7 +15,10 @@ describe("OpenSearch Base Search", () => {
 
     const indexTestName = `${prefix}search-base-index-test`;
 
-    const searchPlugin = new OpenSearchQueryBuilderOperatorContainsPlugin();
+    const diContainer = new Container();
+    OpenSearchQueryBuilderOperatorFeature.register(diContainer);
+    const registry = diContainer.resolve(OpenSearchQueryBuilderOperatorRegistry);
+    const containsOperator = registry.get("contains")!;
 
     const insertAllData = async () => {
         const operations = [];
@@ -177,7 +182,7 @@ describe("OpenSearch Base Search", () => {
                 must_not: []
             };
 
-            searchPlugin.apply(query, {
+            containsOperator.apply(query, {
                 name: "biography",
                 basePath: "biography",
                 path: "biography",

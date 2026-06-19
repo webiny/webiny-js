@@ -1,15 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { createBlankQuery } from "../../helpers";
 import { OpenSearchBoolQueryConfig } from "~/types.js";
-import { OpenSearchQueryBuilderOperatorNotStartsWithPlugin } from "~/plugins/operator/index.js";
+import { Container } from "@webiny/di";
+import { OpenSearchQueryBuilderOperatorFeature } from "~/features/OpenSearchQueryBuilderOperator/feature.js";
+import { OpenSearchQueryBuilderOperatorRegistry } from "~/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperatorRegistry.js";
 
-describe("OpenSearchQueryBuilderOperatorNotStartsWithPlugin", () => {
-    const plugin = new OpenSearchQueryBuilderOperatorNotStartsWithPlugin();
+describe("not_startsWith operator", () => {
+    const container = new Container();
+    OpenSearchQueryBuilderOperatorFeature.register(container);
+    const registry = container.resolve(OpenSearchQueryBuilderOperatorRegistry);
+    const operator = registry.get("not_startsWith")!;
 
     it("should apply startsWith correctly", () => {
         const query = createBlankQuery();
 
-        plugin.apply(query, {
+        operator.apply(query, {
             name: "name",
             path: "name.keyword",
             basePath: "name",
@@ -17,7 +22,7 @@ describe("OpenSearchQueryBuilderOperatorNotStartsWithPlugin", () => {
             keyword: true
         });
 
-        plugin.apply(query, {
+        operator.apply(query, {
             name: "name",
             path: "name.keyword",
             basePath: "name",

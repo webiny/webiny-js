@@ -1,15 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { createBlankQuery } from "../../helpers";
 import { OpenSearchBoolQueryConfig } from "~/types.js";
-import { OpenSearchQueryBuilderOperatorEqualPlugin } from "~/plugins/operator/index.js";
+import { Container } from "@webiny/di";
+import { OpenSearchQueryBuilderOperatorFeature } from "~/features/OpenSearchQueryBuilderOperator/feature.js";
+import { OpenSearchQueryBuilderOperatorRegistry } from "~/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperatorRegistry.js";
 
-describe("OpenSearchQueryBuilderOperatorEqualPlugin", () => {
-    const plugin = new OpenSearchQueryBuilderOperatorEqualPlugin();
+describe("equal operator", () => {
+    const container = new Container();
+    OpenSearchQueryBuilderOperatorFeature.register(container);
+    const registry = container.resolve(OpenSearchQueryBuilderOperatorRegistry);
+    const operator = registry.get("eq")!;
 
     it("should apply equal correctly", () => {
         const query = createBlankQuery();
 
-        plugin.apply(query, {
+        operator.apply(query, {
             name: "name",
             basePath: "name",
             path: "name.keyword",
@@ -17,7 +22,7 @@ describe("OpenSearchQueryBuilderOperatorEqualPlugin", () => {
             keyword: true
         });
 
-        plugin.apply(query, {
+        operator.apply(query, {
             name: "name",
             basePath: "name",
             path: "name.keyword",

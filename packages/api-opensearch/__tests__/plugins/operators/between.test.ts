@@ -1,14 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { OpenSearchQueryBuilderOperatorBetweenPlugin } from "~/plugins/operator/index.js";
 import { createBlankQuery } from "../../helpers";
 import { OpenSearchBoolQueryConfig } from "~/types.js";
+import { Container } from "@webiny/di";
+import { OpenSearchQueryBuilderOperatorFeature } from "~/features/OpenSearchQueryBuilderOperator/feature.js";
+import { OpenSearchQueryBuilderOperatorRegistry } from "~/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperatorRegistry.js";
 
-describe("OpenSearchQueryBuilderOperatorBetweenPlugin", () => {
-    const plugin = new OpenSearchQueryBuilderOperatorBetweenPlugin();
+describe("between operator", () => {
+    const container = new Container();
+    OpenSearchQueryBuilderOperatorFeature.register(container);
+    const registry = container.resolve(OpenSearchQueryBuilderOperatorRegistry);
+    const operator = registry.get("between")!;
 
     it("should apply between correctly", () => {
         const query = createBlankQuery();
-        plugin.apply(query, {
+        operator.apply(query, {
             name: "id",
             value: [100, 110],
             path: "id",
@@ -37,7 +42,7 @@ describe("OpenSearchQueryBuilderOperatorBetweenPlugin", () => {
 
     it("should apply multiple between correctly", () => {
         const query = createBlankQuery();
-        plugin.apply(query, {
+        operator.apply(query, {
             name: "id",
             value: [100, 110],
             path: "id",
@@ -48,7 +53,7 @@ describe("OpenSearchQueryBuilderOperatorBetweenPlugin", () => {
         const from = new Date();
         const to = new Date();
         to.setTime(from.getTime() + 1000000);
-        plugin.apply(query, {
+        operator.apply(query, {
             name: "id",
             value: [from.toISOString(), to.toISOString()],
             path: "date",
@@ -86,7 +91,7 @@ describe("OpenSearchQueryBuilderOperatorBetweenPlugin", () => {
         const query = createBlankQuery();
 
         expect(() => {
-            plugin.apply(query, {
+            operator.apply(query, {
                 name: "id",
                 value: "notAnArray",
                 path: "id",
@@ -106,7 +111,7 @@ describe("OpenSearchQueryBuilderOperatorBetweenPlugin", () => {
             const query = createBlankQuery();
 
             expect(() => {
-                plugin.apply(query, {
+                operator.apply(query, {
                     name: "id",
                     value,
                     path: "id",
