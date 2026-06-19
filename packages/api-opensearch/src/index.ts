@@ -8,7 +8,6 @@ export * from "./indices.js";
 export * from "./where.js";
 export * from "./limit.js";
 export * from "./normalize.js";
-export * from "./operators.js";
 export * from "./cursors.js";
 export {
     createOpenSearchClient,

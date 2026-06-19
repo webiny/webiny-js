@@ -39,6 +39,7 @@ import {
     type IOpenSearchEntityAttributes as IElasticsearchEntityAttributes
 } from "@webiny/api-opensearch";
 import type { PluginsContainer } from "@webiny/plugins";
+import type { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
 import { DataLoadersHandler } from "./dataLoaders.js";
 import {
@@ -84,6 +85,7 @@ export interface CreateEntriesStorageOperationsParams {
     esEntity: IElasticsearchEntity;
     elasticsearch: Client;
     plugins: PluginsContainer;
+    operatorRegistry: OpenSearchQueryBuilderOperatorRegistry.Interface;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
     compressionHandler: CompressionHandler.Interface;
@@ -124,6 +126,7 @@ export const createEntriesStorageOperations = (
         esEntity,
         elasticsearch,
         plugins,
+        operatorRegistry,
         fieldRegistry,
         fieldIndexRegistry,
         compressionHandler,
@@ -1373,7 +1376,7 @@ export const createEntriesStorageOperations = (
                 limit,
                 after: decodeCursor(params.after)
             },
-            plugins
+            operatorRegistry
         });
 
         let response: OpenSearchSearchResponse;
@@ -2088,7 +2091,7 @@ export const createEntriesStorageOperations = (
                 limit: 1,
                 where
             },
-            plugins
+            operatorRegistry
         });
 
         const field = model.fields.find(f => f.fieldId === fieldId);

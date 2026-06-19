@@ -40,7 +40,10 @@ import {
     CmsEntryOpenSearchFilterRegistry
 } from "~/features/CmsEntryOpenSearchFilter/index.js";
 import { DbRegistry } from "@webiny/db/exports/api/db.js";
-import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import {
+    OpenSearchClient,
+    OpenSearchQueryBuilderOperatorRegistry
+} from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { CreateElasticsearchIndexTask } from "~/tasks/CreateElasticsearchIndexTask.js";
 
 const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
@@ -87,6 +90,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const fullTextSearches = container.resolveAll(CmsEntryOpenSearchFullTextSearch);
     const valuesModifiers = container.resolveAll(CmsEntryOpenSearchValuesModifier);
     const filterRegistry = container.resolve(CmsEntryOpenSearchFilterRegistry);
+    const operatorRegistry = container.resolve(OpenSearchQueryBuilderOperatorRegistry);
 
     container.registerFactory(ModelAfterCreateEventHandler, () => ({
         async handle(event) {
@@ -124,6 +128,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         entity: entities.entries,
         esEntity: entities.entriesEs,
         plugins,
+        operatorRegistry,
         elasticsearch,
         fieldRegistry,
         fieldIndexRegistry,

@@ -1,7 +1,7 @@
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { getOpenSearchOperators } from "~/operators.js";
 import { OpenSearchClientFeature } from "~/features/OpenSearchClient/feature.js";
 import { OpenSearchClientFactoryFeature } from "~/features/OpenSearchClientFactory/feature.js";
+import { OpenSearchQueryBuilderOperatorFeature } from "~/features/OpenSearchQueryBuilderOperator/feature.js";
 import type { OpenSearchClientOptions } from "~/client.js";
 import { Client, createOpenSearchClient } from "~/client.js";
 
@@ -15,9 +15,8 @@ export const registerOpenSearchCore = (params: OpenSearchClientOptions | Client)
         // @ts-expect-error
         context.__registeredOpensearch = true;
 
-        context.plugins.register(getOpenSearchOperators());
-
         OpenSearchClientFeature.register(context.container, client);
         OpenSearchClientFactoryFeature.register(context.container);
+        OpenSearchQueryBuilderOperatorFeature.register(context.container);
     });
 };

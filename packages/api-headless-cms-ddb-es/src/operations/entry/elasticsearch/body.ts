@@ -1,4 +1,4 @@
-import type { PluginsContainer } from "@webiny/plugins";
+import type { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type {
     CmsEntryListParams,
     CmsEntryListWhere,
@@ -26,7 +26,7 @@ import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSea
 import type { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter/index.js";
 
 interface ICreateElasticsearchBodyParams {
-    plugins: PluginsContainer;
+    operatorRegistry: OpenSearchQueryBuilderOperatorRegistry.Interface;
     model: CmsModel;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
@@ -42,7 +42,7 @@ interface ICreateElasticsearchBodyParams {
     };
 }
 export const createElasticsearchBody = ({
-    plugins,
+    operatorRegistry,
     model,
     params,
     fieldRegistry,
@@ -112,7 +112,7 @@ export const createElasticsearchBody = ({
     const execFiltering = createExecFiltering({
         model,
         fields: modelFields,
-        plugins,
+        operatorRegistry,
         valueSearchRegistry,
         filterRegistry
     });

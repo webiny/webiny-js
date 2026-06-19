@@ -1,14 +1,14 @@
-import { OpenSearchQueryBuilderOperatorPlugin } from "~/plugins/definition/OpenSearchQueryBuilderOperatorPlugin.js";
-import type { OpenSearchBoolQueryConfig, OpenSearchQueryBuilderArgsPlugin } from "~/types.js";
+import type { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
 
-export class OpenSearchQueryBuilderOperatorInPlugin extends OpenSearchQueryBuilderOperatorPlugin {
-    public override name = "opensearch.queryBuilder.operator.in.default";
-
+export class In implements OpenSearchQueryBuilderOperator.Interface {
     public getOperator(): string {
         return "in";
     }
 
-    public apply(query: OpenSearchBoolQueryConfig, params: OpenSearchQueryBuilderArgsPlugin): void {
+    public apply(
+        query: OpenSearchQueryBuilderOperator.Query,
+        params: OpenSearchQueryBuilderOperator.Params
+    ): void {
         const { value: values, path, basePath, name } = params;
         const isArray = Array.isArray(values);
         if (isArray === false || values.length === 0) {
@@ -17,7 +17,6 @@ export class OpenSearchQueryBuilderOperatorInPlugin extends OpenSearchQueryBuild
             );
         }
 
-        // Only use ".keyword" if all of the provided values are strings.
         const useBasePath = values.some(
             (value: string | number | boolean | null | undefined) => typeof value !== "string"
         );

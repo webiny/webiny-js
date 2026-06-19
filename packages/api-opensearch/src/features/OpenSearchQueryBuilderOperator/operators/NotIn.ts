@@ -1,14 +1,14 @@
-import { OpenSearchQueryBuilderOperatorPlugin } from "~/plugins/definition/OpenSearchQueryBuilderOperatorPlugin.js";
-import type { OpenSearchBoolQueryConfig, OpenSearchQueryBuilderArgsPlugin } from "~/types.js";
+import type { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
 
-export class OpenSearchQueryBuilderOperatorNotInPlugin extends OpenSearchQueryBuilderOperatorPlugin {
-    public override name = "opensearch.queryBuilder.operator.notIn.default";
-
+export class NotIn implements OpenSearchQueryBuilderOperator.Interface {
     public getOperator(): string {
         return "not_in";
     }
 
-    public apply(query: OpenSearchBoolQueryConfig, params: OpenSearchQueryBuilderArgsPlugin): void {
+    public apply(
+        query: OpenSearchQueryBuilderOperator.Query,
+        params: OpenSearchQueryBuilderOperator.Params
+    ): void {
         const { value: values, path, basePath, name } = params;
         const isArray = Array.isArray(values);
         if (isArray === false || values.length === 0) {
