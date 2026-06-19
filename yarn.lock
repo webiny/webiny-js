@@ -13595,7 +13595,6 @@ __metadata:
     "@webiny/di": "npm:^1.0.1"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
@@ -13611,7 +13610,6 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
@@ -14076,8 +14074,6 @@ __metadata:
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/event-handler-aws": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     get-yarn-workspaces: "npm:1.0.2"
     jest-dynalite: "npm:^3.6.1"
     listr2: "npm:^10.2.1"
@@ -14094,7 +14090,9 @@ __metadata:
     "@webiny/api-opensearch": 0.0.0
     "@webiny/aws-sdk": 0.0.0
     "@webiny/background-tasks": 0.0.0
+    "@webiny/event-handler-aws": 0.0.0
     "@webiny/handler-aws": 0.0.0
+    "@webiny/handler-graphql": 0.0.0
   languageName: unknown
   linkType: soft
 
