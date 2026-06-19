@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { DATA_SYNCHRONIZATION_TASK } from "~/tasks";
-import { createRunner } from "@webiny/project-utils/testing/tasks";
-import { useHandler } from "~tests/helpers/useHandler";
-import type { IDataSynchronizationInput } from "~/tasks/dataSynchronization/types";
+import { DATA_SYNCHRONIZATION_TASK } from "~/tasks/index.js";
+import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
+import { useHandler } from "~tests/helpers/useHandler.js";
+import type { IDataSynchronizationInput } from "~/tasks/dataSynchronization/types.js";
 import {
     TaskDefinition,
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { ElasticsearchToDynamoDbSynchronization } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchToDynamoDbSynchronization";
-import { Manager } from "~/abstractions/Manager";
+import { ElasticsearchToDynamoDbSynchronization } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchToDynamoDbSynchronization.js";
+import { Manager } from "~/abstractions/Manager.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 const createDummySync = () => {
@@ -17,7 +17,10 @@ const createDummySync = () => {
             implementation: class {
                 constructor(private readonly manager: Manager.Interface) {}
 
-                async run(input: IDataSynchronizationInput) {
+                async run(
+                    input: ElasticsearchToDynamoDbSynchronization.Input,
+                    _indexManager: ElasticsearchToDynamoDbSynchronization.IndexManager
+                ): Promise<ElasticsearchToDynamoDbSynchronization.Result> {
                     return this.manager.controller.response.continue({
                         ...input,
                         elasticsearchToDynamoDb: {
@@ -95,6 +98,14 @@ describe("data synchronization - elasticsearch", () => {
             webinyTaskId: task.id
         });
 
+        if (result.status === "error") {
+            const taskCheck = await context.tasks.getTask(task.id);
+            console.log("[DEBUG] Task error:", JSON.stringify(taskCheck?.taskStatus, null, 2));
+            console.log(
+                "[DEBUG] Task log:",
+                JSON.stringify(taskCheck?.log?.items?.slice(-3), null, 2)
+            );
+        }
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(result.webinyTaskId).toBe(task.id);
         const taskCheck = await context.tasks.getTask(task.id);
