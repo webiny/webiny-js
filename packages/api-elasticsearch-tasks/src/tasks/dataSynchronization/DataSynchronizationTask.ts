@@ -3,11 +3,8 @@ import type {
     IDataSynchronizationInput,
     IDataSynchronizationOutput
 } from "~/tasks/dataSynchronization/types.js";
-import { Manager } from "~/types.js";
-import { IndexManager } from "~/settings/index.js";
-import { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
-import { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
 import { ElasticsearchToDynamoDbSynchronization } from "./elasticsearch/abstractions/ElasticsearchToDynamoDbSynchronization.js";
+import { IndexManagerFactory } from "~/settings/abstractions/IndexManagerFactory.js";
 
 export const DATA_SYNCHRONIZATION_TASK = "dataSynchronization";
 
@@ -23,9 +20,7 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
     public readonly databaseLogs = false;
 
     constructor(
-        private readonly manager: Manager.Interface,
-        private readonly disableIndexing: DisableIndexing.Interface,
-        private readonly enableIndexing: EnableIndexing.Interface,
+        private readonly indexManagerFactory: IndexManagerFactory.Interface,
         private readonly sync: ElasticsearchToDynamoDbSynchronization.Interface
     ) {}
 
@@ -41,12 +36,9 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
             return controller.response.done();
         }
 
-        const indexManager = new IndexManager(
-            this.manager.elasticsearch,
-            this.disableIndexing,
-            this.enableIndexing,
-            {}
-        );
+        const indexManager = this.indexManagerFactory.createIndexManager({
+            settings: {}
+        });
 
         try {
             return await this.sync.run(input, indexManager);
@@ -74,5 +66,5 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
 
 export const DataSynchronizationTask = TaskDefinition.createImplementation({
     implementation: DataSynchronizationTaskImpl,
-    dependencies: [Manager, DisableIndexing, EnableIndexing, ElasticsearchToDynamoDbSynchronization]
+    dependencies: [IndexManagerFactory, ElasticsearchToDynamoDbSynchronization]
 });

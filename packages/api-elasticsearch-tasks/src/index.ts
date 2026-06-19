@@ -16,6 +16,7 @@ import {
 import { IndexSettingsManager } from "~/settings/IndexSettingsManager.js";
 import { DisableIndexing } from "~/settings/DisableIndexing.js";
 import { EnableIndexing } from "~/settings/EnableIndexing.js";
+import { IndexManagerFactory } from "~/settings/IndexManagerFactory.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import type { Context } from "~/types.js";
 
@@ -26,6 +27,7 @@ export const createElasticsearchBackgroundTasks = (): PluginCollection => {
             context.container.register(IndexSettingsManager);
             context.container.register(DisableIndexing);
             context.container.register(EnableIndexing);
+            context.container.register(IndexManagerFactory);
             context.container.register(ReindexingTaskRunner);
             context.container.register(ElasticsearchReindexingTask);
             context.container.register(EnableIndexingTaskRunner);

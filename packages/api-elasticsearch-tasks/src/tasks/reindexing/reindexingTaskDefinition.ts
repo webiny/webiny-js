@@ -1,19 +1,14 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { IElasticsearchIndexingTaskValues } from "~/types.js";
-import { Manager } from "~/types.js";
-import { IndexManager } from "~/settings/index.js";
-import { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
-import { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
 import { ReindexingTaskRunner } from "./abstractions/ReindexingTaskRunner.js";
+import { IndexManagerFactory } from "~/settings/abstractions/IndexManagerFactory.js";
 
 class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElasticsearchIndexingTaskValues> {
     public readonly id = "elasticsearchReindexing";
     public readonly title = "Elasticsearch reindexing";
 
     constructor(
-        private readonly manager: Manager.Interface,
-        private readonly disableIndexing: DisableIndexing.Interface,
-        private readonly enableIndexing: EnableIndexing.Interface,
+        private readonly indexManagerFactory: IndexManagerFactory.Interface,
         private readonly runner: ReindexingTaskRunner.Interface
     ) {}
 
@@ -22,12 +17,9 @@ class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElast
             return controller.response.aborted();
         }
 
-        const indexManager = new IndexManager(
-            this.manager.elasticsearch,
-            this.disableIndexing,
-            this.enableIndexing,
-            input.settings || {}
-        );
+        const indexManager = this.indexManagerFactory.createIndexManager({
+            settings: input.settings || {}
+        });
 
         const keys = input.keys || undefined;
         return await this.runner.exec(keys, input.limit || 100, indexManager);
@@ -36,5 +28,5 @@ class ElasticsearchReindexingTaskImpl implements TaskDefinition.Interface<IElast
 
 export const ElasticsearchReindexingTask = TaskDefinition.createImplementation({
     implementation: ElasticsearchReindexingTaskImpl,
-    dependencies: [Manager, DisableIndexing, EnableIndexing, ReindexingTaskRunner]
+    dependencies: [IndexManagerFactory, ReindexingTaskRunner]
 });
