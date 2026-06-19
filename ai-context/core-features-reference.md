@@ -444,19 +444,25 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 
 - **Import:** `import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js"`
 - **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchClient/abstraction.ts`
-- **Usage:** DI wrapper around the OpenSearch `Client`. Depends on `OpenSearchContext`. Call `use()` to get the raw client. Registered by `registerOpensearchCore()`.
-
-### OpenSearchContext
-
-- **Import:** `import { OpenSearchContext } from "@webiny/api-opensearch/exports/api/opensearch.js"`
-- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchContext/abstraction.ts`
-- **Usage:** Provides access to the opensearch client via `context.opensearch`. Registered as a factory by `registerOpensearchCore()`.
+- **Usage:** DI wrapper around the OpenSearch `Client`. Call `use()` to get the raw client. Registered as an instance by `registerOpenSearchCore()` — receives the client directly, no intermediate context layer.
 
 ### OpenSearchClientFactory
 
 - **Import:** `import { OpenSearchClientFactory } from "@webiny/api-opensearch/exports/api/opensearch.js"`
 - **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchClientFactory/abstraction.ts`
-- **Usage:** Factory for creating new OpenSearch client instances. Registered by `registerOpensearchCore()`.
+- **Usage:** Factory for creating new OpenSearch client instances. Registered by `registerOpenSearchCore()`.
+
+### OpenSearchQueryBuilderOperator
+
+- **Import:** `import { OpenSearchQueryBuilderOperator } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperator.ts`
+- **Usage:** DI abstraction for query builder operators (eq, not, contains, gt, etc.). Each operator is registered as a singleton via `createImplementation`. 15 built-in operators provided by `OpenSearchQueryBuilderOperatorFeature`.
+
+### OpenSearchQueryBuilderOperatorRegistry
+
+- **Import:** `import { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperatorRegistry.ts`
+- **Usage:** Registry that collects all `OpenSearchQueryBuilderOperator` implementations via `{ multiple: true }` DI. Provides `get(operatorName)` and `getAll()`. Registered as singleton by `OpenSearchQueryBuilderOperatorFeature`.
 
 ---
 
