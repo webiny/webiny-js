@@ -1,4 +1,5 @@
-import type { FieldSortOptions, SortOrder } from "~/types.js";
+import type { FieldSortOptions } from "~/types.js";
+import type { SortOrder } from "~/types.js";
 import type { OpenSearchField } from "./abstractions/OpenSearchField.js";
 
 const keywordLessUnmappedType = ["date", "long"];
@@ -24,11 +25,9 @@ export class OpenSearchFieldImpl implements OpenSearchField.Interface {
     public constructor(params: OpenSearchField.Params) {
         this.field = params.field;
         this.path = params.path || params.field;
-        this.keyword = params.keyword === undefined ? true : params.keyword;
         this.unmappedType = params.unmappedType;
-        if (unmappedTypeHasKeyword(params.unmappedType) === false) {
-            this.keyword = false;
-        }
+        const keyword = params.keyword === undefined ? true : params.keyword;
+        this.keyword = unmappedTypeHasKeyword(params.unmappedType) ? keyword : false;
         this.sortable = params.sortable === undefined ? true : params.sortable;
         this.searchable = params.searchable === undefined ? true : params.searchable;
         this.searchValueFn = params.toSearchValue;

@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/exports/api.js";
-import type { FieldSortOptions, SortOrder } from "~/types.js";
+import type { FieldSortOptions } from "~/types.js";
+import type { SortOrder } from "~/types.js";
 
 export interface ToSearchValueParams {
     value: any;
