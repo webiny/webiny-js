@@ -144,6 +144,8 @@ function createMockPresenter(
             isUploading: false
         },
         tags: [],
+        loading: false,
+        empty: false,
         showFolders: true,
         viewMode: "table" as const,
         dragging: false,
