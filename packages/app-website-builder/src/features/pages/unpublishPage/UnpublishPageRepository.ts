@@ -24,11 +24,7 @@ class UnpublishPageRepositoryImpl implements RepositoryAbstraction.Interface {
 
         this.detailsCache.updateItems(existingPage => {
             if (existingPage.id === page.id) {
-                return Page.create({
-                    ...result,
-                    elements: page.elements,
-                    bindings: page.bindings
-                });
+                return Page.create(result);
             }
             return existingPage;
         });

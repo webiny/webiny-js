@@ -30,6 +30,9 @@ describe("UnpublishPage", () => {
             },
             bindings: {
                 data: "any-data"
+            },
+            extensions: {
+                ext1: "ext-data"
             }
         })
     };
@@ -57,6 +60,28 @@ describe("UnpublishPage", () => {
                 },
                 bindings: {
                     data: "any-data"
+                }
+            })
+        ]);
+        detailsCache.addItems([
+            Page.create({
+                id: "page-1#0001",
+                entryId: "page-1",
+                status: WbPageStatus.Published,
+                location: {
+                    folderId: "folder-1"
+                },
+                properties: {
+                    title: "Page 1"
+                },
+                elements: {
+                    element1: "element"
+                },
+                bindings: {
+                    data: "any-data"
+                },
+                extensions: {
+                    ext1: "ext-data"
                 }
             })
         ]);
@@ -88,6 +113,15 @@ describe("UnpublishPage", () => {
 
         expect(publishedItem?.id).toEqual("page-1#0001");
         expect(publishedItem?.status).toEqual(WbPageStatus.Unpublished);
+
+        // Details cache is updated with the full gateway result including document fields
+        const detailItem = detailsCache.getItem(page => page.entryId === "page-1");
+        expect(detailItem).toBeDefined();
+        expect(detailItem?.id).toEqual("page-1#0001");
+        expect(detailItem?.status).toEqual(WbPageStatus.Unpublished);
+        expect(detailItem?.elements).toMatchObject({ element1: "element" });
+        expect(detailItem?.bindings).toMatchObject({ data: "any-data" });
+        expect(detailItem?.extensions).toMatchObject({ ext1: "ext-data" });
     });
 
     it("should not unpublish a page if id is missing", async () => {

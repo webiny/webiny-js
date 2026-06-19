@@ -34,11 +34,7 @@ class UpdatePageRepositoryImpl implements RepositoryAbstraction.Interface {
 
         this.detailsCache.updateItems(existingPage => {
             if (existingPage.id === page.id) {
-                return Page.create({
-                    ...result,
-                    elements: dto.elements,
-                    bindings: dto.bindings
-                });
+                return Page.create(result);
             }
             return existingPage;
         });
