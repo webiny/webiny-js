@@ -3,6 +3,10 @@ import path from "node:path";
 
 export const typecheckPackage = (packageFolder: string): string => {
     const configPath = path.join(packageFolder, "tsconfig.check-tests.json");
+    const folderName = path.basename(packageFolder);
+    const testsPrefix = `${folderName}/__tests__/`;
+
+    let output = "";
 
     try {
         execFileSync("npx", ["tsc", "-p", configPath], {
@@ -10,10 +14,14 @@ export const typecheckPackage = (packageFolder: string): string => {
             stdio: ["pipe", "pipe", "pipe"],
             shell: process.platform === "win32"
         });
-
-        return "";
     } catch (err: unknown) {
         const error = err as { stdout?: string; stderr?: string };
-        return error.stdout || error.stderr || "";
+        output = error.stdout || error.stderr || "";
     }
+
+    /* Only keep errors from this package's __tests__ files. */
+    return output
+        .split("\n")
+        .filter(line => line.includes(testsPrefix) && line.includes("error TS"))
+        .join("\n");
 };
