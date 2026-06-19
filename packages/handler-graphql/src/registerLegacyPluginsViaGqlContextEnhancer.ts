@@ -12,7 +12,10 @@ import type { IGraphQLContextEnhancer } from "./engine/index.js";
  *   registerLegacyPluginsViaGqlContextEnhancer(container, extensions());
  *   registerLegacyPluginsViaGqlContextEnhancer(container, [myPlugin(), anotherPlugin()]);
  */
-export function registerLegacyPluginsViaGqlContextEnhancer(container: Container, plugins: any | any[]): void {
+export function registerLegacyPluginsViaGqlContextEnhancer(
+    container: Container,
+    plugins: any | any[]
+): void {
     const flat = [plugins].flat(Infinity as 1).filter(Boolean);
     let initialized = false;
 

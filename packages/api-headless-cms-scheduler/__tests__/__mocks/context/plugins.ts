@@ -7,10 +7,6 @@ import { createPermissions } from "./helpers";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import type {
-    SchedulerClient,
-    SchedulerClientConfig
-} from "@webiny/aws-sdk/client-scheduler/index.js";
 import { createSchedulerManifestPlugin } from "../schedulerManifestPlugin.js";
 import { createApiCore } from "@webiny/api-core";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";

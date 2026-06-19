@@ -80,7 +80,6 @@ describe("content model test", () => {
 
         const ReadQuery = getTypeObject(readSchema, "Query");
         const ManageQuery = getTypeObject(manageSchema, "Query");
-        const ReadMutation = getTypeObject(readSchema, "Mutation");
         const ManageMutation = getTypeObject(manageSchema, "Mutation");
 
         expect(getTypeFields(ReadQuery)).toEqual(

@@ -5,6 +5,8 @@ import { createWebsiteBuilderScheduleContext } from "./context.js";
 export const WebsiteBuilderSchedulerFeature = createFeature({
     name: "WebsiteBuilderScheduler",
     register(container: Container) {
-        registerLegacyPluginsViaGqlContextEnhancer(container, [createWebsiteBuilderScheduleContext()]);
+        registerLegacyPluginsViaGqlContextEnhancer(container, [
+            createWebsiteBuilderScheduleContext()
+        ]);
     }
 });

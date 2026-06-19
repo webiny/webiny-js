@@ -26,9 +26,7 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
-    "@webiny/utils": "0.0.0",
-    "type-fest": "^5.7.0",
-    "zod": "4.4.3"
+    "type-fest": "^5.7.0"
   },
   "devDependencies": {
     "@webiny/api-headless-cms": "0.0.0",
