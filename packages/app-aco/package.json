@@ -49,7 +49,7 @@
     "apollo-link": "^1.2.14",
     "rimraf": "^6.1.3",
     "typescript": "6.0.3",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.9"
   },
   "publishConfig": {
     "access": "public"

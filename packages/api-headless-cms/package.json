@@ -58,10 +58,10 @@
     "@webiny/wcp": "0.0.0",
     "apollo-graphql": "^0.9.7",
     "graphql": "^16.14.2",
-    "oxfmt": "^0.54.0",
+    "oxfmt": "^0.55.0",
     "rimraf": "^6.1.3",
     "typescript": "6.0.3",
-    "vitest": "^4.1.8",
+    "vitest": "^4.1.9",
     "write-json-file": "^7.0.0"
   },
   "publishConfig": {

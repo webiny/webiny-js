@@ -26,7 +26,7 @@
     "@types/postcss-import": "^14.0.3",
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3",
-    "vitest": "^4.1.8",
+    "vitest": "^4.1.9",
     "webpack": "^5.107.2"
   },
   "peerDependencies": {
