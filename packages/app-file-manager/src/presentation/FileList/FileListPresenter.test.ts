@@ -414,6 +414,92 @@ describe("FileListPresenter", () => {
     });
 
     // -----------------------------------------------------------------------
+    // loading: true only during initial load (no rows yet).
+    // -----------------------------------------------------------------------
+
+    it("should be loading when pagination is loading and no rows exist", () => {
+        presenter.init();
+        runInAction(() => {
+            (mocks.listPresenter.vm as any).rows = [];
+            (mocks.listPresenter.vm as any).pagination.loading = true;
+        });
+        expect(presenter.vm.loading).toBe(true);
+    });
+
+    it("should not be loading when rows already exist", () => {
+        presenter.init();
+        runInAction(() => {
+            (mocks.listPresenter.vm as any).rows = [{ id: "file-1" }];
+            (mocks.listPresenter.vm as any).pagination.loading = true;
+        });
+        expect(presenter.vm.loading).toBe(false);
+    });
+
+    it("should not be loading when pagination is not loading", () => {
+        presenter.init();
+        runInAction(() => {
+            (mocks.listPresenter.vm as any).rows = [];
+            (mocks.listPresenter.vm as any).pagination.loading = false;
+        });
+        expect(presenter.vm.loading).toBe(false);
+    });
+
+    // -----------------------------------------------------------------------
+    // empty: accounts for both files and child folders.
+    // -----------------------------------------------------------------------
+
+    it("should be empty when no files and no child folders", () => {
+        presenter.init();
+        runInAction(() => {
+            (mocks.listPresenter.vm as any).rows = [];
+            (mocks.listPresenter.vm as any).pagination.loading = false;
+        });
+        expect(presenter.vm.empty).toBe(true);
+    });
+
+    it("should not be empty when there are files", () => {
+        presenter.init();
+        runInAction(() => {
+            (mocks.listPresenter.vm as any).rows = [{ id: "file-1" }];
+            (mocks.listPresenter.vm as any).pagination.loading = false;
+        });
+        expect(presenter.vm.empty).toBe(false);
+    });
+
+    it("should not be empty when there are child folders but no files", () => {
+        presenter.init();
+        runInAction(() => {
+            (mocks.listPresenter.vm as any).rows = [];
+            (mocks.listPresenter.vm as any).pagination.loading = false;
+            (mocks.folderTreePresenter.vm as any).childFolders = [{ id: "folder-1" }];
+        });
+        expect(presenter.vm.empty).toBe(false);
+    });
+
+    it("should not be empty while loading", () => {
+        presenter.init();
+        runInAction(() => {
+            (mocks.listPresenter.vm as any).rows = [];
+            (mocks.listPresenter.vm as any).pagination.loading = true;
+        });
+        expect(presenter.vm.empty).toBe(false);
+    });
+
+    it("should be empty when child folders exist but folders are hidden (search active)", () => {
+        presenter.init();
+        runInAction(() => {
+            (mocks.listPresenter.vm as any).rows = [];
+            (mocks.listPresenter.vm as any).pagination.loading = false;
+            (mocks.listPresenter.vm as any).appliedQuery = {
+                search: "photo",
+                filters: { folderId: "root" }
+            };
+            (mocks.folderTreePresenter.vm as any).childFolders = [{ id: "folder-1" }];
+        });
+        expect(presenter.vm.empty).toBe(true);
+    });
+
+    // -----------------------------------------------------------------------
     // showFolders computed from appliedQuery.
     // -----------------------------------------------------------------------
 
