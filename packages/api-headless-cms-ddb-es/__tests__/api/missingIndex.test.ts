@@ -4,6 +4,7 @@ import { createMockPlugins } from "~tests/converters/mocks";
 import { createGlobalModifierPlugin } from "~tests/api/mocks/plugins";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
 import { configurations } from "~/configurations";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 
 describe("missing index", () => {
     it("should return empty result set when index is missing", async () => {
@@ -12,13 +13,15 @@ describe("missing index", () => {
         });
         const context = await createContext();
 
+        const opensearch = context.container.resolve(OpenSearchClient);
+
         const model = (await context.cms.getModel("converter")) as CmsModel;
 
         const config = configurations.es({
             model
         });
 
-        const indexExistsResponse = await context.opensearch.indices.exists({
+        const indexExistsResponse = await opensearch.use().indices.exists({
             index: config.index
         });
 

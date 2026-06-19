@@ -33,7 +33,7 @@ export interface IExecuteParams {
     timer: ITimer;
     maxRunningTime: number;
     maxProcessorPercent: number;
-    opensearch: OpenSearchClient.Client;
+    openSearchClient: OpenSearchClient.Client;
     operations: Pick<IOperations, "items" | "total">;
 }
 
@@ -69,7 +69,7 @@ const checkErrors = (result?: ApiResponse): void => {
 
 export const execute = (params: IExecuteParams) => {
     return async (): Promise<void> => {
-        const { opensearch, timer, maxRunningTime, maxProcessorPercent, operations } = params;
+        const { openSearchClient, timer, maxRunningTime, maxProcessorPercent, operations } = params;
 
         if (operations.total === 0) {
             return;
@@ -85,7 +85,7 @@ export const execute = (params: IExecuteParams) => {
             );
         }
 
-        const healthCheck = createWaitUntilHealthy(opensearch, {
+        const healthCheck = createWaitUntilHealthy(openSearchClient, {
             minClusterHealthStatus: OpenSearchCatClusterHealthStatus.Yellow,
             waitingTimeStep: 30,
             maxProcessorPercent,
@@ -142,7 +142,7 @@ export const execute = (params: IExecuteParams) => {
         }
 
         try {
-            const res = await opensearch.bulk({
+            const res = await openSearchClient.bulk({
                 body: operations.items
             });
             checkErrors(res);

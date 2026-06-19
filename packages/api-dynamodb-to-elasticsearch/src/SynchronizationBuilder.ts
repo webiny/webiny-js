@@ -22,17 +22,17 @@ export interface ISynchronizationBuilder {
 
 export interface ISynchronizationBuilderParams {
     timer: ITimer;
-    opensearch: OpenSearchClient.Client;
+    openSearchClient: OpenSearchClient.Client;
 }
 
 export class SynchronizationBuilder implements ISynchronizationBuilder {
     private readonly timer;
-    private readonly opensearch;
+    private readonly openSearchClient;
     private readonly operations;
 
     public constructor(params: ISynchronizationBuilderParams) {
         this.timer = params.timer;
-        this.opensearch = params.opensearch;
+        this.openSearchClient = params.openSearchClient;
         this.operations = new Operations();
     }
 
@@ -57,7 +57,7 @@ export class SynchronizationBuilder implements ISynchronizationBuilder {
                 ...params,
                 maxRunningTime: this.timer.getRemainingMilliseconds(),
                 timer: this.timer,
-                opensearch: this.opensearch,
+                openSearchClient: this.openSearchClient,
                 operations: this.operations
             });
             this.operations.clear();

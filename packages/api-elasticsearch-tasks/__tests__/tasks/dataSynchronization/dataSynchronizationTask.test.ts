@@ -8,7 +8,7 @@ import {
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { ElasticsearchToDynamoDbSynchronization } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchToDynamoDbSynchronization";
-import { Manager } from "~/types";
+import { Manager } from "~/abstractions/Manager";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 const createDummySync = () => {

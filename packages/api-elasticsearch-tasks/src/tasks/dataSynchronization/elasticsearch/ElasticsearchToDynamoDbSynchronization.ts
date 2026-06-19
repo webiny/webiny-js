@@ -1,7 +1,7 @@
 import type { IDataSynchronizationInput, ISynchronizationRunResult } from "../types.js";
 import type { IIndexManager } from "~/settings/types.js";
 import type { NonEmptyArray } from "@webiny/api/types.js";
-import { Manager } from "~/types.js";
+import { Manager } from "~/abstractions/Manager.js";
 import { ElasticsearchSynchronize } from "./abstractions/ElasticsearchSynchronize.js";
 import { ElasticsearchFetcher } from "./abstractions/ElasticsearchFetcher.js";
 import { ElasticsearchToDynamoDbSynchronization as Abstraction } from "./abstractions/ElasticsearchToDynamoDbSynchronization.js";

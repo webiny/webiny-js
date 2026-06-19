@@ -47,7 +47,7 @@ export const createEventHandler = () => {
         await executeWithRetry({
             timer,
             maxRunningTime: MAX_RUNNING_TIME,
-            opensearch: client.use(),
+            openSearchClient: client.use(),
             operations
         });
 

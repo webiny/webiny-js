@@ -43,7 +43,7 @@ export const executeWithRetry = async (params: IExecuteWithRetryParams) => {
                 timer: params.timer,
                 maxRunningTime: params.maxRunningTime,
                 maxProcessorPercent: params.maxProcessorPercent || MAX_PROCESSOR_PERCENT,
-                opensearch: params.opensearch,
+                openSearchClient: params.openSearchClient,
                 operations: params.operations
             }),
             {

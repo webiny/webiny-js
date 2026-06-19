@@ -5,7 +5,7 @@ import { SynchronizationBuilder } from "@webiny/api-dynamodb-to-elasticsearch";
 import type { ITimer } from "@webiny/handler-aws";
 import type { IIndexManager } from "~/settings/types";
 import { timerFactory } from "@webiny/handler-aws/utils";
-import { createRunner } from "@webiny/project-utils/testing/tasks";
+import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition";
 import { IndexManagerFactory } from "~/settings/abstractions/IndexManagerFactory";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch";
@@ -34,7 +34,7 @@ const createRecordsFactory = (params: ICreateSyncBuilderParams) => {
     const { timer, opensearch, index, records } = params;
     const syncBuilder = new SynchronizationBuilder({
         timer,
-        opensearch
+        openSearchClient: opensearch
     });
 
     for (let i = 0; i < records; i++) {
