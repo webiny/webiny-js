@@ -464,6 +464,35 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 - **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperatorRegistry.ts`
 - **Usage:** Registry that collects all `OpenSearchQueryBuilderOperator` implementations via `{ multiple: true }` DI. Provides `get(operatorName)` and `getAll()`. Registered as singleton by `OpenSearchQueryBuilderOperatorFeature`.
 
+### OpenSearchField
+
+- **Import:** `import { OpenSearchField } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchField/abstractions/OpenSearchField.ts`
+- **Usage:** DI abstraction for OpenSearch field descriptors. Carries field metadata (`field`, `path`, `keyword`, `unmappedType`, `sortable`, `searchable`) and provides `getPath()`, `getBasePath()`, `getSortOptions()`, `toSearchValue()`. Instances are created via `OpenSearchFieldFactory`.
+
+### OpenSearchFieldFactory
+
+- **Import:** `import { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchField/abstractions/OpenSearchFieldFactory.ts`
+- **Usage:** Factory for creating `OpenSearchField.Interface` instances from params. Registered as singleton by `OpenSearchFieldFeature`. Use `factory.create({ field, path, keyword, ... })` instead of direct class instantiation.
+
+### OpenSearchFieldAll
+
+- **Import:** `import { OpenSearchFieldAll } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Usage:** The wildcard sentinel value (`"*"`) used to match any field path. Exported as a standalone const (not a namespace member) due to a Rspack/swc bundler limitation with namespace runtime values.
+
+### OpenSearchIndex
+
+- **Import:** `import { OpenSearchIndex } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchIndex/abstractions/OpenSearchIndex.ts`
+- **Usage:** DI abstraction for OpenSearch index configuration. Provides `readonly body: OpenSearchIndexRequestBody` and `canUse(): boolean`. Register implementations to provide index settings.
+
+### OpenSearchIndexRegistry
+
+- **Import:** `import { OpenSearchIndexRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchIndex/abstractions/OpenSearchIndexRegistry.ts`
+- **Usage:** Registry that collects all `OpenSearchIndex` implementations via `{ multiple: true }` DI. Provides `getLastAdded()` (returns the last registered usable index) and `getAll()`. Registered as singleton by `OpenSearchIndexFeature`.
+
 ---
 
 ## Notes
