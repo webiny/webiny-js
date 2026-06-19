@@ -1,6 +1,5 @@
 import { createFeature } from "@webiny/feature/api/index.js";
-import { OpenSearchQueryBuilderOperatorRegistry } from "./abstractions/OpenSearchQueryBuilderOperatorRegistry.js";
-import { OpenSearchQueryBuilderOperatorRegistryImpl } from "./OpenSearchQueryBuilderOperatorRegistry.js";
+import { OpenSearchQueryBuilderOperatorRegistry } from "./OpenSearchQueryBuilderOperatorRegistry.js";
 import { Equal } from "./operators/Equal.js";
 import { Not } from "./operators/Not.js";
 import { Contains } from "./operators/Contains.js";
@@ -20,25 +19,21 @@ import { NotStartsWith } from "./operators/NotStartsWith.js";
 export const OpenSearchQueryBuilderOperatorFeature = createFeature({
     name: "opensearch.internal.queryBuilderOperator",
     register(container) {
-        container.registerInstance(
-            OpenSearchQueryBuilderOperatorRegistry,
-            new OpenSearchQueryBuilderOperatorRegistryImpl([
-                new Equal(),
-                new Not(),
-                new Contains(),
-                new NotContains(),
-                new Between(),
-                new NotBetween(),
-                new GreaterThan(),
-                new GreaterThanOrEqual(),
-                new LesserThan(),
-                new LesserThanOrEqual(),
-                new In(),
-                new AndIn(),
-                new NotIn(),
-                new StartsWith(),
-                new NotStartsWith()
-            ])
-        );
+        container.register(Equal).inSingletonScope();
+        container.register(Not).inSingletonScope();
+        container.register(Contains).inSingletonScope();
+        container.register(NotContains).inSingletonScope();
+        container.register(Between).inSingletonScope();
+        container.register(NotBetween).inSingletonScope();
+        container.register(GreaterThan).inSingletonScope();
+        container.register(GreaterThanOrEqual).inSingletonScope();
+        container.register(LesserThan).inSingletonScope();
+        container.register(LesserThanOrEqual).inSingletonScope();
+        container.register(In).inSingletonScope();
+        container.register(AndIn).inSingletonScope();
+        container.register(NotIn).inSingletonScope();
+        container.register(StartsWith).inSingletonScope();
+        container.register(NotStartsWith).inSingletonScope();
+        container.register(OpenSearchQueryBuilderOperatorRegistry).inSingletonScope();
     }
 });

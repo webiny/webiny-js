@@ -1,6 +1,6 @@
-import type { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
+import { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
 
-export class Between implements OpenSearchQueryBuilderOperator.Interface {
+class BetweenImpl implements OpenSearchQueryBuilderOperator.Interface {
     public getOperator(): string {
         return "between";
     }
@@ -30,3 +30,8 @@ export class Between implements OpenSearchQueryBuilderOperator.Interface {
         });
     }
 }
+
+export const Between = OpenSearchQueryBuilderOperator.createImplementation({
+    implementation: BetweenImpl,
+    dependencies: []
+});

@@ -1,7 +1,7 @@
 import { normalizeValueWithAsterisk } from "~/normalize.js";
-import type { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
+import { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
 
-export class Contains implements OpenSearchQueryBuilderOperator.Interface {
+class ContainsImpl implements OpenSearchQueryBuilderOperator.Interface {
     public getOperator(): string {
         return "contains";
     }
@@ -21,3 +21,8 @@ export class Contains implements OpenSearchQueryBuilderOperator.Interface {
         });
     }
 }
+
+export const Contains = OpenSearchQueryBuilderOperator.createImplementation({
+    implementation: ContainsImpl,
+    dependencies: []
+});

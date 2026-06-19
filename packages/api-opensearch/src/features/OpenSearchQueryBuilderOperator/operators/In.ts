@@ -1,6 +1,6 @@
-import type { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
+import { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
 
-export class In implements OpenSearchQueryBuilderOperator.Interface {
+class InImpl implements OpenSearchQueryBuilderOperator.Interface {
     public getOperator(): string {
         return "in";
     }
@@ -28,3 +28,8 @@ export class In implements OpenSearchQueryBuilderOperator.Interface {
         });
     }
 }
+
+export const In = OpenSearchQueryBuilderOperator.createImplementation({
+    implementation: InImpl,
+    dependencies: []
+});

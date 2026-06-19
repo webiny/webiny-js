@@ -1,6 +1,6 @@
-import type { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
+import { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
 
-export class Not implements OpenSearchQueryBuilderOperator.Interface {
+class NotImpl implements OpenSearchQueryBuilderOperator.Interface {
     public getOperator(): string {
         return "not";
     }
@@ -44,3 +44,8 @@ export class Not implements OpenSearchQueryBuilderOperator.Interface {
         });
     }
 }
+
+export const Not = OpenSearchQueryBuilderOperator.createImplementation({
+    implementation: NotImpl,
+    dependencies: []
+});

@@ -1,6 +1,6 @@
-import type { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
+import { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
 
-export class GreaterThanOrEqual implements OpenSearchQueryBuilderOperator.Interface {
+class GreaterThanOrEqualImpl implements OpenSearchQueryBuilderOperator.Interface {
     public getOperator(): string {
         return "gte";
     }
@@ -19,3 +19,8 @@ export class GreaterThanOrEqual implements OpenSearchQueryBuilderOperator.Interf
         });
     }
 }
+
+export const GreaterThanOrEqual = OpenSearchQueryBuilderOperator.createImplementation({
+    implementation: GreaterThanOrEqualImpl,
+    dependencies: []
+});

@@ -1,7 +1,7 @@
-import type { OpenSearchQueryBuilderOperator } from "./abstractions/OpenSearchQueryBuilderOperator.js";
-import type { OpenSearchQueryBuilderOperatorRegistry as Abstraction } from "./abstractions/OpenSearchQueryBuilderOperatorRegistry.js";
+import { OpenSearchQueryBuilderOperator } from "./abstractions/OpenSearchQueryBuilderOperator.js";
+import { OpenSearchQueryBuilderOperatorRegistry as Abstraction } from "./abstractions/OpenSearchQueryBuilderOperatorRegistry.js";
 
-export class OpenSearchQueryBuilderOperatorRegistryImpl implements Abstraction.Interface {
+class OpenSearchQueryBuilderOperatorRegistryImpl implements Abstraction.Interface {
     private readonly operators: Map<string, OpenSearchQueryBuilderOperator.Interface>;
 
     public constructor(operators: OpenSearchQueryBuilderOperator.Interface[]) {
@@ -19,3 +19,8 @@ export class OpenSearchQueryBuilderOperatorRegistryImpl implements Abstraction.I
         return Array.from(this.operators.values());
     }
 }
+
+export const OpenSearchQueryBuilderOperatorRegistry = Abstraction.createImplementation({
+    implementation: OpenSearchQueryBuilderOperatorRegistryImpl,
+    dependencies: [[OpenSearchQueryBuilderOperator, { multiple: true }]]
+});

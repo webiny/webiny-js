@@ -1,6 +1,6 @@
-import type { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
+import { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
 
-export class Equal implements OpenSearchQueryBuilderOperator.Interface {
+class EqualImpl implements OpenSearchQueryBuilderOperator.Interface {
     public getOperator(): string {
         return "eq";
     }
@@ -37,3 +37,8 @@ export class Equal implements OpenSearchQueryBuilderOperator.Interface {
         });
     }
 }
+
+export const Equal = OpenSearchQueryBuilderOperator.createImplementation({
+    implementation: EqualImpl,
+    dependencies: []
+});

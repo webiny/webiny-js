@@ -1,6 +1,6 @@
-import type { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
+import { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
 
-export class LesserThan implements OpenSearchQueryBuilderOperator.Interface {
+class LesserThanImpl implements OpenSearchQueryBuilderOperator.Interface {
     public getOperator(): string {
         return "lt";
     }
@@ -19,3 +19,8 @@ export class LesserThan implements OpenSearchQueryBuilderOperator.Interface {
         });
     }
 }
+
+export const LesserThan = OpenSearchQueryBuilderOperator.createImplementation({
+    implementation: LesserThanImpl,
+    dependencies: []
+});
