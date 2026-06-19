@@ -1,10 +1,7 @@
 export { registerOpenSearchCore } from "./registerOpenSearchCore.js";
 
 export { getCommonMappings, getBaseConfiguration } from "./indexConfiguration/index.js";
-export * from "./plugins/index.js";
 export * from "./sort.js";
-
-export * from "./indices.js";
 export * from "./where.js";
 export * from "./limit.js";
 export * from "./normalize.js";
