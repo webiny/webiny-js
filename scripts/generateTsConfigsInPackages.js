@@ -141,5 +141,31 @@ async function output(target, content) {
         };
 
         await output(wpObject.tsConfigBuildJsonPath, JSON.stringify(tsconfigBuildJson));
+
+        // Generate `tsconfig.check-tests.json`
+        if (wpObject.hasTests) {
+            const tsconfigCheckTestsJson = {
+                extends: "./tsconfig.json",
+                compilerOptions: {
+                    composite: false,
+                    noEmit: true,
+                    declaration: false,
+                    declarationDir: null,
+                    emitDeclarationOnly: false,
+                    outDir: null,
+                    rootDir: null,
+                    rootDirs: null,
+                    paths: {
+                        "~/*": ["./src/*"],
+                        "~tests/*": ["./__tests__/*"]
+                    }
+                },
+                include: ["__tests__", "src"],
+                references: []
+            };
+
+            const checkTestsPath = wpObject.packageFolder + "/tsconfig.check-tests.json";
+            await output(checkTestsPath, JSON.stringify(tsconfigCheckTestsJson));
+        }
     }
 })();
