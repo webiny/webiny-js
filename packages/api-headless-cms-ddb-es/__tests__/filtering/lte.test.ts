@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { CreateExecFilteringResponse } from "~/operations/entry/elasticsearch/filtering";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types";
-import { createPluginsContainer, createQuery, Query } from "./mocks";
+import { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types";
+import { createQuery, Query } from "./mocks";
 import { createExecFiltering } from "./mocks/filtering";
 
 describe("lesser than or equal filter", () => {
@@ -11,9 +11,7 @@ describe("lesser than or equal filter", () => {
 
     beforeEach(() => {
         query = createQuery();
-        execFiltering = createExecFiltering({
-            plugins: createPluginsContainer()
-        });
+        execFiltering = createExecFiltering();
     });
 
     it("should add lesser than or equal filter", async () => {
@@ -28,7 +26,7 @@ describe("lesser than or equal filter", () => {
             where
         });
 
-        const expected: ElasticsearchBoolQueryConfig = {
+        const expected: OpenSearchBoolQueryConfig = {
             must: [],
             should: [],
             filter: [

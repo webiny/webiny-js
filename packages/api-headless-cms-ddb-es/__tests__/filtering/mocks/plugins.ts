@@ -4,11 +4,9 @@ import { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSe
 import { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter";
 import { createTestContainer } from "~tests/helpers/createTestContainer";
 import { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch";
-import { OpenSearchQueryBuilderOperatorFeature } from "@webiny/api-opensearch/features/OpenSearchQueryBuilderOperator/feature";
 
 export const buildElasticsearchOperatorPlugins = () => {
     const testContainer = createTestContainer();
-    OpenSearchQueryBuilderOperatorFeature.register(testContainer);
     const registry = testContainer.resolve(OpenSearchQueryBuilderOperatorRegistry);
     return createOperatorPluginList({ registry });
 };
@@ -21,7 +19,6 @@ export interface Plugins {
 
 export const createPlugins = (): Plugins => {
     const testContainer = createTestContainer();
-    OpenSearchQueryBuilderOperatorFeature.register(testContainer);
     return {
         operators: buildElasticsearchOperatorPlugins(),
         valueSearchRegistry: testContainer.resolve(CmsEntryOpenSearchValueSearchRegistry),
