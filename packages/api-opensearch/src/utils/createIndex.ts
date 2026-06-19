@@ -13,11 +13,10 @@ interface OnError {
 interface ExistsIndexParams {
     client: Client;
     index: string;
-    onExists?: OnExists;
 }
 
 const indexExists = async (params: ExistsIndexParams): Promise<boolean> => {
-    const { client, index, onExists } = params;
+    const { client, index } = params;
 
     try {
         const response = await client.indices.exists({
@@ -30,9 +29,6 @@ const indexExists = async (params: ExistsIndexParams): Promise<boolean> => {
         });
         if (!response.body) {
             return false;
-        }
-        if (onExists) {
-            onExists();
         }
         return true;
     } catch {

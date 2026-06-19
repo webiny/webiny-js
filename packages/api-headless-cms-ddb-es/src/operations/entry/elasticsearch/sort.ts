@@ -1,7 +1,7 @@
 import type { Sort as OpenSearchSort } from "@webiny/api-opensearch/types.js";
 import { createSort } from "@webiny/api-opensearch";
-import type { OpenSearchField } from "@webiny/api-opensearch/exports/api/opensearch";
-import { OpenSearchFieldImpl } from "@webiny/api-opensearch/features/OpenSearchField/OpenSearchFieldImpl";
+import type { OpenSearchField } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { OpenSearchFieldImpl } from "@webiny/api-opensearch/features/OpenSearchField/OpenSearchFieldImpl.js";
 import type { CmsEntryListSort, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { ModelFields } from "./types.js";
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword.js";
