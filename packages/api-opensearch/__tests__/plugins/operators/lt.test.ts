@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankQuery } from "../../helpers";
+import { createBlankQuery } from "~/testing/index.js";
 import { OpenSearchBoolQueryConfig } from "~/types.js";
 import { Container } from "@webiny/di";
 import { OpenSearchQueryBuilderOperatorFeature } from "~/features/OpenSearchQueryBuilderOperator/feature.js";
