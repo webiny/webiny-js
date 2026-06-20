@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import fs from "fs";
 import chalk from "chalk";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 import { Listr, ListrTask } from "listr2";
 import { getPackagesWithTests } from "./getPackagesWithTests.js";
 import { generateTsConfig, removeTsConfig } from "./generateTsConfig.js";
@@ -9,7 +11,32 @@ import { writeReport, REPORT_DIR } from "./writeReport.js";
 
 const { green, red, yellow } = chalk;
 
-const packages = getPackagesWithTests();
+const argv = yargs(hideBin(process.argv))
+    .option("p", {
+        alias: "package",
+        type: "array",
+        string: true,
+        describe: "Package name(s) to check (e.g. @webiny/api-headless-cms)"
+    })
+    .option("report", {
+        type: "string",
+        choices: ["file", "cli"],
+        default: "file",
+        describe: "Output errors to files in docs/.reports/ or print to CLI"
+    })
+    .parse() as { p?: string[]; report: "file" | "cli" };
+
+let packages = getPackagesWithTests();
+
+if (argv.p && argv.p.length > 0) {
+    const requested = argv.p;
+    packages = packages.filter(pkg => requested.includes(pkg.packageJson.name));
+
+    if (packages.length === 0) {
+        console.error(red(`No matching packages found for: ${requested.join(", ")}`));
+        process.exit(1);
+    }
+}
 
 const cleanup = () => {
     for (const pkg of packages) {
@@ -31,8 +58,10 @@ for (const pkg of packages) {
     generateTsConfig(pkg.packageFolder);
 }
 
-fs.rmSync(REPORT_DIR, { recursive: true, force: true });
-fs.mkdirSync(REPORT_DIR, { recursive: true });
+if (argv.report === "file") {
+    fs.rmSync(REPORT_DIR, { recursive: true, force: true });
+    fs.mkdirSync(REPORT_DIR, { recursive: true });
+}
 
 console.log(`\nType-checking tests for ${green(packages.length)} packages.\n`);
 
@@ -42,6 +71,8 @@ const results = {
     totalErrors: 0
 };
 
+const cliOutput: string[] = [];
+
 const tasks = new Listr(
     packages.map<ListrTask>(pkg => ({
         title: pkg.packageJson.name,
@@ -50,10 +81,17 @@ const tasks = new Listr(
             const errorLines = output.split("\n").filter(l => l.includes("error TS"));
 
             if (errorLines.length > 0) {
-                const count = writeReport(pkg.folderName, errorLines);
+                const count = errorLines.length;
                 results.failed++;
                 results.totalErrors += count;
                 task.title = `${red("✖")} ${pkg.packageJson.name} — ${red(count)} errors`;
+
+                if (argv.report === "file") {
+                    writeReport(pkg.folderName, errorLines);
+                } else {
+                    cliOutput.push(`\n${red("✖")} ${pkg.packageJson.name} — ${count} errors\n`);
+                    cliOutput.push(...errorLines);
+                }
             } else {
                 results.passed++;
                 task.title = `${green("✔")} ${pkg.packageJson.name}`;
@@ -75,9 +113,15 @@ try {
 }
 
 console.log();
+
+if (argv.report === "cli" && cliOutput.length > 0) {
+    console.log(cliOutput.join("\n"));
+    console.log();
+}
+
 console.log(`Results: ${green(results.passed)} passed, ${red(results.failed)} failed`);
 console.log(`Total type errors: ${results.totalErrors}`);
 
-if (results.failed > 0) {
+if (results.failed > 0 && argv.report === "file") {
     console.log(`Reports written to ${yellow("docs/.reports/")}`);
 }
