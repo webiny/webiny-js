@@ -9,7 +9,7 @@ interface AssetMetadata {
 }
 
 export class MetadataReader {
-    constructor(private keyValueStore: GlobalKeyValueStore.Interface) {}
+    constructor(private readonly keyValueStore: GlobalKeyValueStore.Interface) {}
 
     async read(fileId: string): Promise<AssetMetadata | undefined> {
         const result = await this.keyValueStore.get<AssetMetadata>(

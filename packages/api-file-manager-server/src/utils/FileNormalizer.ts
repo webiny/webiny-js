@@ -25,10 +25,8 @@ function resolveTypeFromName(name: string): string {
     return extensionToMime.get(ext) || "application/octet-stream";
 }
 
-/*
- * FileNormalizer normalizes file data, before it's signed for upload to S3.
- * It generates a unique file id, and makes sure that the file key includes the unique id.
- */
+/* FileNormalizer normalizes file data before it's signed for upload.
+ * It generates a unique file id and makes sure that the file key includes the unique id. */
 export class FileNormalizer {
     private readonly modifier: FileModifier | undefined;
 

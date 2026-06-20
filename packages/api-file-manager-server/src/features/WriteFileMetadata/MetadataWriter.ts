@@ -4,8 +4,8 @@ import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/ind
 
 export class MetadataWriter {
     constructor(
-        private tenantContext: TenantContext.Interface,
-        private keyValueStore: GlobalKeyValueStore.Interface
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly keyValueStore: GlobalKeyValueStore.Interface
     ) {}
 
     async write(files: File[]) {

@@ -2,10 +2,8 @@ import path from "node:path";
 import { mkdir } from "node:fs/promises";
 import { readdir } from "node:fs/promises";
 import { readFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import { rm } from "node:fs/promises";
-import { createWriteStream } from "node:fs";
-import { pipeline } from "node:stream/promises";
-import { Readable } from "node:stream";
 
 interface CompleteMultiPartUploadParams {
     fileKey: string;
@@ -49,21 +47,15 @@ export class CompleteMultiPartUploadUseCase {
 
         await mkdir(destDir, { recursive: true });
 
-        const destStream = createWriteStream(destPath);
-
+        const buffers: Buffer[] = [];
         for (const partName of sorted) {
             const partPath = path.join(multipartDir, partName);
             const partData = await readFile(partPath);
-            const readable = Readable.from(partData);
-            await pipeline(readable, destStream, { end: false });
+            buffers.push(partData);
         }
 
-        destStream.end();
-
-        await new Promise<void>((resolve, reject) => {
-            destStream.on("finish", resolve);
-            destStream.on("error", reject);
-        });
+        const finalBuffer = Buffer.concat(buffers);
+        await writeFile(destPath, finalBuffer);
 
         await rm(multipartDir, { recursive: true, force: true });
     }

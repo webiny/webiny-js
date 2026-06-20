@@ -12,16 +12,6 @@ export class LocalOutputStrategy implements AssetOutputStrategy {
     }
 
     async output(asset: Asset): Promise<AssetReply> {
-        if (asset.getSize() > this.assetStreamingMaxSize) {
-            console.log(
-                `Asset size is greater than ${this.assetStreamingMaxSize}; streaming anyway (local storage has no presigned URL redirect).`
-            );
-        } else {
-            console.log(
-                `Asset size is smaller than ${this.assetStreamingMaxSize}; streaming directly.`
-            );
-        }
-
         return new LocalStreamAssetReply(asset);
     }
 }
