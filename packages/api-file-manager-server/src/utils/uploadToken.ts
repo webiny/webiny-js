@@ -4,9 +4,7 @@ import type { UploadTokenPayload } from "~/types.js";
 export const createUploadToken = (payload: UploadTokenPayload, secret: string): string => {
     const json = JSON.stringify(payload);
     const encoded = Buffer.from(json).toString("base64url");
-    const signature = createHmac("sha256", secret)
-        .update(encoded)
-        .digest("base64url");
+    const signature = createHmac("sha256", secret).update(encoded).digest("base64url");
 
     return `${encoded}.${signature}`;
 };
@@ -20,9 +18,7 @@ export const verifyUploadToken = (token: string, secret: string): UploadTokenPay
     const encoded = token.slice(0, dotIndex);
     const signature = token.slice(dotIndex + 1);
 
-    const expectedSignature = createHmac("sha256", secret)
-        .update(encoded)
-        .digest("base64url");
+    const expectedSignature = createHmac("sha256", secret).update(encoded).digest("base64url");
 
     if (signature !== expectedSignature) {
         throw new Error("Invalid token signature.");
