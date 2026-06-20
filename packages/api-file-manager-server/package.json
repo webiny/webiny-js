@@ -28,6 +28,7 @@
     "exifreader": "^4.41.0",
     "fastify": "5.8.5",
     "mime": "^4.1.0",
+    "object-hash": "^3.0.0",
     "p-map": "^7.0.4",
     "p-reduce": "^3.0.0",
     "sanitize-filename": "^1.6.4",
