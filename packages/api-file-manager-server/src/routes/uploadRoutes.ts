@@ -2,6 +2,7 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import { createHash } from "node:crypto";
 import { mkdir } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import { createWriteStream } from "node:fs";
 import { pipeline } from "node:stream/promises";
 import { RoutePlugin } from "@webiny/handler/plugins/RoutePlugin.js";
@@ -169,10 +170,7 @@ export const uploadRoutesPlugin = new RoutePlugin(({ onPost, onPut }) => {
 
         const body = request.body as Buffer;
 
-        const writeStream = createWriteStream(destPath);
-        const readable = Readable.from(body);
-
-        await pipeline(readable, writeStream);
+        await writeFile(destPath, body);
 
         const etag = createHash("md5").update(body).digest("hex");
 
