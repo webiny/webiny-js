@@ -194,7 +194,8 @@ The `createAssetDelivery` export wires the full asset delivery feature pipeline 
 
 - `LocalContentsReader` — implements `AssetContentsReader`, reads file bytes from local disk via `fs.readFile()` instead of S3 `getObject`
 - `LocalAssetResolver` — resolves asset keys to local file paths, implementing the same `AssetResolver` interface as the S3 version
-- Output strategy and image transformation (via `sharp`) are provided by `@webiny/api-file-manager` and do not need local re-implementation
+- `LocalOutputStrategy` — implements `AssetOutputStrategy`, streams file bytes from disk to the HTTP response. The base `@webiny/api-file-manager` only provides `NullAssetOutputStrategy` (returns 404), so this override is required for asset delivery to function.
+- `LocalSharpTransform` — implements `AssetTransformationStrategy`, handles image resizing via `sharp` using the `imageResizeWidths` config. Reads source bytes from local disk and writes cached resized copies back to disk (in a `_transforms/` subdirectory alongside the original). The base package only provides `PassthroughAssetTransformationStrategy` (no-op), so this override is required for image resizing to work.
 
 The `createAssetDelivery` factory accepts configuration params matching the S3 package's `AssetDeliveryParams` interface: `imageResizeWidths` (allowed resize dimensions) and `assetStreamingMaxSize` (threshold for streaming vs. buffering). The `presignedUrlTtl` param from the S3 version is not applicable (no redirect-to-presigned-URL flow on local disk) and is accepted but ignored for API compatibility.
 
@@ -275,6 +276,8 @@ packages/api-file-manager-server/
     assetDelivery/
       LocalContentsReader.ts
       LocalAssetResolver.ts
+      LocalOutputStrategy.ts
+      LocalSharpTransform.ts
       createAssetDelivery.ts
   __tests__/
   package.json
