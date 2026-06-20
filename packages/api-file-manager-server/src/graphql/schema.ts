@@ -176,7 +176,7 @@ export const createServerGraphQLSchema = () => {
                     await checkPermissions(identityContext, { rwd: "w" });
 
                     try {
-                        const storagePath = String(process.env.SERVER_STORAGE_PATH);
+                        const storagePath = String(process.env.WEBINY_LOCAL_STORAGE_PATH);
                         const useCase = new CreateMultiPartUploadUseCase(storagePath);
 
                         const tenantContext = context.container.resolve(TenantContext);
@@ -207,7 +207,7 @@ export const createServerGraphQLSchema = () => {
                     await checkPermissions(identityContext, { rwd: "w" });
 
                     try {
-                        const storagePath = String(process.env.SERVER_STORAGE_PATH);
+                        const storagePath = String(process.env.WEBINY_LOCAL_STORAGE_PATH);
                         const useCase = new CompleteMultiPartUploadUseCase(storagePath);
 
                         const tenantContext = context.container.resolve(TenantContext);
