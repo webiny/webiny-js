@@ -23,6 +23,9 @@ export class CompleteMultiPartUploadUseCase {
     public async execute(params: CompleteMultiPartUploadParams): Promise<void> {
         const { fileKey, uploadId, tenantId } = params;
 
+        this.assertNoTraversal(uploadId);
+        this.assertPathContained(path.join(this.storagePath, fileKey));
+
         const multipartDir = path.join(
             this.storagePath,
             "tenants",
@@ -63,5 +66,19 @@ export class CompleteMultiPartUploadUseCase {
         });
 
         await rm(multipartDir, { recursive: true, force: true });
+    }
+
+    private assertNoTraversal(segment: string): void {
+        if (segment.includes("..") || segment.includes("/") || segment.includes("\\")) {
+            throw new Error("Invalid path segment.");
+        }
+    }
+
+    private assertPathContained(resolved: string): void {
+        const normalized = path.resolve(resolved);
+        const root = path.resolve(this.storagePath);
+        if (!normalized.startsWith(root + path.sep) && normalized !== root) {
+            throw new Error("Path escapes storage root.");
+        }
     }
 }
