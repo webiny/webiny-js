@@ -21,7 +21,8 @@ export class LocalAssetResolver implements AssetResolver {
     ) {}
 
     async resolve(request: AssetRequest): Promise<Asset | undefined> {
-        const fileId = ObjectKey.from(request.getKey()).id();
+        const objectKey = ObjectKey.from(request.getKey());
+        const fileId = objectKey.id();
         const result = await this.keyValueStore.get<AssetMetadata>(
             `FileManager/File/${fileId}/Metadata`
         );

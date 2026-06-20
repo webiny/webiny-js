@@ -12,7 +12,8 @@ import { WidthCollection } from "~/assetDelivery/transformation/WidthCollection.
 import * as utils from "~/assetDelivery/transformation/utils.js";
 import { CallableContentsReader } from "~/assetDelivery/transformation/CallableContentsReader.js";
 import { AssetKeyGenerator } from "~/assetDelivery/transformation/AssetKeyGenerator.js";
-import { LocalStoragePath, LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
+import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
+import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
 export class LocalSharpTransform implements AssetTransformationStrategy {
