@@ -1,7 +1,9 @@
-import { existsSync, mkdirSync } from "node:fs";
+import { existsSync } from "node:fs";
+import { mkdirSync } from "node:fs";
 import { ContextPlugin } from "@webiny/api";
 import { createServerGraphQLSchema } from "./graphql/schema.js";
-import { uploadRoutesPlugin, modifyFastifyPlugin } from "~/routes/uploadRoutes.js";
+import { uploadRoutesPlugin } from "~/routes/uploadRoutes.js";
+import { modifyFastifyPlugin } from "~/routes/uploadRoutes.js";
 import { CleanupStaleMultipartUploadsFeature } from "~/features/CleanupStaleMultipartUploads/feature.js";
 import { DeleteFileFromDiskFeature } from "~/features/DeleteFileFromDisk/feature.js";
 import { ExtractMetadataFeature } from "~/features/ExtractMetadata/feature.js";
