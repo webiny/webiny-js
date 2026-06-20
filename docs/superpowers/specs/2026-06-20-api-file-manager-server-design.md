@@ -15,10 +15,12 @@ A drop-in replacement for `api-file-manager-s3` that stores uploaded files on th
 ### Entry Point
 
 ```typescript
-export const createFileManagerServer = () => [contextPlugin, createServerGraphQLSchema(), uploadRoutePlugin];
+export const createFileManagerServer = () => [contextPlugin, createServerGraphQLSchema(), uploadRoutesPlugin];
+export { createFileUploadModifier } from "./utils/FileUploadModifier.js";
+export { createAssetDelivery } from "./assetDelivery/createAssetDelivery.js";
 ```
 
-Same pattern as `createFileManagerS3()` — returns an array of plugins.
+Same pattern as `createFileManagerS3()` — returns an array of plugins. The `uploadRoutesPlugin` is a single `RoutePlugin` that registers both the simple upload (`POST`) and multipart parts (`PUT`) endpoints. `createFileUploadModifier` and `createAssetDelivery` are re-exported for parity with the S3 package.
 
 ### Configuration
 
@@ -29,6 +31,17 @@ Same pattern as `createFileManagerS3()` — returns an array of plugins.
 | ServiceManifest | Server URL | Yes | Base URL for constructing upload endpoint URLs |
 
 Boot validation: the `ContextPlugin` checks that `WEBINY_LOCAL_STORAGE_PATH` and `WEBINY_UPLOAD_SECRET` are set, and the storage directory exists (or can be created). If any check fails, it throws a descriptive error.
+
+#### Server URL Resolution
+
+The upload endpoint base URL is resolved from `ServiceManifest` via `ServiceDiscovery.load()`. The Pulumi infrastructure registers a manifest entry (e.g., `{ name: "api", manifest: { url: "https://..." } }`) and the GraphQL resolvers read it at runtime:
+
+```typescript
+const manifest = await ServiceDiscovery.load();
+const baseUrl = manifest?.api?.url;
+```
+
+If `ServiceManifest` is unavailable (e.g., local dev without Pulumi), the resolver falls back to constructing the URL from the Fastify request: `${request.protocol}://${request.hostname}`. This ensures the package works in both deployed and local development contexts.
 
 ### File Storage Layout
 
@@ -64,11 +77,11 @@ Extends `FmQuery` and `FmMutation` with the same types defined by `api-file-mana
 - `CreateMultiPartUploadResponseData`
 - `CreateMultiPartUploadResponse`
 - `CompleteMultiPartUploadResponse`
-- `MultiPartUploadFilePartInput`
+- `MultiPartUploadFilePartInput` — defined for schema parity with S3; not referenced by any mutation argument in this implementation
 
 ### Queries
 
-- `getPreSignedPostPayload(data: PreSignedPostPayloadInput!)` — returns upload URL + HMAC-signed token in `data.fields`
+- `getPreSignedPostPayload(data: PreSignedPostPayloadInput!)` — returns upload URL + HMAC-signed token in `data.fields`. Resolves `GetSettingsUseCase` to read `uploadMinFileSize` / `uploadMaxFileSize` and embeds them in the token for server-side enforcement.
 - `getPreSignedPostPayloads(data: [PreSignedPostPayloadInput]!)` — batch version
 
 ### Mutations
@@ -110,8 +123,9 @@ Accepts `multipart/form-data` with:
 
 Validation:
 1. Verify HMAC token signature and expiry.
-2. Write file to `{WEBINY_LOCAL_STORAGE_PATH}/{key}`.
-3. Return `204 No Content` on success (same as S3 presigned POST behavior).
+2. Enforce `uploadMinFileSize` / `uploadMaxFileSize` from the token payload against the actual uploaded file size. Reject with `400` if out of range.
+3. Write file to `{WEBINY_LOCAL_STORAGE_PATH}/{key}`.
+4. Return `204 No Content` on success (same as S3 presigned POST behavior).
 
 ### PUT /webiny-file-upload/parts
 
@@ -122,13 +136,13 @@ Query parameters: `uploadId`, `partNumber`, `token`.
 Validation:
 1. Verify HMAC token.
 2. Write chunk to `{WEBINY_LOCAL_STORAGE_PATH}/tenants/{tenantId}/multipart/{uploadId}/part-{partNumber}`.
-3. Return `200 OK` (same as S3 multipart PUT behavior).
+3. Return `200 OK` with an `ETag` response header containing the MD5 hash of the chunk (matches S3 multipart PUT behavior). The current frontend does not read ETags, but including them ensures forward compatibility.
 
 ## Upload Token Security
 
 HMAC-SHA256 signed tokens mirror S3 presigned URL security:
 
-- **Payload**: `{ key, tenantId, expiresAt }`
+- **Payload**: `{ key, tenantId, expiresAt, uploadMinFileSize, uploadMaxFileSize }`
 - **Secret**: `WEBINY_UPLOAD_SECRET` env var (required; boot fails if missing)
 - **Expiry**: 60 seconds (same as S3 presigned default)
 - **Validation**: verify signature, check `expiresAt > now`, match key against request
@@ -145,7 +159,7 @@ Implements `GetFileContentsByKeyUseCase` abstraction. Reads file directly from d
 
 ### DeleteFileFromDiskFeature
 
-Handles `FileAfterDeleteEvent`. Deletes the file directory from disk (`fs.rm(path, { recursive: true })`) and removes the metadata from `GlobalKeyValueStore`.
+Handles `FileAfterDeleteEvent`. Deletes the file directory from disk (`fs.rm(path, { recursive: true })`) and removes the metadata from `GlobalKeyValueStore`. Unlike the S3 version, no background task is needed — local filesystem deletion via `fs.rm` with `{ recursive: true }` is fast and does not require paginated iteration. The feature registers only the event handler, not a task definition.
 
 ### WriteFileMetadataFeature
 
@@ -157,7 +171,7 @@ Handles `FileAfterCreateEvent`. Triggers a task that reads the file from local d
 
 ### FlushCacheFeature (noop)
 
-Handles `FileAfterDeleteEvent` and `FileAfterUpdateEvent`. The handlers exist with the correct signatures but perform no operation. This provides the integration point for future cache invalidation.
+Handles `FileAfterDeleteEvent` and `FileBeforeUpdateEvent` (matching the S3 package's event hooks exactly — the S3 version flushes cache _before_ the update so the CDN is invalidated before the record changes). The handlers exist with the correct signatures but perform no operation. This provides the integration point for future cache invalidation. No task definition is registered (unlike S3's `InvalidateCloudfrontCacheTaskDefinition`).
 
 ## Shared Code
 
@@ -171,9 +185,13 @@ The following utilities from `api-file-manager-s3` are not S3-specific and will 
 
 ## Asset Delivery
 
-A `LocalContentsReader` class implements the `AssetContentsReader` interface. It reads file contents from local disk using `fs.readFile()` instead of S3 `getObject`.
+The `createAssetDelivery` export wires the full asset delivery feature pipeline — matching the S3 package's structure:
 
-Exported as `createAssetDelivery` (same export name as S3 package) for use in the asset delivery handler.
+- `LocalContentsReader` — implements `AssetContentsReader`, reads file bytes from local disk via `fs.readFile()` instead of S3 `getObject`
+- `LocalAssetResolver` — resolves asset keys to local file paths, implementing the same `AssetResolver` interface as the S3 version
+- Output strategy and image transformation (via `sharp`) are provided by `@webiny/api-file-manager` and do not need local re-implementation
+
+The `createAssetDelivery` factory returns the same plugin structure as the S3 package, making it a drop-in replacement for the asset delivery handler configuration.
 
 ## Package Dependencies
 
@@ -183,6 +201,7 @@ Exported as `createAssetDelivery` (same export name as S3 package) for use in th
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
+    "@webiny/background-tasks": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
@@ -199,15 +218,15 @@ Exported as `createAssetDelivery` (same export name as S3 package) for use in th
 }
 ```
 
-Notable: no `@webiny/aws-sdk` dependency.
+Notable: no `@webiny/aws-sdk` dependency. The `@webiny/background-tasks` dependency is required for `ExtractMetadataFeature` (which triggers a background task) and for the `TaskController` context augmentation type import in `types.ts`.
 
 ## File Structure
 
 ```
 packages/api-file-manager-server/
   src/
-    index.ts                              # createFileManagerServer entry point
-    types.ts                              # shared types
+    index.ts                              # createFileManagerServer entry point + re-exports
+    types.ts                              # shared types + background-tasks augmentation import
     graphql/
       schema.ts                           # GraphQL schema (same shape as S3)
     features/
@@ -220,7 +239,7 @@ packages/api-file-manager-server/
         feature.ts
       FlushCache/
         FlushCacheOnFileDeleteHandler.ts   # noop
-        FlushCacheOnFileUpdateHandler.ts   # noop
+        FlushCacheOnFileBeforeUpdateHandler.ts  # noop (matches S3's FileBeforeUpdateEvent)
         feature.ts
       GetFileContentsById/
         GetFileContentsByIdUseCase.ts
@@ -235,11 +254,11 @@ packages/api-file-manager-server/
         WriteMetadataAfterBatchCreateHandler.ts
         feature.ts
     routes/
-      uploadRoute.ts                      # POST /webiny-file-upload
-      multipartRoute.ts                   # PUT /webiny-file-upload/parts
+      uploadRoutes.ts                     # RoutePlugin registering POST + PUT endpoints
     utils/
       FileNormalizer.ts
       FileKey.ts
+      FileUploadModifier.ts               # createFileUploadModifier (re-exported from index)
       mimeTypes.ts
       uploadToken.ts                      # HMAC token create/verify
       checkPermissions.ts
