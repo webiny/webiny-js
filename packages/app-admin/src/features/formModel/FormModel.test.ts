@@ -3291,6 +3291,61 @@ describe("FormModel", () => {
             expect(form.field("general.fieldId").getValue()).toBe("custom");
         });
 
+        it("$. prefix resolves field paths relative to the parent object", () => {
+            const form = createForm({
+                fields: fields => ({
+                    group: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            label: f.text().defaultValue("Hello"),
+                            slug: f.text().computedUntilDirty(f =>
+                                String(f.field("$.label").getValue() || "")
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "-")
+                            )
+                        }))
+                })
+            });
+
+            expect(form.field("group.slug").getValue()).toBe("hello");
+
+            form.field("group.label").setValue("New Title");
+            expect(form.field("group.slug").getValue()).toBe("new-title");
+        });
+
+        it("$. can traverse deeper into sibling objects", () => {
+            const form = createForm({
+                fields: fields => ({
+                    wrapper: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            message: f
+                                .text()
+                                .defaultValue("default")
+                                .computedUntilDirty(f => {
+                                    const preset = f.field("$.settings.preset").getValue();
+                                    return preset === "custom"
+                                        ? "Custom message"
+                                        : `Preset: ${preset}`;
+                                }),
+                            settings: f
+                                .object()
+                                .renderer("passthrough")
+                                .fields(inner => ({
+                                    preset: inner.text().defaultValue("custom")
+                                }))
+                        }))
+                })
+            });
+
+            expect(form.field("wrapper.message").getValue()).toBe("Custom message");
+
+            form.field("wrapper.settings.preset").setValue("email");
+            expect(form.field("wrapper.message").getValue()).toBe("Preset: email");
+        });
+
         it("modifier setComputed converts a regular field into a computed one", () => {
             const form = createForm({
                 fields: fields => ({

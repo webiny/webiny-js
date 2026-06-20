@@ -61,6 +61,7 @@ export interface IFieldConfig {
     onBlurCallbacks?: OnBlurCallback[];
     requiredWhenCallbacks?: RequiredWhenCallback[];
     hiddenWhenCallbacks?: HiddenWhenCallback[];
+    disabledWhenCallbacks?: DisabledWhenCallback[];
     computed?: ComputedFieldCallback;
     computedUntilDirty?: ComputedFieldCallback;
     tags?: string[];
@@ -76,6 +77,8 @@ export interface IRequiredWhenCallbackConfig {
 export type RequiredWhenCallback = IRequiredWhenCallbackConfig;
 
 export type HiddenWhenCallback = (form: IFormModel) => boolean;
+
+export type DisabledWhenCallback = (form: IFormModel) => boolean;
 
 export type ComputedFieldCallback = (form: IFormModel) => unknown;
 
@@ -750,6 +753,7 @@ export namespace FormModel {
     export type FormRuleType = FormRule;
     export type RequiredWhen = (form: IFormModel) => boolean;
     export type HiddenWhen = HiddenWhenCallback;
+    export type DisabledWhen = DisabledWhenCallback;
     export type Computed = ComputedFieldCallback;
 }
 
@@ -815,6 +819,7 @@ export interface IFieldBuilder<
     ): this;
     hidden(): this;
     hiddenWhen(fn: (form: IFormModel) => boolean): this;
+    disabledWhen(fn: (form: IFormModel) => boolean): this;
     required(message?: string): this;
     /**
      * Conditional required check. Multiple `requiredWhen()` calls chain — the

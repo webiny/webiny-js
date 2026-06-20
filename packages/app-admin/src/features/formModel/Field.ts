@@ -14,6 +14,7 @@ import type {
     OnBlurCallback,
     RequiredWhenCallback,
     HiddenWhenCallback,
+    DisabledWhenCallback,
     ComputedFieldCallback
 } from "./abstractions.js";
 
@@ -31,6 +32,7 @@ export class Field implements IField {
     private _onBlurCallbacks: OnBlurCallback[] = [];
     private _requiredWhenCallbacks: RequiredWhenCallback[] = [];
     private _hiddenWhenCallbacks: HiddenWhenCallback[] = [];
+    private _disabledWhenCallbacks: DisabledWhenCallback[] = [];
     private _computed: ComputedFieldCallback | null = null;
     private _computedUntilDirty: ComputedFieldCallback | null = null;
     /** Set once a computedUntilDirty field receives its first user edit. */
@@ -41,6 +43,7 @@ export class Field implements IField {
     private _isUIChange = false;
     private _focusRequested = false;
     private _qualifiedName: string = "";
+    private _parentPath: string = "";
     private _form: IFormModel | null = null;
     private _ancestorRules: IRule[] = [];
 
@@ -75,6 +78,9 @@ export class Field implements IField {
         if (config.hiddenWhenCallbacks) {
             this._hiddenWhenCallbacks = [...config.hiddenWhenCallbacks];
         }
+        if (config.disabledWhenCallbacks) {
+            this._disabledWhenCallbacks = [...config.disabledWhenCallbacks];
+        }
         if (config.computed) {
             this._computed = config.computed;
         } else if (config.computedUntilDirty) {
@@ -97,10 +103,10 @@ export class Field implements IField {
 
     getValue<T = unknown>(): T {
         if (this._computed && this._form) {
-            return this._computed(this._form) as T;
+            return this._computed(this._scopedForm()) as T;
         }
         if (this._computedUntilDirty && !this._computedOverridden && this._form) {
-            return this._computedUntilDirty(this._form) as T;
+            return this._computedUntilDirty(this._scopedForm()) as T;
         }
         return this._value as T;
     }
@@ -115,7 +121,7 @@ export class Field implements IField {
             ? this._applyNormalizeValue(raw, this.config.normalizeValue)
             : raw;
         for (const cb of this._beforeChangeCallbacks) {
-            transformed = cb(transformed, this._form!);
+            transformed = cb(transformed, this._scopedForm());
         }
 
         if (transformed === this._value) {
@@ -123,7 +129,9 @@ export class Field implements IField {
         }
 
         const wasComputed = this._computedUntilDirty && !this._computedOverridden && this._form;
-        const computedValue = wasComputed ? this._computedUntilDirty!(this._form!) : undefined;
+        const computedValue = wasComputed
+            ? this._computedUntilDirty!(this._scopedForm())
+            : undefined;
 
         this._value = transformed;
         if (this._computedUntilDirty && this._isUIChange) {
@@ -133,12 +141,12 @@ export class Field implements IField {
         }
 
         for (const cb of this._afterChangeCallbacks) {
-            cb(transformed, this._form!);
+            cb(transformed, this._scopedForm());
         }
 
         if (!this._isUIChange) {
             for (const cb of this._afterSetValueCallbacks) {
-                cb(transformed, this._form!);
+                cb(transformed, this._scopedForm());
             }
         }
     }
@@ -155,7 +163,7 @@ export class Field implements IField {
             if (parsed === null || parsed === undefined) {
                 this._computedOverridden = false;
             } else if (this._form) {
-                const computedValue = this._computedUntilDirty(this._form);
+                const computedValue = this._computedUntilDirty(this._scopedForm());
                 this._computedOverridden = parsed !== computedValue;
             } else {
                 this._computedOverridden = true;
@@ -184,8 +192,9 @@ export class Field implements IField {
             return false;
         }
         if (this._form && this._hiddenWhenCallbacks.length > 0) {
+            const scoped = this._scopedForm();
             for (const cb of this._hiddenWhenCallbacks) {
-                if (cb(this._form)) {
+                if (cb(scoped)) {
                     return false;
                 }
             }
@@ -196,6 +205,14 @@ export class Field implements IField {
     get disabled(): boolean {
         if (this._disabled) {
             return true;
+        }
+        if (this._form && this._disabledWhenCallbacks.length > 0) {
+            const scoped = this._scopedForm();
+            for (const cb of this._disabledWhenCallbacks) {
+                if (cb(scoped)) {
+                    return true;
+                }
+            }
         }
         return this._evaluateRules().disabled;
     }
@@ -266,8 +283,9 @@ export class Field implements IField {
             return { required: true, message: this.config.requiredMessage };
         }
         if (this._form && this._requiredWhenCallbacks.length > 0) {
+            const scoped = this._scopedForm();
             for (const cb of this._requiredWhenCallbacks) {
-                if (cb.fn(this._form)) {
+                if (cb.fn(scoped)) {
                     return { required: true, message: cb.message };
                 }
             }
@@ -277,13 +295,35 @@ export class Field implements IField {
 
     blur(): void {
         for (const cb of this._onBlurCallbacks) {
-            cb(this._value, this._form!);
+            cb(this._value, this._scopedForm());
         }
     }
 
     setForm(form: IFormModel, parentPath?: string): void {
         this._form = form;
+        this._parentPath = parentPath || "";
         this._qualifiedName = parentPath ? `${parentPath}.${this.config.name}` : this.config.name;
+    }
+
+    private _scopedForm(): IFormModel {
+        if (!this._form) {
+            throw new Error("Field not attached to a form.");
+        }
+        if (!this._parentPath) {
+            return this._form;
+        }
+        const form = this._form;
+        const parentPath = this._parentPath;
+        return Object.create(form, {
+            field: {
+                value(name: string) {
+                    if (name.startsWith("$.")) {
+                        return form.field(`${parentPath}.${name.slice(2)}`);
+                    }
+                    return form.field(name);
+                }
+            }
+        });
     }
 
     get qualifiedName(): string {
@@ -388,7 +428,7 @@ export class Field implements IField {
             return undefined;
         }
         if (typeof this.config.options === "function") {
-            return this.config.options(this._form!);
+            return this.config.options(this._scopedForm());
         }
         return this.config.options;
     }

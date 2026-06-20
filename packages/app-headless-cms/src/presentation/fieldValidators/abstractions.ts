@@ -10,6 +10,7 @@ export interface ICmsFieldValidatorVariable {
 }
 
 export interface ICmsFieldValidatorFormBuilder {
+    message: FormModelFactory.FieldBuilder;
     fields(
         fn: (
             fields: FormModelFactory.FieldBuilderRegistry

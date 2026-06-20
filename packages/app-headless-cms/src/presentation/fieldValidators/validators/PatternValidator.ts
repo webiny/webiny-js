@@ -24,38 +24,41 @@ class PatternValidatorImpl implements CmsFieldValidator.Interface {
             ...patterns.map(p => ({ value: p.name, label: p.label }))
         ];
 
+        form.message.computedUntilDirty(f => {
+            const preset = f.field("$.settings.preset").getValue() as string;
+            if (preset === "custom") {
+                return "Invalid value.";
+            }
+            const pattern = patterns.find(p => p.name === preset);
+            return pattern ? pattern.message : "Invalid value.";
+        });
+
         form.fields(fields => ({
             preset: fields
                 .text()
                 .label("Preset")
-                .description("Choose a regex pattern.")
+                .description("Select a preset.")
                 .options(presetOptions)
                 .required()
                 .defaultValue("custom")
                 .afterChange((value, f) => {
-                    if (value === "custom") {
-                        f.field("message").setValue("Invalid value.");
-                        return;
-                    }
-                    f.field("settings.regex").setValue(null);
-                    f.field("settings.flags").setValue(null);
-                    const pattern = patterns.find(p => p.name === value);
-                    if (pattern) {
-                        f.field("message").setValue(pattern.message);
+                    if (value !== "custom") {
+                        f.field("$.regex").setValue(null);
+                        f.field("$.flags").setValue(null);
                     }
                 }),
             regex: fields
                 .text()
                 .label("Regex")
-                .description("Enter the regex pattern to test.")
+                .description("Regex pattern to test.")
                 .required()
-                .hiddenWhen(f => f.field("settings.preset").getValue() !== "custom"),
+                .disabledWhen(f => f.field("$.preset").getValue() !== "custom"),
             flags: fields
                 .text()
                 .label("Flags")
                 .description("Add regex flags.")
                 .required()
-                .hiddenWhen(f => f.field("settings.preset").getValue() !== "custom")
+                .disabledWhen(f => f.field("$.preset").getValue() !== "custom")
         }));
         form.layout(layout => [layout.row("preset", "regex", "flags")]);
     }
