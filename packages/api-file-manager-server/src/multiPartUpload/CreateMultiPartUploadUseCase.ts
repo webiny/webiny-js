@@ -36,7 +36,13 @@ export class CreateMultiPartUploadUseCase {
 
         const uploadId = mdbid();
 
-        const multipartDir = path.join(this.storagePath, "multipart", uploadId);
+        const multipartDir = path.join(
+            this.storagePath,
+            "tenants",
+            tenantId,
+            "multipart",
+            uploadId
+        );
         await mkdir(multipartDir, { recursive: true });
 
         const secret = process.env.WEBINY_UPLOAD_SECRET as string;
@@ -47,16 +53,16 @@ export class CreateMultiPartUploadUseCase {
 
             const token = createUploadToken(
                 {
-                    key: uploadId,
+                    key: `tenants/${tenantId}/multipart/${uploadId}/part-${partNumber}`,
                     tenantId,
                     expiresAt,
                     uploadMinFileSize: 0,
-                    uploadMaxFileSize: 0
+                    uploadMaxFileSize: 1_099_511_627_776
                 },
                 secret
             );
 
-            const url = `${serverUrl}/webiny-multipart-upload/${uploadId}/${partNumber}?token=${token}`;
+            const url = `${serverUrl}/webiny-file-upload/parts?uploadId=${uploadId}&partNumber=${partNumber}&token=${token}`;
 
             return {
                 partNumber,

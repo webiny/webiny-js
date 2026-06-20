@@ -3,7 +3,8 @@ import { createGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import type { Context } from "@webiny/handler/types.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
+import { ErrorResponse } from "@webiny/handler-graphql/responses.js";
+import { Response } from "@webiny/handler-graphql/responses.js";
 import { GetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
 import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload.js";
 import { checkPermissions } from "~/utils/checkPermissions.js";
@@ -217,7 +218,8 @@ export const createServerGraphQLSchema = () => {
 
                         await useCase.execute({
                             fileKey,
-                            uploadId: args.uploadId
+                            uploadId: args.uploadId,
+                            tenantId: tenant.id
                         });
 
                         return new Response(true);

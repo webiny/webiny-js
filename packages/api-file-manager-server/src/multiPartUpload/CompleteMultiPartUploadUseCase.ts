@@ -1,5 +1,8 @@
 import path from "node:path";
-import { mkdir, readdir, readFile, rm } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
+import { readdir } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
+import { rm } from "node:fs/promises";
 import { createWriteStream } from "node:fs";
 import { pipeline } from "node:stream/promises";
 import { Readable } from "node:stream";
@@ -7,6 +10,7 @@ import { Readable } from "node:stream";
 interface CompleteMultiPartUploadParams {
     fileKey: string;
     uploadId: string;
+    tenantId: string;
 }
 
 export class CompleteMultiPartUploadUseCase {
@@ -17,9 +21,15 @@ export class CompleteMultiPartUploadUseCase {
     }
 
     public async execute(params: CompleteMultiPartUploadParams): Promise<void> {
-        const { fileKey, uploadId } = params;
+        const { fileKey, uploadId, tenantId } = params;
 
-        const multipartDir = path.join(this.storagePath, "multipart", uploadId);
+        const multipartDir = path.join(
+            this.storagePath,
+            "tenants",
+            tenantId,
+            "multipart",
+            uploadId
+        );
 
         const entries = await readdir(multipartDir);
 
