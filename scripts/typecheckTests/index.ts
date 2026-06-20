@@ -14,9 +14,8 @@ const { green, red, yellow } = chalk;
 const argv = yargs(hideBin(process.argv))
     .option("p", {
         alias: "package",
-        type: "array",
-        string: true,
-        describe: "Package name(s) to check (e.g. @webiny/api-headless-cms)"
+        type: "string",
+        describe: "Folder name(s) to check, comma-separated (e.g. handler-aws,plugins)"
     })
     .option("report", {
         type: "string",
@@ -24,13 +23,13 @@ const argv = yargs(hideBin(process.argv))
         default: "file",
         describe: "Output errors to files in docs/.reports/ or print to CLI"
     })
-    .parse() as { p?: string[]; report: "file" | "cli" };
+    .parse() as { p?: string; report: "file" | "cli" };
 
 let packages = getPackagesWithTests();
 
-if (argv.p && argv.p.length > 0) {
-    const requested = argv.p;
-    packages = packages.filter(pkg => requested.includes(pkg.packageJson.name));
+if (argv.p) {
+    const requested = argv.p.split(",").map(s => s.trim());
+    packages = packages.filter(pkg => requested.includes(pkg.folderName));
 
     if (packages.length === 0) {
         console.error(red(`No matching packages found for: ${requested.join(", ")}`));
