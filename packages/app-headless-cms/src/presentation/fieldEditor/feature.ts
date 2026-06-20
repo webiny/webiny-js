@@ -3,6 +3,7 @@ import { FieldEditorPresenterRegistration } from "./FieldEditorPresenter.js";
 import { GeneralGroup } from "./groups/GeneralGroup.js";
 import { AppearanceGroup } from "./groups/AppearanceGroup.js";
 import { PredefinedValuesGroup } from "./groups/PredefinedValuesGroup.js";
+import { ValidationsGroup } from "./groups/ValidationsGroup.js";
 
 export const FieldEditorFeature = createFeature({
     name: "CmsFieldEditor",
@@ -11,5 +12,6 @@ export const FieldEditorFeature = createFeature({
         container.register(GeneralGroup);
         container.register(AppearanceGroup);
         container.register(PredefinedValuesGroup);
+        container.register(ValidationsGroup);
     }
 });

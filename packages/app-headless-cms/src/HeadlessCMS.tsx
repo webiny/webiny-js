@@ -28,8 +28,10 @@ import { CmsRefDetailedMultipleRenderer } from "~/presentation/fieldRenderers/re
 import { CmsFieldRendererFeature } from "~/presentation/fieldRenderers/feature.js";
 import { CmsFieldTypeFeature } from "~/presentation/fieldTypes/feature.js";
 import { FieldEditorFeature } from "~/presentation/fieldEditor/feature.js";
+import { CmsFieldValidatorFeature } from "~/presentation/fieldValidators/feature.js";
 import { CmsAppearanceRenderer } from "~/presentation/fieldEditor/renderers/CmsRendererSelectorRenderer.js";
 import { CmsPredefinedValuesRenderer } from "~/presentation/fieldEditor/renderers/CmsPredefinedValuesRenderer.js";
+import { CmsValidatorsRenderer } from "~/presentation/fieldEditor/renderers/CmsValidatorsRenderer.js";
 
 interface HeadlessCMSProvider {
     children: React.ReactNode;
@@ -93,6 +95,7 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
             <RegisterFeature feature={CmsFieldRendererFeature} />
             <RegisterFeature feature={CmsFieldTypeFeature} />
             <RegisterFeature feature={FieldEditorFeature} />
+            <RegisterFeature feature={CmsFieldValidatorFeature} />
             <RoutesConfig />
             <ContentEntriesModule />
             <SingletonContentEntryModule />
@@ -136,6 +139,10 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
                 <AdminConfig.Form.FieldRenderer
                     name={"cmsPredefinedValues"}
                     component={CmsPredefinedValuesRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"cmsValidators"}
+                    component={CmsValidatorsRenderer}
                 />
             </AdminConfig>
         </Fragment>
