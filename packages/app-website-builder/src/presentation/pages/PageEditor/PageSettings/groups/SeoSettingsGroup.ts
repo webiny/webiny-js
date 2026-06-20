@@ -1,15 +1,6 @@
 import { z } from "zod";
 import { PageSettingsGroup } from "../abstractions.js";
 
-declare module "@webiny/app-admin/features/formModel/abstractions.js" {
-    interface IFieldRendererRegistry {
-        keyValueTags: {
-            fieldType: "object";
-            settings?: { addItemLabel?: string };
-        };
-    }
-}
-
 const PATHNAME_REGEX = new RegExp(
     `^\\/(?:[a-zA-Z0-9._~:@!$&'()*+,;=%/-])*(?:\\?[a-zA-Z0-9._~:@!$&'()*+,;=?/%#[\\]-]*)?(?:#[a-zA-Z0-9._~:@!$&'()*+,;=?/%#[\\]-]*)?$`
 );

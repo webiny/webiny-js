@@ -28,6 +28,7 @@ import { PasswordInputRenderer } from "~/base/Base/FieldRenderers/PasswordInputR
 import { PermissionsRenderer } from "~/base/Base/FieldRenderers/PermissionsRenderer.js";
 import { RolesMultiSelectRenderer } from "~/base/Base/FieldRenderers/RolesMultiSelectRenderer.js";
 import { ApiKeyTokenRenderer } from "~/base/Base/FieldRenderers/ApiKeyTokenRenderer.js";
+import { MultiAutoCompleteRenderer } from "~/base/Base/FieldRenderers/MultiAutoCompleteRenderer.js";
 
 export const DefaultFieldRenderers = () => {
     return (
@@ -90,6 +91,10 @@ export const DefaultFieldRenderers = () => {
                 component={RolesMultiSelectRenderer}
             />
             <AdminConfig.Form.FieldRenderer name={"apiKeyToken"} component={ApiKeyTokenRenderer} />
+            <AdminConfig.Form.FieldRenderer
+                name={"multiAutoComplete"}
+                component={MultiAutoCompleteRenderer}
+            />
         </AdminConfig>
     );
 };

@@ -18,47 +18,54 @@ class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
         const { fieldType, field } = context;
         const isNewField = !field.id;
 
-        form.fields(fields => ({
-            label: fields.text().label("Label").required(),
-            fieldId: fields
+        form.fields(fields => {
+            const fieldIdBuilder = fields
                 .text()
                 .label("Field ID")
                 .required()
                 .schema(fieldIdSchema)
-                .beforeChange(value => String(value).trim())
-                .computedUntilDirty(f =>
-                    camelCase(String(f.field("general.label").getValue() || ""))
-                ),
-            list: fields
-                .boolean()
-                .label(fieldType.listLabel || "Use as a list")
-                .disabled(!fieldType.allowList),
-            predefinedValuesEnabled: fields
-                .boolean()
-                .label("Use predefined values")
-                .disabled(!fieldType.allowPredefinedValues),
-            description: fields
-                .text()
-                .label("Description")
-                .description("This text will be shown below the label (optional)"),
-            note: fields
-                .text()
-                .label("Note")
-                .description("This text will be shown below the input (optional)"),
-            help: fields
-                .text()
-                .label("Help")
-                .renderer("textarea")
-                .description("This text will be shown in a tooltip (optional)"),
-            tags: fields
-                .text()
-                .label("Tags")
-                .renderer("tags")
-                .list()
-                .description(
-                    "Field tags are useful for developers and are not visible in the UI (optional)"
-                )
-        }));
+                .beforeChange(value => String(value).trim());
+
+            if (isNewField) {
+                fieldIdBuilder.computedUntilDirty(f => {
+                    return camelCase(String(f.field("general.label").getValue() || ""));
+                });
+            }
+
+            return {
+                label: fields.text().label("Label").required(),
+                fieldId: fieldIdBuilder,
+                list: fields
+                    .boolean()
+                    .label(fieldType.listLabel || "Use as a list")
+                    .disabled(!fieldType.allowList),
+                predefinedValuesEnabled: fields
+                    .boolean()
+                    .label("Use predefined values")
+                    .disabled(!fieldType.allowPredefinedValues),
+                description: fields
+                    .text()
+                    .label("Description")
+                    .description("This text will be shown below the label (optional)"),
+                note: fields
+                    .text()
+                    .label("Note")
+                    .description("This text will be shown below the input (optional)"),
+                help: fields
+                    .text()
+                    .label("Help")
+                    .renderer("textarea")
+                    .description("This text will be shown in a tooltip (optional)"),
+                tags: fields
+                    .text()
+                    .label("Tags")
+                    .renderer("tags")
+                    .list()
+                    .description(
+                        "Field tags are useful for developers and are not visible in the UI (optional)"
+                    )
+            };
+        });
 
         form.layout(layout => [
             layout.row("label", "fieldId"),

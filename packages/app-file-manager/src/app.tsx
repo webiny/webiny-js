@@ -22,6 +22,7 @@ import { FileManagerPresenterFeature } from "~/presentation/FileList/index.js";
 import { FileManagerRoutes } from "~/modules/FileManagerRoutes.js";
 import { FileManagerRendererDecorator } from "~/presentation/FileManager/FileManagerRenderer.js";
 import { FileModelProviderFeature } from "~/features/fileModel/index.js";
+import { FileFieldTypeFeature } from "~/modules/HeadlessCms/fieldType/feature.js";
 
 export const FileManager = () => {
     return (
@@ -54,6 +55,7 @@ export const FileManager = () => {
             <SettingsModule />
             <FileManagerRendererDecorator />
             <DefaultFileManagerConfig />
+            <RegisterFeature feature={FileFieldTypeFeature} />
             <HeadlessCmsModule />
             <EnterpriseModule />
             <SecurityPermissions />

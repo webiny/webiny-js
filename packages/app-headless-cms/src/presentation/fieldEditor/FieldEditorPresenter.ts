@@ -128,6 +128,19 @@ class FieldEditorPresenterImpl implements IFieldEditorPresenter {
                 for (const { group, layoutFns } of collected) {
                     tabs.tab(group.name, tab => {
                         tab.label(group.label);
+
+                        if (group.name === "predefinedValues") {
+                            tab.rules([
+                                {
+                                    type: "condition",
+                                    target: "general.predefinedValuesEnabled",
+                                    operator: "isFalsy",
+                                    value: null,
+                                    action: "disable"
+                                }
+                            ]);
+                        }
+
                         tab.layout(l => [
                             l.object(group.name, inner => layoutFns.flatMap(fn => fn(inner)))
                         ]);

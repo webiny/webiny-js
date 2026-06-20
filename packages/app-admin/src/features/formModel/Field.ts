@@ -152,7 +152,14 @@ export class Field implements IField {
             : value;
         this._value = parsed;
         if (this._computedUntilDirty) {
-            this._computedOverridden = parsed !== null && parsed !== undefined;
+            if (parsed === null || parsed === undefined) {
+                this._computedOverridden = false;
+            } else if (this._form) {
+                const computedValue = this._computedUntilDirty(this._form);
+                this._computedOverridden = parsed !== computedValue;
+            } else {
+                this._computedOverridden = true;
+            }
         }
     }
 

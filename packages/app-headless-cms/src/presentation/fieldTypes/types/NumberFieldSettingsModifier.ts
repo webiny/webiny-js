@@ -1,12 +1,12 @@
-import { CmsFieldEditorGroupModifier } from "../abstractions.js";
-import type { ICmsFieldEditorFormBuilder, ICmsFieldEditorContext } from "../abstractions.js";
+import { CmsFieldEditorGroupModifier } from "../../fieldEditor/abstractions.js";
+import type { ICmsFieldEditorFormBuilder, ICmsFieldEditorContext } from "../../fieldEditor/abstractions.js";
 import type { CmsModelField } from "~/types.js";
 
-class TextFieldSettingsModifierImpl implements CmsFieldEditorGroupModifier.Interface {
+class NumberFieldSettingsModifierImpl implements CmsFieldEditorGroupModifier.Interface {
     group = "general";
 
     shouldApply(context: ICmsFieldEditorContext) {
-        return context.fieldType.type === "text";
+        return context.fieldType.type === "number";
     }
 
     modifyForm(form: ICmsFieldEditorFormBuilder) {
@@ -28,7 +28,7 @@ class TextFieldSettingsModifierImpl implements CmsFieldEditorGroupModifier.Inter
     }
 }
 
-export const TextFieldSettingsModifier = CmsFieldEditorGroupModifier.createImplementation({
-    implementation: TextFieldSettingsModifierImpl,
+export const NumberFieldSettingsModifier = CmsFieldEditorGroupModifier.createImplementation({
+    implementation: NumberFieldSettingsModifierImpl,
     dependencies: []
 });

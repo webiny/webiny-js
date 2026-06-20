@@ -28,6 +28,8 @@ import { CmsRefDetailedMultipleRenderer } from "~/presentation/fieldRenderers/re
 import { CmsFieldRendererFeature } from "~/presentation/fieldRenderers/feature.js";
 import { CmsFieldTypeFeature } from "~/presentation/fieldTypes/feature.js";
 import { FieldEditorFeature } from "~/presentation/fieldEditor/feature.js";
+import { CmsAppearanceRenderer } from "~/presentation/fieldEditor/renderers/CmsRendererSelectorRenderer.js";
+import { CmsPredefinedValuesRenderer } from "~/presentation/fieldEditor/renderers/CmsPredefinedValuesRenderer.js";
 
 interface HeadlessCMSProvider {
     children: React.ReactNode;
@@ -126,6 +128,14 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
                 <AdminConfig.Form.FieldRenderer
                     name={"refDetailedMultiple"}
                     component={CmsRefDetailedMultipleRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"cmsAppearance"}
+                    component={CmsAppearanceRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"cmsPredefinedValues"}
+                    component={CmsPredefinedValuesRenderer}
                 />
             </AdminConfig>
         </Fragment>
