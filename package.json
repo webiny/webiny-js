@@ -91,6 +91,7 @@
     "build:apps": "yarn webiny ws run build --scope='@webiny/app*'",
     "build:full": "yarn build --build-overrides='{\"tsConfig\":{\"compilerOptions\":{\"skipLibCheck\":false}}}'",
     "check:circular-deps": "tsx scripts/circularDependencyCheck.ts",
+    "check:test:types": "tsx scripts/typecheckTests/index.ts",
     "check:node-modules": "tsx scripts/checkNodeModules/index.ts",
     "check:node-modules:ci": "tsx scripts/checkNodeModules/index.ts --ci --workspacesOnly",
     "check-ts-configs": "node scripts/checkTsConfigs.js",
