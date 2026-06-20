@@ -61,6 +61,10 @@ If the manifest is unavailable or the `cloudfront.domain` field is not set (e.g.
 
 Same tenant-scoped structure as S3. Multipart upload parts are stored in a temporary directory until `completeMultiPartUpload` is called, at which point they are concatenated into the final file and the parts directory is removed.
 
+#### Abandoned Multipart Upload Cleanup
+
+If `completeMultiPartUpload` is never called (client crash, network drop), the `multipart/{uploadId}/` directory remains on disk. Unlike S3 (which has lifecycle policies for cleanup), local disk requires explicit cleanup. The `ContextPlugin` registers a background task (`cleanupStaleMultipartUploads`) that periodically scans the `multipart/` directories across all tenants and removes any that are older than 24 hours. This matches the 24-hour expiry of multipart upload tokens.
+
 ## GraphQL Schema
 
 Extends `FmQuery` and `FmMutation` with the same types defined by `api-file-manager-s3`:
@@ -87,7 +91,7 @@ Extends `FmQuery` and `FmMutation` with the same types defined by `api-file-mana
 ### Mutations
 
 - `createMultiPartUpload(data: PreSignedPostPayloadInput!, numberOfParts: Number!)` — generates part upload URLs
-- `completeMultiPartUpload(fileKey: String!, uploadId: String!)` — concatenates parts into final file
+- `completeMultiPartUpload(fileKey: String!, uploadId: String!)` — reads all `part-{n}` files from the multipart directory, sorts them by **numeric part number** (not lexicographic — `part-2` before `part-10`), concatenates them into the final file, then removes the multipart directory
 
 ### Response Shape
 
@@ -112,7 +116,7 @@ https://{serverUrl}/webiny-file-upload/parts?uploadId={uploadId}&partNumber={n}&
 
 ## HTTP Upload Endpoints
 
-Registered via `RoutePlugin` and `ModifyFastifyPlugin` (for `@fastify/multipart`).
+The `uploadRoutesPlugin` file registers both endpoints via `RoutePlugin` and also uses `ModifyFastifyPlugin` to register `@fastify/multipart` on the Fastify instance. This is required so that `request.file()` is available in the POST handler for parsing `multipart/form-data` uploads.
 
 ### POST /webiny-file-upload
 
@@ -124,7 +128,7 @@ Accepts `multipart/form-data` with:
 Validation:
 1. Verify HMAC token signature and expiry.
 2. Enforce `uploadMinFileSize` / `uploadMaxFileSize` from the token payload against the actual uploaded file size. Reject with `400` if out of range.
-3. Write file to `{WEBINY_LOCAL_STORAGE_PATH}/{key}`.
+3. Write file to `{WEBINY_LOCAL_STORAGE_PATH}/{key}`. The `key` value is the full tenant-scoped path produced by `FileKey.toString()` (e.g., `tenants/{tenantId}/files/{id}/{sanitizedName}.{ext}`), so no additional path construction is needed — the key already encodes the complete directory structure.
 4. Return `204 No Content` on success (same as S3 presigned POST behavior).
 
 ### PUT /webiny-file-upload/parts
@@ -144,7 +148,7 @@ HMAC-SHA256 signed tokens mirror S3 presigned URL security:
 
 - **Payload**: `{ key, tenantId, expiresAt, uploadMinFileSize, uploadMaxFileSize }`
 - **Secret**: `WEBINY_UPLOAD_SECRET` env var (required; boot fails if missing)
-- **Expiry**: 60 seconds (same as S3 presigned default)
+- **Expiry**: 60 seconds for simple uploads (same as S3 presigned POST default); **24 hours** for multipart part tokens (matching S3's `CreateMultiPartUploadUseCase` which sets `expiresIn: 86400`). Large file uploads can take many minutes, so part tokens must outlive the upload duration.
 - **Validation**: verify signature, check `expiresAt > now`, match key against request
 
 ## DI Features
@@ -182,6 +186,7 @@ The following utilities from `api-file-manager-s3` are not S3-specific and will 
 - `MetadataWriter` / `MetadataReader` — key-value store operations for file metadata
 - `mimeTypes` — MIME type resolution from file extension
 - `checkPermissions` — file manager permission checks
+- `FileUploadModifier` — the plugin type string MUST be changed from `"fm.s3.uploadModifier"` to `"fm.server.uploadModifier"` to avoid collisions if both packages are loaded in the same environment
 
 ## Asset Delivery
 
@@ -191,7 +196,9 @@ The `createAssetDelivery` export wires the full asset delivery feature pipeline 
 - `LocalAssetResolver` — resolves asset keys to local file paths, implementing the same `AssetResolver` interface as the S3 version
 - Output strategy and image transformation (via `sharp`) are provided by `@webiny/api-file-manager` and do not need local re-implementation
 
-The `createAssetDelivery` factory returns the same plugin structure as the S3 package, making it a drop-in replacement for the asset delivery handler configuration.
+The `createAssetDelivery` factory accepts configuration params matching the S3 package's `AssetDeliveryParams` interface: `imageResizeWidths` (allowed resize dimensions) and `assetStreamingMaxSize` (threshold for streaming vs. buffering). The `presignedUrlTtl` param from the S3 version is not applicable (no redirect-to-presigned-URL flow on local disk) and is accepted but ignored for API compatibility.
+
+The factory returns the same plugin structure as the S3 package, making it a drop-in replacement for the asset delivery handler configuration.
 
 ## Package Dependencies
 
@@ -247,6 +254,9 @@ packages/api-file-manager-server/
       GetFileContentsByKey/
         GetFileContentsByKeyUseCase.ts
         feature.ts
+      CleanupStaleMultipartUploads/
+        CleanupStaleMultipartUploadsTask.ts
+        feature.ts
       WriteFileMetadata/
         MetadataWriter.ts
         MetadataReader.ts
@@ -264,6 +274,7 @@ packages/api-file-manager-server/
       checkPermissions.ts
     assetDelivery/
       LocalContentsReader.ts
+      LocalAssetResolver.ts
       createAssetDelivery.ts
   __tests__/
   package.json
