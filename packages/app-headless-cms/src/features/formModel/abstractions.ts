@@ -17,6 +17,7 @@ export interface ICmsFieldTypeMapper {
 
 export interface ICmsFieldMapperContext {
     model: CmsModel;
+    rendererMap: Map<string, string>;
     mapField(field: CmsModelField, registry: IFieldBuilderRegistry): IFieldBuilder;
 }
 

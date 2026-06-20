@@ -16,14 +16,20 @@ import type {
 } from "./abstractions.js";
 import { CmsFormModelBuilder as BuilderAbstraction } from "./abstractions.js";
 import { CmsFieldTypeMapper } from "./abstractions.js";
+import { CmsFieldRenderer } from "~/presentation/fieldRenderers/abstractions.js";
+import type { ICmsFieldRenderer } from "~/presentation/fieldRenderers/abstractions.js";
 import { mapCmsLayout } from "./CmsLayoutMapper.js";
 import { createBuiltInMappers } from "./mappers/index.js";
 import { applyFieldProps } from "./mappers/applyFieldProps.js";
 
 class CmsFormModelBuilderImpl implements ICmsFormModelBuilder {
     private mappers: Map<string, ICmsFieldTypeMapper>;
+    private rendererMap: Map<string, string>;
 
-    constructor(customMappers: ICmsFieldTypeMapper[] | undefined) {
+    constructor(
+        customMappers: ICmsFieldTypeMapper[] | undefined,
+        fieldRenderers: ICmsFieldRenderer[] | undefined
+    ) {
         this.mappers = new Map();
         for (const mapper of createBuiltInMappers()) {
             this.mappers.set(mapper.type, mapper);
@@ -31,11 +37,17 @@ class CmsFormModelBuilderImpl implements ICmsFormModelBuilder {
         for (const mapper of customMappers || []) {
             this.mappers.set(mapper.type, mapper);
         }
+
+        this.rendererMap = new Map();
+        for (const renderer of fieldRenderers || []) {
+            this.rendererMap.set(renderer.rendererName, renderer.formRenderer);
+        }
     }
 
     build(model: CmsModel): IFormModelConfig {
         const context: ICmsFieldMapperContext = {
             model,
+            rendererMap: this.rendererMap,
             mapField: (field, registry) => this.mapField(field, registry, context)
         };
 
@@ -74,13 +86,16 @@ class CmsFormModelBuilderImpl implements ICmsFormModelBuilder {
             return mapper.map(field, registry, context);
         }
 
-        return applyFieldProps(registry.text(), field);
+        return applyFieldProps(registry.text(), field, context.rendererMap);
     }
 }
 
 export const CmsFormModelBuilder = BuilderAbstraction.createImplementation({
     implementation: CmsFormModelBuilderImpl,
-    dependencies: [[CmsFieldTypeMapper, { multiple: true, optional: true }]]
+    dependencies: [
+        [CmsFieldTypeMapper, { multiple: true, optional: true }],
+        [CmsFieldRenderer, { multiple: true, optional: true }]
+    ]
 });
 
 function collectFieldIds(

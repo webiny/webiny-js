@@ -25,6 +25,9 @@ import { CmsRefSimpleSingleRenderer } from "~/presentation/fieldRenderers/ref/Cm
 import { CmsRefSimpleMultipleRenderer } from "~/presentation/fieldRenderers/ref/CmsRefSimpleMultipleRenderer.js";
 import { CmsRefDetailedSingleRenderer } from "~/presentation/fieldRenderers/ref/CmsRefDetailedSingleRenderer.js";
 import { CmsRefDetailedMultipleRenderer } from "~/presentation/fieldRenderers/ref/CmsRefDetailedMultipleRenderer.js";
+import { CmsFieldRendererFeature } from "~/presentation/fieldRenderers/feature.js";
+import { CmsFieldTypeFeature } from "~/presentation/fieldTypes/feature.js";
+import { FieldEditorFeature } from "~/presentation/fieldEditor/feature.js";
 
 interface HeadlessCMSProvider {
     children: React.ReactNode;
@@ -85,6 +88,9 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
             <RegisterFeature feature={FormModelFeature} />
             <RegisterFeature feature={CmsFormModelFeature} />
             <RegisterFeature feature={ContentEntryFeature} />
+            <RegisterFeature feature={CmsFieldRendererFeature} />
+            <RegisterFeature feature={CmsFieldTypeFeature} />
+            <RegisterFeature feature={FieldEditorFeature} />
             <RoutesConfig />
             <ContentEntriesModule />
             <SingletonContentEntryModule />

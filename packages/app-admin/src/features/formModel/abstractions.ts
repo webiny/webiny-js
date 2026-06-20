@@ -429,6 +429,7 @@ export interface ITabsNode {
     type: "tabs";
     id?: string;
     renderer?: string;
+    rendererSettings?: Record<string, unknown>;
     tabs: ITabDefinition[];
     rules?: IRule[];
 }
@@ -485,7 +486,7 @@ export interface ITabBuilder {
 }
 
 export interface ITabsBuilder extends ILayoutNodeBuilder {
-    renderer(name: string): this;
+    renderer(name: string, settings?: Record<string, unknown>): this;
     tab(id: string, configure: (tab: ITabBuilder) => void): this;
     before(target: string): this;
     after(target: string): this;
@@ -530,6 +531,7 @@ export interface ITabsNodeVM {
     type: "tabs";
     id?: string;
     renderer?: string;
+    rendererSettings?: Record<string, unknown>;
     tabs: ITabDefinitionVM[];
     disabled: boolean;
     activeTabId: string;

@@ -1,9 +1,12 @@
 import type { IFieldBuilder } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { CmsModelField } from "~/types.js";
-import { mapCmsRendererName } from "../CmsRendererMap.js";
 import { mapCmsValidators } from "../CmsValidationMapper.js";
 
-export function applyFieldProps(builder: IFieldBuilder, field: CmsModelField): IFieldBuilder {
+export function applyFieldProps(
+    builder: IFieldBuilder,
+    field: CmsModelField,
+    rendererMap: Map<string, string>
+): IFieldBuilder {
     if (field.label) {
         builder.label(field.label);
     }
@@ -51,7 +54,7 @@ export function applyFieldProps(builder: IFieldBuilder, field: CmsModelField): I
     }
 
     if (field.renderer && typeof field.renderer === "object") {
-        const mappedRenderer = mapCmsRendererName(field.renderer.name);
+        const mappedRenderer = rendererMap.get(field.renderer.name);
         if (mappedRenderer) {
             builder.renderer(mappedRenderer as any, field.renderer.settings);
         }

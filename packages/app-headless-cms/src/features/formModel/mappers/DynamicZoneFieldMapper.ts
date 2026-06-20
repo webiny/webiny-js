@@ -44,6 +44,6 @@ export class DynamicZoneFieldMapper implements ICmsFieldTypeMapper {
             }
         }
 
-        return applyFieldProps(builder, field);
+        return applyFieldProps(builder, field, context.rendererMap);
     }
 }

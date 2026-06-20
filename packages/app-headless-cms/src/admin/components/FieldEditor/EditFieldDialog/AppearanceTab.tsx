@@ -4,7 +4,7 @@ import { css } from "@emotion/css";
 import { validation } from "@webiny/validation";
 import { useBind } from "@webiny/form";
 import { RendererOptions } from "./AppearanceTab/RendererOptions.js";
-import { useRendererPlugins } from "./useRendererPlugins.js";
+import { useCmsFieldRenderers } from "./useCmsFieldRenderers.js";
 import { useModelField } from "~/admin/components/ModelFieldProvider/index.js";
 import { RadioGroup, Text, Grid, Heading } from "@webiny/admin-ui";
 
@@ -22,7 +22,7 @@ const style = {
 };
 
 const AppearanceTab = () => {
-    const renderers = useRendererPlugins();
+    const renderers = useCmsFieldRenderers();
     const { field } = useModelField();
 
     const rendererName = useBind({
@@ -30,8 +30,8 @@ const AppearanceTab = () => {
         validate: validation.create("required")
     });
 
-    const selectedPlugin = rendererName.value
-        ? renderers.find(pl => pl.renderer.rendererName === rendererName.value)
+    const selectedRenderer = rendererName.value
+        ? renderers.find(r => r.rendererName === rendererName.value)
         : undefined;
 
     if (renderers.length === 0) {
@@ -47,17 +47,17 @@ const AppearanceTab = () => {
 
     useEffect(() => {
         // If the currently selected render plugin is no longer available, select the first available one.
-        if (selectedPlugin) {
+        if (selectedRenderer) {
             return;
         }
 
         if (renderers[0]) {
-            rendererName.onChange(renderers[0].renderer.rendererName);
+            rendererName.onChange(renderers[0].rendererName);
             return;
         }
 
         console.info(`No renderers for field ${field.fieldId} found.`, field);
-    }, [field.id, field.list, field.predefinedValues?.enabled, selectedPlugin]);
+    }, [field.id, field.list, field.predefinedValues?.enabled, selectedRenderer]);
 
     return (
         <>
@@ -72,19 +72,19 @@ const AppearanceTab = () => {
                             <RadioGroup
                                 {...rendererName}
                                 items={renderers.map(item => ({
-                                    id: item.renderer.rendererName,
-                                    value: item.renderer.rendererName,
+                                    id: item.rendererName,
+                                    value: item.rendererName,
                                     label: (
                                         <div>
                                             <Text as={"div"} size={"md"}>
-                                                {item.renderer.name}
+                                                {item.name}
                                             </Text>
                                             <Text
                                                 as={"div"}
                                                 size={"sm"}
                                                 className={"text-sm text-neutral-strong text-wrap"}
                                             >
-                                                {item.renderer.description}
+                                                {item.description}
                                             </Text>
                                         </div>
                                     )
@@ -92,7 +92,7 @@ const AppearanceTab = () => {
                             />
                         </div>
                     </Grid.Column>
-                    <RendererOptions plugin={selectedPlugin} />
+                    <RendererOptions renderer={selectedRenderer} />
                 </>
             </Grid>
         </>

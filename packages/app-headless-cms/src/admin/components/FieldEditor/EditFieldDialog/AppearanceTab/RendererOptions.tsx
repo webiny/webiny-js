@@ -1,23 +1,21 @@
 import React from "react";
-import type { CmsModelFieldRendererPlugin } from "@webiny/app-headless-cms-common/types/index.js";
+import type { ICmsFieldRenderer } from "~/presentation/fieldRenderers/abstractions.js";
 import { useModelField } from "~/admin/components/ModelFieldProvider/index.js";
 import { Grid, Heading, Text } from "@webiny/admin-ui";
 
 interface RendererOptionsProps {
-    plugin: CmsModelFieldRendererPlugin | undefined;
+    renderer: ICmsFieldRenderer | undefined;
 }
 
-export const RendererOptions = ({ plugin }: RendererOptionsProps) => {
+export const RendererOptions = ({ renderer }: RendererOptionsProps) => {
     const { field } = useModelField();
-    if (!plugin || !plugin.renderer.renderSettings) {
+    if (!renderer || !renderer.buildSettingsForm) {
         return null;
     }
 
-    const settings = plugin.renderer.renderSettings({ field });
-
-    if (!settings) {
-        return null;
-    }
+    // TODO: use FormModelFactory to build and render the settings form
+    // from renderer.buildSettingsForm(formBuilder)
+    void field;
 
     return (
         <>
@@ -27,7 +25,6 @@ export const RendererOptions = ({ plugin }: RendererOptionsProps) => {
                     Configure additional settings for the selected field renderer.
                 </Text>
             </Grid.Column>
-            {settings}
         </>
     );
 };

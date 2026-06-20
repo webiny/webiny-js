@@ -28,6 +28,6 @@ export class ObjectFieldMapper implements ICmsFieldTypeMapper {
             });
         }
 
-        return applyFieldProps(builder, field);
+        return applyFieldProps(builder, field, context.rendererMap);
     }
 }

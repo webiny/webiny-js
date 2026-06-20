@@ -10,19 +10,6 @@ import objectField from "~/admin/plugins/fields/object.js";
 import jsonField from "~/admin/plugins/fields/json.js";
 import searchableJsonField from "~/admin/plugins/fields/searchableJson.js";
 
-import numberFieldRenderer from "~/admin/plugins/fieldRenderers/number/index.js";
-import textFieldRenderer from "~/admin/plugins/fieldRenderers/text/index.js";
-import longTextFieldRenderer from "~/admin/plugins/fieldRenderers/longText/index.js";
-import { createLexicalInput } from "~/admin/plugins/fieldRenderers/lexicalText/index.js";
-import booleanFieldRenderer from "~/admin/plugins/fieldRenderers/boolean/index.js";
-import dateTimeFieldRenderer from "~/admin/plugins/fieldRenderers/dateTime/index.js";
-import radioButtonsFieldRenderer from "~/admin/plugins/fieldRenderers/radioButtons.js";
-import selectFieldRenderer from "~/admin/plugins/fieldRenderers/select.js";
-import checkboxesFieldRenderer from "~/admin/plugins/fieldRenderers/checkboxes.js";
-import refFieldRenderer from "~/admin/plugins/fieldRenderers/ref/index.js";
-import objectFieldRenderer from "~/admin/plugins/fieldRenderers/object/index.js";
-import { hiddenFieldRenderer } from "~/admin/plugins/fieldRenderers/hidden.js";
-
 import editorGteFieldValidator from "~/admin/plugins/fieldValidators/gte.js";
 import editorDateGteFieldValidator from "~/admin/plugins/fieldValidators/dateGte.js";
 import editorDateLteFieldValidator from "~/admin/plugins/fieldValidators/dateLte.js";
@@ -40,10 +27,8 @@ import editorUpperCaseFieldValidator from "~/admin/plugins/fieldValidators/patte
 import editorLowerCaseSpaceFieldValidator from "~/admin/plugins/fieldValidators/patternPlugins/lowerCaseSpace.js";
 import editorUpperCaseSpaceFieldValidator from "~/admin/plugins/fieldValidators/patternPlugins/upperCaseSpace.js";
 import { dynamicZoneField } from "~/admin/plugins/fields/dynamicZone.js";
-import { dynamicZoneFieldRenderer } from "~/admin/plugins/fieldRenderers/dynamicZone/dynamicZoneRenderer.js";
 import { dynamicZoneFieldValidator } from "~/admin/plugins/fieldValidators/dynamicZone.js";
 import { uiAlertField, uiSeparatorField, uiTabsField } from "~/admin/plugins/fields/ui/index.js";
-import { passthroughFieldRenderer } from "~/admin/plugins/fieldRenderers/passthrough.js";
 
 export default [
     headlessCmsPlugins(),
@@ -53,17 +38,7 @@ export default [
     numberField,
     booleanField,
     dateTimeField,
-    createLexicalInput(),
     refField,
-    numberFieldRenderer,
-    textFieldRenderer,
-    longTextFieldRenderer,
-    booleanFieldRenderer,
-    dateTimeFieldRenderer,
-    radioButtonsFieldRenderer,
-    selectFieldRenderer,
-    checkboxesFieldRenderer,
-    refFieldRenderer,
     uiSeparatorField,
     uiAlertField,
     uiTabsField,
@@ -85,11 +60,7 @@ export default [
     editorUpperCaseSpaceFieldValidator,
     dynamicZoneFieldValidator,
     objectField,
-    objectFieldRenderer,
     dynamicZoneField,
-    dynamicZoneFieldRenderer,
-    hiddenFieldRenderer,
-    passthroughFieldRenderer,
     jsonField,
     searchableJsonField
 ];

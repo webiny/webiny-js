@@ -113,6 +113,7 @@ export class TabBuilder implements TabBuilderInternal {
 export class TabsBuilder implements ITabsBuilder {
     private _id: string | undefined;
     private _renderer: string | undefined;
+    private _rendererSettings: Record<string, unknown> | undefined;
     private _rules: IRule[] | undefined;
     private _pendingTabs: { tabId: string; tabBuilder: TabBuilderInternal }[] = [];
     private _lastAddedIdx = -1;
@@ -121,8 +122,9 @@ export class TabsBuilder implements ITabsBuilder {
         this._id = id;
     }
 
-    renderer(name: string): this {
+    renderer(name: string, settings?: Record<string, unknown>): this {
         this._renderer = name;
+        this._rendererSettings = settings;
         return this;
     }
 
@@ -152,6 +154,7 @@ export class TabsBuilder implements ITabsBuilder {
             type: "tabs",
             id: this._id,
             renderer: this._renderer,
+            rendererSettings: this._rendererSettings,
             tabs: this._pendingTabs.map(p => p.tabBuilder._build(p.tabId)),
             rules: this._rules
         };
@@ -163,8 +166,9 @@ export class TabsAccessBuilder implements ITabsBuilder {
 
     constructor(private _node: ITabsNode) {}
 
-    renderer(name: string): this {
+    renderer(name: string, settings?: Record<string, unknown>): this {
         this._node.renderer = name;
+        this._node.rendererSettings = settings;
         return this;
     }
 
