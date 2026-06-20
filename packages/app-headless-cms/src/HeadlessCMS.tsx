@@ -32,6 +32,8 @@ import { CmsFieldValidatorFeature } from "~/presentation/fieldValidators/feature
 import { CmsAppearanceRenderer } from "~/presentation/fieldEditor/renderers/CmsRendererSelectorRenderer.js";
 import { CmsPredefinedValuesRenderer } from "~/presentation/fieldEditor/renderers/CmsPredefinedValuesRenderer.js";
 import { CmsValidatorItemRenderer } from "~/presentation/fieldEditor/renderers/CmsValidatorsRenderer.js";
+import { CmsAccessControlRulesRenderer } from "~/presentation/fieldEditor/renderers/CmsAccessControlRulesRenderer.js";
+import { CmsConditionRulesRenderer } from "~/presentation/fieldEditor/renderers/CmsConditionRulesRenderer.js";
 
 interface HeadlessCMSProvider {
     children: React.ReactNode;
@@ -143,6 +145,14 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
                 <AdminConfig.Form.FieldRenderer
                     name={"cmsValidatorItem"}
                     component={CmsValidatorItemRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"cmsAccessControlRules"}
+                    component={CmsAccessControlRulesRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"cmsConditionRules"}
+                    component={CmsConditionRulesRenderer}
                 />
             </AdminConfig>
         </Fragment>
