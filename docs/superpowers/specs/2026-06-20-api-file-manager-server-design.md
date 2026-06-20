@@ -34,14 +34,14 @@ Boot validation: the `ContextPlugin` checks that `WEBINY_LOCAL_STORAGE_PATH` and
 
 #### Server URL Resolution
 
-The upload endpoint base URL is resolved from `ServiceManifest` via `ServiceDiscovery.load()`. The Pulumi infrastructure registers a manifest entry (e.g., `{ name: "api", manifest: { url: "https://..." } }`) and the GraphQL resolvers read it at runtime:
+The upload endpoint base URL is resolved from `ServiceManifest` via `ServiceDiscovery.load()`. The existing API manifest (registered by `createApiPulumiApp`) contains `cloudfront.domain` — the HTTPS URL fronting the API. The resolver reads it at runtime:
 
 ```typescript
 const manifest = await ServiceDiscovery.load();
-const baseUrl = manifest?.api?.url;
+const baseUrl = manifest?.api?.cloudfront?.domain;
 ```
 
-If `ServiceManifest` is unavailable (e.g., local dev without Pulumi), the resolver falls back to constructing the URL from the Fastify request: `${request.protocol}://${request.hostname}`. This ensures the package works in both deployed and local development contexts.
+If the manifest is unavailable or the `cloudfront.domain` field is not set (e.g., local dev without Pulumi, or a non-CloudFront deployment), the resolver falls back to constructing the URL from the Fastify request: `${request.protocol}://${request.hostname}`. This ensures the package works in both deployed and local development contexts.
 
 ### File Storage Layout
 
