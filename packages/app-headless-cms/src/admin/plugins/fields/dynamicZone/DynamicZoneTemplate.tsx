@@ -48,6 +48,7 @@ export const DynamicZoneTemplate = ({
         acceptLabel: "Yes, I'm sure!"
     });
 
+    const [isOpen, setIsOpen] = useState(open);
     const [templateToEdit, setTemplateToEdit] = useState<CmsDynamicZoneTemplate | undefined>(
         undefined
     );
@@ -102,7 +103,8 @@ export const DynamicZoneTemplate = ({
             title={template.name}
             description={template.description}
             icon={icon ? <FontAwesomeIcon icon={icon} /> : undefined}
-            open={open}
+            open={isOpen}
+            onOpenChange={setIsOpen}
             actions={
                 <>
                     <Accordion.Item.Action
