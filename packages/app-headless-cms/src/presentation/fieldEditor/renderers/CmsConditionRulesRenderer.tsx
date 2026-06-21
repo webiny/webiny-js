@@ -102,8 +102,7 @@ const RuleRow = observer(
             [selectedFieldOption]
         );
 
-        const showValue =
-            rule.operator && !VALUE_HIDDEN_OPERATORS.has(rule.operator as Operator);
+        const showValue = rule.operator && !VALUE_HIDDEN_OPERATORS.has(rule.operator as Operator);
         const isBooleanField = selectedFieldOption?.fieldType === "boolean";
 
         return (
@@ -130,9 +129,7 @@ const RuleRow = observer(
                                 const newOps = newFieldOption
                                     ? getOperatorOptions(newFieldOption.fieldType)
                                     : [];
-                                const currentOpValid = newOps.some(
-                                    o => o.value === rule.operator
-                                );
+                                const currentOpValid = newOps.some(o => o.value === rule.operator);
                                 onChange(index, {
                                     ...rule,
                                     target: newTarget,
@@ -227,9 +224,7 @@ const RuleRow = observer(
                     </Grid.Column>
                     <Grid.Column span={12} className={"flex justify-between"}>
                         <Button
-                            className={
-                                "[&_svg]:fill-destructive text-destructive-primary"
-                            }
+                            className={"[&_svg]:fill-destructive text-destructive-primary"}
                             containerClassName={"flex ml-auto"}
                             text={"Remove rule"}
                             icon={<DeleteIcon />}

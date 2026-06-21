@@ -6,7 +6,7 @@ class PredefinedValuesGroupImpl implements CmsFieldEditorGroup.Interface {
     name = "predefinedValues";
     label = "Predefined values";
 
-    buildForm(form: ICmsFieldEditorFormBuilder, context: ICmsFieldEditorContext) {
+    buildForm(form: ICmsFieldEditorFormBuilder, _context: ICmsFieldEditorContext) {
         form.fields(fields => ({
             values: fields
                 .object()

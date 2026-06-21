@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { Grid, IconButton, Tabs, Tooltip, useToast } from "@webiny/admin-ui";
+import { Grid, IconButton, Separator, Tabs, Text, Tooltip, useToast } from "@webiny/admin-ui";
 import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
 import { ReactComponent as PasteIcon } from "@webiny/icons/content_paste.svg";
 import { DevToolsSection } from "@webiny/react-properties";
@@ -10,6 +10,7 @@ import type {
     IRowNodeVM,
     IFieldVM,
     ITabsNodeVM,
+    ISeparatorNodeVM,
     IElementNodeVM
 } from "./abstractions.js";
 import type { Icon } from "~/components/IconPicker/types.js";
@@ -100,7 +101,7 @@ export const LayoutNodeRenderer = observer(({ node }: { node: LayoutNodeVM }) =>
         case "row":
             return <RowNodeRenderer node={node} />;
         case "separator":
-            return <SeparatorNodeRenderer />;
+            return <SeparatorNodeRenderer node={node} />;
         case "tabs":
             return <TabsNodeRenderer node={node} />;
         case "element":
@@ -150,8 +151,26 @@ const FieldRenderer = observer(({ field, renderers }: FieldRendererProps) => {
     return <Renderer field={field} />;
 });
 
-const SeparatorNodeRenderer = observer(function SeparatorNodeRenderer() {
-    return <hr className="border-neutral-dimmed my-2" />;
+const SeparatorNodeRenderer = observer(function SeparatorNodeRenderer({
+    node
+}: {
+    node: ISeparatorNodeVM;
+}) {
+    if (node.title) {
+        return (
+            <div>
+                <Separator variant={"accent"} labelPosition={"start"}>
+                    {node.title}
+                </Separator>
+                {node.description ? (
+                    <Text size={"sm"} className={"mt-xs"}>
+                        {node.description}
+                    </Text>
+                ) : null}
+            </div>
+        );
+    }
+    return <Separator variant={"dimmed"} />;
 });
 
 export interface TabsNodeRendererProps {

@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { FormView } from "@webiny/app-admin";
+import { FormView, FormErrors } from "@webiny/app-admin";
 import { useContainer } from "@webiny/app";
 import { Drawer } from "@webiny/admin-ui";
 import type { CmsModelField } from "~/types.js";
 import { useModelEditor, useModelField } from "~/admin/hooks/index.js";
 import { FieldEditorPresenter } from "~/presentation/fieldEditor/abstractions.js";
-import type { IFieldEditorPresenter } from "~/presentation/fieldEditor/abstractions.js";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -73,7 +72,12 @@ const EditFieldDialog = observer((props: EditFieldDialogProps) => {
             }
             data-testid={"cms-editor-edit-fields-dialog"}
         >
-            {presenter.vm.form ? <FormView name="CmsFieldEditor" form={presenter.vm.form} /> : null}
+            {presenter.vm.form ? (
+                <>
+                    <FormErrors form={presenter.vm.form} />
+                    <FormView name="CmsFieldEditor" form={presenter.vm.form} />
+                </>
+            ) : null}
         </Drawer>
     );
 });

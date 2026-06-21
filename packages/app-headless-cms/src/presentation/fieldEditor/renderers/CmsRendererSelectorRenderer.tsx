@@ -1,62 +1,41 @@
 import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { useContainer } from "@webiny/app";
+import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { createObjectFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 import type { IObjectFieldVM } from "@webiny/app-admin/features/formModel/abstractions.js";
+import { LayoutNodeRenderer } from "@webiny/app-admin/features/formModel/FormView.js";
 import { RadioGroup, Text, Heading } from "@webiny/admin-ui";
-import {
-    CmsFieldRenderer,
-    type ICmsFieldRenderer
-} from "~/presentation/fieldRenderers/abstractions.js";
-import { useModel } from "~/admin/components/ModelProvider/index.js";
-import { useModelField } from "~/admin/components/ModelFieldProvider/index.js";
-
-const hiddenLast = (a: ICmsFieldRenderer, b: ICmsFieldRenderer) => {
-    if (a.rendererName === "hidden") {
-        return 1;
-    }
-    if (b.rendererName === "hidden") {
-        return -1;
-    }
-    return 0;
-};
+import { CmsAppearancePresenterFeature } from "./CmsAppearancePresenter.js";
 
 export const CmsAppearanceRenderer = createObjectFieldRenderer(({ field }) => {
-    const container = useContainer();
-    const { model } = useModel();
-    const { field: cmsField } = useModelField();
+    const parentContainer = useContainer();
 
-    const renderers = useMemo(() => {
-        const all = container.resolveAll(CmsFieldRenderer);
-        return all.filter(r => r.canUse({ field: cmsField, model })).sort(hiddenLast);
-    }, [container, cmsField, model]);
+    const scopedContainer = useMemo(() => {
+        const child = parentContainer.createChildContainer();
+        CmsAppearancePresenterFeature.register(child);
+        return child;
+    }, []);
 
-    return <AppearanceInner field={field} renderers={renderers} />;
+    return (
+        <DiContainerProvider container={scopedContainer}>
+            <AppearanceInner field={field} />
+        </DiContainerProvider>
+    );
 });
 
 interface AppearanceInnerProps {
     field: IObjectFieldVM;
-    renderers: ICmsFieldRenderer[];
 }
 
-const AppearanceInner = observer(({ field, renderers }: AppearanceInnerProps) => {
-    const nameField = field.fields.find(f => f.name === "name");
-    const value = nameField ? (nameField.value as string) : "";
-
-    const selectedRenderer = value
-        ? renderers.find(r => r.rendererName === value)
-        : undefined;
+const AppearanceInner = observer(({ field }: AppearanceInnerProps) => {
+    const { presenter } = useFeature(CmsAppearancePresenterFeature);
+    const { renderers, selectedValue, settingsLayout, hasRenderers } = presenter.getVm(field);
 
     useEffect(() => {
-        if (selectedRenderer || renderers.length === 0) {
-            return;
-        }
-        if (renderers[0] && nameField) {
-            nameField.onChange(renderers[0].rendererName);
-        }
-    }, [selectedRenderer, renderers, nameField]);
+        presenter.autoSelectFirst(field);
+    }, [renderers.length]);
 
-    if (renderers.length === 0) {
+    if (!hasRenderers) {
         return (
             <Text size={"sm"} className={"text-center py-lg"}>
                 There are no components that can render this field.
@@ -70,15 +49,11 @@ const AppearanceInner = observer(({ field, renderers }: AppearanceInnerProps) =>
             <Text size={"sm"}>Choose a component that will render the field.</Text>
             <div className={"mb-xl mt-md"}>
                 <RadioGroup
-                    value={value}
-                    onChange={selected => {
-                        if (nameField) {
-                            nameField.onChange(selected);
-                        }
-                    }}
+                    value={selectedValue}
+                    onChange={selected => presenter.selectRenderer(field, selected)}
                     items={renderers.map(r => ({
-                        id: r.rendererName,
-                        value: r.rendererName,
+                        id: r.value,
+                        value: r.value,
                         label: (
                             <div>
                                 <Text as={"div"} size={"md"}>
@@ -96,25 +71,19 @@ const AppearanceInner = observer(({ field, renderers }: AppearanceInnerProps) =>
                     }))}
                 />
             </div>
-            {selectedRenderer && selectedRenderer.buildSettingsForm ? (
-                <RendererSettings renderer={selectedRenderer} />
+            {settingsLayout.length > 0 ? (
+                <>
+                    <Heading level={5}>Renderer settings</Heading>
+                    <Text size={"sm"}>
+                        Configure additional settings for the selected field renderer.
+                    </Text>
+                    <div className={"flex flex-col gap-md mt-md"}>
+                        {settingsLayout.map((node, index) => (
+                            <LayoutNodeRenderer key={index} node={node} />
+                        ))}
+                    </div>
+                </>
             ) : null}
         </>
     );
 });
-
-interface RendererSettingsProps {
-    renderer: ICmsFieldRenderer;
-}
-
-const RendererSettings = ({ renderer }: RendererSettingsProps) => {
-    // TODO: build a sub-form from renderer.buildSettingsForm() and render it
-    return (
-        <>
-            <Heading level={5}>Renderer settings</Heading>
-            <Text size={"sm"}>
-                Configure additional settings for the selected field renderer.
-            </Text>
-        </>
-    );
-};

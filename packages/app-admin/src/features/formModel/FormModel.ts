@@ -319,6 +319,9 @@ export class FormModel implements IFormModel {
                 const path = pathPrefix ? `${pathPrefix}.${field.name}` : field.name;
                 const segment = field.config.label || field.name;
                 if (isObjectField(field)) {
+                    if (!field.visible) {
+                        continue;
+                    }
                     if (
                         field.vm.validation.isValid === false &&
                         field.vm.validation.message &&
@@ -331,17 +334,22 @@ export class FormModel implements IFormModel {
                             message: field.vm.validation.message
                         });
                     }
+                    const skipBreadcrumb =
+                        field.config.renderer === "passthrough" && !field.config.label;
+                    const childTrail = skipBreadcrumb ? trail : [...trail, segment];
+
                     if (field.config.isList) {
                         for (const [index, item] of field.items.entries()) {
-                            collectErrors(item.children, `${path}.${index}`, [
-                                ...trail,
-                                `${segment} [${index + 1}]`
-                            ]);
+                            collectErrors(item.children, `${path}.${index}`, [...childTrail]);
                         }
                     } else {
-                        collectErrors(field.children, path, [...trail, segment]);
+                        collectErrors(field.children, path, childTrail);
                     }
-                } else if (field.vm.validation.isValid === false && !ruleErrorPaths.has(path)) {
+                } else if (
+                    field.visible &&
+                    field.vm.validation.isValid === false &&
+                    !ruleErrorPaths.has(path)
+                ) {
                     errors.push({
                         path,
                         label: field.config.label,

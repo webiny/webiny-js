@@ -4,19 +4,22 @@ import { observer } from "mobx-react-lite";
 import { useListView } from "./context.js";
 
 export interface ListViewBottomBarProps {
-    meta?: { itemLabel: string };
+    meta?: { itemLabel: string | { singular: string; plural: string } };
     status?: { loadingText?: string } | true;
 }
 
-const Meta = observer(({ itemLabel }: { itemLabel: string }) => {
-    const { list } = useListView();
-    const { loading, totalCount, currentCount } = list.pagination;
+const Meta = observer(
+    ({ itemLabel }: { itemLabel: string | { singular: string; plural: string } }) => {
+        const { list } = useListView();
+        const { loading, totalCount, currentCount } = list.pagination;
 
-    if (loading) {
-        return null;
-    }
+        if (loading) {
+            return null;
+        }
 
-    const label = totalCount === 1 ? itemLabel : `${itemLabel}s`;
+        const singular = typeof itemLabel === "string" ? itemLabel : itemLabel.singular;
+        const plural = typeof itemLabel === "string" ? `${itemLabel}s` : itemLabel.plural;
+        const label = totalCount === 1 ? singular : plural;
 
     return (
         <Text

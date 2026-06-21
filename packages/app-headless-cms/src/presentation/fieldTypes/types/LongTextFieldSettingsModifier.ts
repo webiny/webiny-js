@@ -1,5 +1,8 @@
 import { CmsFieldEditorGroupModifier } from "../../fieldEditor/abstractions.js";
-import type { ICmsFieldEditorFormBuilder, ICmsFieldEditorContext } from "../../fieldEditor/abstractions.js";
+import type {
+    ICmsFieldEditorFormBuilder,
+    ICmsFieldEditorContext
+} from "../../fieldEditor/abstractions.js";
 import type { CmsModelField } from "~/types.js";
 
 class LongTextFieldSettingsModifierImpl implements CmsFieldEditorGroupModifier.Interface {

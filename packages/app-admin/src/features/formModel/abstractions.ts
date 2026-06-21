@@ -403,6 +403,9 @@ export type IRowNodeHandle = IRowBuilder;
 
 export interface ISeparatorNode {
     type: "separator";
+    title?: string;
+    description?: string;
+    rules?: IRule[];
 }
 
 export interface ITabDefinition {
@@ -477,6 +480,9 @@ export interface IRowBuilder extends ILayoutNodeBuilder {
 }
 
 export interface ISeparatorBuilder extends ILayoutNodeBuilder {
+    title(text: string): this;
+    description(text: string): this;
+    rules(rules: IRule[]): this;
     build(): ISeparatorNode;
 }
 
@@ -518,6 +524,8 @@ export interface IRowNodeVM {
 
 export interface ISeparatorNodeVM {
     type: "separator";
+    title?: string;
+    description?: string;
 }
 
 export interface ITabDefinitionVM {

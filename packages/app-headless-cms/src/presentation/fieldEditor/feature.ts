@@ -12,9 +12,9 @@ export const FieldEditorFeature = createFeature({
     register(container) {
         container.register(FieldEditorPresenterRegistration);
         container.register(GeneralGroup);
-        container.register(AppearanceGroup);
         container.register(PredefinedValuesGroup);
         container.register(ValidationsGroup);
+        container.register(AppearanceGroup);
         container.register(PermissionsGroup);
         container.register(RulesGroup);
     }

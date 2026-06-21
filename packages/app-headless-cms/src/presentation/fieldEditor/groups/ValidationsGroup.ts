@@ -53,10 +53,11 @@ class ValidationsGroupImpl implements CmsFieldEditorGroup.Interface {
             context.fieldType.validators,
             context.field
         );
-        const listValidatorNames = resolveValidatorNames(
-            context.fieldType.listValidators,
-            context.field
-        );
+        const DEFAULT_LIST_VALIDATORS = ["minLength", "maxLength"];
+        const listValidatorNames =
+            resolveValidatorNames(context.fieldType.listValidators, context.field).length > 0
+                ? resolveValidatorNames(context.fieldType.listValidators, context.field)
+                : DEFAULT_LIST_VALIDATORS;
 
         const fieldValidators = this.allValidators.filter(v =>
             fieldValidatorNames.includes(v.name)
@@ -68,18 +69,6 @@ class ValidationsGroupImpl implements CmsFieldEditorGroup.Interface {
 
         form.fields(fields => {
             const result: Record<string, FormModelFactory.FieldBuilder> = {};
-
-            if (fieldValidators.length > 0) {
-                fieldResult = this.buildValidatorFields(
-                    fields as FormModelFactory.FieldBuilderRegistry,
-                    fieldValidators,
-                    context
-                );
-                result.validation = fields
-                    .object()
-                    .renderer("passthrough")
-                    .fields(() => fieldResult!.fields);
-            }
 
             if (listValidators.length > 0) {
                 listResult = this.buildValidatorFields(
@@ -94,24 +83,60 @@ class ValidationsGroupImpl implements CmsFieldEditorGroup.Interface {
                     .fields(() => listResult!.fields);
             }
 
+            if (fieldValidators.length > 0) {
+                fieldResult = this.buildValidatorFields(
+                    fields as FormModelFactory.FieldBuilderRegistry,
+                    fieldValidators,
+                    context
+                );
+                result.validation = fields
+                    .object()
+                    .renderer("passthrough")
+                    .fields(() => fieldResult!.fields);
+            }
+
             return result;
         });
+
+        const listRule = {
+            type: "condition",
+            target: "general.list",
+            operator: "isFalsy",
+            value: null,
+            action: "hide" as const
+        };
 
         form.layout(layout => {
             const rows: FormModel.LayoutNodeBuilder[] = [];
 
-            if (fieldValidators.length > 0 && fieldResult) {
+            if (listValidators.length > 0 && listResult) {
                 rows.push(
-                    layout.object("validation", inner =>
-                        this.buildValidatorLayouts(inner, fieldValidators, fieldResult!)
+                    layout
+                        .separator()
+                        .title("List validators")
+                        .description("These validators are applied to the entire list of values.")
+                        .rules([listRule])
+                );
+                rows.push(
+                    layout.object("listValidation", inner =>
+                        this.buildValidatorLayouts(inner, listValidators, listResult!)
                     )
                 );
             }
 
-            if (listValidators.length > 0 && listResult) {
+            if (fieldValidators.length > 0 && fieldResult) {
+                if (listValidators.length > 0) {
+                    rows.push(
+                        layout
+                            .separator()
+                            .title("Individual value validators")
+                            .description("These validators are applied to each value in the list.")
+                            .rules([listRule])
+                    );
+                }
                 rows.push(
-                    layout.object("listValidation", inner =>
-                        this.buildValidatorLayouts(inner, listValidators, listResult!)
+                    layout.object("validation", inner =>
+                        this.buildValidatorLayouts(inner, fieldValidators, fieldResult!)
                     )
                 );
             }
@@ -164,6 +189,8 @@ class ValidationsGroupImpl implements CmsFieldEditorGroup.Interface {
                 messageDescription += ` Available variables: ${vars}.`;
             }
 
+            const notEnabled = (f: FormModel.Interface) => !f.field("$.enabled").getValue();
+
             const childFields: Record<string, FormModelFactory.FieldBuilder> = {
                 enabled: fields.boolean().label("Enabled").defaultValue(false).hidden(),
                 message: fields
@@ -171,6 +198,7 @@ class ValidationsGroupImpl implements CmsFieldEditorGroup.Interface {
                     .label("Message")
                     .description(messageDescription)
                     .defaultValue(validator.defaultMessage)
+                    .hiddenWhen(notEnabled)
             };
 
             const settingsLayoutFns: Array<
@@ -201,6 +229,7 @@ class ValidationsGroupImpl implements CmsFieldEditorGroup.Interface {
                     childFields.settings = fields
                         .object()
                         .renderer("passthrough")
+                        .hiddenWhen(notEnabled)
                         .fields((f: FormModelFactory.FieldBuilderRegistry) => {
                             const merged: Record<string, FormModelFactory.FieldBuilder> = {};
                             for (const fn of settingsFieldsFns) {

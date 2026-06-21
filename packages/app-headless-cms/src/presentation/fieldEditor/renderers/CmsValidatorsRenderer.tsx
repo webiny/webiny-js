@@ -33,9 +33,7 @@ const ValidatorItem = observer(({ field }: ValidatorItemProps) => {
             open={isEnabled}
             title={field.label}
             description={field.description}
-            actions={
-                <Switch label="Enabled" checked={isEnabled} onChange={toggleEnabled} />
-            }
+            actions={<Switch label="Enabled" checked={isEnabled} onChange={toggleEnabled} />}
         >
             {isEnabled ? (
                 <div className={"flex flex-col gap-md p-md"}>

@@ -1,5 +1,5 @@
 import { CmsFieldEditorGroup } from "../abstractions.js";
-import type { ICmsFieldEditorFormBuilder, ICmsFieldEditorContext } from "../abstractions.js";
+import type { ICmsFieldEditorFormBuilder } from "../abstractions.js";
 import type { CmsModelField, FieldRule } from "~/types.js";
 
 declare module "@webiny/app-admin/features/formModel/abstractions.js" {

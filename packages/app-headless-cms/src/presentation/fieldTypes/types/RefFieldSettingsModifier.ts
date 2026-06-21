@@ -1,6 +1,9 @@
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
 import { CmsFieldEditorGroupModifier } from "../../fieldEditor/abstractions.js";
-import type { ICmsFieldEditorFormBuilder, ICmsFieldEditorContext } from "../../fieldEditor/abstractions.js";
+import type {
+    ICmsFieldEditorFormBuilder,
+    ICmsFieldEditorContext
+} from "../../fieldEditor/abstractions.js";
 import type { CmsModelField } from "~/types.js";
 import { ListModelsUseCase } from "~/features/model/listModels/abstractions.js";
 import { ModelsCache } from "~/features/model/abstractions.js";

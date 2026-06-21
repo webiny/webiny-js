@@ -3,7 +3,7 @@ import type { CmsModelField } from "~/types.js";
 
 class ObjectAccordionRendererImpl implements CmsFieldRenderer.Interface {
     rendererName = "object-accordion";
-    formRenderer = "objectAccordion";
+    formRenderer = "objectAccordionSingle";
     name = "Accordion";
     description = "Renders fields within an accordion.";
 

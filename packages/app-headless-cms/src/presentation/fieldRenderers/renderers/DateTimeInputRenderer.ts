@@ -3,7 +3,7 @@ import type { CmsModelField } from "~/types.js";
 
 class DateTimeInputRendererImpl implements CmsFieldRenderer.Interface {
     rendererName = "date-time-input";
-    formRenderer = "dateTimePicker";
+    formRenderer = "dateTimeInput";
     name = "Date/Time Input";
     description = "Renders input for various formats of date and time.";
 

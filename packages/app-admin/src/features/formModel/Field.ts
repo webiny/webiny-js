@@ -374,7 +374,7 @@ export class Field implements IField {
             note: this.config.note,
             placeholder: this.config.placeholder,
             value: this.getValue(),
-            validation: this._validation,
+            validation: this.visible ? this._validation : { isValid: null },
             validating: this._validating,
             required,
             visible: this.visible,

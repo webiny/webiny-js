@@ -1,6 +1,7 @@
+import { z } from "zod";
 import type { IFieldBuilder } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { CmsModelField } from "~/types.js";
-import { mapCmsValidators } from "../CmsValidationMapper.js";
+import { mapCmsValidators, mapCmsListValidators } from "../CmsValidationMapper.js";
 
 export function applyFieldProps(
     builder: IFieldBuilder,
@@ -45,12 +46,32 @@ export function applyFieldProps(
         }
     }
 
-    const { required, requiredMessage, schema } = mapCmsValidators(field.validation);
-    if (required) {
-        builder.required(requiredMessage);
-    }
-    if (schema) {
-        builder.schema(schema);
+    if (field.list) {
+        const itemResult = mapCmsValidators(field.validation);
+        const listResult = mapCmsListValidators(field.listValidation);
+
+        if (itemResult.required || listResult.required) {
+            builder.required(itemResult.requiredMessage || listResult.requiredMessage);
+        }
+
+        const itemSchema = itemResult.schema ? z.array(itemResult.schema) : null;
+        const listSchema = listResult.schema;
+
+        if (itemSchema && listSchema) {
+            builder.schema(z.intersection(itemSchema, listSchema));
+        } else if (itemSchema) {
+            builder.schema(itemSchema);
+        } else if (listSchema) {
+            builder.schema(listSchema);
+        }
+    } else {
+        const { required, requiredMessage, schema } = mapCmsValidators(field.validation);
+        if (required) {
+            builder.required(requiredMessage);
+        }
+        if (schema) {
+            builder.schema(schema);
+        }
     }
 
     if (field.renderer && typeof field.renderer === "object") {

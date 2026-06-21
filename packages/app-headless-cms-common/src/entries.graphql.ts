@@ -245,11 +245,17 @@ export const createListQueryDataSelection = (
     model: CmsEditorContentModel,
     fields?: CmsModelField[]
 ) => {
+    const valuesSelection = fields
+        ? createFieldsList({ model, fields })
+        : getModelTitleFieldId(model);
+
+    const valuesBlock = valuesSelection
+        ? `values {\n            ${valuesSelection}\n        }`
+        : "";
+
     return `
         ${createEntrySystemFields(model)}
-        values {
-            ${fields ? createFieldsList({ model, fields }) : getModelTitleFieldId(model)}
-        }
+        ${valuesBlock}
     `;
 };
 

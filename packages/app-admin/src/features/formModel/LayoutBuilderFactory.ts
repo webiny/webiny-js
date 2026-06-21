@@ -242,11 +242,32 @@ export class LayoutBuilderFactory {
                 return builder;
             },
             separator(): ISeparatorBuilder {
-                return {
+                let _title: string | undefined;
+                let _description: string | undefined;
+                let _rules: IRule[] | undefined;
+                const builder: ISeparatorBuilder = {
+                    title(text: string) {
+                        _title = text;
+                        return builder;
+                    },
+                    description(text: string) {
+                        _description = text;
+                        return builder;
+                    },
+                    rules(r: IRule[]) {
+                        _rules = r;
+                        return builder;
+                    },
                     build(): ISeparatorNode {
-                        return { type: "separator" };
+                        return {
+                            type: "separator",
+                            title: _title,
+                            description: _description,
+                            rules: _rules
+                        };
                     }
                 };
+                return builder;
             },
             tabs(id?: string): ITabsBuilder {
                 return new TabsBuilder(id);

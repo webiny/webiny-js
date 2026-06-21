@@ -125,7 +125,12 @@ const DocumentList = observer(() => {
                     <Table />
                 </ListView.Content>
             }
-            bottomBar={<ListView.BottomBar meta={{ itemLabel: "entry" }} status />}
+            bottomBar={
+                <ListView.BottomBar
+                    meta={{ itemLabel: { singular: "entry", plural: "entries" } }}
+                    status
+                />
+            }
         />
     );
 });
