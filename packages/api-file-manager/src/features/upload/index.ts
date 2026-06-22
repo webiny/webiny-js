@@ -13,3 +13,7 @@ export { createFileUploadModifier } from "./utils/FileUploadModifier.js";
 export { FileUploadModifierPlugin } from "./utils/FileUploadModifier.js";
 export { createModifierFromPlugins } from "./utils/FileUploadModifier.js";
 export { createFileNormalizerFromContext } from "./utils/createFileNormalizerFromContext.js";
+
+export { GetUploadPayloadUseCase } from "./GetUploadPayload/index.js";
+export { CreateMultiPartUploadUseCase } from "./CreateMultiPartUpload/index.js";
+export { CompleteMultiPartUploadUseCase } from "./CompleteMultiPartUpload/index.js";
