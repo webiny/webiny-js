@@ -13,7 +13,7 @@ class GetFileByUrlUseCaseImpl implements Abstraction.Interface {
 
     public async execute(url: string): Promise<Result<File | undefined, Abstraction.Error>> {
         const identity = this.identityContext.getIdentity();
-        if (!identity) {
+        if (identity.isAnonymous()) {
             return Result.fail(new FileNotAuthorizedError());
         }
 
@@ -26,7 +26,7 @@ class GetFileByUrlUseCaseImpl implements Abstraction.Interface {
         });
 
         if (filesResult.isFail()) {
-            return Result.ok(undefined);
+            return Result.fail(filesResult.error);
         }
 
         const files = filesResult.value.items;

@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { File } from "~/domain/file/types.js";
 import { FileNotAuthorizedError } from "~/domain/file/errors.js";
+import type { FilePersistenceError } from "~/domain/file/errors.js";
 
 export interface IGetFileByUrlUseCase {
     execute(url: string): Promise<Result<File | undefined, UseCaseError>>;
@@ -9,6 +10,7 @@ export interface IGetFileByUrlUseCase {
 
 export interface IGetFileByUrlUseCaseErrors {
     notAuthorized: FileNotAuthorizedError;
+    persistence: FilePersistenceError;
 }
 
 type UseCaseError = IGetFileByUrlUseCaseErrors[keyof IGetFileByUrlUseCaseErrors];
