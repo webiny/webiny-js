@@ -16,10 +16,13 @@ class CompleteMultiPartUploadUseCaseImpl implements CompleteMultiPartUploadUseCa
         const tenant = this.tenantContext.getTenant();
 
         assertNoTraversal(uploadId);
+        for (const seg of fileKey.split(/[\\/]/)) {
+            assertNoTraversal(seg);
+        }
 
-        const fullFileKey = `tenants/${tenant.id}/files/${fileKey}`;
-        const destPath = path.join(storagePath, fullFileKey);
-        assertPathContained(destPath, storagePath);
+        const tenantRoot = path.resolve(path.join(storagePath, "tenants", tenant.id, "files"));
+        const destPath = path.resolve(path.join(tenantRoot, fileKey));
+        assertPathContained(destPath, tenantRoot);
 
         const multipartDir = path.join(storagePath, "tenants", tenant.id, "multipart", uploadId);
 
@@ -55,11 +58,11 @@ function assertNoTraversal(segment: string): void {
     }
 }
 
-function assertPathContained(resolved: string, storagePath: string): void {
+function assertPathContained(resolved: string, root: string): void {
     const normalized = path.resolve(resolved);
-    const root = path.resolve(storagePath);
-    if (!normalized.startsWith(root + path.sep) && normalized !== root) {
-        throw new Error("Path escapes storage root.");
+    const normalizedRoot = path.resolve(root);
+    if (!normalized.startsWith(normalizedRoot + path.sep) && normalized !== normalizedRoot) {
+        throw new Error("Path escapes tenant root.");
     }
 }
 
