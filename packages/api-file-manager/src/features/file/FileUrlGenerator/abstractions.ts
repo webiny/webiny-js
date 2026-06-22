@@ -3,6 +3,7 @@ import type { File } from "~/domain/file/types.js";
 
 export interface IFileUrlGenerator {
     generateUrl(file: File): string;
+    init?(): Promise<void>;
 }
 
 /* Generate URLs for uploaded files. */

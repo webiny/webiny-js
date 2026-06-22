@@ -28,8 +28,8 @@ export const createGraphQLSchemaPlugin = () => {
 
             await context.security.withoutAuthorization(async () => {
                 const fileUrlGenerator = context.container.resolve(FileUrlGenerator);
-                if (typeof (fileUrlGenerator as any).init === "function") {
-                    await (fileUrlGenerator as any).init();
+                if (fileUrlGenerator.init) {
+                    await fileUrlGenerator.init();
                 }
 
                 const modelsResult = await listModels.execute();

@@ -1,9 +1,7 @@
-import {
-    ErrorResponse,
-    GraphQLSchemaPlugin,
-    ListResponse,
-    Response
-} from "@webiny/handler-graphql";
+import { ErrorResponse } from "@webiny/handler-graphql";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { ListResponse } from "@webiny/handler-graphql";
+import { Response } from "@webiny/handler-graphql";
 import { emptyResolver } from "./utils.js";
 import type { CreateFilesTypeDefsParams } from "~/graphql/createFilesTypeDefs.js";
 import { createFilesTypeDefs } from "~/graphql/createFilesTypeDefs.js";
@@ -36,7 +34,7 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
                 }
             },
             FmQuery: {
-                async getFileModel(_, __, context) {
+                getFileModel(_, __, context) {
                     const identity = context.security.getIdentity();
                     if (!identity) {
                         return new NotAuthorizedResponse();
