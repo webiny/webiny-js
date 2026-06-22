@@ -10,11 +10,17 @@ import { FileModel, FILE_MODEL_ID } from "~/domain/file/file.model.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { AssetDeliveryFeature } from "~/features/assetDelivery/feature.js";
 
-export * from "./modelModifier/CmsModelModifier.js";
 export * from "./delivery/index.js";
 
 export const createFileManagerContext = () => {
-    const fileManagerContextPlugin = new ContextPlugin<ApiCoreContext>(async context => {
+    const extensionPlugin = createRegisterExtensionPlugin(context => {
+        context.container.register(FileModel);
+        FmPermissionsFeature.register(context.container);
+        FileManagerFeature.register(context.container);
+    });
+    extensionPlugin.name = "file-manager.extension";
+
+    const contextPlugin = new ContextPlugin<ApiCoreContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
         const getModel = context.container.resolve(GetModelUseCase);
 
@@ -26,23 +32,10 @@ export const createFileManagerContext = () => {
             const fileModel = await getModel.execute(FILE_MODEL_ID);
             context.container.registerInstance(FileModelAbstraction, fileModel.value);
         });
-
-        FmPermissionsFeature.register(context.container);
-        FileManagerFeature.register(context.container);
     });
+    contextPlugin.name = "file-manager.createContext";
 
-    fileManagerContextPlugin.name = "file-manager.createContext";
-
-    const modelsPlugin = createRegisterExtensionPlugin(context => {
-        context.container.register(FileModel);
-    });
-
-    return [fileManagerContextPlugin, modelsPlugin];
-};
-
-/* GraphQL schemas are now registered via DI (GraphQLSchemaFactory) in FileManagerFeature. */
-export const createFileManagerGraphQL = () => {
-    return [];
+    return [extensionPlugin, contextPlugin];
 };
 
 export const createAssetDelivery = () => {

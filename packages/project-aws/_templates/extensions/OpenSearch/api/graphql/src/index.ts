@@ -6,7 +6,7 @@ import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { OpenSearchClientOptions, registerOpenSearchCore } from "@webiny/api-opensearch";
-import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAssetDelivery, createFileManagerS3 } from "@webiny/api-file-manager-s3";
 import { createCmsExtension } from "@webiny/api-headless-cms";
@@ -75,7 +75,6 @@ export const handler = createHandler({
         createRecordLocking(),
         createBackgroundTasks(),
         createFileManagerContext(),
-        createFileManagerGraphQL(),
         createFileManagerAco(),
         createAssetDelivery(),
         createFileManagerS3(),
