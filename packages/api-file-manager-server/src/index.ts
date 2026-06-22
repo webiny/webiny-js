@@ -10,7 +10,6 @@ import { ExtractMetadataFeature } from "~/features/ExtractMetadata/feature.js";
 import { FlushCacheFeature } from "~/features/FlushCache/feature.js";
 import { GetFileContentsByIdFeature } from "~/features/GetFileContentsById/feature.js";
 import { GetFileContentsByKeyFeature } from "~/features/GetFileContentsByKey/feature.js";
-import { WriteFileMetadataFeature } from "~/features/WriteFileMetadata/feature.js";
 export { createFileUploadModifier } from "@webiny/api-file-manager/features/upload/index.js";
 export { createAssetDelivery } from "./assetDelivery/createAssetDelivery.js";
 
@@ -38,7 +37,6 @@ const contextPlugin = new ContextPlugin(context => {
     FlushCacheFeature.register(container);
     DeleteFileFromDiskFeature.register(container);
     ExtractMetadataFeature.register(container);
-    WriteFileMetadataFeature.register(container);
     GetFileContentsByIdFeature.register(container);
     GetFileContentsByKeyFeature.register(container);
     CleanupStaleMultipartUploadsFeature.register(container);

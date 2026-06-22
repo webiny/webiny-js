@@ -3,7 +3,7 @@ import { WriteMetadataAfterCreateHandler } from "./WriteMetadataAfterCreateHandl
 import { WriteMetadataAfterBatchCreateHandler } from "./WriteMetadataAfterBatchCreateHandler.js";
 
 export const WriteFileMetadataFeature = createFeature({
-    name: "FileManagerS3/WriteFileMetadata",
+    name: "FileManager/WriteFileMetadata",
     register(container) {
         container.register(WriteMetadataAfterCreateHandler);
         container.register(WriteMetadataAfterBatchCreateHandler);

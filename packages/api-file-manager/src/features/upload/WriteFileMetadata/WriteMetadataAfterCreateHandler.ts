@@ -1,4 +1,4 @@
-import { FileAfterCreateEventHandler } from "@webiny/api-file-manager/features/file/CreateFile/events.js";
+import { FileAfterCreateEventHandler } from "~/features/file/CreateFile/events.js";
 import { MetadataWriter } from "./MetadataWriter.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";

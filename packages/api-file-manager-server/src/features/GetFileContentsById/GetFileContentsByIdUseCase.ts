@@ -7,7 +7,7 @@ import {
     FileNotFoundError,
     FilePersistenceError
 } from "@webiny/api-file-manager/domain/file/errors.js";
-import { MetadataReader } from "~/features/WriteFileMetadata/MetadataReader.js";
+import { MetadataReader } from "@webiny/api-file-manager/features/upload/WriteFileMetadata/MetadataReader.js";
 
 class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCase.Interface {
     private readonly metadataReader: MetadataReader;

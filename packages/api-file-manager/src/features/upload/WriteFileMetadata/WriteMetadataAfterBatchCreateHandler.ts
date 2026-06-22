@@ -1,5 +1,5 @@
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { FileAfterBatchCreateEventHandler } from "@webiny/api-file-manager/features/file/CreateFilesInBatch/events.js";
+import { FileAfterBatchCreateEventHandler } from "~/features/file/CreateFilesInBatch/events.js";
 import { MetadataWriter } from "./MetadataWriter.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 

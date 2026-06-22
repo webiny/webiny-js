@@ -3,7 +3,7 @@ import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
-import { MetadataReader } from "../WriteFileMetadata/MetadataReader.js";
+import { MetadataReader } from "@webiny/api-file-manager/features/upload/WriteFileMetadata/MetadataReader.js";
 
 export interface ExtractMetadataInput {
     fileId: string;
