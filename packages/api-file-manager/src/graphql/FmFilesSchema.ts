@@ -15,8 +15,10 @@ import { CreateFileUseCase } from "~/features/file/CreateFile/abstractions.js";
 import { CreateFilesInBatchUseCase } from "~/features/file/CreateFilesInBatch/abstractions.js";
 import { UpdateFileUseCase } from "~/features/file/UpdateFile/abstractions.js";
 import { DeleteFileUseCase } from "~/features/file/DeleteFile/abstractions.js";
+import { GetFileByUrlUseCase } from "~/features/file/GetFileByUrl/abstractions.js";
 import { FileUrlGenerator } from "~/features/file/FileUrlGenerator/abstractions.js";
 import { FileModel } from "~/domain/file/abstractions.js";
+import { NotFoundResponse } from "@webiny/handler-graphql";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 
 const removeFieldRequiredValidation = (field: CmsModelField) => {
@@ -209,6 +211,7 @@ class FmFilesSchema_ implements GraphQLSchemaFactory.Interface {
             extend type FmQuery {
                 getFileModel: FmFileModelResponse!
                 getFile(id: ID!): FmFileResponse!
+                getFileByUrl(url: String!): FmFileResponse
                 listFiles(
                     search: String
                     where: FmFileListWhereInput
@@ -295,6 +298,26 @@ class FmFilesSchema_ implements GraphQLSchemaFactory.Interface {
 
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
+                    }
+
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<{ url: string }>({
+            path: "FmQuery.getFileByUrl",
+            dependencies: [GetFileByUrlUseCase],
+            resolver: (getFileByUrl: GetFileByUrlUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await getFileByUrl.execute(args.url);
+
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+
+                    if (!result.value) {
+                        return new NotFoundResponse("File not found!");
                     }
 
                     return new Response(result.value);
