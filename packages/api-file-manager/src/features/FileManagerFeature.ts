@@ -14,6 +14,7 @@ import { FileUrlGeneratorFeature } from "~/features/file/FileUrlGenerator/featur
 import { GetFileByUrlFeature } from "~/features/file/GetFileByUrl/feature.js";
 import { WriteFileMetadataFeature } from "~/features/upload/WriteFileMetadata/feature.js";
 import { FmGraphQLSchema } from "~/graphql/FmGraphQLSchema.js";
+import { FmUploadGraphQLSchema } from "~/graphql/FmUploadGraphQLSchema.js";
 
 export const FileManagerFeature = createFeature({
     name: "FileManager",
@@ -33,7 +34,8 @@ export const FileManagerFeature = createFeature({
         GetFileByUrlFeature.register(container);
         WriteFileMetadataFeature.register(container);
 
-        /* GraphQL schema factory. */
+        /* GraphQL schema factories. */
         container.register(FmGraphQLSchema);
+        container.register(FmUploadGraphQLSchema);
     }
 });
