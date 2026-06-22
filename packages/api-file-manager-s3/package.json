@@ -27,7 +27,6 @@
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "exifreader": "^4.41.0",
-    "object-hash": "^3.0.0",
     "sharp": "^0.35.1"
   },
   "devDependencies": {

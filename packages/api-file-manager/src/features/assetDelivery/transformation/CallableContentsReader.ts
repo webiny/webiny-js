@@ -1,4 +1,4 @@
-import type { AssetContentsReader } from "@webiny/api-file-manager";
+import type { AssetContentsReader } from "../../../delivery/index.js";
 
 interface ContentsCallable {
     (): Promise<Buffer> | Buffer;

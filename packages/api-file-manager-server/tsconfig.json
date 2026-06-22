@@ -8,7 +8,6 @@
     { "path": "../background-tasks" },
     { "path": "../feature" },
     { "path": "../handler" },
-    { "path": "../handler-graphql" },
     { "path": "../plugins" },
     { "path": "../utils" },
     { "path": "../validation" }
@@ -36,8 +35,6 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],

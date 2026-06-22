@@ -1,4 +1,4 @@
-import type { Asset } from "@webiny/api-file-manager";
+import type { Asset } from "../../../delivery/index.js";
 import * as newUtils from "./utils.js";
 
 export class AssetKeyGenerator {
