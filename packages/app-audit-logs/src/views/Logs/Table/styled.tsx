@@ -15,29 +15,29 @@ export const ActionWrapper = styled.div<{ value: ActionType }>`
     border-radius: 5px;
 
     ${({ value: actionType }) => {
-        // Yellow.
+        // Yellow (warning).
         if (ACTION_TYPES_COLORS_MAP.YELLOW.includes(actionType)) {
             return `
-                background-color: #fac42810;
-                border-color: #fac428;
-                color: #fac428;
+                background-color: color-mix(in srgb, var(--color-warning) 6%, transparent);
+                border-color: var(--color-warning);
+                color: var(--color-warning);
             `;
         }
 
-        // Red.
+        // Red (destructive).
         if (ACTION_TYPES_COLORS_MAP.RED.includes(actionType)) {
             return `
-                background-color: #ff000010;
-                border-color: #ff0000;
-                color: #ff0000;
+                background-color: color-mix(in srgb, var(--color-destructive) 6%, transparent);
+                border-color: var(--color-destructive);
+                color: var(--color-destructive);
             `;
         }
 
-        // Green.
+        // Green (success).
         return `
-            background-color: #00ccb010;
-            border-color: #00ccb0;
-            color: #00ccb0;
+            background-color: color-mix(in srgb, var(--color-success) 6%, transparent);
+            border-color: var(--color-success);
+            color: var(--color-success);
         `;
     }}
 `;
@@ -55,7 +55,7 @@ export const previewColumn = css`
 `;
 
 export const TextGray = styled(Text)`
-    color: "#616161";
+    color: var(--text-color-neutral-muted);
 `;
 
 export const TimezoneText = styled(TextGray)`

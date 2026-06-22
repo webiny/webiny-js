@@ -52,7 +52,7 @@ const TabPanel = ({ tab, Bind, fields, contentModel, gridClassName }: TabPanelPr
 };
 
 const tabsWrapperClassName = [
-    "bg-white!",
+    "bg-neutral-elevated!",
     "opacity-100!",
     "border-neutral-muted",
     "text-neutral-strong",

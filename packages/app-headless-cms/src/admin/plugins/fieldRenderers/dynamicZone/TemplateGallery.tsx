@@ -57,7 +57,13 @@ const Gallery = makeDecoratable("TemplateGallery", (props: TemplateGalleryProps)
                                 value={value}
                                 onChange={onChange}
                                 placeholder={"Search templates..."}
-                                startIcon={<Icon icon={<SearchIcon />} label={"Search"} />}
+                                startIcon={
+                                    <Icon
+                                        icon={<SearchIcon />}
+                                        label={"Search"}
+                                        color={"neutral-strong"}
+                                    />
+                                }
                                 size={"md"}
                                 variant={"primary"}
                             />

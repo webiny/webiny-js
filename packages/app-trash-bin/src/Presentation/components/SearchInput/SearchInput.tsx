@@ -24,7 +24,9 @@ export const SearchInput = () => {
                     forwardEventOnChange={true}
                     placeholder={vm.searchLabel}
                     data-testid={"trash-bin.search-input"}
-                    startIcon={<Icon icon={<SearchIcon />} label="Search" />}
+                    startIcon={
+                        <Icon icon={<SearchIcon />} label="Search" color={"neutral-strong"} />
+                    }
                     size={"md"}
                     variant={"ghost"}
                 />

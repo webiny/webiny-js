@@ -25,8 +25,8 @@ const contentEditableStyles: React.CSSProperties = {
 };
 
 const styles: React.CSSProperties = {
-    backgroundColor: "#fff",
-    border: "1px solid #e1e1e1",
+    backgroundColor: "var(--color-neutral-base)",
+    border: "1px solid var(--color-neutral-dimmed)",
     padding: "10px 14px",
     minHeight: 200,
     maxHeight: 350

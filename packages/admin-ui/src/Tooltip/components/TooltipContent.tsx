@@ -12,7 +12,7 @@ const tooltipContentVariants = cva(
         variants: {
             variant: {
                 accent: "bg-neutral-dark text-neutral-light",
-                subtle: "bg-neutral-base text-neutral-primary shadow-md"
+                subtle: "bg-neutral-elevated text-neutral-primary shadow-md"
             },
             hiddenArrow: {
                 true: [

@@ -34,7 +34,9 @@ export const SearchBar = observer(function SearchBar() {
                     placeholder={t`Search files...`}
                     disabled={!vm.permissions.canRead}
                     data-testid={"fm-search-bar"}
-                    startIcon={<Icon label={"Search"} icon={<SearchIcon />} />}
+                    startIcon={
+                        <Icon label={"Search"} icon={<SearchIcon />} color={"neutral-strong"} />
+                    }
                     size={"md"}
                     variant={"ghost"}
                 />

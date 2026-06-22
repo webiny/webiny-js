@@ -6,7 +6,7 @@ const tooltipArrowVariants = cva("", {
     variants: {
         variant: {
             accent: "fill-bg-neutral-dark",
-            subtle: "fill-neutral-base"
+            subtle: "fill-neutral-elevated"
         }
     },
     defaultVariants: {

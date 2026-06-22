@@ -2,8 +2,8 @@ import React from "react";
 import styled from "@emotion/styled";
 
 const StyledError = styled.div`
-    border: 2px solid red;
-    background-color: #f87e7e;
+    border: 2px solid var(--color-destructive);
+    background-color: var(--color-destructive-muted);
     border-radius: 5px;
     padding: 5px 10px;
 `;

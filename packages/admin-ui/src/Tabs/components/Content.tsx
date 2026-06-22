@@ -4,7 +4,10 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 
 const tabContentVariants = cva(
     [
-        "bg-neutral-base",
+        // Inherit the surface the tabs sit on (page, dialog, drawer, card) instead of
+        // forcing the base page color, which would otherwise paint a mismatched rectangle
+        // inside elevated containers in dark mode.
+        "bg-transparent",
         "rounded-lg",
         "focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed",
         // By default, the inner content is removed by the DOM when the tab becomes inactive.

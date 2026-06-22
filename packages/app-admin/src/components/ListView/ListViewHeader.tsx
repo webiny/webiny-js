@@ -45,7 +45,9 @@ const SearchInput = observer((props: { placeholder?: string; id?: string; disabl
                     onChange={e => onChange(e.target.value)}
                     forwardEventOnChange={true}
                     placeholder={props.placeholder ?? "Search..."}
-                    startIcon={<Icon icon={<SearchIcon />} label="Search" />}
+                    startIcon={
+                        <Icon icon={<SearchIcon />} label="Search" color={"neutral-strong"} />
+                    }
                     size={"md"}
                     variant={"ghost"}
                     className={"w-full"}

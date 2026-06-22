@@ -7,7 +7,7 @@ const toastRootVariants = cva(
         variants: {
             variant: {
                 default: "default-variant bg-neutral-dark",
-                subtle: "subtle-variant bg-white"
+                subtle: "subtle-variant bg-neutral-elevated"
             },
             hasDescription: {
                 true: "has-description items-start justify-start"

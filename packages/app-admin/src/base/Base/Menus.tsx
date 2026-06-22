@@ -5,6 +5,7 @@ import { ReactComponent as UpgradeIcon } from "@webiny/icons/electric_bolt.svg";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { Menu } from "~/config/AdminConfig/Menu.js";
 import { useWcp } from "~/presentation/wcp/useWcp.js";
+import { ThemeSwitcher } from "./ThemeMode/ThemeSwitcher.js";
 
 export const Menus = React.memo(() => {
     const wcp = useWcp();
@@ -58,6 +59,8 @@ export const Menus = React.memo(() => {
                     }
                 />
             )}
+
+            <Menu.Footer name={"theme-switcher"} after={"upgrade"} element={<ThemeSwitcher />} />
         </AdminConfig>
     );
 });

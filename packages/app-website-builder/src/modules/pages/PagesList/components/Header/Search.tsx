@@ -35,7 +35,9 @@ export const Search = () => {
                     onChange={e => onChange(e.target.value)}
                     forwardEventOnChange={true}
                     placeholder={vm.searchLabel}
-                    startIcon={<Icon icon={<SearchIcon />} label="Search" />}
+                    startIcon={
+                        <Icon icon={<SearchIcon />} label="Search" color={"neutral-strong"} />
+                    }
                     size={"md"}
                     variant={"ghost"}
                     className={"w-full"}

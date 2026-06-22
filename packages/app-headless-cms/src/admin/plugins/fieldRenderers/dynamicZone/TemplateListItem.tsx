@@ -17,7 +17,7 @@ export const TemplateListItem = ({ template, onTemplate }: TemplateListItemProps
             <div
                 onClick={() => onTemplate(template)}
                 className={
-                    "group flex items-center gap-y-md py-sm-extra px-md rounded-lg bg-neutral-light hover:bg-[#f1f2f4] cursor-pointer"
+                    "group flex items-center gap-y-md py-sm-extra px-md rounded-lg bg-neutral-light hover:bg-neutral-dimmed cursor-pointer"
                 }
             >
                 <div className={"flex items-center justify-center shrink-0 pr-md"}>

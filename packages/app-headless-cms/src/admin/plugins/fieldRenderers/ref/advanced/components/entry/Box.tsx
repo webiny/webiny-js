@@ -22,7 +22,7 @@ const Name = styled("h4")({
     fontSize: 11,
     lineHeight: "16px",
     letterSpacing: "0.5px",
-    color: "#938F99",
+    color: "var(--text-color-neutral-muted)",
     textTransform: "uppercase"
 });
 const Text = styled("h5")({
@@ -30,7 +30,7 @@ const Text = styled("h5")({
     fontSize: 11,
     lineHeight: "16px",
     letterSpacing: "0.5px",
-    color: "#49454F"
+    color: "var(--text-color-neutral-primary)"
 });
 
 interface BoxProps {

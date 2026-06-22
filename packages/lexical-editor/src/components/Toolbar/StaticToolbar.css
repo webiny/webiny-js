@@ -660,3 +660,283 @@ button.item.dropdown-item-active i {
   color: #000;
   overflow: hidden;
 }
+
+/*
+ * Dark mode. This toolbar predates the design-system tokens and hardcodes light colors
+ * (#fff surfaces, #eee borders/hover, #777 text) plus black background-image SVG icons.
+ * Rather than rewrite it, we override the relevant colors whenever ANY dark theme is active
+ * (`data-theme` on <html> is one of the dark themes) using the semantic tokens from
+ * @webiny/admin-ui — so the toolbar follows whichever theme is selected. The
+ * black SVG icons can't be recolored via `fill` (they're background images), so we invert
+ * them to render light on the dark surface. Light mode is left untouched.
+ */
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar {
+  background: var(--color-neutral-base);
+  border-color: var(--color-neutral-dimmed);
+}
+
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  button.popup-item,
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  button.toolbar-item {
+  background: transparent;
+}
+
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  .popup-item:hover:not([disabled]),
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  .toolbar-item:hover:not([disabled]) {
+  background-color: var(--color-neutral-dimmed);
+}
+
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  button.popup-item.active,
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  button.toolbar-item.active,
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  .button.active,
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  button.item.dropdown-item-active {
+  background-color: var(--color-neutral-muted);
+}
+
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  .divider {
+  background-color: var(--color-neutral-dimmed);
+}
+
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  select.popup-item,
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  .popup-item
+  .text,
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  .toolbar-item
+  .text {
+  color: var(--text-color-neutral-muted);
+}
+
+/* Black background-image icons -> light on the dark toolbar. */
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  i.format,
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  i.chevron-down,
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .static-toolbar
+  .icon {
+  filter: invert(1);
+}
+
+/* Dropdowns (floating surfaces). */
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .lexical-dropdown {
+  background-color: var(--color-neutral-elevated);
+}
+
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .lexical-dropdown
+  .item {
+  background-color: transparent;
+  color: var(--text-color-neutral-primary);
+}
+
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .lexical-dropdown
+  .item:hover {
+  background-color: var(--color-neutral-dimmed);
+}
+
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .lexical-dropdown
+  .divider {
+  background-color: var(--color-neutral-dimmed);
+}
+
+:root:is(
+    [data-theme="dark"],
+    [data-theme="webiny-dark"],
+    [data-theme="dracula"],
+    [data-theme="github-dark"],
+    [data-theme="one-dark-pro"],
+    [data-theme="tokyo-night"],
+    [data-theme="catppuccin-mocha"]
+  )
+  .lexical-dropdown
+  .icon {
+  filter: invert(1);
+}

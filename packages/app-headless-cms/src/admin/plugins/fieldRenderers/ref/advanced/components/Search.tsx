@@ -16,7 +16,9 @@ export const Search = ({ onChange, value }: SearchProps) => {
                     placeholder={"Search entries..."}
                     onChange={onChange}
                     value={value}
-                    startIcon={<Icon label="Search" icon={<SearchIcon />} />}
+                    startIcon={
+                        <Icon label="Search" icon={<SearchIcon />} color={"neutral-strong"} />
+                    }
                 />
             )}
         </DelayedOnChange>

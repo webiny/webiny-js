@@ -6,7 +6,7 @@ const popoverArrowVariants = cva("", {
     variants: {
         variant: {
             accent: "border-neutral-black",
-            subtle: "fill-neutral-base"
+            subtle: "fill-neutral-elevated"
         }
     },
     defaultVariants: {

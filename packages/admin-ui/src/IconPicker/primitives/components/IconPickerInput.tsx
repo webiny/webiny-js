@@ -34,7 +34,13 @@ const IconPickerInput = (props: IconPickerInputProps) => {
                         placeholder={"Search icons..."}
                         variant={"secondary"}
                         size={"md"}
-                        startIcon={<Icon icon={<SearchIcon />} label={"Search icons"} />}
+                        startIcon={
+                            <Icon
+                                icon={<SearchIcon />}
+                                label={"Search icons"}
+                                color={"neutral-strong"}
+                            />
+                        }
                     />
                 </div>
             )}

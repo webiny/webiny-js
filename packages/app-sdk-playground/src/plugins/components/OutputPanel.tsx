@@ -10,7 +10,7 @@ interface OutputPanelProps {
 export const OutputPanel: React.FC<OutputPanelProps> = ({ output }) => {
     return (
         <div
-            className="bg-white flex flex-col overflow-hidden"
+            className="bg-neutral-base flex flex-col overflow-hidden"
             style={{ flex: 1, width: "auto", minWidth: `${MIN_PANE_PCT}%` }}
         >
             <div className="p-2 border-b border-gray-200 font-bold">Output</div>

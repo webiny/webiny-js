@@ -16,7 +16,7 @@ export const PlaygroundToolbar: React.FC<PlaygroundToolbarProps> = ({
     onFormat
 }) => {
     return (
-        <div className="flex justify-between items-center px-4 py-2 bg-white border-b border-gray-200 shadow-sm">
+        <div className="flex justify-between items-center px-4 py-2 bg-neutral-base border-b border-gray-200 shadow-sm">
             <div>
                 <strong>SDK Playground</strong>
                 <span className="ml-4 text-xs text-gray-600">

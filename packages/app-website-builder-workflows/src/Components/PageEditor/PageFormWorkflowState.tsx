@@ -10,7 +10,10 @@ export const PageFormWorkflowState = () => {
         <WorkflowStateBar>
             {({ stateBar }) => {
                 return (
-                    <div className={"max-w-screen bg-white p-sm"} data-affects-preview={"height"}>
+                    <div
+                        className={"max-w-screen bg-neutral-base p-sm"}
+                        data-affects-preview={"height"}
+                    >
                         {stateBar}
                     </div>
                 );

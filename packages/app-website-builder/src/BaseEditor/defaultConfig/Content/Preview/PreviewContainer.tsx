@@ -26,22 +26,22 @@ export const PreviewContainer = ({ children }: PreviewContainerProps) => {
                     <>
                         <div
                             className={
-                                "absolute z-50 pointer-events-none animate-fade-in top-0 left-0 right-0 h-2 bg-[#f9d8ce]"
+                                "absolute z-50 pointer-events-none animate-fade-in top-0 left-0 right-0 h-2 bg-primary-light"
                             }
                         />
                         <div
                             className={
-                                "absolute z-50 pointer-events-none animate-fade-in bottom-0 left-0 right-0 h-2 bg-[#f9d8ce]"
+                                "absolute z-50 pointer-events-none animate-fade-in bottom-0 left-0 right-0 h-2 bg-primary-light"
                             }
                         />
                         <div
                             className={
-                                "absolute z-50 pointer-events-none animate-fade-in top-0 left-0 bottom-0 w-2 bg-[#f9d8ce]"
+                                "absolute z-50 pointer-events-none animate-fade-in top-0 left-0 bottom-0 w-2 bg-primary-light"
                             }
                         />
                         <div
                             className={
-                                "absolute z-50 pointer-events-none animate-fade-in top-0 right-0 bottom-0 w-2 bg-[#f9d8ce]"
+                                "absolute z-50 pointer-events-none animate-fade-in top-0 right-0 bottom-0 w-2 bg-primary-light"
                             }
                         />
                     </>
