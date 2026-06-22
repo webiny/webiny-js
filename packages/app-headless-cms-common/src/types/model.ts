@@ -181,6 +181,7 @@ export interface CmsModel {
      * Is model currently being deleted?
      */
     isBeingDeleted?: boolean;
+    valuesSelection?: string;
     settings: {
         [key: string]: any;
     };

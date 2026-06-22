@@ -8,6 +8,7 @@ class SearchableJsonFieldTypeImpl implements CmsFieldType.Interface {
     allowList = true;
     listLabel = "Use as a list of Searchable JSONs";
     allowPredefinedValues = true;
+    hideInAdmin = true;
 
     createField() {
         return {

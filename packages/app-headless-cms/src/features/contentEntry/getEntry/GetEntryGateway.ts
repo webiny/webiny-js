@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsContentEntry, CmsErrorResponse } from "~/types.js";
-import { createEntrySystemFields, createFieldsList } from "@webiny/app-headless-cms-common";
+import { createEntrySystemFields, getValuesBlock } from "@webiny/app-headless-cms-common";
 import {
     GetEntryGateway as GatewayAbstraction,
     GetEntryGraphQLFieldSelection,
@@ -42,9 +42,7 @@ class GetEntryGatewayImpl implements GatewayAbstraction.Interface {
                     data {
                         ${createEntrySystemFields(model)}
                         ${extraSelection.join("\n")}
-                        values {
-                            ${createFieldsList({ model, fields: model.fields })}
-                        }
+                        ${getValuesBlock(model)}
                     }
                     error ${ERROR_FIELD}
                 }

@@ -73,6 +73,7 @@ export const MODEL_FIELDS = `
     }
     plugin
     isBeingDeleted
+    valuesSelection
 `;
 /**
  * ############################

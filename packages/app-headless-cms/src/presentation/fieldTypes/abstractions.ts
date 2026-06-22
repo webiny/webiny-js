@@ -21,6 +21,9 @@ export interface ICmsFieldType {
         | CmsModelFieldValidatorsGroup
         | CmsModelFieldValidatorsFactory;
 
+    readonly hideInAdmin?: boolean;
+    readonly tags?: string[];
+
     createField(): Pick<CmsModelField, "type" | "validation" | "renderer" | "settings">;
 }
 

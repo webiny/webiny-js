@@ -8,6 +8,7 @@ class JsonFieldTypeImpl implements CmsFieldType.Interface {
     allowList = true;
     listLabel = "Use as a list of JSONs";
     allowPredefinedValues = true;
+    hideInAdmin = true;
 
     createField() {
         return {

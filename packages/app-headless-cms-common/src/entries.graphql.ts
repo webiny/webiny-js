@@ -13,6 +13,18 @@ import { getModelTitleFieldId } from "./getModelTitleFieldId.js";
 import type { FormValidationOptions } from "@webiny/form";
 import { CMS_MODEL_SINGLETON_TAG } from "./constants.js";
 
+export function getValuesBlock(model: CmsEditorContentModel): string {
+    const selection = model.valuesSelection
+        ? model.valuesSelection
+        : createFieldsList({ model, fields: model.fields });
+
+    if (!selection) {
+        return "";
+    }
+
+    return `values {\n${selection}\n}`;
+}
+
 const CONTENT_META_FIELDS = /* GraphQL */ `
     title
     description
@@ -153,9 +165,7 @@ export const createReadQuery = (model: CmsEditorContentModel) => {
             content: get${model.singularApiName}(revision: $revision, entryId: $entryId) {
                 data {
                     ${createEntrySystemFields(model)}
-                    values {
-                        ${createFieldsList({ model, fields: model.fields })}
-                    }
+                    ${getValuesBlock(model)}
                 }
                 error ${ERROR_FIELD}
             }
@@ -180,9 +190,7 @@ export const createReadSingletonQuery = (model: CmsEditorContentModel) => {
             content: get${model.singularApiName} {
                 data {
                     ${createEntrySystemFields(model)}
-                    values {
-                        ${createFieldsList({ model, fields: model.fields })}
-                    }
+                    ${getValuesBlock(model)}
                 }
                 error ${ERROR_FIELD}
             }
@@ -341,9 +349,7 @@ export const createRestoreFromBinMutation = (model: CmsEditorContentModel) => {
             content: restore${model.singularApiName}FromBin(revision: $revision) {
                 data {
                     ${createEntrySystemFields(model)}
-                    values {
-                        ${createFieldsList({ model, fields: model.fields })}
-                    }
+                    ${getValuesBlock(model)}
                 }
                 error ${ERROR_FIELD}
             }
@@ -371,8 +377,6 @@ export interface CmsEntryCreateMutationVariables {
 }
 
 export const createCreateMutation = (model: CmsEditorContentModel) => {
-    const createFields = createFieldsList({ model, fields: model.fields });
-
     return gql`
         mutation CmsEntriesCreate${model.singularApiName}($data: ${
             model.singularApiName
@@ -380,9 +384,7 @@ export const createCreateMutation = (model: CmsEditorContentModel) => {
             content: create${model.singularApiName}(data: $data, options: $options) {
                 data {
                     ${createEntrySystemFields(model)}
-                    values {
-                        ${createFields}
-                    }
+                    ${getValuesBlock(model)}
                 }
                 error ${ERROR_FIELD}
             }
@@ -420,9 +422,7 @@ export const createCreateFromMutation = (model: CmsEditorContentModel) => {
         }From(revision: $revision, data: $data, options: $options) {
                 data {
                     ${createEntrySystemFields(model)}
-                    values {
-                        ${createFieldsList({ model, fields: model.fields })}
-                    }
+                    ${getValuesBlock(model)}
                 }
                 error ${ERROR_FIELD}
             }
@@ -459,9 +459,7 @@ export const createUpdateMutation = (model: CmsEditorContentModel) => {
             }(revision: $revision, data: $data, options: $options) {
                 data {
                     ${createEntrySystemFields(model)}
-                    values {
-                        ${createFieldsList({ model, fields: model.fields })}
-                    }
+                    ${getValuesBlock(model)}
                 }
                 error ${ERROR_FIELD}
             }
@@ -496,9 +494,7 @@ export const createUpdateSingletonMutation = (model: CmsEditorContentModel) => {
             content: update${model.singularApiName}(data: $data, options: $options) {
             data {
                 ${createEntrySystemFields(model)}
-                values {
-                    ${createFieldsList({ model, fields: model.fields })}
-                }
+                ${getValuesBlock(model)}
             }
             error ${ERROR_FIELD}
         }
@@ -524,9 +520,7 @@ export const createUpdateRevisionDescriptionMutation = (model: CmsEditorContentM
             content: update${model.singularApiName}RevisionDescription(revision: $revision, revisionDescription: $revisionDescription) {
                 data {
                     ${createEntrySystemFields(model)}
-                    values {
-                        ${createFieldsList({ model, fields: model.fields })}
-                    }
+                    ${getValuesBlock(model)}
                 }
                 error ${ERROR_FIELD}
             }
@@ -554,9 +548,7 @@ export const createPublishMutation = (model: CmsEditorContentModel) => {
             content: publish${model.singularApiName}(revision: $revision) {
                 data {
                     ${createEntrySystemFields(model)}
-                    values {
-                        ${createFieldsList({ model, fields: model.fields })}
-                    }
+                    ${getValuesBlock(model)}
                 }
                 error ${ERROR_FIELD}
             }
@@ -584,9 +576,7 @@ export const createUnpublishMutation = (model: CmsEditorContentModel) => {
             content: unpublish${model.singularApiName}(revision: $revision) {
                  data {
                     ${createEntrySystemFields(model)}
-                    values {
-                        ${createFieldsList({ model, fields: model.fields })}
-                    }
+                    ${getValuesBlock(model)}
                 }
                 error ${ERROR_FIELD}
             }
