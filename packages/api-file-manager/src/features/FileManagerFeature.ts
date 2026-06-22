@@ -11,6 +11,7 @@ import { GetSettingsFeature } from "~/features/settings/GetSettings/feature.js";
 import { UpdateSettingsFeature } from "~/features/settings/UpdateSettings/feature.js";
 import { ListImagesByTagToolFeature } from "~/features/file/ListImagesByTagTool/feature.js";
 import { FileUrlGeneratorFeature } from "~/features/file/FileUrlGenerator/feature.js";
+import { GetFileByUrlFeature } from "~/features/file/GetFileByUrl/feature.js";
 
 export const FileManagerFeature = createFeature({
     name: "FileManager",
@@ -27,5 +28,6 @@ export const FileManagerFeature = createFeature({
         UpdateSettingsFeature.register(container);
         ListImagesByTagToolFeature.register(container);
         FileUrlGeneratorFeature.register(container);
+        GetFileByUrlFeature.register(container);
     }
 });
