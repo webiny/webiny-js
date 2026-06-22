@@ -1,26 +1,8 @@
+import type { FileData } from "@webiny/api-file-manager/features/upload/index.js";
 import "@webiny/background-tasks/api/features/TaskController/augmentation.js";
 
-export interface PresignedPostPayloadData {
-    name: string;
-    type: string;
-    size: number;
-    id?: string;
-    key?: string;
-    keyPrefix?: string;
-}
-
-export interface FileData {
-    id: string;
-    key: string;
-    name: string;
-    size: number;
-    type: string;
-}
-
-export interface PresignedPostPayloadDataResponse {
-    data: LocalPresignedPostData;
-    file: FileData;
-}
+export type { PresignedPostPayloadData } from "@webiny/api-file-manager/features/upload/index.js";
+export type { FileData } from "@webiny/api-file-manager/features/upload/index.js";
 
 export interface LocalPresignedPostData {
     url: string;
@@ -28,6 +10,11 @@ export interface LocalPresignedPostData {
         key: string;
         token: string;
     };
+}
+
+export interface PresignedPostPayloadDataResponse {
+    data: LocalPresignedPostData;
+    file: FileData;
 }
 
 export interface UploadTokenPayload {
