@@ -7,6 +7,7 @@ import { createBaseSchema } from "~/graphql/baseSchema.js";
 import { createFilesSchema } from "~/graphql/filesSchema.js";
 import { getFileByUrl } from "~/graphql/getFileByUrl.js";
 import { FileModel } from "~/domain/file/abstractions.js";
+import { FileUrlGenerator } from "~/features/file/FileUrlGenerator/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
@@ -26,6 +27,11 @@ export const createGraphQLSchemaPlugin = () => {
             const fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
 
             await context.security.withoutAuthorization(async () => {
+                const fileUrlGenerator = context.container.resolve(FileUrlGenerator);
+                if (typeof (fileUrlGenerator as any).init === "function") {
+                    await (fileUrlGenerator as any).init();
+                }
+
                 const modelsResult = await listModels.execute();
                 const models = modelsResult.value;
 

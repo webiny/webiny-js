@@ -4,7 +4,7 @@ import {
     ListResponse,
     Response
 } from "@webiny/handler-graphql";
-import { emptyResolver, resolve } from "./utils.js";
+import { emptyResolver } from "./utils.js";
 import type { CreateFilesTypeDefsParams } from "~/graphql/createFilesTypeDefs.js";
 import { createFilesTypeDefs } from "~/graphql/createFilesTypeDefs.js";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
@@ -15,7 +15,7 @@ import { CreateFileUseCase } from "~/features/file/CreateFile/abstractions.js";
 import { CreateFilesInBatchUseCase } from "~/features/file/CreateFilesInBatch/abstractions.js";
 import { UpdateFileUseCase } from "~/features/file/UpdateFile/abstractions.js";
 import { DeleteFileUseCase } from "~/features/file/DeleteFile/abstractions.js";
-import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
+import { FileUrlGenerator } from "~/features/file/FileUrlGenerator/abstractions.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { FileModel } from "~/domain/file/abstractions.js";
 
@@ -30,24 +30,24 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
                 fileManager: emptyResolver
             },
             FmFile: {
-                async src(file, _, context) {
-                    // TODO: create `FileUrlGenerator` service to use here
-                    const getSettings = context.container.resolve(GetSettingsUseCase);
-                    const result = await getSettings.execute();
-                    const settings = result.value;
-                    return (settings?.srcPrefix || "") + file.key;
+                src(file, _, context) {
+                    const urlGenerator = context.container.resolve(FileUrlGenerator);
+                    return urlGenerator.generateUrl(file);
                 }
             },
             FmQuery: {
-                getFileModel(_, __, context) {
+                async getFileModel(_, __, context) {
                     const identity = context.security.getIdentity();
                     if (!identity) {
                         return new NotAuthorizedResponse();
                     }
 
-                    return resolve(async () => {
-                        return context.container.resolve(FileModel);
-                    });
+                    try {
+                        const fileModel = context.container.resolve(FileModel);
+                        return new Response(fileModel);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
                 },
                 async getFile(_, args: any, context) {
                     const getFile = context.container.resolve(GetFileUseCase);

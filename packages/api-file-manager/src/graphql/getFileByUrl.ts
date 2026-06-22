@@ -1,10 +1,7 @@
 import { ErrorResponse, GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { Response, NotFoundResponse } from "@webiny/handler-graphql";
-import type { File } from "~/domain/file/types.js";
-import type { Security } from "@webiny/api-core/types/security.js";
-import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { ListFilesUseCase } from "~/features/file/ListFiles/index.js";
+import { GetFileByUrlUseCase } from "~/features/file/GetFileByUrl/abstractions.js";
 
 export const getFileByUrl = () => {
     const fileManagerGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
@@ -17,19 +14,18 @@ export const getFileByUrl = () => {
             FmQuery: {
                 async getFileByUrl(_, args, context) {
                     const { url } = args as { url: string };
-                    const useCase = new SecureGetFileByUrl(
-                        context.security,
-                        new GetFileByUrlUseCase(context.container.resolve(ListFilesUseCase))
-                    );
-                    try {
-                        const file = await useCase.execute(url);
-                        if (file) {
-                            return new Response(file);
-                        }
-                        return new NotFoundResponse("File not found!");
-                    } catch (error) {
-                        return new ErrorResponse(error);
+                    const useCase = context.container.resolve(GetFileByUrlUseCase);
+                    const result = await useCase.execute(url);
+
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
                     }
+
+                    if (!result.value) {
+                        return new NotFoundResponse("File not found!");
+                    }
+
+                    return new Response(result.value);
                 }
             }
         }
@@ -38,45 +34,3 @@ export const getFileByUrl = () => {
 
     return fileManagerGraphQL;
 };
-
-interface IGetFileByUrl {
-    execute(url: string): Promise<File | undefined>;
-}
-
-class GetFileByUrlUseCase implements IGetFileByUrl {
-    constructor(private listFiles: ListFilesUseCase.Interface) {}
-
-    async execute(url: string): Promise<File | undefined> {
-        const { pathname } = new URL(url);
-        const query = pathname.replace("/files/", "").replace("/private/", "");
-
-        const filesResult = await this.listFiles.execute({
-            where: {
-                key: query
-            },
-            limit: 1
-        });
-
-        const files = filesResult.value.items;
-
-        return files.length ? files[0] : undefined;
-    }
-}
-
-class SecureGetFileByUrl implements IGetFileByUrl {
-    private security: Security;
-    private useCase: IGetFileByUrl;
-
-    constructor(security: Security, useCase: IGetFileByUrl) {
-        this.security = security;
-        this.useCase = useCase;
-    }
-
-    execute(url: string): Promise<File | undefined> {
-        if (!this.security.getIdentity()) {
-            throw new NotAuthorizedError({ message: "You're not authorized to edit this file!" });
-        }
-
-        return this.useCase.execute(url);
-    }
-}
