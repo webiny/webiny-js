@@ -1,7 +1,6 @@
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { ContextPlugin } from "@webiny/api";
 import { setupAssetDelivery } from "./delivery/setupAssetDelivery.js";
-import { createGraphQLSchemaPlugin } from "./graphql/index.js";
 import { FileManagerFeature } from "~/features/FileManagerFeature.js";
 import { FmPermissionsFeature } from "~/features/permissions/feature.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
@@ -41,8 +40,9 @@ export const createFileManagerContext = () => {
     return [fileManagerContextPlugin, modelsPlugin];
 };
 
+/* GraphQL schemas are now registered via DI (GraphQLSchemaFactory) in FileManagerFeature. */
 export const createFileManagerGraphQL = () => {
-    return createGraphQLSchemaPlugin();
+    return [];
 };
 
 export const createAssetDelivery = () => {

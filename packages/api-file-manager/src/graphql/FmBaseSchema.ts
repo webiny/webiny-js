@@ -1,12 +1,14 @@
-import { ErrorResponse, GraphQLSchemaPlugin, Response } from "@webiny/handler-graphql";
-import { emptyResolver } from "./utils.js";
+import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { Response } from "@webiny/handler-graphql";
+import { ErrorResponse } from "@webiny/handler-graphql";
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
-import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
-export const createBaseSchema = () => {
-    const fileManagerGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
-        typeDefs: /* GraphQL */ `
+class FmBaseSchema_ implements GraphQLSchemaFactory.Interface {
+    public async execute(
+        builder: GraphQLSchemaFactory.SchemaBuilder
+    ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
+        builder.addTypeDefs(/* GraphQL */ `
             type FmError {
                 code: String
                 message: String
@@ -68,17 +70,27 @@ export const createBaseSchema = () => {
             extend type Mutation {
                 fileManager: FmMutation
             }
-        `,
-        resolvers: {
-            Query: {
-                fileManager: emptyResolver
-            },
-            Mutation: {
-                fileManager: emptyResolver
-            },
-            FmQuery: {
-                async getSettings(_, __, context) {
-                    const getSettings = context.container.resolve(GetSettingsUseCase);
+        `);
+
+        builder.addResolver({
+            path: "Query.fileManager",
+            resolver: () => {
+                return () => ({});
+            }
+        });
+
+        builder.addResolver({
+            path: "Mutation.fileManager",
+            resolver: () => {
+                return () => ({});
+            }
+        });
+
+        builder.addResolver({
+            path: "FmQuery.getSettings",
+            dependencies: [GetSettingsUseCase],
+            resolver: (getSettings: GetSettingsUseCase.Interface) => {
+                return async () => {
                     const result = await getSettings.execute();
 
                     if (result.isFail()) {
@@ -86,11 +98,15 @@ export const createBaseSchema = () => {
                     }
 
                     return new Response(result.value);
-                }
-            },
-            FmMutation: {
-                async updateSettings(_, args: any, context) {
-                    const updateSettings = context.container.resolve(UpdateSettingsUseCase);
+                };
+            }
+        });
+
+        builder.addResolver({
+            path: "FmMutation.updateSettings",
+            dependencies: [UpdateSettingsUseCase],
+            resolver: (updateSettings: UpdateSettingsUseCase.Interface) => {
+                return async ({ args }) => {
                     const result = await updateSettings.execute(args.data);
 
                     if (result.isFail()) {
@@ -98,11 +114,15 @@ export const createBaseSchema = () => {
                     }
 
                     return new Response(result.value);
-                }
+                };
             }
-        }
-    });
-    fileManagerGraphQL.name = "fm.graphql.base";
+        });
 
-    return fileManagerGraphQL;
-};
+        return builder;
+    }
+}
+
+export const FmBaseSchema = GraphQLSchemaFactory.createImplementation({
+    implementation: FmBaseSchema_,
+    dependencies: []
+});
