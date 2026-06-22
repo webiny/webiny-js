@@ -1,6 +1,6 @@
 import pReduce from "p-reduce";
 import { Plugin } from "@webiny/plugins";
-import type { FileToSign } from "~/utils/FileNormalizer.js";
+import type { FileToSign } from "./FileNormalizer.js";
 
 interface Setter<T> {
     (param: T): T;
@@ -17,7 +17,7 @@ class FileUploadModifier {
         return pReduce(
             this.fileSetters,
             async (file, setter) => {
-                // We need to spread the original file, then add (potentially) partial changes.
+                /* We need to spread the original file, then add (potentially) partial changes. */
                 return { ...file, ...(await setter(file)) };
             },
             file
@@ -32,7 +32,7 @@ interface FileUploadModifierCallbackParams {
 }
 
 export class FileUploadModifierPlugin extends Plugin {
-    public static override type = "fm.s3.uploadModifier";
+    public static override type = "fm.uploadModifier";
     private readonly cb: FileUploadModifierCallable;
 
     constructor(cb: FileUploadModifierCallable) {

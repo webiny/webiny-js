@@ -7,12 +7,12 @@ import { ErrorResponse } from "@webiny/handler-graphql/responses.js";
 import { Response } from "@webiny/handler-graphql/responses.js";
 import { GetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
 import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload.js";
-import { checkPermissions } from "~/utils/checkPermissions.js";
+import { checkPermissions } from "@webiny/api-file-manager/features/upload/index.js";
+import { createFileNormalizerFromContext } from "@webiny/api-file-manager/features/upload/index.js";
 import { resolveServerUrl } from "~/utils/resolveServerUrl.js";
-import { createFileNormalizerFromContext } from "~/utils/createFileNormalizerFromContext.js";
 import { CreateMultiPartUploadUseCase } from "~/multiPartUpload/CreateMultiPartUploadUseCase.js";
 import { CompleteMultiPartUploadUseCase } from "~/multiPartUpload/CompleteMultiPartUploadUseCase.js";
-import type { PresignedPostPayloadData } from "~/types.js";
+import type { PresignedPostPayloadData } from "@webiny/api-file-manager/features/upload/index.js";
 
 export const createServerGraphQLSchema = () => {
     return createGraphQLSchemaPlugin<Context>({

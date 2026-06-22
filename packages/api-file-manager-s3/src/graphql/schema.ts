@@ -4,11 +4,11 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
 import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload.js";
-import { checkPermissions } from "./checkPermissions.js";
-import type { PresignedPostPayloadData } from "~/types.js";
+import { checkPermissions } from "@webiny/api-file-manager/features/upload/index.js";
+import { createFileNormalizerFromContext } from "@webiny/api-file-manager/features/upload/index.js";
+import type { PresignedPostPayloadData } from "@webiny/api-file-manager/features/upload/index.js";
 import { CreateMultiPartUploadUseCase } from "~/multiPartUpload/CreateMultiPartUploadUseCase.js";
 import { CompleteMultiPartUploadUseCase } from "~/multiPartUpload/CompleteMultiPartUploadUseCase.js";
-import { createFileNormalizerFromContext } from "~/utils/createFileNormalizerFromContext.js";
 import { GetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 

@@ -1,4 +1,4 @@
-import type { FilePermission } from "@webiny/api-file-manager/types.js";
+import type { FilePermission } from "~/types.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
@@ -32,7 +32,7 @@ const hasRwd = (filesFilePermissions: FilePermission | FilePermission[], rwd: st
         return true;
     }
 
-    // Is there a permission that doesn't restrict RWD permissions, that means all RWD permissions are allowed.
+    /* Is there a permission that doesn't restrict RWD, all RWD permissions are allowed. */
     const permissionWithoutRwdRestrictions = filesFilePermissions.some(permission => {
         return typeof permission.rwd !== "string";
     });
@@ -41,7 +41,6 @@ const hasRwd = (filesFilePermissions: FilePermission | FilePermission[], rwd: st
         return true;
     }
 
-    // If there is no permission that doesn't restrict RWD permissions, that means we need to check if the RWD.
     return filesFilePermissions.some(permission => {
         return permission.rwd && permission.rwd.includes(rwd);
     });

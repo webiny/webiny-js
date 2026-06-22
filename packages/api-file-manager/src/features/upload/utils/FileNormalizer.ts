@@ -1,7 +1,7 @@
 import { mdbid } from "@webiny/utils";
-import type { FileData, PresignedPostPayloadData } from "~/types.js";
-import { FileKey } from "~/utils/FileKey.js";
-import { mimeTypes } from "~/utils/mimeTypes.js";
+import type { FileData, PresignedPostPayloadData } from "~/features/upload/types.js";
+import { FileKey } from "./FileKey.js";
+import { mimeTypes } from "./mimeTypes.js";
 import type { FileModifier } from "./FileUploadModifier.js";
 
 export interface FileToSign {
@@ -25,8 +25,10 @@ function resolveTypeFromName(name: string): string {
     return extensionToMime.get(ext) || "application/octet-stream";
 }
 
-/* FileNormalizer normalizes file data before it's signed for upload.
- * It generates a unique file id and makes sure that the file key includes the unique id. */
+/*
+ * FileNormalizer normalizes file data, before it's signed for upload.
+ * It generates a unique file id, and makes sure that the file key includes the unique id.
+ */
 export class FileNormalizer {
     private readonly modifier: FileModifier | undefined;
 

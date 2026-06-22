@@ -8,7 +8,7 @@ import { FlushCacheFeature } from "~/features/FlushCache/feature.js";
 import { ExtractMetadataFeature } from "~/features/ExtractMetadata/feature.js";
 import { GetFileContentsByIdFeature } from "~/features/GetFileContentsById/feature.js";
 import { GetFileContentsByKeyFeature } from "~/features/GetFileContentsByKey/feature.js";
-export { createFileUploadModifier } from "./utils/FileUploadModifier.js";
+export { createFileUploadModifier } from "@webiny/api-file-manager/features/upload/index.js";
 export { createAssetDelivery } from "./assetDelivery/createAssetDelivery.js";
 
 const contextPlugin = new ContextPlugin(context => {
