@@ -11,7 +11,6 @@
     { "path": "../feature" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
-    { "path": "../handler-graphql" },
     { "path": "../plugins" },
     { "path": "../utils" },
     { "path": "../validation" }
@@ -45,8 +44,6 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],

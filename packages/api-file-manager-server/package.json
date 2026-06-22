@@ -21,14 +21,12 @@
     "@webiny/background-tasks": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "exifreader": "^4.41.0",
     "fastify": "5.8.5",
     "object-hash": "^3.0.0",
-    "p-map": "^7.0.4",
     "sharp": "^0.35.1"
   },
   "devDependencies": {
