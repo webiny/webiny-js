@@ -155,6 +155,24 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-file-manager/src/features/file/CreateFile/events.ts`
 - **Usage:** Hook into file creation. Implement `.handle(event)` where `event.payload.file` is the created file. Register via `FileAfterCreateEventHandler.createImplementation({ implementation, dependencies })`.
 
+### FileUrlGenerator (File Manager)
+
+- **Import:** `import { FileUrlGenerator } from "@webiny/api-file-manager/features/file/FileUrlGenerator/abstractions.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/file/FileUrlGenerator/abstractions.ts`
+- **Usage:** Generates full URLs for files by prepending `srcPrefix` from settings. Sync `generateUrl(file)` method; optional `init()` loads settings once. Registered as singleton.
+
+### GetFileByUrlUseCase (File Manager)
+
+- **Import:** `import { GetFileByUrlUseCase } from "@webiny/api-file-manager/features/file/GetFileByUrl/abstractions.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/file/GetFileByUrl/abstractions.ts`
+- **Usage:** Retrieve a file by its public URL. Parses URL pathname, queries files by key. Returns `Result<File | undefined, Error>`. Rejects anonymous users via `IdentityContext`.
+
+### FmGraphQLSchema (File Manager)
+
+- **Import:** `import { FmGraphQLSchema } from "@webiny/api-file-manager/graphql/FmGraphQLSchema.js"`
+- **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/handler-graphql/graphql/abstractions.js`
+- **Usage:** Single `GraphQLSchemaFactory` implementation for the entire FM GraphQL API (base types, settings, file CRUD, getFileByUrl). Registered in `FileManagerFeature`. Uses `builder.addTypeDefs()` and `builder.addResolver({ path, dependencies, resolver })` — no `context.container.resolve()` in resolvers.
+
 ### Encryption
 
 - **Import:** `import { Encryption } from "@webiny/api-core/features/encryption"`
