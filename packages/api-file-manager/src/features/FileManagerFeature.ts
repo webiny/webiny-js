@@ -12,8 +12,7 @@ import { UpdateSettingsFeature } from "~/features/settings/UpdateSettings/featur
 import { ListImagesByTagToolFeature } from "~/features/file/ListImagesByTagTool/feature.js";
 import { FileUrlGeneratorFeature } from "~/features/file/FileUrlGenerator/feature.js";
 import { GetFileByUrlFeature } from "~/features/file/GetFileByUrl/feature.js";
-import { FmBaseSchema } from "~/graphql/FmBaseSchema.js";
-import { FmFilesSchema } from "~/graphql/FmFilesSchema.js";
+import { FmGraphQLSchema } from "~/graphql/FmGraphQLSchema.js";
 
 export const FileManagerFeature = createFeature({
     name: "FileManager",
@@ -32,8 +31,7 @@ export const FileManagerFeature = createFeature({
         FileUrlGeneratorFeature.register(container);
         GetFileByUrlFeature.register(container);
 
-        /* GraphQL schema factories. */
-        container.register(FmBaseSchema);
-        container.register(FmFilesSchema);
+        /* GraphQL schema factory. */
+        container.register(FmGraphQLSchema);
     }
 });

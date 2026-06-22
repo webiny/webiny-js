@@ -1,6 +1,7 @@
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { ErrorResponse } from "@webiny/handler-graphql";
 import { ListResponse } from "@webiny/handler-graphql";
+import { NotFoundResponse } from "@webiny/handler-graphql";
 import { Response } from "@webiny/handler-graphql";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields.js";
@@ -16,9 +17,10 @@ import { CreateFilesInBatchUseCase } from "~/features/file/CreateFilesInBatch/ab
 import { UpdateFileUseCase } from "~/features/file/UpdateFile/abstractions.js";
 import { DeleteFileUseCase } from "~/features/file/DeleteFile/abstractions.js";
 import { GetFileByUrlUseCase } from "~/features/file/GetFileByUrl/abstractions.js";
+import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
+import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { FileUrlGenerator } from "~/features/file/FileUrlGenerator/abstractions.js";
 import { FileModel } from "~/domain/file/abstractions.js";
-import { NotFoundResponse } from "@webiny/handler-graphql";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 
 const removeFieldRequiredValidation = (field: CmsModelField) => {
@@ -38,7 +40,7 @@ const createUpdateFields = (fields: CmsModelField[]): CmsModelField[] => {
     }, []);
 };
 
-class FmFilesSchema_ implements GraphQLSchemaFactory.Interface {
+class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
     public constructor(
         private readonly identityContext: IdentityContext.Interface,
         private readonly listModelsUseCase: ListModelsUseCase.Interface,
@@ -54,6 +56,96 @@ class FmFilesSchema_ implements GraphQLSchemaFactory.Interface {
             await this.fileUrlGenerator.init();
         }
 
+        this.addBaseTypeDefs(builder);
+        await this.addFileTypeDefs(builder);
+        this.addSettingsResolvers(builder);
+        this.addFileQueryResolvers(builder);
+        this.addFileMutationResolvers(builder);
+
+        return builder;
+    }
+
+    private addBaseTypeDefs(builder: GraphQLSchemaFactory.SchemaBuilder): void {
+        builder.addTypeDefs(/* GraphQL */ `
+            type FmError {
+                code: String
+                message: String
+                data: JSON
+                stack: String
+            }
+
+            type FmCreatedBy {
+                id: ID
+                displayName: String
+                type: String
+            }
+
+            type FmListMeta {
+                cursor: String
+                totalCount: Int
+                hasMoreItems: Boolean
+            }
+
+            type FmBooleanResponse {
+                data: Boolean
+                error: FmError
+            }
+
+            type FmSettings {
+                uploadMinFileSize: Number
+                uploadMaxFileSize: Number
+                srcPrefix: String
+            }
+
+            input FmSettingsInput {
+                uploadMinFileSize: Number
+                uploadMaxFileSize: Number
+                srcPrefix: String
+            }
+
+            type FmSettingsResponse {
+                data: FmSettings
+                error: FmError
+            }
+
+            type FmDeleteResponse {
+                data: Boolean
+                error: FmError
+            }
+
+            type FmQuery {
+                getSettings: FmSettingsResponse
+            }
+
+            type FmMutation {
+                updateSettings(data: FmSettingsInput): FmSettingsResponse
+            }
+
+            extend type Query {
+                fileManager: FmQuery
+            }
+
+            extend type Mutation {
+                fileManager: FmMutation
+            }
+        `);
+
+        builder.addResolver({
+            path: "Query.fileManager",
+            resolver: () => {
+                return () => ({});
+            }
+        });
+
+        builder.addResolver({
+            path: "Mutation.fileManager",
+            resolver: () => {
+                return () => ({});
+            }
+        });
+    }
+
+    private async addFileTypeDefs(builder: GraphQLSchemaFactory.SchemaBuilder): Promise<void> {
         const models = await this.loadModels();
         const { fields } = this.fileModel;
 
@@ -229,14 +321,43 @@ class FmFilesSchema_ implements GraphQLSchemaFactory.Interface {
                 deleteFile(id: ID!): FmBooleanResponse!
             }
         `);
-
-        this.addQueryResolvers(builder);
-        this.addMutationResolvers(builder);
-
-        return builder;
     }
 
-    private addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
+    private addSettingsResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
+        builder.addResolver({
+            path: "FmQuery.getSettings",
+            dependencies: [GetSettingsUseCase],
+            resolver: (getSettings: GetSettingsUseCase.Interface) => {
+                return async () => {
+                    const result = await getSettings.execute();
+
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver({
+            path: "FmMutation.updateSettings",
+            dependencies: [UpdateSettingsUseCase],
+            resolver: (updateSettings: UpdateSettingsUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await updateSettings.execute(args.data);
+
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+
+                    return new Response(result.value);
+                };
+            }
+        });
+    }
+
+    private addFileQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
         builder.addResolver({
             path: "FmFile.src",
             dependencies: [FileUrlGenerator],
@@ -326,7 +447,7 @@ class FmFilesSchema_ implements GraphQLSchemaFactory.Interface {
         });
     }
 
-    private addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
+    private addFileMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
         builder.addResolver({
             path: "FmMutation.createFile",
             dependencies: [CreateFileUseCase],
@@ -407,8 +528,8 @@ class FmFilesSchema_ implements GraphQLSchemaFactory.Interface {
     }
 }
 
-export const FmFilesSchema = GraphQLSchemaFactory.createImplementation({
-    implementation: FmFilesSchema_,
+export const FmGraphQLSchema = GraphQLSchemaFactory.createImplementation({
+    implementation: FmGraphQLSchema_,
     dependencies: [
         IdentityContext,
         ListModelsUseCase,
