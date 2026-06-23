@@ -2,6 +2,7 @@ import * as React from "react";
 import { Tabs as TabsPrimitive } from "radix-ui";
 import { cn, cva, type VariantProps } from "~/utils.js";
 import { Icon } from "~/Icon/index.js";
+import { Skeleton } from "~/Skeleton/index.js";
 
 const tabTriggerVariants = cva(
     [
@@ -54,18 +55,25 @@ type TriggerProps = Omit<TabsPrimitive.TabsTriggerProps, "children"> &
     VariantProps<typeof tabTriggerVariants> & {
         text: React.ReactNode;
         icon?: React.ReactElement;
+        loading?: boolean;
         "data-testid"?: string;
     };
 
-const Trigger = ({ className, size, icon, text, visible, ...props }: TriggerProps) => (
+const Trigger = ({ className, size, icon, text, visible, loading, ...props }: TriggerProps) => (
     <TabsPrimitive.Trigger
         className={cn(tabTriggerVariants({ size, visible }), className)}
         {...props}
     >
-        <div className={cn(innerTabTriggerVariants({ size }))}>
-            {icon && <Icon icon={icon} size={"sm"} label={String(text)} color={"neutral-light"} />}
-            {text}
-        </div>
+        {loading ? (
+            <Skeleton type={"text"} size={"md"} className={"w-[64px]"} />
+        ) : (
+            <div className={cn(innerTabTriggerVariants({ size }))}>
+                {icon && (
+                    <Icon icon={icon} size={"sm"} label={String(text)} color={"neutral-light"} />
+                )}
+                {text}
+            </div>
+        )}
     </TabsPrimitive.Trigger>
 );
 

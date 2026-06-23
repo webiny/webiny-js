@@ -71,11 +71,30 @@ export const WorkflowStatesWidgetCardTabs = observer(
         const activeTab = getActiveTab(presenter.vm);
 
         // `loading` flips to `false` as soon as the queries resolve, but `vm.values` is
-        // populated a tick later. Until we have a resolved active tab, render the loader so
-        // the uncontrolled `Tabs` doesn't mount with an `undefined` default (which leaves all
-        // tabs inactive and their content hidden until the user clicks one).
+        // populated a tick later. Until we have a resolved active tab, render the loading state
+        // so the uncontrolled `Tabs` doesn't mount with an `undefined` default (which leaves all
+        // tabs inactive and their content hidden until the user clicks one). While loading we
+        // still render the full `Tabs` (with `loading` triggers and skeleton content) so the
+        // layout doesn't jump once the data resolves and the skeletons turn into real text/rows.
         if (presenter.vm.loading || !activeTab) {
-            return <WorkflowStateListSkeleton />;
+            const loadingTabs = presenter.vm.states.map(tab => (
+                <Tabs.Tab
+                    key={tab}
+                    value={tab}
+                    trigger={names[tab] || ""}
+                    content={<WorkflowStateListSkeleton />}
+                />
+            ));
+
+            return (
+                <Tabs
+                    spacing={"lg"}
+                    separator={true}
+                    loading={true}
+                    defaultValue={presenter.vm.states[0]}
+                    tabs={loadingTabs}
+                />
+            );
         }
 
         return (

@@ -306,7 +306,9 @@ const NoEntriesIllustration = () => {
 
 export const WorkflowStateListEmpty = () => {
     return (
-        <div className={"w-full flex flex-col items-center justify-center gap-md py-xl"}>
+        <div
+            className={"w-full min-h-[194px] flex flex-col items-center justify-center gap-md py-xl"}
+        >
             <NoEntriesIllustration />
             <Text
                 size={"sm"}

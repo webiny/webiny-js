@@ -336,10 +336,10 @@
   @keyframes skeleton-pulse {
     0%,
     100% {
-      background-color: var(--color-neutral-dimmed);
+      background-color: var(--skeleton-pulse-from, var(--color-neutral-dimmed));
     }
     50% {
-      background-color: var(--color-neutral-muted);
+      background-color: var(--skeleton-pulse-to, var(--color-neutral-muted));
     }
   }
 }

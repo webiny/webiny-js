@@ -9,7 +9,7 @@ export const WorkflowStateListSkeleton = (props: IWorkflowStateListSkeletonProps
     const { count = 3 } = props;
 
     return (
-        <div className={"flex flex-col gap-xs p-lg"}>
+        <div className={"flex flex-col gap-xs"}>
             {Array.from({ length: count }).map((_, index) => {
                 return (
                     <Skeleton
