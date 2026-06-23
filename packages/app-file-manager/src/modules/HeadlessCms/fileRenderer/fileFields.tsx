@@ -64,7 +64,7 @@ const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
                                             onChange(dotProp.delete(values, index))
                                         }
                                         placeholder={field.placeholder}
-                                        type={"compact"}
+                                        type={"area"}
                                         data-testid={`fr.input.filefields.${field.label}`}
                                     />
                                 );

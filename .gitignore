@@ -57,8 +57,14 @@ packages/*/README.md
 packages/tasks/tpl/*
 ./nextjs
 
+./db/
+
 /.local
 CLAUDE.local.md
 .claude/*.local.*
 .claude/worktrees/
 .claire/**
+.codegraph
+.mcp.json
+docs/.reports
+tsconfig.check-tests.json

@@ -1,3 +1,12 @@
-import { WebsocketService } from "~/features/WebsocketService/index.js";
-
-export const Websockets = WebsocketService;
+export { WebsocketsTransport } from "~/transport/index.js";
+export { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
+export { WebsocketsSendToIdentityUseCase } from "~/features/SendToIdentity/abstractions.js";
+export { WebsocketsSendToConnectionsUseCase } from "~/features/SendToConnections/abstractions.js";
+export { WebsocketsDisconnectUseCase } from "~/features/Disconnect/abstractions.js";
+export { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
+export { WebsocketsEventValidator } from "~/validator/index.js";
+export { WebsocketsRunner } from "~/runner/WebsocketsRunner.js";
+export { createWebsocketsRoutePlugins } from "~/runner/routes/index.js";
+export { createWebsocketsRoutePlugin } from "~/plugins/WebsocketsRoutePlugin.js";
+export { WebsocketsResponse } from "~/response/index.js";
+export type { WebsocketsError } from "~/features/shared/errors.js";

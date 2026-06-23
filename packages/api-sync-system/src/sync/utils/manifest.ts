@@ -1,7 +1,6 @@
-import { ServiceDiscovery } from "@webiny/api";
+import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import zod from "zod";
 import { createZodError } from "@webiny/utils";
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 const validateManifest = zod.object({
     sync: zod.object({
@@ -11,18 +10,12 @@ const validateManifest = zod.object({
     })
 });
 
-export interface IGetManifestParams {
-    getDocumentClient(): Pick<DynamoDBDocument, "send">;
-}
-
-export const getManifest = async (params: IGetManifestParams) => {
-    const documentClient = params.getDocumentClient();
+export const getManifest = async () => {
     try {
-        ServiceDiscovery.setDocumentClient(documentClient);
         const manifest = await ServiceDiscovery.load();
         if (!manifest?.sync) {
             return {
-                /**
+                /*
                  * This error will be silent. We do not want to log or throw at this point.
                  */
                 error: new Error(

@@ -1,7 +1,7 @@
 import { NextjsConfig as Abstraction } from "~/features/nextjs/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { MarkdownContentBuilder } from "~/features/nextjs/MarkdownContentBuilder.js";
-import { ServiceDiscovery } from "@webiny/api";
+import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { ApiKeysRepository } from "@webiny/api-core/features/security/apiKeys/shared/abstractions.js";
 
 class NextjsConfigImpl implements Abstraction.Interface {

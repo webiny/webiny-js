@@ -1,0 +1,29 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"]
+    }
+  }
+}

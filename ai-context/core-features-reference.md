@@ -72,17 +72,106 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-core/src/features/task/TaskService/abstractions.ts`
 - **Usage:** Trigger and abort background tasks. Call `taskService.trigger({ definition: "taskId", input: {...} })`. Inject as DI dependency via `TaskService`.
 
-### WebsocketService
+### ConnectionRegistry
 
-- **Import:** `import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js"`
-- **Interface Type:** See `packages/api-websockets/src/features/WebsocketService/abstractions.ts`
-- **Usage:** Send real-time messages to connected clients. Use `send({ id: userId }, { action, data })` for a specific user or `sendToConnections(connections, { action, data })` for multiple. List connections with `listConnections({ where: { identityId } })`. Make optional with `[WebsocketService, { optional: true }]`.
+- **Import:** `import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js"`
+- **Interface Type:** See `packages/api-websockets/src/features/ConnectionRegistry/abstractions.ts`
+- **Usage:** DI abstraction for websocket connection storage. Namespace types: `ConnectionRegistry.Interface`, `.Identity`, `.Data`, `.RegisterParams`, `.UnregisterParams`. DDB implementation in `@webiny/api-websockets-ddb`, SQL in `@webiny/api-websockets-sql`.
+
+### WebsocketsListConnectionsUseCase
+
+- **Import:** `import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/exports/api.js"`
+- **Interface Type:** See `packages/api-websockets/src/features/ListConnections/abstractions.ts`
+- **Usage:** List active WebSocket connections. Namespace types: `.Interface`, `.Params`, `.ParamsWhere`, `.RegistryData`. Call `.execute({ where: { identityId } })` to filter. Returns `Result<ConnectionRegistry.Data[], WebsocketsError>`. Filters out stale connections (>3 hours).
+
+### WebsocketsSendToIdentityUseCase
+
+- **Import:** `import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js"`
+- **Interface Type:** See `packages/api-websockets/src/features/SendToIdentity/abstractions.ts`
+- **Usage:** Send a message to all connections for a given identity. Namespace types: `.Interface`, `.Identity`, `.Data<T>`. Call `.execute({ id: userId }, { action, data })`. Make optional with `[WebsocketsSendToIdentityUseCase, { optional: true }]`.
+
+### WebsocketsSendToConnectionsUseCase
+
+- **Import:** `import { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/exports/api.js"`
+- **Interface Type:** See `packages/api-websockets/src/features/SendToConnections/abstractions.ts`
+- **Usage:** Send a message to specific connections. Namespace types: `.Interface`, `.Connection`, `.Data<T>`. Call `.execute(connections, { action, data })`.
+
+### WebsocketsDisconnectUseCase
+
+- **Import:** `import { WebsocketsDisconnectUseCase } from "@webiny/api-websockets/exports/api.js"`
+- **Interface Type:** See `packages/api-websockets/src/features/Disconnect/abstractions.ts`
+- **Usage:** Disconnect WebSocket connections. Namespace types: `.Interface`, `.Params`. Call `.execute({ where: { identityId } }, notify?)` to disconnect by filter.
+
+### WebsocketsTransport
+
+- **Import:** `import { WebsocketsTransport } from "@webiny/api-websockets/exports/api.js"`
+- **Interface Type:** See `packages/api-websockets/src/transport/abstractions/WebsocketsTransport.ts`
+- **Usage:** DI abstraction for the WebSocket transport layer. Namespace types: `.Interface`, `.SendConnection`, `.DisconnectConnection`, `.SendData<T>`. NullWebsocketsTransport registered by default; AWS and server packages override.
+
+### WebsocketsResponse
+
+- **Import:** `import { WebsocketsResponse } from "@webiny/api-websockets/exports/api.js"`
+- **Interface Type:** See `packages/api-websockets/src/response/abstractions/WebsocketsResponse.ts`
+- **Usage:** DI abstraction for websocket response formatting. Namespace types: `.Interface`, `.OkParams`, `.OkResult`, `.ErrorParams`, `.ErrorResult`, `.ErrorResultError`. Default implementation auto-registered.
+
+### WebsocketsEventValidator
+
+- **Import:** `import { WebsocketsEventValidator } from "@webiny/api-websockets/exports/api.js"`
+- **Interface Type:** See `packages/api-websockets/src/validator/abstractions/WebsocketsEventValidator.ts`
+- **Usage:** DI abstraction for event validation. Namespace types: `.Interface`. AWS and server packages provide implementations.
+
+### WebsocketsRunner
+
+- **Import:** `import { WebsocketsRunner } from "@webiny/api-websockets/exports/api.js"`
+- **Interface Type:** See `packages/api-websockets/src/runner/WebsocketsRunner.ts`
+- **Usage:** Processes websocket events through route plugins. Namespace types: `.Event<T>`, `.EventData`, `.EventContext`, `.EventType`, `.Route`, `.Response`.
+
+### WebsocketsServerAdapter
+
+- **Import:** `import { WebsocketsServerAdapter } from "@webiny/api-websockets-server"`
+- **Interface Type:** See `packages/api-websockets-server/src/abstractions.ts`
+- **Usage:** DI abstraction wrapping the WebSocket library. Default implementation uses Node built-in `ws`. Namespace types: `WebsocketsServerAdapter.Interface<TSocket>`. Swap to use a different WS library (uWebSockets, etc.) via `WebsocketsServerAdapter.createImplementation(...)`.
+
+### WebsocketsUpgradeHandler
+
+- **Import:** `import { WebsocketsUpgradeHandler } from "@webiny/api-websockets-server"`
+- **Interface Type:** See `packages/api-websockets-server/src/abstractions.ts`
+- **Usage:** Pre-connection filtering during HTTP upgrade (CORS, rate limiting, IP allowlists). Default accepts all. Namespace types: `WebsocketsUpgradeHandler.Interface`, `.Decision`. Swap via `WebsocketsUpgradeHandler.createImplementation(...)`.
+
+### WebsocketsConnectionManager
+
+- **Import:** `import { WebsocketsConnectionManager } from "@webiny/api-websockets-server"`
+- **Interface Type:** See `packages/api-websockets-server/src/abstractions.ts`
+- **Usage:** Manages local socket map, syncs with SQL connection registry, handles heartbeat/TTL updates. Namespace types: `WebsocketsConnectionManager.Interface<TSocket>`, `.AddParams<TSocket>`, `.ConnectionMetadata`.
+
+### Server Factory Functions
+
+- **Import:** `import { createWebsocketsServer, attachWebsocketsServer } from "@webiny/api-websockets-server"`
+- **Usage:** `createWebsocketsServer({ port, host, plugins, heartbeatInterval })` for standalone mode (creates HTTP+WS server). `attachWebsocketsServer({ server, plugins, heartbeatInterval })` for attach mode (uses existing HTTP server). Both return `IWebsocketsServer` with `start()`/`stop()`/`port()`.
 
 ### FileAfterCreateEventHandler (File Manager)
 
 - **Import:** `import { FileAfterCreateEventHandler } from "@webiny/api-file-manager/features/file/CreateFile/events.js"`
 - **Interface Type:** See `packages/api-file-manager/src/features/file/CreateFile/events.ts`
 - **Usage:** Hook into file creation. Implement `.handle(event)` where `event.payload.file` is the created file. Register via `FileAfterCreateEventHandler.createImplementation({ implementation, dependencies })`.
+
+### FileUrlGenerator (File Manager)
+
+- **Import:** `import { FileUrlGenerator } from "@webiny/api-file-manager/features/file/FileUrlGenerator/abstractions.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/file/FileUrlGenerator/abstractions.ts`
+- **Usage:** Generates full URLs for files by prepending `srcPrefix` from settings. Sync `generateUrl(file)` method; optional `init()` loads settings once. Registered as singleton.
+
+### GetFileByUrlUseCase (File Manager)
+
+- **Import:** `import { GetFileByUrlUseCase } from "@webiny/api-file-manager/features/file/GetFileByUrl/abstractions.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/file/GetFileByUrl/abstractions.ts`
+- **Usage:** Retrieve a file by its public URL. Parses URL pathname, queries files by key. Returns `Result<File | undefined, Error>`. Rejects anonymous users via `IdentityContext`.
+
+### FmGraphQLSchema (File Manager)
+
+- **Import:** `import { FmGraphQLSchema } from "@webiny/api-file-manager/graphql/FmGraphQLSchema.js"`
+- **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/handler-graphql/graphql/abstractions.js`
+- **Usage:** Single `GraphQLSchemaFactory` implementation for the entire FM GraphQL API (base types, settings, file CRUD, getFileByUrl). Registered in `FileManagerFeature`. Uses `builder.addTypeDefs()` and `builder.addResolver({ path, dependencies, resolver })` — no `context.container.resolve()` in resolvers.
 
 ### Encryption
 
@@ -358,6 +447,69 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 - **Import:** `import { MailTransportFactory } from "@webiny/api-mailer/domain/MailTransport/abstractions"`
 - **Interface Type:** See `packages/api-mailer/src/domain/MailTransport/abstractions.ts`
 - **Usage:** Register a custom mail transport. Implementations expose a stable `name: string` (used to route code-driven settings from `<Infra.Mailer.*>` BuildParams) and a `createTransport(settings)` factory method. Multiple factories can be registered; `ActiveTransport.name()` returns the last-registered one.
+
+---
+
+## Database Features
+
+### DbRegistry
+
+- **Import:** `import { DbRegistry } from "@webiny/db/exports/api/db.js"`
+- **Interface Type:** See `packages/db/src/features/DbRegistry/abstractions.ts`
+- **Usage:** Registry for DynamoDB entities/tables. Registered as singleton via `DbRegistryFeature`. Provides `register()`, `getOneItem()`, `getItem()`, `getItems()` methods for looking up registered entities by app and tags. Namespace exports `DbRegistry.Interface`, `DbRegistry.RegisterParams`, `DbRegistry.RegistryItem`.
+
+### OpenSearchClient
+
+- **Import:** `import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchClient/abstraction.ts`
+- **Usage:** DI wrapper around the OpenSearch `Client`. Call `use()` to get the raw client. Registered as an instance by `registerOpenSearchCore()` — receives the client directly, no intermediate context layer.
+
+### OpenSearchClientFactory
+
+- **Import:** `import { OpenSearchClientFactory } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchClientFactory/abstraction.ts`
+- **Usage:** Factory for creating new OpenSearch client instances. Registered by `registerOpenSearchCore()`.
+
+### OpenSearchQueryBuilderOperator
+
+- **Import:** `import { OpenSearchQueryBuilderOperator } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperator.ts`
+- **Usage:** DI abstraction for query builder operators (eq, not, contains, gt, etc.). Each operator is registered as a singleton via `createImplementation`. 15 built-in operators provided by `OpenSearchQueryBuilderOperatorFeature`.
+
+### OpenSearchQueryBuilderOperatorRegistry
+
+- **Import:** `import { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperatorRegistry.ts`
+- **Usage:** Registry that collects all `OpenSearchQueryBuilderOperator` implementations via `{ multiple: true }` DI. Provides `get(operatorName)` and `getAll()`. Registered as singleton by `OpenSearchQueryBuilderOperatorFeature`.
+
+### OpenSearchField
+
+- **Import:** `import { OpenSearchField } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchField/abstractions/OpenSearchField.ts`
+- **Usage:** DI abstraction for OpenSearch field descriptors. Carries field metadata (`field`, `path`, `keyword`, `unmappedType`, `sortable`, `searchable`) and provides `getPath()`, `getBasePath()`, `getSortOptions()`, `toSearchValue()`. Instances are created via `OpenSearchFieldFactory`.
+
+### OpenSearchFieldFactory
+
+- **Import:** `import { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchField/abstractions/OpenSearchFieldFactory.ts`
+- **Usage:** Factory for creating `OpenSearchField.Interface` instances from params. Registered as singleton by `OpenSearchFieldFeature`. Use `factory.create({ field, path, keyword, ... })` instead of direct class instantiation.
+
+### OpenSearchFieldAll
+
+- **Import:** `import { OpenSearchFieldAll } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Usage:** The wildcard sentinel value (`"*"`) used to match any field path. Exported as a standalone const (not a namespace member) due to a Rspack/swc bundler limitation with namespace runtime values.
+
+### OpenSearchIndex
+
+- **Import:** `import { OpenSearchIndex } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchIndex/abstractions/OpenSearchIndex.ts`
+- **Usage:** DI abstraction for OpenSearch index configuration. Provides `readonly body: OpenSearchIndexRequestBody` and `canUse(): boolean`. Register implementations to provide index settings.
+
+### OpenSearchIndexRegistry
+
+- **Import:** `import { OpenSearchIndexRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js"`
+- **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchIndex/abstractions/OpenSearchIndexRegistry.ts`
+- **Usage:** Registry that collects all `OpenSearchIndex` implementations via `{ multiple: true }` DI. Provides `getLastAdded()` (returns the last registered usable index) and `getAll()`. Registered as singleton by `OpenSearchIndexFeature`.
 
 ---
 

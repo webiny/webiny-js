@@ -4,7 +4,7 @@ import type {
     WorkflowStateListRepositoryType
 } from "~/Repositories/abstractions/WorkflowStateListRepository.js";
 import { type IGenericError, type IGenericMeta, type IWorkflowState } from "~/types.js";
-import { makeAutoObservable, observable, runInAction } from "mobx";
+import { makeAutoObservable, observable, runInAction, toJS } from "mobx";
 import type { IWorkflowStateListGateway } from "~/Gateways/index.js";
 
 interface IWorkflowStateListRepositoryParams {
@@ -93,10 +93,11 @@ export class WorkflowStateListRepository implements IWorkflowStateListRepository
     }
 
     private createSnapshot(input: IWorkflowStateListRepositoryListParams): string {
-        const value = structuredClone({
-            ...input,
+        const merged = toJS({
+            ...toJS(input),
             __repositoryType: this._type
         });
+        const value = structuredClone(merged);
         delete value.after;
         return JSON.stringify(value);
     }

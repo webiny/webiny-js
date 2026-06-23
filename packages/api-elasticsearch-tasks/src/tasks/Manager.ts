@@ -1,37 +1,28 @@
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { Client } from "@webiny/api-opensearch";
 import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch";
-import type { IManager } from "~/types.js";
+import { Manager as Abstraction } from "~/abstractions/Manager.js";
 import type { BatchReadItem } from "@webiny/db-dynamodb/utils/batch/batchRead.js";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batch/batchRead.js";
 import type { IEntity } from "@webiny/db-dynamodb";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
 
-export interface ManagerParams<
-    T extends TaskDefinition.TaskInput,
-    O extends TaskDefinition.TaskOutput
-> {
-    documentClient: DynamoDBDocument;
-    elasticsearchClient: Client;
-    controller: TaskController.Interface<T, O>;
-}
-
-export class Manager<
-    T extends TaskDefinition.TaskInput,
-    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
-> implements IManager<T, O> {
-    public readonly controller: TaskController.Interface<T, O>;
-    public readonly documentClient: DynamoDBDocument;
-    public readonly elasticsearch: Client;
-    public readonly table: ReturnType<typeof createOpenSearchTable>;
+class ManagerImpl implements Abstraction.Interface {
+    public readonly controller: TaskController.Interface;
+    public readonly documentClient;
+    public readonly openSearchClient;
+    public readonly table;
 
     private readonly entities: Record<string, IEntity> = {};
 
-    public constructor(params: ManagerParams<T, O>) {
-        this.controller = params.controller;
-        this.documentClient = params.documentClient;
-        this.elasticsearch = params.elasticsearchClient;
+    public constructor(
+        openSearchClient: OpenSearchClient.Interface,
+        dynamoDBClient: DynamoDBClient.Interface,
+        controller: TaskController.Interface
+    ) {
+        this.controller = controller;
+        this.documentClient = dynamoDBClient.client;
+        this.openSearchClient = openSearchClient.use();
 
         this.table = createOpenSearchTable({
             documentClient: this.documentClient
@@ -56,3 +47,8 @@ export class Manager<
         });
     }
 }
+
+export const Manager = Abstraction.createImplementation({
+    implementation: ManagerImpl,
+    dependencies: [OpenSearchClient, DynamoDBClient, TaskController]
+});

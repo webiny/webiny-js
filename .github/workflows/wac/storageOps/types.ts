@@ -1,1 +1,1 @@
-export type StorageOpsId = "ddb" | "ddb-os,ddb";
+export type StorageOpsId = "ddb" | "ddb-os,ddb" | "sql,ddb";

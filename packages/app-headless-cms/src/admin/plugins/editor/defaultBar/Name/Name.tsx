@@ -78,7 +78,7 @@ export const Name = () => {
                 <Heading
                     level={5}
                     className={
-                        "px-xs border-sm border-neutral-base rounded-md hover:border-neutral-muted"
+                        "px-xs text-accent-primary border-sm border-neutral-base rounded-md hover:border-neutral-muted"
                     }
                     data-testid="cms-editor-model-title"
                     onClick={startEditing}

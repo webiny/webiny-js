@@ -1,5 +1,5 @@
 import zod from "zod";
-import { ServiceDiscovery } from "@webiny/api";
+import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 
 const MIN_FILE_SIZE = 0;
 const MAX_FILE_SIZE = 10737418240;

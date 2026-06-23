@@ -28,7 +28,7 @@ const WithDisableAction = ({ children }: WithDisableActionProps) => {
                 label={"Disable"}
                 onAction={disableEntry}
                 data-testid={"aco.actions.entry.delete"}
-                className={"text-destructive-primary! [&_svg]:fill-destructive"}
+                variant={"destructive"}
             />
         );
     }

@@ -1,0 +1,40 @@
+{
+  "name": "@webiny/api-scheduler-server",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-scheduler-server"
+  },
+  "keywords": [
+    "scheduler:server"
+  ],
+  "author": "Webiny Ltd",
+  "description": "Server-side cron-based implementation for the Webiny action scheduler.",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-scheduler": "0.0.0",
+    "@webiny/error": "0.0.0",
+    "bree": "^9.2.9"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.9"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

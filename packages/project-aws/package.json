@@ -17,8 +17,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.30.0",
-    "@pulumi/pulumi": "^3.243.0",
+    "@pulumi/aws": "^7.33.0",
+    "@pulumi/pulumi": "^3.246.0",
     "@pulumi/random": "^4.21.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-layers": "0.0.0",
@@ -44,7 +44,7 @@
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.9"
   },
   "adio": {
     "ignoreDirs": [

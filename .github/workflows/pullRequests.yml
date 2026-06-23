@@ -10,7 +10,7 @@ concurrency:
 jobs:
   validateCommits:
     name: Validate commit messages
-    if: github.base_ref != 'dev' && !startsWith(github.head_ref, 'release/')
+    if: github.base_ref != 'dev'
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -23,7 +23,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   validateCommitsDev:
     name: Validate commit messages (dev branch, 'feat' commits not allowed)
-    if: github.base_ref == 'dev' && !startsWith(github.head_ref, 'release/')
+    if: github.base_ref == 'dev'
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -38,7 +38,6 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   constants:
     name: Create constants
-    if: '!startsWith(github.head_ref, ''release/'')'
     outputs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
@@ -134,7 +133,6 @@ jobs:
       - constants
       - build
     name: Build project (core, api, admin)
-    if: '!startsWith(github.head_ref, ''release/'')'
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -209,7 +207,7 @@ jobs:
         run: yarn lint
         working-directory: ${{ github.base_ref }}
       - name: Check Package Node Modules
-        run: yarn check-package-dependencies
+        run: yarn check:node-modules:ci
         working-directory: ${{ github.base_ref }}
       - name: Validate webiny package
         run: yarn webiny-scripts validate-webiny-package
@@ -253,7 +251,6 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
-    if: '!startsWith(github.head_ref, ''release/'')'
     runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@v5
@@ -281,7 +278,8 @@ jobs:
       - constants
       - staticCodeAnalysis
     if: >-
-      failure() && needs.staticCodeAnalysis.result == 'failure' &&
+      failure() && github.event.pull_request.user.login == 'adrians5j' &&
+      needs.staticCodeAnalysis.result == 'failure' &&
       needs.constants.outputs.is-fork-pr != 'true' &&
       needs.constants.outputs.skip-ai-fix != 'true'
     permissions:
@@ -322,7 +320,7 @@ jobs:
           if it reports dependency errors, fix the relevant package.json files.
           2. Run 'yarn check-ts-configs' — if it reports errors, fix them. 3.
           Run 'yarn lint' — if there are still non-auto-fixable errors, read the
-          affected files and fix them. 4. Run 'yarn check-package-dependencies'
+          affected files and fix them. 4. Run 'yarn check:node-modules:ci'
           — if it reports errors, fix them. Work in the current directory."
       - name: Update yarn.lock
         run: yarn
@@ -555,6 +553,91 @@ jobs:
     if: >-
       needs.vitest-ddb-os-constants.outputs.vitest-test-commands != '[]' &&
       needs.constants.outputs.is-fork-pr != 'true'
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
+      - uses: actions/checkout@v5
+        with:
+          path: ${{ github.base_ref }}
+      - uses: actions/cache@v5
+        with:
+          path: ${{ github.base_ref }}/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v5
+        with:
+          path: ${{ github.base_ref }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
+      - name: Build packages
+        run: yarn build
+        working-directory: ${{ github.base_ref }}
+      - name: Run tests
+        run: ${{ matrix.testCommand.cmd }}
+        working-directory: ${{ github.base_ref }}
+    permissions:
+      id-token: write
+  vitest-sql-constants:
+    needs:
+      - constants
+      - build
+    name: Vitest (SQL) - Constants
+    outputs:
+      vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - uses: actions/checkout@v5
+        with:
+          path: ${{ github.base_ref }}
+      - id: list-vitest-test-commands
+        name: List Vitest Test Commands
+        working-directory: ${{ github.base_ref }}
+        run: >-
+          echo "vitest-test-commands=$(node
+          .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
+          '["sql,ddb", ${{ needs.constants.outputs.changed-packages }}]')" >>
+          "$GITHUB_OUTPUT"
+      - name: Packages to test with Vitest
+        id: list-packages
+        run: >-
+          echo '${{ steps.list-vitest-test-commands.outputs.vitest-test-commands
+          }}'
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  vitest-sql-run:
+    needs:
+      - constants
+      - build
+      - vitest-sql-constants
+    name: ${{ matrix.testCommand.title }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        node:
+          - 24
+        testCommand: >-
+          ${{ fromJSON(needs.vitest-sql-constants.outputs.vitest-test-commands)
+          }}
+    runs-on: ${{ matrix.os }}
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_REGION: eu-central-1
+      WEBINY_STORAGE: sql,ddb
+    if: needs.vitest-sql-constants.outputs.vitest-test-commands != '[]'
     steps:
       - uses: actions/setup-node@v5
         with:

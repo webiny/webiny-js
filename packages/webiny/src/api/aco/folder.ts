@@ -35,4 +35,8 @@ export {
     ListFoldersUseCase,
     ListFoldersRepository
 } from "@webiny/api-aco/features/folder/ListFolders/abstractions.js";
-export { FilterStorageOperations } from "@webiny/api-aco/features/folder/shared/abstractions.js";
+export {
+    FilterStorageOperations,
+    FlpStorageOperations
+} from "@webiny/api-aco/features/folder/shared/abstractions.js";
+export type { Folder } from "@webiny/api-aco/folder/folder.types.js";

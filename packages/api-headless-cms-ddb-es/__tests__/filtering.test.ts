@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types";
-import { createPluginsContainer, createQuery } from "./filtering/mocks";
+import { createQuery } from "./filtering/mocks";
 import { createExecFiltering } from "./filtering/mocks/filtering";
 
 describe("convert where to elasticsearch query", () => {
@@ -10,9 +10,7 @@ describe("convert where to elasticsearch query", () => {
 
     beforeEach(() => {
         query = createQuery();
-        execFiltering = createExecFiltering({
-            plugins: createPluginsContainer()
-        });
+        execFiltering = createExecFiltering();
     });
 
     it("should add root level query conditions", async () => {

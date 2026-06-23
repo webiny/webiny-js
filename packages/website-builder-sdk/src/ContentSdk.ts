@@ -77,7 +77,12 @@ export class ContentSdk implements IContentSdk, IRedirects {
         }
 
         this.lastConfig = configHash;
-        const apiClient = new ApiClient(config.apiHost, config.apiKey, config.apiTenant);
+        const apiClient = new ApiClient({
+            apiHost: config.apiHost,
+            apiKey: config.apiKey,
+            apiTenant: config.apiTenant,
+            preview: config.preview
+        });
 
         const dataProvider = new DefaultDataProvider({ apiClient });
 

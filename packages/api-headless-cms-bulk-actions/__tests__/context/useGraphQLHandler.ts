@@ -1,11 +1,11 @@
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { createHandler } from "@webiny/handler-aws";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { until } from "@webiny/project-utils/testing/helpers/until";
+import { until } from "@webiny/project-utils/testing/helpers/until.js";
 import { getIntrospectionQuery } from "graphql";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createIdentity, createPermissions } from "~tests/context/helpers";
@@ -56,8 +56,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 permissions: createPermissions(),
                 identity: createIdentity()
             }),
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
+            createCmsExtension(),
             graphQLHandlerPlugins(),
             createBackgroundTaskContext(),
             createBackgroundTaskGraphQL(),

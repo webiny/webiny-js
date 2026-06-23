@@ -1,8 +1,10 @@
-import { WebsocketsEventRoute } from "~/handler/types.js";
+import type { WebsocketsRoute } from "~/types.js";
 import { createWebsocketsRoutePlugin } from "~/plugins/WebsocketsRoutePlugin.js";
 
+const DEFAULT: WebsocketsRoute = "default";
+
 export const createWebsocketsRouteDefaultPlugin = () => {
-    const plugin = createWebsocketsRoutePlugin(WebsocketsEventRoute.default, async params => {
+    const plugin = createWebsocketsRoutePlugin(DEFAULT, async params => {
         const { response, getIdentity, getTenant } = params;
         const tenant = getTenant();
         const identity = getIdentity();

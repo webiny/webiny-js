@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "./__mocks/context/useHandler.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
 import { createHeadlessCmsScheduler } from "~/index.js";
 import { createMockTargetModelPlugins, MOCK_TARGET_MODEL_ID } from "./__mocks/targetModel.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
@@ -22,10 +21,7 @@ describe("Action Handlers", () => {
 
     beforeEach(async () => {
         const contextHandler = useHandler({
-            plugins: [createHeadlessCmsScheduler(), createMockTargetModelPlugins()],
-            getScheduleClient: () => {
-                return createMockScheduleClient();
-            }
+            plugins: [createHeadlessCmsScheduler(), createMockTargetModelPlugins()]
         });
         context = await contextHandler.handler();
     });

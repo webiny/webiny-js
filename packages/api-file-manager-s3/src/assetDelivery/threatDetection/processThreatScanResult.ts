@@ -1,7 +1,11 @@
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { DeleteFileUseCase } from "@webiny/api-file-manager/features/file/DeleteFile/index.js";
-import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js";
+import {
+    WebsocketsListConnectionsUseCase,
+    WebsocketsSendToConnectionsUseCase,
+    ConnectionRegistry
+} from "@webiny/api-websockets/exports/api.js";
 import type { GuardDutyEvent } from "./types.js";
 import { ObjectKey } from "./ObjectKey.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
@@ -10,7 +14,8 @@ export const processThreatScanResult = async (
     context: ApiCoreContext,
     eventDetail: GuardDutyEvent
 ) => {
-    const websocketService = context.container.resolve(WebsocketService);
+    const listConnections = context.container.resolve(WebsocketsListConnectionsUseCase);
+    const sendToConnections = context.container.resolve(WebsocketsSendToConnectionsUseCase);
     const getFile = context.container.resolve(GetFileUseCase);
     const updateFile = context.container.resolve(UpdateFileUseCase);
     const deleteFile = context.container.resolve(DeleteFileUseCase);
@@ -28,8 +33,8 @@ export const processThreatScanResult = async (
 
         const file = fileResult.value;
 
-        let allConnections: WebsocketService.Connection[] = [];
-        const connectionsResult = await websocketService.listConnections();
+        let allConnections: ConnectionRegistry.Data[] = [];
+        const connectionsResult = await listConnections.execute();
         if (connectionsResult.isOk()) {
             allConnections = connectionsResult.value;
         }
@@ -41,7 +46,7 @@ export const processThreatScanResult = async (
                 tags: newTags
             });
 
-            await websocketService.sendToConnections(allConnections, {
+            await sendToConnections.execute(allConnections, {
                 action: "fm.threatScan.noThreatFound",
                 data: {
                     id: file.id,
@@ -56,7 +61,7 @@ export const processThreatScanResult = async (
             // Delete the infected file.
             await deleteFile.execute(file.id);
 
-            await websocketService.sendToConnections(allConnections, {
+            await sendToConnections.execute(allConnections, {
                 action: "fm.threatScan.threatDetected",
                 data: {
                     id: file.id,
@@ -70,7 +75,7 @@ export const processThreatScanResult = async (
         // For all other outcomes, we delete the file, until better logic is implemented.
         await deleteFile.execute(file.id);
 
-        await websocketService.sendToConnections(allConnections, {
+        await sendToConnections.execute(allConnections, {
             action: "fm.threatScan.unsupported",
             data: {
                 id: file.id,
