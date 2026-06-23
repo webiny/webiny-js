@@ -6,6 +6,7 @@ import { PluginsContainer } from "@webiny/plugins";
 import { Request } from "@webiny/handler";
 import { CmsParametersPlugin } from "@webiny/api-headless-cms/plugins/CmsParametersPlugin.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
+import { Benchmark } from "@webiny/api/Benchmark.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createApiCore } from "@webiny/api-core";
@@ -50,8 +51,10 @@ export const useHandler = (params?: UseHandlerParams) => {
         registerLegacyPluginsViaGqlContextEnhancer(container, legacyPlugins);
 
         const ctx: Record<string, any> = { container, plugins: new PluginsContainer() };
-        // Pre-register "manage" CMS type before context plugins run, since
-        // createContextPlugin() runs before CmsParametersPlugin instances are registered
+        // Pre-seed benchmark and CMS type before context plugins run:
+        // createContextPlugin() builds context.cms with closures that use context.benchmark,
+        // and it runs before CmsParametersPlugin instances are registered.
+        ctx.benchmark = new Benchmark();
         ctx.plugins.register(new CmsParametersPlugin(async () => ({ type: "manage" })));
         for (const enhancer of container.resolveAll(GraphQLContextEnhancer)) {
             await enhancer.enhance(ctx);
