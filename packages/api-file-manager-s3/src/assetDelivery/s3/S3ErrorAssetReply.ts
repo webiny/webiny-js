@@ -1,4 +1,4 @@
-import { AssetReply } from "@webiny/api-file-manager";
+import { AssetReply } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 
 export class S3ErrorAssetReply extends AssetReply {
     public static fromMessage(message: string) {

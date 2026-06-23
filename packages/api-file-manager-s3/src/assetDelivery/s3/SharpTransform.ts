@@ -1,11 +1,6 @@
 import sharp from "sharp";
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
-import type {
-    Asset,
-    AssetRequest,
-    AssetRequestOptions,
-    AssetTransformationStrategy
-} from "@webiny/api-file-manager";
+import type { AssetRequestOptions } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { AssetTransformationStrategy as AssetTransformationStrategyAbstraction } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { WidthCollection } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import * as utils from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
@@ -14,7 +9,7 @@ import { AssetKeyGenerator } from "@webiny/api-file-manager/features/assetDelive
 import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { IS3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
-export class SharpTransform implements AssetTransformationStrategy {
+export class SharpTransform implements AssetTransformationStrategyAbstraction.Interface {
     private readonly s3: S3;
     private readonly bucket: string;
     private readonly imageResizeWidths: number[];
@@ -25,7 +20,10 @@ export class SharpTransform implements AssetTransformationStrategy {
         this.imageResizeWidths = config.imageResizeWidths;
     }
 
-    async transform(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
+    async transform(
+        assetRequest: AssetTransformationStrategyAbstraction.AssetRequest,
+        asset: AssetTransformationStrategyAbstraction.Asset
+    ): Promise<AssetTransformationStrategyAbstraction.Asset> {
         if (!utils.SUPPORTED_TRANSFORMABLE_IMAGES.includes(asset.getExtension())) {
             console.log(
                 `Transformations/optimizations of ${asset.getContentType()} assets are not supported. Skipping.`
@@ -45,7 +43,10 @@ export class SharpTransform implements AssetTransformationStrategy {
         return this.optimizeAsset(transformedAsset);
     }
 
-    private async transformAsset(asset: Asset, options: Omit<AssetRequestOptions, "original">) {
+    private async transformAsset(
+        asset: AssetTransformationStrategyAbstraction.Asset,
+        options: Omit<AssetRequestOptions, "original">
+    ) {
         if (options.width) {
             const assetKey = AssetKeyGenerator.create(asset);
             const transformedAssetKey = assetKey.getTransformedImageKey(options);
@@ -108,7 +109,7 @@ export class SharpTransform implements AssetTransformationStrategy {
         return asset;
     }
 
-    private async optimizeAsset(asset: Asset) {
+    private async optimizeAsset(asset: AssetTransformationStrategyAbstraction.Asset) {
         console.log("Optimize asset", {
             id: asset.getId(),
             key: asset.getKey(),
@@ -172,7 +173,7 @@ export class SharpTransform implements AssetTransformationStrategy {
         }
     }
 
-    private isAssetAnimated(asset: Asset) {
+    private isAssetAnimated(asset: AssetTransformationStrategyAbstraction.Asset) {
         return ["gif", "webp"].includes(asset.getExtension());
     }
 

@@ -1,10 +1,11 @@
-import type { Asset, AssetOutputStrategy, AssetReply } from "@webiny/api-file-manager";
-import { AssetOutputStrategy as AssetOutputStrategyAbstraction } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
-import { StreamAssetReply } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
+import {
+    AssetOutputStrategy as AssetOutputStrategyAbstraction,
+    StreamAssetReply
+} from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
-export class LocalOutputStrategy implements AssetOutputStrategy {
+export class LocalOutputStrategy implements AssetOutputStrategyAbstraction.Interface {
     private readonly assetStreamingMaxSize: number;
     private readonly streamAssetReply: StreamAssetReply.Interface;
 
@@ -13,7 +14,9 @@ export class LocalOutputStrategy implements AssetOutputStrategy {
         this.streamAssetReply = streamAssetReply;
     }
 
-    async output(asset: Asset): Promise<AssetReply> {
+    async output(
+        asset: AssetOutputStrategyAbstraction.Asset
+    ): Promise<AssetOutputStrategyAbstraction.AssetReply> {
         return this.streamAssetReply.create(asset);
     }
 }

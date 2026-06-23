@@ -1,3 +1,9 @@
+export { Asset } from "~/delivery/AssetDelivery/Asset.js";
+export type { AssetData } from "~/delivery/AssetDelivery/Asset.js";
+export { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
+export type { AssetRequestOptions } from "~/delivery/AssetDelivery/AssetRequest.js";
+export { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
+export { createAssetDeliveryPluginLoader } from "~/delivery/AssetDelivery/createAssetDeliveryPluginLoader.js";
 export { AssetRequestResolver } from "~/features/assetDelivery/abstractions/AssetRequestResolver.js";
 export { AssetResolver } from "~/features/assetDelivery/abstractions/AssetResolver.js";
 export { AssetProcessor } from "~/features/assetDelivery/abstractions/AssetProcessor.js";

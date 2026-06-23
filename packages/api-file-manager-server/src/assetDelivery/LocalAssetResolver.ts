@@ -1,4 +1,3 @@
-import type { AssetRequest, AssetResolver } from "@webiny/api-file-manager";
 import {
     AssetFactory,
     AssetResolver as AssetResolverAbstraction,
@@ -16,7 +15,7 @@ interface AssetMetadata {
     bucketKey: string;
 }
 
-export class LocalAssetResolver implements AssetResolver {
+export class LocalAssetResolver implements AssetResolverAbstraction.Interface {
     constructor(
         private readonly keyValueStore: GlobalKeyValueStore.Interface,
         private readonly storagePath: string,
@@ -24,7 +23,9 @@ export class LocalAssetResolver implements AssetResolver {
         private readonly assetFactory: AssetFactory.Interface
     ) {}
 
-    async resolve(request: AssetRequest): Promise<AssetFactory.Asset | undefined> {
+    async resolve(
+        request: AssetResolverAbstraction.Request
+    ): Promise<AssetFactory.Asset | undefined> {
         const objectKey = this.objectKey.from(request.getKey());
         const fileId = objectKey.id();
         const result = await this.keyValueStore.get<AssetMetadata>(

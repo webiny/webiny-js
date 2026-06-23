@@ -1,5 +1,4 @@
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
-import type { AssetRequest, AssetResolver } from "@webiny/api-file-manager";
 import {
     AssetFactory,
     AssetResolver as AssetResolverAbstraction,
@@ -17,7 +16,7 @@ interface AssetMetadata {
     bucketKey: string;
 }
 
-export class S3AssetResolver implements AssetResolver {
+export class S3AssetResolver implements AssetResolverAbstraction.Interface {
     constructor(
         private readonly keyValueStore: GlobalKeyValueStore.Interface,
         private readonly s3: S3,
@@ -26,7 +25,9 @@ export class S3AssetResolver implements AssetResolver {
         private readonly assetFactory: AssetFactory.Interface
     ) {}
 
-    async resolve(request: AssetRequest): Promise<AssetFactory.Asset | undefined> {
+    async resolve(
+        request: AssetResolverAbstraction.Request
+    ): Promise<AssetFactory.Asset | undefined> {
         const fileId = this.objectKey.from(request.getKey()).id();
         const result = await this.keyValueStore.get<AssetMetadata>(
             `FileManager/File/${fileId}/Metadata`

@@ -1,4 +1,4 @@
-import { createAssetDeliveryPluginLoader } from "@webiny/api-file-manager";
+import { createAssetDeliveryPluginLoader } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import type { PluginFactory } from "@webiny/plugins/types.js";
 import type { AssetDeliveryParams } from "~/assetDelivery/types.js";
 

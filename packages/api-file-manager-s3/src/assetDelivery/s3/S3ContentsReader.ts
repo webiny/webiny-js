@@ -1,7 +1,7 @@
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
-import type { Asset, AssetContentsReader } from "@webiny/api-file-manager";
+import { AssetContentsReader } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 
-export class S3ContentsReader implements AssetContentsReader {
+export class S3ContentsReader implements AssetContentsReader.Interface {
     private readonly s3: S3;
     private readonly bucket: string;
 
@@ -14,7 +14,7 @@ export class S3ContentsReader implements AssetContentsReader {
         this.bucket = bucket;
     }
 
-    public async read(asset: Asset): Promise<Buffer> {
+    public async read(asset: AssetContentsReader.Asset): Promise<Buffer> {
         const { Body } = await this.s3.getObject({
             Bucket: this.bucket,
             Key: asset.getKey()

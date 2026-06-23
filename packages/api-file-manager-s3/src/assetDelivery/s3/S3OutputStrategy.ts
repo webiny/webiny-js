@@ -1,4 +1,3 @@
-import type { Asset, AssetOutputStrategy, AssetReply } from "@webiny/api-file-manager";
 import { AssetOutputStrategy as AssetOutputStrategyAbstraction } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { GetObjectCommand, getSignedUrl } from "@webiny/aws-sdk/client-s3/index.js";
@@ -7,7 +6,7 @@ import { S3RedirectAssetReply } from "~/assetDelivery/s3/S3RedirectAssetReply.js
 import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { IS3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
-export class S3OutputStrategy implements AssetOutputStrategy {
+export class S3OutputStrategy implements AssetOutputStrategyAbstraction.Interface {
     private readonly s3: S3;
     private readonly bucket: string;
     private readonly presignedUrlTtl: number;
@@ -27,7 +26,9 @@ export class S3OutputStrategy implements AssetOutputStrategy {
         this.streamAssetReply = streamAssetReply;
     }
 
-    async output(asset: Asset): Promise<AssetReply> {
+    async output(
+        asset: AssetOutputStrategyAbstraction.Asset
+    ): Promise<AssetOutputStrategyAbstraction.AssetReply> {
         if (asset.getSize() > this.assetStreamingMaxSize) {
             console.log(
                 `Asset size is greater than ${this.assetStreamingMaxSize}; redirecting to a presigned S3 URL.`
@@ -45,7 +46,7 @@ export class S3OutputStrategy implements AssetOutputStrategy {
         return this.streamAssetReply.create(asset);
     }
 
-    protected getPresignedUrl(asset: Asset) {
+    protected getPresignedUrl(asset: AssetOutputStrategyAbstraction.Asset) {
         return getSignedUrl(
             this.s3,
             new GetObjectCommand({
