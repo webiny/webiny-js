@@ -233,6 +233,30 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-file-manager/src/features/assetDelivery/ObjectKey/abstractions.ts`
 - **Usage:** DI factory for parsing bucket keys (`tenants/<tenant>/files/<id>/...`). `ObjectKey.Interface` has `from(key): ObjectKey.Instance` where the instance exposes `id()` and `relativeKey()`. Registered by `AssetDeliveryFeature`. Used by asset resolvers and threat detection in both provider packages.
 
+### Asset (File Manager — Asset Delivery)
+
+- **Import:** `import { Asset } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Type:** See `packages/api-file-manager/src/delivery/AssetDelivery/Asset.ts`
+- **Usage:** Domain class representing an uploaded file for delivery. Created via `Asset.create(data)` (private constructor). Exposes `getId()`, `getTenant()`, `getKey()`, `getSize()`, `getContentType()`, `getExtension()`, `getContents()`, `clone()`, `withProps()`. Accepts `setContentsReader()` and `setOutputStrategy()`.
+
+### AssetRequest (File Manager — Asset Delivery)
+
+- **Import:** `import { AssetRequest } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Type:** See `packages/api-file-manager/src/delivery/AssetDelivery/AssetRequest.ts`
+- **Usage:** Domain class representing an incoming asset request. Created via `AssetRequest.create(data)` (private constructor). Exposes `getKey()`, `getOptions()`, `setOptions()`, `getContext()`, `getExtension()`. `AssetRequestOptions` type is also exported.
+
+### AssetReply (File Manager — Asset Delivery)
+
+- **Import:** `import { AssetReply } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Type:** See `packages/api-file-manager/src/delivery/AssetDelivery/abstractions/AssetReply.ts`
+- **Usage:** Base class for asset delivery responses. Created via `AssetReply.create(params?)`. Exposes `getCode()`, `setCode()`, `getBody()`, `setBody()`, `getHeaders()`, `setHeaders()`. Subclassed by `NullAssetReply`, `S3ErrorAssetReply`, `S3RedirectAssetReply`.
+
+### createAssetDeliveryPluginLoader (File Manager — Asset Delivery)
+
+- **Import:** `import { createAssetDeliveryPluginLoader } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Type:** See `packages/api-file-manager/src/delivery/AssetDelivery/createAssetDeliveryPluginLoader.ts`
+- **Usage:** Wraps a plugin factory so it only loads when `WEBINY_FUNCTION_TYPE === "asset-delivery"`. Used by S3 and server packages to conditionally load asset delivery config.
+
 ### MetadataWriter (File Manager — Upload)
 
 - **Import:** `import { MetadataWriter } from "@webiny/api-file-manager/features/upload/WriteFileMetadata/abstractions.js"`
