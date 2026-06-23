@@ -1,5 +1,9 @@
-export { AssetFactory } from "@webiny/api-file-manager/features/assetDelivery/Asset/abstractions.js";
-export { AssetRequestFactory } from "@webiny/api-file-manager/features/assetDelivery/AssetRequest/abstractions.js";
+export { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
+export type { AssetData } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
+export { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
+export type { AssetRequestOptions } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
+export { AssetReply } from "@webiny/api-file-manager/delivery/AssetDelivery/abstractions/AssetReply.js";
+export { createAssetDeliveryPluginLoader } from "@webiny/api-file-manager/delivery/AssetDelivery/createAssetDeliveryPluginLoader.js";
 export { AssetRequestResolver } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetRequestResolver.js";
 export { AssetResolver } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetResolver.js";
 export { AssetProcessor } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetProcessor.js";
@@ -7,5 +11,7 @@ export { AssetOutputStrategy } from "@webiny/api-file-manager/features/assetDeli
 export { AssetTransformationStrategy } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetTransformationStrategy.js";
 export { AssetContentsReader } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetContentsReader.js";
 export { AssetAuthorizer } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetAuthorizer.js";
+export { AssetFactory } from "@webiny/api-file-manager/features/assetDelivery/Asset/abstractions.js";
+export { AssetRequestFactory } from "@webiny/api-file-manager/features/assetDelivery/AssetRequest/abstractions.js";
 export { StreamAssetReply } from "@webiny/api-file-manager/features/assetDelivery/StreamAssetReply/abstractions.js";
 export { ObjectKey } from "@webiny/api-file-manager/features/assetDelivery/ObjectKey/abstractions.js";
