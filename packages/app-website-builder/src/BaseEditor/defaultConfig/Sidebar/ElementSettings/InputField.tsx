@@ -88,7 +88,12 @@ function ObjectField({ element, node, bindings }: ObjectFieldProps) {
         <div className={"flex flex-col gap-xs"}>
             <ObjectFieldHeader description={node.input.description} />
             <ObjectRow title={label} onOpen={() => setOpen(true)} />
-            <ObjectFieldPanel open={open} onClose={() => setOpen(false)} title={label} depth={depth}>
+            <ObjectFieldPanel
+                open={open}
+                onClose={() => setOpen(false)}
+                title={label}
+                depth={depth}
+            >
                 {node.children.map(child => (
                     <InputField
                         key={child.path}
