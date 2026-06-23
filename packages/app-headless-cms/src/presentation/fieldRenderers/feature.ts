@@ -27,7 +27,7 @@ import {
     RefSimpleMultipleRenderer,
     RefDetailedSingleRenderer,
     RefDetailedMultipleRenderer
-} from "./renderers/index.js";
+} from "../fieldTypes/renderers/index.js";
 
 export const CmsFieldRendererFeature = createFeature({
     name: "CmsFieldRenderers",

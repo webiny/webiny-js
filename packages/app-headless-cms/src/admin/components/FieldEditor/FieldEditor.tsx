@@ -35,20 +35,20 @@ const Editor = () => {
         field,
         dropTarget,
         getFieldType,
-        getLayoutFieldPlugin,
+        getLayoutFieldType,
         getField
     } = useModelFieldEditor();
 
     /**
      * Collect all data fields referenced inside a layout descriptor (e.g. fields inside tabs).
-     * Delegates to the layout field plugin's `collectFields` method if available.
+     * Delegates to the layout field type's `collectFields` method if available.
      */
     const collectLayoutFieldFields = (layoutField: CmsLayoutField): CmsModelField[] => {
-        const plugin = getLayoutFieldPlugin(layoutField.type);
-        if (!plugin?.field.collectFields) {
+        const lft = getLayoutFieldType(layoutField.type);
+        if (!lft || !lft.collectFields) {
             return [];
         }
-        return plugin.field.collectFields({
+        return lft.collectFields({
             field: layoutField,
             getField: (id: string) => getField({ id })
         });

@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as DateTimeIcon } from "~/admin/plugins/fields/icons/schedule-black-24px.svg";
+import { ReactComponent as DateTimeIcon } from "@webiny/icons/schedule.svg";
 import { CmsFieldType } from "../abstractions.js";
 
 class DateTimeFieldTypeImpl implements CmsFieldType.Interface {

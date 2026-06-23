@@ -84,13 +84,3 @@ export const FieldElement = makeDecoratable(
         );
     }
 );
-
-/**
- * @deprecated Use `FieldElement` instead.
- */
-export const RenderFieldElement = FieldElement;
-
-/**
- * @deprecated Use `FieldElementProps` instead.
- */
-export type RenderFieldElementProps = FieldElementProps;

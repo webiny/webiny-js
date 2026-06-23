@@ -7,11 +7,11 @@ import { ReactComponent as HomeIcon } from "@webiny/icons/home.svg";
 import { ReactComponent as FolderIcon } from "@webiny/icons/folder.svg";
 import { FolderTree } from "@webiny/app-aco/presentation/folderTree/FolderTree.js";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries/list/ContentEntryListConfig.js";
-import { SidebarFooter } from "~/admin/components/ContentEntries/SidebarFooter/SidebarFooter.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 import { ContentEntryFormView } from "./ContentEntryFormView.js";
 import { Table } from "./Table/Table.js";
 import { CmsAdvancedSearch } from "./CmsAdvancedSearch.js";
+import { SidebarFooter } from "./SidebarFooter.js";
 
 export const ContentEntriesListLayout = observer(() => {
     const presenter = useContentEntriesPresenter();

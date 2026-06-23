@@ -4,10 +4,7 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { useContainer } from "@webiny/app";
 import type {
     CmsEditorFieldId,
-    CmsModelFieldRendererPlugin,
     CmsEditorFieldsLayout,
-    CmsModelFieldTypePlugin,
-    CmsModelLayoutFieldTypePlugin,
     CmsModelField,
     DragSource,
     FieldLayoutPosition
@@ -17,7 +14,6 @@ import type {
     CmsEditorLayoutCell
 } from "@webiny/app-headless-cms-common/types/model.js";
 import { isLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
-import { plugins } from "@webiny/plugins";
 import * as utils from "./utils/index.js";
 import type { FieldEditorProps } from "./FieldEditor.js";
 import type { DragSourceMonitor } from "react-dnd";
@@ -25,6 +21,14 @@ import { useModelFieldEditor } from "~/admin/components/FieldEditor/useModelFiel
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import type { DragObject } from "../Droppable.js";
 import { CmsFieldType, type ICmsFieldType } from "~/presentation/fieldTypes/abstractions.js";
+import {
+    CmsFieldRenderer,
+    type ICmsFieldRenderer
+} from "~/presentation/fieldRenderers/abstractions.js";
+import {
+    CmsLayoutFieldType,
+    type ICmsLayoutFieldType
+} from "~/presentation/fieldTypes/abstractions.js";
 
 interface DropTarget {
     row: number;
@@ -67,17 +71,14 @@ interface DeleteLayoutCellCallable {
 interface MoveLayoutCellCallable {
     (fieldId: string, position: FieldLayoutPosition): void;
 }
-interface GetLayoutFieldPluginCallable {
-    (type: string): CmsModelLayoutFieldTypePlugin | undefined;
-}
-interface GetFieldPluginCallable {
-    (type: string): CmsModelFieldTypePlugin | undefined;
+interface GetLayoutFieldTypeCallable {
+    (type: string): ICmsLayoutFieldType | undefined;
 }
 interface GetFieldCallable {
     (query: GetFieldParams): CmsModelField | undefined;
 }
 interface GetFieldRendererCallable {
-    (rendererName: string): CmsModelFieldRendererPlugin | undefined;
+    (rendererName: string): ICmsFieldRenderer | undefined;
 }
 interface OnFieldDropCallable {
     (source: Partial<DragSource>, target: DropTarget): void;
@@ -112,10 +113,9 @@ export interface FieldEditorContext {
     layout: CmsEditorFieldsLayout;
     onChange?: (data: any) => void;
     getFieldsInLayout: GetFieldsInLayoutCallable;
-    getFieldPlugin: GetFieldPluginCallable;
     getFieldType: (type: string) => ICmsFieldType | undefined;
     getField: GetFieldCallable;
-    getFieldRendererPlugin: GetFieldRendererCallable;
+    getFieldRenderer: GetFieldRendererCallable;
     editField: (field: CmsModelField | null) => void;
     field: CmsModelField | null;
     parent?: CmsModelField;
@@ -133,7 +133,7 @@ export interface FieldEditorContext {
     updateLayoutCell: UpdateLayoutCellCallable;
     deleteLayoutCell: DeleteLayoutCellCallable;
     moveLayoutCell: MoveLayoutCellCallable;
-    getLayoutFieldPlugin: GetLayoutFieldPluginCallable;
+    getLayoutFieldType: GetLayoutFieldTypeCallable;
     addField: AddFieldCallable;
     removeField: RemoveFieldCallable;
 }
@@ -202,6 +202,24 @@ export const FieldEditorProvider = ({
         return map;
     }, [container]);
 
+    const fieldRenderersMap = useMemo(() => {
+        const all = container.resolveAll(CmsFieldRenderer);
+        const map = new Map<string, ICmsFieldRenderer>();
+        for (const r of all) {
+            map.set(r.rendererName, r);
+        }
+        return map;
+    }, [container]);
+
+    const layoutFieldTypesMap = useMemo(() => {
+        const all = container.resolveAll(CmsLayoutFieldType);
+        const map = new Map<string, ICmsLayoutFieldType>();
+        for (const lft of all) {
+            map.set(lft.type, lft);
+        }
+        return map;
+    }, [container]);
+
     const [state, setState] = useState<State>({
         layout,
         fields,
@@ -251,11 +269,11 @@ export const FieldEditorProvider = ({
 
         // Handle new layout field drops (separator, alert, tabs, etc.)
         if (type === "newLayoutField") {
-            const plugin = getLayoutFieldPlugin(source.layoutFieldType || "");
-            if (!plugin) {
+            const lft = getLayoutFieldType(source.layoutFieldType || "");
+            if (!lft) {
                 return null;
             }
-            const layoutField = plugin.field.createField();
+            const layoutField = lft.createField();
             insertLayoutCell(layoutField, dropTarget);
             return null;
         }
@@ -360,19 +378,8 @@ export const FieldEditorProvider = ({
             }) as (CmsModelField | CmsLayoutField)[][];
     };
 
-    /**
-     * Return field plugin.
-     */
-    const getFieldPlugin: GetFieldPluginCallable = type => {
-        return plugins
-            .byType<CmsModelFieldTypePlugin>("cms-editor-field-type")
-            .find(plugin => plugin.field.type === type);
-    };
-
-    const getFieldRendererPlugin: GetFieldRendererCallable = name => {
-        return plugins
-            .byType<CmsModelFieldRendererPlugin>("cms-editor-field-renderer")
-            .find(plugin => plugin.renderer.rendererName === name);
+    const getFieldRenderer: GetFieldRendererCallable = name => {
+        return fieldRenderersMap.get(name);
     };
 
     /**
@@ -489,13 +496,8 @@ export const FieldEditorProvider = ({
         }));
     };
 
-    /**
-     * Return layout field plugin by type.
-     */
-    const getLayoutFieldPlugin: GetLayoutFieldPluginCallable = type => {
-        return plugins
-            .byType<CmsModelLayoutFieldTypePlugin>("cms-editor-layout-field-type")
-            .find(plugin => plugin.field.type === type);
+    const getLayoutFieldType: GetLayoutFieldTypeCallable = type => {
+        return layoutFieldTypesMap.get(type);
     };
 
     /**
@@ -668,9 +670,8 @@ export const FieldEditorProvider = ({
         parentEditorContext,
         depth,
         getFieldsInLayout,
-        getFieldPlugin,
         getFieldType: (type: string) => fieldTypesMap.get(type),
-        getFieldRendererPlugin,
+        getFieldRenderer,
         getField,
         editField,
         field: state.field,
@@ -686,7 +687,7 @@ export const FieldEditorProvider = ({
         updateLayoutCell,
         deleteLayoutCell,
         moveLayoutCell,
-        getLayoutFieldPlugin,
+        getLayoutFieldType,
         addField,
         removeField,
         fields: getFieldsInLayout(),

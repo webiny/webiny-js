@@ -119,7 +119,6 @@
     "./admin/ui/lexical": "./admin/ui/lexical.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
-    "./admin/cms/field-renderers/common": "./admin/cms/field-renderers/common.js",
     "./admin/cms/field-renderers/dynamic-zone": "./admin/cms/field-renderers/dynamic-zone.js",
     "./admin/cms/field-renderers/object": "./admin/cms/field-renderers/object.js",
     "./admin/cms/lexical": "./admin/cms/lexical.js",
@@ -142,7 +141,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "8e97435777df36627ba311b5f8ae6935f57b7c81cf33e4a35c7549bee859fda5",
+  "exportGenerationHash": "bd12be0b99082f2f83c3d359c73467e58a13b8028c7edc239ae69096d96a9450",
   "webiny": {
     "publishFrom": "dist"
   }

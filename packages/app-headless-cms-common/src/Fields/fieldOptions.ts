@@ -1,5 +1,4 @@
-import type { CmsModelField, CmsEditorFieldsLayout } from "~/types/model.js";
-import type { CmsModelLayoutFieldTypePlugin } from "~/types/index.js";
+import type { CmsModelField, CmsEditorFieldsLayout, CmsLayoutField } from "~/types/model.js";
 import { isLayoutField } from "~/types/model.js";
 
 export interface FieldOption {
@@ -8,19 +7,24 @@ export interface FieldOption {
     fieldType: string;
 }
 
+export interface LayoutFieldTypeForOptions {
+    readonly type: string;
+    getFieldLabelPrefixes?(params: { field: CmsLayoutField }): Record<string, string>;
+}
+
 /**
  * Walk a model layout and collect label prefixes for each field ID by delegating
- * to `getFieldLabelPrefixes` on the matching layout-field-type plugin.
+ * to `getFieldLabelPrefixes` on the matching layout field type.
  *
  * Returns a map from fieldId to its label prefix string
  * (e.g., `"metaTitle" → "My Tabs › SEO"`).
  */
 export function buildFieldLabelPrefixes(
     layout: CmsEditorFieldsLayout,
-    plugins: CmsModelLayoutFieldTypePlugin[]
+    layoutFieldTypes: LayoutFieldTypeForOptions[]
 ): Map<string, string> {
     const map = new Map<string, string>();
-    const pluginByType = new Map(plugins.map(p => [p.field.type, p]));
+    const byType = new Map(layoutFieldTypes.map(lft => [lft.type, lft]));
 
     for (const row of layout) {
         for (const cell of row) {
@@ -28,12 +32,12 @@ export function buildFieldLabelPrefixes(
                 continue;
             }
 
-            const plugin = pluginByType.get(cell.type);
-            if (!plugin?.field.getFieldLabelPrefixes) {
+            const lft = byType.get(cell.type);
+            if (!lft || !lft.getFieldLabelPrefixes) {
                 continue;
             }
 
-            const prefixes = plugin.field.getFieldLabelPrefixes({ field: cell });
+            const prefixes = lft.getFieldLabelPrefixes({ field: cell });
             for (const [fieldId, prefix] of Object.entries(prefixes)) {
                 map.set(fieldId, prefix);
             }
@@ -68,7 +72,7 @@ export function buildFieldOptions(
     prefix = "",
     labelPrefix = "",
     fieldLabelPrefixes?: Map<string, string>,
-    layoutPlugins?: CmsModelLayoutFieldTypePlugin[]
+    layoutFieldTypes?: LayoutFieldTypeForOptions[]
 ): FieldOption[] {
     const options: FieldOption[] = [];
 
@@ -101,8 +105,8 @@ export function buildFieldOptions(
         if (childFields && childFields.length > 0) {
             // Build label prefixes from the object field's own layout (e.g., tabs inside an object).
             let childPrefixes: Map<string, string> | undefined;
-            if (layoutPlugins && field.settings?.layout) {
-                childPrefixes = buildFieldLabelPrefixes(field.settings.layout, layoutPlugins);
+            if (layoutFieldTypes && field.settings?.layout) {
+                childPrefixes = buildFieldLabelPrefixes(field.settings.layout, layoutFieldTypes);
             }
 
             if (field.list) {
@@ -119,7 +123,7 @@ export function buildFieldOptions(
                         `${path}.$.`,
                         `${label} › `,
                         childPrefixes,
-                        layoutPlugins
+                        layoutFieldTypes
                     )
                 );
             } else {
@@ -130,7 +134,7 @@ export function buildFieldOptions(
                         `${path}.`,
                         `${label} › `,
                         childPrefixes,
-                        layoutPlugins
+                        layoutFieldTypes
                     )
                 );
             }

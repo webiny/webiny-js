@@ -56,6 +56,9 @@ const createFieldsList = ({ model, fields }: CreateFieldsListParams): string => 
 };
 
 export const createAppFields = (model: AcoModel) => {
+    if (model.valuesSelection) {
+        return model.valuesSelection;
+    }
     return createFieldsList({
         model,
         fields: model.fields

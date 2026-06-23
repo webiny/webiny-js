@@ -7,6 +7,7 @@ import { Drawer } from "@webiny/admin-ui";
 import type { CmsModelField } from "~/types.js";
 import { useModelEditor, useModelField } from "~/admin/hooks/index.js";
 import { FieldEditorPresenter } from "~/presentation/fieldEditor/abstractions.js";
+import { CmsFieldType } from "~/presentation/fieldTypes/abstractions.js";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -16,18 +17,21 @@ interface EditFieldDialogProps {
 }
 
 const EditFieldDialog = observer((props: EditFieldDialogProps) => {
-    const { field, fieldPlugin } = useModelField();
+    const { field } = useModelField();
     const { data: contentModel, setData: setContentModelData } = useModelEditor();
 
     const container = useContainer();
     const presenter = useMemo(() => container.resolve(FieldEditorPresenter), [container]);
+    const fieldType = useMemo(() => {
+        return container.resolveAll(CmsFieldType).find(ft => ft.type === field.type);
+    }, [container, field.type]);
 
     useEffect(() => {
         presenter.init(field, contentModel);
     }, []);
 
     const headerTitle = t`Field Settings - {fieldTypeLabel}`({
-        fieldTypeLabel: fieldPlugin.field.label
+        fieldTypeLabel: fieldType ? fieldType.label : field.type
     });
 
     const isTitleField = contentModel.titleFieldId === field.fieldId;

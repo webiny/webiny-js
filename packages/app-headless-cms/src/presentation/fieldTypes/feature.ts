@@ -17,6 +17,9 @@ import { RichTextFieldSettingsModifier } from "./types/RichTextFieldSettingsModi
 import { BooleanFieldSettingsModifier } from "./types/BooleanFieldSettingsModifier.js";
 import { DateTimeFieldSettingsModifier } from "./types/DateTimeFieldSettingsModifier.js";
 import { RefFieldSettingsModifier } from "./types/RefFieldSettingsModifier.js";
+import { TabsLayoutFieldType } from "./types/layout/TabsLayoutFieldType.js";
+import { SeparatorLayoutFieldType } from "./types/layout/SeparatorLayoutFieldType.js";
+import { AlertLayoutFieldType } from "./types/layout/AlertLayoutFieldType.js";
 
 export const CmsFieldTypeFeature = createFeature({
     name: "CmsFieldTypes",
@@ -39,5 +42,8 @@ export const CmsFieldTypeFeature = createFeature({
         container.register(BooleanFieldSettingsModifier);
         container.register(DateTimeFieldSettingsModifier);
         container.register(RefFieldSettingsModifier);
+        container.register(TabsLayoutFieldType);
+        container.register(SeparatorLayoutFieldType);
+        container.register(AlertLayoutFieldType);
     }
 });

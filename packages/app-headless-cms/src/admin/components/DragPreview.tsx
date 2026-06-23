@@ -6,7 +6,7 @@ import { DragCursor } from "@webiny/admin-ui";
 import { dropZoneOverState } from "./dropZoneOverState.js";
 import { getDragInfo } from "./getDragInfo.js";
 import type { DragSource } from "~/types.js";
-import { CmsFieldType, type ICmsFieldType } from "~/presentation/fieldTypes/abstractions.js";
+import { CmsFieldType, CmsLayoutFieldType, type ICmsFieldType } from "~/presentation/fieldTypes/abstractions.js";
 
 let dragPreviewRef: HTMLDivElement | null = null;
 
@@ -20,6 +20,14 @@ const DragPreview = () => {
         const map = new Map<string, ICmsFieldType>();
         for (const ft of all) {
             map.set(ft.type, ft);
+        }
+        return map;
+    }, [container]);
+    const layoutFieldTypesMap = useMemo(() => {
+        const all = container.resolveAll(CmsLayoutFieldType);
+        const map = new Map<string, CmsLayoutFieldType.Interface>();
+        for (const lft of all) {
+            map.set(lft.type, lft);
         }
         return map;
     }, [container]);
@@ -61,7 +69,7 @@ const DragPreview = () => {
         return null;
     }
 
-    const { label, icon } = getDragInfo(item, fieldTypesMap);
+    const { label, icon } = getDragInfo(item, fieldTypesMap, layoutFieldTypesMap);
 
     return (
         <div className={"fixed pointer-events-none left-0 top-0 w-full h-full z-[1001]"}>

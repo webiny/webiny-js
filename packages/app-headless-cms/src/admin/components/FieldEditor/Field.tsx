@@ -82,7 +82,7 @@ const Field = (props: FieldProps) => {
     const { field, onEdit, parent } = props;
     const { showSnackbar, showErrorSnackbar } = useSnackbar();
     const { setData: setModel, data: model } = useModelEditor();
-    const { getFieldPlugin, getFieldType, getFieldRendererPlugin } = useModelFieldEditor();
+    const { getFieldType, getFieldRenderer } = useModelFieldEditor();
 
     const removeFieldFromSelected = useCallback(async () => {
         if (model.titleFieldId === field.fieldId) {
@@ -152,7 +152,6 @@ const Field = (props: FieldProps) => {
     }, [field.fieldId, setModel]);
 
     const fieldType = getFieldType(field.type);
-    const fieldPlugin = getFieldPlugin(field.type);
     const editorFieldOptionPlugins =
         plugins.byType<CmsEditorFieldOptionPlugin>("cms-editor-field-option");
 
@@ -160,7 +159,7 @@ const Field = (props: FieldProps) => {
         return null;
     }
 
-    const rendererPlugin = getFieldRendererPlugin(field.renderer.name);
+    const renderer = getFieldRenderer(field.renderer.name);
     const canEdit = fieldType.canEditSettings !== false;
 
     const defaultInformationRenderer = useMemo(() => {
@@ -177,9 +176,9 @@ const Field = (props: FieldProps) => {
         return fn;
     }, [field.id]);
 
-    const fieldInformationRenderer = fieldPlugin ? fieldPlugin.field?.renderInfo : undefined;
+    const fieldInformationRenderer = fieldType.renderInfo;
 
-    const info = [rendererPlugin?.renderer.name, field.list ? "multiple values" : null]
+    const info = [renderer?.name, field.list ? "multiple values" : null]
         .filter(Boolean)
         .join(", ");
 

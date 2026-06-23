@@ -1,5 +1,4 @@
 export * from "./FieldElement.js";
-export * from "./Fields.js";
 export * from "./useBind.js";
 export * from "./FieldRulesProvider.js";
 export * from "./evaluateExpression.js";

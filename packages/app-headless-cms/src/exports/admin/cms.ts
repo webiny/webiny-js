@@ -1,10 +1,4 @@
 export { CmsGraphQLClient } from "~/features/graphQLClient/index.js";
-export { CmsContentFormRenderer } from "~/legacyPluginAdapters/CmsContentFormRenderer.js";
-export { CmsModelFieldValidator } from "~/legacyPluginAdapters/CmsModelFieldValidator.js";
-export { CmsModelFieldType } from "~/legacyPluginAdapters/CmsModelFieldType.js";
-export { CmsModelFieldRenderer } from "~/legacyPluginAdapters/CmsModelFieldRenderer.js";
-export { CmsModelLayoutFieldType } from "~/legacyPluginAdapters/CmsModelLayoutFieldType.js";
-export { CmsModelLayoutFieldRenderer } from "~/legacyPluginAdapters/CmsModelLayoutFieldRenderer.js";
 export { useQuery } from "~/admin/hooks/useQuery.js";
 export { useCms } from "~/admin/hooks/useCms.js";
 export { useLazyQuery } from "~/admin/hooks/useLazyQuery.js";

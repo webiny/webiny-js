@@ -1,6 +1,5 @@
 import React from "react";
 import type { CmsModelField } from "~/types/index.js";
-import { createGenericContext } from "@webiny/app-admin";
 
 export type ModelFieldContext = CmsModelField;
 
@@ -13,17 +12,4 @@ export interface ModelFieldProviderProps {
 
 export const ModelFieldProvider = ({ field, children }: ModelFieldProviderProps) => {
     return <ModelFieldContext.Provider value={field}>{children}</ModelFieldContext.Provider>;
-};
-
-const { Provider, useHook } = createGenericContext<{ index: number }>("FieldIndex");
-
-export const ParentValueIndexProvider = Provider;
-
-export const useParentValueIndex = () => {
-    try {
-        const context = useHook();
-        return context.index;
-    } catch {
-        return -1;
-    }
 };

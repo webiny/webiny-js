@@ -1,29 +1,10 @@
 import { useContext } from "react";
-import { plugins } from "@webiny/plugins";
 import { makeDecoratable } from "@webiny/react-composition";
-import { ModelFieldContext, useParentValueIndex } from "./ModelFieldContext.js";
-import type { CmsModelField, CmsModelFieldTypePlugin } from "~/types/index.js";
-
-interface GetFieldPlugin {
-    (type: string): CmsModelFieldTypePlugin;
-}
-
-const getFieldPlugin: GetFieldPlugin = type => {
-    const plugin = plugins
-        .byType<CmsModelFieldTypePlugin>("cms-editor-field-type")
-        .find(plugin => plugin.field.type === type);
-
-    if (!plugin) {
-        throw Error(`Missing plugin for field type "${type}"!`);
-    }
-
-    return plugin;
-};
+import { ModelFieldContext } from "./ModelFieldContext.js";
+import type { CmsModelField } from "~/types/index.js";
 
 export interface UseModelField {
     field: CmsModelField;
-    parentValueIndex: number;
-    fieldPlugin: CmsModelFieldTypePlugin;
 }
 
 /**
@@ -38,9 +19,5 @@ export const useModelField = makeDecoratable((): UseModelField => {
         );
     }
 
-    const parentValueIndex = useParentValueIndex();
-
-    const fieldPlugin = getFieldPlugin(field.type);
-
-    return { field, fieldPlugin, parentValueIndex };
+    return { field };
 });

@@ -5,10 +5,8 @@ import { AdminConfig, Provider, RegisterFeature } from "@webiny/app-admin";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app";
 import { CmsProvider } from "~/admin/contexts/Cms/index.js";
 import apiInformation from "~/admin/plugins/apiInformation/index.js";
-import { ContentEntriesModule } from "~/admin/views/contentEntries/ContentEntriesModule.js";
-import allPlugins from "~/allPlugins.js";
+import headlessCmsPlugins from "~/admin/plugins/index.js";
 import { LexicalEditorCmsPlugin } from "~/admin/components/LexicalCmsEditor/LexicalEditorCmsPlugin.js";
-import { SingletonContentEntryModule } from "~/admin/views/contentEntries/SingletonContentEntryModule.js";
 import { RoutesConfig } from "./admin/RoutesConfig.js";
 import { CmsSecurityPermission } from "~/admin/plugins/permissionRenderer/index.js";
 import { CmsPermissionsFeature } from "~/features/permissions/feature.js";
@@ -37,7 +35,7 @@ import { CmsConditionRulesRenderer } from "~/presentation/fieldEditor/renderers/
 import {
     EditTemplateDialog,
     EDIT_DZ_TEMPLATE_DIALOG
-} from "~/admin/plugins/fields/dynamicZone/EditTemplateDialog.js";
+} from "~/presentation/fieldTypes/types/dynamicZone/EditTemplateDialog.js";
 
 interface HeadlessCMSProvider {
     children: React.ReactNode;
@@ -76,7 +74,7 @@ const attachTypeName = ["CmsContentEntry", "RefField"];
 
 const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
     plugins.register(apiInformation);
-    plugins.register(allPlugins);
+    plugins.register(headlessCmsPlugins());
 
     plugins.register(
         new ApolloCacheObjectIdPlugin(obj => {
@@ -103,8 +101,6 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
             <RegisterFeature feature={FieldEditorFeature} />
             <RegisterFeature feature={CmsFieldValidatorFeature} />
             <RoutesConfig />
-            <ContentEntriesModule />
-            <SingletonContentEntryModule />
             <Provider hoc={createHeadlessCMSProvider(createApolloClient)} />
             <LexicalEditorCmsPlugin />
             <CmsSecurityPermission />

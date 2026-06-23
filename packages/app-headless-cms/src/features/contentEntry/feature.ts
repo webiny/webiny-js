@@ -17,12 +17,14 @@ import { BulkActionFeature } from "./bulkAction/feature.js";
 import { CmsTrashBinFeature } from "./trashBin/feature.js";
 import { SearchContentEntriesFeature } from "./searchContentEntries/feature.js";
 import { GetContentEntriesFeature } from "./getContentEntries/feature.js";
+import { ValueTransformersFeature } from "./valueTransformers/feature.js";
 
 export const ContentEntryFeature = createFeature({
     name: "CmsContentEntry",
     register(container) {
         container.register(ContentEntriesCacheProviderImplementation).inSingletonScope();
 
+        ValueTransformersFeature.register(container);
         GetEntryFeature.register(container);
         ListEntriesFeature.register(container);
         SearchContentEntriesFeature.register(container);

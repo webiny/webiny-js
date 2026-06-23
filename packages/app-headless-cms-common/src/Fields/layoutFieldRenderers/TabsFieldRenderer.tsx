@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { CmsTabLayoutField, CmsTabLayoutTab } from "~/types/model.js";
 import type { BindComponent, CmsEditorContentModel, CmsModelField } from "~/types/index.js";
 import { normalizeIcon } from "~/normalizeIcon.js";
-import { Fields } from "~/Fields/index.js";
 import { FieldRulesProvider } from "~/Fields/FieldRulesProvider.js";
 import { useFieldEffectiveRules } from "~/Fields/useFieldRules.js";
 
@@ -24,7 +23,7 @@ interface TabPanelProps {
     gridClassName?: string;
 }
 
-const TabPanel = ({ tab, Bind, fields, contentModel, gridClassName }: TabPanelProps) => {
+const TabPanel = ({ tab }: TabPanelProps) => {
     const rules = useFieldEffectiveRules(tab);
 
     const icon = normalizeIcon(tab.icon);
@@ -38,13 +37,7 @@ const TabPanel = ({ tab, Bind, fields, contentModel, gridClassName }: TabPanelPr
             icon={icon ? <FontAwesomeIcon icon={icon} size={"sm"} /> : undefined}
             content={
                 <FieldRulesProvider rules={rules}>
-                    <Fields
-                        Bind={Bind}
-                        fields={fields}
-                        layout={tab.layout}
-                        contentModel={contentModel}
-                        gridClassName={gridClassName}
-                    />
+                   <div>Legacy Fields</div>
                 </FieldRulesProvider>
             }
         />

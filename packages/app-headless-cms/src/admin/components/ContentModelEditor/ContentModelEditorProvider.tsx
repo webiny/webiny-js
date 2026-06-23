@@ -12,8 +12,8 @@ import type {
 import { GET_CONTENT_MODEL, UPDATE_CONTENT_MODEL } from "~/admin/graphql/contentModels.js";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql.js";
 import type { CmsModel, CmsModelField } from "~/types.js";
-import type { CmsModelLayoutFieldTypePlugin } from "@webiny/app-headless-cms-common/types/index.js";
 import type { FetchResult } from "apollo-link";
+import { useContainer } from "@webiny/app";
 import { ModelProvider } from "~/admin/components/ModelProvider/index.js";
 import { createHashing } from "@webiny/app/utils/index.js";
 import { Routes } from "~/routes.js";
@@ -22,7 +22,7 @@ import {
     buildFieldOptions,
     buildFieldLabelPrefixes
 } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
-import { plugins } from "@webiny/plugins";
+import { CmsLayoutFieldType } from "~/presentation/fieldTypes/abstractions.js";
 
 export interface ContentModelEditorProviderContext {
     apolloClient: ApolloClient<any>;
@@ -238,9 +238,10 @@ export const ContentModelEditorProvider = ({
         });
     }, [modelId]);
 
-    const layoutFieldPlugins = plugins.byType<CmsModelLayoutFieldTypePlugin>(
-        "cms-editor-layout-field-type"
-    );
+    const container = useContainer();
+    const layoutFieldTypes = useMemo(() => {
+        return container.resolveAll(CmsLayoutFieldType);
+    }, [container]);
 
     const fieldOptions = useMemo(() => {
         const model = state.data;
@@ -248,9 +249,9 @@ export const ContentModelEditorProvider = ({
             return [];
         }
         const prefixes = model.layout
-            ? buildFieldLabelPrefixes(model.layout, layoutFieldPlugins)
+            ? buildFieldLabelPrefixes(model.layout, layoutFieldTypes)
             : undefined;
-        return buildFieldOptions(model.fields ?? [], "", "", prefixes, layoutFieldPlugins);
+        return buildFieldOptions(model.fields ?? [], "", "", prefixes, layoutFieldTypes);
     }, [state.data?.fields, state.data?.layout]);
 
     const value = useMemo<ContentModelEditorProviderContext>(

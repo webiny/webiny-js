@@ -3,7 +3,7 @@ import { ReactComponent as DynamicZoneIcon } from "@webiny/icons/dynamic_form.sv
 import { CmsFieldType } from "../abstractions.js";
 import type { CmsModelField } from "~/types.js";
 import type { CmsModelFieldValidatorsGroup } from "@webiny/app-headless-cms-common/types/validation.js";
-import { DynamicZone } from "~/admin/plugins/fields/dynamicZone/DynamicZone.js";
+import { DynamicZone } from "./dynamicZone/DynamicZone.js";
 
 const listValidators: CmsModelFieldValidatorsGroup = {
     validators: ["minLength", "maxLength"],

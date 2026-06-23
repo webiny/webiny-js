@@ -3,8 +3,8 @@ import { observer } from "mobx-react-lite";
 import { AdvancedSearch, GraphQLInputMapper, useFilterRepository } from "@webiny/app-aco";
 import type { FilterDTO } from "@webiny/app-aco/components/AdvancedSearch/domain/index.js";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
-import { FieldsMapper } from "~/admin/components/ContentEntries/Filters/FieldsMapper.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
+import { FieldsMapper } from "./FieldsMapper.js";
 
 const SYSTEM_FIELD_PREFIXES = ["status", "createdOn", "savedOn", "AND", "OR"];
 

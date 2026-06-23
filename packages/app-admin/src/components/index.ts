@@ -14,7 +14,7 @@ export {
     SimpleFormFooter,
     SimpleFormHeader
 } from "~/components/SimpleForm/index.js";
-export { type SingleImageUploadProps } from "~/components/SingleImageUpload.js";
+export { SingleImageUpload, type SingleImageUploadProps } from "~/components/SingleImageUpload.js";
 export { LexicalEditor } from "~/components/LexicalEditor/index.js";
 export type { RichTextValueWithHtml } from "~/components/LexicalEditor/index.js";
 export { LexicalLinkForm } from "~/components/LexicalEditor/index.js";
