@@ -1,46 +1,104 @@
-import type { CreateHandlerCoreParams } from "./plugins";
-import { createHandlerCore } from "./plugins";
-import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import { defaultIdentity } from "./tenancySecurity";
-import type { LambdaContext } from "@webiny/handler-aws/types";
-import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
+import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { ApiCoreFeature } from "@webiny/api-core";
+import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
+import { GraphQLEngineFeature, GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { RegisterExtensionPlugin } from "@webiny/handler";
+import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { registerSchedulerExtension } from "@webiny/api-scheduler";
+import { processLegacyPlugins } from "./bridgeLegacyPlugins";
+import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
+import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
+import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
+import { RootTenantInitializer } from "./mocks/RootTenantInitializer";
+import type {
+    SchedulerClient,
+    SchedulerClientConfig
+} from "@webiny/aws-sdk/client-scheduler/index.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
-interface CmsHandlerEvent {
-    path: string;
-    headers: {
-        ["x-tenant"]: string;
-        [key: string]: string;
-    };
+export interface UseHandlerParams {
+    getScheduleClient: (config?: SchedulerClientConfig) => Pick<SchedulerClient, "send">;
+    permissions?: SecurityPermission[];
+    identity?: IdentityData;
 }
 
-export const useHandler = <C extends CmsContext>(params: CreateHandlerCoreParams) => {
-    const core = createHandlerCore(params);
+const defaultIdentity: IdentityData = {
+    id: "id-12345678",
+    type: "admin",
+    displayName: "John Doe"
+};
 
-    const plugins = [...core.plugins].concat([
-        createRawEventHandler<CmsHandlerEvent, C, C>(async ({ context }) => {
-            return context;
-        })
-    ]);
+export const useHandler = (params: UseHandlerParams) => {
+    const { permissions, identity } = params;
 
-    const handler = createRawHandler<CmsHandlerEvent, C>({
-        plugins,
-        debug: process.env.DEBUG === "true"
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+
+    const resolvedIdentity = identity ?? defaultIdentity;
+    const resolvedPermissions = (permissions ?? [{ name: "*" }]) as SecurityPermission[];
+
+    let capturedCtx: any = null;
+
+    const handler = createTestHttpHandler({
+        root: container => {
+            container.registerInstance(TestIdentity, resolvedIdentity);
+            container.registerInstance(TestPermissions, resolvedPermissions);
+            container.register(TestAuthenticator);
+            container.register(TestAuthorizer);
+            container.registerDecorator(AuthTriggerHandler);
+            container.registerDecorator(RootTenantInitializer);
+        },
+        request: async container => {
+            const wcpLicense = await loadWcpLicense(createTestWcpLicense());
+            ApiCoreFeature.register(container, {
+                ...apiCoreStorage.storageOperations,
+                wcpLicense
+            });
+            processLegacyPlugins(container, cmsStorage.plugins);
+            HeadlessCmsFeature.register(container, { type: "manage" });
+
+            const schedulerPlugins = registerSchedulerExtension();
+            processLegacyPlugins(
+                container,
+                schedulerPlugins.filter(p => p instanceof RegisterExtensionPlugin)
+            );
+            const schedulerContextPlugins = schedulerPlugins.filter(
+                p => !(p instanceof RegisterExtensionPlugin)
+            );
+
+            container.registerFactory(GraphQLContextEnhancer, () => ({
+                async enhance(ctx: Record<string, any>): Promise<void> {
+                    for (const plugin of schedulerContextPlugins) {
+                        if (typeof (plugin as any).apply === "function") {
+                            await (plugin as any).apply(ctx);
+                        }
+                    }
+                    capturedCtx = ctx;
+                }
+            }));
+
+            GraphQLEngineFeature.register(container);
+        }
     });
 
     return {
-        plugins,
-        identity: params.identity || defaultIdentity,
-        tenant: core.tenant,
-        handler: (input?: CmsHandlerEvent) => {
-            const payload: CmsHandlerEvent = {
-                path: "/cms/manage",
+        handler: async () => {
+            await handler({
+                method: "POST",
+                path: "/graphql",
                 headers: {
-                    "x-webiny-cms-endpoint": "manage",
-                    "x-tenant": "root"
+                    "x-tenant": "root",
+                    "content-type": "application/json",
+                    authorization: "Bearer test-token"
                 },
-                ...input
-            };
-            return handler(payload, {} as LambdaContext);
+                body: { query: "{ __typename }" }
+            });
+            return capturedCtx;
         }
     };
 };
