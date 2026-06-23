@@ -1,21 +1,16 @@
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { FileAfterBatchCreateEventHandler } from "~/features/file/CreateFilesInBatch/events.js";
-import { MetadataWriter } from "./MetadataWriter.js";
-import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { MetadataWriter } from "./abstractions.js";
 
 class WriteMetadataAfterBatchCreateHandlerImpl
     implements FileAfterBatchCreateEventHandler.Interface
 {
-    private readonly metadataWriter: MetadataWriter;
+    private readonly metadataWriter: MetadataWriter.Interface;
 
-    constructor(
-        tenantContext: TenantContext.Interface,
-        keyValueStore: GlobalKeyValueStore.Interface
-    ) {
-        this.metadataWriter = new MetadataWriter(tenantContext, keyValueStore);
+    public constructor(metadataWriter: MetadataWriter.Interface) {
+        this.metadataWriter = metadataWriter;
     }
 
-    async handle(event: FileAfterBatchCreateEventHandler.Event): Promise<void> {
+    public async handle(event: FileAfterBatchCreateEventHandler.Event): Promise<void> {
         const { files } = event.payload;
         await this.metadataWriter.write(files);
     }
@@ -24,5 +19,5 @@ class WriteMetadataAfterBatchCreateHandlerImpl
 export const WriteMetadataAfterBatchCreateHandler =
     FileAfterBatchCreateEventHandler.createImplementation({
         implementation: WriteMetadataAfterBatchCreateHandlerImpl,
-        dependencies: [TenantContext, GlobalKeyValueStore]
+        dependencies: [MetadataWriter]
     });

@@ -1,17 +1,23 @@
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import type { File } from "~/domain/file/types.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import {
+    MetadataWriter as MetadataWriterAbstraction,
+    type IMetadataWriter
+} from "./abstractions.js";
 
-export class MetadataWriter {
-    constructor(
-        private readonly tenantContext: TenantContext.Interface,
-        private readonly keyValueStore: GlobalKeyValueStore.Interface
-    ) {}
+class MetadataWriterImpl implements IMetadataWriter {
+    private readonly tenantContext: TenantContext.Interface;
+    private readonly keyValueStore: GlobalKeyValueStore.Interface;
 
-    async write(files: File[]) {
-        /*
-         * We need to write each file with retry.
-         */
+    public constructor(
+        tenantContext: TenantContext.Interface,
+        keyValueStore: GlobalKeyValueStore.Interface
+    ) {
+        this.tenantContext = tenantContext;
+        this.keyValueStore = keyValueStore;
+    }
+
+    public async write(files: MetadataWriterAbstraction.File[]) {
         const writers = files.map(async file => {
             const metadata = this.getMetadata(file);
             await this.keyValueStore.set(`FileManager/File/${file.id}/Metadata`, metadata);
@@ -20,7 +26,7 @@ export class MetadataWriter {
         await Promise.all(writers);
     }
 
-    private getMetadata(file: File) {
+    private getMetadata(file: MetadataWriterAbstraction.File) {
         const tenant = this.tenantContext.getTenant();
         return {
             id: file.id,
@@ -31,3 +37,8 @@ export class MetadataWriter {
         };
     }
 }
+
+export const MetadataWriter = MetadataWriterAbstraction.createImplementation({
+    implementation: MetadataWriterImpl,
+    dependencies: [TenantContext, GlobalKeyValueStore]
+});
