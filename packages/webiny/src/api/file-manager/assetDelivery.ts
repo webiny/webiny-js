@@ -1,3 +1,5 @@
+export { AssetFactory } from "@webiny/api-file-manager/features/assetDelivery/Asset/abstractions.js";
+export { AssetRequestFactory } from "@webiny/api-file-manager/features/assetDelivery/AssetRequest/abstractions.js";
 export { AssetRequestResolver } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetRequestResolver.js";
 export { AssetResolver } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetResolver.js";
 export { AssetProcessor } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetProcessor.js";
