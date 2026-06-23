@@ -65,8 +65,13 @@ export { useTenantContext } from "./presentation/tenancy/useTenantContext.js";
 export { useIdentity } from "./presentation/security/hooks/useIdentity.js";
 export { useAuthentication } from "./presentation/security/hooks/useAuthentication.js";
 export { useBuildParams } from "./presentation/buildParams/useBuildParams.js";
-export { useTheme, THEMES, THEME_KEY } from "./base/Base/ThemeMode/useTheme.js";
-export type { ThemeOption, UseTheme } from "./base/Base/ThemeMode/useTheme.js";
+export { useTheme, THEME_KEY } from "./base/Base/ThemeMode/useTheme.js";
+export type { UseTheme } from "./base/Base/ThemeMode/useTheme.js";
+export { createTheme } from "./config/AdminConfig/Theme/createTheme.js";
+export { lightTheme } from "./config/AdminConfig/Theme/lightTheme.js";
+export type { Theme } from "./config/AdminConfig/Theme/types.js";
+// Re-exported from @webiny/admin-ui so extension theme files can import everything from here.
+export { darkThemeBase, type ThemeVariables } from "@webiny/admin-ui";
 
 // Legacy hook for easier migration
 export { useSecurity } from "./presentation/security/hooks/useSecurity.js";

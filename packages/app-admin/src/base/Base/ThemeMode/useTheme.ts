@@ -1,58 +1,53 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
+import { useAdminConfig } from "~/config/AdminConfig.js";
+import { lightTheme } from "~/config/AdminConfig/Theme/lightTheme.js";
+import type { Theme } from "~/config/AdminConfig/Theme/types.js";
+import { applyTheme } from "./applyTheme.js";
 
 export const THEME_KEY = "webiny/theme";
-export const DEFAULT_THEME = "light";
-
-export interface ThemeOption {
-    id: string;
-    label: string;
-}
-
 /**
- * Available admin UI themes. "light" is the default; the rest are dark themes activated by
- * setting `data-theme="<id>"` on <html> — each id has a matching block in @webiny/admin-ui
- * `theme.css`. Add a theme here and a palette there to introduce a new one.
+ * The selected theme's CSS variables are cached here so the applier can re-apply them
+ * immediately on load, without waiting for the theme registry (extension) to populate.
  */
-export const THEMES: ThemeOption[] = [
-    { id: "light", label: "Light" },
-    { id: "webiny-dark", label: "Webiny Dark" },
-    { id: "dracula", label: "Dracula" },
-    { id: "github-dark", label: "GitHub Dark" },
-    { id: "one-dark-pro", label: "One Dark Pro" },
-    { id: "tokyo-night", label: "Tokyo Night" },
-    { id: "catppuccin-mocha", label: "Catppuccin Mocha" }
-];
+export const THEME_VARIABLES_KEY = "webiny/theme-variables";
+export const DEFAULT_THEME = lightTheme.id;
 
 export interface UseTheme {
+    /** The selected theme id (from local storage, or "light" by default). */
     theme: string;
+    /** Persist the selection and apply it immediately. */
     setTheme: (id: string) => void;
-    themes: ThemeOption[];
+    /** All selectable themes: the built-in Light theme plus the ones registered via the extension. */
+    themes: Theme[];
 }
 
 /**
- * Reads and persists the selected admin UI theme in local storage. The value is stored as a
- * plain theme id string; reads are reactive via `useLocalStorageValue`, so consumers (the
- * applier and the sidebar switcher) re-render when the theme changes.
+ * Reads the registered themes (built-in Light + any registered via
+ * `<AdminConfig.Theme.Register>`) and the selected theme id from local storage. Selection is
+ * persisted under `webiny/theme`; with nothing stored, Light is used. `setTheme` persists and
+ * applies immediately, while `ThemeModeApplier` applies on load and reactively.
  */
 export const useTheme = (): UseTheme => {
-    const stored = useLocalStorageValue<string>(THEME_KEY);
+    const { themes: registeredThemes } = useAdminConfig();
+    const storedTheme = useLocalStorageValue<string>(THEME_KEY);
     const { set } = useLocalStorage();
 
-    const theme = THEMES.some(t => t.id === stored) ? (stored as string) : DEFAULT_THEME;
+    const themes = useMemo<Theme[]>(() => [lightTheme, ...registeredThemes], [registeredThemes]);
+
+    const theme = storedTheme || DEFAULT_THEME;
 
     const setTheme = useCallback(
         (id: string) => {
+            const next = themes.find(t => t.id === id) ?? lightTheme;
             set(THEME_KEY, id);
-            // Apply immediately and synchronously. Persisting + relying on the reactive
-            // `ThemeModeApplier` is enough on reload, but applying here guarantees the click
-            // takes effect right away regardless of cross-component store propagation.
-            if (typeof document !== "undefined") {
-                document.documentElement.setAttribute("data-theme", id);
-            }
+            // Cache the resolved variables so a page reload can apply them without waiting for
+            // the theme registry to re-populate.
+            set(THEME_VARIABLES_KEY, next.variables);
+            applyTheme(next.variables);
         },
-        [set]
+        [set, themes]
     );
 
-    return { theme, setTheme, themes: THEMES };
+    return { theme, setTheme, themes };
 };

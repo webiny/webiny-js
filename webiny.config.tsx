@@ -15,6 +15,7 @@ export const Extensions = () => {
             <Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />
             <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
             <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
+            <Admin.Extension src={"@/extensions/adminThemes/index.tsx"} />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}

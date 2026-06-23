@@ -1,12 +1,24 @@
 import React, { useEffect } from "react";
 import type { Preview } from "@storybook/react";
 import { AdminUiProvider } from "../src/AdminUiProvider/AdminUiProvider.js";
+import { darkThemeBase } from "../src/themes/darkThemeBase.js";
 
 import "../src/theme.css";
 
-const ThemeMode = ({ theme }: { theme: string }) => {
+/**
+ * Themes are applied as runtime CSS variables (the real admin does this from registered theme
+ * files). Storybook can't import the project's theme files, so it previews "Webiny Dark" by
+ * applying the shared `darkThemeBase` mapping over the default ramp.
+ */
+const applyTheme = (variables: Record<string, string>) => {
+    const root = document.documentElement;
+    Object.keys(darkThemeBase).forEach(key => root.style.removeProperty(key));
+    Object.entries(variables).forEach(([key, value]) => root.style.setProperty(key, value));
+};
+
+const ThemeApplier = ({ theme }: { theme: string }) => {
     useEffect(() => {
-        document.documentElement.setAttribute("data-theme", theme);
+        applyTheme(theme === "dark" ? darkThemeBase : {});
     }, [theme]);
     return null;
 };
@@ -25,12 +37,7 @@ const preview: Preview = {
                 icon: "contrast",
                 items: [
                     { value: "light", title: "Light", icon: "sun" },
-                    { value: "webiny-dark", title: "Webiny Dark", icon: "moon" },
-                    { value: "dracula", title: "Dracula", icon: "moon" },
-                    { value: "github-dark", title: "GitHub Dark", icon: "moon" },
-                    { value: "one-dark-pro", title: "One Dark Pro", icon: "moon" },
-                    { value: "tokyo-night", title: "Tokyo Night", icon: "moon" },
-                    { value: "catppuccin-mocha", title: "Catppuccin Mocha", icon: "moon" }
+                    { value: "dark", title: "Webiny Dark", icon: "moon" }
                 ],
                 dynamicTitle: true
             }
@@ -39,7 +46,7 @@ const preview: Preview = {
     decorators: [
         (Story, context) => (
             <AdminUiProvider>
-                <ThemeMode theme={context.globals.theme} />
+                <ThemeApplier theme={context.globals.theme} />
                 <Story />
             </AdminUiProvider>
         )

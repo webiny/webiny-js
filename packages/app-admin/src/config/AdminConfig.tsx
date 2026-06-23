@@ -7,6 +7,7 @@ import type { SupportMenuConfig } from "./AdminConfig/Menu/SupportMenu.js";
 import type { UserMenuConfig } from "./AdminConfig/Menu/UserMenu.js";
 import { Route } from "./AdminConfig/Route.js";
 import { Theme } from "./AdminConfig/Theme.js";
+import type { Theme as ThemeDefinition } from "./AdminConfig/Theme/types.js";
 import { Dashboard } from "./AdminConfig/Dashboard.js";
 import { type WidgetConfig } from "./AdminConfig/Widget.js";
 import { Security } from "./AdminConfig/Security.js";
@@ -43,6 +44,7 @@ interface AdminConfig {
     dialogs: DialogConfig[];
     fieldRenderers: FieldRendererConfig[];
     layoutRenderers: LayoutRendererConfig[];
+    themes: ThemeDefinition[];
 }
 
 /* Once the app fully renders (after the LoginScreen), apply protected configs. */
@@ -85,7 +87,8 @@ export const useAdminConfig = () => {
         lexicalTheme,
         dialogs: baseConfig.dialogs ?? [],
         fieldRenderers: baseConfig.fieldRenderers ?? [],
-        layoutRenderers: baseConfig.layoutRenderers ?? []
+        layoutRenderers: baseConfig.layoutRenderers ?? [],
+        themes: baseConfig.themes ?? []
     };
 };
 
