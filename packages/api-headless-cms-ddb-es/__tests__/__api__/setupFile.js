@@ -2,7 +2,6 @@ import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing/dynamodb/index.js";
-import { ContextPlugin } from "@webiny/api";
 import { registerCmsOpenSearchStorageOperations } from "../../src/index";
 import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
@@ -45,20 +44,20 @@ setStorageOps("cms", () => {
      *
      * When creating, updating, creating from, publishing, unpublishing and deleting we need to refresh index.
      */
-    const createOrRefreshIndexSubscription = new ContextPlugin(async context => {
-        context.container.registerFactory(EntryBeforeCreateEventHandler, () => ({
+    const createOrRefreshIndexSubscription = createRegisterExtensionPlugin(({ container }) => {
+        container.registerFactory(EntryBeforeCreateEventHandler, () => ({
             async handle(event) {
-                const client = context.container.resolve(OpenSearchClient);
+                const client = container.resolve(OpenSearchClient);
                 const { model } = event.payload;
                 const index = createIndexName(model);
                 try {
-                    const response = await client.indices.exists({
+                    const response = await client.use().indices.exists({
                         index
                     });
                     if (response.body) {
                         return;
                     }
-                    await client.indices.create({
+                    await client.use().indices.create({
                         index,
                         body: {
                             ...getBaseConfiguration().body
