@@ -1,63 +1,99 @@
-import { createApiCore } from "@webiny/api-core";
-import createGraphQLHandler from "@webiny/handler-graphql";
-import { createEventHandler, createHandler } from "@webiny/handler-aws/raw";
-import type { AcoContext } from "~/types";
-import { createTenancyAndSecurity } from "./tenancySecurity";
-import { createCmsExtension } from "@webiny/api-headless-cms";
-import { createAco } from "~/index";
-import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createIdentity } from "./identity";
+import { Container } from "@webiny/di";
+import { RequestContainer } from "@webiny/event-handler-core";
+import { ApiCoreFeature } from "@webiny/api-core";
+import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
+import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
+import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
+import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
-import { SecurityPermission } from "@webiny/api-core/types/security.js";
-import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { AcoFeature } from "~/index";
+import { createIdentity } from "./identity";
+import { processLegacyPlugins } from "./bridgeLegacyPlugins";
+import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
+import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
+import type { AcoContext } from "~/types";
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
-    plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
 }
 
 export const useHandler = (params: UseHandlerParams = {}) => {
-    const { permissions, plugins = [] } = params;
+    const { permissions = [{ name: "*" }] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const apiAcoStorage = getStorageOps<ApiCoreStorageOperations>("aco");
+    const apiAcoStorage = getStorageOps<any>("aco");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
-    const testProjectLicense = createTestWcpLicense();
+    const resolvedIdentity = createIdentity();
+    const resolvedPermissions = permissions;
 
-    const handler = createHandler<any, AcoContext>({
-        plugins: [
-            createApiCore({
-                storageOperations: apiCoreStorage.storageOperations,
-                testProjectLicense
-            }),
-            ...apiAcoStorage.plugins,
-            ...cmsStorage.plugins,
-            createGraphQLHandler(),
-            ...createTenancyAndSecurity({ permissions, identity: createIdentity() }),
-            createCmsExtension(),
-            createAco(),
-            createEventHandler<any, AcoContext, AcoContext>(async ({ context }) => {
-                return context;
-            }),
-            plugins
-        ]
-    });
+    // Root container is created once; child containers are per-call (mirrors createHandler).
+    let rootContainer: Container | null = null;
+
+    const buildContext = async (): Promise<AcoContext> => {
+        if (!rootContainer) {
+            rootContainer = new Container();
+            rootContainer.registerInstance(TestIdentity, resolvedIdentity);
+            rootContainer.registerInstance(TestPermissions, resolvedPermissions);
+            rootContainer.register(TestAuthenticator);
+            rootContainer.register(TestAuthorizer);
+        }
+
+        const container = rootContainer.createChildContainer();
+        container.registerInstance(RequestContainer, container);
+
+        const wcpLicense = await loadWcpLicense(createTestWcpLicense());
+        ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense });
+        processLegacyPlugins(container, apiAcoStorage.plugins);
+        processLegacyPlugins(container, cmsStorage.plugins);
+        HeadlessCmsFeature.register(container, { type: "manage" });
+        container.register(FileModel);
+        AcoFeature.register(container);
+
+        // Set tenant before enhancers run (replicates RootTenantInitializer).
+        const tenantCtx = container.resolve(TenantContext);
+        tenantCtx.setTenant({
+            id: "root",
+            name: "Root",
+            description: "",
+            status: "enabled",
+            isInstalled: false,
+            settings: {
+                name: { full: "Root", slug: "root" },
+                social: {},
+                favicon: {},
+                logo: {}
+            } as any,
+            tags: [],
+            parent: null,
+            createdOn: new Date().toISOString(),
+            savedOn: new Date().toISOString()
+        });
+
+        // Authenticate and set identity (replicates AuthTriggerHandler).
+        const authCtx = container.resolve(AuthenticationContext);
+        const identityCtx = container.resolve(IdentityContext);
+        const identity = await authCtx.authenticate("");
+        identityCtx.setIdentity(identity);
+
+        // Build context by running all GraphQL context enhancers (replicates GraphQLEngineImpl.buildContext).
+        const enhancers = container.resolveAll(GraphQLContextEnhancer);
+        const ctx: Record<string, any> = { container };
+        for (const enhancer of enhancers) {
+            await enhancer.enhance(ctx);
+        }
+
+        return ctx as AcoContext;
+    };
 
     return {
-        handler: () => {
-            return handler(
-                {
-                    headers: {
-                        ["x-tenant"]: "root",
-                        ["Content-Type"]: "application/json"
-                    }
-                } as unknown as APIGatewayEvent,
-                {} as unknown as LambdaContext
-            );
-        }
+        handler: buildContext
     };
 };

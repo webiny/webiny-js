@@ -1,10 +1,28 @@
-import { createApiCore } from "@webiny/api-core";
-import { createCmsExtension } from "@webiny/api-headless-cms";
-import { createHandler } from "@webiny/handler-aws";
-import createGraphQLHandler from "@webiny/handler-graphql";
-import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createTenancyAndSecurity } from "./tenancySecurity";
+import { getIntrospectionQuery } from "graphql";
+import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { ApiCoreFeature } from "@webiny/api-core";
+import { GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
+import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
+import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { until } from "@webiny/project-utils/testing/helpers/until.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
+import type { CmsModel } from "@webiny/api-headless-cms/types";
+import { ContextPlugin } from "@webiny/api";
+import { AcoFeature } from "~/index";
+import { createIdentity } from "./identity";
+import { processLegacyPlugins } from "./bridgeLegacyPlugins";
+import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
+import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
+import { RootTenantInitializer } from "./handlers/RootTenantInitializer";
+import { AuthTriggerHandler } from "./handlers/AuthTriggerHandler";
+import { createAcoSdk } from "~tests/utils/createAcoSdk.js";
 
 import {
     CREATE_RECORD,
@@ -26,24 +44,10 @@ import {
     UPDATE_ENTRY
 } from "~tests/graphql/cms";
 
-import { createAco } from "~/index";
-import { createIdentity } from "./identity";
-import { getIntrospectionQuery } from "graphql";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
-import type { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createFileManagerContext } from "@webiny/api-file-manager";
-import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
-import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
-import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import { createAcoSdk } from "~tests/utils/createAcoSdk.js";
-
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
     identity?: IdentityData | null;
-    plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
+    plugins?: any;
     storageOperationPlugins?: any[];
     testProjectLicense?: DecryptedWcpProjectLicense;
 }
@@ -59,80 +63,86 @@ interface InvokeParams {
 }
 
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
-    const { permissions, identity, plugins = [] } = params;
+    const { permissions, identity } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const apiAcoStorage = getStorageOps<ApiCoreStorageOperations>("aco");
+    const apiAcoStorage = getStorageOps<any>("aco");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
-    const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
+    const resolvedIdentity = identity === undefined ? createIdentity() : identity;
+    const resolvedPermissions: SecurityPermission[] =
+        permissions === undefined ? [{ name: "*" }] : permissions;
 
-    const handler = createHandler({
-        plugins: [
-            createApiCore({
-                storageOperations: apiCoreStorage.storageOperations,
-                testProjectLicense
-            }),
-            ...apiAcoStorage.plugins,
-            ...cmsStorage.plugins,
-            createGraphQLHandler(),
-            ...createTenancyAndSecurity({
-                permissions,
-                identity: identity === undefined ? createIdentity() : identity
-            }),
-            createCmsExtension(),
-            createFileManagerContext(),
-            createAco(),
-            plugins
-        ],
-        debug: false
+    const handler = createTestHttpHandler({
+        root: container => {
+            container.registerInstance(TestIdentity, resolvedIdentity);
+            container.registerInstance(TestPermissions, resolvedPermissions);
+            container.register(TestAuthenticator);
+            container.register(TestAuthorizer);
+            container.registerDecorator(AuthTriggerHandler);
+            container.registerDecorator(RootTenantInitializer);
+        },
+        request: async container => {
+            const wcpLicense = await loadWcpLicense(
+                params.testProjectLicense ?? createTestWcpLicense()
+            );
+
+            ApiCoreFeature.register(container, {
+                ...apiCoreStorage.storageOperations,
+                wcpLicense
+            });
+
+            processLegacyPlugins(container, apiAcoStorage.plugins);
+            processLegacyPlugins(container, cmsStorage.plugins);
+
+            if (params.plugins) {
+                const extraPlugins = [params.plugins].flat(Infinity as 1);
+                for (const plugin of extraPlugins) {
+                    if (plugin instanceof ContextPlugin) {
+                        await plugin.apply({ container } as any);
+                    }
+                }
+                processLegacyPlugins(container, extraPlugins);
+            }
+
+            HeadlessCmsFeature.register(container, { type: "manage" });
+            container.register(FileModel);
+            AcoFeature.register(container);
+            GraphQLEngineFeature.register(container);
+        }
     });
 
-    // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
-        const response = await handler(
-            {
-                path: "/graphql",
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as unknown as APIGatewayEvent,
-            {} as unknown as LambdaContext
-        );
-
-        // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body), response];
+    const invoke = async ({ httpMethod = "POST", body, headers = {} }: InvokeParams) => {
+        const response = await handler({
+            method: httpMethod,
+            path: "/graphql",
+            headers: {
+                "x-tenant": "root",
+                "content-type": "application/json",
+                ...headers
+            },
+            body
+        });
+        return [response.body, response];
     };
 
     const invokeCms = async ({
         httpMethod = "POST",
         type = "manage",
         body,
-        headers = {},
-        ...rest
+        headers = {}
     }: InvokeParams) => {
-        const response = await handler(
-            {
-                path: `/cms/${type}`,
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as unknown as APIGatewayEvent,
-            {} as LambdaContext
-        );
-
-        // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body), response];
+        const response = await handler({
+            method: httpMethod,
+            path: `/cms/${type}`,
+            headers: {
+                "x-tenant": "root",
+                "content-type": "application/json",
+                ...headers
+            },
+            body
+        });
+        return [response.body, response];
     };
 
     const search = {
@@ -160,15 +170,12 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     };
 
     const cms = {
-        // Models, model groups, entries.
         async createContentModel(variables: Record<string, any>) {
             return invokeCms({ body: { query: CREATE_CONTENT_MODEL, variables } });
         },
-
         async createContentModelGroup(variables: Record<string, any>) {
             return invokeCms({ body: { query: CREATE_CONTENT_MODEL_GROUP, variables } });
         },
-
         async createTestModelGroup() {
             return cms
                 .createContentModelGroup({
@@ -183,7 +190,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                     return response.data.createContentModelGroup.data;
                 });
         },
-
         async createBasicModel(variables: Record<string, any>) {
             return cms
                 .createContentModel({
@@ -200,23 +206,18 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                     return response.data.createContentModel.data as CmsModel;
                 });
         },
-
         async createEntry(model: CmsModel, variables: Record<string, any>) {
             return invokeCms({ body: { query: CREATE_ENTRY(model), variables } });
         },
-
         async updateEntry(model: CmsModel, variables: Record<string, any>) {
             return invokeCms({ body: { query: UPDATE_ENTRY(model), variables } });
         },
-
         async deleteEntry(model: CmsModel, variables: Record<string, any>) {
             return invokeCms({ body: { query: DELETE_ENTRY(model), variables } });
         },
-
         async listEntries(model: CmsModel, variables: Record<string, any> = {}) {
             return invokeCms({ body: { query: LIST_ENTRIES(model), variables } });
         },
-
         async getEntry(model: CmsModel, variables: Record<string, any>) {
             return invokeCms({ body: { query: GET_ENTRY(model), variables } });
         }
@@ -233,11 +234,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         search,
         cms,
         async introspect() {
-            return invoke({
-                body: {
-                    query: getIntrospectionQuery()
-                }
-            });
+            return invoke({ body: { query: getIntrospectionQuery() } });
         }
     };
 };
