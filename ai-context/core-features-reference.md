@@ -233,6 +233,18 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-file-manager/src/features/assetDelivery/ObjectKey/abstractions.ts`
 - **Usage:** DI factory for parsing bucket keys (`tenants/<tenant>/files/<id>/...`). `ObjectKey.Interface` has `from(key): ObjectKey.Instance` where the instance exposes `id()` and `relativeKey()`. Registered by `AssetDeliveryFeature`. Used by asset resolvers and threat detection in both provider packages.
 
+### MetadataWriter (File Manager — Upload)
+
+- **Import:** `import { MetadataWriter } from "@webiny/api-file-manager/features/upload/WriteFileMetadata/abstractions.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/upload/WriteFileMetadata/abstractions.ts`
+- **Usage:** DI abstraction for writing file metadata to the key-value store. `MetadataWriter.Interface` has a `write(files: File[]): Promise<void>` method. Registered by `WriteFileMetadataFeature`. Used by `WriteMetadataAfterCreateHandler` and `WriteMetadataAfterBatchCreateHandler` event handlers.
+
+### MetadataReader (File Manager — Upload)
+
+- **Import:** `import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/upload/ReadFileMetadata/abstractions.ts`
+- **Usage:** DI abstraction for reading file metadata from the key-value store. `MetadataReader.Interface` has a `read(fileId: string): Promise<AssetMetadata | undefined>` method. Registered by `ReadFileMetadataFeature`. Used by `ExtractMetadataTask` and `GetFileContentsByIdUseCase` in both provider packages.
+
 ### Encryption
 
 - **Import:** `import { Encryption } from "@webiny/api-core/features/encryption"`
