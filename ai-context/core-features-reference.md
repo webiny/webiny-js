@@ -209,6 +209,12 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-file-manager/src/features/extractMetadata/ExtractMetadataInput.ts`
 - **Usage:** Input interface for the metadata extraction task (`{ fileId: string }`). Used by both `ExtractMetadataHandler` and provider-specific `ExtractMetadataTask` implementations.
 
+### AssetRequestFactory (File Manager — Asset Delivery)
+
+- **Import:** `import { AssetRequestFactory } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/assetDelivery/AssetRequest/abstractions.ts`
+- **Usage:** DI factory for creating `AssetRequest` instances. `AssetRequestFactory.Interface` has a `create(data: AssetRequestData): AssetRequest` method. Registered by `AssetDeliveryFeature`. Used by `FilesAssetRequestResolver` and `PrivateFileAssetRequestResolver` instead of direct `new AssetRequest()` calls.
+
 ### StreamAssetReply (File Manager — Asset Delivery)
 
 - **Import:** `import { StreamAssetReply } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
