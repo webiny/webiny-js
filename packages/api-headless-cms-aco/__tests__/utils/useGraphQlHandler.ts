@@ -1,17 +1,22 @@
-import createGraphQLHandler from "@webiny/handler-graphql";
-import { CmsParametersPlugin, createCmsExtension } from "@webiny/api-headless-cms";
-import { createHandler } from "@webiny/handler-aws";
-import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createTenancyAndSecurity } from "./tenancySecurity";
-import { createAcoHcmsContext } from "~/index";
-import { createAco } from "@webiny/api-aco";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import type { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getIntrospectionQuery } from "graphql";
-import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
-import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
+import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { ApiCoreFeature } from "@webiny/api-core";
+import { GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
+import { HeadlessCmsContextualSchema } from "@webiny/api-headless-cms/HeadlessCmsContextualSchema.js";
+import { AcoFeature } from "@webiny/api-aco";
+import { AcoHcmsFeature } from "~/AcoHcmsFeature.js";
+import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { until } from "@webiny/project-utils/testing/helpers/until.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { Plugin, PluginCollection } from "@webiny/plugins/types";
+import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
+import type { CmsModel } from "@webiny/api-headless-cms/types";
 import {
     CREATE_CONTENT_MODEL,
     CREATE_CONTENT_MODEL_GROUP,
@@ -20,12 +25,12 @@ import {
     GET_ENTRY,
     RESTORE_ENTRY
 } from "~tests/graphql/cms.gql";
-
 import { CREATE_FOLDER, DELETE_FOLDER, GET_FOLDER } from "~tests/graphql/folder.gql";
-import { SecurityPermission } from "@webiny/api-core/types/security";
-import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { createApiCore } from "@webiny/api-core";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
+import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
+import { RootTenantInitializer } from "./handlers/RootTenantInitializer";
+import { AuthTriggerHandler } from "./handlers/AuthTriggerHandler";
+import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -37,7 +42,6 @@ export interface UseGQLHandlerParams {
 
 interface InvokeParams {
     httpMethod?: "POST";
-    type?: string;
     body: {
         query: string;
         variables?: Record<string, any>;
@@ -58,76 +62,50 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const apiAcoStorage = getStorageOps<ApiCoreStorageOperations>("aco");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
-    const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
+    const resolvedIdentity = identity ?? defaultIdentity;
+    const resolvedPermissions = permissions ?? ([{ name: "*" }] as SecurityPermission[]);
 
-    const handler = createHandler({
-        plugins: [
-            createApiCore({
-                storageOperations: apiCoreStorage.storageOperations,
-                testProjectLicense
-            }),
-            ...apiAcoStorage.plugins,
-            ...cmsStorage.plugins,
-            createGraphQLHandler(),
-            ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
-            new CmsParametersPlugin(async () => {
-                return {
-                    type: "manage"
-                };
-            }),
-            createCmsExtension(),
-            createAco(),
-            createAcoHcmsContext(),
-            plugins
-        ],
-        debug: false
+    const extraCmsPlugins = ([plugins] as any[]).flat(Infinity as 1).filter(Boolean);
+
+    const handler = createTestHttpHandler({
+        root: container => {
+            container.registerInstance(TestIdentity, resolvedIdentity);
+            container.registerInstance(TestPermissions, resolvedPermissions);
+            container.register(TestAuthenticator);
+            container.register(TestAuthorizer);
+            container.registerDecorator(AuthTriggerHandler);
+            container.registerDecorator(RootTenantInitializer);
+        },
+        request: async container => {
+            const wcpLicense = await loadWcpLicense(
+                params.testProjectLicense ?? createTestWcpLicense()
+            );
+            ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense });
+            processLegacyPlugins(container, apiAcoStorage.plugins);
+            processLegacyPlugins(container, cmsStorage.plugins);
+            HeadlessCmsFeature.register(container, {
+                type: "manage",
+                extraPlugins: extraCmsPlugins
+            });
+            container.register(HeadlessCmsContextualSchema);
+            AcoFeature.register(container);
+            AcoHcmsFeature.register(container);
+            GraphQLEngineFeature.register(container);
+        }
     });
 
-    // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
-        const response = await handler(
-            {
-                path: "/graphql",
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as unknown as APIGatewayEvent,
-            {} as LambdaContext
-        );
-
-        // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body), response];
-    };
-
-    const invokeCms = async ({
-        httpMethod = "POST",
-        type = "manage",
-        body,
-        headers = {},
-        ...rest
-    }: InvokeParams) => {
-        const response = await handler(
-            {
-                path: `/cms/${type}`,
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as unknown as APIGatewayEvent,
-            {} as LambdaContext
-        );
-
-        // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body), response];
+    const invoke = async ({ httpMethod = "POST", body, headers = {} }: InvokeParams) => {
+        const response = await handler({
+            method: httpMethod,
+            path: "/graphql",
+            headers: {
+                ["x-tenant"]: "root",
+                ["content-type"]: "application/json",
+                ...headers
+            },
+            body
+        });
+        return [response.body, response];
     };
 
     const aco = {
@@ -143,15 +121,12 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     };
 
     const cms = {
-        // Models, model groups, entries.
         async createContentModel(variables: Record<string, any>) {
-            return invokeCms({ body: { query: CREATE_CONTENT_MODEL, variables } });
+            return invoke({ body: { query: CREATE_CONTENT_MODEL, variables } });
         },
-
         async createContentModelGroup(variables: Record<string, any>) {
-            return invokeCms({ body: { query: CREATE_CONTENT_MODEL_GROUP, variables } });
+            return invoke({ body: { query: CREATE_CONTENT_MODEL_GROUP, variables } });
         },
-
         async createTestModelGroup() {
             return cms
                 .createContentModelGroup({
@@ -166,7 +141,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                     return response.data.createContentModelGroup.data;
                 });
         },
-
         async createBasicModel(variables: Record<string, any>) {
             return cms
                 .createContentModel({
@@ -183,21 +157,17 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                     return response.data.createContentModel.data as CmsModel;
                 });
         },
-
         async createEntry(model: CmsModel, variables: Record<string, any>) {
-            return invokeCms({ body: { query: CREATE_ENTRY(model), variables } });
+            return invoke({ body: { query: CREATE_ENTRY(model), variables } });
         },
-
         async deleteEntry(model: CmsModel, variables: Record<string, any>) {
-            return invokeCms({ body: { query: DELETE_ENTRY(model), variables } });
+            return invoke({ body: { query: DELETE_ENTRY(model), variables } });
         },
-
         async restoreEntry(model: CmsModel, variables: Record<string, any>) {
-            return invokeCms({ body: { query: RESTORE_ENTRY(model), variables } });
+            return invoke({ body: { query: RESTORE_ENTRY(model), variables } });
         },
-
         async getEntry(model: CmsModel, variables: Record<string, any>) {
-            return invokeCms({ body: { query: GET_ENTRY(model), variables } });
+            return invoke({ body: { query: GET_ENTRY(model), variables } });
         }
     };
 
