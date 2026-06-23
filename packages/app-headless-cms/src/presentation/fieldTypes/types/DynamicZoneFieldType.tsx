@@ -1,5 +1,9 @@
+import React from "react";
+import { ReactComponent as DynamicZoneIcon } from "@webiny/icons/dynamic_form.svg";
 import { CmsFieldType } from "../abstractions.js";
+import type { CmsModelField } from "~/types.js";
 import type { CmsModelFieldValidatorsGroup } from "@webiny/app-headless-cms-common/types/validation.js";
+import { DynamicZone } from "~/admin/plugins/fields/dynamicZone/DynamicZone.js";
 
 const listValidators: CmsModelFieldValidatorsGroup = {
     validators: ["minLength", "maxLength"],
@@ -11,11 +15,11 @@ class DynamicZoneFieldTypeImpl implements CmsFieldType.Interface {
     type = "dynamicZone";
     label = "Dynamic Zone";
     description = "Define content templates to be used during content creation.";
-    icon = "fas/dynamic-form";
+    icon = (<DynamicZoneIcon />);
     allowList = true;
     listLabel = "Use as a list of values";
     allowPredefinedValues = false;
-    validators = (field: any) => {
+    validators = (field: CmsModelField) => {
         if (field.list) {
             return {
                 validators: ["dynamicZone"],
@@ -26,6 +30,10 @@ class DynamicZoneFieldTypeImpl implements CmsFieldType.Interface {
         return ["required"];
     };
     listValidators = listValidators;
+
+    renderEditor() {
+        return <DynamicZone />;
+    }
 
     createField() {
         return {

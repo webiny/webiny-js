@@ -1,10 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { DragLayerMonitor } from "react-dnd";
 import { useDragLayer } from "react-dnd";
+import { useContainer } from "@webiny/app";
 import { DragCursor } from "@webiny/admin-ui";
 import { dropZoneOverState } from "./dropZoneOverState.js";
 import { getDragInfo } from "./getDragInfo.js";
 import type { DragSource } from "~/types.js";
+import { CmsFieldType, type ICmsFieldType } from "~/presentation/fieldTypes/abstractions.js";
 
 let dragPreviewRef: HTMLDivElement | null = null;
 
@@ -12,6 +14,15 @@ const DragPreview = () => {
     const [opacity, setOpacity] = useState(0);
     const [isOverSlot, setIsOverSlot] = useState(false);
     const monitorRef = useRef<DragLayerMonitor | null>(null);
+    const container = useContainer();
+    const fieldTypesMap = useMemo(() => {
+        const all = container.resolveAll(CmsFieldType);
+        const map = new Map<string, ICmsFieldType>();
+        for (const ft of all) {
+            map.set(ft.type, ft);
+        }
+        return map;
+    }, [container]);
 
     const { isDragging, item } = useDragLayer((monitor: DragLayerMonitor) => {
         monitorRef.current = monitor;
@@ -50,7 +61,7 @@ const DragPreview = () => {
         return null;
     }
 
-    const { label, icon } = getDragInfo(item);
+    const { label, icon } = getDragInfo(item, fieldTypesMap);
 
     return (
         <div className={"fixed pointer-events-none left-0 top-0 w-full h-full z-[1001]"}>

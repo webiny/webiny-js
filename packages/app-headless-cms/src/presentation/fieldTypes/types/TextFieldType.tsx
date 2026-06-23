@@ -1,10 +1,12 @@
+import React from "react";
+import { ReactComponent as TextIcon } from "@webiny/icons/text_fields.svg";
 import { CmsFieldType } from "../abstractions.js";
 
 class TextFieldTypeImpl implements CmsFieldType.Interface {
     type = "text";
     label = "Text";
     description = "Titles, names, single line values.";
-    icon = "fas/text-fields";
+    icon = (<TextIcon />);
     allowList = true;
     listLabel = "Use as a list of texts";
     allowPredefinedValues = true;

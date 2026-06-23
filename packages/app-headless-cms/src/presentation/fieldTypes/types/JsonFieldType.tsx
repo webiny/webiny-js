@@ -1,10 +1,12 @@
+import React from "react";
+import { ReactComponent as JsonIcon } from "@webiny/icons/data_object.svg";
 import { CmsFieldType } from "../abstractions.js";
 
 class JsonFieldTypeImpl implements CmsFieldType.Interface {
     type = "json";
     label = "JSON";
     description = "Store JSON values.";
-    icon = "fas/data-object";
+    icon = (<JsonIcon />);
     allowList = true;
     listLabel = "Use as a list of JSONs";
     allowPredefinedValues = true;

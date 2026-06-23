@@ -1,10 +1,12 @@
+import React from "react";
+import { ReactComponent as RefIcon } from "@webiny/icons/link.svg";
 import { CmsFieldType } from "../abstractions.js";
 
 class RefFieldTypeImpl implements CmsFieldType.Interface {
     type = "ref";
     label = "Reference";
     description = "Reference existing content entries.";
-    icon = "fas/link";
+    icon = (<RefIcon />);
     allowList = true;
     listLabel = "Use as a list of references";
     allowPredefinedValues = false;

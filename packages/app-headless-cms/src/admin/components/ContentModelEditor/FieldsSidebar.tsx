@@ -10,7 +10,6 @@ import { SectionHeader } from "./SectionHeader.js";
 import { FieldsGrid } from "./FieldsGrid.js";
 import { ReactComponent as CollapseSidebarIcon } from "@webiny/icons/right_panel_open.svg";
 import { CmsFieldType, type ICmsFieldType } from "~/presentation/fieldTypes/abstractions.js";
-import { CmsFieldTypeIcon } from "./CmsFieldTypeIcon.js";
 
 interface FieldProps {
     onFieldDragStart: DragEventHandler;
@@ -24,7 +23,7 @@ const Field = ({ onFieldDragStart, fieldType }: FieldProps) => {
                 <GridItem
                     testId={`cms-editor-fields-field-${fieldType.type}`}
                     label={fieldType.label}
-                    icon={<CmsFieldTypeIcon icon={fieldType.icon} />}
+                    icon={fieldType.icon}
                     onDragStart={onFieldDragStart}
                     dragRef={element => drag(element)}
                 />

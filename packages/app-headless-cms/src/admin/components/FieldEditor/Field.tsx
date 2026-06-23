@@ -82,7 +82,7 @@ const Field = (props: FieldProps) => {
     const { field, onEdit, parent } = props;
     const { showSnackbar, showErrorSnackbar } = useSnackbar();
     const { setData: setModel, data: model } = useModelEditor();
-    const { getFieldPlugin, getFieldRendererPlugin } = useModelFieldEditor();
+    const { getFieldPlugin, getFieldType, getFieldRendererPlugin } = useModelFieldEditor();
 
     const removeFieldFromSelected = useCallback(async () => {
         if (model.titleFieldId === field.fieldId) {
@@ -151,16 +151,17 @@ const Field = (props: FieldProps) => {
         showSnackbar(t`Image field set successfully.`);
     }, [field.fieldId, setModel]);
 
+    const fieldType = getFieldType(field.type);
     const fieldPlugin = getFieldPlugin(field.type);
     const editorFieldOptionPlugins =
         plugins.byType<CmsEditorFieldOptionPlugin>("cms-editor-field-option");
 
-    if (!fieldPlugin) {
+    if (!fieldType) {
         return null;
     }
 
     const rendererPlugin = getFieldRendererPlugin(field.renderer.name);
-    const canEdit = fieldPlugin.field.canEditSettings !== false;
+    const canEdit = fieldType.canEditSettings !== false;
 
     const defaultInformationRenderer = useMemo(() => {
         const fieldTypeName = getFieldTypeName(model, field, parent);
@@ -176,7 +177,7 @@ const Field = (props: FieldProps) => {
         return fn;
     }, [field.id]);
 
-    const fieldInformationRenderer = fieldPlugin.field?.renderInfo;
+    const fieldInformationRenderer = fieldPlugin ? fieldPlugin.field?.renderInfo : undefined;
 
     const info = [rendererPlugin?.renderer.name, field.list ? "multiple values" : null]
         .filter(Boolean)
@@ -187,8 +188,8 @@ const Field = (props: FieldProps) => {
             <div className={"flex items-center justify-between gap-sm-extra"}>
                 <div className={"flex items-center gap-sm-extra flex-1 min-w-0"}>
                     <Icon
-                        icon={fieldPlugin.field.icon as React.ReactElement}
-                        label={fieldPlugin.field.label}
+                        icon={fieldType.icon}
+                        label={fieldType.label}
                         size={"md"}
                         color={"neutral-light"}
                     />
@@ -201,7 +202,7 @@ const Field = (props: FieldProps) => {
                             {field.label}
                         </span>
                         <Text size={"sm"} className={"text-neutral-muted truncate"}>
-                            {fieldPlugin.field.label}
+                            {fieldType.label}
                             {info && <span> / {info}</span>}
                         </Text>
                     </div>
@@ -278,9 +279,9 @@ const Field = (props: FieldProps) => {
                     </DropdownMenu>
                 </div>
             </div>
-            {fieldPlugin.field.render && (
+            {fieldType.renderEditor && (
                 <div className={"pt-md"}>
-                    {fieldPlugin.field.render({ field, data: model, setData: setModel })}
+                    {fieldType.renderEditor({ field, model })}
                 </div>
             )}
         </Fragment>

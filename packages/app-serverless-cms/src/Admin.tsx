@@ -48,13 +48,13 @@ const App = (props: AdminProps) => {
         >
             <AdminUI />
             <SystemInstallerProvider />
-            <FileManager />
             <GraphQLPlayground createApolloClient={createApolloClient} />
             <SdkPlayground />
             <Websockets />
             <RecordLocking />
             <LexicalEditorActions />
             <HeadlessCMS createApolloClient={createApolloClient} />
+            <FileManager />
             <AuditLogs />
             <MailerSettings />
             <SchedulerModule />

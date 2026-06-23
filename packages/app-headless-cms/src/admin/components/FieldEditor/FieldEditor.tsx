@@ -34,7 +34,7 @@ const Editor = () => {
         onEndDrag,
         field,
         dropTarget,
-        getFieldPlugin,
+        getFieldType,
         getLayoutFieldPlugin,
         getField
     } = useModelFieldEditor();
@@ -55,15 +55,10 @@ const Editor = () => {
     };
 
     const canDropIntoField = (field: CmsModelField, draggable: DragSource) => {
-        const fieldPlugin = getFieldPlugin(field.type);
-        if (!fieldPlugin) {
-            return true;
-        }
-        const canAccept = fieldPlugin.field.canAccept;
-        if (typeof canAccept === "function" && !canAccept(field, draggable)) {
+        const ft = getFieldType(field.type);
+        if (ft && typeof ft.canAccept === "function" && !ft.canAccept(field, draggable)) {
             return false;
         }
-
         return true;
     };
 
@@ -78,9 +73,9 @@ const Editor = () => {
                 return cb(item);
             }
 
-            const fieldPlugin = getFieldPlugin(parent.type);
-            if (fieldPlugin) {
-                const allowLayout = fieldPlugin.field.allowLayout ?? true;
+            const parentFieldType = getFieldType(parent.type);
+            if (parentFieldType) {
+                const allowLayout = parentFieldType.allowLayout ?? true;
                 if (!allowLayout) {
                     return false;
                 }

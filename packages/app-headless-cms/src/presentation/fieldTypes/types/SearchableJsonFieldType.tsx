@@ -1,10 +1,12 @@
+import React from "react";
+import { ReactComponent as JsonIcon } from "@webiny/icons/data_object.svg";
 import { CmsFieldType } from "../abstractions.js";
 
 class SearchableJsonFieldTypeImpl implements CmsFieldType.Interface {
     type = "searchable-json";
     label = "Searchable JSON";
     description = "Store Searchable JSON values.";
-    icon = "fas/data-object";
+    icon = (<JsonIcon />);
     allowList = true;
     listLabel = "Use as a list of Searchable JSONs";
     allowPredefinedValues = true;

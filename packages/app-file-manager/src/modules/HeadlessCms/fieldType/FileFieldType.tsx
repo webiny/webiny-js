@@ -1,10 +1,12 @@
+import React from "react";
+import { ReactComponent as FileIcon } from "@webiny/icons/file_present.svg";
 import { CmsFieldType } from "@webiny/app-headless-cms/presentation/fieldTypes/abstractions.js";
 
 class FileFieldTypeImpl implements CmsFieldType.Interface {
     type = "file";
     label = "Files";
     description = "Images, videos and other files.";
-    icon = "fas/file-present";
+    icon = (<FileIcon />);
     allowList = true;
     listLabel = "Use as a list of files or an image gallery";
     allowPredefinedValues = false;

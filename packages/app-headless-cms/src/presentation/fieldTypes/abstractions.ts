@@ -1,5 +1,6 @@
+import React from "react";
 import { createAbstraction } from "@webiny/feature/admin";
-import type { CmsModelField } from "~/types.js";
+import type { CmsModel, CmsModelField, DragSource } from "~/types.js";
 import type {
     CmsModelFieldValidatorsGroup,
     CmsModelFieldValidatorsFactory
@@ -9,7 +10,7 @@ export interface ICmsFieldType {
     readonly type: string;
     readonly label: string;
     readonly description: string;
-    readonly icon: string;
+    readonly icon: React.ReactElement;
 
     readonly allowList: boolean;
     readonly listLabel?: string;
@@ -23,6 +24,12 @@ export interface ICmsFieldType {
 
     readonly hideInAdmin?: boolean;
     readonly tags?: string[];
+    readonly canEditSettings?: boolean;
+    readonly allowLayout?: boolean;
+
+    canAccept?(field: CmsModelField, draggable: DragSource): boolean;
+
+    renderEditor?(params: { field: CmsModelField; model: CmsModel }): React.ReactNode;
 
     createField(): Pick<CmsModelField, "type" | "validation" | "renderer" | "settings">;
 }

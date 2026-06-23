@@ -99,30 +99,7 @@ export const DynamicZoneTemplate = ({
     const icon = normalizeIcon(template.icon);
 
     return (
-        <Accordion.Item
-            title={template.name}
-            description={template.description}
-            icon={icon ? <FontAwesomeIcon icon={icon} /> : undefined}
-            open={isOpen}
-            onOpenChange={setIsOpen}
-            actions={
-                <>
-                    <Accordion.Item.Action
-                        icon={<ArrowUpIcon />}
-                        onClick={moveTemplateUp}
-                        disabled={isFirst}
-                    />
-                    <Accordion.Item.Action
-                        icon={<ArrowDownIcon />}
-                        onClick={moveTemplateDown}
-                        disabled={isLast}
-                    />
-                    <Accordion.Item.Action.Separator />
-                    <Accordion.Item.Action icon={<EditIcon />} onClick={editTemplate} />
-                    <Accordion.Item.Action icon={<DeleteIcon />} onClick={deleteTemplate} />
-                </>
-            }
-        >
+        <>
             {templateToEdit ? (
                 <TemplateDialog
                     template={templateToEdit}
@@ -130,13 +107,37 @@ export const DynamicZoneTemplate = ({
                     onClose={onDialogClose}
                 />
             ) : null}
-
-            <FieldEditor
-                parent={field}
-                fields={template.fields}
-                layout={template.layout}
-                onChange={updateFieldsAndLayout}
-            />
-        </Accordion.Item>
+            <Accordion.Item
+                title={template.name}
+                description={template.description}
+                icon={icon ? <FontAwesomeIcon icon={icon} /> : undefined}
+                open={isOpen}
+                onOpenChange={setIsOpen}
+                actions={
+                    <>
+                        <Accordion.Item.Action
+                            icon={<ArrowUpIcon />}
+                            onClick={moveTemplateUp}
+                            disabled={isFirst}
+                        />
+                        <Accordion.Item.Action
+                            icon={<ArrowDownIcon />}
+                            onClick={moveTemplateDown}
+                            disabled={isLast}
+                        />
+                        <Accordion.Item.Action.Separator />
+                        <Accordion.Item.Action icon={<EditIcon />} onClick={editTemplate} />
+                        <Accordion.Item.Action icon={<DeleteIcon />} onClick={deleteTemplate} />
+                    </>
+                }
+            >
+                <FieldEditor
+                    parent={field}
+                    fields={template.fields}
+                    layout={template.layout}
+                    onChange={updateFieldsAndLayout}
+                />
+            </Accordion.Item>
+        </>
     );
 };

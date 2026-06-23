@@ -1,6 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import dot from "dot-prop-immutable";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import { useContainer } from "@webiny/app";
 import type {
     CmsEditorFieldId,
     CmsModelFieldRendererPlugin,
@@ -23,6 +24,7 @@ import type { DragSourceMonitor } from "react-dnd";
 import { useModelFieldEditor } from "~/admin/components/FieldEditor/useModelFieldEditor.js";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import type { DragObject } from "../Droppable.js";
+import { CmsFieldType, type ICmsFieldType } from "~/presentation/fieldTypes/abstractions.js";
 
 interface DropTarget {
     row: number;
@@ -111,6 +113,7 @@ export interface FieldEditorContext {
     onChange?: (data: any) => void;
     getFieldsInLayout: GetFieldsInLayoutCallable;
     getFieldPlugin: GetFieldPluginCallable;
+    getFieldType: (type: string) => ICmsFieldType | undefined;
     getField: GetFieldCallable;
     getFieldRendererPlugin: GetFieldRendererCallable;
     editField: (field: CmsModelField | null) => void;
@@ -188,6 +191,16 @@ export const FieldEditorProvider = ({
     } catch {
         // There's no parent provider, so this is the top-level one.
     }
+
+    const container = useContainer();
+    const fieldTypesMap = useMemo(() => {
+        const all = container.resolveAll(CmsFieldType);
+        const map = new Map<string, ICmsFieldType>();
+        for (const ft of all) {
+            map.set(ft.type, ft);
+        }
+        return map;
+    }, [container]);
 
     const [state, setState] = useState<State>({
         layout,
@@ -285,14 +298,14 @@ export const FieldEditorProvider = ({
         if (!fieldType) {
             return null;
         }
-        const plugin = getFieldPlugin(fieldType);
-        if (!plugin) {
+        const ft = fieldTypesMap.get(fieldType);
+        if (!ft) {
             return null;
         }
 
-        const fieldData = plugin.field.createField() as CmsModelField;
+        const fieldData = ft.createField() as CmsModelField;
 
-        if (plugin.field.canEditSettings !== false) {
+        if (ft.canEditSettings !== false) {
             editField(fieldData);
             setState(state => ({
                 ...state,
@@ -395,9 +408,8 @@ export const FieldEditorProvider = ({
             throw new Error(`Field "type" missing.`);
         }
 
-        const fieldPlugin = getFieldPlugin(field.type);
-        if (!fieldPlugin) {
-            throw new Error(`No plugin found for field type "${field.type}".`);
+        if (!fieldTypesMap.has(field.type)) {
+            throw new Error(`No field type found for "${field.type}".`);
         }
 
         setState(prev => {
@@ -657,6 +669,7 @@ export const FieldEditorProvider = ({
         depth,
         getFieldsInLayout,
         getFieldPlugin,
+        getFieldType: (type: string) => fieldTypesMap.get(type),
         getFieldRendererPlugin,
         getField,
         editField,
