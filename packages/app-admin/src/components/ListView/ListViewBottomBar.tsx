@@ -21,14 +21,15 @@ const Meta = observer(
         const plural = typeof itemLabel === "string" ? `${itemLabel}s` : itemLabel.plural;
         const label = totalCount === 1 ? singular : plural;
 
-    return (
-        <Text
-            size={"sm"}
-            as={"div"}
-            className={"text-neutral-strong"}
-        >{`Showing ${currentCount} out of ${totalCount} ${label}.`}</Text>
-    );
-});
+        return (
+            <Text
+                size={"sm"}
+                as={"div"}
+                className={"text-neutral-strong"}
+            >{`Showing ${currentCount} out of ${totalCount} ${label}.`}</Text>
+        );
+    }
+);
 
 const Status = observer(({ loadingText }: { loadingText?: string }) => {
     const { list } = useListView();

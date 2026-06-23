@@ -34,6 +34,10 @@ import { CmsPredefinedValuesRenderer } from "~/presentation/fieldEditor/renderer
 import { CmsValidatorItemRenderer } from "~/presentation/fieldEditor/renderers/CmsValidatorsRenderer.js";
 import { CmsAccessControlRulesRenderer } from "~/presentation/fieldEditor/renderers/CmsAccessControlRulesRenderer.js";
 import { CmsConditionRulesRenderer } from "~/presentation/fieldEditor/renderers/CmsConditionRulesRenderer.js";
+import {
+    EditTemplateDialog,
+    EDIT_DZ_TEMPLATE_DIALOG
+} from "~/admin/plugins/fields/dynamicZone/EditTemplateDialog.js";
 
 interface HeadlessCMSProvider {
     children: React.ReactNode;
@@ -105,6 +109,10 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
             <LexicalEditorCmsPlugin />
             <CmsSecurityPermission />
             <AdminConfig>
+                <AdminConfig.Dialog
+                    name={EDIT_DZ_TEMPLATE_DIALOG}
+                    element={<EditTemplateDialog />}
+                />
                 <AdminConfig.Form.FieldRenderer
                     name={"cmsFilePicker"}
                     component={CmsFilePickerRenderer}

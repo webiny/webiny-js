@@ -8,7 +8,7 @@ class ObjectFieldTypeImpl implements CmsFieldType.Interface {
     type = "object";
     label = "Object";
     description = "Store nested data structures.";
-    icon = (<ObjectIcon />);
+    icon = <ObjectIcon />;
     allowList = true;
     listLabel = "Use as a repeatable object";
     allowPredefinedValues = false;

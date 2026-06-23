@@ -15,7 +15,7 @@ class DynamicZoneFieldTypeImpl implements CmsFieldType.Interface {
     type = "dynamicZone";
     label = "Dynamic Zone";
     description = "Define content templates to be used during content creation.";
-    icon = (<DynamicZoneIcon />);
+    icon = <DynamicZoneIcon />;
     allowList = true;
     listLabel = "Use as a list of values";
     allowPredefinedValues = false;

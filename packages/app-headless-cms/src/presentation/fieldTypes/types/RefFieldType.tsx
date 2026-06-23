@@ -6,7 +6,7 @@ class RefFieldTypeImpl implements CmsFieldType.Interface {
     type = "ref";
     label = "Reference";
     description = "Reference existing content entries.";
-    icon = (<RefIcon />);
+    icon = <RefIcon />;
     allowList = true;
     listLabel = "Use as a list of references";
     allowPredefinedValues = false;

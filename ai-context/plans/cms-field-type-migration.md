@@ -3,6 +3,7 @@
 ## Context
 
 The CMS uses two parallel systems for field types:
+
 - **Old**: `CmsModelFieldTypePlugin` plugins (`cms-editor-field-type`) — global plugin registry
 - **New**: `CmsFieldType` DI abstraction — container-registered, used by `FieldEditorPresenter`
 
@@ -31,6 +32,7 @@ The old plugins carry `graphql.queryField` (client-side GraphQL selection genera
 3. **Tests**: Unit test for `astToValuesSelection` with cases for flat fields, nested objects, refs, dynamic zones, and empty models.
 
 ### Key reference
+
 - `CmsModelToAstConverter` at `packages/api-headless-cms/src/utils/contentModelAst/CmsModelToAstConverter.ts`
 - `getModelToAstConverter()` at `packages/api-headless-cms/src/crud/contentModel.crud.ts:32`
 - Existing GraphQL type prefix pattern: `${model.singularApiName}_${createTypeName(fieldId)}`
@@ -38,6 +40,7 @@ The old plugins carry `graphql.queryField` (client-side GraphQL selection genera
 - Ref selection: `{ modelId id }` (hardcoded, not recursive)
 
 ### Verify
+
 - [ ] `yarn test packages/api-headless-cms` — existing tests pass
 - [ ] New unit test for `astToValuesSelection` passes
 - [ ] Query `getContentModel` returns `valuesSelection` with correct nested selections
@@ -68,6 +71,7 @@ The old plugins carry `graphql.queryField` (client-side GraphQL selection genera
 5. **Deprecate `createFieldsList`** — mark as deprecated or remove if no remaining callers
 
 ### Verify
+
 - [ ] `yarn check` on app-headless-cms, app-headless-cms-common, app-aco
 - [ ] Content entries with object, ref, dynamic zone fields load correctly
 - [ ] Updating a model (adding/removing fields) → re-fetching entries uses updated selection
@@ -82,6 +86,7 @@ The old plugins carry `graphql.queryField` (client-side GraphQL selection genera
 ### What to do
 
 1. **Extend `ICmsFieldType` interface** (`presentation/fieldTypes/abstractions.ts`):
+
    ```
    hideInAdmin?: boolean
    tags?: string[]
@@ -105,6 +110,7 @@ The old plugins carry `graphql.queryField` (client-side GraphQL selection genera
    - `useModelField.ts` — return `CmsFieldType` instead of `CmsModelFieldTypePlugin`
 
 ### Verify
+
 - [ ] `yarn check` on app-headless-cms, app-headless-cms-common
 - [ ] Model editor: field sidebar shows all types, drag-and-drop works
 - [ ] Object fields show nested field editor
@@ -125,6 +131,7 @@ The old plugins carry `graphql.queryField` (client-side GraphQL selection genera
 4. Remove `createFieldsList` if fully unused
 
 ### Verify
+
 - [ ] Full typecheck passes
 - [ ] No runtime errors
 - [ ] All manual tests from previous phases still pass

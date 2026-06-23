@@ -6,7 +6,7 @@ class JsonFieldTypeImpl implements CmsFieldType.Interface {
     type = "json";
     label = "JSON";
     description = "Store JSON values.";
-    icon = (<JsonIcon />);
+    icon = <JsonIcon />;
     allowList = true;
     listLabel = "Use as a list of JSONs";
     allowPredefinedValues = true;

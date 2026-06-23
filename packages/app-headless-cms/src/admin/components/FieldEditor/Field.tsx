@@ -280,9 +280,7 @@ const Field = (props: FieldProps) => {
                 </div>
             </div>
             {fieldType.renderEditor && (
-                <div className={"pt-md"}>
-                    {fieldType.renderEditor({ field, model })}
-                </div>
+                <div className={"pt-md"}>{fieldType.renderEditor({ field, model })}</div>
             )}
         </Fragment>
     );

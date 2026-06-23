@@ -89,11 +89,7 @@ export const FieldsSidebar = ({ onFieldDragStart, onCollapse }: FieldsSidebarPro
             />
             <FieldsGrid>
                 {fieldTypes.map(ft => (
-                    <Field
-                        key={ft.type}
-                        fieldType={ft}
-                        onFieldDragStart={onFieldDragStart}
-                    />
+                    <Field key={ft.type} fieldType={ft} onFieldDragStart={onFieldDragStart} />
                 ))}
             </FieldsGrid>
             {layoutFieldPlugins.length > 0 && (

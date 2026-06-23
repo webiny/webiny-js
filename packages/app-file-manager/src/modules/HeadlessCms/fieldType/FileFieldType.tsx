@@ -6,7 +6,7 @@ class FileFieldTypeImpl implements CmsFieldType.Interface {
     type = "file";
     label = "Files";
     description = "Images, videos and other files.";
-    icon = (<FileIcon />);
+    icon = <FileIcon />;
     allowList = true;
     listLabel = "Use as a list of files or an image gallery";
     allowPredefinedValues = false;

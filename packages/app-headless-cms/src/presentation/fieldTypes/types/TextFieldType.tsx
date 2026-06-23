@@ -6,7 +6,7 @@ class TextFieldTypeImpl implements CmsFieldType.Interface {
     type = "text";
     label = "Text";
     description = "Titles, names, single line values.";
-    icon = (<TextIcon />);
+    icon = <TextIcon />;
     allowList = true;
     listLabel = "Use as a list of texts";
     allowPredefinedValues = true;

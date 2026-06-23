@@ -6,16 +6,16 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/expand_less.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/expand_more.svg";
 import { Accordion } from "@webiny/admin-ui";
-import { useConfirmationDialog } from "@webiny/app-admin";
+import { useConfirmationDialog, useDialogs } from "@webiny/app-admin";
 import {
     pullValueAtIndex,
     pushValueAtIndex,
     removeValueAtIndex
 } from "~/admin/plugins/arrayUtils.js";
 import type { CmsDynamicZoneTemplate, CmsEditorFieldsLayout, CmsModelField } from "~/types.js";
-import { TemplateDialog } from "./TemplateDialog.js";
 import { FieldEditor } from "~/admin/components/FieldEditor/index.js";
 import { normalizeIcon } from "~/utils/normalizeIcon.js";
+import { EDIT_DZ_TEMPLATE_DIALOG } from "./EditTemplateDialog.js";
 
 interface DynamicZoneTemplateProps {
     index: number;
@@ -48,24 +48,14 @@ export const DynamicZoneTemplate = ({
         acceptLabel: "Yes, I'm sure!"
     });
 
+    const { openNamedDialog } = useDialogs();
     const [isOpen, setIsOpen] = useState(open);
-    const [templateToEdit, setTemplateToEdit] = useState<CmsDynamicZoneTemplate | undefined>(
-        undefined
-    );
 
     const templates = field.settings?.templates || [];
     const isFirst = index === 0;
     const isLast = index === templates.length - 1;
 
     const callbackDeps = [onChange, field, index, template.id];
-
-    const onDialogClose = useCallback(() => {
-        setTemplateToEdit(undefined);
-    }, []);
-
-    const editTemplate = useCallback(() => {
-        setTemplateToEdit(template);
-    }, [template]);
 
     const updateTemplate = useCallback<UpdateTemplate>(params => {
         onChange(
@@ -74,6 +64,13 @@ export const DynamicZoneTemplate = ({
             })
         );
     }, callbackDeps);
+
+    const editTemplate = useCallback(() => {
+        openNamedDialog(EDIT_DZ_TEMPLATE_DIALOG, {
+            template,
+            onTemplate: updateTemplate
+        });
+    }, [template, updateTemplate]);
 
     const updateFieldsAndLayout = useCallback<UpdateFieldsAndLayout>(
         params => {
@@ -99,45 +96,36 @@ export const DynamicZoneTemplate = ({
     const icon = normalizeIcon(template.icon);
 
     return (
-        <>
-            {templateToEdit ? (
-                <TemplateDialog
-                    template={templateToEdit}
-                    onTemplate={updateTemplate}
-                    onClose={onDialogClose}
-                />
-            ) : null}
-            <Accordion.Item
-                title={template.name}
-                description={template.description}
-                icon={icon ? <FontAwesomeIcon icon={icon} /> : undefined}
-                open={isOpen}
-                onOpenChange={setIsOpen}
-                actions={
-                    <>
-                        <Accordion.Item.Action
-                            icon={<ArrowUpIcon />}
-                            onClick={moveTemplateUp}
-                            disabled={isFirst}
-                        />
-                        <Accordion.Item.Action
-                            icon={<ArrowDownIcon />}
-                            onClick={moveTemplateDown}
-                            disabled={isLast}
-                        />
-                        <Accordion.Item.Action.Separator />
-                        <Accordion.Item.Action icon={<EditIcon />} onClick={editTemplate} />
-                        <Accordion.Item.Action icon={<DeleteIcon />} onClick={deleteTemplate} />
-                    </>
-                }
-            >
-                <FieldEditor
-                    parent={field}
-                    fields={template.fields}
-                    layout={template.layout}
-                    onChange={updateFieldsAndLayout}
-                />
-            </Accordion.Item>
-        </>
+        <Accordion.Item
+            title={template.name}
+            description={template.description}
+            icon={icon ? <FontAwesomeIcon icon={icon} /> : undefined}
+            open={isOpen}
+            onOpenChange={setIsOpen}
+            actions={
+                <>
+                    <Accordion.Item.Action
+                        icon={<ArrowUpIcon />}
+                        onClick={moveTemplateUp}
+                        disabled={isFirst}
+                    />
+                    <Accordion.Item.Action
+                        icon={<ArrowDownIcon />}
+                        onClick={moveTemplateDown}
+                        disabled={isLast}
+                    />
+                    <Accordion.Item.Action.Separator />
+                    <Accordion.Item.Action icon={<EditIcon />} onClick={editTemplate} />
+                    <Accordion.Item.Action icon={<DeleteIcon />} onClick={deleteTemplate} />
+                </>
+            }
+        >
+            <FieldEditor
+                parent={field}
+                fields={template.fields}
+                layout={template.layout}
+                onChange={updateFieldsAndLayout}
+            />
+        </Accordion.Item>
     );
 };

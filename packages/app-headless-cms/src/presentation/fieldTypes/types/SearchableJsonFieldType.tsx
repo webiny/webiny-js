@@ -6,7 +6,7 @@ class SearchableJsonFieldTypeImpl implements CmsFieldType.Interface {
     type = "searchable-json";
     label = "Searchable JSON";
     description = "Store Searchable JSON values.";
-    icon = (<JsonIcon />);
+    icon = <JsonIcon />;
     allowList = true;
     listLabel = "Use as a list of Searchable JSONs";
     allowPredefinedValues = true;

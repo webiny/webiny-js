@@ -6,7 +6,7 @@ class RichTextFieldTypeImpl implements CmsFieldType.Interface {
     type = "rich-text";
     label = "Rich text";
     description = "Text formatting with references and media.";
-    icon = (<RichTextIcon />);
+    icon = <RichTextIcon />;
     allowList = true;
     listLabel = "Use as a list of rich texts";
     allowPredefinedValues = false;

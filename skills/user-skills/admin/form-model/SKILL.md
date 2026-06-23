@@ -281,34 +281,34 @@ These are available on **all** field types:
 
 ### Complete Renderer Reference
 
-| Renderer                  | Field Type                 | Settings                                                        | Description                                               |
-| ------------------------- | -------------------------- | --------------------------------------------------------------- | --------------------------------------------------------- |
-| `textInput`               | text                       | —                                                               | Single-line text input (default for text)                 |
-| `textarea`                | text                       | `{ rows?: number }`                                             | Multi-line text area                                      |
-| `textInputs`              | text (list)                | `{ addItemLabel?: string }`                                     | List of text inputs                                       |
-| `textareas`               | text (list)                | `{ addItemLabel?: string }`                                     | List of textareas                                         |
-| `tags`                    | text (list)                | —                                                               | Comma-separated tag input                                 |
-| `codeEditor`              | text                       | `{ language?: string; height?: number }`                        | Code editor with syntax highlighting                      |
-| `dropdown`                | text, number               | —                                                               | Select dropdown (auto-selected when `.options()` is used) |
-| `radioButtons`            | text, number               | —                                                               | Radio button group (requires `.options()`)                |
-| `checkboxes`              | text (list), number (list) | —                                                               | Checkbox group (requires `.options()` + `.list()`)        |
-| `numberInput`             | number                     | —                                                               | Number input (default for number)                         |
-| `numberInputs`            | number (list)              | `{ addItemLabel?: string }`                                     | List of number inputs                                     |
-| `switch`                  | boolean                    | —                                                               | Toggle switch (default for boolean)                       |
-| `dateTimeInput`           | datetime                   | `{ type, displayFormat?, yearRange?, weekStartsOn?, presets? }` | Date/time picker (default for datetime)                   |
-| `dateTimeInputs`          | datetime (list)            | `{ type, displayFormat?, weekStartsOn?, addItemLabel? }`        | List of date/time pickers                                 |
-| `lexical`                 | lexical                    | —                                                               | Lexical rich text editor (default for lexical)            |
-| `filePicker`              | file                       | —                                                               | File picker with full metadata (default for file)         |
-| `fileUrlPicker`           | fileUrl                    | —                                                               | File picker returning URL only (default for fileUrl)      |
-| `objectAccordionSingle`   | object                     | `{ open?: boolean }`                                            | Single object in accordion (default for object)           |
-| `objectAccordionMultiple` | object (list)              | `{ open?, container?, itemTitle?, addItemLabel? }`              | List of objects in accordions (auto for `.list()`)        |
-| `dynamicZone`             | object (templates)         | `{ container?: boolean }`                                       | Template picker zone (auto for `.template()`)             |
-| `passthrough`             | object                     | —                                                               | Renders child fields inline without wrapper               |
-| `keyValueTags`            | object (list)              | `{ addItemLabel?: string }`                                     | Key-value tag pairs                                       |
+| Renderer                  | Field Type                 | Settings                                                        | Description                                                  |
+| ------------------------- | -------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------ |
+| `textInput`               | text                       | —                                                               | Single-line text input (default for text)                    |
+| `textarea`                | text                       | `{ rows?: number }`                                             | Multi-line text area                                         |
+| `textInputs`              | text (list)                | `{ addItemLabel?: string }`                                     | List of text inputs                                          |
+| `textareas`               | text (list)                | `{ addItemLabel?: string }`                                     | List of textareas                                            |
+| `tags`                    | text (list)                | —                                                               | Comma-separated tag input                                    |
+| `codeEditor`              | text                       | `{ language?: string; height?: number }`                        | Code editor with syntax highlighting                         |
+| `dropdown`                | text, number               | —                                                               | Select dropdown (auto-selected when `.options()` is used)    |
+| `radioButtons`            | text, number               | —                                                               | Radio button group (requires `.options()`)                   |
+| `checkboxes`              | text (list), number (list) | —                                                               | Checkbox group (requires `.options()` + `.list()`)           |
+| `numberInput`             | number                     | —                                                               | Number input (default for number)                            |
+| `numberInputs`            | number (list)              | `{ addItemLabel?: string }`                                     | List of number inputs                                        |
+| `switch`                  | boolean                    | —                                                               | Toggle switch (default for boolean)                          |
+| `dateTimeInput`           | datetime                   | `{ type, displayFormat?, yearRange?, weekStartsOn?, presets? }` | Date/time picker (default for datetime)                      |
+| `dateTimeInputs`          | datetime (list)            | `{ type, displayFormat?, weekStartsOn?, addItemLabel? }`        | List of date/time pickers                                    |
+| `lexical`                 | lexical                    | —                                                               | Lexical rich text editor (default for lexical)               |
+| `filePicker`              | file                       | —                                                               | File picker with full metadata (default for file)            |
+| `fileUrlPicker`           | fileUrl                    | —                                                               | File picker returning URL only (default for fileUrl)         |
+| `objectAccordionSingle`   | object                     | `{ open?: boolean }`                                            | Single object in accordion (default for object)              |
+| `objectAccordionMultiple` | object (list)              | `{ open?, container?, itemTitle?, addItemLabel? }`              | List of objects in accordions (auto for `.list()`)           |
+| `dynamicZone`             | object (templates)         | `{ container?: boolean }`                                       | Template picker zone (auto for `.template()`)                |
+| `passthrough`             | object                     | —                                                               | Renders child fields inline without wrapper                  |
+| `keyValueTags`            | object (list)              | `{ addItemLabel?: string }`                                     | Key-value tag pairs                                          |
 | `hidden`                  | any                        | —                                                               | Hidden field (no UI rendered, but field stays visible in VM) |
-| `passwordInput`           | password                   | —                                                               | Password input (default for password)                     |
-| `permissions`             | permissions                | —                                                               | Permissions editor (default for permissions)              |
-| `rolesMultiSelect`        | rolesMultiSelect           | —                                                               | Roles multi-select (default for rolesMultiSelect)         |
+| `passwordInput`           | password                   | —                                                               | Password input (default for password)                        |
+| `permissions`             | permissions                | —                                                               | Permissions editor (default for permissions)                 |
+| `rolesMultiSelect`        | rolesMultiSelect           | —                                                               | Roles multi-select (default for rolesMultiSelect)            |
 
 ### Automatic Renderer Switching
 
@@ -360,9 +360,9 @@ Tabs with renderer settings:
 
 ```typescript
 layout.tabs("field-settings").renderer("tabsHorizontal", {
-    spacing: "lg",
-    size: "md",
-    separator: true
+  spacing: "lg",
+  size: "md",
+  separator: true
 });
 ```
 
@@ -516,14 +516,17 @@ fields
 Inside callbacks on nested fields (`computed`, `computedUntilDirty`, `hiddenWhen`, `disabledWhen`, `requiredWhen`, `options`, `beforeChange`, `afterChange`, `onBlur`), the `form` parameter supports a `$.` prefix to resolve paths relative to the field's parent object:
 
 ```typescript
-fields.object().renderer("passthrough").fields(f => ({
+fields
+  .object()
+  .renderer("passthrough")
+  .fields(f => ({
     label: f.text().defaultValue("Hello"),
     slug: f.text().computedUntilDirty(form =>
-        String(form.field("$.label").getValue() || "")
-            .toLowerCase()
-            .replace(/\s+/g, "-")
+      String(form.field("$.label").getValue() || "")
+        .toLowerCase()
+        .replace(/\s+/g, "-")
     )
-}))
+  }));
 ```
 
 `$.label` resolves to the `label` sibling within the same parent object. Without `$.`, paths are absolute from the form root. The `$.` prefix can traverse into sibling objects too: `$.settings.preset` resolves to `settings.preset` relative to the parent.
@@ -534,14 +537,16 @@ For dynamic visibility and disabled state that depends on other field values:
 
 ```typescript
 // Hide a field based on a sibling value
-fields.text().label("Details").hiddenWhen(form =>
-    form.field("$.mode").getValue() !== "advanced"
-)
+fields
+  .text()
+  .label("Details")
+  .hiddenWhen(form => form.field("$.mode").getValue() !== "advanced");
 
 // Disable based on a root-level field
-fields.text().label("Name").disabledWhen(form =>
-    Boolean(form.field("locked").getValue())
-)
+fields
+  .text()
+  .label("Name")
+  .disabledWhen(form => Boolean(form.field("locked").getValue()));
 ```
 
 Both `hiddenWhen` and `disabledWhen` accept `(form: IFormModel) => boolean`. Multiple calls chain — any returning true triggers the effect.
@@ -644,15 +649,15 @@ const data = await form.submit({ skipValidation: true });
 The `IFormVM` exposes reactive state for the UI:
 
 ```typescript
-form.vm.layout      // LayoutNodeVM[] — resolved layout nodes
-form.vm.errors      // IFormError[] — current validation errors
-form.vm.hasErrors   // boolean — shorthand for errors.length > 0
-form.vm.isDirty     // boolean — any field changed from initial value
-form.vm.isValid     // boolean | null — null until first validation
-form.vm.submitCount // number — increments on each submit attempt
-form.vm.focusField(path) // scroll to and focus a field
-form.vm.getData()   // current form data snapshot
-form.vm.setData()   // replace all form data
+form.vm.layout; // LayoutNodeVM[] — resolved layout nodes
+form.vm.errors; // IFormError[] — current validation errors
+form.vm.hasErrors; // boolean — shorthand for errors.length > 0
+form.vm.isDirty; // boolean — any field changed from initial value
+form.vm.isValid; // boolean | null — null until first validation
+form.vm.submitCount; // number — increments on each submit attempt
+form.vm.focusField(path); // scroll to and focus a field
+form.vm.getData(); // current form data snapshot
+form.vm.setData(); // replace all form data
 ```
 
 ### FormErrors Component

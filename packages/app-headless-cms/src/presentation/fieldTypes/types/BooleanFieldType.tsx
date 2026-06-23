@@ -6,7 +6,7 @@ class BooleanFieldTypeImpl implements CmsFieldType.Interface {
     type = "boolean";
     label = "Boolean";
     description = 'Store boolean ("yes" or "no") values.';
-    icon = (<BooleanIcon />);
+    icon = <BooleanIcon />;
     allowList = false;
     listLabel = "Use as a list of booleans";
     allowPredefinedValues = false;

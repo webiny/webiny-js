@@ -6,7 +6,7 @@ class LongTextFieldTypeImpl implements CmsFieldType.Interface {
     type = "long-text";
     label = "Long text";
     description = "Long comments, notes, multi line values.";
-    icon = (<LongTextIcon />);
+    icon = <LongTextIcon />;
     allowList = true;
     listLabel = "Use as a list of long texts";
     allowPredefinedValues = false;
