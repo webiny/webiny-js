@@ -16,14 +16,14 @@ import { PrivateFilesAssetProcessor } from "./privateFiles/PrivateFilesAssetProc
 export const AssetDeliveryFeature = createFeature({
     name: "AssetDelivery",
     register(container) {
-        container.register(AssetFactory);
-        container.register(AssetRequestFactory);
-        container.register(FilesAssetRequestResolver);
-        container.register(NullAssetResolver);
-        container.register(NullAssetOutputStrategy);
-        container.register(StreamAssetReply);
-        container.register(ObjectKey);
-        container.register(PassthroughAssetTransformationStrategy);
+        container.register(AssetFactory).inSingletonScope();
+        container.register(AssetRequestFactory).inSingletonScope();
+        container.register(FilesAssetRequestResolver).inSingletonScope();
+        container.register(NullAssetResolver).inSingletonScope();
+        container.register(NullAssetOutputStrategy).inSingletonScope();
+        container.register(StreamAssetReply).inSingletonScope();
+        container.register(ObjectKey).inSingletonScope();
+        container.register(PassthroughAssetTransformationStrategy).inSingletonScope();
         container.register(TransformationAssetProcessor);
 
         container.registerDecorator(PrivateFileAssetRequestResolver);
