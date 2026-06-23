@@ -1,29 +1,32 @@
-import createGraphQLHandler from "@webiny/handler-graphql";
-import { CmsParametersPlugin, createCmsExtension } from "@webiny/api-headless-cms";
-import { createHandler } from "@webiny/handler-aws";
-import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createAco } from "@webiny/api-aco";
-import { createAcoSdk } from "../../../api-aco/__tests__/utils/createAcoSdk.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getIntrospectionQuery } from "graphql";
-import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
-import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
-import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
-import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import { createApiCore } from "@webiny/api-core";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import { createTenancyAndSecurity } from "./tenancySecurity";
+import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { ApiCoreFeature } from "@webiny/api-core";
+import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
+import { GraphQLEngineFeature, GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { RegisterExtensionPlugin } from "@webiny/handler";
+import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { AcoFeature } from "@webiny/api-aco";
 import { createFileManagerContext } from "@webiny/api-file-manager";
+import { createAcoSdk } from "../../../api-aco/__tests__/utils/createAcoSdk.js";
 import { createFileManagerSdk } from "../../../api-file-manager/__tests__/utils/createFileManagerSdk.js";
-import { createFileManagerAco } from "~/index.js";
+import { FileManagerAcoFeature } from "~/index.js";
+import { processLegacyPlugins } from "./bridgeLegacyPlugins";
+import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
+import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
+import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
+import { RootTenantInitializer } from "./mocks/RootTenantInitializer";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
     identity?: IdentityData;
-    plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    storageOperationPlugins?: any[];
+    plugins?: any[];
     testProjectLicense?: DecryptedWcpProjectLicense;
 }
 
@@ -43,61 +46,74 @@ const defaultIdentity: IdentityData = {
 };
 
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
-    const { permissions, identity, plugins = [] } = params;
+    const { permissions, identity } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const apiAcoStorage = getStorageOps<ApiCoreStorageOperations>("aco");
+    const apiAcoStorage = getStorageOps<any>("aco");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
-    const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
+    const resolvedIdentity = identity ?? defaultIdentity;
+    const resolvedPermissions = (permissions ?? [{ name: "*" }]) as SecurityPermission[];
 
-    const handler = createHandler({
-        plugins: [
-            createApiCore({
-                storageOperations: apiCoreStorage.storageOperations,
-                testProjectLicense
-            }),
-            ...apiAcoStorage.plugins,
-            ...cmsStorage.plugins,
-            createGraphQLHandler(),
-            ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
-            new CmsParametersPlugin(async () => {
-                return {
-                    type: "manage"
-                };
-            }),
-            createCmsExtension(),
-            createAco(),
-            createFileManagerContext(),
-            createFileManagerAco(),
-            plugins
-        ],
-        debug: false
+    const handler = createTestHttpHandler({
+        root: container => {
+            container.registerInstance(TestIdentity, resolvedIdentity);
+            container.registerInstance(TestPermissions, resolvedPermissions);
+            container.register(TestAuthenticator);
+            container.register(TestAuthorizer);
+            container.registerDecorator(AuthTriggerHandler);
+            container.registerDecorator(RootTenantInitializer);
+        },
+        request: async container => {
+            const wcpLicense = await loadWcpLicense(
+                params.testProjectLicense ?? createTestWcpLicense()
+            );
+
+            ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense });
+            processLegacyPlugins(container, apiAcoStorage.plugins);
+            processLegacyPlugins(container, cmsStorage.plugins);
+
+            HeadlessCmsFeature.register(container, { type: "manage" });
+            AcoFeature.register(container);
+
+            const fmPlugins = [createFileManagerContext()].flat(Infinity as 1);
+            processLegacyPlugins(
+                container,
+                fmPlugins.filter(p => p instanceof RegisterExtensionPlugin)
+            );
+            const fmContextPlugins = fmPlugins.filter(p => !(p instanceof RegisterExtensionPlugin));
+
+            container.registerFactory(GraphQLContextEnhancer, () => ({
+                async enhance(ctx: Record<string, any>): Promise<void> {
+                    for (const plugin of fmContextPlugins) {
+                        if (typeof (plugin as any).apply === "function") {
+                            await (plugin as any).apply(ctx);
+                        }
+                    }
+                }
+            }));
+
+            FileManagerAcoFeature.register(container);
+            GraphQLEngineFeature.register(container);
+        }
     });
 
-    // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
-        const response = await handler(
-            {
-                path: "/graphql",
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as unknown as APIGatewayEvent,
-            {} as LambdaContext
-        );
-
-        // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body), response];
+    const invoke = async ({ httpMethod = "POST", body, headers = {} }: InvokeParams) => {
+        const response = await handler({
+            method: httpMethod,
+            path: "/graphql",
+            headers: {
+                "x-tenant": "root",
+                "content-type": "application/json",
+                ...headers
+            },
+            body
+        });
+        return [response.body, response];
     };
 
-    const fm = createFileManagerSdk(invoke);
-    const aco = createAcoSdk(invoke);
+    const fm = createFileManagerSdk(invoke as any);
+    const aco = createAcoSdk(invoke as any);
 
     return {
         params,
@@ -106,11 +122,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         fm,
         aco,
         introspect: () => {
-            return invoke({
-                body: {
-                    query: getIntrospectionQuery()
-                }
-            });
+            return invoke({ body: { query: getIntrospectionQuery() } });
         }
     };
 };
