@@ -15,7 +15,6 @@
     { "path": "../api-core-ddb" },
     { "path": "../api-file-manager-s3" },
     { "path": "../background-tasks" },
-    { "path": "../handler-aws" },
     { "path": "../plugins" },
     { "path": "../wcp" }
   ],
@@ -52,8 +51,6 @@
       "@webiny/api-file-manager-s3": ["../api-file-manager-s3/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

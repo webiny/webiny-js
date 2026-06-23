@@ -1,4 +1,5 @@
 import type { Container } from "@webiny/di";
+import { PluginsContainer } from "@webiny/plugins";
 import { GraphQLContextEnhancer } from "./engine/index.js";
 import type { IGraphQLContextEnhancer } from "./engine/index.js";
 
@@ -25,6 +26,12 @@ export function registerLegacyPluginsViaGqlContextEnhancer(
                 return;
             }
             initialized = true;
+
+            // Legacy plugins assume ctx.plugins exists (they call ctx.plugins.register() directly).
+            // Mirror the contract of the old createHandler which always initialised PluginsContainer.
+            if (!ctx.plugins) {
+                ctx.plugins = new PluginsContainer([]);
+            }
 
             for (const plugin of flat) {
                 if (typeof plugin.apply === "function") {
