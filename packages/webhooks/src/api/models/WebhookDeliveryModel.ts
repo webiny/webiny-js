@@ -4,7 +4,7 @@ import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
 class WebhookDeliveryModelFactory implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
         const model = builder
-            .public({
+            .private({
                 modelId: WEBHOOK_DELIVERY_MODEL_ID,
                 name: "Webhook Delivery",
                 group: "hidden"
