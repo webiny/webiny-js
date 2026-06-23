@@ -1,9 +1,11 @@
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import type { AssetRequest, AssetResolver } from "@webiny/api-file-manager";
-import { Asset } from "@webiny/api-file-manager";
-import { AssetResolver as AssetResolverAbstraction } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
+import {
+    AssetFactory,
+    AssetResolver as AssetResolverAbstraction,
+    ObjectKey
+} from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import { ObjectKey } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { S3ContentsReader } from "~/assetDelivery/index.js";
 import { S3Client, S3Bucket } from "~/assetDelivery/abstractions.js";
 
@@ -20,10 +22,11 @@ export class S3AssetResolver implements AssetResolver {
         private readonly keyValueStore: GlobalKeyValueStore.Interface,
         private readonly s3: S3,
         private readonly bucket: string,
-        private readonly objectKey: ObjectKey.Interface
+        private readonly objectKey: ObjectKey.Interface,
+        private readonly assetFactory: AssetFactory.Interface
     ) {}
 
-    async resolve(request: AssetRequest): Promise<Asset | undefined> {
+    async resolve(request: AssetRequest): Promise<AssetFactory.Asset | undefined> {
         const fileId = this.objectKey.from(request.getKey()).id();
         const result = await this.keyValueStore.get<AssetMetadata>(
             `FileManager/File/${fileId}/Metadata`
@@ -35,7 +38,7 @@ export class S3AssetResolver implements AssetResolver {
 
         const metadata = result.value;
 
-        const asset = new Asset({
+        const asset = this.assetFactory.create({
             id: metadata.id,
             tenant: metadata.tenant,
             size: metadata.size,
@@ -51,5 +54,5 @@ export class S3AssetResolver implements AssetResolver {
 
 export const S3AssetResolverImpl = AssetResolverAbstraction.createImplementation({
     implementation: S3AssetResolver,
-    dependencies: [GlobalKeyValueStore, S3Client, S3Bucket, ObjectKey]
+    dependencies: [GlobalKeyValueStore, S3Client, S3Bucket, ObjectKey, AssetFactory]
 });

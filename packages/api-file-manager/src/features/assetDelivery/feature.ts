@@ -1,5 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
+import { AssetFactory } from "./Asset/Asset.js";
 import { AssetRequestFactory } from "./AssetRequest/AssetRequest.js";
 import { FilesAssetRequestResolver } from "./FilesAssetRequestResolver.js";
 import { NullAssetResolver } from "./NullAssetResolver.js";
@@ -15,6 +16,7 @@ import { PrivateFilesAssetProcessor } from "./privateFiles/PrivateFilesAssetProc
 export const AssetDeliveryFeature = createFeature({
     name: "AssetDelivery",
     register(container) {
+        container.register(AssetFactory);
         container.register(AssetRequestFactory);
         container.register(FilesAssetRequestResolver);
         container.register(NullAssetResolver);

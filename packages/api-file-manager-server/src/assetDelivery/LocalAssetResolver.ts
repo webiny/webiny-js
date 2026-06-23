@@ -1,8 +1,10 @@
 import type { AssetRequest, AssetResolver } from "@webiny/api-file-manager";
-import { Asset } from "@webiny/api-file-manager";
-import { AssetResolver as AssetResolverAbstraction } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
+import {
+    AssetFactory,
+    AssetResolver as AssetResolverAbstraction,
+    ObjectKey
+} from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import { ObjectKey } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { LocalContentsReader } from "~/assetDelivery/LocalContentsReader.js";
 import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
 
@@ -18,10 +20,11 @@ export class LocalAssetResolver implements AssetResolver {
     constructor(
         private readonly keyValueStore: GlobalKeyValueStore.Interface,
         private readonly storagePath: string,
-        private readonly objectKey: ObjectKey.Interface
+        private readonly objectKey: ObjectKey.Interface,
+        private readonly assetFactory: AssetFactory.Interface
     ) {}
 
-    async resolve(request: AssetRequest): Promise<Asset | undefined> {
+    async resolve(request: AssetRequest): Promise<AssetFactory.Asset | undefined> {
         const objectKey = this.objectKey.from(request.getKey());
         const fileId = objectKey.id();
         const result = await this.keyValueStore.get<AssetMetadata>(
@@ -34,7 +37,7 @@ export class LocalAssetResolver implements AssetResolver {
 
         const metadata = result.value;
 
-        const asset = new Asset({
+        const asset = this.assetFactory.create({
             id: metadata.id,
             tenant: metadata.tenant,
             size: metadata.size,
@@ -50,5 +53,5 @@ export class LocalAssetResolver implements AssetResolver {
 
 export const LocalAssetResolverImpl = AssetResolverAbstraction.createImplementation({
     implementation: LocalAssetResolver,
-    dependencies: [GlobalKeyValueStore, LocalStoragePath, ObjectKey]
+    dependencies: [GlobalKeyValueStore, LocalStoragePath, ObjectKey, AssetFactory]
 });

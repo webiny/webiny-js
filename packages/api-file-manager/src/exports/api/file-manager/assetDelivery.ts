@@ -5,6 +5,7 @@ export { AssetOutputStrategy } from "~/features/assetDelivery/abstractions/Asset
 export { AssetTransformationStrategy } from "~/features/assetDelivery/abstractions/AssetTransformationStrategy.js";
 export { AssetContentsReader } from "~/features/assetDelivery/abstractions/AssetContentsReader.js";
 export { AssetAuthorizer } from "~/features/assetDelivery/abstractions/AssetAuthorizer.js";
+export { AssetFactory } from "~/features/assetDelivery/Asset/abstractions.js";
 export { AssetRequestFactory } from "~/features/assetDelivery/AssetRequest/abstractions.js";
 export { StreamAssetReply } from "~/features/assetDelivery/StreamAssetReply/abstractions.js";
 export { ObjectKey } from "~/features/assetDelivery/ObjectKey/abstractions.js";

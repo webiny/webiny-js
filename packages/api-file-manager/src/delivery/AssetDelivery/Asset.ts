@@ -9,7 +9,6 @@ export interface AssetData {
     size: number;
     contentType: string;
 }
-
 export class Asset {
     protected readonly props: AssetData;
     private outputStrategy: AssetOutputStrategy | undefined;
