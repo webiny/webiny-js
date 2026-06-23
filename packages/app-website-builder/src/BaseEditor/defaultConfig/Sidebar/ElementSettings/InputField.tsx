@@ -88,18 +88,16 @@ function ObjectField({ element, node, bindings }: ObjectFieldProps) {
         <div className={"flex flex-col gap-xs"}>
             <ObjectFieldHeader description={node.input.description} />
             <ObjectRow title={label} onOpen={() => setOpen(true)} />
-            {open ? (
-                <ObjectFieldPanel open onClose={() => setOpen(false)} title={label} depth={depth}>
-                    {node.children.map(child => (
-                        <InputField
-                            key={child.path}
-                            element={element}
-                            node={child}
-                            bindings={bindings}
-                        />
-                    ))}
-                </ObjectFieldPanel>
-            ) : null}
+            <ObjectFieldPanel open={open} onClose={() => setOpen(false)} title={label} depth={depth}>
+                {node.children.map(child => (
+                    <InputField
+                        key={child.path}
+                        element={element}
+                        node={child}
+                        bindings={bindings}
+                    />
+                ))}
+            </ObjectFieldPanel>
         </div>
     );
 }
@@ -121,8 +119,16 @@ interface ObjectListFieldProps {
 function ObjectListField({ element, node, bindings, value, onChange }: ObjectListFieldProps) {
     const items: any[] = Array.isArray(value) ? value : [];
     const [openIndex, setOpenIndex] = useState<number | null>(null);
+    // The index whose panel is shown. Retained while closing so the content stays put during the
+    // exit transition (openIndex goes null immediately, activeIndex lingers).
+    const [activeIndex, setActiveIndex] = useState(0);
     const depth = useDrawerDepth();
     const label = node.input.label ?? node.name;
+
+    const openItem = (index: number) => {
+        setActiveIndex(index);
+        setOpenIndex(index);
+    };
 
     const commit = (next: any[]) => {
         onChange(({ value }) => {
@@ -169,7 +175,7 @@ function ObjectListField({ element, node, bindings, value, onChange }: ObjectLis
                         <ObjectRow
                             key={`${node.path}/${index}`}
                             title={deriveItemTitle(node, item, index)}
-                            onOpen={() => setOpenIndex(index)}
+                            onOpen={() => openItem(index)}
                             actions={
                                 <ObjectRowActions
                                     onMoveUp={() => handleMoveUp(index)}
@@ -185,26 +191,24 @@ function ObjectListField({ element, node, bindings, value, onChange }: ObjectLis
                 </>
             )}
 
-            {openIndex !== null && items[openIndex] !== undefined ? (
-                <ObjectFieldPanel
-                    open
-                    onClose={() => setOpenIndex(null)}
-                    title={deriveItemTitle(node, items[openIndex], openIndex)}
-                    depth={depth}
-                >
-                    {node.children.map(child => {
-                        const indexedChild = withIndexedPath(child, node.path, openIndex);
-                        return (
-                            <InputField
-                                key={indexedChild.path}
-                                element={element}
-                                node={indexedChild}
-                                bindings={bindings}
-                            />
-                        );
-                    })}
-                </ObjectFieldPanel>
-            ) : null}
+            <ObjectFieldPanel
+                open={openIndex !== null}
+                onClose={() => setOpenIndex(null)}
+                title={deriveItemTitle(node, items[activeIndex], activeIndex)}
+                depth={depth}
+            >
+                {node.children.map(child => {
+                    const indexedChild = withIndexedPath(child, node.path, activeIndex);
+                    return (
+                        <InputField
+                            key={indexedChild.path}
+                            element={element}
+                            node={indexedChild}
+                            bindings={bindings}
+                        />
+                    );
+                })}
+            </ObjectFieldPanel>
         </div>
     );
 }

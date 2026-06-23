@@ -1,11 +1,4 @@
-import React, {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useLayoutEffect,
-    useState
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Button, Label, Text } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
@@ -17,69 +10,43 @@ import { ReactComponent as ObjectIcon } from "@webiny/icons/data_object.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 /**
- * Width of a single object-field panel. Slightly narrower than the editor sidebar (329px) so it
- * reads as an overlay sitting on top of it. Nested panels are offset left by this amount so they
- * cascade beside their parent instead of fully covering it.
+ * Width of the first object-field panel. Slightly narrower than the editor sidebar (329px) so the
+ * backdrop shows as a thin strip on its left edge.
  */
 const PANEL_WIDTH = 312;
 
 /**
- * The editor sidebar carries this attribute (see `config/Sidebar/Sidebar.tsx`). It is measured so
- * object panels can be positioned directly over it (right-aligned, below the top bars).
+ * Each nested panel is this much narrower than its parent, so the stack of open panels is visible
+ * (the dimmed parent peeks out on the left).
+ */
+const NEST_INSET = 16;
+
+/**
+ * Duration of the enter/exit transitions. The panel stays mounted this long after closing so the
+ * slide-out / fade-out can play before it unmounts.
+ */
+const TRANSITION_MS = 250;
+
+/**
+ * The editor sidebar carries this attribute (see `config/Sidebar/Sidebar.tsx`). Object panels are
+ * portaled into it and overlay it, so they stay confined to the sidebar (no app-wide overlay).
  */
 const ANCHOR_SELECTOR = "[data-role='wb-object-panel-anchor']";
 
 /**
- * Base z-index for object panels. Each level of nesting adds 2 (one slot for the panel, one for
- * its backdrop, which sits directly beneath the topmost panel).
+ * Base z-index for object panels. Each level of nesting adds 2: one slot for the panel and one for
+ * its backdrop, which sits directly beneath it. Backdrops stack, so each deeper panel dims the
+ * parent panel a little more.
  */
 const Z_BASE = 50;
 
 /**
- * Tracks how deeply nested the current object panel is. Each panel offsets itself by
- * `depth * PANEL_WIDTH` so a nested object opens a new panel beside its parent rather than on top
- * of it.
+ * Tracks how deeply nested the current object panel is. Used to compute stacking order and width -
+ * a nested object opens a new panel that renders over its parent within the sidebar.
  */
 const DrawerDepthContext = createContext(0);
 
 export const useDrawerDepth = () => useContext(DrawerDepthContext);
-
-interface PanelStack {
-    register: (depth: number) => void;
-    unregister: (depth: number) => void;
-    topDepth: number;
-}
-
-const PanelStackContext = createContext<PanelStack>({
-    register: () => undefined,
-    unregister: () => undefined,
-    topDepth: -1
-});
-
-/**
- * Tracks which object panels are currently open so that only the deepest (topmost) one renders the
- * backdrop. Everything beneath the topmost panel - parent panels, the sidebar and the canvas - is
- * dimmed by that single scrim. Mount once above the element inputs.
- */
-export const ObjectPanelStackProvider = ({ children }: { children: React.ReactNode }) => {
-    const [openDepths, setOpenDepths] = useState<number[]>([]);
-
-    const register = useCallback((depth: number) => {
-        setOpenDepths(prev => (prev.includes(depth) ? prev : [...prev, depth]));
-    }, []);
-
-    const unregister = useCallback((depth: number) => {
-        setOpenDepths(prev => prev.filter(value => value !== depth));
-    }, []);
-
-    const topDepth = openDepths.length > 0 ? Math.max(...openDepths) : -1;
-
-    return (
-        <PanelStackContext.Provider value={{ register, unregister, topDepth }}>
-            {children}
-        </PanelStackContext.Provider>
-    );
-};
 
 interface ObjectFieldPanelProps {
     open: boolean;
@@ -90,10 +57,11 @@ interface ObjectFieldPanelProps {
 }
 
 /**
- * A panel holding an object's fields. It is rendered over the editor sidebar (right-aligned, below
- * the top bars), with a backdrop covering the editor area to its left. Nested objects open another
- * panel cascading to the left, and the topmost panel's backdrop dims every parent panel + the
- * sidebar + the canvas behind it. Closes on the header button, the backdrop, or the Escape key.
+ * A panel holding an object's fields. It is portaled into the editor sidebar and overlays it
+ * (right-aligned, slightly narrower so the backdrop shows as a thin strip on the left). A nested
+ * object opens another, narrower panel over this one with its own backdrop; backdrops stack and
+ * persist, so each deeper level dims its parent further. Closes on the header button, its own
+ * backdrop, or Escape.
  */
 export const ObjectFieldPanel = ({
     open,
@@ -102,32 +70,40 @@ export const ObjectFieldPanel = ({
     depth,
     children
 }: ObjectFieldPanelProps) => {
-    const { register, unregister, topDepth } = useContext(PanelStackContext);
-    const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+    const [host] = useState<HTMLElement | null>(() =>
+        typeof document !== "undefined"
+            ? document.querySelector<HTMLElement>(ANCHOR_SELECTOR)
+            : null
+    );
+    const [rendered, setRendered] = useState(open);
+    const [entered, setEntered] = useState(false);
 
-    // Measure the sidebar so the panel can be positioned directly over it and the backdrop can
-    // span the editor area below the top bars.
-    useLayoutEffect(() => {
-        if (!open) {
+    // Mount on open; on close, play the exit transition (slide out + fade out) before unmounting.
+    useEffect(() => {
+        if (open) {
+            setRendered(true);
             return;
         }
-        const anchor = document.querySelector<HTMLElement>(ANCHOR_SELECTOR);
-        if (!anchor) {
-            return;
-        }
-        const measure = () => setAnchorRect(anchor.getBoundingClientRect());
-        measure();
-        window.addEventListener("resize", measure);
-        return () => window.removeEventListener("resize", measure);
+        setEntered(false);
+        const timeout = setTimeout(() => setRendered(false), TRANSITION_MS);
+        return () => clearTimeout(timeout);
     }, [open]);
 
+    // Enter transition: once mounted and open, flip to the on-screen state after the browser paints
+    // the initial off-screen / transparent state. A double rAF guarantees that first paint.
     useEffect(() => {
-        if (!open) {
+        if (!rendered || !open) {
             return;
         }
-        register(depth);
-        return () => unregister(depth);
-    }, [open, depth, register, unregister]);
+        let inner = 0;
+        const outer = requestAnimationFrame(() => {
+            inner = requestAnimationFrame(() => setEntered(true));
+        });
+        return () => {
+            cancelAnimationFrame(outer);
+            cancelAnimationFrame(inner);
+        };
+    }, [rendered, open]);
 
     useEffect(() => {
         if (!open) {
@@ -142,41 +118,32 @@ export const ObjectFieldPanel = ({
         return () => window.removeEventListener("keydown", onKeyDown);
     }, [open, onClose]);
 
-    if (!open || !anchorRect) {
+    if (!rendered || !host) {
         return null;
     }
 
     const panelZIndex = Z_BASE + depth * 2;
-    // Only the deepest open panel paints the scrim; it sits one z-level below this panel, dimming
-    // every parent panel, the sidebar and the canvas behind it.
-    const isTopmost = depth === topDepth;
-    // Anchor over the sidebar's right edge; nested panels cascade one panel-width to the left.
-    const rightOffset = window.innerWidth - anchorRect.right + depth * PANEL_WIDTH;
+    const panelWidth = PANEL_WIDTH - depth * NEST_INSET;
 
     return createPortal(
         <>
-            {isTopmost ? (
-                <div
-                    className={"fixed"}
-                    style={{
-                        top: anchorRect.top,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: "rgba(25, 28, 32, 0.2)",
-                        zIndex: panelZIndex - 1
-                    }}
-                    onClick={onClose}
-                />
-            ) : null}
             <div
-                className={"fixed flex shadow-lg"}
+                className={"absolute inset-0"}
                 style={{
-                    top: anchorRect.top,
-                    height: anchorRect.height,
-                    right: rightOffset,
-                    width: PANEL_WIDTH,
-                    zIndex: panelZIndex
+                    backgroundColor: "rgba(25, 28, 32, 0.2)",
+                    zIndex: panelZIndex - 1,
+                    opacity: entered ? 1 : 0,
+                    transition: "opacity 200ms ease"
+                }}
+                onClick={onClose}
+            />
+            <div
+                className={"absolute top-0 bottom-0 right-0 flex shadow-lg"}
+                style={{
+                    width: panelWidth,
+                    zIndex: panelZIndex,
+                    transform: entered ? "translateX(0)" : "translateX(100%)",
+                    transition: "transform 250ms ease"
                 }}
             >
                 <div className={"w-px h-full shrink-0 bg-neutral-dimmed"} />
@@ -210,7 +177,7 @@ export const ObjectFieldPanel = ({
                 </div>
             </div>
         </>,
-        document.body
+        host
     );
 };
 
