@@ -1,5 +1,5 @@
 import { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
-import { AssetRequestResolver } from "../abstractions.js";
+import { AssetRequestResolver } from "../abstractions/AssetRequestResolver.js";
 
 class PrivateFileAssetRequestResolverImpl implements AssetRequestResolver.Interface {
     private readonly resolver: AssetRequestResolver.Interface;

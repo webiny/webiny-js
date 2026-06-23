@@ -2,9 +2,9 @@ import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
 import type { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
 import { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
 import { ResponseHeaders } from "@webiny/handler";
-import type { IAssetOutputStrategy } from "../abstractions.js";
+import { AssetOutputStrategy } from "../abstractions/AssetOutputStrategy.js";
 
-export class RedirectToPublicUrlOutputStrategy implements IAssetOutputStrategy {
+export class RedirectToPublicUrlOutputStrategy implements AssetOutputStrategy.Interface {
     private assetRequest: AssetRequest;
 
     constructor(assetRequest: AssetRequest) {

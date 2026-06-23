@@ -1,6 +1,6 @@
 import type { AssetRequestOptions } from "~/delivery/AssetDelivery/AssetRequest.js";
 import { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
-import { AssetRequestResolver } from "./abstractions.js";
+import { AssetRequestResolver } from "./abstractions/AssetRequestResolver.js";
 
 class FilesAssetRequestResolverImpl implements AssetRequestResolver.Interface {
     async resolve(

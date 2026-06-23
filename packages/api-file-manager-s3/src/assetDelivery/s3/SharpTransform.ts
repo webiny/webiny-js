@@ -6,7 +6,7 @@ import type {
     AssetRequestOptions,
     AssetTransformationStrategy
 } from "@webiny/api-file-manager";
-import { AssetTransformationStrategy as AssetTransformationStrategyAbstraction } from "@webiny/api-file-manager/features/assetDelivery/abstractions.js";
+import { AssetTransformationStrategy as AssetTransformationStrategyAbstraction } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { WidthCollection } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import * as utils from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";

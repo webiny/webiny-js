@@ -6,7 +6,7 @@ import {
     WebsocketsSendToConnectionsUseCase,
     ConnectionRegistry
 } from "@webiny/api-websockets/exports/api.js";
-import { ObjectKey } from "@webiny/api-file-manager/features/assetDelivery/ObjectKey/index.js";
+import { ObjectKey } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import type { GuardDutyEvent } from "./types.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 

@@ -1,4 +1,4 @@
-import { AssetResolver } from "./abstractions.js";
+import { AssetResolver } from "./abstractions/AssetResolver.js";
 
 class NullAssetResolverImpl implements AssetResolver.Interface {
     resolve(): Promise<AssetResolver.Asset | undefined> {

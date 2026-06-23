@@ -3,7 +3,7 @@ import { createHandlerOnRequest } from "@webiny/handler";
 import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import { ObjectKey } from "@webiny/api-file-manager/features/assetDelivery/ObjectKey/index.js";
+import { ObjectKey } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import type { GuardDutyEvent } from "./types.js";
 import { processThreatScanResult } from "./processThreatScanResult.js";
 

@@ -1,8 +1,8 @@
 import type { AssetRequest, AssetResolver } from "@webiny/api-file-manager";
 import { Asset } from "@webiny/api-file-manager";
-import { AssetResolver as AssetResolverAbstraction } from "@webiny/api-file-manager/features/assetDelivery/abstractions.js";
+import { AssetResolver as AssetResolverAbstraction } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import { ObjectKey } from "@webiny/api-file-manager/features/assetDelivery/ObjectKey/index.js";
+import { ObjectKey } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { LocalContentsReader } from "~/assetDelivery/LocalContentsReader.js";
 import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
 

@@ -1,4 +1,5 @@
-import { AssetProcessor, AssetTransformationStrategy } from "../abstractions.js";
+import { AssetProcessor } from "../abstractions/AssetProcessor.js";
+import { AssetTransformationStrategy } from "../abstractions/AssetTransformationStrategy.js";
 
 class TransformationAssetProcessorImpl implements AssetProcessor.Interface {
     private strategy: AssetTransformationStrategy.Interface;

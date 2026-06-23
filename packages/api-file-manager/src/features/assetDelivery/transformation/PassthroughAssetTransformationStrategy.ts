@@ -1,4 +1,4 @@
-import { AssetTransformationStrategy } from "../abstractions.js";
+import { AssetTransformationStrategy } from "../abstractions/AssetTransformationStrategy.js";
 
 class PassthroughAssetTransformationStrategyImpl implements AssetTransformationStrategy.Interface {
     transform(

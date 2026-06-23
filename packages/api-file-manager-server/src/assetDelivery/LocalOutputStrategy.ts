@@ -1,6 +1,6 @@
 import type { Asset, AssetOutputStrategy, AssetReply } from "@webiny/api-file-manager";
-import { AssetOutputStrategy as AssetOutputStrategyAbstraction } from "@webiny/api-file-manager/features/assetDelivery/abstractions.js";
-import { StreamAssetReply } from "@webiny/api-file-manager/features/assetDelivery/StreamAssetReply/index.js";
+import { AssetOutputStrategy as AssetOutputStrategyAbstraction } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
+import { StreamAssetReply } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 

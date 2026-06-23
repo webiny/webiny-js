@@ -1,8 +1,8 @@
 import type { Asset, AssetOutputStrategy, AssetReply } from "@webiny/api-file-manager";
-import { AssetOutputStrategy as AssetOutputStrategyAbstraction } from "@webiny/api-file-manager/features/assetDelivery/abstractions.js";
+import { AssetOutputStrategy as AssetOutputStrategyAbstraction } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { GetObjectCommand, getSignedUrl } from "@webiny/aws-sdk/client-s3/index.js";
-import { StreamAssetReply } from "@webiny/api-file-manager/features/assetDelivery/StreamAssetReply/index.js";
+import { StreamAssetReply } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { S3RedirectAssetReply } from "~/assetDelivery/s3/S3RedirectAssetReply.js";
 import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { IS3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";

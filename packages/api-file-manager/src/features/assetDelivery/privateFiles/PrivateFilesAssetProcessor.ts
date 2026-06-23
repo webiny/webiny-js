@@ -5,7 +5,8 @@ import { RedirectToPublicUrlOutputStrategy } from "./RedirectToPublicUrlOutputSt
 import { RedirectToPrivateUrlOutputStrategy } from "./RedirectToPrivateUrlOutputStrategy.js";
 import { PrivateCache } from "./PrivateCache.js";
 import { PublicCache } from "./PublicCache.js";
-import { AssetAuthorizer, AssetProcessor } from "../abstractions.js";
+import { AssetAuthorizer } from "../abstractions/AssetAuthorizer.js";
+import { AssetProcessor } from "../abstractions/AssetProcessor.js";
 import type { File as IFile } from "~/domain/file/types.js";
 
 interface MaybePrivate {
