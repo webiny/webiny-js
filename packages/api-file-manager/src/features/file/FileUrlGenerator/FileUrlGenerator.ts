@@ -12,15 +12,21 @@ class FileUrlGeneratorImpl implements Abstraction.Interface {
         return prefix + file.key;
     }
 
-    private getPrefix(): Promise<string> {
+    private async getPrefix(): Promise<string> {
         if (this.srcPrefix === undefined) {
-            this.srcPrefix = (async () => {
-                const result = await this.getSettings.execute();
-                const settings = result.value;
-                return settings?.srcPrefix ?? "";
-            })();
+            this.srcPrefix = this.fetchPrefix();
         }
         return this.srcPrefix;
+    }
+
+    private async fetchPrefix(): Promise<string> {
+        const result = await this.getSettings.execute();
+        if (result.isFail()) {
+            console.error("Failed to fetch settings:", result.error);
+            return "";
+        }
+        const settings = result.value;
+        return settings?.srcPrefix || "";
     }
 }
 
