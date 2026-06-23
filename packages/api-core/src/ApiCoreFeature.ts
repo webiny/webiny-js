@@ -18,8 +18,10 @@ import { WcpFeature } from "~/features/wcp/WcpFeature.js";
 import { NullLicense } from "@webiny/wcp";
 import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/NullWebhookDispatcher.js";
 import { WebhookProviderFeature } from "~/features/webhooks/index.js";
-import { ApiCoreContextEnhancer } from "~/graphql/ApiCoreContextEnhancer.js";
+import { ApiCoreContextEnhancerImpl } from "~/graphql/ApiCoreContextEnhancer.js";
 import { ApiCoreSchemaFactory } from "~/graphql/ApiCoreSchemaFactory.js";
+import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { RequestContainer } from "@webiny/event-handler-core";
 
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
@@ -41,7 +43,14 @@ export const ApiCoreFeature = createFeature({
         IdpAuthenticatorFeature.register(container);
         container.register(NullWebhookDispatcher).inSingletonScope();
         WebhookProviderFeature.register(container);
-        container.register(ApiCoreContextEnhancer);
+        // Use registerInstance so ApiCoreContextEnhancer runs as the very first enhancer
+        // (instance registrations precede class registrations in resolveAll). This ensures
+        // ctx.security / ctx.tenancy / ctx.wcp are available to all subsequent enhancers.
+        const coreEnhancer = container.resolveWithDependencies({
+            implementation: ApiCoreContextEnhancerImpl,
+            dependencies: [RequestContainer]
+        });
+        container.registerInstance(GraphQLContextEnhancer, coreEnhancer);
         container.register(ApiCoreSchemaFactory);
     }
 });

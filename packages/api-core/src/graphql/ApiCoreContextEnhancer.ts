@@ -8,7 +8,7 @@ import { WcpFeature } from "~/features/wcp/WcpFeature.js";
 import { loadWcpLicense } from "~/legacy/wcp/context.js";
 import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
 
-class ApiCoreContextEnhancerImpl implements IGraphQLContextEnhancer {
+export class ApiCoreContextEnhancerImpl implements IGraphQLContextEnhancer {
     constructor(private container: Container) {}
 
     async enhance(ctx: Record<string, any>): Promise<void> {
