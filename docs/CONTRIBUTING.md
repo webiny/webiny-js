@@ -107,6 +107,76 @@ The setup of our Github repo is identical to the one created by `create-webiny-p
    
 Learn more about the `watch` command here: https://www.webiny.com/docs/how-to-guides/use-watch-command
 
+## Agent setup
+
+It's recommended while working inside the webiny-js repo that you setup Webiny MCP server and [`codegraph`](https://github.com/colbymchenry/codegraph).
+
+
+
+First install codegraph, after it's installed, run `codegraph init` inside your Webiny project to index the files.
+
+
+Then open your agent and paste the below prompt which will setup the Webiny MCP server and codegraph for your project.
+
+```
+  Add the Webiny MCP server to your project's .mcp.json file.
+
+  The Webiny MCP server lives in the monorepo at packages/mcp/bin.js. It provides two tools: list_webiny_skills and get_webiny_skill for querying Webiny framework knowledge.
+
+  Add this entry to the mcpServers object in your .mcp.json (create the file at the project root if it doesn't exist):
+
+  "webiny": {
+    "type": "stdio",
+    "command": "node",
+    "args": ["<relative-path-to-webiny-js-v6>/packages/mcp/bin.js", "serve"]
+  }
+
+  Replace <relative-path-to-webiny-js-v6> with the actual relative path from your project root to the webiny-js-v6 repo. If your project IS the webiny-js-v6 repo, use "args":
+  ["packages/mcp/bin.js"].
+
+  After adding, enable it in .claude/settings.local.json by adding "webiny" to the enabledMcpjsonServers array (create the array if it doesn't exist):
+
+  {
+    "enabledMcpjsonServers": ["webiny"]
+  }
+
+  Additionally add codegraph to the same .mcp.json file:
+   "codegraph": {
+      "type": "stdio",
+      "command": "codegraph",
+      "args": [
+        "serve",
+        "--mcp"
+      ]
+    }
+  
+  ```
+
+Your `.mcp.json` file should look something like this:
+
+```
+{
+  "mcpServers": {
+    "codegraph": {
+      "type": "stdio",
+      "command": "codegraph",
+      "args": [
+        "serve",
+        "--mcp"
+      ]
+    },
+    "webiny": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["packages/mcp/bin.js", "serve"]
+    }
+  }
+}
+```
+
+Inside your agent if you open the list of connected mcp servers you should see both Webiny MCP and codegraph active.
+  
+
 ## Tests
 
 You can find examples of tests in some of the utility packages (`validation`, `i18n`, `plugins`).
