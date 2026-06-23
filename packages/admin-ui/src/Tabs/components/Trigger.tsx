@@ -64,16 +64,23 @@ const Trigger = ({ className, size, icon, text, visible, loading, ...props }: Tr
         className={cn(tabTriggerVariants({ size, visible }), className)}
         {...props}
     >
-        {loading ? (
-            <Skeleton type={"text"} size={"md"} className={"w-[64px]"} />
-        ) : (
-            <div className={cn(innerTabTriggerVariants({ size }))}>
-                {icon && (
-                    <Icon icon={icon} size={"sm"} label={String(text)} color={"neutral-light"} />
-                )}
-                {text}
-            </div>
-        )}
+        <div className={cn(innerTabTriggerVariants({ size }))}>
+            {loading ? (
+                <Skeleton type={"text"} size={"md"} className={"w-[64px]"} />
+            ) : (
+                <>
+                    {icon && (
+                        <Icon
+                            icon={icon}
+                            size={"sm"}
+                            label={String(text)}
+                            color={"neutral-light"}
+                        />
+                    )}
+                    {text}
+                </>
+            )}
+        </div>
     </TabsPrimitive.Trigger>
 );
 

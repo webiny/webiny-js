@@ -1,7 +1,7 @@
 import React from "react";
 import { cn, cva, type VariantProps, makeDecoratable } from "~/utils.js";
 
-const skeletonVariants = cva("animate-skeleton-pulse rounded-sm", {
+const skeletonVariants = cva("rounded-sm", {
     variants: {
         type: {
             text: "w-full",
@@ -18,8 +18,8 @@ const skeletonVariants = cva("animate-skeleton-pulse rounded-sm", {
             "3xl": "h-xxl"
         },
         shade: {
-            dark: "",
-            light: "[--skeleton-pulse-from:var(--color-neutral-subtle)] [--skeleton-pulse-to:var(--color-neutral-disabled)]"
+            dark: "animate-skeleton-pulse",
+            light: "animate-skeleton-pulse-light"
         }
     },
     compoundVariants: [
