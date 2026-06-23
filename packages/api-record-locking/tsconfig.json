@@ -12,6 +12,7 @@
     { "path": "../plugins" },
     { "path": "../utils" },
     { "path": "../api-core" },
+    { "path": "../event-handler-core" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -41,6 +42,8 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

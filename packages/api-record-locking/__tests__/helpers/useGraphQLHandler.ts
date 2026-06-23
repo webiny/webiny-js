@@ -1,10 +1,26 @@
 import { getIntrospectionQuery } from "graphql";
-import { createHandler } from "@webiny/handler-aws";
-import { PluginsContainer } from "@webiny/plugins/types";
-import type { CreateHandlerCoreParams } from "./plugins";
-import { createHandlerCore } from "./plugins";
-import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
-import { defaultIdentity } from "./tenancySecurity";
+import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { ApiCoreFeature } from "@webiny/api-core";
+import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
+import { GraphQLEngineFeature, GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { RegisterExtensionPlugin } from "@webiny/handler";
+import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import {
+    ConnectionRegistry,
+    WebsocketsSendToIdentityUseCase
+} from "@webiny/api-websockets/exports/api.js";
+import { createRecordLocking } from "~/index";
+import { processLegacyPlugins } from "./bridgeLegacyPlugins";
+import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
+import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
+import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
+import { RootTenantInitializer } from "./mocks/RootTenantInitializer";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type {
     IGetLockedEntryLockRecordGraphQlResponse,
     IGetLockedEntryLockRecordGraphQlVariables,
@@ -34,64 +50,113 @@ import {
     UPDATE_ENTRY_LOCK_MUTATION
 } from "./graphql/recordLocking";
 
-export type GraphQLHandlerParams = CreateHandlerCoreParams;
+export const defaultIdentity: IdentityData = {
+    id: "id-12345678",
+    type: "admin",
+    displayName: "John Doe"
+};
 
-export interface IInvokeResult<T = any> {
-    data: T;
+export interface GraphQLHandlerParams {
+    permissions?: SecurityPermission[];
+    identity?: IdentityData;
 }
 
-export interface InvokeParams {
-    httpMethod?: "POST" | "GET" | "OPTIONS";
-    body?: {
-        query: string;
-        variables?: Record<string, any>;
-    };
-    headers?: Record<string, string>;
-}
+const noopConnectionRegistry: ConnectionRegistry.Interface = {
+    register: async () => ({
+        connectionId: "",
+        identity: { id: "", displayName: "", type: "" },
+        tenant: "",
+        connectedOn: "",
+        endpoint: ""
+    }),
+    unregister: async () => {},
+    listViaConnections: async () => [],
+    listViaIdentity: async () => [],
+    listViaTenant: async () => [],
+    listAll: async () => [],
+    updateLastSeen: async () => {},
+    listStale: async () => []
+};
 
 export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
     const { identity } = params;
 
-    const core = createHandlerCore(params);
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
-    const plugins = new PluginsContainer(core.plugins);
+    const resolvedIdentity = identity ?? defaultIdentity;
+    const resolvedPermissions = (params.permissions ?? [{ name: "*" }]) as SecurityPermission[];
 
-    const handler = createHandler({
-        plugins: plugins.all(),
-        debug: false
+    const handler = createTestHttpHandler({
+        root: container => {
+            container.registerInstance(TestIdentity, resolvedIdentity);
+            container.registerInstance(TestPermissions, resolvedPermissions);
+            container.register(TestAuthenticator);
+            container.register(TestAuthorizer);
+            container.registerDecorator(AuthTriggerHandler);
+            container.registerDecorator(RootTenantInitializer);
+        },
+        request: async container => {
+            const wcpLicense = await loadWcpLicense(createTestWcpLicense({ recordLocking: true }));
+            ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense });
+            processLegacyPlugins(container, cmsStorage.plugins);
+            HeadlessCmsFeature.register(container, { type: "manage" });
+
+            // RegisterExtensionPlugin (modelsPlugin) must go into DI now;
+            // ContextPlugin must run as factory enhancer so it executes after
+            // HeadlessCmsContextEnhancer sets up ctx.plugins and the model registry.
+            const recordLockingPlugins = [createRecordLocking()].flat(Infinity as 1);
+            processLegacyPlugins(
+                container,
+                recordLockingPlugins.filter(p => p instanceof RegisterExtensionPlugin)
+            );
+            const recordLockingContextPlugins = recordLockingPlugins.filter(
+                p => !(p instanceof RegisterExtensionPlugin)
+            );
+
+            container.registerInstance(ConnectionRegistry, noopConnectionRegistry);
+            container.registerInstance(WebsocketsSendToIdentityUseCase, {
+                execute: async () => {}
+            });
+
+            container.registerFactory(GraphQLContextEnhancer, () => ({
+                async enhance(ctx: Record<string, any>): Promise<void> {
+                    for (const plugin of recordLockingContextPlugins) {
+                        if (typeof (plugin as any).apply === "function") {
+                            await (plugin as any).apply(ctx);
+                        }
+                    }
+                }
+            }));
+
+            GraphQLEngineFeature.register(container);
+        }
     });
 
     const invoke = async <T = any>({
         httpMethod = "POST",
         body,
-        headers = {},
-        ...rest
-    }: InvokeParams): Promise<[IInvokeResult<T>, any]> => {
-        const response = await handler(
-            {
-                path: "/graphql",
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as unknown as APIGatewayEvent,
-            {} as unknown as LambdaContext
-        );
-        // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body || "{}"), response];
+        headers = {}
+    }: {
+        httpMethod?: "POST" | "GET" | "OPTIONS";
+        body?: { query: string; variables?: Record<string, any> };
+        headers?: Record<string, string>;
+    }): Promise<[T, any]> => {
+        const response = await handler({
+            method: httpMethod,
+            path: "/graphql",
+            headers: {
+                "x-tenant": "root",
+                "content-type": "application/json",
+                ...headers
+            },
+            body
+        });
+        return [response.body as T, response];
     };
 
     return {
-        handler,
-        invoke,
-        tenant: core.tenant,
-        identity: identity || defaultIdentity,
-        plugins,
-        storageOperations: core.storageOperations,
+        identity: resolvedIdentity,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });
         },
