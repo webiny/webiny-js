@@ -1,0 +1,36 @@
+import React from "react";
+import { observer } from "mobx-react-lite";
+import { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
+import { usePermission } from "~/admin/hooks/usePermission.js";
+import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
+
+export const SaveAndPublishButton = observer(() => {
+    const presenter = useContentEntryFormPresenter();
+    const { ButtonPrimary } = ContentEntryEditorConfig.Actions.ButtonAction.useButtons();
+    const { canEdit, canPublish } = usePermission();
+
+    if (
+        (presenter.vm.entry && !canEdit(presenter.vm.entry, "cms.contentEntry")) ||
+        !canPublish("cms.contentEntry")
+    ) {
+        return null;
+    }
+
+    const saveAndPublish = async () => {
+        const saved = await presenter.saveRevision();
+        if (!saved) {
+            return;
+        }
+        await presenter.publishRevision();
+    };
+
+    return (
+        <ButtonPrimary
+            onAction={saveAndPublish}
+            disabled={presenter.vm.loading !== null}
+            data-testid="cms-content-save-publish-content-button"
+        >
+            {"Save & Publish"}
+        </ButtonPrimary>
+    );
+});

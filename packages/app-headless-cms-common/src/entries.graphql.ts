@@ -8,17 +8,13 @@ import type {
     CmsModel,
     CmsModelField
 } from "~/types/index.js";
-import { createFieldsList } from "./createFieldsList.js";
-import { getModelTitleFieldId } from "./getModelTitleFieldId.js";
 import type { FormValidationOptions } from "@webiny/form";
 import { CMS_MODEL_SINGLETON_TAG } from "./constants.js";
 
 export function getValuesBlock(model: CmsEditorContentModel): string {
-    const selection = model.valuesSelection
-        ? model.valuesSelection
-        : createFieldsList({ model, fields: model.fields });
+    const selection = model.valuesSelection;
 
-    if (!selection) {
+    if (!selection || selection === "_empty") {
         return "";
     }
 
@@ -249,17 +245,13 @@ export interface CmsEntriesListQueryVariables {
     after?: string;
 }
 
-export const createListQueryDataSelection = (
-    model: CmsEditorContentModel,
-    fields?: CmsModelField[]
-) => {
-    const valuesSelection = fields
-        ? createFieldsList({ model, fields })
-        : getModelTitleFieldId(model);
+export const createListQueryDataSelection = (model: CmsEditorContentModel) => {
+    const valuesSelection = model.valuesSelection;
 
-    const valuesBlock = valuesSelection
-        ? `values {\n            ${valuesSelection}\n        }`
-        : "";
+    const valuesBlock =
+        valuesSelection && valuesSelection !== "_empty"
+            ? `values {\n            ${valuesSelection}\n        }`
+            : "";
 
     return `
         ${createEntrySystemFields(model)}
@@ -274,7 +266,7 @@ export const createListQuery = (
 ) => {
     const queryName = deleted ? `Deleted${model.pluralApiName}` : model.pluralApiName;
 
-    const selection = createListQueryDataSelection(model, fields);
+    const selection = createListQueryDataSelection(model);
 
     return gql`
         query CmsEntriesList${queryName}($where: ${model.singularApiName}ListWhereInput, $sort: [${

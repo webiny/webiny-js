@@ -52,9 +52,10 @@ class TabsLayoutFieldTypeImpl implements ICmsLayoutFieldType {
 
     getFieldLabelPrefixes({
         field
-    }: Parameters<
-        NonNullable<ICmsLayoutFieldType["getFieldLabelPrefixes"]>
-    >[0]): Record<string, string> {
+    }: Parameters<NonNullable<ICmsLayoutFieldType["getFieldLabelPrefixes"]>>[0]): Record<
+        string,
+        string
+    > {
         const tabsField = field as CmsTabLayoutField;
         const tabs = tabsField.tabs;
         if (!tabs) {

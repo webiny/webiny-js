@@ -19,13 +19,7 @@ class ListDeletedEntriesGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: CmsGraphQLClient.Interface) {}
 
     async execute(params: IListDeletedEntriesParams): Promise<IListDeletedEntriesResult> {
-        const fields = params.model.fields.filter(field => {
-            return ["text", "number", "boolean", "file", "long-text", "ref", "datetime"].includes(
-                field.type
-            );
-        });
-
-        const query = createListQuery(params.model, fields, true);
+        const query = createListQuery(params.model, undefined, true);
 
         const response = await this.client.execute<ListDeletedEntriesResponse>({
             query,

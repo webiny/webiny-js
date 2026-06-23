@@ -37,7 +37,7 @@ const TabPanel = ({ tab }: TabPanelProps) => {
             icon={icon ? <FontAwesomeIcon icon={icon} size={"sm"} /> : undefined}
             content={
                 <FieldRulesProvider rules={rules}>
-                   <div>Legacy Fields</div>
+                    <div>Legacy Fields</div>
                 </FieldRulesProvider>
             }
         />

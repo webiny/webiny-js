@@ -178,9 +178,7 @@ const Field = (props: FieldProps) => {
 
     const fieldInformationRenderer = fieldType.renderInfo;
 
-    const info = [renderer?.name, field.list ? "multiple values" : null]
-        .filter(Boolean)
-        .join(", ");
+    const info = [renderer?.name, field.list ? "multiple values" : null].filter(Boolean).join(", ");
 
     return (
         <Fragment>

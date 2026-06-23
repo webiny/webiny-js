@@ -1,4 +1,3 @@
-import { createFieldsList } from "@webiny/app-headless-cms-common";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 
 import { GetFolderModelRepository } from "./abstractions.js";
@@ -20,40 +19,35 @@ class FolderModelProviderImpl implements Provider.Interface {
     }
 
     async getGraphQLSelection(): Promise<string> {
-        const model = await this.getModel();
-
-        const fields = model.valuesSelection
-            ? model.valuesSelection
-            : createFieldsList({ model, fields: model.fields });
-
-        return /* GraphQL */ `{
-            id
-            createdOn
-            createdBy {
+        return /* GraphQL */ `
+            {
                 id
-                displayName
+                createdOn
+                createdBy {
+                    id
+                    displayName
+                }
+                savedOn
+                savedBy {
+                    id
+                    displayName
+                }
+                modifiedOn
+                modifiedBy {
+                    id
+                    displayName
+                }
+                permissions {
+                    target
+                    level
+                    inheritedFrom
+                }
+                hasNonInheritedPermissions
+                canManagePermissions
+                canManageStructure
+                canManageContent
             }
-            savedOn
-            savedBy {
-                id
-                displayName
-            }
-            modifiedOn
-            modifiedBy {
-                id
-                displayName
-            }
-            permissions {
-                target
-                level
-                inheritedFrom
-            }
-            hasNonInheritedPermissions
-            canManagePermissions
-            canManageStructure
-            canManageContent
-            ${fields}
-        }`;
+        `;
     }
 }
 

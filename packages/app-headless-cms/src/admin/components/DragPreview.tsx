@@ -6,7 +6,11 @@ import { DragCursor } from "@webiny/admin-ui";
 import { dropZoneOverState } from "./dropZoneOverState.js";
 import { getDragInfo } from "./getDragInfo.js";
 import type { DragSource } from "~/types.js";
-import { CmsFieldType, CmsLayoutFieldType, type ICmsFieldType } from "~/presentation/fieldTypes/abstractions.js";
+import {
+    CmsFieldType,
+    CmsLayoutFieldType,
+    type ICmsFieldType
+} from "~/presentation/fieldTypes/abstractions.js";
 
 let dragPreviewRef: HTMLDivElement | null = null;
 

@@ -36,6 +36,7 @@ import {
     EditTemplateDialog,
     EDIT_DZ_TEMPLATE_DIALOG
 } from "~/presentation/fieldTypes/types/dynamicZone/EditTemplateDialog.js";
+import { ContentEntriesModule } from "~/ContentEntriesModule.js";
 
 interface HeadlessCMSProvider {
     children: React.ReactNode;
@@ -104,6 +105,7 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
             <Provider hoc={createHeadlessCMSProvider(createApolloClient)} />
             <LexicalEditorCmsPlugin />
             <CmsSecurityPermission />
+            <ContentEntriesModule />
             <AdminConfig>
                 <AdminConfig.Dialog
                     name={EDIT_DZ_TEMPLATE_DIALOG}
