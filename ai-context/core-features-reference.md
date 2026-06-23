@@ -173,6 +173,30 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/handler-graphql/graphql/abstractions.js`
 - **Usage:** Single `GraphQLSchemaFactory` implementation for the entire FM GraphQL API (base types, settings, file CRUD, getFileByUrl). Registered in `FileManagerFeature`. Uses `builder.addTypeDefs()` and `builder.addResolver({ path, dependencies, resolver })` — no `context.container.resolve()` in resolvers.
 
+### GetUploadPayloadUseCase (File Manager)
+
+- **Import:** `import { GetUploadPayloadUseCase } from "@webiny/api-file-manager/features/upload/GetUploadPayload/index.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/upload/GetUploadPayload/abstractions.ts`
+- **Usage:** DI abstraction for generating upload payloads (presigned URLs or HMAC tokens). `execute(file, settings)` returns `{ data, file }`. S3 implementation uses S3 presigned POST; server implementation uses HMAC tokens + upload URL. Registered by provider packages (`api-file-manager-s3` or `api-file-manager-server`).
+
+### CreateMultiPartUploadUseCase (File Manager)
+
+- **Import:** `import { CreateMultiPartUploadUseCase } from "@webiny/api-file-manager/features/upload/CreateMultiPartUpload/index.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/upload/CreateMultiPartUpload/abstractions.ts`
+- **Usage:** DI abstraction for initiating multipart uploads. `execute({ file, numberOfParts })` returns `{ file, uploadId, parts }`. S3 implementation uses S3 multipart API; server implementation creates local part directories with HMAC-signed URLs.
+
+### CompleteMultiPartUploadUseCase (File Manager)
+
+- **Import:** `import { CompleteMultiPartUploadUseCase } from "@webiny/api-file-manager/features/upload/CompleteMultiPartUpload/index.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/upload/CompleteMultiPartUpload/abstractions.ts`
+- **Usage:** DI abstraction for completing multipart uploads. `execute({ fileKey, uploadId })` returns `void`. S3 implementation uses S3 `CompleteMultipartUploadCommand`; server implementation reassembles parts from local disk.
+
+### FmUploadGraphQLSchema (File Manager)
+
+- **Import:** `import { FmUploadGraphQLSchema } from "@webiny/api-file-manager/graphql/FmUploadGraphQLSchema.js"`
+- **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/handler-graphql/graphql/abstractions.js`
+- **Usage:** Shared `GraphQLSchemaFactory` for FM upload operations (presigned payloads, multipart upload). Resolves `GetUploadPayloadUseCase`, `CreateMultiPartUploadUseCase`, `CompleteMultiPartUploadUseCase` from DI. Registered automatically by `FileManagerFeature`. Provider packages only need to register their implementations of the three abstractions.
+
 ### Encryption
 
 - **Import:** `import { Encryption } from "@webiny/api-core/features/encryption"`
