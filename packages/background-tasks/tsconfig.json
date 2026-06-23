@@ -18,7 +18,8 @@
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
     { "path": "../sdk" },
-    { "path": "../utils" }
+    { "path": "../utils" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -60,7 +61,9 @@
       "@webiny/sdk/*": ["../sdk/src/*"],
       "@webiny/sdk": ["../sdk/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     }
   }
 }

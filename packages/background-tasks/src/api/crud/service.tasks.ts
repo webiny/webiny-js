@@ -49,10 +49,6 @@ const validateDelay = <T extends TaskService.TaskInput = TaskService.TaskInput>(
 };
 
 export const createServiceCrud = (context: Context): ITasksContextServiceObject => {
-    const service = createService({
-        context
-    });
-
     return {
         trigger: async <
             T extends TaskService.TaskInput = TaskService.TaskInput,
@@ -60,6 +56,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
         >(
             params: ITaskTriggerParams<T>
         ): Promise<Result<TaskService.Task<T, O>, BaseError>> => {
+            const service = createService({ context });
             const { definition: id, input: inputValues, name, parent, delay = 0 } = params;
             const definition = context.tasks.getDefinition(id);
             if (!definition) {
@@ -123,6 +120,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
         fetchServiceInfo: async (
             input: TaskService.Task | string
         ): Promise<Result<IStepFunctionServiceFetchResult, BaseError<any>>> => {
+            const service = createService({ context });
             const task = typeof input === "object" ? input : await context.tasks.getTask(input);
             if (!task && typeof input === "string") {
                 throw new NotFoundError(`Task "${input}" was not found!`);
