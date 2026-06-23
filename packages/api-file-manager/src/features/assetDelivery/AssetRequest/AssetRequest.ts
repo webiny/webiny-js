@@ -8,7 +8,7 @@ class AssetRequestFactoryImpl implements IAssetRequestFactory {
     create(
         data: AssetRequestFactoryAbstraction.AssetRequestData
     ): AssetRequestFactoryAbstraction.AssetRequest {
-        return new AssetRequest(data);
+        return AssetRequest.create(data);
     }
 }
 

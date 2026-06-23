@@ -45,7 +45,7 @@ export class LocalAssetResolver implements AssetResolver {
             key: metadata.bucketKey
         });
 
-        asset.setContentsReader(new LocalContentsReader(this.storagePath));
+        asset.setContentsReader(LocalContentsReader.create(this.storagePath));
 
         return asset;
     }

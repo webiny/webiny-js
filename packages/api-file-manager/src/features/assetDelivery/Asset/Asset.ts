@@ -3,7 +3,7 @@ import { AssetFactory as AssetFactoryAbstraction, type IAssetFactory } from "./a
 
 class AssetFactoryImpl implements IAssetFactory {
     create(data: AssetFactoryAbstraction.AssetData): AssetFactoryAbstraction.Asset {
-        return new Asset(data);
+        return Asset.create(data);
     }
 }
 

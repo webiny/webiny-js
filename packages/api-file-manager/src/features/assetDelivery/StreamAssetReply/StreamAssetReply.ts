@@ -4,7 +4,7 @@ import { StreamAssetReply as StreamAssetReplyAbstraction } from "./abstractions.
 
 class StreamAssetReplyImpl implements StreamAssetReplyAbstraction.Interface {
     create(asset: StreamAssetReplyAbstraction.Asset): StreamAssetReplyAbstraction.AssetReply {
-        return new AssetReply({
+        return AssetReply.create({
             code: 200,
             headers: ResponseHeaders.create({
                 "cache-control": `public, max-age=${86400 * 365}`,

@@ -5,16 +5,16 @@ import { ResponseHeaders } from "@webiny/handler";
 import { AssetOutputStrategy } from "../abstractions/AssetOutputStrategy.js";
 
 export class RedirectToPublicUrlOutputStrategy implements AssetOutputStrategy.Interface {
-    private assetRequest: AssetRequest;
+    private readonly assetRequest: AssetRequest;
 
-    constructor(assetRequest: AssetRequest) {
+    public constructor(assetRequest: AssetRequest) {
         this.assetRequest = assetRequest;
     }
 
-    async output(asset: Asset): Promise<AssetReply> {
+    public async output(asset: Asset): Promise<AssetReply> {
         const requestUrl = this.assetRequest.getContext().url;
 
-        return new AssetReply({
+        return AssetReply.create({
             code: 301,
             headers: ResponseHeaders.create({
                 location: requestUrl.replace("/private/", "/files/"),

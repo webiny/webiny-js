@@ -46,7 +46,7 @@ export class S3AssetResolver implements AssetResolver {
             key: metadata.bucketKey
         });
 
-        asset.setContentsReader(new S3ContentsReader(this.s3, this.bucket));
+        asset.setContentsReader(S3ContentsReader.create(this.s3, this.bucket));
 
         return asset;
     }

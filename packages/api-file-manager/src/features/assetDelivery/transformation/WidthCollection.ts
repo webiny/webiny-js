@@ -1,19 +1,23 @@
 export class WidthCollection {
     private readonly values: number[];
 
-    constructor(values: number[]) {
+    public static create(values: number[]) {
+        return new WidthCollection(values);
+    }
+
+    private constructor(values: number[]) {
         this.values = values.sort((a, b) => a - b);
     }
 
-    max() {
+    public max() {
         return Math.max(...this.values);
     }
 
-    min() {
+    public min() {
         return Math.min(...this.values);
     }
 
-    getClosestOrMax(value: number | undefined): number {
+    public getClosestOrMax(value: number | undefined): number {
         if (!value) {
             return this.max();
         }

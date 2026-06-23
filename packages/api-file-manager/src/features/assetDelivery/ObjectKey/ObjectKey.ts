@@ -5,21 +5,25 @@ import {
 } from "./abstractions.js";
 
 class ObjectKeyInstance implements IObjectKeyInstance {
-    constructor(private readonly bucketKey: string) {}
+    public static create(bucketKey: string) {
+        return new ObjectKeyInstance(bucketKey);
+    }
 
-    id(): string {
+    private constructor(private readonly bucketKey: string) {}
+
+    public id(): string {
         const [id] = this.relativeKey().split("/");
         return id;
     }
 
-    relativeKey(): string {
+    public relativeKey(): string {
         return this.bucketKey.replace(/^tenants\/[^/]+\/files\//, "");
     }
 }
 
 class ObjectKeyImpl implements IObjectKey {
-    from(key: string): IObjectKeyInstance {
-        return new ObjectKeyInstance(key);
+    public from(key: string): IObjectKeyInstance {
+        return ObjectKeyInstance.create(key);
     }
 }
 

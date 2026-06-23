@@ -3,7 +3,7 @@ import { AssetOutputStrategy } from "./abstractions/AssetOutputStrategy.js";
 
 class NullAssetOutputStrategyImpl implements AssetOutputStrategy.Interface {
     async output(): Promise<AssetOutputStrategy.AssetReply> {
-        return new NullAssetReply();
+        return NullAssetReply.instance();
     }
 }
 
