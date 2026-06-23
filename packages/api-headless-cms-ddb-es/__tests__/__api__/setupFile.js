@@ -12,12 +12,10 @@ import {
     getTestOpenSearchClient,
     registerOpenSearchCoreForTests
 } from "@webiny/api-opensearch/testing/index.js";
-import { registerOpenSearchCore, getBaseConfiguration } from "@webiny/api-opensearch";
+import { getBaseConfiguration } from "@webiny/api-opensearch";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
-import { createHandler } from "@webiny/handler-aws";
-import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
-import { createMockApiLogContextPlugin } from "@webiny/project-utils/testing/mockApiLog";
+import { createDdbToEsStreamHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 
 if (typeof registerCmsOpenSearchStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -31,14 +29,7 @@ if (!prefix.includes("api-")) {
 const documentClient = getDocumentClient();
 const opensearchClient = getTestOpenSearchClient();
 
-const dynamoDbToEsHandler = createHandler({
-    plugins: [
-        registerOpenSearchCore(opensearchClient),
-        createMockApiLogContextPlugin(),
-        createDynamoDBToElasticsearchEventHandler()
-    ]
-});
-simulateStream(documentClient, dynamoDbToEsHandler);
+simulateStream(documentClient, createDdbToEsStreamHandler(opensearchClient));
 
 setStorageOps("cms", () => {
     const createIndexName = model => {

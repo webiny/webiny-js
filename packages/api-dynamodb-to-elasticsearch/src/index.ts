@@ -7,3 +7,5 @@ export * from "./OperationsBuilder.js";
 export * from "./SynchronizationBuilder.js";
 export type * from "./types.js";
 export { DdbToEsLambdaHandler } from "./DdbToEsLambdaHandler.js";
+export { createDdbToEsStreamHandler } from "./createDdbToEsStreamHandler.js";
+export type { DdbToEsStreamHandler } from "./createDdbToEsStreamHandler.js";
