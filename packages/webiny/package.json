@@ -87,6 +87,7 @@
     "./api/tenancy": "./api/tenancy.js",
     "./api/webhooks": "./api/webhooks.js",
     "./api": "./api.js",
+    "./api/file-manager/assetDelivery": "./api/file-manager/assetDelivery.js",
     "./api/file-manager/file": "./api/file-manager/file.js",
     "./api/file-manager/permissions": "./api/file-manager/permissions.js",
     "./api/file-manager/settings": "./api/file-manager/settings.js",
@@ -143,7 +144,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "9daa05b2fa1b65fefa0e88c498ce378adcfe0916df28dae760cc34366eba55b7",
+  "exportGenerationHash": "4ad89cf5f5a3477c9f96377d9fb2676462c302e4550838953e5dc913f91b3bed",
   "webiny": {
     "publishFrom": "dist"
   }
