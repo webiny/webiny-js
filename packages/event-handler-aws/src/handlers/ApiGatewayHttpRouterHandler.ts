@@ -100,6 +100,7 @@ class ApiGatewayHttpRouterHandlerImpl implements ApiGatewayEventHandler.Interfac
                 return toApiGatewayResult({ statusCode: 404, body: { message: e.message } });
             }
             if (e && typeof e === "object" && (e as any).code) {
+                console.error("HTTP handler WebinyError:", (e as any).code, (e as any).message, e);
                 return toApiGatewayResult({
                     statusCode: 500,
                     body: {
