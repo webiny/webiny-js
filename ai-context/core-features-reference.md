@@ -209,6 +209,18 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-file-manager/src/features/extractMetadata/ExtractMetadataInput.ts`
 - **Usage:** Input interface for the metadata extraction task (`{ fileId: string }`). Used by both `ExtractMetadataHandler` and provider-specific `ExtractMetadataTask` implementations.
 
+### StreamAssetReply (File Manager — Asset Delivery)
+
+- **Import:** `import { StreamAssetReply } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/assetDelivery/StreamAssetReply/abstractions.ts`
+- **Usage:** DI factory abstraction for creating streaming asset replies (HTTP 200, cache-control, content-type). Default implementation registered by `AssetDeliveryFeature`. `StreamAssetReply.Interface` has a `create(asset): AssetReply` method. Decoratable by provider packages if they need custom reply behavior.
+
+### ObjectKey (File Manager — Asset Delivery)
+
+- **Import:** `import { ObjectKey } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/assetDelivery/ObjectKey/abstractions.ts`
+- **Usage:** DI factory for parsing bucket keys (`tenants/<tenant>/files/<id>/...`). `ObjectKey.Interface` has `from(key): ObjectKey.Instance` where the instance exposes `id()` and `relativeKey()`. Registered by `AssetDeliveryFeature`. Used by asset resolvers and threat detection in both provider packages.
+
 ### Encryption
 
 - **Import:** `import { Encryption } from "@webiny/api-core/features/encryption"`
