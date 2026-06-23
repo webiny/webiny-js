@@ -7,7 +7,7 @@ import {
 class WebhookSettingsModelFactory implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
         const model = builder
-            .public({
+            .private({
                 modelId: WEBHOOK_SETTINGS_MODEL_ID,
                 name: "Webhook Settings",
                 group: "hidden"
