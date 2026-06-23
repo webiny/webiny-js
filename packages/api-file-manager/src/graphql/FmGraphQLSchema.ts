@@ -52,10 +52,6 @@ class FmGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface {
     public async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
-        if (this.fileUrlGenerator.init) {
-            await this.fileUrlGenerator.init();
-        }
-
         this.addBaseTypeDefs(builder);
         await this.addFileTypeDefs(builder);
         this.addSettingsResolvers(builder);
@@ -363,11 +359,7 @@ class FmGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface {
             dependencies: [FileUrlGenerator],
             resolver: (urlGenerator: FileUrlGenerator.Interface) => {
                 return async ({ parent }) => {
-                    // TODO figure out a better way to initialize the URL generator, so we don't have to do it here.
-                    if (urlGenerator.init) {
-                        await urlGenerator.init();
-                    }
-                    return urlGenerator.generateUrl(parent);
+                    return await urlGenerator.generateUrl(parent);
                 };
             }
         });

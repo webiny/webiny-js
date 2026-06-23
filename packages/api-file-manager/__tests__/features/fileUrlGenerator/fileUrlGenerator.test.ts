@@ -30,7 +30,7 @@ describe("FileUrlGenerator", () => {
         container = new Container();
     });
 
-    it("should return srcPrefix + file.key after init()", async () => {
+    it("should return srcPrefix + file.key", async () => {
         container.registerInstance(GetSettingsUseCase, {
             execute: async () => ({
                 isFail: () => false,
@@ -41,28 +41,9 @@ describe("FileUrlGenerator", () => {
         FileUrlGeneratorFeature.register(container);
 
         const generator = container.resolve(FileUrlGenerator);
-        await generator.init!();
-
-        const url = generator.generateUrl(createMockFile("abc123/image.jpg"));
+        const url = await generator.generateUrl(createMockFile("abc123/image.jpg"));
 
         expect(url).toBe("https://cdn.example.com/files/abc123/image.jpg");
-    });
-
-    it("should return only file.key when init() is not called", () => {
-        container.registerInstance(GetSettingsUseCase, {
-            execute: async () => ({
-                isFail: () => false,
-                value: { srcPrefix: "https://cdn.example.com/files/" }
-            })
-        } as any);
-
-        FileUrlGeneratorFeature.register(container);
-
-        const generator = container.resolve(FileUrlGenerator);
-
-        const url = generator.generateUrl(createMockFile("abc123/image.jpg"));
-
-        expect(url).toBe("abc123/image.jpg");
     });
 
     it("should return the same instance (singleton scope)", () => {
@@ -91,10 +72,10 @@ describe("FileUrlGenerator", () => {
         FileUrlGeneratorFeature.register(container);
 
         const generator1 = container.resolve(FileUrlGenerator);
-        await generator1.init!();
+        await generator1.generateUrl(createMockFile("abc123/image.jpg"));
 
         const generator2 = container.resolve(FileUrlGenerator);
-        const url = generator2.generateUrl(createMockFile("abc123/image.jpg"));
+        const url = await generator2.generateUrl(createMockFile("abc123/image.jpg"));
 
         expect(url).toBe("https://cdn.example.com/files/abc123/image.jpg");
     });
@@ -110,10 +91,30 @@ describe("FileUrlGenerator", () => {
         FileUrlGeneratorFeature.register(container);
 
         const generator = container.resolve(FileUrlGenerator);
-        await generator.init!();
-
-        const url = generator.generateUrl(createMockFile("abc123/image.jpg"));
+        const url = await generator.generateUrl(createMockFile("abc123/image.jpg"));
 
         expect(url).toBe("abc123/image.jpg");
+    });
+
+    it("should only call getSettings once (caches after first init)", async () => {
+        let callCount = 0;
+        container.registerInstance(GetSettingsUseCase, {
+            execute: async () => {
+                callCount++;
+                return {
+                    isFail: () => false,
+                    value: { srcPrefix: "https://cdn.example.com/files/" }
+                };
+            }
+        } as any);
+
+        FileUrlGeneratorFeature.register(container);
+
+        const generator = container.resolve(FileUrlGenerator);
+        await generator.generateUrl(createMockFile("a.jpg"));
+        await generator.generateUrl(createMockFile("b.jpg"));
+        await generator.generateUrl(createMockFile("c.jpg"));
+
+        expect(callCount).toBe(1);
     });
 });
