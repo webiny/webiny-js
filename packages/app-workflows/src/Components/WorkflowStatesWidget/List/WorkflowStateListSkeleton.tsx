@@ -13,6 +13,7 @@ export const WorkflowStateListSkeleton = (props: IWorkflowStateListSkeletonProps
             {Array.from({ length: count }).map((_, index) => {
                 return (
                     <Skeleton
+                        shade={"light"}
                         key={`workflow-state-skeleton-${index}`}
                         className={"h-[62px] w-full"}
                     />

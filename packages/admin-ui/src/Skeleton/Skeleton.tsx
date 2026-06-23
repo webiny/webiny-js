@@ -16,6 +16,10 @@ const skeletonVariants = cva("animate-skeleton-pulse rounded-sm", {
             xl: "h-xl",
             xxl: "h-[40px]",
             "3xl": "h-xxl"
+        },
+        shade: {
+            dark: "",
+            light: "[--skeleton-pulse-from:var(--color-neutral-subtle)] [--skeleton-pulse-to:var(--color-neutral-disabled)]"
         }
     },
     compoundVariants: [
@@ -33,15 +37,16 @@ const skeletonVariants = cva("animate-skeleton-pulse rounded-sm", {
     ],
     defaultVariants: {
         type: "area",
-        size: "lg"
+        size: "lg",
+        shade: "dark"
     }
 });
 
 interface SkeletonProps
     extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof skeletonVariants> {}
 
-const DecoratableSkeleton = ({ size, type, className, ...props }: SkeletonProps) => {
-    return <div className={cn(skeletonVariants({ size, type }), className)} {...props} />;
+const DecoratableSkeleton = ({ size, type, shade, className, ...props }: SkeletonProps) => {
+    return <div className={cn(skeletonVariants({ size, type, shade }), className)} {...props} />;
 };
 
 const Skeleton = makeDecoratable("Skeleton", DecoratableSkeleton);
