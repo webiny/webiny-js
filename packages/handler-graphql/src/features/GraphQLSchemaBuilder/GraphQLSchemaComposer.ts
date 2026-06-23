@@ -66,6 +66,13 @@ class GraphQLSchemaComposerImpl implements Abstraction.Interface {
                 if (schema?.resolvers) {
                     addLegacyResolvers(builder, schema.resolvers as Record<string, any>, "");
                 }
+                if (schema?.resolverDecorators) {
+                    for (const [path, decorators] of Object.entries(schema.resolverDecorators)) {
+                        for (const decorator of decorators as any[]) {
+                            builder.addResolverDecorator(path, decorator);
+                        }
+                    }
+                }
             }
 
             // Include custom scalars registered as graphql-scalar plugins (e.g. RevisionId from CMS).

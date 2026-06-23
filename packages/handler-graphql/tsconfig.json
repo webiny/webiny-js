@@ -8,8 +8,7 @@
     { "path": "../feature" },
     { "path": "../handler" },
     { "path": "../plugins" },
-    { "path": "../utils" },
-    { "path": "../handler-aws" }
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -31,9 +30,7 @@
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"]
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }

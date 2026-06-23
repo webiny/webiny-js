@@ -12,7 +12,11 @@ import { createRequestBody } from "~/createRequestBody.js";
 import type { IGraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 import type { IGraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
 import type { IGraphQLContextualSchema } from "./GraphQLContextualSchema.js";
-import type { GraphQLRequestBody } from "~/types.js";
+import type {
+    GraphQLAfterQueryPlugin,
+    GraphQLBeforeQueryPlugin,
+    GraphQLRequestBody
+} from "~/types.js";
 import type { GraphQLSchema } from "graphql";
 
 class GraphQLEngineImplClass implements GraphQLEngine.Interface {
@@ -36,11 +40,17 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
             resolverDecoration.addDecorators(schemaConfig.resolverDecorators);
         }
 
+        // Always provide base root types so that `extend type Query/Mutation` works without
+        // requiring callers to define them. With assumeValidSDL:true, empty base types are
+        // allowed at build time; graphql() then returns schema-validation errors at execution
+        // time (e.g. "Type Query must define one or more fields.") when no fields are registered.
+        const typeDefs = `type Query\ntype Mutation\n${schemaConfig.typeDefs ?? ""}`;
         const staticSchema = makeExecutableSchema({
-            typeDefs: schemaConfig.typeDefs || "type Query { _empty: String }",
+            typeDefs,
             resolvers: resolverDecoration.decorateResolvers(
                 mergeResolvers([schemaConfig.resolvers ?? {}])
             ),
+            assumeValidSDL: true,
             inheritResolversFromInterfaces: true
         });
 
@@ -54,10 +64,17 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
               )) as ReturnType<typeof createRequestBody>)
             : createRequestBody(body);
 
-        const executeAll = async () =>
-            Array.isArray(parsed)
-                ? Promise.all(parsed.map(b => this.executeOne(b, schema, ctx)))
-                : this.executeOne(parsed, schema, ctx);
+        const executeAll = async () => {
+            if (!Array.isArray(parsed)) {
+                return this.executeOne(parsed, schema, ctx);
+            }
+            // Run sequentially so per-request state (e.g. ctx.debug.logs) is scoped per query.
+            const results = [];
+            for (const b of parsed) {
+                results.push(await this.executeOne(b, schema, ctx));
+            }
+            return results;
+        };
 
         const result = await (bm?.measure
             ? bm.measure("headlessCms.graphql.processRequestBody", executeAll)
@@ -96,7 +113,14 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         ctx: Record<string, any>
     ): Promise<any> {
         const { query, variables, operationName } = body;
-        return graphql({
+
+        if (ctx.plugins && typeof ctx.plugins.byType === "function") {
+            for (const pl of ctx.plugins.byType<GraphQLBeforeQueryPlugin>("graphql-before-query")) {
+                pl.apply({ body, schema, context: ctx as any });
+            }
+        }
+
+        const result = await graphql({
             schema,
             source: query,
             rootValue: {},
@@ -104,6 +128,14 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
             variableValues: variables ?? undefined,
             operationName: operationName ?? undefined
         });
+
+        if (ctx.plugins && typeof ctx.plugins.byType === "function") {
+            for (const pl of ctx.plugins.byType<GraphQLAfterQueryPlugin>("graphql-after-query")) {
+                pl.apply({ result, body, schema, context: ctx as any });
+            }
+        }
+
+        return result;
     }
 }
 

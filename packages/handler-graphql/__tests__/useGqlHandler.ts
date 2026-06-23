@@ -1,7 +1,9 @@
-import { createHandler } from "@webiny/handler-aws";
-import graphqlServerPlugins from "~/index";
+import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { GraphQLContextEnhancer, GraphQLEngineFeature } from "~/engine/index.js";
+import { registerLegacyPluginsViaGqlContextEnhancer } from "~/registerLegacyPluginsViaGqlContextEnhancer.js";
+import { interceptConsole } from "~/interceptConsole.js";
+import { PluginsContainer } from "@webiny/plugins";
 import type { PluginCollection } from "@webiny/plugins/types";
-import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 
 interface Params {
     debug?: boolean;
@@ -9,30 +11,63 @@ interface Params {
 }
 
 export default ({ debug = false, plugins = [] }: Params = {}) => {
-    // Creates the actual handler. Feel free to add additional plugins if needed.
-    const handler = createHandler({
-        plugins: [graphqlServerPlugins({ debug }), ...plugins]
+    const handler = createTestHttpHandler({
+        root: () => {},
+        request: async container => {
+            container.registerInstance(GraphQLContextEnhancer, {
+                enhance(ctx: Record<string, any>) {
+                    ctx.plugins = new PluginsContainer([]);
+                }
+            });
+
+            const flat = [plugins].flat(Infinity as 1).filter(Boolean);
+            if (flat.length > 0) {
+                registerLegacyPluginsViaGqlContextEnhancer(container, flat);
+            }
+
+            if (debug) {
+                container.registerInstance(GraphQLContextEnhancer, {
+                    enhance(ctx: Record<string, any>) {
+                        ctx.debug = { logs: [] };
+                        interceptConsole((method: string, args: any[]) => {
+                            ctx.debug.logs.push({ method, args });
+                        });
+                    }
+                });
+                container.registerInstance(GraphQLContextEnhancer, {
+                    enhance(ctx: Record<string, any>) {
+                        ctx.plugins.register({
+                            type: "graphql-after-query",
+                            apply({ result, context }: any) {
+                                result["extensions"] = {
+                                    console: [...(context.debug.logs || [])]
+                                };
+                                if (context.debug.logs) {
+                                    context.debug.logs.length = 0;
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            GraphQLEngineFeature.register(container);
+        }
     });
 
-    // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ method = "POST", body = {}, headers = {}, ...rest }) => {
-        const response = await handler(
-            {
-                path: "/graphql",
-                httpMethod: method,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as unknown as APIGatewayEvent,
-            {} as LambdaContext
-        );
-
-        // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body), response];
+    const invoke = async ({ method = "POST", body = {}, headers = {}, ...rest }: any) => {
+        const response = await handler({
+            method,
+            path: "/graphql",
+            headers: {
+                "x-tenant": "root",
+                "content-type": "application/json",
+                ...headers
+            },
+            body,
+            ...rest
+        });
+        return [response.body, response];
     };
 
     return {
