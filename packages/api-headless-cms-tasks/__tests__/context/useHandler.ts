@@ -1,51 +1,44 @@
-import type { CreateHandlerCoreParams } from "./plugins";
-import { createHandlerCore } from "./plugins";
-import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import type { HcmsTasksContext } from "~/types";
-import { defaultIdentity } from "./tenancySecurity";
-import type { LambdaContext } from "@webiny/handler-aws/types";
+import { Container } from "@webiny/feature/api";
+import { RequestContainer } from "@webiny/event-handler-core";
+import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
+import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { PluginsContainer } from "@webiny/plugins";
+import { Request } from "@webiny/handler";
+import { CmsParametersPlugin } from "@webiny/api-headless-cms/plugins/CmsParametersPlugin.js";
+import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
+import { Benchmark } from "@webiny/api/Benchmark.js";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
-
-interface CmsHandlerEvent {
-    path: string;
-    headers: {
-        ["x-tenant"]: string;
-        [key: string]: string;
-    };
-}
+import type { HcmsTasksContext } from "~/types";
+import { createHandlerCore } from "./plugins";
+import type { CreateHandlerCoreParams } from "./plugins";
+import { defaultIdentity } from "./tenancySecurity";
 
 type Params = CreateHandlerCoreParams;
+
 export const useHandler = <C extends HcmsTasksContext = HcmsTasksContext>(params: Params = {}) => {
     const core = createHandlerCore(params);
+    const legacyPlugins = (core.plugins as any[]).flat(Infinity as 1);
 
-    const plugins = [...core.plugins].concat([
-        createRawEventHandler<CmsHandlerEvent, C, C>(async ({ context }) => {
-            return context;
-        })
-    ]);
+    const buildContext = async (): Promise<C> => {
+        const container = new Container();
+        container.registerInstance(RequestContainer, container);
+        container.registerInstance(Request, { headers: { "x-tenant": "root" } });
+        CompressionFeature.register(container);
+        registerLegacyPluginsViaGqlContextEnhancer(container, legacyPlugins);
 
-    const handler = createRawHandler<CmsHandlerEvent, C>({
-        plugins,
-        debug: process.env.DEBUG === "true"
-    });
-
-    const elasticsearchClient = createTestOpenSearchClient();
+        const ctx: Record<string, any> = { container, plugins: new PluginsContainer() };
+        ctx.benchmark = new Benchmark();
+        ctx.plugins.register(new CmsParametersPlugin(async () => ({ type: "manage" })));
+        for (const enhancer of container.resolveAll(GraphQLContextEnhancer)) {
+            await enhancer.enhance(ctx);
+        }
+        return ctx as unknown as C;
+    };
 
     return {
-        plugins,
         identity: params.identity || defaultIdentity,
         tenant: core.tenant,
-        elasticsearch: elasticsearchClient,
-        handler: (input?: CmsHandlerEvent) => {
-            const payload: CmsHandlerEvent = {
-                path: "/cms/manage/en-US",
-                headers: {
-                    "x-webiny-cms-endpoint": "manage",
-                    "x-tenant": "root"
-                },
-                ...input
-            };
-            return handler(payload, {} as LambdaContext);
-        }
+        elasticsearch: createTestOpenSearchClient(),
+        handler: buildContext
     };
 };

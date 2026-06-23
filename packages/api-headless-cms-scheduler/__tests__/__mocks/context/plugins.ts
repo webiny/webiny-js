@@ -7,7 +7,6 @@ import { createPermissions } from "./helpers";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createSchedulerManifestPlugin } from "../schedulerManifestPlugin.js";
 import { createApiCore } from "@webiny/api-core";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -53,7 +52,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                 permissions: createPermissions(permissions),
                 identity
             }),
-            createSchedulerManifestPlugin(),
             createCmsExtension(),
             plugins,
             graphQLHandlerPlugins(),
