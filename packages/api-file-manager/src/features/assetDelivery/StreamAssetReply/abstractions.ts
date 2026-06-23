@@ -1,9 +1,9 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
-import type { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
+import type { Asset as IAsset } from "~/delivery/AssetDelivery/Asset.js";
+import type { AssetReply as IAssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
 
 export interface IStreamAssetReply {
-    create(asset: Asset): AssetReply;
+    create(asset: IAsset): IAssetReply;
 }
 
 export const StreamAssetReply = createAbstraction<IStreamAssetReply>(
@@ -12,4 +12,6 @@ export const StreamAssetReply = createAbstraction<IStreamAssetReply>(
 
 export namespace StreamAssetReply {
     export type Interface = IStreamAssetReply;
+    export type Asset = IAsset;
+    export type AssetReply = IAssetReply;
 }

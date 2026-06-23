@@ -1,13 +1,9 @@
-import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
 import { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
 import { ResponseHeaders } from "@webiny/handler";
-import {
-    StreamAssetReply as StreamAssetReplyAbstraction,
-    type IStreamAssetReply
-} from "./abstractions.js";
+import { StreamAssetReply as StreamAssetReplyAbstraction } from "./abstractions.js";
 
-class StreamAssetReplyImpl implements IStreamAssetReply {
-    create(asset: Asset): AssetReply {
+class StreamAssetReplyImpl implements StreamAssetReplyAbstraction.Interface {
+    create(asset: StreamAssetReplyAbstraction.Asset): StreamAssetReplyAbstraction.AssetReply {
         return new AssetReply({
             code: 200,
             headers: ResponseHeaders.create({

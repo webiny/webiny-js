@@ -1,10 +1,11 @@
-import type { Request } from "@webiny/handler/types.js";
 import type { AssetRequestOptions } from "~/delivery/AssetDelivery/AssetRequest.js";
 import { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
-import { AssetRequestResolver, type IAssetRequestResolver } from "./abstractions.js";
+import { AssetRequestResolver } from "./abstractions.js";
 
-export class FilesAssetRequestResolver implements IAssetRequestResolver {
-    async resolve(request: Request): Promise<AssetRequest | undefined> {
+class FilesAssetRequestResolverImpl implements AssetRequestResolver.Interface {
+    async resolve(
+        request: AssetRequestResolver.Request
+    ): Promise<AssetRequestResolver.AssetRequest | undefined> {
         if (!request.url.startsWith("/files/")) {
             return undefined;
         }
@@ -33,7 +34,7 @@ export class FilesAssetRequestResolver implements IAssetRequestResolver {
     }
 }
 
-export const FilesAssetRequestResolverImpl = AssetRequestResolver.createImplementation({
-    implementation: FilesAssetRequestResolver,
+export const FilesAssetRequestResolver = AssetRequestResolver.createImplementation({
+    implementation: FilesAssetRequestResolverImpl,
     dependencies: []
 });

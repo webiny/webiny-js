@@ -1,10 +1,10 @@
-import type { AssetContentsReader } from "../../../delivery/index.js";
+import { AssetContentsReader } from "~/features/assetDelivery/abstractions.js";
 
 interface ContentsCallable {
     (): Promise<Buffer> | Buffer;
 }
 
-export class CallableContentsReader implements AssetContentsReader {
+export class CallableContentsReader implements AssetContentsReader.Interface {
     private readonly callable: ContentsCallable;
 
     constructor(callable: ContentsCallable) {

@@ -1,20 +1,16 @@
-import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
-import type { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
-import {
-    AssetProcessor,
-    AssetTransformationStrategy,
-    type IAssetProcessor,
-    type IAssetTransformationStrategy
-} from "../abstractions.js";
+import { AssetProcessor, AssetTransformationStrategy } from "../abstractions.js";
 
-export class TransformationAssetProcessor implements IAssetProcessor {
-    private strategy: IAssetTransformationStrategy;
+class TransformationAssetProcessorImpl implements AssetProcessor.Interface {
+    private strategy: AssetTransformationStrategy.Interface;
 
-    constructor(strategy: IAssetTransformationStrategy) {
+    constructor(strategy: AssetTransformationStrategy.Interface) {
         this.strategy = strategy;
     }
 
-    async process(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
+    async process(
+        assetRequest: AssetProcessor.AssetRequest,
+        asset: AssetProcessor.Asset
+    ): Promise<AssetProcessor.Asset> {
         const { original } = assetRequest.getOptions();
 
         if (original) {
@@ -26,7 +22,7 @@ export class TransformationAssetProcessor implements IAssetProcessor {
     }
 }
 
-export const TransformationAssetProcessorImpl = AssetProcessor.createImplementation({
-    implementation: TransformationAssetProcessor,
+export const TransformationAssetProcessor = AssetProcessor.createImplementation({
+    implementation: TransformationAssetProcessorImpl,
     dependencies: [AssetTransformationStrategy]
 });
