@@ -4,6 +4,7 @@ import type { TenancyContext, TenancyStorageOperations } from "~/types/tenancy.j
 import type { WcpContext } from "~/features/wcp/WcpContext/types.js";
 import type { AdminUsersContext, AdminUsersStorageOperations } from "~/types/users.js";
 import { KeyValueStorageOperations } from "~/features/keyValueStore/index.js";
+import type { ILicense } from "@webiny/wcp/types.js";
 
 export type ApiCoreContext = BaseContext &
     SecurityContext &
@@ -16,4 +17,5 @@ export type ApiCoreStorageOperations = {
     tenancyStorageOperations: TenancyStorageOperations;
     securityStorageOperations: SecurityStorageOperations;
     keyValueStorageOperations: KeyValueStorageOperations.Interface;
+    wcpLicense?: ILicense;
 };

@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useLayoutEffect,
+    useState
+} from "react";
 import { createPortal } from "react-dom";
 import { Button, Label, Text } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
@@ -10,25 +17,69 @@ import { ReactComponent as ObjectIcon } from "@webiny/icons/data_object.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 /**
- * Width of a single object-field panel. Nested panels are offset by this amount so they cascade
- * next to each other instead of overlapping.
+ * Width of a single object-field panel. Slightly narrower than the editor sidebar (329px) so it
+ * reads as an overlay sitting on top of it. Nested panels are offset left by this amount so they
+ * cascade beside their parent instead of fully covering it.
  */
-const PANEL_WIDTH = 320;
+const PANEL_WIDTH = 312;
 
 /**
- * The editor sidebar carries this attribute (see `config/Sidebar/Sidebar.tsx`) and is the
- * positioning anchor for object panels: they are portaled into it and positioned just to its left.
+ * The editor sidebar carries this attribute (see `config/Sidebar/Sidebar.tsx`). It is measured so
+ * object panels can be positioned directly over it (right-aligned, below the top bars).
  */
 const ANCHOR_SELECTOR = "[data-role='wb-object-panel-anchor']";
 
 /**
+ * Base z-index for object panels. Each level of nesting adds 2 (one slot for the panel, one for
+ * its backdrop, which sits directly beneath the topmost panel).
+ */
+const Z_BASE = 50;
+
+/**
  * Tracks how deeply nested the current object panel is. Each panel offsets itself by
- * `depth * PANEL_WIDTH` (measured from the sidebar's left edge) so a nested object opens a new
- * panel beside its parent rather than on top of it.
+ * `depth * PANEL_WIDTH` so a nested object opens a new panel beside its parent rather than on top
+ * of it.
  */
 const DrawerDepthContext = createContext(0);
 
 export const useDrawerDepth = () => useContext(DrawerDepthContext);
+
+interface PanelStack {
+    register: (depth: number) => void;
+    unregister: (depth: number) => void;
+    topDepth: number;
+}
+
+const PanelStackContext = createContext<PanelStack>({
+    register: () => undefined,
+    unregister: () => undefined,
+    topDepth: -1
+});
+
+/**
+ * Tracks which object panels are currently open so that only the deepest (topmost) one renders the
+ * backdrop. Everything beneath the topmost panel - parent panels, the sidebar and the canvas - is
+ * dimmed by that single scrim. Mount once above the element inputs.
+ */
+export const ObjectPanelStackProvider = ({ children }: { children: React.ReactNode }) => {
+    const [openDepths, setOpenDepths] = useState<number[]>([]);
+
+    const register = useCallback((depth: number) => {
+        setOpenDepths(prev => (prev.includes(depth) ? prev : [...prev, depth]));
+    }, []);
+
+    const unregister = useCallback((depth: number) => {
+        setOpenDepths(prev => prev.filter(value => value !== depth));
+    }, []);
+
+    const topDepth = openDepths.length > 0 ? Math.max(...openDepths) : -1;
+
+    return (
+        <PanelStackContext.Provider value={{ register, unregister, topDepth }}>
+            {children}
+        </PanelStackContext.Provider>
+    );
+};
 
 interface ObjectFieldPanelProps {
     open: boolean;
@@ -39,9 +90,10 @@ interface ObjectFieldPanelProps {
 }
 
 /**
- * A panel holding an object's fields. It is portaled into the editor sidebar and positioned
- * immediately to its left (cascading further left for nested objects), leaving the canvas and
- * sidebar visible and interactive. Closes on the header button or the Escape key.
+ * A panel holding an object's fields. It is rendered over the editor sidebar (right-aligned, below
+ * the top bars), with a backdrop covering the editor area to its left. Nested objects open another
+ * panel cascading to the left, and the topmost panel's backdrop dims every parent panel + the
+ * sidebar + the canvas behind it. Closes on the header button, the backdrop, or the Escape key.
  */
 export const ObjectFieldPanel = ({
     open,
@@ -50,11 +102,32 @@ export const ObjectFieldPanel = ({
     depth,
     children
 }: ObjectFieldPanelProps) => {
-    const [host, setHost] = useState<HTMLElement | null>(null);
+    const { register, unregister, topDepth } = useContext(PanelStackContext);
+    const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+
+    // Measure the sidebar so the panel can be positioned directly over it and the backdrop can
+    // span the editor area below the top bars.
+    useLayoutEffect(() => {
+        if (!open) {
+            return;
+        }
+        const anchor = document.querySelector<HTMLElement>(ANCHOR_SELECTOR);
+        if (!anchor) {
+            return;
+        }
+        const measure = () => setAnchorRect(anchor.getBoundingClientRect());
+        measure();
+        window.addEventListener("resize", measure);
+        return () => window.removeEventListener("resize", measure);
+    }, [open]);
 
     useEffect(() => {
-        setHost(document.querySelector<HTMLElement>(ANCHOR_SELECTOR));
-    }, []);
+        if (!open) {
+            return;
+        }
+        register(depth);
+        return () => unregister(depth);
+    }, [open, depth, register, unregister]);
 
     useEffect(() => {
         if (!open) {
@@ -69,42 +142,75 @@ export const ObjectFieldPanel = ({
         return () => window.removeEventListener("keydown", onKeyDown);
     }, [open, onClose]);
 
-    if (!open || !host) {
+    if (!open || !anchorRect) {
         return null;
     }
 
+    const panelZIndex = Z_BASE + depth * 2;
+    // Only the deepest open panel paints the scrim; it sits one z-level below this panel, dimming
+    // every parent panel, the sidebar and the canvas behind it.
+    const isTopmost = depth === topDepth;
+    // Anchor over the sidebar's right edge; nested panels cascade one panel-width to the left.
+    const rightOffset = window.innerWidth - anchorRect.right + depth * PANEL_WIDTH;
+
     return createPortal(
-        <div
-            className={"absolute top-0 h-full flex shadow-lg"}
-            style={{
-                right: `calc(100% + ${depth * PANEL_WIDTH}px)`,
-                width: PANEL_WIDTH,
-                zIndex: 50 + depth
-            }}
-        >
-            <div className={"w-px h-full shrink-0 bg-neutral-dimmed"} />
-            <div className={"flex flex-col flex-1 min-w-0 bg-neutral-base"}>
+        <>
+            {isTopmost ? (
                 <div
-                    className={
-                        "flex items-center justify-between gap-sm px-md py-md border-b border-neutral-dimmed"
-                    }
-                >
-                    <div className={"flex items-center gap-sm min-w-0"}>
-                        <ObjectIcon className={"w-5 h-5 shrink-0 text-primary"} />
-                        <Text size={"md"} className={"font-semibold truncate text-neutral-primary"}>
-                            {title}
-                        </Text>
+                    className={"fixed"}
+                    style={{
+                        top: anchorRect.top,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: "rgba(25, 28, 32, 0.2)",
+                        zIndex: panelZIndex - 1
+                    }}
+                    onClick={onClose}
+                />
+            ) : null}
+            <div
+                className={"fixed flex shadow-lg"}
+                style={{
+                    top: anchorRect.top,
+                    height: anchorRect.height,
+                    right: rightOffset,
+                    width: PANEL_WIDTH,
+                    zIndex: panelZIndex
+                }}
+            >
+                <div className={"w-px h-full shrink-0 bg-neutral-dimmed"} />
+                <div className={"flex flex-col flex-1 min-w-0 bg-neutral-base"}>
+                    <div
+                        className={
+                            "flex items-center justify-between gap-sm px-md py-md border-b border-neutral-dimmed"
+                        }
+                    >
+                        <div className={"flex items-center gap-sm min-w-0"}>
+                            <ObjectIcon className={"w-5 h-5 shrink-0 text-primary"} />
+                            <Text
+                                size={"md"}
+                                className={"font-semibold truncate text-neutral-primary"}
+                            >
+                                {title}
+                            </Text>
+                        </div>
+                        <Button
+                            variant={"ghost"}
+                            size={"sm"}
+                            icon={<CloseIcon />}
+                            onClick={onClose}
+                        />
                     </div>
-                    <Button variant={"ghost"} size={"sm"} icon={<CloseIcon />} onClick={onClose} />
-                </div>
-                <div className={"flex-1 overflow-y-auto p-md"}>
-                    <DrawerDepthContext.Provider value={depth + 1}>
-                        <div className={"flex flex-col gap-md"}>{children}</div>
-                    </DrawerDepthContext.Provider>
+                    <div className={"flex-1 overflow-y-auto p-md"}>
+                        <DrawerDepthContext.Provider value={depth + 1}>
+                            <div className={"flex flex-col gap-md"}>{children}</div>
+                        </DrawerDepthContext.Provider>
+                    </div>
                 </div>
             </div>
-        </div>,
-        host
+        </>,
+        document.body
     );
 };
 

@@ -8,6 +8,7 @@ import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { InfoMessage } from "~/BaseEditor/defaultConfig/Sidebar/InfoMessage.js";
 import { ElementPreview } from "../ElementPreview.js";
+import { ObjectPanelStackProvider } from "~/inputRenderers/ObjectInput.js";
 
 interface ElementInputsProps {
     element: DocumentElement;
@@ -48,7 +49,9 @@ export const ElementInputs = makeDecoratable("ElementInputs", ({ element }: Elem
                 <></>
             )}
 
-            <InputRenderer key={element.id} ast={inputsAst} bindings={bindings.inputs} />
+            <ObjectPanelStackProvider>
+                <InputRenderer key={element.id} ast={inputsAst} bindings={bindings.inputs} />
+            </ObjectPanelStackProvider>
         </Grid>
     );
 });
