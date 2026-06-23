@@ -3,6 +3,7 @@ import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { FilesAssetRequestResolverImpl } from "./FilesAssetRequestResolver.js";
 import { NullAssetResolverImpl } from "./NullAssetResolver.js";
 import { NullAssetOutputStrategyImpl } from "./NullAssetOutputStrategy.js";
+import { StreamAssetReplyImplementation } from "./StreamAssetReply/index.js";
 import { PassthroughAssetTransformationStrategyImpl } from "./transformation/PassthroughAssetTransformationStrategy.js";
 import { TransformationAssetProcessorImpl } from "./transformation/TransformationAssetProcessor.js";
 import { PrivateFileAssetRequestResolverDecorator } from "./privateFiles/PrivateFileAssetRequestResolver.js";
@@ -15,6 +16,7 @@ export const AssetDeliveryFeature = createFeature({
         container.register(FilesAssetRequestResolverImpl);
         container.register(NullAssetResolverImpl);
         container.register(NullAssetOutputStrategyImpl);
+        container.register(StreamAssetReplyImplementation);
         container.register(PassthroughAssetTransformationStrategyImpl);
         container.register(TransformationAssetProcessorImpl);
 
