@@ -197,6 +197,18 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/handler-graphql/graphql/abstractions.js`
 - **Usage:** Shared `GraphQLSchemaFactory` for FM upload operations (presigned payloads, multipart upload). Resolves `GetUploadPayloadUseCase`, `CreateMultiPartUploadUseCase`, `CompleteMultiPartUploadUseCase` from DI. Registered automatically by `FileManagerFeature`. Provider packages only need to register their implementations of the three abstractions.
 
+### ExtractMetadataHandler (File Manager)
+
+- **Import:** `import { ExtractMetadataHandler } from "@webiny/api-file-manager/features/extractMetadata/ExtractMetadataHandler.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/extractMetadata/ExtractMetadataHandler.ts`
+- **Usage:** Shared event handler that triggers the `fileManagerExtractMetadata` background task after a file is created. Uses `FileAfterCreateEventHandler.createImplementation` with `TaskService` as a dependency. Registered by provider packages (`api-file-manager-s3` or `api-file-manager-server`) alongside their storage-specific `ExtractMetadataTaskDefinition`.
+
+### ExtractMetadataInput (File Manager)
+
+- **Import:** `import type { ExtractMetadataInput } from "@webiny/api-file-manager/features/extractMetadata/ExtractMetadataInput.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/extractMetadata/ExtractMetadataInput.ts`
+- **Usage:** Input interface for the metadata extraction task (`{ fileId: string }`). Used by both `ExtractMetadataHandler` and provider-specific `ExtractMetadataTask` implementations.
+
 ### Encryption
 
 - **Import:** `import { Encryption } from "@webiny/api-core/features/encryption"`
