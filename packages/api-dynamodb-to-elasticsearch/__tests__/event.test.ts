@@ -65,10 +65,7 @@ describe("event", () => {
     it("should handle event with no records", async () => {
         const handler = createHandler();
 
-        const result = await handler.execute(
-            { event: { Records: [] }, metadata: {} },
-            vi.fn()
-        );
+        const result = await handler.execute({ event: { Records: [] }, metadata: {} }, vi.fn());
 
         expect(result).toEqual({ success: true, processedRecords: 0 });
     });
