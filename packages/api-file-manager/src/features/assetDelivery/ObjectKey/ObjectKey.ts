@@ -1,4 +1,8 @@
-import { ObjectKey, type IObjectKey, type IObjectKeyInstance } from "./abstractions.js";
+import {
+    ObjectKey as ObjectKeyAbstraction,
+    type IObjectKey,
+    type IObjectKeyInstance
+} from "./abstractions.js";
 
 class ObjectKeyInstance implements IObjectKeyInstance {
     constructor(private readonly bucketKey: string) {}
@@ -19,7 +23,7 @@ class ObjectKeyImpl implements IObjectKey {
     }
 }
 
-export const ObjectKeyImplementation = ObjectKey.createImplementation({
+export const ObjectKey = ObjectKeyAbstraction.createImplementation({
     implementation: ObjectKeyImpl,
     dependencies: []
 });

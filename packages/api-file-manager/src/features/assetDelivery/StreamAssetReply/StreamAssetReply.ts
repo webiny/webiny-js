@@ -1,7 +1,10 @@
 import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
 import { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
 import { ResponseHeaders } from "@webiny/handler";
-import { StreamAssetReply, type IStreamAssetReply } from "./abstractions.js";
+import {
+    StreamAssetReply as StreamAssetReplyAbstraction,
+    type IStreamAssetReply
+} from "./abstractions.js";
 
 class StreamAssetReplyImpl implements IStreamAssetReply {
     create(asset: Asset): AssetReply {
@@ -16,7 +19,7 @@ class StreamAssetReplyImpl implements IStreamAssetReply {
     }
 }
 
-export const StreamAssetReplyImplementation = StreamAssetReply.createImplementation({
+export const StreamAssetReply = StreamAssetReplyAbstraction.createImplementation({
     implementation: StreamAssetReplyImpl,
     dependencies: []
 });

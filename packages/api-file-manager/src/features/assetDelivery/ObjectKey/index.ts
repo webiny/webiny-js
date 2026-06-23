@@ -1,2 +1,2 @@
 export { ObjectKey } from "./abstractions.js";
-export { ObjectKeyImplementation } from "./ObjectKey.js";
+export { ObjectKey as ObjectKeyImpl } from "./ObjectKey.js";
