@@ -128,7 +128,7 @@ Then open your agent and paste the below prompt which will setup the Webiny MCP 
   "webiny": {
     "type": "stdio",
     "command": "node",
-    "args": ["<relative-path-to-webiny-js-v6>/packages/mcp/bin.js", "serve"]
+    "args": ["<relative-path-to-webiny-js-v6>/packages/mcp/bin.js", "serve", "--skills=./skills"]
   }
 
   Replace <relative-path-to-webiny-js-v6> with the actual relative path from your project root to the webiny-js-v6 repo. If your project IS the webiny-js-v6 repo, use "args":
@@ -168,7 +168,7 @@ Your `.mcp.json` file should look something like this:
     "webiny": {
       "type": "stdio",
       "command": "node",
-      "args": ["packages/mcp/bin.js", "serve"]
+      "args": ["packages/mcp/bin.js", "serve", "--skills=./skills"]
     }
   }
 }
