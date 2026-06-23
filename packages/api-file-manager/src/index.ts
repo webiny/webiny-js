@@ -48,3 +48,6 @@ export const createAssetDelivery = () => {
         ...setupAssetDelivery()
     ];
 };
+
+export { FileManagerAppFeature } from "./FileManagerAppFeature.js";
+export { AssetDeliveryRoute } from "./delivery/AssetDeliveryRoute.js";

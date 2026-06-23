@@ -39,5 +39,5 @@ export const registerSchedulerAwsExtension = (params: IRegisterSchedulerAwsExten
 
     plugin.name = "scheduler.aws.extension";
 
-    return plugin;
+    return [plugin];
 };
