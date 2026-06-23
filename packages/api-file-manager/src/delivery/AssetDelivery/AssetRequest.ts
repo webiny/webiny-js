@@ -17,7 +17,6 @@ export interface AssetRequestData<TOptions> {
     context: AssetRequestContext;
     options: TOptions;
 }
-// TODO convert to be used via DI factory: assetRequestFactory.create({ key, context, options })
 export class AssetRequest<TOptions extends AssetRequestOptions = AssetRequestOptions> {
     private data: AssetRequestData<TOptions>;
 

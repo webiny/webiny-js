@@ -1,10 +1,15 @@
-import { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
 import { AssetRequestResolver } from "../abstractions/AssetRequestResolver.js";
+import { AssetRequestFactory } from "../AssetRequest/abstractions.js";
 
 class PrivateFileAssetRequestResolverImpl implements AssetRequestResolver.Interface {
+    private readonly assetRequestFactory: AssetRequestFactory.Interface;
     private readonly resolver: AssetRequestResolver.Interface;
 
-    constructor(resolver: AssetRequestResolver.Interface) {
+    constructor(
+        assetRequestFactory: AssetRequestFactory.Interface,
+        resolver: AssetRequestResolver.Interface
+    ) {
+        this.assetRequestFactory = assetRequestFactory;
         this.resolver = resolver;
     }
 
@@ -20,7 +25,7 @@ class PrivateFileAssetRequestResolverImpl implements AssetRequestResolver.Interf
 
         const path = params["*"];
 
-        return new AssetRequest({
+        return this.assetRequestFactory.create({
             key: decodeURI(path).replace("/private/", ""),
             context: {
                 url: request.url,
@@ -36,5 +41,5 @@ class PrivateFileAssetRequestResolverImpl implements AssetRequestResolver.Interf
 
 export const PrivateFileAssetRequestResolver = AssetRequestResolver.createDecorator({
     decorator: PrivateFileAssetRequestResolverImpl,
-    dependencies: []
+    dependencies: [AssetRequestFactory]
 });
