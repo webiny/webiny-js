@@ -1,11 +1,8 @@
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import {
-    MetadataWriter as MetadataWriterAbstraction,
-    type IMetadataWriter
-} from "./abstractions.js";
+import { MetadataWriter as MetadataWriterAbstraction } from "./abstractions.js";
 
-class MetadataWriterImpl implements IMetadataWriter {
+class MetadataWriterImpl implements MetadataWriterAbstraction.Interface {
     private readonly tenantContext: TenantContext.Interface;
     private readonly keyValueStore: GlobalKeyValueStore.Interface;
 

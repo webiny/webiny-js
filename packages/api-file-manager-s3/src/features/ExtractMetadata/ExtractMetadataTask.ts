@@ -1,9 +1,8 @@
 import type { ExifTags } from "exifreader";
 import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
-import { MetadataReader } from "@webiny/api-file-manager/features/upload/WriteFileMetadata/MetadataReader.js";
+import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
 import type { ExtractMetadataInput } from "@webiny/api-file-manager/features/extractMetadata/ExtractMetadataInput.js";
 
 class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadataInput> {
@@ -15,8 +14,8 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
     public readonly databaseLogs = false;
     public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
 
-    constructor(
-        private readonly keyValueStore: GlobalKeyValueStore.Interface,
+    public constructor(
+        private readonly metadataReader: MetadataReader.Interface,
         private readonly updateFileUseCase: UpdateFileUseCase.Interface
     ) {}
 
@@ -31,8 +30,7 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
         }
 
         /* Load file metadata from the key-value store. */
-        const metadataReader = new MetadataReader(this.keyValueStore);
-        const fileMetadata = await metadataReader.read(input.fileId);
+        const fileMetadata = await this.metadataReader.read(input.fileId);
 
         if (!fileMetadata) {
             return controller.response.error({
@@ -141,5 +139,5 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
 
 export const ExtractMetadataTaskDefinition = TaskDefinition.createImplementation({
     implementation: ExtractMetadataTaskImpl,
-    dependencies: [GlobalKeyValueStore, UpdateFileUseCase]
+    dependencies: [MetadataReader, UpdateFileUseCase]
 });
