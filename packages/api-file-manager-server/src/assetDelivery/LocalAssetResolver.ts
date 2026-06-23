@@ -2,8 +2,8 @@ import type { AssetRequest, AssetResolver } from "@webiny/api-file-manager";
 import { Asset } from "@webiny/api-file-manager";
 import { AssetResolver as AssetResolverAbstraction } from "@webiny/api-file-manager/features/assetDelivery/abstractions.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { ObjectKey } from "@webiny/api-file-manager/features/assetDelivery/ObjectKey/index.js";
 import { LocalContentsReader } from "~/assetDelivery/LocalContentsReader.js";
-import { ObjectKey } from "~/assetDelivery/ObjectKey.js";
 import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
 
 interface AssetMetadata {
@@ -17,11 +17,12 @@ interface AssetMetadata {
 export class LocalAssetResolver implements AssetResolver {
     constructor(
         private readonly keyValueStore: GlobalKeyValueStore.Interface,
-        private readonly storagePath: string
+        private readonly storagePath: string,
+        private readonly objectKey: ObjectKey.Interface
     ) {}
 
     async resolve(request: AssetRequest): Promise<Asset | undefined> {
-        const objectKey = ObjectKey.from(request.getKey());
+        const objectKey = this.objectKey.from(request.getKey());
         const fileId = objectKey.id();
         const result = await this.keyValueStore.get<AssetMetadata>(
             `FileManager/File/${fileId}/Metadata`
@@ -49,5 +50,5 @@ export class LocalAssetResolver implements AssetResolver {
 
 export const LocalAssetResolverImpl = AssetResolverAbstraction.createImplementation({
     implementation: LocalAssetResolver,
-    dependencies: [GlobalKeyValueStore, LocalStoragePath]
+    dependencies: [GlobalKeyValueStore, LocalStoragePath, ObjectKey]
 });

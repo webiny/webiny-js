@@ -3,9 +3,9 @@ import { createHandlerOnRequest } from "@webiny/handler";
 import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { ObjectKey } from "@webiny/api-file-manager/features/assetDelivery/ObjectKey/index.js";
 import type { GuardDutyEvent } from "./types.js";
 import { processThreatScanResult } from "./processThreatScanResult.js";
-import { ObjectKey } from "./ObjectKey.js";
 
 const detailType = "GuardDuty Malware Protection Object Scan Result";
 
@@ -17,12 +17,12 @@ export const createThreatDetectionEventHandler = () => {
             return;
         }
 
-        const objectKey = payload.detail.s3ObjectDetails.objectKey;
+        const s3ObjectKey = payload.detail.s3ObjectDetails.objectKey;
+        const objectKey = context.container.resolve(ObjectKey);
         const keyValueStore = context.container.resolve(GlobalKeyValueStore);
 
         try {
-            // Extract file id from the absolute S3 object key
-            const fileId = ObjectKey.from(objectKey).id();
+            const fileId = objectKey.from(s3ObjectKey).id();
             const result = await keyValueStore.get<{ tenant: string }>(
                 `FileManager/File/${fileId}/Metadata`
             );
