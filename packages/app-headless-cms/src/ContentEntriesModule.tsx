@@ -12,11 +12,7 @@ import {
     ActionPublish,
     ActionUnpublish
 } from "~/admin/components/ContentEntries/BulkActions/index.js";
-import {
-    DeleteEntry as DeleteEntryMenuItem,
-    SaveAndPublishButton,
-    SaveContentButton
-} from "~/admin/components/ContentEntryForm/Header/index.js";
+
 import {
     TRASH_ENTRY_DIALOG,
     PUBLISH_ENTRY_DIALOG,
@@ -38,10 +34,7 @@ import {
     CellName,
     CellStatus
 } from "~/admin/components/ContentEntries/Table/Cells/index.js";
-import { ShowRevisionList } from "~/admin/components/ContentEntryForm/Header/ShowRevisionsList/index.js";
 import { IsModelPublishable } from "~/admin/components/IsModelPublishable.js";
-import { ContentFormOptionsMenu } from "~/admin/components/ContentEntryForm/Header/ContentFormOptionsMenu/index.js";
-import { RevisionSelector } from "~/admin/components/ContentEntryForm/Header/index.js";
 import { FilterByStatus } from "~/admin/components/ContentEntries/FilterByStatus.js";
 import { CmsTrashBin } from "~/presentation/contentEntries/trashBin/CmsTrashBin.js";
 import { TrashEntryConfirmDialog } from "~/admin/components/Dialogs/TrashEntryConfirmDialog.js";
@@ -49,6 +42,12 @@ import { PublishEntryConfirmDialog } from "~/admin/components/Dialogs/PublishEnt
 import { UnpublishEntryConfirmDialog } from "~/admin/components/Dialogs/UnpublishEntryConfirmDialog.js";
 import { DeleteRevisionConfirmDialog } from "~/admin/components/Dialogs/DeleteRevisionConfirmDialog.js";
 import { DELETE_REVISION_DIALOG } from "~/presentation/contentEntries/revisionsList/RevisionsListPresenter.js";
+import { RevisionSelector } from "~/presentation/contentEntries/views/actions/RevisionSelector.js";
+import { ContentFormOptionsMenu } from "~/presentation/contentEntries/views/actions/ContentFormOptionsMenu.js";
+import { SaveContentButton } from "~/presentation/contentEntries/views/actions/SaveContentButton.js";
+import { SaveAndPublishButton } from "~/presentation/contentEntries/views/actions/SaveAndPublishButton.js";
+import { DeleteEntryMenuItem } from "~/presentation/contentEntries/views/actions/DeleteEntryMenuItem.js";
+import { ShowRevisionListMenuItem } from "~/presentation/contentEntries/views/actions/ShowRevisionListMenuItem.js";
 
 const { Browser } = InternalContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
@@ -155,7 +154,7 @@ export const ContentEntriesModule = () => {
                 <IsModelPublishable>
                     <Actions.MenuItemAction
                         name={"showRevisionsList"}
-                        element={<ShowRevisionList />}
+                        element={<ShowRevisionListMenuItem />}
                     />
                 </IsModelPublishable>
             </ContentEntryEditorConfig>
