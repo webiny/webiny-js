@@ -11,6 +11,8 @@ import type {
     IRowNodeVM,
     ISeparatorNode,
     ISeparatorNodeVM,
+    IAlertNode,
+    IAlertNodeVM,
     ITabsNode,
     ITabsNodeVM,
     ITabDefinitionVM,
@@ -48,6 +50,8 @@ export class LayoutResolver {
                 return this.resolveRowNode(node);
             case "separator":
                 return this.resolveSeparatorNode(node);
+            case "alert":
+                return this.resolveAlertNode(node);
             case "tabs":
                 return this.resolveTabsNode(node);
             case "element":
@@ -80,6 +84,16 @@ export class LayoutResolver {
             }
         }
         return { type: "separator", title: node.title, description: node.description };
+    }
+
+    private resolveAlertNode(node: IAlertNode): IAlertNodeVM | null {
+        if (node.rules) {
+            const state = this._evaluateRules(node.rules);
+            if (!state.visible) {
+                return null;
+            }
+        }
+        return { type: "alert", message: node.message, alertType: node.alertType ?? "info" };
     }
 
     private resolveTabsNode(node: ITabsNode): ITabsNodeVM | null {
@@ -166,6 +180,8 @@ export class LayoutResolver {
             }
             case "separator":
                 return this.resolveSeparatorNode(node);
+            case "alert":
+                return this.resolveAlertNode(node);
             case "element":
                 return this.resolveElementNode(node);
             case "object": {

@@ -73,10 +73,28 @@ function mapLayoutField(
 }
 
 function mapSeparator(
-    _field: CmsSeparatorLayoutField,
+    field: CmsSeparatorLayoutField,
     layoutBuilder: ILayoutBuilder
 ): ILayoutNodeBuilder {
-    return layoutBuilder.separator();
+    const builder = layoutBuilder.separator();
+    if (field.label) {
+        builder.title(field.label);
+    }
+    if (field.description) {
+        builder.description(field.description);
+    }
+    if (field.rules) {
+        builder.rules(
+            field.rules.map(r => ({
+                type: r.type,
+                target: r.target,
+                operator: r.operator,
+                value: r.value != null ? String(r.value) : null,
+                action: r.action as "hide" | "disable"
+            }))
+        );
+    }
+    return builder;
 }
 
 function mapTabs(
@@ -123,8 +141,23 @@ function mapTabs(
 }
 
 function mapAlert(field: CmsAlertLayoutField, layoutBuilder: ILayoutBuilder): ILayoutNodeBuilder {
-    return layoutBuilder.element("alert", {
-        alertType: field.alertType,
-        label: field.label
-    });
+    const builder = layoutBuilder.alert();
+    if (field.label) {
+        builder.message(field.label);
+    }
+    if (field.alertType) {
+        builder.alertType(field.alertType);
+    }
+    if (field.rules) {
+        builder.rules(
+            field.rules.map(r => ({
+                type: r.type,
+                target: r.target,
+                operator: r.operator,
+                value: r.value != null ? String(r.value) : null,
+                action: r.action as "hide" | "disable"
+            }))
+        );
+    }
+    return builder;
 }

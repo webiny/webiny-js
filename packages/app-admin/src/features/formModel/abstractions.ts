@@ -390,7 +390,13 @@ export type CloneValueCallback = (value: unknown) => unknown;
 // Layout types
 // ---------------------------------------------------------------------------
 
-export type LayoutNode = IRowNode | ISeparatorNode | ITabsNode | IElementNode | IObjectNode;
+export type LayoutNode =
+    | IRowNode
+    | ISeparatorNode
+    | IAlertNode
+    | ITabsNode
+    | IElementNode
+    | IObjectNode;
 
 export interface IRowNode {
     type: "row";
@@ -440,6 +446,13 @@ export interface ITabsNode {
     rules?: IRule[];
 }
 
+export interface IAlertNode {
+    type: "alert";
+    message?: string;
+    alertType?: "info" | "success" | "warning" | "danger";
+    rules?: IRule[];
+}
+
 export interface IElementNode {
     type: "element";
     id?: string;
@@ -486,6 +499,13 @@ export interface ISeparatorBuilder extends ILayoutNodeBuilder {
     build(): ISeparatorNode;
 }
 
+export interface IAlertBuilder extends ILayoutNodeBuilder {
+    message(text: string): this;
+    alertType(type: "info" | "success" | "warning" | "danger"): this;
+    rules(rules: IRule[]): this;
+    build(): IAlertNode;
+}
+
 export interface ITabBuilder {
     label(text: string): this;
     description(text: string): this;
@@ -515,7 +535,12 @@ export interface IObjectBuilder extends ILayoutNodeBuilder {
 // Layout VM types
 // ---------------------------------------------------------------------------
 
-export type LayoutNodeVM = IRowNodeVM | ISeparatorNodeVM | ITabsNodeVM | IElementNodeVM;
+export type LayoutNodeVM =
+    | IRowNodeVM
+    | ISeparatorNodeVM
+    | IAlertNodeVM
+    | ITabsNodeVM
+    | IElementNodeVM;
 
 export interface IRowNodeVM {
     type: "row";
@@ -526,6 +551,12 @@ export interface ISeparatorNodeVM {
     type: "separator";
     title?: string;
     description?: string;
+}
+
+export interface IAlertNodeVM {
+    type: "alert";
+    message?: string;
+    alertType: "info" | "success" | "warning" | "danger";
 }
 
 export interface ITabDefinitionVM {
@@ -610,6 +641,7 @@ export interface IFormModifier {
 export interface ILayoutModifier {
     row(...fieldIds: string[]): ILayoutNodeHandle;
     separator(): ILayoutNodeHandle;
+    alert(): ILayoutNodeHandle;
     tabs(config: {
         id?: string;
         renderer?: string;
@@ -723,6 +755,9 @@ export namespace FormModel {
     export type LayoutNodeBuilder = ILayoutNodeBuilder;
     export type RowBuilder = IRowBuilder;
     export type SeparatorBuilder = ISeparatorBuilder;
+    export type AlertBuilder = IAlertBuilder;
+    export type AlertNode = IAlertNode;
+    export type AlertNodeVM = IAlertNodeVM;
     export type TabBuilder = ITabBuilder;
     export type TabsBuilder = ITabsBuilder;
     export type ElementBuilder = IElementBuilder;
@@ -783,6 +818,7 @@ export interface IFormModelConfig {
 export interface ILayoutBuilder {
     row(...fieldIds: string[]): IRowBuilder;
     separator(): ISeparatorBuilder;
+    alert(): IAlertBuilder;
     tabs(id?: string): ITabsBuilder;
     element(renderer: string, props?: Record<string, unknown>): IElementBuilder;
     /**

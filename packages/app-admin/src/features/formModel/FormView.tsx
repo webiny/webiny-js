@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { Grid, IconButton, Separator, Tabs, Text, Tooltip, useToast } from "@webiny/admin-ui";
+import { Alert, Grid, IconButton, Separator, Tabs, Text, Tooltip, useToast } from "@webiny/admin-ui";
 import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
 import { ReactComponent as PasteIcon } from "@webiny/icons/content_paste.svg";
 import { DevToolsSection } from "@webiny/react-properties";
@@ -11,6 +11,7 @@ import type {
     IFieldVM,
     ITabsNodeVM,
     ISeparatorNodeVM,
+    IAlertNodeVM,
     IElementNodeVM
 } from "./abstractions.js";
 import type { Icon } from "~/components/IconPicker/types.js";
@@ -102,6 +103,8 @@ export const LayoutNodeRenderer = observer(({ node }: { node: LayoutNodeVM }) =>
             return <RowNodeRenderer node={node} />;
         case "separator":
             return <SeparatorNodeRenderer node={node} />;
+        case "alert":
+            return <AlertNodeRenderer node={node} />;
         case "tabs":
             return <TabsNodeRenderer node={node} />;
         case "element":
@@ -171,6 +174,17 @@ const SeparatorNodeRenderer = observer(function SeparatorNodeRenderer({
         );
     }
     return <Separator variant={"dimmed"} />;
+});
+
+const AlertNodeRenderer = observer(function AlertNodeRenderer({
+    node
+}: {
+    node: IAlertNodeVM;
+}) {
+    if (!node.message) {
+        return null;
+    }
+    return <Alert type={node.alertType}>{node.message}</Alert>;
 });
 
 export interface TabsNodeRendererProps {

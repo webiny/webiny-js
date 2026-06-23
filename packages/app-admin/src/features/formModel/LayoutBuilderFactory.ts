@@ -14,10 +14,12 @@ import type {
     ITabsNode,
     IRowBuilder,
     ISeparatorBuilder,
+    IAlertBuilder,
     IElementBuilder,
     IObjectBuilder,
     IRowNode,
     ISeparatorNode,
+    IAlertNode,
     IElementNode,
     IObjectNode,
     LayoutNode,
@@ -263,6 +265,34 @@ export class LayoutBuilderFactory {
                             type: "separator",
                             title: _title,
                             description: _description,
+                            rules: _rules
+                        };
+                    }
+                };
+                return builder;
+            },
+            alert(): IAlertBuilder {
+                let _message: string | undefined;
+                let _alertType: "info" | "success" | "warning" | "danger" = "info";
+                let _rules: IRule[] | undefined;
+                const builder: IAlertBuilder = {
+                    message(text: string) {
+                        _message = text;
+                        return builder;
+                    },
+                    alertType(type: "info" | "success" | "warning" | "danger") {
+                        _alertType = type;
+                        return builder;
+                    },
+                    rules(r: IRule[]) {
+                        _rules = r;
+                        return builder;
+                    },
+                    build(): IAlertNode {
+                        return {
+                            type: "alert",
+                            message: _message,
+                            alertType: _alertType,
                             rules: _rules
                         };
                     }
