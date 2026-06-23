@@ -40,7 +40,7 @@ const createUpdateFields = (fields: CmsModelField[]): CmsModelField[] => {
     }, []);
 };
 
-class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
+class FmGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface {
     public constructor(
         private readonly identityContext: IdentityContext.Interface,
         private readonly listModelsUseCase: ListModelsUseCase.Interface,
@@ -362,7 +362,11 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
             path: "FmFile.src",
             dependencies: [FileUrlGenerator],
             resolver: (urlGenerator: FileUrlGenerator.Interface) => {
-                return ({ parent }) => {
+                return async ({ parent }) => {
+                    // TODO figure out a better way to initialize the URL generator, so we don't have to do it here.
+                    if (urlGenerator.init) {
+                        await urlGenerator.init();
+                    }
                     return urlGenerator.generateUrl(parent);
                 };
             }
@@ -529,7 +533,7 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
 }
 
 export const FmGraphQLSchema = GraphQLSchemaFactory.createImplementation({
-    implementation: FmGraphQLSchema_,
+    implementation: FmGraphQLSchemaImpl,
     dependencies: [
         IdentityContext,
         ListModelsUseCase,
