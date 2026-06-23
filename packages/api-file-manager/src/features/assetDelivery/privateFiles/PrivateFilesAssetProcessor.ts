@@ -38,12 +38,12 @@ class PrivateFilesAssetProcessorImpl implements AssetProcessor.Interface {
         const isPrivateFile = this.isPrivate(file);
 
         if (!isPrivateFile && this.requestedViaPrivateEndpoint(assetRequest)) {
-            asset.setOutputStrategy(new RedirectToPublicUrlOutputStrategy(assetRequest));
+            asset.setOutputStrategy(RedirectToPublicUrlOutputStrategy.create(assetRequest));
             return asset;
         }
 
         if (isPrivateFile && this.requestedViaPublicEndpoint(assetRequest)) {
-            asset.setOutputStrategy(new RedirectToPrivateUrlOutputStrategy(assetRequest));
+            asset.setOutputStrategy(RedirectToPrivateUrlOutputStrategy.create(assetRequest));
             return asset;
         }
 

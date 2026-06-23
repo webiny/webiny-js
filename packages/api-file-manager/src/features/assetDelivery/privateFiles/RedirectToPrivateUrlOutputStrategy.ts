@@ -7,7 +7,11 @@ import { AssetOutputStrategy } from "../abstractions/AssetOutputStrategy.js";
 export class RedirectToPrivateUrlOutputStrategy implements AssetOutputStrategy.Interface {
     private readonly assetRequest: AssetRequest;
 
-    public constructor(assetRequest: AssetRequest) {
+    public static create(assetRequest: AssetRequest) {
+        return new RedirectToPrivateUrlOutputStrategy(assetRequest);
+    }
+
+    private constructor(assetRequest: AssetRequest) {
         this.assetRequest = assetRequest;
     }
 
