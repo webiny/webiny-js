@@ -57,11 +57,29 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
     const setup = async (container: Container, extraPlugins: any[] = []): Promise<void> => {
         const wcpLicense = await loadWcpLicense(testProjectLicense);
         ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense });
+
+        const extraCmsPlugins: any[] = [];
+
+        // RegisterExtensionPlugin instances are pre-registered before HeadlessCms enhancers run,
+        // so private models reach the DI container before AcoContextEnhancer populates ModelCache.
+        // Static plugins (CmsModelPlugin, GraphQLSchemaPlugin, etc.) are collected for ctx.plugins.
         processLegacyPlugins(container, cmsStorage.plugins);
+        for (const p of [cmsStorage.plugins].flat(Infinity as 1)) {
+            if (p && typeof (p as any).apply !== "function" && typeof p !== "function") {
+                extraCmsPlugins.push(p);
+            }
+        }
+
         if (extraPlugins.length > 0) {
             processLegacyPlugins(container, extraPlugins);
+            for (const p of [extraPlugins].flat(Infinity as 1)) {
+                if (p && typeof (p as any).apply !== "function" && typeof p !== "function") {
+                    extraCmsPlugins.push(p);
+                }
+            }
         }
-        HeadlessCmsFeature.register(container, { type: "manage" });
+
+        HeadlessCmsFeature.register(container, { type: "manage", extraPlugins: extraCmsPlugins });
     };
 
     const legacyPlugins = [
