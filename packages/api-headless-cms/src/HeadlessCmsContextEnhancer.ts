@@ -1,8 +1,9 @@
 import type { Container } from "@webiny/di";
 import { Abstraction } from "@webiny/di";
 import { PluginsContainer } from "@webiny/plugins";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import type { IGraphQLContextEnhancer, IGraphQLContextualSchema } from "@webiny/handler-graphql";
+import type { GraphQLSchema } from "graphql";
 import { AccessControl } from "~/crud/AccessControl/AccessControl.js";
 import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud.js";
 import { createModelsCrud } from "~/crud/contentModel.crud.js";
@@ -18,18 +19,6 @@ import { Benchmark } from "@webiny/api/Benchmark.js";
 import { createBaseSchema } from "~/graphql/schema/baseSchema.js";
 import { createExportGraphQL } from "~/export/graphql/index.js";
 import { createRevisionIdScalarPlugin } from "~/graphql/scalars/RevisionIdScalarPlugin.js";
-import { CmsInstallerFeature } from "~/features/installer/feature.js";
-import { ContentEntriesFeature } from "~/features/contentEntry/ContentEntriesFeature.js";
-import { ContentModelFeature } from "~/features/contentModel/ContentModelFeature.js";
-import { ContentModelGroupFeature } from "~/features/contentModelGroup/ContentModelGroupFeature.js";
-import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
-import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
-import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
-import { CmsWebhooksFeature } from "~/features/webhooks/feature.js";
-import { GraphQLFeature } from "~/features/graphql/index.js";
-import { ValidationFeature } from "~/features/validation/index.js";
-import { StorageFeature } from "~/features/storage/index.js";
-import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import {
     AccessControl as AccessControlAbstraction,
     CmsContext as CmsContextAbstraction,
@@ -45,7 +34,6 @@ import {
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage.js";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
 import type { ApiEndpoint, CmsContext } from "~/types/index.js";
-import { RequestContainer } from "@webiny/event-handler-core";
 
 export interface IHeadlessCmsEnhancerConfig {
     type: ApiEndpoint;
@@ -56,7 +44,9 @@ export const HeadlessCmsEnhancerConfig = new Abstraction<IHeadlessCmsEnhancerCon
     "HeadlessCmsEnhancerConfig"
 );
 
-export class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
+export class HeadlessCmsInitializerImpl
+    implements IGraphQLContextEnhancer, IGraphQLContextualSchema
+{
     private initialized = false;
 
     constructor(
@@ -64,15 +54,29 @@ export class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
         private config: IHeadlessCmsEnhancerConfig
     ) {}
 
+    // Runs during the enhancer phase (before legacy plugins) so that ctx.cms and all
+    // runtime DI registrations (CmsContextAbstraction, etc.) are available when legacy
+    // plugins like createWorkflows() resolve their use cases from the container.
     async enhance(ctx: Record<string, any>): Promise<void> {
-        if (this.initialized) {
-            return;
-        }
-        this.initialized = true;
-        await this._enhance(ctx);
+        await this._maybeInitialize(ctx);
     }
 
-    async _enhance(ctx: Record<string, any>): Promise<void> {
+    async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
+        await this._maybeInitialize(ctx);
+        return makeExecutableSchema({
+            typeDefs: "type Query\ntype Mutation",
+            assumeValidSDL: true
+        });
+    }
+
+    private async _maybeInitialize(ctx: Record<string, any>): Promise<void> {
+        if (!this.initialized) {
+            this.initialized = true;
+            await this._initialize(ctx);
+        }
+    }
+
+    private async _initialize(ctx: Record<string, any>): Promise<void> {
         const { type } = this.config;
 
         // Provide a PluginsContainer with field converters and required scalar plugins
@@ -86,12 +90,6 @@ export class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
         if (!ctx.benchmark) {
             ctx.benchmark = new Benchmark();
         }
-
-        // Must run before storage ops — registers graphql/validation/storage DI features
-        CompressionFeature.register(this.container);
-        GraphQLFeature.register(this.container);
-        ValidationFeature.register(this.container);
-        StorageFeature.register(this.container);
 
         ctx.plugins.register(
             new StorageOperationsCmsModelPlugin(
@@ -186,16 +184,6 @@ export class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
         await createBaseSchema().apply(ctx as CmsContext);
         await createExportGraphQL().apply(ctx as CmsContext);
 
-        // Register DI features after cms is set on ctx
-        CmsInstallerFeature.register(this.container);
-        ContentEntriesFeature.register(this.container);
-        ContentModelFeature.register(this.container);
-        ContentModelGroupFeature.register(this.container);
-        ModelBuilderFeature.register(this.container);
-        CmsWhereMapperFeature.register(this.container);
-        CmsSortMapperFeature.register(this.container);
-        CmsWebhooksFeature.register(this.container);
-
         // Register legacy DI abstractions for use-cases that resolve them
         this.container.registerInstance(StorageOperations, storageOperations);
         this.container.registerInstance(AccessControlAbstraction, accessControl);
@@ -227,8 +215,3 @@ export class HeadlessCmsContextEnhancerImpl implements IGraphQLContextEnhancer {
         }
     }
 }
-
-export const HeadlessCmsContextEnhancer = GraphQLContextEnhancer.createImplementation({
-    implementation: HeadlessCmsContextEnhancerImpl,
-    dependencies: [RequestContainer, HeadlessCmsEnhancerConfig]
-});

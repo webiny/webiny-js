@@ -1,10 +1,22 @@
 import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
 import {
-    HeadlessCmsContextEnhancerImpl,
+    HeadlessCmsInitializerImpl,
     HeadlessCmsEnhancerConfig
 } from "./HeadlessCmsContextEnhancer.js";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
+import { GraphQLFeature } from "~/features/graphql/index.js";
+import { ValidationFeature } from "~/features/validation/index.js";
+import { StorageFeature } from "~/features/storage/index.js";
+import { CmsInstallerFeature } from "~/features/installer/feature.js";
+import { ContentEntriesFeature } from "~/features/contentEntry/ContentEntriesFeature.js";
+import { ContentModelFeature } from "~/features/contentModel/ContentModelFeature.js";
+import { ContentModelGroupFeature } from "~/features/contentModelGroup/ContentModelGroupFeature.js";
+import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
+import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
+import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
+import { CmsWebhooksFeature } from "~/features/webhooks/feature.js";
 import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import type { IGraphQLContextEnhancer, IGraphQLContextualSchema } from "@webiny/handler-graphql";
@@ -113,15 +125,36 @@ export const HeadlessCmsFeature = createFeature({
             type: config.type,
             extraPlugins: config.extraPlugins
         });
-        // Use registerInstance (not register) so that HeadlessCmsContextEnhancer is an
-        // instance registration. Instance registrations are resolved before class registrations
-        // in resolveAll(), ensuring this enhancer runs first — before any other feature
-        // enhancers that depend on ctx.cms or CmsContext being set.
-        const enhancer = container.resolveWithDependencies({
-            implementation: HeadlessCmsContextEnhancerImpl,
+
+        // Register CMS DI features statically so they are available before any enhancers run.
+        // Legacy plugins (e.g. createWorkflows()) resolve these services during their context
+        // plugin apply() calls, which happen inside the GraphQLContextEnhancer phase — before
+        // HeadlessCmsInitializerImpl.build() sets up runtime state. All these are pure class
+        // registrations (no eager instantiation) so they are safe to register here.
+        CompressionFeature.register(container);
+        GraphQLFeature.register(container);
+        ValidationFeature.register(container);
+        StorageFeature.register(container);
+        CmsInstallerFeature.register(container);
+        ContentEntriesFeature.register(container);
+        ContentModelFeature.register(container);
+        ContentModelGroupFeature.register(container);
+        ModelBuilderFeature.register(container);
+        CmsWhereMapperFeature.register(container);
+        CmsSortMapperFeature.register(container);
+        CmsWebhooksFeature.register(container);
+
+        // Register as both GraphQLContextEnhancer and GraphQLContextualSchema so that:
+        // - enhance() runs during buildContext() BEFORE legacy plugins (e.g. createWorkflows()
+        //   needs CmsContextAbstraction which _initialize() sets on ctx.cms).
+        // - build() runs during buildContextualSchemas() — if enhance() already ran, it's a
+        //   no-op that returns an empty schema for safe merging.
+        const initializer = container.resolveWithDependencies({
+            implementation: HeadlessCmsInitializerImpl,
             dependencies: [RequestContainer, HeadlessCmsEnhancerConfig]
         });
-        container.registerInstance(GraphQLContextEnhancer, enhancer);
+        container.registerInstance(GraphQLContextEnhancer, initializer);
+        container.registerInstance(GraphQLContextualSchema, initializer);
         container.register(createCmsRoute(config.type));
     }
 });

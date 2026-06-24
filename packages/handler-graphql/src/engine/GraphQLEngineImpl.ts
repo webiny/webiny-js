@@ -108,7 +108,12 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         if (this.contextualSchemas.length === 0) {
             return [];
         }
-        return Promise.all(this.contextualSchemas.map(s => s.build(ctx)));
+        // Sequential — schemas may have ordering dependencies (e.g. Aco needs ctx.cms from HeadlessCms).
+        const schemas: GraphQLSchema[] = [];
+        for (const s of this.contextualSchemas) {
+            schemas.push(await s.build(ctx));
+        }
+        return schemas;
     }
 
     private async buildSchema(
