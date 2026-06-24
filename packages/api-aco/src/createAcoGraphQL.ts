@@ -8,6 +8,7 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { createGraphQLSchemaPluginFromFieldPlugins } from "@webiny/api-headless-cms/utils/getSchemaFromFieldPlugins.js";
 import { FOLDER_MODEL_ID } from "~/domain/folder/folder.model.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
 const emptyResolver = () => ({});
 
@@ -84,7 +85,7 @@ export const createAcoGraphQL = () => {
 
         const fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
 
-        await context.security.withoutAuthorization(async () => {
+        await context.container.resolve(IdentityContext).withoutAuthorization(async () => {
             const model = (await context.cms.getModel(FOLDER_MODEL_ID)) as CmsModel;
             const models = await context.cms.listModels();
             /**

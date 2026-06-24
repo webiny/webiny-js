@@ -6,6 +6,7 @@ import {
 } from "@webiny/event-handler-aws/abstractions/handlers/EventBridgeEventHandler.js";
 import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
 import { RequestContainer } from "@webiny/event-handler-core";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import type { HcmsBulkActionsContext } from "~/types.js";
 
@@ -35,7 +36,7 @@ class BulkActionsEventBridgeLambdaHandlerImpl implements EventBridgeEventHandler
             return { success: false, message: "Missing tasks or tenancy." };
         }
 
-        await context.tenancy.withRootTenant(async () => {
+        await context.container.resolve(TenantContext).withRootTenant(async () => {
             await context.tasks.trigger({ definition: "hcmsEntriesEmptyTrashBins" });
         });
 

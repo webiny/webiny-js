@@ -9,6 +9,7 @@ import {
 import type { GuardDutyEvent } from "./types.js";
 import { ObjectKey } from "./ObjectKey.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
 export const processThreatScanResult = async (
     context: ApiCoreContext,
@@ -20,7 +21,7 @@ export const processThreatScanResult = async (
     const updateFile = context.container.resolve(UpdateFileUseCase);
     const deleteFile = context.container.resolve(DeleteFileUseCase);
 
-    await context.security.withoutAuthorization(async () => {
+    await context.container.resolve(IdentityContext).withoutAuthorization(async () => {
         const scanStatus = eventDetail.scanResultDetails.scanResultStatus;
         const s3Object = eventDetail.s3ObjectDetails;
 

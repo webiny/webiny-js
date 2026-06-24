@@ -2,10 +2,12 @@ import type { HcmsBulkActionsContext } from "~/types.js";
 import { CmsGraphQLSchemaPlugin, isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
 import { ContextPlugin } from "@webiny/api";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
 export const createDefaultGraphQL = () => {
     return new ContextPlugin<HcmsBulkActionsContext>(async context => {
-        const tenant = context.tenancy.getCurrentTenant();
+        const tenant = context.container.resolve(TenantContext).getTenant();
 
         if (!(await isHeadlessCmsReady(context))) {
             return;
@@ -25,19 +27,21 @@ export const createDefaultGraphQL = () => {
         });
         defaultPlugin.name = `headless-cms.graphql.schema.bulkAction.default`;
 
-        const models = await context.security.withoutAuthorization(async () => {
-            const allModels = await context.cms.listModels();
-            return allModels.filter(model => {
-                if (model.isPrivate) {
-                    return false;
-                }
-                const tags = Array.isArray(model.tags) ? model.tags : [];
-                if (tags.includes(CMS_MODEL_SINGLETON_TAG)) {
-                    return false;
-                }
-                return true;
+        const models = await context.container
+            .resolve(IdentityContext)
+            .withoutAuthorization(async () => {
+                const allModels = await context.cms.listModels();
+                return allModels.filter(model => {
+                    if (model.isPrivate) {
+                        return false;
+                    }
+                    const tags = Array.isArray(model.tags) ? model.tags : [];
+                    if (tags.includes(CMS_MODEL_SINGLETON_TAG)) {
+                        return false;
+                    }
+                    return true;
+                });
             });
-        });
 
         const modelPlugins: CmsGraphQLSchemaPlugin<HcmsBulkActionsContext>[] = [];
 
@@ -57,7 +61,8 @@ export const createDefaultGraphQL = () => {
                         ): BulkActionResponse
                     }
                 `,
-                isApplicable: context => context.tenancy.getCurrentTenant().id === tenant.id
+                isApplicable: context =>
+                    context.container.resolve(TenantContext).getTenant().id === tenant.id
             });
 
             plugin.name = `headless-cms.graphql.schema.bulkAction.default.${model.modelId}`;

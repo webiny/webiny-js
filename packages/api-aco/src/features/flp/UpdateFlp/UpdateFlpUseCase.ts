@@ -6,6 +6,7 @@ import type { AcoContext, Folder, FolderLevelPermission, FolderPermission } from
 import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
 import { FolderModel } from "~/domain/folder/abstractions.js";
 import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
 interface FlpUpdateData {
     parentId: string;
@@ -192,14 +193,16 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
     private async listDirectChildren(flp: FolderLevelPermission): Promise<FolderLevelPermission[]> {
         const listFolders = this.context.container.resolve(ListFoldersUseCase);
 
-        const result = await this.context.security.withoutAuthorization(() => {
-            return listFolders.execute({
-                where: {
-                    type: flp.type,
-                    parentId: flp.id
-                }
+        const result = await this.context.container
+            .resolve(IdentityContext)
+            .withoutAuthorization(() => {
+                return listFolders.execute({
+                    where: {
+                        type: flp.type,
+                        parentId: flp.id
+                    }
+                });
             });
-        });
 
         if (result.isFail()) {
             throw result.error;
