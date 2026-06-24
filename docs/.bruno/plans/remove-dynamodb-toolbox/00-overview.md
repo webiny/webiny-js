@@ -1,6 +1,6 @@
 # Remove dynamodb-toolbox Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Each task is in its own file under this directory.
+> **Status: COMPLETED (2026-06-24)** — All 7 tasks done. Commit `404398ad9d`.
 
 **Goal:** Replace the `dynamodb-toolbox` library with direct AWS SDK v3 `DynamoDBDocumentClient` calls, keeping all existing public interfaces (`IEntity`, `ITable`, batch classes) stable.
 
