@@ -24,7 +24,7 @@
     "@webiny/aws-layers": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/cli-core": "0.0.0",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/project": "0.0.0",
     "@webiny/pulumi": "0.0.0",
     "@webiny/utils": "0.0.0",

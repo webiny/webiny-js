@@ -27,7 +27,7 @@
     "@graphql-tools/schema": "^10.0.33",
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
@@ -49,7 +49,6 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@types/babel__code-frame": "^7.27.0",
     "@types/pluralize": "^0.0.33",
     "@webiny/build-tools": "0.0.0",
     "@webiny/handler-db": "0.0.0",

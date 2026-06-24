@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/project-utils": "0.0.0",
     "better-sqlite3": "^12.11.1",
     "rimraf": "^6.1.3",
