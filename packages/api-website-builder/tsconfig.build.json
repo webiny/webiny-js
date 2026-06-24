@@ -14,8 +14,10 @@
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api-core-ddb/tsconfig.build.json" },
     { "path": "../api-file-manager-s3/tsconfig.build.json" },
+    { "path": "../api-opensearch/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../testing/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -49,10 +51,14 @@
       "@webiny/api-core-ddb": ["../api-core-ddb/src"],
       "@webiny/api-file-manager-s3/*": ["../api-file-manager-s3/src/*"],
       "@webiny/api-file-manager-s3": ["../api-file-manager-s3/src"],
+      "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
+      "@webiny/api-opensearch": ["../api-opensearch/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/testing/*": ["../testing/src/*"],
+      "@webiny/testing": ["../testing/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

@@ -1,95 +1,63 @@
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import type { ApiCoreContext, ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import { useContextHandler } from "@webiny/testing";
+import type { UseContextHandlerParams } from "@webiny/testing";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { createContextPlugin } from "@webiny/api";
 import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
-import { createTenancyAndSecurity } from "./tenancySecurity.js";
 import { createWebsiteBuilder } from "~/index.js";
 import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
-import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createIdentity } from "./identity.js";
-import { createBackgroundTasks } from "~tests/mocks/mockBackgroundTasks.js";
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
-import {
-    GraphQLContextEnhancer,
-    GraphQLEngineFeature,
-    registerLegacyPluginsViaGqlContextEnhancer
-} from "@webiny/handler-graphql";
-import { ApiCoreFeature } from "@webiny/api-core";
-import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
-import { processLegacyPlugins } from "./bridgeLegacyPlugins.js";
 import { PageModelPlugin } from "~/domain/page/page.model.js";
 import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
 
-export interface UseHandlerParams {
-    permissions?: SecurityPermission[];
+type Params = Omit<UseContextHandlerParams, "features"> & {
     identity?: IdentityData | null;
-    plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-}
+};
 
-export const useHandler = (params: UseHandlerParams = {}) => {
-    const { permissions, identity, plugins = [] } = params;
+export const useHandler = (params: Params = {}) => {
+    const { identity, ...rest } = params;
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-
-    const testProjectLicense = createTestWcpLicense();
-
-    const capturedCtx: { value?: Record<string, any> } = {};
-
-    const handler = createTestHttpHandler({
-        root: () => {},
-        request: async container => {
-            const wcpLicense = await loadWcpLicense(testProjectLicense);
-            ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense });
-            processLegacyPlugins(container, cmsStorage.plugins);
-            HeadlessCmsFeature.register(container, { type: "manage" });
-            // Register model plugins before enhancers so HeadlessCmsContextEnhancerImpl
-            // and the WB contextPlugin can find them via ModelsProvider.
+    const inner = useContextHandler<ApiCoreContext>({
+        ...rest,
+        // Do not pass null identity to useContextHandler — TenancyAndSecurityFeature
+        // does not support null (treats it same as undefined → defaultIdentity).
+        // We handle anonymous identity below via a second GraphQLContextEnhancer.
+        identity: identity === null ? undefined : identity,
+        plugins: [
+            createContextPlugin(ctx => {
+                ctx.container.register(InvalidateCloudfrontCacheTaskDefinition);
+            }),
+            createWebsiteBuilder(),
+            ...[rest.plugins].flat(Infinity as 1).filter(Boolean)
+        ],
+        features: container => {
             container.register(PageModelPlugin);
             container.register(RedirectModelPlugin);
             LanguagesExtension.register(container);
-            registerLegacyPluginsViaGqlContextEnhancer(container, [
-                // createTenancyAndSecurity FIRST: sets ctx.tenancy / ctx.security before
-                // createWebsiteBuilder's contextPlugin calls GetModelUseCase (which needs the tenant).
-                ...createTenancyAndSecurity({
-                    permissions,
-                    identity: identity === undefined ? createIdentity() : identity
-                }),
-                createBackgroundTasks(),
-                createContextPlugin(ctx => {
-                    ctx.container.register(InvalidateCloudfrontCacheTaskDefinition);
-                }),
-                createWebsiteBuilder(),
-                plugins
-            ]);
 
-            container.registerInstance(GraphQLContextEnhancer, {
-                enhance(ctx: Record<string, any>) {
-                    capturedCtx.value = ctx;
-                }
-            });
-
-            GraphQLEngineFeature.register(container);
+            // When identity is explicitly null the test wants an anonymous (unauthenticated)
+            // request. TenancyAndSecurityFeature always seats a non-null identity during its
+            // enhance() phase; we override it back to anonymous in a second enhancer that
+            // runs after TenancyAndSecurityFeature's enhancer.
+            if (identity === null) {
+                const anonymousOverride: IGraphQLContextEnhancer = {
+                    async enhance(_ctx: Record<string, any>): Promise<void> {
+                        const identityCtx = container.resolve(IdentityContext);
+                        identityCtx.setIdentity(undefined);
+                    }
+                };
+                container.registerInstance(GraphQLContextEnhancer, anonymousOverride);
+            }
         }
     });
 
     return {
-        handler: async (): Promise<ApiCoreContext> => {
-            await handler({
-                method: "POST",
-                path: "/graphql",
-                headers: {
-                    "x-tenant": "root",
-                    "content-type": "application/json"
-                },
-                body: { query: "{ __typename }" }
-            });
-            return capturedCtx.value as unknown as ApiCoreContext;
-        }
+        identity: inner.identity,
+        tenant: inner.tenant,
+        elasticsearch: createTestOpenSearchClient(),
+        handler: inner.context
     };
 };

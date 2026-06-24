@@ -14,8 +14,10 @@
     { "path": "../utils" },
     { "path": "../api-core-ddb" },
     { "path": "../api-file-manager-s3" },
+    { "path": "../api-opensearch" },
     { "path": "../background-tasks" },
     { "path": "../plugins" },
+    { "path": "../testing" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -49,10 +51,14 @@
       "@webiny/api-core-ddb": ["../api-core-ddb/src"],
       "@webiny/api-file-manager-s3/*": ["../api-file-manager-s3/src/*"],
       "@webiny/api-file-manager-s3": ["../api-file-manager-s3/src"],
+      "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
+      "@webiny/api-opensearch": ["../api-opensearch/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/testing/*": ["../testing/src/*"],
+      "@webiny/testing": ["../testing/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

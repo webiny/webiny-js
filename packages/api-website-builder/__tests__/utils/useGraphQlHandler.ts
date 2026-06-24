@@ -1,115 +1,71 @@
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
-import { ApiCoreFeature } from "@webiny/api-core";
-import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
-import {
-    registerLegacyPluginsViaGqlContextEnhancer,
-    GraphQLEngineFeature
-} from "@webiny/handler-graphql";
-import { processLegacyPlugins } from "./bridgeLegacyPlugins.js";
-import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createTenancyAndSecurity } from "./tenancySecurity.js";
+import { useGraphQLHandler } from "@webiny/testing";
+import type { UseGraphQLHandlerParams } from "@webiny/testing";
 import { until } from "@webiny/project-utils/testing/helpers/until.js";
-import { createWebsiteBuilder } from "~/index.js";
-import { createIdentity } from "./identity.js";
-import { getIntrospectionQuery } from "graphql";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
-import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
-import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import { createWbSdk } from "~tests/utils/createWbSdk.js";
 import { createContextPlugin } from "@webiny/api";
 import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
-import { createBackgroundTasks } from "~tests/mocks/mockBackgroundTasks.js";
+import { createWebsiteBuilder } from "~/index.js";
+import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
 import { PageModelPlugin } from "~/domain/page/page.model.js";
 import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
+import { createWbSdk } from "~tests/utils/createWbSdk.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
+import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 
-export interface UseGQLHandlerParams {
-    permissions?: SecurityPermission[];
+export interface UseGQLHandlerParams extends Omit<UseGraphQLHandlerParams, "features"> {
     identity?: IdentityData | null;
-    plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    storageOperationPlugins?: any[];
     testProjectLicense?: DecryptedWcpProjectLicense;
 }
 
-interface InvokeParams {
-    httpMethod?: "POST";
-    type?: string;
-    body: {
-        query: string;
-        variables?: Record<string, any>;
-    };
-    headers?: Record<string, string>;
-}
-
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
-    const { permissions, identity, plugins = [] } = params;
+    const { identity, ...rest } = params;
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-
-    const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
-
-    const handler = createTestHttpHandler({
-        root: () => {},
-        request: async container => {
-            const wcpLicense = await loadWcpLicense(testProjectLicense);
-            ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense });
-            processLegacyPlugins(container, cmsStorage.plugins);
-            HeadlessCmsFeature.register(container, { type: "manage" });
-            // Register model plugins before enhancers so HeadlessCmsContextEnhancerImpl
-            // and the WB contextPlugin can find them via ModelsProvider.
+    const inner = useGraphQLHandler({
+        ...rest,
+        // Do not pass null identity to useGraphQLHandler — TenancyAndSecurityFeature
+        // does not support null (treats it same as undefined → defaultIdentity).
+        // We handle anonymous identity below via a second GraphQLContextEnhancer.
+        identity: identity === null ? undefined : identity,
+        plugins: [
+            createContextPlugin(ctx => {
+                ctx.container.register(InvalidateCloudfrontCacheTaskDefinition);
+            }),
+            createWebsiteBuilder(),
+            ...[rest.plugins].flat(Infinity as 1).filter(Boolean)
+        ],
+        features: container => {
             container.register(PageModelPlugin);
             container.register(RedirectModelPlugin);
-            registerLegacyPluginsViaGqlContextEnhancer(container, [
-                // createTenancyAndSecurity FIRST: sets ctx.tenancy / ctx.security before
-                // createWebsiteBuilder's contextPlugin calls GetModelUseCase (which needs the tenant).
-                ...createTenancyAndSecurity({
-                    permissions,
-                    identity: identity === undefined ? createIdentity() : identity
-                }),
-                createBackgroundTasks(),
-                createContextPlugin(context => {
-                    context.container.register(InvalidateCloudfrontCacheTaskDefinition);
-                }),
-                createWebsiteBuilder(),
-                plugins
-            ]);
-            GraphQLEngineFeature.register(container);
+            LanguagesExtension.register(container);
+
+            // When identity is explicitly null the test wants an anonymous (unauthenticated)
+            // request. TenancyAndSecurityFeature always seats a non-null identity during its
+            // enhance() phase; we override it back to anonymous in a second enhancer that
+            // runs after TenancyAndSecurityFeature's enhancer.
+            if (identity === null) {
+                const anonymousOverride: IGraphQLContextEnhancer = {
+                    async enhance(_ctx: Record<string, any>): Promise<void> {
+                        const identityCtx = container.resolve(IdentityContext);
+                        identityCtx.setIdentity(undefined);
+                    }
+                };
+                container.registerInstance(GraphQLContextEnhancer, anonymousOverride);
+            }
         }
     });
 
-    const invoke = async ({ httpMethod = "POST", body, headers = {} }: InvokeParams) => {
-        const response = await handler({
-            method: httpMethod,
-            path: "/graphql",
-            headers: {
-                "x-tenant": "root",
-                "Content-Type": "application/json",
-                ...headers
-            },
-            body
-        });
-        return [response.body, response];
-    };
-
-    const wb = createWbSdk(invoke);
+    const wb = createWbSdk(inner.invoke as any);
 
     return {
         until,
         params,
-        handler,
-        invoke,
+        handler: inner.handler,
+        invoke: inner.invoke,
         wb,
         async introspect() {
-            return invoke({
-                body: {
-                    query: getIntrospectionQuery()
-                }
-            });
+            return inner.introspect();
         }
     };
 };
