@@ -1,5 +1,6 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
 import type { CmsEntryResolverFactory as ResolverFactory } from "~/types/index.js";
+import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/UpdateRevisionDescription/index.js";
 
 interface ResolveUpdateRevisionDescriptionArgs {
     revision: string;
@@ -11,13 +12,13 @@ export const resolveUpdateRevisionDescription: ResolveUpdateRevisionDescription 
     ({ model }) =>
     async (_, args, context) => {
         try {
-            const entry = await context.cms.updateRevisionDescription(
-                model,
-                args.revision,
-                args.revisionDescription
-            );
-
-            return new Response(entry);
+            const result = await context.container
+                .resolve(UpdateRevisionDescriptionUseCase)
+                .execute(model, args.revision, args.revisionDescription);
+            if (result.isFail()) {
+                throw result.error;
+            }
+            return new Response(result.value);
         } catch (e) {
             return new ErrorResponse(e);
         }

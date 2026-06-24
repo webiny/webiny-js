@@ -4,6 +4,7 @@ import type {
     CreateFromCmsEntryInput,
     CreateRevisionCmsEntryOptionsInput
 } from "~/types/index.js";
+import { CreateEntryRevisionFromUseCase } from "~/features/contentEntry/CreateEntryRevisionFrom/index.js";
 
 interface ResolveCreateFromArgs {
     revision: string;
@@ -16,13 +17,13 @@ export const resolveCreateFrom: ResolveCreateFrom =
     ({ model }) =>
     async (_, args: any, context) => {
         try {
-            const newRevision = await context.cms.createEntryRevisionFrom(
-                model,
-                args.revision,
-                args.data || {},
-                args.options
-            );
-            return new Response(newRevision);
+            const result = await context.container
+                .resolve(CreateEntryRevisionFromUseCase)
+                .execute(model, args.revision, args.data || {}, args.options);
+            if (result.isFail()) {
+                throw result.error;
+            }
+            return new Response(result.value);
         } catch (e) {
             return new ErrorResponse(e);
         }

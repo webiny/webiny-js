@@ -2,6 +2,9 @@ import WebinyError from "@webiny/error";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
 import type { CmsEntryResolverFactory as ResolverFactory } from "~/types/index.js";
 import { parseIdentifier } from "@webiny/utils";
+import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";
+import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntry/GetLatestEntriesByIds/index.js";
+import { GetEntryByIdUseCase } from "~/features/contentEntry/GetEntryById/index.js";
 
 interface ResolveGetArgs {
     revision: string;
@@ -50,10 +53,6 @@ const getValuesFromArgs = (args?: ValuesFromArgsParams): ArgsValues => {
             }
         );
     }
-    /**
-     * In case we are searching for latest or published but we do not have entryId, we need to set it.
-     * OR if version was not passed we will find latest or published, depending on status sent.
-     */
     if (status || !revision) {
         const { id } = parseIdentifier(entryId || revision);
         return {
@@ -74,14 +73,25 @@ export const resolveGet: ResolveGet =
 
             if (entryId) {
                 const result = published
-                    ? await context.cms.getPublishedEntriesByIds(model, [entryId])
-                    : await context.cms.getLatestEntriesByIds(model, [entryId]);
-                return new Response(result.shift() || null);
+                    ? await context.container
+                          .resolve(GetPublishedEntriesByIdsUseCase)
+                          .execute(model, [entryId])
+                    : await context.container
+                          .resolve(GetLatestEntriesByIdsUseCase)
+                          .execute(model, [entryId]);
+                if (result.isFail()) {
+                    throw result.error;
+                }
+                return new Response(result.value[0] || null);
             }
 
-            const entry = await context.cms.getEntryById(model, revision as string);
-
-            return new Response(entry);
+            const result = await context.container
+                .resolve(GetEntryByIdUseCase)
+                .execute(model, revision as string);
+            if (result.isFail()) {
+                throw result.error;
+            }
+            return new Response(result.value);
         } catch (e) {
             return new ErrorResponse(e);
         }

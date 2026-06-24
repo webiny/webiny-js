@@ -4,6 +4,8 @@ import type {
     CmsEntryResolverFactory as ResolverFactory
 } from "~/types/index.js";
 import { parseIdentifier } from "@webiny/utils";
+import { DeleteEntryRevisionUseCase } from "~/features/contentEntry/DeleteEntryRevision/index.js";
+import { DeleteEntryUseCase } from "~/features/contentEntry/DeleteEntry/index.js";
 
 interface ResolveDeleteArgs {
     revision: string;
@@ -18,16 +20,23 @@ export const resolveDelete: ResolveDelete =
             const { revision, options: deleteOptions } = args || {};
             const { version } = parseIdentifier(revision);
             if (version) {
-                await context.cms.deleteEntryRevision(model, revision);
+                const result = await context.container
+                    .resolve(DeleteEntryRevisionUseCase)
+                    .execute(model, revision);
+                if (result.isFail()) {
+                    throw result.error;
+                }
             } else {
-                /**
-                 * @see CmsDeleteEntryOptions
-                 */
                 const options: CmsDeleteEntryOptions = {
                     force: deleteOptions?.force === true,
                     permanently: deleteOptions?.permanently
                 };
-                await context.cms.deleteEntry(model, revision, options);
+                const result = await context.container
+                    .resolve(DeleteEntryUseCase)
+                    .execute(model, revision, options);
+                if (result.isFail()) {
+                    throw result.error;
+                }
             }
 
             return new Response(true);

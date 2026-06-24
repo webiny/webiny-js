@@ -1,4 +1,3 @@
-import WebinyError from "@webiny/error";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import type {
     CmsContext,
@@ -17,6 +16,11 @@ import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
+import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
+import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntry/GetLatestEntriesByIds/index.js";
+import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";
+import { GetEntriesByIdsUseCase } from "~/features/contentEntry/GetEntriesByIds/index.js";
+import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsContextEnhancer.js";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -133,28 +137,37 @@ interface FetchMethod {
 }
 
 const getFetchMethod = (type: GetContentEntryType, context: CmsContext): FetchMethod => {
-    if (!getContentEntriesMethods[type]) {
-        throw new WebinyError(
-            `Unknown getContentEntries method "${type}". Could not fetch content entries.`,
-            "UNKNOWN_METHOD_ERROR",
-            {
-                type
+    if (type === "latest") {
+        return async (model, ids) => {
+            const result = await context.container
+                .resolve(GetLatestEntriesByIdsUseCase)
+                .execute(model, ids);
+            if (result.isFail()) {
+                throw result.error;
             }
-        );
-    }
-    const methodName = getContentEntriesMethods[type] as GetContentEntryMethods;
-    if (!context.cms[methodName]) {
-        throw new WebinyError(
-            `Unknown context.cms method "${methodName}". Could not fetch content entries.`,
-            "UNKNOWN_METHOD_ERROR",
-            {
-                type,
-                methodName
+            return result.value;
+        };
+    } else if (type === "published") {
+        return async (model, ids) => {
+            const result = await context.container
+                .resolve(GetPublishedEntriesByIdsUseCase)
+                .execute(model, ids);
+            if (result.isFail()) {
+                throw result.error;
             }
-        );
+            return result.value;
+        };
+    } else {
+        return async (model, ids) => {
+            const result = await context.container
+                .resolve(GetEntriesByIdsUseCase)
+                .execute(model, ids);
+            if (result.isFail()) {
+                throw result.error;
+            }
+            return result.value;
+        };
     }
-
-    return context.cms[methodName];
 };
 
 /**
@@ -168,17 +181,6 @@ interface GetContentEntriesParams {
     type: GetContentEntryType;
 }
 
-enum GetContentEntryMethods {
-    getLatestEntriesByIds = "getLatestEntriesByIds",
-    getPublishedEntriesByIds = "getPublishedEntriesByIds",
-    getEntriesByIds = "getEntriesByIds"
-}
-
-const getContentEntriesMethods = {
-    latest: "getLatestEntriesByIds",
-    published: "getPublishedEntriesByIds",
-    exact: "getEntriesByIds"
-};
 const getContentEntries = async (
     params: GetContentEntriesParams
 ): Promise<Response | ErrorResponse> => {
@@ -186,7 +188,11 @@ const getContentEntries = async (
 
     const method = getFetchMethod(type, context);
 
-    const models = await context.cms.listModels();
+    const modelsResult = await context.container.resolve(ListModelsUseCase).execute();
+    if (modelsResult.isFail()) {
+        throw modelsResult.error;
+    }
+    const models = modelsResult.value;
 
     const modelsMap = models.reduce(
         (collection, model) => {
@@ -252,22 +258,15 @@ const getContentEntry = async (
     params: GetContentEntryParams
 ): Promise<Response<CmsEntryRecord | null> | NotAuthorizedResponse> => {
     const { args, context, type } = params;
-    if (!getContentEntriesMethods[type]) {
-        throw new WebinyError(
-            `Unknown getContentEntry method "${type}". Could not fetch content entry.`,
-            "UNKNOWN_METHOD_ERROR",
-            {
-                args,
-                type
-            }
-        );
-    }
 
     const method = getFetchMethod(type, context);
 
     const { modelId, id } = args.entry;
-    const models = await context.cms.listModels();
-    const model = models.find(m => m.modelId === modelId);
+    const modelsResult = await context.container.resolve(ListModelsUseCase).execute();
+    if (modelsResult.isFail()) {
+        throw modelsResult.error;
+    }
+    const model = modelsResult.value.find(m => m.modelId === modelId);
 
     if (!model) {
         return new NotAuthorizedResponse({
@@ -291,8 +290,11 @@ const getContentEntry = async (
  */
 const createResolveDescription = (): GraphQLFieldResolver<any, any, CmsContext> => {
     return async (parent, _, context) => {
-        const models = await context.cms.listModels();
-        const model = models.find(({ modelId }) => {
+        const modelsResult = await context.container.resolve(ListModelsUseCase).execute();
+        if (modelsResult.isFail()) {
+            return null;
+        }
+        const model = modelsResult.value.find(({ modelId }) => {
             return parent.model.modelId === modelId;
         });
         if (!model) {
@@ -322,12 +324,13 @@ interface Params {
 export const createContentEntriesSchema = ({
     context
 }: Params): ICmsGraphQLSchemaPlugin<CmsContext> => {
-    if (!context.cms.MANAGE) {
+    const enhancerConfig = context.container.resolve(HeadlessCmsEnhancerConfig);
+    if (enhancerConfig.type !== "manage") {
         const plugin = createCmsGraphQLSchemaPlugin({
             typeDefs: "",
             resolvers: {}
         });
-        plugin.name = `headless-cms.graphql.schema.${context.cms.type}.empty`;
+        plugin.name = `headless-cms.graphql.schema.${enhancerConfig.type}.empty`;
         return plugin;
     }
 
@@ -410,16 +413,25 @@ export const createContentEntriesSchema = ({
             CmsContentEntry: {
                 published: async (parent, _, context) => {
                     try {
-                        const models = await context.cms.listModels();
-                        const model = models.find(({ modelId }) => {
+                        const modelsResult = await context.container
+                            .resolve(ListModelsUseCase)
+                            .execute();
+                        if (modelsResult.isFail()) {
+                            return null;
+                        }
+                        const model = modelsResult.value.find(({ modelId }) => {
                             return parent.model.modelId === modelId;
                         });
                         if (!model) {
                             return null;
                         }
-                        const [entry] = await context.cms.getPublishedEntriesByIds(model, [
-                            parent.id
-                        ]);
+                        const result = await context.container
+                            .resolve(GetPublishedEntriesByIdsUseCase)
+                            .execute(model, [parent.id]);
+                        if (result.isFail()) {
+                            return null;
+                        }
+                        const entry = result.value[0];
                         if (!entry) {
                             return null;
                         }
@@ -436,7 +448,13 @@ export const createContentEntriesSchema = ({
             Query: {
                 async searchContentEntries(_, args: any, context) {
                     const { modelIds, fields, query, limit = 10 } = args;
-                    const models = await context.cms.listModels();
+                    const modelsResult = await context.container
+                        .resolve(ListModelsUseCase)
+                        .execute();
+                    if (modelsResult.isFail()) {
+                        return new ErrorResponse(modelsResult.error);
+                    }
+                    const models = modelsResult.value;
 
                     const getters = models
                         .filter(model => modelIds.includes(model.modelId))
@@ -521,7 +539,7 @@ export const createContentEntriesSchema = ({
         }
     });
 
-    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.content-entries`;
+    plugin.name = `headless-cms.graphql.schema.${context.container.resolve(HeadlessCmsEnhancerConfig).type}.content-entries`;
 
     return plugin;
 };
