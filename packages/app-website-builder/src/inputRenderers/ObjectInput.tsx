@@ -5,8 +5,6 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as MoveUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
 import { ReactComponent as MoveDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
-import { ReactComponent as DragIcon } from "@webiny/icons/drag_indicator.svg";
-import { ReactComponent as ObjectIcon } from "@webiny/icons/data_object.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 /**
@@ -128,8 +126,9 @@ export const ObjectFieldPanel = ({
     return createPortal(
         <>
             <div
-                className={"absolute inset-0"}
+                className={"absolute top-0 bottom-0 left-0"}
                 style={{
+                    width: "50%",
                     backgroundColor: "rgba(25, 28, 32, 0.2)",
                     zIndex: panelZIndex - 1,
                     opacity: entered ? 1 : 0,
@@ -148,20 +147,10 @@ export const ObjectFieldPanel = ({
             >
                 <div className={"w-px h-full shrink-0 bg-neutral-dimmed"} />
                 <div className={"flex flex-col flex-1 min-w-0 bg-neutral-base"}>
-                    <div
-                        className={
-                            "flex items-center justify-between gap-sm px-md py-md border-b border-neutral-dimmed"
-                        }
-                    >
-                        <div className={"flex items-center gap-sm min-w-0"}>
-                            <ObjectIcon className={"w-5 h-5 shrink-0 text-primary"} />
-                            <Text
-                                size={"md"}
-                                className={"font-semibold truncate text-neutral-primary"}
-                            >
-                                {title}
-                            </Text>
-                        </div>
+                    <div className={"flex items-center justify-between gap-sm px-md py-md"}>
+                        <Text size={"md"} className={"font-semibold truncate text-neutral-primary"}>
+                            {title}
+                        </Text>
                         <Button
                             variant={"ghost"}
                             size={"sm"}
@@ -188,27 +177,48 @@ interface ObjectRowProps {
 }
 
 /**
- * A clickable row representing an object (a single object field, or one item of a list). Clicking
- * the row opens its drawer; trailing actions (reorder / remove) sit outside the click target.
+ * A clickable row representing an object (a single object field, or one item of a list). Resting,
+ * it shows a content icon + title. On hover it tints and reveals its trailing actions (reorder /
+ * remove) - rows without actions (a single object field) just tint.
  */
 export const ObjectRow = ({ title, onOpen, actions }: ObjectRowProps) => {
+    const [hovered, setHovered] = useState(false);
+    const showActions = hovered && Boolean(actions);
+
     return (
         <div
-            className={
-                "flex items-center gap-xs rounded-md border border-neutral-dimmed bg-neutral-base hover:bg-neutral-light transition-colors"
-            }
+            role={"button"}
+            tabIndex={0}
+            onClick={onOpen}
+            onKeyDown={event => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onOpen();
+                }
+            }}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            // Fixed height + vertical centering keeps the row the same height whether or not the
+            // (taller) hover actions are shown.
+            style={{ height: 40 }}
+            className={[
+                "flex items-center justify-between gap-xs rounded-md border border-neutral-dimmed-darker px-sm-extra cursor-pointer transition-colors",
+                hovered ? "bg-neutral-light" : "bg-neutral-base"
+            ].join(" ")}
         >
-            <button
-                type={"button"}
-                onClick={onOpen}
-                className={"flex flex-1 items-center gap-sm px-sm py-xs min-w-0 text-left"}
-            >
-                <DragIcon className={"w-4 h-4 shrink-0 text-neutral-strong"} />
-                <Text size={"sm"} className={"truncate text-neutral-primary"}>
+            <div className={"flex flex-1 items-center min-w-0"}>
+                <Text size={"sm"} className={"truncate text-neutral-strong"}>
                     {title}
                 </Text>
-            </button>
-            {actions ? <div className={"flex items-center gap-xxs pr-xs"}>{actions}</div> : null}
+            </div>
+            {showActions ? (
+                <div
+                    className={"flex items-center gap-xs shrink-0"}
+                    onClick={event => event.stopPropagation()}
+                >
+                    {actions}
+                </div>
+            ) : null}
         </div>
     );
 };
@@ -262,7 +272,16 @@ export const ObjectFieldHeader = ({ label, description }: ObjectFieldHeaderProps
         return null;
     }
 
-    return <Label text={label} description={description} />;
+    return (
+        <div className={"flex flex-col"}>
+            <Label text={label} className={"pb-xs"} />
+            {description ? (
+                <Text size={"sm"} className={"font-normal text-neutral-strong"}>
+                    {description}
+                </Text>
+            ) : null}
+        </div>
+    );
 };
 
 interface ObjectAddButtonProps {
@@ -274,7 +293,7 @@ export const ObjectAddButton = ({ text = "Add", onClick }: ObjectAddButtonProps)
     return (
         <div>
             <Button
-                variant={"secondary"}
+                variant={"ghost"}
                 size={"sm"}
                 icon={<AddIcon />}
                 text={text}
@@ -291,14 +310,14 @@ interface ObjectEmptyStateProps {
 }
 
 export const ObjectEmptyState = ({
-    text = "Add your first object here",
+    text = "Add your first item here",
     addText = "Add",
     onAdd
 }: ObjectEmptyStateProps) => {
     return (
         <div
             className={
-                "flex flex-col items-center justify-center gap-sm rounded-md border border-dashed border-neutral-dimmed bg-neutral-light px-sm py-lg"
+                "flex flex-col items-center justify-center gap-sm rounded-md border border-dashed border-neutral-dimmed px-sm py-lg"
             }
         >
             <Text size={"sm"} className={"text-neutral-strong"}>

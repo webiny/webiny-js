@@ -169,29 +169,31 @@ function ObjectListField({ element, node, bindings, value, onChange }: ObjectLis
     };
 
     return (
-        <div className={"flex flex-col gap-xs"}>
+        <div className={"flex flex-col gap-sm"}>
             <ObjectFieldHeader label={label} description={node.input.description} />
 
             {items.length === 0 ? (
                 <ObjectEmptyState onAdd={handleAdd} />
             ) : (
                 <>
-                    {items.map((item, index) => (
-                        <ObjectRow
-                            key={`${node.path}/${index}`}
-                            title={deriveItemTitle(node, item, index)}
-                            onOpen={() => openItem(index)}
-                            actions={
-                                <ObjectRowActions
-                                    onMoveUp={() => handleMoveUp(index)}
-                                    onMoveDown={() => handleMoveDown(index)}
-                                    onRemove={() => handleRemove(index)}
-                                    canMoveUp={index > 0}
-                                    canMoveDown={index < items.length - 1}
-                                />
-                            }
-                        />
-                    ))}
+                    <div className={"flex flex-col gap-sm"}>
+                        {items.map((item, index) => (
+                            <ObjectRow
+                                key={`${node.path}/${index}`}
+                                title={deriveItemTitle(node, item, index)}
+                                onOpen={() => openItem(index)}
+                                actions={
+                                    <ObjectRowActions
+                                        onMoveUp={() => handleMoveUp(index)}
+                                        onMoveDown={() => handleMoveDown(index)}
+                                        onRemove={() => handleRemove(index)}
+                                        canMoveUp={index > 0}
+                                        canMoveDown={index < items.length - 1}
+                                    />
+                                }
+                            />
+                        ))}
+                    </div>
                     <ObjectAddButton onClick={handleAdd} />
                 </>
             )}
