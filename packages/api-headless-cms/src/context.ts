@@ -39,6 +39,8 @@ import { GraphQLFeature } from "~/features/graphql/index.js";
 import { ValidationFeature } from "~/features/validation/index.js";
 import { StorageFeature } from "~/features/storage/index.js";
 import { CmsWebhooksFeature } from "~/features/webhooks/feature.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -57,7 +59,7 @@ export const createContextPlugin = () => {
         const { type } = await getParameters(context);
 
         const getTenant = () => {
-            return context.tenancy.getCurrentTenant();
+            return context.container.resolve(TenantContext).getTenant();
         };
 
         const setSchemaType = (type: ApiEndpoint | null) => {
@@ -89,13 +91,15 @@ export const createContextPlugin = () => {
             const originalType = context.cms.type;
             setSchemaType(type);
 
-            const schema = await context.security.withoutAuthorization(() => {
-                return getSchema({
-                    context,
-                    getTenant,
-                    type
+            const schema = await context.container
+                .resolve(IdentityContext)
+                .withoutAuthorization(() => {
+                    return getSchema({
+                        context,
+                        getTenant,
+                        type
+                    });
                 });
-            });
 
             setSchemaType(originalType);
 
@@ -108,13 +112,14 @@ export const createContextPlugin = () => {
             new StorageOperationsCmsModelPlugin(createCmsModelFieldConvertersAttachFactory(context))
         );
 
+        const identityContext = context.container.resolve(IdentityContext);
         const accessControl = new AccessControl({
-            getIdentity: async () => context.security.getIdentity(),
-            getGroupsPermissions: () => context.security.getPermissions("cms.contentModelGroup"),
-            getModelsPermissions: () => context.security.getPermissions("cms.contentModel"),
-            getEntriesPermissions: () => context.security.getPermissions("cms.contentEntry"),
+            getIdentity: async () => identityContext.getIdentity(),
+            getGroupsPermissions: () => identityContext.getPermissions("cms.contentModelGroup"),
+            getModelsPermissions: () => identityContext.getPermissions("cms.contentModel"),
+            getEntriesPermissions: () => identityContext.getPermissions("cms.contentEntry"),
             listAllGroups: () => {
-                return context.security.withoutAuthorization(() => {
+                return identityContext.withoutAuthorization(() => {
                     return context.cms.listGroups();
                 });
             }
