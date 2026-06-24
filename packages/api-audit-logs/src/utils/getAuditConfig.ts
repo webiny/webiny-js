@@ -1,4 +1,5 @@
 import WebinyError from "@webiny/error";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { AuditAction, AuditLogPayload, AuditLogsContext } from "~/types.js";
 import type { IAuditLog } from "~/storage/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
@@ -100,12 +101,13 @@ export const getAuditConfig = (audit: AuditAction) => {
 
         const delay = audit.action.newEntryDelay || 0;
 
-        if (!context.security.getIdentity()?.id) {
+        const identityContext = context.container.resolve(IdentityContext);
+        if (!identityContext.getIdentity()?.id) {
             console.log("No identity - skipping audit log creation.");
             return null;
         }
 
-        return await context.security.withoutAuthorization(async () => {
+        return await identityContext.withoutAuthorization(async () => {
             // Check if there is delay on audit log creation for this action.
             if (delay > 0) {
                 try {

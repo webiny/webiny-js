@@ -1,4 +1,5 @@
 import { ContextPlugin } from "@webiny/api";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/abstractions.js";
 import { createSubscriptionHooks } from "~/subscriptions/index.js";
 import { createAuditLogsContext } from "~/context/index.js";
 import { createGraphQLSchema } from "~/graphql/schema.js";
@@ -10,7 +11,7 @@ export interface ICreateAuditLogsParams {
 
 export const createAuditLogs = (params?: ICreateAuditLogsParams) => {
     const subscriptionsPlugin = new ContextPlugin<AuditLogsContext.Interface>(context => {
-        if (!context.wcp.canUseFeature("auditLogs")) {
+        if (!context.container.resolve(WcpContext).canUseFeature("auditLogs")) {
             return;
         }
 

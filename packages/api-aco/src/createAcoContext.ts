@@ -1,5 +1,6 @@
 import { ContextPlugin } from "@webiny/api";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/abstractions.js";
 import { createFilterOperations } from "~/filter/filter.so.js";
 import { createFilterCrudMethods } from "~/filter/filter.crud.js";
 import type { AcoContext } from "~/types.js";
@@ -106,7 +107,7 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         flp: flpCrudMethods
     };
 
-    if (context.wcp.canUseFolderLevelPermissions()) {
+    if (container.resolve(WcpContext).canUseFolderLevelPermissions()) {
         CmsFlpFeature.register(container);
     }
 };
