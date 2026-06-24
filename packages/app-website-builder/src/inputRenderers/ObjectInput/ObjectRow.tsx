@@ -33,7 +33,7 @@ export const ObjectRow = ({ title, onOpen, actions }: ObjectRowProps) => {
             // (taller) hover actions are shown.
             style={{ height: 40 }}
             className={cn(
-                "flex items-center justify-between gap-xs rounded-md border border-neutral-dimmed-darker px-sm-extra cursor-pointer transition-colors",
+                "flex item¬s-center justify-between gap-xs rounded-md border border-neutral-dimmed-darker px-sm-extra cursor-pointer transition-colors",
                 hovered ? "bg-neutral-light" : "bg-neutral-base"
             )}
         >
