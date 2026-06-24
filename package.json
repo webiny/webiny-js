@@ -54,7 +54,7 @@
     "fs-extra": "^11.3.5",
     "get-yarn-workspaces": "^1.0.2",
     "github-actions-wac": "^2.0.0",
-    "graphql": "^17.0.1",
+    "graphql": "^16.14.2",
     "husky": "^9.1.7",
     "inquirer": "^14.0.2",
     "jest-extended": "^7.0.0",
