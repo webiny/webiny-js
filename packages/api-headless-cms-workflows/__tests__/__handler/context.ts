@@ -1,4 +1,4 @@
-import { createWorkflows } from "@webiny/api-workflows";
+import { WorkflowsFeature } from "@webiny/api-workflows";
 import { useContextHandler, type UseContextHandlerParams } from "@webiny/testing";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { createModelsPlugins, type ICreateModelsPluginsParams } from "../__cms/models.js";
@@ -13,10 +13,10 @@ export const createContextHandler = (
         ...params,
         bottomPlugins: [
             ...createModelsPlugins(params),
-            createWorkflows(),
             createHeadlessCmsWorkflows(),
             params?.plugins || []
         ],
+        features: container => WorkflowsFeature.register(container),
         testProjectLicense: testLicence
     });
 };

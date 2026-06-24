@@ -7,6 +7,7 @@ import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { getIntrospectionQuery } from "graphql";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import type { Container } from "@webiny/di";
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
@@ -19,6 +20,8 @@ export interface InvokeParams {
 
 export interface UseGraphQLHandlerParams extends CreateHandlerCoreParams {
     debug?: boolean;
+    /** Called after core setup to register DI-native features (e.g. WorkflowsFeature). */
+    features?: (container: Container) => void;
 }
 export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     const { path } = params;
@@ -29,6 +32,7 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         request: async container => {
             await core.setup(container, core.legacyPlugins);
             registerLegacyPluginsViaGqlContextEnhancer(container, core.legacyPlugins);
+            params.features?.(container);
             GraphQLEngineFeature.register(container);
         }
     });

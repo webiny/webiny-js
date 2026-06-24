@@ -5,7 +5,7 @@ import {
     type UseGraphQLHandlerParams,
     FULL_ACCESS_TEAM_ID
 } from "@webiny/testing";
-import { createWorkflows } from "~/index.js";
+import { WorkflowsFeature } from "~/WorkflowsFeature.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { WORKFLOW_MODEL_ID, WORKFLOW_STATE_MODEL_ID } from "~/constants.js";
 import { GetUserTeamsUseCase } from "~/features/internal/GetUserTeams/index.js";
@@ -94,9 +94,9 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
         })
     );
 
-    plugins.register(createWorkflows());
     const handler = useContextHandler({
         ...params,
+        features: container => WorkflowsFeature.register(container),
         permissions: [
             {
                 name: "*"
@@ -118,7 +118,6 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
 
 export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     const plugins = new PluginsContainer(params.plugins || []);
-    plugins.register(createWorkflows());
 
     // Register mock GetUserTeamsUseCase for testing
     plugins.register(
@@ -129,6 +128,7 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
 
     const handler = useGraphQLHandler({
         ...params,
+        features: container => WorkflowsFeature.register(container),
         permissions: [
             {
                 name: "*"

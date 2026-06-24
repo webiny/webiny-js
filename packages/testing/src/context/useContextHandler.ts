@@ -6,6 +6,7 @@ import { createHandlerCore } from "./plugins.js";
 import { defaultIdentity } from "./tenancySecurity.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import type { Container } from "@webiny/di";
 
 export interface HandlerEvent {
     path: string;
@@ -17,6 +18,8 @@ export interface HandlerEvent {
 
 export interface UseContextHandlerParams extends CreateHandlerCoreParams {
     debug?: boolean;
+    /** Called after core setup to register DI-native features (e.g. WorkflowsFeature). */
+    features?: (container: Container) => void;
 }
 export const useContextHandler = <C extends CmsContext = CmsContext>(
     params: UseContextHandlerParams = {}
@@ -42,6 +45,7 @@ export const useContextHandler = <C extends CmsContext = CmsContext>(
                             capturedCtx.value = ctx;
                         }
                     });
+                    params.features?.(container);
                     GraphQLEngineFeature.register(container);
                 }
             });

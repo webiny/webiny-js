@@ -127,10 +127,8 @@ export const HeadlessCmsFeature = createFeature({
         });
 
         // Register CMS DI features statically so they are available before any enhancers run.
-        // Legacy plugins (e.g. createWorkflows()) resolve these services during their context
-        // plugin apply() calls, which happen inside the GraphQLContextEnhancer phase — before
-        // HeadlessCmsInitializerImpl.build() sets up runtime state. All these are pure class
-        // registrations (no eager instantiation) so they are safe to register here.
+        // All these are pure class registrations (no eager instantiation) so they are safe
+        // to register here before any request-time context is available.
         CompressionFeature.register(container);
         GraphQLFeature.register(container);
         ValidationFeature.register(container);
@@ -145,8 +143,8 @@ export const HeadlessCmsFeature = createFeature({
         CmsWebhooksFeature.register(container);
 
         // Register as both GraphQLContextEnhancer and GraphQLContextualSchema so that:
-        // - enhance() runs during buildContext() BEFORE legacy plugins (e.g. createWorkflows()
-        //   needs CmsContextAbstraction which _initialize() sets on ctx.cms).
+        // - enhance() runs during buildContext() to set ctx.cms and register runtime DI
+        //   instances (CmsContextAbstraction, etc.) before contextual schemas resolve them.
         // - build() runs during buildContextualSchemas() — if enhance() already ran, it's a
         //   no-op that returns an empty schema for safe merging.
         const initializer = container.resolveWithDependencies({

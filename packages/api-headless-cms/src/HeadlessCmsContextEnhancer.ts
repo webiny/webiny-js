@@ -54,9 +54,9 @@ export class HeadlessCmsInitializerImpl
         private config: IHeadlessCmsEnhancerConfig
     ) {}
 
-    // Runs during the enhancer phase (before legacy plugins) so that ctx.cms and all
-    // runtime DI registrations (CmsContextAbstraction, etc.) are available when legacy
-    // plugins like createWorkflows() resolve their use cases from the container.
+    // Runs during the enhancer phase so that ctx.cms and all runtime DI registrations
+    // (CmsContextAbstraction, etc.) are available before any contextual schemas resolve
+    // their use cases from the container.
     async enhance(ctx: Record<string, any>): Promise<void> {
         await this._maybeInitialize(ctx);
     }

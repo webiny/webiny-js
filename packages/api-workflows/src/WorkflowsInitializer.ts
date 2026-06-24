@@ -8,14 +8,8 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import {
-    WORKFLOW_MODEL_ID,
-    WorkflowModel as WorkflowPrivateModel
-} from "./domain/workflow/workflowModel.js";
-import {
-    WORKFLOW_STATE_MODEL_ID,
-    WorkflowStateModel as WorkflowStatePrivateModel
-} from "./domain/workflowState/stateModel.js";
+import { WORKFLOW_MODEL_ID } from "./domain/workflow/workflowModel.js";
+import { WORKFLOW_STATE_MODEL_ID } from "./domain/workflowState/stateModel.js";
 import { WorkflowModel } from "./domain/workflow/abstractions.js";
 import { WorkflowStateModel } from "./domain/workflowState/abstractions.js";
 import { WorkflowMapper } from "~/domain/workflow/WorkflowMapper.js";
@@ -55,8 +49,7 @@ class WorkflowsInitializerImpl implements IGraphQLContextualSchema {
         private container: Container,
         private tenantCtx: TenantContext.Interface,
         private identityCtx: IdentityContext.Interface,
-        private wcp: WcpContext.Interface,
-        private getModel: GetModelUseCase.Interface
+        private wcp: WcpContext.Interface
     ) {}
 
     async build(_ctx: Record<string, any>): Promise<GraphQLSchema> {
@@ -75,15 +68,13 @@ class WorkflowsInitializerImpl implements IGraphQLContextualSchema {
     }
 
     private async init(): Promise<void> {
-        // Register private models
-        this.container.register(WorkflowPrivateModel);
-        this.container.register(WorkflowStatePrivateModel);
-
-        // Fetch and register CMS models
+        // Fetch and register CMS models — resolved lazily here because CmsContext is only
+        // registered after HeadlessCmsInitializerImpl.enhance() runs (before this runs).
+        const getModel = this.container.resolve(GetModelUseCase);
         await this.identityCtx.withoutAuthorization(async () => {
             const [workflowModel, workflowStateModel] = await Promise.all([
-                this.getModel.execute(WORKFLOW_MODEL_ID),
-                this.getModel.execute(WORKFLOW_STATE_MODEL_ID)
+                getModel.execute(WORKFLOW_MODEL_ID),
+                getModel.execute(WORKFLOW_STATE_MODEL_ID)
             ]);
 
             this.container.registerInstance(WorkflowModel, workflowModel.value);
@@ -129,5 +120,5 @@ class WorkflowsInitializerImpl implements IGraphQLContextualSchema {
 
 export const WorkflowsInitializer = GraphQLContextualSchema.createImplementation({
     implementation: WorkflowsInitializerImpl,
-    dependencies: [RequestContainer, TenantContext, IdentityContext, WcpContext, GetModelUseCase]
+    dependencies: [RequestContainer, TenantContext, IdentityContext, WcpContext]
 });
