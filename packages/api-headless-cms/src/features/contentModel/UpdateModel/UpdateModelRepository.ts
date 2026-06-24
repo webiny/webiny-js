@@ -7,6 +7,7 @@ import {
     ModelValidationError
 } from "~/domain/contentModel/errors.js";
 import { CmsContext, StorageOperations } from "~/features/shared/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { validateEndingAllowed } from "~/crud/contentModel/validate/endingAllowed.js";
 import { validateSingularApiName } from "~/domain/contentModel/validation/singularApiName.js";
 import { validatePluralApiName } from "~/domain/contentModel/validation/pluralApiName.js";
@@ -31,7 +32,8 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
         private readonly modelsFetcher: ModelsFetcher.Interface,
         private readonly storageOperations: StorageOperations.Interface,
         private readonly cmsContext: CmsContext.Interface,
-        private readonly modelFieldCompression: ModelFieldCompression.Interface
+        private readonly modelFieldCompression: ModelFieldCompression.Interface,
+        private readonly identityContext: IdentityContext.Interface
     ) {}
 
     async execute(
@@ -49,7 +51,7 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
             }
 
             // Get all models for validation (excluding the current model)
-            const modelsResult = await this.cmsContext.security.withoutAuthorization(async () => {
+            const modelsResult = await this.identityContext.withoutAuthorization(async () => {
                 return await this.modelsFetcher.fetchAll();
             });
 
@@ -118,5 +120,12 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const UpdateModelRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdateModelRepositoryImpl,
-    dependencies: [ModelCache, ModelsFetcher, StorageOperations, CmsContext, ModelFieldCompression]
+    dependencies: [
+        ModelCache,
+        ModelsFetcher,
+        StorageOperations,
+        CmsContext,
+        ModelFieldCompression,
+        IdentityContext
+    ]
 });
