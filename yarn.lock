@@ -12531,6 +12531,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-tasks@workspace:packages/api-headless-cms-tasks"
   dependencies:
+    "@graphql-tools/schema": "npm:^10.0.33"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
@@ -12549,6 +12550,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
+    graphql: "npm:^16.14.2"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.9"
     zod: "npm:4.4.3"

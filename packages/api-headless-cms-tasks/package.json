@@ -17,6 +17,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@graphql-tools/schema": "^10.0.33",
     "@webiny/api": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
@@ -27,6 +28,7 @@
     "@webiny/feature": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/utils": "0.0.0",
+    "graphql": "^16.14.2",
     "zod": "4.4.3"
   },
   "devDependencies": {
