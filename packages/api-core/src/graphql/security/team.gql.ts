@@ -7,6 +7,12 @@ import {
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
 import type { ApiCoreContext } from "~/types/core.js";
 import type { Team } from "~/types/security.js";
+import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
+import { GetTeamUseCase } from "~/features/security/teams/GetTeam/index.js";
+import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
+import { CreateTeam } from "~/features/security/teams/CreateTeam/index.js";
+import { UpdateTeam } from "~/features/security/teams/UpdateTeam/index.js";
+import { DeleteTeam } from "~/features/security/teams/DeleteTeam/index.js";
 
 export default new GraphQLSchemaPlugin<ApiCoreContext>({
     typeDefs: /* GraphQL */ `
@@ -64,7 +70,12 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
         SecurityTeam: {
             roles: async (team: Team, __, context) => {
                 try {
-                    return context.security.listRoles({ where: { id_in: team.roles } });
+                    const useCase = context.container.resolve(ListRolesUseCase);
+                    const result = await useCase.execute({ where: { id_in: team.roles } });
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return result.value;
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
@@ -73,17 +84,24 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
         SecurityQuery: {
             getTeam: async (_, { where }, context) => {
                 try {
-                    const team = await context.security.getTeam({ where });
-                    return new Response(team);
+                    const useCase = context.container.resolve(GetTeamUseCase);
+                    const result = await useCase.execute(where);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return new Response(result.value);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
             listTeams: async (_, __, context) => {
                 try {
-                    const teamList = await context.security.listTeams();
-
-                    return new ListResponse(teamList);
+                    const useCase = context.container.resolve(ListTeamsUseCase);
+                    const result = await useCase.execute();
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return new ListResponse(result.value);
                 } catch (e) {
                     return new ListErrorResponse(e);
                 }
@@ -92,25 +110,35 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
         SecurityMutation: {
             createTeam: async (_, { data }, context) => {
                 try {
-                    const team = await context.security.createTeam(data);
-
-                    return new Response(team);
+                    const useCase = context.container.resolve(CreateTeam);
+                    const result = await useCase.execute(data);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return new Response(result.value);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
             updateTeam: async (_, { id, data }, context) => {
                 try {
-                    const team = await context.security.updateTeam(id, data);
-                    return new Response(team);
+                    const useCase = context.container.resolve(UpdateTeam);
+                    const result = await useCase.execute(id, data);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return new Response(result.value);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
             deleteTeam: async (_, { id }, context) => {
                 try {
-                    await context.security.deleteTeam(id);
-
+                    const useCase = context.container.resolve(DeleteTeam);
+                    const result = await useCase.execute(id);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);

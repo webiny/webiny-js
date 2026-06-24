@@ -6,6 +6,11 @@ import {
 } from "@webiny/handler-graphql/responses.js";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
 import type { ApiCoreContext } from "~/types/core.js";
+import { GetRoleUseCase } from "~/features/security/roles/GetRole/index.js";
+import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
+import { CreateRoleUseCase } from "~/features/security/roles/CreateRole/index.js";
+import { UpdateRoleUseCase } from "~/features/security/roles/UpdateRole/index.js";
+import { DeleteRoleUseCase } from "~/features/security/roles/DeleteRole/index.js";
 
 export default new GraphQLSchemaPlugin<ApiCoreContext>({
     typeDefs: /* GraphQL */ `
@@ -63,17 +68,24 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
         SecurityQuery: {
             getRole: async (_, { where }, context) => {
                 try {
-                    const roles = await context.security.getRole({ where });
-                    return new Response(roles);
+                    const useCase = context.container.resolve(GetRoleUseCase);
+                    const result = await useCase.execute(where);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return new Response(result.value);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
             listRoles: async (_, __, context) => {
                 try {
-                    const rolesList = await context.security.listRoles();
-
-                    return new ListResponse(rolesList);
+                    const useCase = context.container.resolve(ListRolesUseCase);
+                    const result = await useCase.execute();
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return new ListResponse(result.value);
                 } catch (e) {
                     return new ListErrorResponse(e);
                 }
@@ -82,25 +94,35 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
         SecurityMutation: {
             createRole: async (_, { data }, context) => {
                 try {
-                    const role = await context.security.createRole(data);
-
-                    return new Response(role);
+                    const useCase = context.container.resolve(CreateRoleUseCase);
+                    const result = await useCase.execute(data);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return new Response(result.value);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
             updateRole: async (_, { id, data }, context) => {
                 try {
-                    const role = await context.security.updateRole(id, data);
-                    return new Response(role);
+                    const useCase = context.container.resolve(UpdateRoleUseCase);
+                    const result = await useCase.execute(id, data);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return new Response(result.value);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
             deleteRole: async (_, { id }, context) => {
                 try {
-                    await context.security.deleteRole(id);
-
+                    const useCase = context.container.resolve(DeleteRoleUseCase);
+                    const result = await useCase.execute(id);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);

@@ -4,23 +4,31 @@ import { EventPublisher } from "~/features/eventPublisher/index.js";
 import type { ApiCoreContext } from "~/types/core.js";
 import { AfterLoginEvent } from "~/features/security/login/index.js";
 import { GetIdentityProfileUseCase } from "~/features/users/GetIdentityProfile/index.js";
-import type { SecurityContext } from "~/types/security.js";
 import type { AdminUser } from "~/types/users.js";
 import { TeamsRepository } from "~/features/security/teams/shared/abstractions.js";
 import { RolesRepository } from "~/features/security/roles/shared/abstractions.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
+import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
+import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
+import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";
 import { ProfileMapper } from "./ProfileMapper.js";
 
-const getDefaultTenant = async (context: SecurityContext) => {
-    const identity = context.security.getIdentity();
+const getDefaultTenant = async (context: ApiCoreContext) => {
+    const identity = context.container.resolve(IdentityContext).getIdentity();
     const defaultTenantId = identity.context.defaultTenantId ?? "root";
 
-    const defaultTenant = await context.tenancy.getTenantById(defaultTenantId);
-    if (defaultTenant) {
-        return defaultTenant;
+    const getTenantById = context.container.resolve(GetTenantByIdUseCase);
+    const tenantResult = await getTenantById.execute(defaultTenantId);
+    if (tenantResult.isOk()) {
+        return tenantResult.value;
     }
 
-    return context.tenancy.getRootTenant();
+    const getRootTenant = context.container.resolve(GetRootTenantUseCase);
+    const rootResult = await getRootTenant.execute();
+    if (rootResult.isFail()) {
+        throw rootResult.error;
+    }
+    return rootResult.value;
 };
 
 export default new GraphQLSchemaPlugin<ApiCoreContext>({
@@ -96,7 +104,7 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
                 const teamsRepo = context.container.resolve(TeamsRepository);
                 const getProfile = context.container.resolve(GetIdentityProfileUseCase);
 
-                const result = await context.security.withoutAuthorization(async () => {
+                const result = await identityContext.withoutAuthorization(async () => {
                     return getProfile.execute(identity.id);
                 });
 
@@ -130,10 +138,10 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
                 return getDefaultTenant(context);
             },
             currentTenant(_, __, context) {
-                return context.tenancy.getCurrentTenant();
+                return context.container.resolve(TenantContext).getTenant();
             },
             permissions(_, __, context) {
-                return context.security.listPermissions();
+                return context.container.resolve(IdentityContext).listPermissions();
             }
         }
     }
