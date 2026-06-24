@@ -1,23 +1,25 @@
 import { createAbstraction } from "@webiny/feature/admin";
 
-export type NotificationVariant = "default" | "success" | "warning" | "error";
+export type NotificationVariant = "default" | "success" | "warning";
 
 export interface INotificationInput {
     title: string;
     description?: string;
-    variant?: NotificationVariant;
 }
 
 export interface INotification extends INotificationInput {
     id: string;
+    variant: NotificationVariant;
 }
 
 /**
- * App-wide notification queue. Any feature can inject this and call `add(...)` to surface a
- * notification on screen, without depending on React or the toast UI directly.
+ * App-wide notification queue. Any feature can inject this and call `notify()` / `success()` /
+ * `warning()` to surface a notification on screen, without depending on React or the toast UI.
  */
 export interface INotificationService {
-    add(notification: INotificationInput): void;
+    notify(notification: INotificationInput): void;
+    success(notification: INotificationInput): void;
+    warning(notification: INotificationInput): void;
     getNotifications(): INotification[];
     remove(id: string): void;
 }

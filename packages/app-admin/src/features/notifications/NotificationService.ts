@@ -2,7 +2,8 @@ import { makeAutoObservable } from "mobx";
 import {
     NotificationService as Abstraction,
     type INotification,
-    type INotificationInput
+    type INotificationInput,
+    type NotificationVariant
 } from "./abstractions.js";
 
 class NotificationServiceImpl implements Abstraction.Interface {
@@ -13,9 +14,16 @@ class NotificationServiceImpl implements Abstraction.Interface {
         makeAutoObservable(this);
     }
 
-    add(input: INotificationInput): void {
-        this.counter++;
-        this.notifications.push({ id: `notification-${this.counter}`, ...input });
+    notify(input: INotificationInput): void {
+        this.push(input, "default");
+    }
+
+    success(input: INotificationInput): void {
+        this.push(input, "success");
+    }
+
+    warning(input: INotificationInput): void {
+        this.push(input, "warning");
     }
 
     getNotifications(): INotification[] {
@@ -24,6 +32,11 @@ class NotificationServiceImpl implements Abstraction.Interface {
 
     remove(id: string): void {
         this.notifications = this.notifications.filter(notification => notification.id !== id);
+    }
+
+    private push(input: INotificationInput, variant: NotificationVariant): void {
+        this.counter++;
+        this.notifications.push({ id: `notification-${this.counter}`, variant, ...input });
     }
 }
 

@@ -14,7 +14,6 @@ const showNotification = (toast: Toast, notification: INotification) => {
             toast.showSuccessToast(params);
             break;
         case "warning":
-        case "error":
             toast.showWarningToast(params);
             break;
         default:

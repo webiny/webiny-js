@@ -18,7 +18,7 @@ interface FileEnrichmentData {
 class AiImageEnrichmentEventHandlerImpl implements WebsocketEventHandler.Interface {
     constructor(
         private filesListCache: FilesListCache.Interface,
-        private notificationService: NotificationService.Interface
+        private notifications: NotificationService.Interface
     ) {}
 
     async handle(event: WebsocketEventHandler.Event): Promise<void> {
@@ -32,10 +32,9 @@ class AiImageEnrichmentEventHandlerImpl implements WebsocketEventHandler.Interfa
             item.id === id ? { ...item, tags, description } : item
         );
 
-        this.notificationService.add({
+        this.notifications.success({
             title: "Image enriched",
-            description: "AI-generated tags and description have been added.",
-            variant: "success"
+            description: "AI-generated tags and description have been added."
         });
     }
 }
