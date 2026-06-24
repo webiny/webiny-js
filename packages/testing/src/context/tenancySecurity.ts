@@ -56,9 +56,11 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
             context.container.registerInstance(TeamFactory, new FullAccessTeamFactory());
         }),
         new ContextPlugin<ApiCoreContext>(async context => {
-            context.adminUsers.listUserTeams = async () => {
-                return await context.security.listTeams();
-            };
+            if (context.adminUsers) {
+                context.adminUsers.listUserTeams = async () => {
+                    return await context.security.listTeams();
+                };
+            }
         }),
         new ContextPlugin<ApiCoreContext>(async context => {
             await context.tenancy.createTenant({

@@ -1,13 +1,12 @@
 import type { CreateHandlerCoreParams } from "./plugins.js";
 import { createHandlerCore } from "./plugins.js";
-import { createLambdaHandler, ApiGatewayFeature } from "@webiny/event-handler-aws";
 import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { defaultIdentity } from "./tenancySecurity.js";
-import type { LambdaContext } from "@webiny/handler-aws/types.js";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { getIntrospectionQuery } from "graphql";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
@@ -18,10 +17,6 @@ export interface InvokeParams {
     headers?: Record<string, string>;
 }
 
-interface IResponse {
-    body: string;
-}
-
 export interface UseGraphQLHandlerParams extends CreateHandlerCoreParams {
     debug?: boolean;
 }
@@ -29,13 +24,11 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     const { path } = params;
     const core = createHandlerCore(params);
 
-    const plugins = [...core.plugins];
-    const handler = createLambdaHandler({
-        root: async container => {
-            ApiGatewayFeature.register(container);
-        },
+    const handler = createTestHttpHandler({
+        root: () => {},
         request: async container => {
-            registerLegacyPluginsViaGqlContextEnhancer(container, plugins);
+            await core.setup(container, core.legacyPlugins);
+            registerLegacyPluginsViaGqlContextEnhancer(container, core.legacyPlugins);
             GraphQLEngineFeature.register(container);
         }
     });
@@ -43,24 +36,19 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     const invoke = async <T = any>({
         httpMethod = "POST",
         body,
-        headers = {},
-        ...rest
-    }: InvokeParams): Promise<[T, any]> => {
-        const response: IResponse = await handler(
-            {
-                path: path ? `/cms/${path}` : "/graphql",
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
+        headers = {}
+    }: InvokeParams = {}): Promise<[T, any]> => {
+        const response = await handler({
+            path: path ? `/cms/${path}` : "/graphql",
+            method: httpMethod,
+            headers: {
+                ["x-tenant"]: "root",
+                ["Content-Type"]: "application/json",
+                ...headers
             },
-            {} as unknown as LambdaContext
-        );
-        return [JSON.parse(response.body || "{}"), response];
+            body
+        });
+        return [response.body as T, response];
     };
 
     const elasticsearchClient = createTestOpenSearchClient();
@@ -100,7 +88,6 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     };
 
     return {
-        plugins,
         invoke,
         identity: params.identity || defaultIdentity,
         tenant: core.tenant,
