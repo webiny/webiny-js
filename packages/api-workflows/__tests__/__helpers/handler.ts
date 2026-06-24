@@ -6,6 +6,7 @@ import {
     FULL_ACCESS_TEAM_ID
 } from "@webiny/testing";
 import { WorkflowsFeature } from "~/WorkflowsFeature.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { WORKFLOW_MODEL_ID, WORKFLOW_STATE_MODEL_ID } from "~/constants.js";
 import { GetUserTeamsUseCase } from "~/features/internal/GetUserTeams/index.js";
@@ -106,8 +107,14 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
         plugins: plugins.all()
     });
     const context = await handler.context();
-    const workflowModel = await context.cms.getModel(WORKFLOW_MODEL_ID);
-    const stateModel = await context.cms.getModel(WORKFLOW_STATE_MODEL_ID);
+    const workflowModelResult = await context.container
+        .resolve(GetModelUseCase)
+        .execute(WORKFLOW_MODEL_ID);
+    const workflowModel = workflowModelResult.value;
+    const stateModelResult = await context.container
+        .resolve(GetModelUseCase)
+        .execute(WORKFLOW_STATE_MODEL_ID);
+    const stateModel = stateModelResult.value;
     return {
         handler,
         context,

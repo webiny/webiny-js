@@ -2,12 +2,11 @@ import { until } from "@webiny/project-utils/testing/helpers/until";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { GraphQLEngineFeature, GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import { RegisterExtensionPlugin } from "@webiny/handler";
+import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { createFileManagerContext } from "~/index";
+import { FileManagerAppFeature } from "~/FileManagerAppFeature";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
 import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
@@ -32,7 +31,7 @@ export const defaultIdentity: IdentityData = {
 };
 
 export default (params: HandlerParams = {}) => {
-    const { identity, permissions, plugins = [] } = params;
+    const { identity, permissions } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
@@ -55,23 +54,7 @@ export default (params: HandlerParams = {}) => {
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });
 
-            const fmPlugins = [createFileManagerContext(), ...plugins].flat(Infinity as 1);
-            processLegacyPlugins(
-                container,
-                fmPlugins.filter(p => p instanceof RegisterExtensionPlugin)
-            );
-            const fmContextPlugins = fmPlugins.filter(p => !(p instanceof RegisterExtensionPlugin));
-
-            container.registerFactory(GraphQLContextEnhancer, () => ({
-                async enhance(ctx: Record<string, any>): Promise<void> {
-                    for (const plugin of fmContextPlugins) {
-                        if (typeof (plugin as any).apply === "function") {
-                            await (plugin as any).apply(ctx);
-                        }
-                    }
-                }
-            }));
-
+            FileManagerAppFeature.register(container);
             GraphQLEngineFeature.register(container);
         }
     });

@@ -4,9 +4,11 @@ import type { CmsContext } from "~/types";
 import type { CmsGroup, CmsModelCreateInput } from "@webiny/api-headless-cms/types";
 import { configurations } from "~/configurations";
 import { createMappingsSnapshot } from "./mocks/mappingsSnapshot";
+import { CreateGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/index.js";
+import { CreateModelUseCase } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 
 const setupGroup = async (context: CmsContext) => {
-    return context.cms.createGroup({
+    const result = await context.container.resolve(CreateGroupUseCase).execute({
         name: "Test Group",
         description: "Test Group Description",
         icon: {
@@ -16,6 +18,10 @@ const setupGroup = async (context: CmsContext) => {
         },
         slug: "test-group"
     });
+    if (result.isFail()) {
+        throw result.error;
+    }
+    return result.value;
 };
 
 const modelData = {
@@ -57,7 +63,13 @@ describe("create index", () => {
 
         const group = await setupGroup(context);
 
-        const model = await context.cms.createModel(createModelData(group));
+        const modelResult = await context.container
+            .resolve(CreateModelUseCase)
+            .execute(createModelData(group));
+        if (modelResult.isFail()) {
+            throw modelResult.error;
+        }
+        const model = modelResult.value;
 
         const { index } = configurations.es({ model });
 

@@ -2,13 +2,12 @@ import { getIntrospectionQuery } from "graphql";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { GraphQLEngineFeature, GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import { RegisterExtensionPlugin } from "@webiny/handler";
+import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { AcoFeature } from "@webiny/api-aco";
-import { createFileManagerContext } from "@webiny/api-file-manager";
+import { FileManagerAppFeature } from "@webiny/api-file-manager";
 import { createAcoSdk } from "../../../api-aco/__tests__/utils/createAcoSdk.js";
 import { createFileManagerSdk } from "../../../api-file-manager/__tests__/utils/createFileManagerSdk.js";
 import { FileManagerAcoFeature } from "~/index.js";
@@ -75,24 +74,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
             HeadlessCmsFeature.register(container, { type: "manage" });
             AcoFeature.register(container);
-
-            const fmPlugins = [createFileManagerContext()].flat(Infinity as 1);
-            processLegacyPlugins(
-                container,
-                fmPlugins.filter(p => p instanceof RegisterExtensionPlugin)
-            );
-            const fmContextPlugins = fmPlugins.filter(p => !(p instanceof RegisterExtensionPlugin));
-
-            container.registerFactory(GraphQLContextEnhancer, () => ({
-                async enhance(ctx: Record<string, any>): Promise<void> {
-                    for (const plugin of fmContextPlugins) {
-                        if (typeof (plugin as any).apply === "function") {
-                            await (plugin as any).apply(ctx);
-                        }
-                    }
-                }
-            }));
-
+            FileManagerAppFeature.register(container);
             FileManagerAcoFeature.register(container);
             GraphQLEngineFeature.register(container);
         }

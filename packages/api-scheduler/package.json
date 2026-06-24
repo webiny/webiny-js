@@ -18,17 +18,20 @@
   "description": "A generic action scheduler.",
   "license": "MIT",
   "dependencies": {
+    "@graphql-tools/schema": "^10.0.33",
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
+    "@webiny/di": "^1.0.1",
     "@webiny/event-handler-aws": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
-    "@webiny/utils": "0.0.0"
+    "@webiny/utils": "0.0.0",
+    "graphql": "^16.14.2"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

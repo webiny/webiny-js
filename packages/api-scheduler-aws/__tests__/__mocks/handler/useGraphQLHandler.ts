@@ -1,12 +1,14 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { GraphQLEngineFeature, GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import { RegisterExtensionPlugin } from "@webiny/handler";
+import {
+    GraphQLEngineFeature,
+    registerLegacyPluginsViaGqlContextualSchema
+} from "@webiny/handler-graphql";
 import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { registerSchedulerExtension } from "@webiny/api-scheduler";
+import { SchedulerFeature } from "@webiny/api-scheduler";
 import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
@@ -88,31 +90,11 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams) => {
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });
 
-            const schedulerPlugins = registerSchedulerExtension();
-            processLegacyPlugins(
-                container,
-                schedulerPlugins.filter(p => p instanceof RegisterExtensionPlugin)
-            );
-            const schedulerContextPlugins = schedulerPlugins.filter(
-                p => !(p instanceof RegisterExtensionPlugin)
-            );
-
+            SchedulerFeature.register(container);
             container.registerInstance(SchedulerService, new VoidSchedulerService());
-
-            container.registerFactory(GraphQLContextEnhancer, () => ({
-                async enhance(ctx: Record<string, any>): Promise<void> {
-                    for (const plugin of schedulerContextPlugins) {
-                        if (typeof (plugin as any).apply === "function") {
-                            await (plugin as any).apply(ctx);
-                        }
-                    }
-                    for (const plugin of extraPlugins) {
-                        if (typeof (plugin as any).apply === "function") {
-                            await (plugin as any).apply(ctx);
-                        }
-                    }
-                }
-            }));
+            if (extraPlugins.length > 0) {
+                registerLegacyPluginsViaGqlContextualSchema(container, extraPlugins);
+            }
 
             GraphQLEngineFeature.register(container);
         }

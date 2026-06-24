@@ -2,8 +2,7 @@ import { getIntrospectionQuery } from "graphql";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { GraphQLEngineFeature, GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import { RegisterExtensionPlugin } from "@webiny/handler";
+import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
@@ -11,7 +10,7 @@ import {
     ConnectionRegistry,
     WebsocketsSendToIdentityUseCase
 } from "@webiny/api-websockets/exports/api.js";
-import { createRecordLocking } from "~/index";
+import { RecordLockingAppFeature } from "~/index";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
 import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
@@ -102,33 +101,12 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });
 
-            // RegisterExtensionPlugin (modelsPlugin) must go into DI now;
-            // ContextPlugin must run as factory enhancer so it executes after
-            // HeadlessCmsContextEnhancer sets up ctx.plugins and the model registry.
-            const recordLockingPlugins = [createRecordLocking()].flat(Infinity as 1);
-            processLegacyPlugins(
-                container,
-                recordLockingPlugins.filter(p => p instanceof RegisterExtensionPlugin)
-            );
-            const recordLockingContextPlugins = recordLockingPlugins.filter(
-                p => !(p instanceof RegisterExtensionPlugin)
-            );
-
             container.registerInstance(ConnectionRegistry, noopConnectionRegistry);
             container.registerInstance(WebsocketsSendToIdentityUseCase, {
                 execute: async () => {}
             });
 
-            container.registerFactory(GraphQLContextEnhancer, () => ({
-                async enhance(ctx: Record<string, any>): Promise<void> {
-                    for (const plugin of recordLockingContextPlugins) {
-                        if (typeof (plugin as any).apply === "function") {
-                            await (plugin as any).apply(ctx);
-                        }
-                    }
-                }
-            }));
-
+            RecordLockingAppFeature.register(container);
             GraphQLEngineFeature.register(container);
         }
     });

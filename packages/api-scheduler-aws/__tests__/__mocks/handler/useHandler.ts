@@ -1,13 +1,14 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { GraphQLEngineFeature, GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import { RegisterExtensionPlugin } from "@webiny/handler";
+import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { registerSchedulerExtension } from "@webiny/api-scheduler";
+import { SchedulerFeature } from "@webiny/api-scheduler";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
+import { buildSchema } from "graphql";
+import type { GraphQLSchema } from "graphql";
 import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
 import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
 import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
@@ -62,25 +63,15 @@ export const useHandler = (params: UseHandlerParams) => {
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });
 
-            const schedulerPlugins = registerSchedulerExtension();
-            processLegacyPlugins(
-                container,
-                schedulerPlugins.filter(p => p instanceof RegisterExtensionPlugin)
-            );
-            const schedulerContextPlugins = schedulerPlugins.filter(
-                p => !(p instanceof RegisterExtensionPlugin)
-            );
+            SchedulerFeature.register(container);
 
-            container.registerFactory(GraphQLContextEnhancer, () => ({
-                async enhance(ctx: Record<string, any>): Promise<void> {
-                    for (const plugin of schedulerContextPlugins) {
-                        if (typeof (plugin as any).apply === "function") {
-                            await (plugin as any).apply(ctx);
-                        }
-                    }
+            const STUB_SCHEMA: GraphQLSchema = buildSchema("type Query { _empty: String }");
+            container.registerInstance(GraphQLContextualSchema, {
+                async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
                     capturedCtx = ctx;
+                    return STUB_SCHEMA;
                 }
-            }));
+            });
 
             GraphQLEngineFeature.register(container);
         }

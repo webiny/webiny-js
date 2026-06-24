@@ -3,11 +3,10 @@ import type { UseContextHandlerParams } from "@webiny/testing";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { WebsiteBuilderSchedulerFeature } from "~/WebsiteBuilderSchedulerFeature.js";
-import { registerSchedulerExtension, SchedulerService } from "@webiny/api-scheduler";
+import { SchedulerFeature, SchedulerService } from "@webiny/api-scheduler";
 import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
 import { PageModelPlugin } from "@webiny/api-website-builder/domain/page/page.model.js";
 import { RedirectModelPlugin } from "@webiny/api-website-builder/domain/redirect/redirect.model.js";
-import { SchedulePrivateModel } from "@webiny/api-scheduler/domain/SchedulePrivateModel.js";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
 import { createMockBackgroundTasks } from "../mockBackgroundTasks.js";
 
@@ -19,13 +18,12 @@ export const useHandler = <C extends ApiCoreContext = ApiCoreContext>(params: Pa
         plugins: [
             createWebsiteBuilder(),
             createMockBackgroundTasks(),
-            registerSchedulerExtension(),
             ...[params.plugins].flat(Infinity as 1).filter(Boolean)
         ],
         features: container => {
             container.register(PageModelPlugin);
             container.register(RedirectModelPlugin);
-            container.register(SchedulePrivateModel);
+            SchedulerFeature.register(container);
             WebsiteBuilderSchedulerFeature.register(container);
             container.registerInstance(SchedulerService, new VoidSchedulerService());
         }
