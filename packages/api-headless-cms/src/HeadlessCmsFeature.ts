@@ -1,5 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import {
     HeadlessCmsInitializerImpl,
     HeadlessCmsEnhancerConfig
@@ -144,7 +146,12 @@ export const HeadlessCmsFeature = createFeature({
 
         const initializer = container.resolveWithDependencies({
             implementation: HeadlessCmsInitializerImpl,
-            dependencies: [RequestContainer, HeadlessCmsEnhancerConfig]
+            dependencies: [
+                RequestContainer,
+                HeadlessCmsEnhancerConfig,
+                IdentityContext,
+                TenantContext
+            ]
         });
         container.registerInstance(GraphQLContextualSchema, initializer);
         container.register(createCmsRoute(config.type));

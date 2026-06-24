@@ -12,7 +12,7 @@ import { Authorizer } from "@webiny/api-core/features/security/authorization/Aut
 import { RoleFactory } from "@webiny/api-core/features/security/roles/shared/abstractions.js";
 import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/Identity.js";
-import type { SecurityPermission, ApiKey } from "@webiny/api-core/types/security.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { defaultIdentity, FULL_ACCESS_TEAM_ID } from "./tenancySecurity.js";
 
@@ -72,12 +72,12 @@ class TenancyAndSecurityInitializerImpl implements IGraphQLContextualSchema {
         private config: Config
     ) {}
 
-    async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
-        await this._maybeInitialize(ctx);
+    async build(_ctx: Record<string, any>): Promise<GraphQLSchema> {
+        await this._maybeInitialize();
         return STUB_SCHEMA;
     }
 
-    private async _maybeInitialize(ctx: Record<string, any>): Promise<void> {
+    private async _maybeInitialize(): Promise<void> {
         if (this.initialized) {
             return;
         }
@@ -118,27 +118,6 @@ class TenancyAndSecurityInitializerImpl implements IGraphQLContextualSchema {
         const authedIdentity = await authCtx.authenticate("");
         const identityCtx = this.container.resolve(IdentityContext);
         identityCtx.setIdentity(authedIdentity);
-
-        // Patch the legacy security bridge with a mock getApiKeyByToken used by tests
-        // that call ctx.security.getApiKeyByToken("aToken").
-        if (ctx.security) {
-            ctx.security.getApiKeyByToken = async (token: string): Promise<ApiKey | null> => {
-                if (!token || token !== "aToken") {
-                    return null;
-                }
-                const id = "a1234567890";
-                return {
-                    id,
-                    name: id,
-                    slug: id,
-                    permissions: resolvedIdentity.permissions || [],
-                    token,
-                    createdBy: { id: "test", displayName: "test", type: "admin" },
-                    description: "test",
-                    createdOn: new Date().toISOString()
-                };
-            };
-        }
     }
 }
 

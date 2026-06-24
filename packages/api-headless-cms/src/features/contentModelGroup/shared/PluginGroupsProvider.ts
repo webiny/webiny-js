@@ -34,7 +34,7 @@ class PluginGroupsProviderImpl implements ProviderAbstraction.Interface {
 
         const cacheKey = createCacheKey({
             tenant: tenant.id,
-            identity: this.cmsContext.security.isAuthorizationEnabled()
+            identity: this.identityContext.isAuthorizationEnabled()
                 ? this.identityContext.getIdentity()?.id
                 : undefined,
             groups: pluginGroups

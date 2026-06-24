@@ -62,7 +62,7 @@ class ListGroupsRepositoryImpl implements RepositoryAbstraction.Interface {
         // 3. Apply access control to database groups (with caching)
         const filteredCacheKey = createCacheKey({
             dbCacheKey: dbCacheKey.get(),
-            identity: this.cmsContext.security.isAuthorizationEnabled()
+            identity: this.identityContext.isAuthorizationEnabled()
                 ? this.identityContext.getIdentity()?.id
                 : undefined
         });

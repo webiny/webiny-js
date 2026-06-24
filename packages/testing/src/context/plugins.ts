@@ -51,10 +51,10 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
         ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense });
 
         // Registration order determines contextual-schema execution order:
-        // 1. ApiCore.build() — sets ctx.security, ctx.tenancy, ctx.wcp
+        // 1. ApiCore.build() — registers WcpFeature
         // 2. TenancyAndSecurity.build() — seeds tenants, authenticates identity
         // 3. cmsStorage.plugins enhancer — ctx.db (runs in the enhance phase, before all build() calls)
-        // 4. HeadlessCms.build() — uses ctx.security, ctx.tenancy, ctx.db to set up ctx.cms
+        // 4. HeadlessCms.build() — sets up ctx.cms
         TenancyAndSecurityFeature.register(container, {
             permissions: createPermissions(permissions),
             identity

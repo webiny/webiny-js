@@ -1,5 +1,9 @@
 import type { Container } from "@webiny/di";
 import { Abstraction } from "@webiny/di";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
+import { LegacyContext as SecurityLegacyContext } from "@webiny/api-core/legacy/security/LegacyContext.js";
+import { LegacyContext as TenancyLegacyContext } from "@webiny/api-core/legacy/tenancy/LegacyContext.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
@@ -49,7 +53,9 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
 
     constructor(
         private container: Container,
-        private config: IHeadlessCmsEnhancerConfig
+        private config: IHeadlessCmsEnhancerConfig,
+        private identityContext: IdentityContext.Interface,
+        private tenantContext: TenantContext.Interface
     ) {}
 
     async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
@@ -65,6 +71,12 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
 
     private async _initialize(ctx: Record<string, any>): Promise<void> {
         const { type } = this.config;
+
+        // Populate legacy ctx.security / ctx.tenancy bridges so that CMS internals
+        // (CRUD methods, resolvers, GraphQL schema helpers) that still access these
+        // via ctx continue to work until they are fully migrated to DI.
+        ctx.security = new SecurityLegacyContext(this.container);
+        ctx.tenancy = new TenancyLegacyContext(this.container);
 
         // Provide a PluginsContainer with field converters and required scalar plugins
         ctx.plugins = new PluginsContainer([
@@ -85,12 +97,13 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
         );
 
         const accessControl = new AccessControl({
-            getIdentity: async () => ctx.security.getIdentity(),
-            getGroupsPermissions: () => ctx.security.getPermissions("cms.contentModelGroup"),
-            getModelsPermissions: () => ctx.security.getPermissions("cms.contentModel"),
-            getEntriesPermissions: () => ctx.security.getPermissions("cms.contentEntry"),
+            getIdentity: async () => this.identityContext.getIdentity(),
+            getGroupsPermissions: () =>
+                this.identityContext.getPermissions("cms.contentModelGroup"),
+            getModelsPermissions: () => this.identityContext.getPermissions("cms.contentModel"),
+            getEntriesPermissions: () => this.identityContext.getPermissions("cms.contentEntry"),
             listAllGroups: () => {
-                return ctx.security.withoutAuthorization(() => {
+                return this.identityContext.withoutAuthorization(() => {
                     return ctx.cms.listGroups();
                 });
             }
@@ -100,7 +113,7 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
         const storageOperations = await storageOperationsFactory.create(ctx);
         await storageOperations.beforeInit(ctx as CmsContext);
 
-        const getTenant = () => ctx.tenancy.getCurrentTenant();
+        const getTenant = () => this.tenantContext.getTenant();
 
         ctx.cms = {
             type,
@@ -136,7 +149,7 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
                 const schema = await ctx.benchmark.measure(
                     "headlessCms.graphql.getSchema",
                     async () => {
-                        return ctx.security.withoutAuthorization(() => {
+                        return this.identityContext.withoutAuthorization(() => {
                             return getSchema({
                                 context: schemaCtx as CmsContext,
                                 getTenant,

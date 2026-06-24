@@ -6,16 +6,12 @@ import type { IGraphQLContextualSchema } from "./engine/index.js";
 import type { GraphQLSchema } from "graphql";
 
 /**
- * Contextual-schema variant of registerLegacyPluginsViaGqlContextEnhancer.
+ * Runs legacy ContextPlugins (those with an `apply(ctx)` method) inside the
+ * contextual-schema phase so that DI services (TenantContext, IdentityContext, etc.)
+ * are fully initialised when they execute.
  *
- * Use this instead of the enhancer variant when the plugins include ContextPlugins
- * that need ctx.tenancy / ctx.security (set by ApiCoreFeature) to be available.
- * Because contextual schemas run sequentially after all enhancers, and after
- * ApiCoreFeature sets ctx.security / ctx.tenancy, these plugins will have a
- * fully initialised context when they run.
- *
- * Registration order matters: call this AFTER ApiCoreFeature.register() but
- * BEFORE any contextual schema that depends on what these plugins set (e.g. ctx.db).
+ * Registration order matters: call this BEFORE any contextual schema that depends
+ * on what these plugins set (e.g. ctx.db).
  */
 export function registerLegacyPluginsViaGqlContextualSchema(
     container: Container,

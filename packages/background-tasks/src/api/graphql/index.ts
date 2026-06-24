@@ -1,6 +1,8 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";
 import { ContextPlugin } from "@webiny/handler";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { Context, IListTaskLogParams, IListTaskParams, ITask, ITaskLog } from "~/api/types.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
 import { emptyResolver, resolve, resolveList } from "./utils.js";
@@ -32,7 +34,7 @@ interface IDeleteTaskMutationParams {
 
 const createGraphQL = () => {
     const plugin = new ContextPlugin<Context>(async ctx => {
-        if (!ctx.tenancy.getCurrentTenant()) {
+        if (!ctx.container.resolve(TenantContext).getTenant()) {
             return;
         }
 
@@ -42,11 +44,13 @@ const createGraphQL = () => {
         const listModels = ctx.container.resolve(ListModelsUseCase);
         const fieldRegistry = ctx.container.resolve(CmsModelFieldToGraphQLRegistry);
 
-        const models = await ctx.security.withoutAuthorization(async () => {
-            const modelsResult = await listModels.execute({ includePrivate: false });
+        const models = await ctx.container
+            .resolve(IdentityContext)
+            .withoutAuthorization(async () => {
+                const modelsResult = await listModels.execute({ includePrivate: false });
 
-            return modelsResult.value.filter(model => model.fields.length > 0);
-        });
+                return modelsResult.value.filter(model => model.fields.length > 0);
+            });
         const taskFields = renderFields({
             models,
             model: taskModel,

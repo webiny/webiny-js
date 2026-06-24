@@ -1,9 +1,12 @@
 import { createFeature, type Container } from "@webiny/feature/api";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { makeExecutableSchema } from "@graphql-tools/schema";
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/abstractions.js";
 import { AuditLogsContext, AuditLogsStorage } from "./abstractions.js";
+import type { GraphQLSchema } from "graphql";
 import { createAuditLogsContextValue } from "./context/AuditLogsContextValue.js";
 import { createSubscriptionHooks } from "./subscriptions/index.js";
 import { createGraphQLSchema } from "./graphql/schema.js";
@@ -67,15 +70,21 @@ export const AuditLogsFeature = createFeature({
 
         let initialized = false;
 
-        container.registerInstance(GraphQLContextEnhancer, {
-            async enhance(ctx: Record<string, any>): Promise<void> {
+        const STUB_SCHEMA: GraphQLSchema = makeExecutableSchema({
+            typeDefs: "type Query\ntype Mutation",
+            assumeValidSDL: true
+        });
+
+        container.registerInstance(GraphQLContextualSchema, {
+            async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
                 if (initialized) {
-                    return;
+                    return STUB_SCHEMA;
                 }
                 initialized = true;
 
-                if (!ctx.wcp?.canUseFeature("auditLogs")) {
-                    return;
+                const wcpContext = container.resolve(WcpContext);
+                if (!wcpContext.canUseFeature("auditLogs")) {
+                    return STUB_SCHEMA;
                 }
 
                 const storage = container.resolve(AuditLogsStorage);
@@ -90,6 +99,8 @@ export const AuditLogsFeature = createFeature({
 
                 container.registerInstance(AuditLogsContext, ctx as any);
                 createSubscriptionHooks(ctx as any);
+
+                return STUB_SCHEMA;
             }
         });
     }

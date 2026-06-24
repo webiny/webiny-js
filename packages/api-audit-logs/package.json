@@ -34,6 +34,7 @@
     "vitest": "^4.1.9"
   },
   "dependencies": {
+    "@graphql-tools/schema": "^10.0.0",
     "@webiny/api": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-core": "0.0.0",

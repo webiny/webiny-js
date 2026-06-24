@@ -1,5 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { ContextPlugin } from "@webiny/handler";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import type { Context } from "~/api/types.js";
 import { GetBackgroundTaskSettingsRepository } from "~/api/features/GetBackgroundTaskSettings/abstractions.js";
 import { UpdateBackgroundTaskSettingsUseCase } from "~/api/features/UpdateBackgroundTaskSettings/abstractions.js";
@@ -29,7 +30,7 @@ const resolve = async <T = unknown>(fn: () => Promise<T>) => {
 
 export const createBackgroundTaskSettingsGraphQL = (): Plugin[] => {
     const plugin = new ContextPlugin<Context>(async ctx => {
-        if (!ctx.tenancy.getCurrentTenant()) {
+        if (!ctx.container.resolve(TenantContext).getTenant()) {
             return;
         }
 
