@@ -14,13 +14,9 @@
     { "path": "../feature" },
     { "path": "../plugins" },
     { "path": "../utils" },
-    { "path": "../api-headless-cms" },
-    { "path": "../event-handler-core" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
-    { "path": "../handler-db" },
-    { "path": "../handler-graphql" },
-    { "path": "../wcp" }
+    { "path": "../testing" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -53,20 +49,12 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
-      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
-      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/testing/*": ["../testing/src/*"],
+      "@webiny/testing": ["../testing/src"]
     }
   }
 }
