@@ -48,6 +48,9 @@ class ValuesSelectionGeneratorImpl implements IValuesSelectionGenerator {
         }
 
         if (children.length === 0) {
+            if (field.type === "object" || field.type === "dynamicZone") {
+                return null;
+            }
             return field.fieldId;
         }
 

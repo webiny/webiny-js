@@ -189,7 +189,7 @@
   "packageManager": "yarn@4.16.0",
   "dependencies": {
     "@types/hoist-non-react-statics": "^3.3.7",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "jwt-decode": "^4.0.0"
   },
   "dependenciesMeta": {

@@ -14,13 +14,13 @@ export namespace ContentEntriesCacheProvider {
     export type Interface = IContentEntriesCacheProvider;
 }
 
-export interface ICmsModelAccessor {
+export interface ICmsModelContext {
     getModel(): CmsModel;
     setModel(model: CmsModel): void;
 }
 
-export const CmsModelAccessor = createAbstraction<ICmsModelAccessor>("CmsModelAccessor");
+export const CmsModelContext = createAbstraction<ICmsModelContext>("CmsModelContext");
 
-export namespace CmsModelAccessor {
-    export type Interface = ICmsModelAccessor;
+export namespace CmsModelContext {
+    export type Interface = ICmsModelContext;
 }

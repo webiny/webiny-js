@@ -7,7 +7,7 @@ import { OverlayLoader } from "@webiny/admin-ui";
 import { parseIdentifier } from "@webiny/utils";
 import { SingleEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/SingleEntryFormContent.js";
 import { SingleEntryPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/singleEntry/abstractions.js";
-import { CmsModelAccessor } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
+import { CmsModelContext } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
 import { RecordLockingPresenter } from "./abstractions.js";
 import { LockedEntryOverlay } from "./components/LockedEntryOverlay.js";
 import type { IKickOutData } from "./abstractions.js";
@@ -34,7 +34,7 @@ export const SingleEntryContentDecorator = SingleEntryFormContent.createDecorato
             [container]
         );
 
-        const modelAccessor = React.useMemo(() => container.resolve(CmsModelAccessor), [container]);
+        const modelAccessor = React.useMemo(() => container.resolve(CmsModelContext), [container]);
 
         const entry = singleEntryPresenter.vm.entry;
 

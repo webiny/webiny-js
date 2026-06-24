@@ -10,8 +10,8 @@ import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/ge
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { CmsContentEntry, CmsModel } from "~/types.js";
 import { ContentEntriesCacheProviderImplementation } from "~/features/contentEntry/ContentEntriesCacheProvider.js";
-import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
-import { CmsModelAccessor as CmsModelAccessorImpl } from "~/features/contentEntry/CmsModelAccessor.js";
+import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
+import { CmsModelContext as CmsModelContextImpl } from "~/features/contentEntry/CmsModelContext.js";
 import { ListEntriesFeature } from "~/features/contentEntry/listEntries/feature.js";
 import { DeleteEntryFeature } from "~/features/contentEntry/deleteEntry/feature.js";
 import { PublishEntryFeature } from "~/features/contentEntry/publishEntry/feature.js";
@@ -148,8 +148,8 @@ function setup(): TestSetup {
     });
 
     container.register(ContentEntriesCacheProviderImplementation).inSingletonScope();
-    container.register(CmsModelAccessorImpl).inSingletonScope();
-    container.resolve(CmsModelAccessor).setModel(MODEL);
+    container.register(CmsModelContextImpl).inSingletonScope();
+    container.resolve(CmsModelContext).setModel(MODEL);
 
     ListEntriesFeature.register(container);
     DeleteEntryFeature.register(container);

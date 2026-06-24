@@ -4,14 +4,14 @@ import {
     type IContentEntryFormPresenter,
     type IContentEntryFormViewModel
 } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
-import { CmsModelAccessor } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
+import { CmsModelContext } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
 import { WorkflowStatePresenter } from "@webiny/app-workflows/presentation/workflowState/abstractions.js";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
 
 class ContentEntryFormPresenterWithWorkflow implements IContentEntryFormPresenter {
     constructor(
         private workflowPresenter: WorkflowStatePresenter.Interface,
-        private modelAccessor: CmsModelAccessor.Interface,
+        private modelAccessor: CmsModelContext.Interface,
         private original: IContentEntryFormPresenter
     ) {
         makeAutoObservable<
@@ -84,6 +84,6 @@ class ContentEntryFormPresenterWithWorkflow implements IContentEntryFormPresente
 export const ContentEntryFormPresenterWorkflowDecorator = ContentEntryFormPresenter.createDecorator(
     {
         decorator: ContentEntryFormPresenterWithWorkflow,
-        dependencies: [WorkflowStatePresenter, CmsModelAccessor]
+        dependencies: [WorkflowStatePresenter, CmsModelContext]
     }
 );

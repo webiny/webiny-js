@@ -15,7 +15,7 @@ import {
     TrashBinRestoreGateway,
     TrashBinBulkActionGateway
 } from "@webiny/app-admin/presentation/trashBin/abstractions.js";
-import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
+import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import { ListDeletedEntriesUseCase } from "~/features/contentEntry/listDeletedEntries/abstractions.js";
 import { RestoreFromTrashUseCase } from "~/features/contentEntry/restoreFromTrash/abstractions.js";
 import { PermanentlyDeleteEntryUseCase } from "~/features/contentEntry/permanentlyDeleteEntry/abstractions.js";
@@ -26,7 +26,7 @@ class CmsTrashBinListGatewayAdapterImpl implements ITrashBinListGateway {
     constructor(
         private listDeletedEntriesUseCase: ListDeletedEntriesUseCase.Interface,
         private itemMapper: ICmsTrashBinItemMapper,
-        private modelAccessor: CmsModelAccessor.Interface
+        private modelAccessor: CmsModelContext.Interface
     ) {}
 
     async execute(params: ITrashBinListGatewayParams): Promise<ITrashBinListGatewayResult> {
@@ -54,13 +54,13 @@ class CmsTrashBinListGatewayAdapterImpl implements ITrashBinListGateway {
 
 export const CmsTrashBinListGatewayAdapter = TrashBinListGateway.createImplementation({
     implementation: CmsTrashBinListGatewayAdapterImpl,
-    dependencies: [ListDeletedEntriesUseCase, CmsTrashBinItemMapper, CmsModelAccessor]
+    dependencies: [ListDeletedEntriesUseCase, CmsTrashBinItemMapper, CmsModelContext]
 });
 
 class CmsTrashBinDeleteGatewayAdapterImpl implements ITrashBinDeleteGateway {
     constructor(
         private permanentlyDeleteUseCase: PermanentlyDeleteEntryUseCase.Interface,
-        private modelAccessor: CmsModelAccessor.Interface
+        private modelAccessor: CmsModelContext.Interface
     ) {}
 
     async execute(id: string): Promise<boolean> {
@@ -71,14 +71,14 @@ class CmsTrashBinDeleteGatewayAdapterImpl implements ITrashBinDeleteGateway {
 
 export const CmsTrashBinDeleteGatewayAdapter = TrashBinDeleteGateway.createImplementation({
     implementation: CmsTrashBinDeleteGatewayAdapterImpl,
-    dependencies: [PermanentlyDeleteEntryUseCase, CmsModelAccessor]
+    dependencies: [PermanentlyDeleteEntryUseCase, CmsModelContext]
 });
 
 class CmsTrashBinRestoreGatewayAdapterImpl implements ITrashBinRestoreGateway {
     constructor(
         private restoreFromTrashUseCase: RestoreFromTrashUseCase.Interface,
         private itemMapper: ICmsTrashBinItemMapper,
-        private modelAccessor: CmsModelAccessor.Interface
+        private modelAccessor: CmsModelContext.Interface
     ) {}
 
     async execute(id: string): Promise<TrashBinItem> {
@@ -90,13 +90,13 @@ class CmsTrashBinRestoreGatewayAdapterImpl implements ITrashBinRestoreGateway {
 
 export const CmsTrashBinRestoreGatewayAdapter = TrashBinRestoreGateway.createImplementation({
     implementation: CmsTrashBinRestoreGatewayAdapterImpl,
-    dependencies: [RestoreFromTrashUseCase, CmsTrashBinItemMapper, CmsModelAccessor]
+    dependencies: [RestoreFromTrashUseCase, CmsTrashBinItemMapper, CmsModelContext]
 });
 
 class CmsTrashBinBulkActionGatewayAdapterImpl implements ITrashBinBulkActionGateway {
     constructor(
         private bulkActionUseCase: BulkActionUseCase.Interface,
-        private modelAccessor: CmsModelAccessor.Interface
+        private modelAccessor: CmsModelContext.Interface
     ) {}
 
     async execute(params: ITrashBinBulkActionParams): Promise<ITrashBinBulkActionResult> {
@@ -113,5 +113,5 @@ class CmsTrashBinBulkActionGatewayAdapterImpl implements ITrashBinBulkActionGate
 
 export const CmsTrashBinBulkActionGatewayAdapter = TrashBinBulkActionGateway.createImplementation({
     implementation: CmsTrashBinBulkActionGatewayAdapterImpl,
-    dependencies: [BulkActionUseCase, CmsModelAccessor]
+    dependencies: [BulkActionUseCase, CmsModelContext]
 });

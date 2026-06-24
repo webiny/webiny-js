@@ -5,7 +5,7 @@ import {
 import type { CmsContentEntry } from "~/types.js";
 import { PublishEntryUseCase } from "~/features/contentEntry/publishEntry/abstractions.js";
 import { BulkActionUseCase } from "~/features/contentEntry/bulkAction/abstractions.js";
-import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
+import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import { BulkPublishPresenter as Abstraction } from "./abstractions.js";
 
 class BulkPublishPresenterImpl implements Abstraction.Interface {
@@ -14,7 +14,7 @@ class BulkPublishPresenterImpl implements Abstraction.Interface {
     constructor(
         private publishEntryUseCase: PublishEntryUseCase.Interface,
         private bulkActionUseCase: BulkActionUseCase.Interface,
-        private modelAccessor: CmsModelAccessor.Interface
+        private modelAccessor: CmsModelContext.Interface
     ) {}
 
     get vm() {
@@ -46,5 +46,5 @@ class BulkPublishPresenterImpl implements Abstraction.Interface {
 
 export const BulkPublishPresenterImplementation = Abstraction.createImplementation({
     implementation: BulkPublishPresenterImpl,
-    dependencies: [PublishEntryUseCase, BulkActionUseCase, CmsModelAccessor]
+    dependencies: [PublishEntryUseCase, BulkActionUseCase, CmsModelContext]
 });

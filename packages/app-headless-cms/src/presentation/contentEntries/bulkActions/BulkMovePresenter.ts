@@ -5,7 +5,7 @@ import {
 import type { CmsContentEntry } from "~/types.js";
 import { MoveEntryUseCase } from "~/features/contentEntry/moveEntry/abstractions.js";
 import { BulkActionUseCase } from "~/features/contentEntry/bulkAction/abstractions.js";
-import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
+import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import { BulkMovePresenter as Abstraction } from "./abstractions.js";
 
 class BulkMovePresenterImpl implements Abstraction.Interface {
@@ -14,7 +14,7 @@ class BulkMovePresenterImpl implements Abstraction.Interface {
     constructor(
         private moveEntryUseCase: MoveEntryUseCase.Interface,
         private bulkActionUseCase: BulkActionUseCase.Interface,
-        private modelAccessor: CmsModelAccessor.Interface
+        private modelAccessor: CmsModelContext.Interface
     ) {}
 
     get vm() {
@@ -50,5 +50,5 @@ class BulkMovePresenterImpl implements Abstraction.Interface {
 
 export const BulkMovePresenterImplementation = Abstraction.createImplementation({
     implementation: BulkMovePresenterImpl,
-    dependencies: [MoveEntryUseCase, BulkActionUseCase, CmsModelAccessor]
+    dependencies: [MoveEntryUseCase, BulkActionUseCase, CmsModelContext]
 });

@@ -17,7 +17,7 @@ import { UnpublishEntryUseCase } from "~/features/contentEntry/unpublishEntry/ab
 import { DeleteEntryUseCase } from "~/features/contentEntry/deleteEntry/abstractions.js";
 import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
 import { CmsFormModelBuilder } from "~/features/formModel/abstractions.js";
-import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
+import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import { ContentEntryFormPresenter as Abstraction } from "./abstractions.js";
 import { TRASH_ENTRY_DIALOG } from "~/presentation/contentEntries/list/ContentEntriesPresenter.js";
 
@@ -31,7 +31,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         private formModelFactory: FormModelFactory.Interface,
         private cmsFormModelBuilder: CmsFormModelBuilder.Interface,
         private confirmation: Confirmation.Interface,
-        private modelAccessor: CmsModelAccessor.Interface,
+        private modelAccessor: CmsModelContext.Interface,
         private getEntryUseCase: GetEntryUseCase.Interface,
         private createEntryUseCase: CreateEntryUseCase.Interface,
         private updateEntryUseCase: UpdateEntryUseCase.Interface,
@@ -308,7 +308,7 @@ export const ContentEntryFormPresenterImplementation = Abstraction.createImpleme
         FormModelFactory,
         CmsFormModelBuilder,
         Confirmation,
-        CmsModelAccessor,
+        CmsModelContext,
         GetEntryUseCase,
         CreateEntryUseCase,
         UpdateEntryUseCase,

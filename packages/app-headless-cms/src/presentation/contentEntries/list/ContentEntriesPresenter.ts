@@ -13,7 +13,7 @@ import { MoveEntryUseCase } from "~/features/contentEntry/moveEntry/abstractions
 import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
 import {
     ContentEntriesCacheProvider,
-    CmsModelAccessor
+    CmsModelContext
 } from "~/features/contentEntry/abstractions.js";
 import {
     ContentEntriesPresenter as Abstraction,
@@ -33,7 +33,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
         private _listPresenter: ListPresenter.Interface<CmsContentEntry>,
         private _foldersPresenter: FolderTreePresenter.Interface,
         private confirmation: Confirmation.Interface,
-        private modelAccessor: CmsModelAccessor.Interface,
+        private modelAccessor: CmsModelContext.Interface,
         private listEntriesUseCase: ListEntriesUseCase.Interface,
         private deleteEntryUseCase: DeleteEntryUseCase.Interface,
         private publishEntryUseCase: PublishEntryUseCase.Interface,
@@ -205,7 +205,7 @@ export const ContentEntriesPresenterImplementation = Abstraction.createImplement
         ListPresenter,
         FolderTreePresenter,
         Confirmation,
-        CmsModelAccessor,
+        CmsModelContext,
         ListEntriesUseCase,
         DeleteEntryUseCase,
         PublishEntryUseCase,

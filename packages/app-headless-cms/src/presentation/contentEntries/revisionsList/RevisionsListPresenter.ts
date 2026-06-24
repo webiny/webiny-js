@@ -4,7 +4,7 @@ import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractio
 import { ListRevisionsUseCase } from "~/features/contentEntry/listRevisions/abstractions.js";
 import { CreateRevisionFromUseCase } from "~/features/contentEntry/createRevisionFrom/abstractions.js";
 import { DeleteEntryRevisionUseCase } from "~/features/contentEntry/deleteEntryRevision/abstractions.js";
-import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
+import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import {
     RevisionsListPresenter as Abstraction,
     type IRevisionsListPresenter,
@@ -19,7 +19,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
     private _visible = false;
 
     constructor(
-        private modelAccessor: CmsModelAccessor.Interface,
+        private modelAccessor: CmsModelContext.Interface,
         private listRevisionsUseCase: ListRevisionsUseCase.Interface,
         private createRevisionFromUseCase: CreateRevisionFromUseCase.Interface,
         private deleteEntryRevisionUseCase: DeleteEntryRevisionUseCase.Interface,
@@ -137,7 +137,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
 export const RevisionsListPresenterImplementation = Abstraction.createImplementation({
     implementation: RevisionsListPresenterImpl,
     dependencies: [
-        CmsModelAccessor,
+        CmsModelContext,
         ListRevisionsUseCase,
         CreateRevisionFromUseCase,
         DeleteEntryRevisionUseCase,

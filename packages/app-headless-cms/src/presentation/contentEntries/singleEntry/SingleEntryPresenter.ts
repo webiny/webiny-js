@@ -5,7 +5,7 @@ import type { CmsContentEntry } from "~/types.js";
 import { GetSingletonEntryUseCase } from "~/features/contentEntry/singletonEntry/abstractions.js";
 import { UpdateSingletonEntryUseCase } from "~/features/contentEntry/singletonEntry/abstractions.js";
 import { CmsFormModelBuilder } from "~/features/formModel/abstractions.js";
-import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
+import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import {
     SingleEntryPresenter as Abstraction,
     type ISingleEntryPresenter,
@@ -20,7 +20,7 @@ class SingleEntryPresenterImpl implements ISingleEntryPresenter {
     constructor(
         private formModelFactory: FormModelFactory.Interface,
         private cmsFormModelBuilder: CmsFormModelBuilder.Interface,
-        private modelAccessor: CmsModelAccessor.Interface,
+        private modelAccessor: CmsModelContext.Interface,
         private getSingletonEntryUseCase: GetSingletonEntryUseCase.Interface,
         private updateSingletonEntryUseCase: UpdateSingletonEntryUseCase.Interface
     ) {
@@ -124,7 +124,7 @@ export const SingleEntryPresenter = Abstraction.createImplementation({
     dependencies: [
         FormModelFactory,
         CmsFormModelBuilder,
-        CmsModelAccessor,
+        CmsModelContext,
         GetSingletonEntryUseCase,
         UpdateSingletonEntryUseCase
     ]

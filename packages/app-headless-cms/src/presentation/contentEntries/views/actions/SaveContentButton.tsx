@@ -19,8 +19,11 @@ export const SaveContentButton = observer(() => {
     }
 
     const handleSave = async () => {
+        const model = presenter.vm.model;
+        const isPublishable = !model.tags.includes("$publishing:false");
+
         const isNew = presenter.vm.isNewEntry;
-        const saved = await presenter.saveRevision();
+        const saved = await presenter.saveRevision({ skipValidation: isPublishable });
         if (saved) {
             if (isNew && presenter.vm.entry) {
                 listPresenter.selectEntry(presenter.vm.entry.id);

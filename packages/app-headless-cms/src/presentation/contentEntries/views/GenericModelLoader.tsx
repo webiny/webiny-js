@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useContainer, useFeature } from "@webiny/app";
-import { CmsModelAccessor as CmsModelAccessorAbstraction } from "~/features/contentEntry/abstractions.js";
+import { CmsModelContext as CmsModelAccessorAbstraction } from "~/features/contentEntry/abstractions.js";
 import { GetModelFeature } from "~/features/model/getModel/feature.js";
 import type { CmsModel } from "~/types.js";
 import { OverlayLoader } from "@webiny/admin-ui";

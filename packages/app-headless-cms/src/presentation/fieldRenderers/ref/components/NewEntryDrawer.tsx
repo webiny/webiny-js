@@ -8,7 +8,7 @@ import { FoldersFeature } from "@webiny/app-aco/features/folders/feature.js";
 import { FolderTreePresenterFeature } from "@webiny/app-aco/presentation/folderTree/feature.js";
 import { FolderTree } from "@webiny/app-aco/presentation/folderTree/FolderTree.js";
 import { ContentEntryFeature } from "~/features/contentEntry/feature.js";
-import { CmsModelAccessor } from "~/features/contentEntry/CmsModelAccessor.js";
+import { CmsModelContext } from "~/features/contentEntry/CmsModelContext.js";
 import { ContentEntryFormPresenterFeature } from "~/presentation/contentEntries/form/feature.js";
 import { NewEntryPresenterFeature } from "../newEntry/feature.js";
 import { GenericModelLoader } from "~/presentation/contentEntries/views/GenericModelLoader.js";
@@ -27,7 +27,7 @@ export const NewEntryDrawer = ({ modelId, onClose, onChange }: NewEntryDrawerPro
     const dialogContainer = useMemo(() => {
         const child = parentContainer.createChildContainer();
         ContentEntryFeature.register(child);
-        child.register(CmsModelAccessor).inSingletonScope();
+        child.register(CmsModelContext).inSingletonScope();
         FoldersFeature.register(child, { type: `cms:${modelId}` });
         FolderTreePresenterFeature.register(child);
         ContentEntryFormPresenterFeature.register(child);

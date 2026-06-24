@@ -11218,7 +11218,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny-scripts/cli@workspace:scripts/cli"
   dependencies:
-    "@webiny/di": "npm:^1.0.1"
+    "@webiny/di": "npm:^1.0.2"
     chalk: "npm:^5.6.2"
     find-up: "npm:^8.0.0"
     pino: "npm:^10.3.1"
@@ -13395,7 +13395,7 @@ __metadata:
   resolution: "@webiny/feature@workspace:packages/feature"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.1"
+    "@webiny/di": "npm:^1.0.2"
     typescript: "npm:6.0.3"
   languageName: unknown
   linkType: soft
@@ -25339,7 +25339,7 @@ __metadata:
     "@types/react": "npm:18.3.31"
     "@types/react-dom": "npm:18.3.7"
     "@vitest/coverage-v8": "npm:^4.1.8"
-    "@webiny/di": "npm:^1.0.1"
+    "@webiny/di": "npm:^1.0.2"
     "@webiny/stdlib": "npm:^0.0.7"
     adio: "npm:^3.0.1"
     chalk: "npm:^5.6.2"

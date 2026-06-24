@@ -13,125 +13,80 @@ The old plugins carry `graphql.queryField` (client-side GraphQL selection genera
 
 ## Phase 1: Backend — `valuesSelection` field on `CmsContentModel`
 
-**Goal**: The backend generates the GraphQL `values { ... }` selection string for a model, so the frontend doesn't need field-type-specific GraphQL logic.
-
-### What to do
-
-1. **New utility** `astToValuesSelection(ast, model)` — walks the AST and produces a GraphQL selection string:
-   - `"field"` node with no children → `field.fieldId`
-   - `"field"` node with children → `field.fieldId { ...recurse children... }`
-   - `"collection"` node → `...on TypeName { ...recurse children... _templateId __typename }`
-   - The TypeName for collections comes from the model's `singularApiName` + field's `fieldId` + template's `gqlTypeName` (matching how `DynamicZoneToGraphQL` builds types)
-
-   Location: `packages/api-headless-cms/src/utils/contentModelAst/astToValuesSelection.ts`
-
-2. **Add `valuesSelection: String` to `CmsContentModel` GraphQL type**
-   - File: `packages/api-headless-cms/src/graphql/schema/contentModels.ts`
-   - Add field resolver on `CmsContentModel` (line ~57) that calls `getModelToAstConverter().toAst(model)` then `astToValuesSelection(ast, model)`
-
-3. **Tests**: Unit test for `astToValuesSelection` with cases for flat fields, nested objects, refs, dynamic zones, and empty models.
-
-### Key reference
-
-- `CmsModelToAstConverter` at `packages/api-headless-cms/src/utils/contentModelAst/CmsModelToAstConverter.ts`
-- `getModelToAstConverter()` at `packages/api-headless-cms/src/crud/contentModel.crud.ts:32`
-- Existing GraphQL type prefix pattern: `${model.singularApiName}_${createTypeName(fieldId)}`
-- DZ template type: `${prefix}_${template.gqlTypeName}`
-- Ref selection: `{ modelId id }` (hardcoded, not recursive)
-
-### Verify
-
-- [ ] `yarn test packages/api-headless-cms` — existing tests pass
-- [ ] New unit test for `astToValuesSelection` passes
-- [ ] Query `getContentModel` returns `valuesSelection` with correct nested selections
+- [x] `ValuesSelectionGenerator` abstraction + implementation + feature + tests
+- [x] `valuesSelection: String` on `CmsContentModel` GraphQL type
+- [x] All backend tests pass
 
 ---
 
 ## Phase 2: Frontend — Use `model.valuesSelection`, remove `createFieldsList`
 
-**Goal**: Frontend queries use the backend-provided selection string instead of generating it client-side.
-
-### What to do
-
-1. **Add `valuesSelection` to frontend model type**
-   - `packages/app-headless-cms-common/src/types/model.ts` — add `valuesSelection?: string` to `CmsModel`/`CmsEditorContentModel`
-
-2. **Add to GraphQL query fragments**
-   - `packages/app-headless-cms/src/admin/graphql/contentModels.ts` — add `valuesSelection` to `MODEL_FIELDS`
-
-3. **Replace `createFieldsList` calls** — all sites that build `values { ... }` blocks use `model.valuesSelection` instead. Key locations:
-   - `packages/app-headless-cms-common/src/entries.graphql.ts` — `createListQueryDataSelection()` and `createReadQueryDataSelection()` etc.
-   - `packages/app-headless-cms/src/features/contentEntry/listEntries/ListEntriesGateway.ts`
-   - `packages/app-headless-cms/src/features/contentEntry/getEntry/GetEntryGateway.ts`
-   - `packages/app-aco/src/graphql/records/common.ts`
-   - `packages/app-aco/src/features/folders/folderModelProvider/FolderModelProvider.ts`
-
-4. **Remove `graphql` from old field plugins** — `object.tsx`, `ref.tsx`, `dynamicZone.tsx`
-
-5. **Deprecate `createFieldsList`** — mark as deprecated or remove if no remaining callers
-
-### Verify
-
-- [ ] `yarn check` on app-headless-cms, app-headless-cms-common, app-aco
-- [ ] Content entries with object, ref, dynamic zone fields load correctly
-- [ ] Updating a model (adding/removing fields) → re-fetching entries uses updated selection
-- [ ] ACO records still load
+- [x] `valuesSelection` on frontend `CmsModel` type + `MODEL_FIELDS` query
+- [x] `getValuesBlock(model)` helper with fallback
+- [x] All `entries.graphql.ts` callers migrated
+- [x] `GetEntryGateway` migrated
+- [x] ACO `FolderModelProvider` + `common.ts` migrated
+- [x] `graphql.queryField` removed from object, ref, dynamicZone plugins
+- [x] Leaf field plugins deleted (text, longText, richText, number, boolean, dateTime, json, searchableJson)
+- [ ] Manual verify: content entries with object, ref, dynamic zone load correctly
+- [ ] Manual verify: ACO records load
 
 ---
 
 ## Phase 3: Extend `ICmsFieldType` with model editor properties
 
-**Goal**: Move metadata, nested editor rendering, and drag-and-drop logic from old plugins to `CmsFieldType`.
-
-### What to do
-
-1. **Extend `ICmsFieldType` interface** (`presentation/fieldTypes/abstractions.ts`):
-
-   ```
-   hideInAdmin?: boolean
-   tags?: string[]
-   allowLayout?: boolean
-   canAccept?(field, draggable): boolean
-   renderEditor?(params): React.ReactNode
-   ```
-
-2. **Add properties to each field type implementation** (`presentation/fieldTypes/types/*.ts`):
-   - `ObjectFieldType`: `allowLayout: true`, `canAccept` (accept most fields), `renderEditor` (nested `FieldEditor`)
-   - `DynamicZoneFieldType`: `renderEditor` (template management UI — `DynamicZone` component)
-   - Layout types (separator, alert, tabs — need new type implementations): `tags: ["Layout"]`, `renderEditor` (their visual UI)
-   - Leaf types (text, number, etc.): no `renderEditor` needed
-
-3. **Migrate consumers to resolve from DI instead of plugin registry**:
-   - `FieldsSidebar.tsx` — resolve all `CmsFieldType` instances, use `hideInAdmin`/`tags` for filtering
-   - `Field.tsx` — use `fieldType.renderEditor()` instead of `fieldPlugin.field.render()`
-   - `FieldEditorContext.tsx` — resolve `CmsFieldType` for field operations
-   - `getDragInfo.tsx` — use `fieldType.canAccept`/`allowLayout`
-   - `LayoutCell.tsx` — use `fieldType.renderEditor()` for layout fields
-   - `useModelField.ts` — return `CmsFieldType` instead of `CmsModelFieldTypePlugin`
-
-### Verify
-
-- [ ] `yarn check` on app-headless-cms, app-headless-cms-common
-- [ ] Model editor: field sidebar shows all types, drag-and-drop works
-- [ ] Object fields show nested field editor
-- [ ] Dynamic zone shows template management UI
-- [ ] Layout fields (separator, alert, tabs) render correctly
+- [x] `ICmsFieldType` extended: `hideInAdmin`, `tags`, `canEditSettings`, `allowLayout`, `canAccept`, `renderEditor`, `renderInfo`
+- [x] Icons changed to `React.ReactElement` — all implementations updated with SVG imports
+- [x] `ObjectFieldType.renderEditor`, `DynamicZoneFieldType.renderEditor`, `RefFieldType.renderInfo`
+- [x] `FieldsSidebar` — resolves from DI
+- [x] `FieldEditorContext` — `getFieldType` from DI, removed `getFieldPlugin`
+- [x] `FieldEditor.tsx` — uses `getFieldType` for `canAccept`/`allowLayout`
+- [x] `Field.tsx` — uses `getFieldType` for icon, label, canEditSettings, renderEditor, renderInfo
+- [x] `getDragInfo` + `DragPreview` — uses DI
+- [x] `EditFieldDialog` — reads label from `CmsFieldType` instead of `fieldPlugin`
+- [x] `getFieldRendererPlugin` → `getFieldRenderer` — resolves `CmsFieldRenderer` from DI
+- [x] Fixed `<FileManager>` / `<HeadlessCMS>` registration order
+- [x] `DynamicZoneTemplate` — named dialog + accordion fix
+- [x] `FileFieldType` icon updated
+- [ ] Manual verify: model editor sidebar, drag-and-drop, nested editors
 
 ---
 
-## Phase 4: Remove old field type plugins
+## Phase 4: Remove old plugins + cleanup
 
-**Goal**: Delete old plugin files and their registration.
+### Deleted
 
-### What to do
+- [x] All `admin/plugins/fieldValidators/` — reimplemented in `presentation/fieldValidators/`
+- [x] Leaf field plugins from `allPlugins.ts`
+- [x] `ref`, `object`, `dynamicZone` from `allPlugins.ts` (no longer registered as old plugins)
+- [x] Old transformer plugins removed from registration — replaced by `CmsEntryValueTransformer` DI abstraction
+- [x] `FullScreenContentEntry/` directory deleted
+- [x] Dead `EditFieldDialog/` subdirectories (ValidationTab, functions, getValidators)
+- [x] Dead imports from `index.tsx` (ContentEntryListConfig, ContentEntryEditorConfig)
 
-1. Remove plugin files from `packages/app-headless-cms/src/admin/plugins/fields/`
-2. Remove plugin imports from `packages/app-headless-cms/src/allPlugins.ts`
-3. Remove `CmsModelFieldTypePlugin` type usage from `app-headless-cms-common` (keep type definition for backwards compat if needed)
-4. Remove `createFieldsList` if fully unused
+### New abstractions created
 
-### Verify
+- `CmsEntryValueTransformer` — per-field-type value transformer abstraction
+- `EntryDataPreparer` — walks fields and applies transformers
+- `DynamicZoneValueTransformer` — converts `{_templateId, ...}` → `{GqlTypeName: {...}}`
+- `ObjectValueTransformer` — recursively prepares nested objects
+- Transformers injected into gateways (`CreateEntryGateway`, `UpdateEntryGateway`, `UpdateSingletonEntryGateway`)
 
-- [ ] Full typecheck passes
-- [ ] No runtime errors
-- [ ] All manual tests from previous phases still pass
+### Remaining old code (still needed)
+
+- `admin/plugins/fields/object.tsx` — `render()` still used by old `ContentEntry` view (public export)
+- `admin/plugins/fields/ref.tsx` — `renderSettings` still used by old field editor system
+- `admin/plugins/fields/dynamicZone.tsx` — `render()` still used by old view
+- `admin/plugins/fields/dynamicZone/` — components used by `DynamicZoneFieldType.renderEditor`
+- `admin/plugins/fields/object/` — `ObjectFields` used by `ObjectFieldType.renderEditor`
+- `admin/plugins/fields/ref/` — `renderInfo` used by `RefFieldType`
+- `admin/plugins/fields/ui/` — layout field plugins (separate type)
+- `admin/plugins/fieldRenderers/` — **under review for deletion**
+- `admin/plugins/transformers/` — no longer registered but files still on disk
+- `admin/views/contentEntries/ContentEntry/` — old view, still in routes + public exports
+
+### Build status
+
+- [x] `yarn build` passes
+- [x] `yarn lint` clean
+- [ ] Manual verification needed

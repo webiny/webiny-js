@@ -6,7 +6,7 @@ import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 import type { CmsContentEntry } from "~/types.js";
 import { DeleteEntryUseCase } from "~/features/contentEntry/deleteEntry/abstractions.js";
 import { BulkActionUseCase } from "~/features/contentEntry/bulkAction/abstractions.js";
-import { CmsModelAccessor } from "~/features/contentEntry/abstractions.js";
+import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import { BulkDeletePresenter as Abstraction } from "./abstractions.js";
 
 class BulkDeletePresenterImpl implements Abstraction.Interface {
@@ -15,7 +15,7 @@ class BulkDeletePresenterImpl implements Abstraction.Interface {
     constructor(
         private deleteEntryUseCase: DeleteEntryUseCase.Interface,
         private bulkActionUseCase: BulkActionUseCase.Interface,
-        private modelAccessor: CmsModelAccessor.Interface
+        private modelAccessor: CmsModelContext.Interface
     ) {}
 
     get vm() {
@@ -48,5 +48,5 @@ class BulkDeletePresenterImpl implements Abstraction.Interface {
 
 export const BulkDeletePresenterImplementation = Abstraction.createImplementation({
     implementation: BulkDeletePresenterImpl,
-    dependencies: [DeleteEntryUseCase, BulkActionUseCase, CmsModelAccessor]
+    dependencies: [DeleteEntryUseCase, BulkActionUseCase, CmsModelContext]
 });

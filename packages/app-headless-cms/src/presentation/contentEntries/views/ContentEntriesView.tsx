@@ -3,7 +3,7 @@ import { DiContainerProvider, useContainer } from "@webiny/app";
 import { DialogsProvider } from "@webiny/app-admin";
 import { FoldersFeature } from "@webiny/app-aco/features/folders/feature.js";
 import { FolderTreePresenterFeature } from "@webiny/app-aco/presentation/folderTree/feature.js";
-import { CmsModelAccessor } from "~/features/contentEntry/CmsModelAccessor.js";
+import { CmsModelContext } from "~/features/contentEntry/CmsModelContext.js";
 import { ContentEntriesPresenterFeature } from "../list/feature.js";
 import { ContentEntryFormPresenterFeature } from "../form/feature.js";
 import { SingleEntryPresenterFeature } from "../singleEntry/feature.js";
@@ -37,7 +37,7 @@ export const ContentEntriesView = ({
 
         FoldersFeature.register(child, { type: `cms:${modelId}` });
         FolderTreePresenterFeature.register(child);
-        child.register(CmsModelAccessor).inSingletonScope();
+        child.register(CmsModelContext).inSingletonScope();
         ContentEntriesPresenterFeature.register(child);
         ContentEntryFormPresenterFeature.register(child);
         RevisionsListFeature.register(child);
