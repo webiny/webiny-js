@@ -1,4 +1,5 @@
-import type { Entity } from "~/toolbox.js";
+import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { EntitySchema } from "~/utils/EntitySchema.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 export type IPutParamsItem<T extends GenericRecord = GenericRecord> = {
@@ -8,15 +9,16 @@ export type IPutParamsItem<T extends GenericRecord = GenericRecord> = {
 } & T;
 
 export interface IPutParams<T extends GenericRecord = GenericRecord> {
-    entity: Entity;
+    client: DynamoDocClient;
+    schema: EntitySchema;
     item: IPutParamsItem<T>;
 }
 
-export const put = async <T extends GenericRecord = GenericRecord>(params: IPutParams<T>) => {
-    const { entity, item } = params;
+export const put = async <T extends GenericRecord = GenericRecord>(
+    params: IPutParams<T>
+): Promise<void> => {
+    const { client, schema, item } = params;
 
-    return await entity.put(item, {
-        execute: true,
-        strictSchemaCheck: false
-    });
+    const marshalled = schema.marshal(item);
+    await client.put(marshalled);
 };

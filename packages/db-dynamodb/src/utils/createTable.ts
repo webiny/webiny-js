@@ -7,24 +7,14 @@ export interface ICreateTableParamsIndexDefinition {
     sortKey?: string;
 }
 
-// export interface ICreateTableParams {
-//     name?: string;
-//     documentClient: DynamoDBDocument;
-//     indexes?: GenericRecord<string, ICreateTableParamsIndexDefinition>;
-// }
-
-export type ICreateTableParams = Partial<
-    Omit<TableConstructor<string, string, string>, "DocumentClient">
-> & {
+export type ICreateTableParams = Partial<Omit<TableConstructor, "DocumentClient">> & {
     name: string;
-    documentClient: Pick<
-        TableConstructor<string, string, string>,
-        "DocumentClient"
-    >["DocumentClient"];
+    documentClient: TableConstructor["DocumentClient"];
 };
 
-export const createTable = (params: ICreateTableParams): ITable<string, "PK", "SK"> => {
+export const createTable = (params: ICreateTableParams): ITable => {
     const { documentClient, indexes = {}, ...rest } = params;
+
     return new Table({
         partitionKey: "PK",
         sortKey: "SK",

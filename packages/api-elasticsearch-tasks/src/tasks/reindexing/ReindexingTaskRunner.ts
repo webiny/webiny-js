@@ -83,7 +83,7 @@ class ReindexingTaskRunnerImpl implements Abstraction.Interface {
                     }
                     const entity = this.manager.getEntity(entityName);
                     await indexManager.disableIndexing(item.index);
-                    tableWriteBatch.put(entity.entity, {
+                    tableWriteBatch.put(entity.schema, {
                         ...item,
                         TYPE: item.TYPE || "unknown",
                         modified: new Date().toISOString()

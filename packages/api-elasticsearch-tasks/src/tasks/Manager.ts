@@ -42,7 +42,7 @@ class ManagerImpl implements Abstraction.Interface {
 
     public async read<T>(items: BatchReadItem[]): Promise<T[]> {
         return await batchReadAll<T>({
-            table: this.table.table,
+            client: this.table.table,
             items
         });
     }

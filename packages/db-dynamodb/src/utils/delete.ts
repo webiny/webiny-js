@@ -1,17 +1,17 @@
-import type { Entity } from "~/toolbox.js";
+import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+
 export interface IDeleteItemKeys {
     PK: string;
     SK: string;
 }
+
 export interface IDeleteItemParams {
-    entity: Entity;
+    client: DynamoDocClient;
     keys: IDeleteItemKeys;
 }
 
-export const deleteItem = async (params: IDeleteItemParams) => {
-    const { entity, keys } = params;
+export const deleteItem = async (params: IDeleteItemParams): Promise<void> => {
+    const { client, keys } = params;
 
-    return await entity.delete(keys, {
-        execute: true
-    });
+    await client.delete(keys);
 };

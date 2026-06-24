@@ -25,7 +25,6 @@
     "@webiny/utils": "0.0.0",
     "date-fns": "^4.4.0",
     "dot-prop": "^10.1.0",
-    "dynamodb-toolbox": "^0.9.5",
     "lodash": "^4.18.1"
   },
   "devDependencies": {

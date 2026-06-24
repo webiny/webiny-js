@@ -1,28 +1,23 @@
-import type { Entity } from "~/toolbox.js";
+import type { EntitySchema } from "~/utils/EntitySchema.js";
 import type { BatchWriteItem, IDeleteBatchItem, IPutBatchItem } from "~/utils/batch/types.js";
 import type { IEntityWriteBatchBuilder } from "./types.js";
-import type { EntityOption } from "./getEntity.js";
-import { getEntity } from "./getEntity.js";
 
 export class EntityWriteBatchBuilder implements IEntityWriteBatchBuilder {
-    private readonly entity: Entity;
+    private readonly schema: EntitySchema;
 
-    public constructor(entity: EntityOption) {
-        this.entity = getEntity(entity);
+    public constructor(schema: EntitySchema) {
+        this.schema = schema;
     }
 
     public put<T extends Record<string, any>>(item: IPutBatchItem<T>): BatchWriteItem {
-        return this.entity.putBatch(item, {
-            execute: true,
-            strictSchemaCheck: false
-        });
+        return this.schema.toPutRequest(item) as unknown as BatchWriteItem;
     }
 
     public delete(item: IDeleteBatchItem): BatchWriteItem {
-        return this.entity.deleteBatch(item);
+        return this.schema.toDeleteRequest(item) as unknown as BatchWriteItem;
     }
 }
 
-export const createEntityWriteBatchBuilder = (entity: Entity): IEntityWriteBatchBuilder => {
-    return new EntityWriteBatchBuilder(entity);
+export const createEntityWriteBatchBuilder = (schema: EntitySchema): IEntityWriteBatchBuilder => {
+    return new EntityWriteBatchBuilder(schema);
 };

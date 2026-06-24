@@ -1,3 +1,5 @@
+import type { EntitySchema } from "~/utils/EntitySchema.js";
+import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
 import type { IReadBatchItem } from "~/utils/batch/types.js";
 import type {
     IEntityReadBatch,
@@ -5,19 +7,18 @@ import type {
     IEntityReadBatchBuilderGetResponse,
     IEntityReadBatchKey
 } from "./types.js";
-import type { Entity as ToolboxEntity, TableDef } from "~/toolbox.js";
 import { batchReadAll } from "~/utils/batch/batchRead.js";
 import { createEntityReadBatchBuilder } from "./EntityReadBatchBuilder.js";
-import type { EntityOption } from "./getEntity.js";
-import { getEntity } from "./getEntity.js";
 
 export interface IEntityReadBatchParams {
-    entity: EntityOption;
+    schema: EntitySchema;
+    client: DynamoDocClient;
     read?: IReadBatchItem[];
 }
 
 export class EntityReadBatch<T> implements IEntityReadBatch<T> {
-    private readonly entity: ToolboxEntity;
+    private readonly schema: EntitySchema;
+    private readonly client: DynamoDocClient;
     private readonly builder: IEntityReadBatchBuilder;
     private readonly _items: IEntityReadBatchBuilderGetResponse[] = [];
 
@@ -30,8 +31,9 @@ export class EntityReadBatch<T> implements IEntityReadBatch<T> {
     }
 
     public constructor(params: IEntityReadBatchParams) {
-        this.entity = getEntity(params.entity);
-        this.builder = createEntityReadBatchBuilder(this.entity);
+        this.schema = params.schema;
+        this.client = params.client;
+        this.builder = createEntityReadBatchBuilder(this.schema);
         for (const item of params.read || []) {
             this.get(item);
         }
@@ -51,7 +53,7 @@ export class EntityReadBatch<T> implements IEntityReadBatch<T> {
 
     public async execute() {
         return await batchReadAll<T>({
-            table: this.entity.table as TableDef,
+            client: this.client,
             items: this._items
         });
     }

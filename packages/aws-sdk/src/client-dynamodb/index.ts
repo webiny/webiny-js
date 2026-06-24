@@ -18,7 +18,8 @@ export {
     GetCommand,
     UpdateCommand,
     DeleteCommand,
-    DynamoDBDocument
+    DynamoDBDocument,
+    QueryCommand as DocQueryCommand
 } from "@aws-sdk/lib-dynamodb";
 
 export type {
@@ -35,6 +36,7 @@ export type {
     DeleteCommandOutput,
     ScanCommandInput,
     ScanCommandOutput,
+    QueryCommandInput as DocQueryCommandInput,
     QueryCommandOutput
 } from "@aws-sdk/lib-dynamodb";
 

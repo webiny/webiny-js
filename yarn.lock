@@ -13607,7 +13607,6 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     date-fns: "npm:^4.4.0"
     dot-prop: "npm:^10.1.0"
-    dynamodb-toolbox: "npm:^0.9.5"
     jest-dynalite: "npm:^3.6.1"
     lodash: "npm:^4.18.1"
     rimraf: "npm:^6.1.3"
@@ -17438,13 +17437,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deep-copy@npm:^1.4.2":
-  version: 1.4.2
-  resolution: "deep-copy@npm:1.4.2"
-  checksum: 10/0e31e320fa8c41b4f1ce6845fa58ddfcbbe55bd67730d3398a39e53589d13b0ea9891cc795d6be498c71a85c957afd1661a90238eaf1daa63b44cc5aa6e42c4c
-  languageName: node
-  linkType: hard
-
 "deep-eql@npm:4.1.4":
   version: 4.1.4
   resolution: "deep-eql@npm:4.1.4"
@@ -17846,19 +17838,6 @@ __metadata:
   bin:
     dynalite: cli.js
   checksum: 10/a32e879c5a592577fa2c340977288ee30fd59ef28d24df2cb2657263511d37051e3edf8f7ddd0cabafde455338d474bb147521fc68fdfd85b9befdeb140901e8
-  languageName: node
-  linkType: hard
-
-"dynamodb-toolbox@npm:^0.9.5":
-  version: 0.9.5
-  resolution: "dynamodb-toolbox@npm:0.9.5"
-  dependencies:
-    deep-copy: "npm:^1.4.2"
-    ts-toolbelt: "npm:^9.6.0"
-  peerDependencies:
-    "@aws-sdk/client-dynamodb": ^3.0.0
-    "@aws-sdk/lib-dynamodb": ^3.0.0
-  checksum: 10/507906d67f52ab667e986ce6c829df88c59801b0ff73459bb1589a527209ed5a969765a7f193c51952fe232eef47742fa89f55aded15cffc007de126b321da10
   languageName: node
   linkType: hard
 
@@ -28200,13 +28179,6 @@ __metadata:
     "@ts-morph/common": "npm:~0.29.0"
     code-block-writer: "npm:^13.0.3"
   checksum: 10/fb5541c2c5b25386ae85346203046cc136d4afa2821a9b7b5ea9ffdbcff6d8867eccf98a3d7d50dd86f64428f80cf4ae9e609bd8f02f99cef902ba2760ecd5d9
-  languageName: node
-  linkType: hard
-
-"ts-toolbelt@npm:^9.6.0":
-  version: 9.6.0
-  resolution: "ts-toolbelt@npm:9.6.0"
-  checksum: 10/2c2dea2631dbd7372a79cccc6d09a377a6ca2f319f767fd239d2e312cd1d9165a90f8c1777a047227bfdcda6aeba3addbadce88fdfc7f43caf4534d385a43c82
   languageName: node
   linkType: hard
 

@@ -1,4 +1,5 @@
-import type { Entity, TableDef } from "~/toolbox.js";
+import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { EntitySchema } from "~/utils/EntitySchema.js";
 import type {
     IEntityReadBatchBuilder,
     IEntityReadBatchBuilderGetResponse
@@ -6,21 +7,19 @@ import type {
 import { batchReadAll } from "~/utils/batch/batchRead.js";
 import { createEntityReadBatchBuilder } from "~/utils/entity/EntityReadBatchBuilder.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import { WebinyError } from "@webiny/error";
 import type { ITableReadBatch, ITableReadBatchKey } from "./types.js";
 
 export interface ITableReadBatchParams {
-    table: TableDef;
+    table: DynamoDocClient;
 }
 
 export class TableReadBatch implements ITableReadBatch {
-    private readonly table: TableDef;
-
+    private readonly client: DynamoDocClient;
     private readonly _items: IEntityReadBatchBuilderGetResponse[] = [];
     private readonly builders: Map<string, IEntityReadBatchBuilder> = new Map();
 
     public constructor(params: ITableReadBatchParams) {
-        this.table = params.table;
+        this.client = params.table;
     }
 
     public get total(): number {
@@ -31,18 +30,11 @@ export class TableReadBatch implements ITableReadBatch {
         return Array.from(this._items);
     }
 
-    public get(entity: Entity, input: ITableReadBatchKey): void {
-        const builder = this.getBuilder(entity);
+    public get(schema: EntitySchema, input: ITableReadBatchKey): void {
+        const builder = this.getBuilder(schema);
 
         const items = Array.isArray(input) ? input : [input];
         for (const item of items) {
-            /**
-             * We cannot read from two tables at the same time, so check for that.
-             */
-            if (this.table.name !== entity.table!.name) {
-                throw new WebinyError(`Cannot read from two different tables at the same time.`);
-            }
-
             this._items.push(builder.get(item));
         }
     }
@@ -53,19 +45,21 @@ export class TableReadBatch implements ITableReadBatch {
         }
         const items = Array.from(this._items);
         this._items.length = 0;
+
         return await batchReadAll<T>({
-            items,
-            table: this.table
+            client: this.client,
+            items
         });
     }
 
-    private getBuilder(entity: Entity): IEntityReadBatchBuilder {
-        const builder = this.builders.get(entity.name);
+    private getBuilder(schema: EntitySchema): IEntityReadBatchBuilder {
+        const builder = this.builders.get(schema.name);
         if (builder) {
             return builder;
         }
-        const newBuilder = createEntityReadBatchBuilder(entity);
-        this.builders.set(entity.name, newBuilder);
+
+        const newBuilder = createEntityReadBatchBuilder(schema);
+        this.builders.set(schema.name, newBuilder);
         return newBuilder;
     }
 }

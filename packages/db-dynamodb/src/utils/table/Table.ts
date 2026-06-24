@@ -1,5 +1,5 @@
 import type { TableConstructor } from "~/toolbox.js";
-import { Table as BaseTable } from "~/toolbox.js";
+import { DynamoDocClient } from "~/utils/DynamoDocClient.js";
 import type {
     ITable,
     ITableReadBatch,
@@ -9,17 +9,15 @@ import type {
 } from "./types.js";
 import { createTableWriteBatch } from "./TableWriteBatch.js";
 import { createTableReadBatch } from "./TableReadBatch.js";
-import { scan } from "../scan.js";
 
-export class Table<
-    Name extends string = string,
-    PartitionKey extends string = string,
-    SortKey extends string = string
-> implements ITable<Name, PartitionKey, SortKey> {
-    public readonly table: BaseTable<Name, PartitionKey, SortKey>;
+export class Table implements ITable {
+    public readonly table: DynamoDocClient;
 
-    public constructor(params: TableConstructor<Name, PartitionKey, SortKey>) {
-        this.table = new BaseTable(params);
+    public constructor(params: TableConstructor) {
+        this.table = new DynamoDocClient({
+            documentClient: params.DocumentClient,
+            tableName: params.name
+        });
     }
 
     public createWriter(): ITableWriteBatch {
@@ -35,9 +33,6 @@ export class Table<
     }
 
     public async scan<T>(params: ITableScanParams): Promise<ITableScanResponse<T>> {
-        return scan<T>({
-            ...params,
-            table: this.table
-        });
+        return this.table.scan<T>(params);
     }
 }

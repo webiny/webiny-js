@@ -1,10 +1,14 @@
-import WebinyError from "@webiny/error";
-import type { Entity, EntityQueryOptions } from "~/toolbox.js";
-import { cleanupItem, cleanupItems } from "~/utils/cleanup.js";
+import type {
+    DynamoDocClient,
+    IQueryParams as IClientQueryParams
+} from "~/utils/DynamoDocClient.js";
+import type { EntitySchema } from "~/utils/EntitySchema.js";
+import type { EntityQueryOptions } from "~/toolbox.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface QueryAllParams {
-    entity: Entity<any>;
+    client: DynamoDocClient;
+    schema: EntitySchema;
     partitionKey: string;
     options?: EntityQueryOptions;
 }
@@ -13,114 +17,31 @@ export interface QueryOneParams extends QueryAllParams {
     options?: Omit<EntityQueryOptions, "limit">;
 }
 
-export interface QueryParams extends QueryAllParams {
-    previous?: any;
-}
-
-export interface QueryResult<T> {
-    result: any | null;
-    items: T[];
-}
-
-/**
- * Will run query only once. Pass the previous to run the query again to fetch new data.
- * It returns the result and the items it found.
- * Result is required to fetch the items that were not fetched in the previous run.
- */
-const query = async <T>(params: QueryParams): Promise<QueryResult<T>> => {
-    const { entity, previous, partitionKey, options } = params;
-    let result;
-    /**
-     * In case there is no previous result we must make a new query.
-     * This is the first query on the given partition key.
-     */
-    if (!previous) {
-        // @ts-expect-error
-        result = await entity.query(partitionKey, options);
-    } else if (typeof previous.next === "function") {
-        /**
-         * In case we have a previous result and it has a next method, we run it.
-         * In case result of the next method is false, it means it has nothing else to read
-         * and we return a null to keep the query from repeating.
-         */
-        result = await previous.next();
-        if (result === false) {
-            return {
-                result: null,
-                items: []
-            };
-        }
-    } else {
-        /**
-         * This could probably never happen but keep it here just in case to break the query loop.
-         * Basically, either previous does not exist or it exists and it does not have the next method
-         * and at that point a result returned will be null and loop should not start again.
-         */
-        return {
-            result: null,
-            items: []
-        };
-    }
-    /**
-     * We expect the result to contain an Items array and if not, something went wrong, very wrong.
-     */
-    if (!result || !result.Items || !Array.isArray(result.Items)) {
-        throw new WebinyError(
-            "Error when querying for content entries - no result.",
-            "QUERY_ERROR",
-            {
-                partitionKey,
-                options
-            }
-        );
-    }
-    return {
-        result,
-        items: result.Items
-    };
-};
-/**
- * Will run the query to fetch the first possible item from the database.
- */
 export const queryOne = async <T>(params: QueryOneParams): Promise<T | null> => {
-    const { items } = await query<T>({
-        ...params,
-        options: {
-            ...(params.options || {}),
-            limit: 1
-        }
-    });
-    const item = items.shift();
-    return item ? item : null;
+    const { client, partitionKey, options } = params;
+
+    const result = await client.queryOne<T>(toClientParams(partitionKey, options));
+    return result;
 };
 
 export const queryOneClean = async <T>(params: QueryOneParams): Promise<T | null> => {
-    const result = await queryOne<T>(params);
+    const result = await queryOne(params);
     if (!result) {
         return null;
     }
-    return cleanupItem(params.entity, result);
+    return params.schema.unmarshal<T>(result as GenericRecord);
 };
-/**
- * Will run the query to fetch the results no matter how many iterations it needs to go through.
- */
+
 export const queryAll = async <T>(params: QueryAllParams): Promise<T[]> => {
-    const items: T[] = [];
-    let results: QueryResult<T>;
-    let previousResult: any = undefined;
-    while ((results = await query({ ...params, previous: previousResult }))) {
-        items.push(...results.items);
-        if (!results.result) {
-            return items;
-        }
-        previousResult = results.result;
-    }
-    return items;
+    const { client, partitionKey, options } = params;
+
+    const result = await client.query<T>(toClientParams(partitionKey, options));
+    return result;
 };
 
 export const queryAllClean = async <T>(params: QueryAllParams): Promise<T[]> => {
     const results = await queryAll<T>(params);
-    return cleanupItems(params.entity, results);
+    return results.map(item => params.schema.unmarshal<T>(item as GenericRecord));
 };
 
 export interface IQueryPageResponse<T> {
@@ -129,17 +50,18 @@ export interface IQueryPageResponse<T> {
 }
 
 export const queryPerPage = async <T>(params: QueryAllParams): Promise<IQueryPageResponse<T>> => {
-    const result = await query<T>({
-        ...params,
-        options: {
-            ...params.options,
-            limit: params.options?.limit || 50
-        }
-    });
+    const { client, partitionKey, options } = params;
+
+    const result = await client.queryPage<T>(
+        toClientParams(partitionKey, {
+            ...options,
+            limit: options?.limit || 50
+        })
+    );
 
     return {
         items: result.items,
-        lastEvaluatedKey: result.result?.LastEvaluatedKey
+        lastEvaluatedKey: result.lastEvaluatedKey as GenericRecord
     };
 };
 
@@ -148,26 +70,50 @@ export const queryPerPageClean = async <T>(
 ): Promise<IQueryPageResponse<T>> => {
     const result = await queryPerPage<T>(params);
     return {
-        items: cleanupItems<T>(params.entity, result.items),
+        items: result.items.map(item => params.schema.unmarshal<T>(item as GenericRecord)),
         lastEvaluatedKey: result.lastEvaluatedKey
     };
 };
 
-/**
- * Will run the query to fetch the results no matter how many iterations it needs to go through.
- * Results of each iteration will be passed to the provided callback
- */
 export const queryAllWithCallback = async <T>(
     params: QueryAllParams,
     callback: (items: T[]) => Promise<void>
 ): Promise<void> => {
-    let results: QueryResult<T>;
-    let previousResult: any = undefined;
-    while ((results = await query({ ...params, previous: previousResult }))) {
-        if (!results.result) {
-            break;
+    const { client, partitionKey, options } = params;
+
+    let startKey: GenericRecord | undefined;
+
+    do {
+        const result = await client.queryPage<T>(
+            toClientParams(partitionKey, {
+                ...options,
+                startKey: startKey || options?.startKey
+            })
+        );
+
+        if (result.items.length > 0) {
+            await callback(result.items);
         }
-        await callback(results.items);
-        previousResult = results.result;
-    }
+
+        startKey = result.lastEvaluatedKey;
+    } while (startKey);
+};
+
+const toClientParams = (partitionKey: string, options?: EntityQueryOptions): IClientQueryParams => {
+    return {
+        partitionKey,
+        index: options?.index,
+        limit: options?.limit,
+        reverse: options?.reverse,
+        consistent: options?.consistent,
+        beginsWith: options?.beginsWith,
+        eq: options?.eq,
+        lt: options?.lt,
+        lte: options?.lte,
+        gt: options?.gt,
+        gte: options?.gte,
+        between: options?.between as [string, string] | [number, number] | undefined,
+        startKey: options?.startKey as GenericRecord | undefined,
+        attributes: options?.attributes
+    };
 };

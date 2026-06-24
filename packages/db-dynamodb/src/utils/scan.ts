@@ -1,72 +1,19 @@
 import type { ScanInput, ScanOutput } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { Entity, ScanOptions, TableDef } from "~/toolbox.js";
+import type { DynamoDocClient, IScanParams, IScanResponse } from "~/utils/DynamoDocClient.js";
 import type { ExecuteWithRetryOptions } from "@webiny/utils";
 import { executeWithRetry } from "@webiny/utils";
 
-export type { ScanOptions, ScanInput, ScanOutput };
+export type { IScanParams as ScanOptions };
+export type { ScanInput, ScanOutput };
 
-export interface BaseScanParams {
-    options?: ScanOptions;
-    params?: Partial<ScanInput>;
+export type BaseScanParams = IScanParams;
+
+export interface ScanParams {
+    table: DynamoDocClient;
+    options?: IScanParams;
 }
 
-export interface ScanWithTable extends BaseScanParams {
-    table: TableDef;
-    entity?: never;
-}
-
-export interface ScanWithEntity extends BaseScanParams {
-    entity: Entity;
-    table?: never;
-}
-
-export type ScanParams = ScanWithTable | ScanWithEntity;
-
-export interface ScanResponse<T = any> {
-    items: T[];
-    count?: number;
-    scannedCount?: number;
-    lastEvaluatedKey?: ScanOutput["LastEvaluatedKey"];
-    next?: () => Promise<ScanResponse<T>>;
-    requestId: string;
-    error: any;
-}
-
-interface DdbScanResult<T> {
-    Items?: T[];
-    Count?: number;
-    ScannedCount?: number;
-    LastEvaluatedKey?: ScanOutput["LastEvaluatedKey"];
-    next?: () => Promise<DdbScanResult<T>>;
-    error?: any;
-    $response?: {
-        requestId: string;
-    };
-}
-
-type NextCb<T> = () => Promise<ScanResponse<T>>;
-
-const createNext = <T>(result: DdbScanResult<T>): NextCb<T> | undefined => {
-    if (!result?.LastEvaluatedKey || !result.next) {
-        return undefined;
-    }
-    return async () => {
-        const response = await result!.next!();
-        return convertResult(response);
-    };
-};
-
-const convertResult = <T>(result: DdbScanResult<T>): ScanResponse<T> => {
-    return {
-        items: result.Items || [],
-        count: result.Count,
-        scannedCount: result.ScannedCount,
-        lastEvaluatedKey: result.LastEvaluatedKey || undefined,
-        next: createNext<T>(result),
-        error: result.error,
-        requestId: result.$response?.requestId || ""
-    };
-};
+export type ScanResponse<T = any> = IScanResponse<T>;
 
 export type ScanDbItem<T> = T & {
     PK: string;
@@ -77,22 +24,10 @@ export type ScanDbItem<T> = T & {
 };
 
 export const scan = async <T>(params: ScanParams): Promise<ScanResponse<T>> => {
-    const { options } = params;
+    const { table, options } = params;
 
-    const table = params.table ? params.table : params.entity.table;
-    if (!table) {
-        throw new Error(`Missing table for scan: ${JSON.stringify(options)}`);
-    }
-
-    const result = await table.scan(
-        {
-            ...options,
-            execute: true
-        },
-        params.params
-    );
-
-    return convertResult(result) as ScanResponse<T>;
+    const result = await table.scan<T>(options);
+    return result;
 };
 
 interface ScanWithCallbackOptions {
@@ -104,7 +39,6 @@ export const scanWithCallback = async <T>(
     callback: (result: ScanResponse<ScanDbItem<T>>) => Promise<void | boolean>,
     options?: ScanWithCallbackOptions
 ): Promise<void> => {
-    // For backwards compatibility, we still allow for executing the scan without retries.
     const usingRetry = Boolean(options?.retry);
     const retryOptions = options?.retry === true ? {} : options?.retry;
 
@@ -122,8 +56,6 @@ export const scanWithCallback = async <T>(
         return;
     }
 
-    // If the result of the callback was `false`, that means the
-    // user's intention was to stop further table scanning.
     const callbackResult = await callback(result);
     const mustBreak = callbackResult === false;
     if (mustBreak) {
@@ -141,8 +73,6 @@ export const scanWithCallback = async <T>(
 
         result = await getNextResult();
 
-        // If the result of the callback was `false`, that means the
-        // user's intention was to stop further table scanning.
         const callbackResult = await callback(result);
         const mustBreak = callbackResult === false;
         if (mustBreak) {

@@ -1,4 +1,5 @@
-import type { Entity as BaseEntity } from "dynamodb-toolbox";
+import type { EntitySchema } from "~/utils/EntitySchema.js";
+import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
 import type {
     BatchWriteItem,
     BatchWriteResult,
@@ -6,65 +7,60 @@ import type {
     IPutBatchItem
 } from "~/utils/batch/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { TableDef } from "~/toolbox.js";
 import type { ITableWriteBatch } from "~/utils/table/types.js";
-import type { IPutParamsItem, put } from "~/utils/put.js";
-import {
-    queryAll,
-    queryAllClean,
-    type QueryAllParams,
-    queryOne,
-    queryOneClean,
-    type QueryOneParams
-} from "~/utils/query.js";
-import type { get, getClean, GetRecordParamsKeys } from "~/utils/get.js";
-import type { deleteItem, IDeleteItemKeys } from "~/utils/delete.js";
-import type { batchReadAll, BatchReadItem } from "~/utils/batch/batchRead.js";
+import type { IPutParamsItem } from "~/utils/put.js";
+import type { GetRecordParamsKeys } from "~/utils/get.js";
+import type { IDeleteItemKeys } from "~/utils/delete.js";
+import type { BatchReadItem } from "~/utils/batch/batchRead.js";
 import type { IEntityWriteBatchParams } from "./EntityWriteBatch.js";
 import type { IEntityReadBatchParams } from "./EntityReadBatch.js";
-import { queryPerPage } from "~/utils/index.js";
+import type { IQueryPageResponse } from "~/utils/query.js";
 
-export type IEntityQueryOneParams = Omit<QueryOneParams, "entity">;
+export type IEntityQueryOneParams = {
+    partitionKey: string;
+    options?: Omit<import("~/toolbox.js").EntityQueryOptions, "limit">;
+};
 
-export type IEntityQueryAllParams = Omit<QueryAllParams, "entity">;
-export type IEntityQueryPerPageParams = Omit<QueryAllParams, "entity">;
+export type IEntityQueryAllParams = {
+    partitionKey: string;
+    options?: import("~/toolbox.js").EntityQueryOptions;
+};
+
+export type IEntityQueryPerPageParams = {
+    partitionKey: string;
+    options?: import("~/toolbox.js").EntityQueryOptions;
+};
 
 export interface IEntityCreateEntityWriterParams<T = GenericRecord> extends Omit<
     IEntityWriteBatchParams<T>,
-    "entity"
+    "schema" | "client"
 > {}
-export interface IEntityCreateEntityReaderParams extends Omit<IEntityReadBatchParams, "entity"> {}
-
-export type IEntityPutResult = ReturnType<typeof put>;
-export type IEntityGetResult<T> = ReturnType<typeof get<T>>;
-export type IEntityGetCleanResult<T> = ReturnType<typeof getClean<T>>;
-export type IEntityDeleteResult = ReturnType<typeof deleteItem>;
-export type IEntityQueryOneResult<T> = ReturnType<typeof queryOne<T>>;
-export type IEntityQueryOneCleanResult<T> = ReturnType<typeof queryOneClean<T>>;
-export type IEntityQueryAllResult<T> = ReturnType<typeof queryAll<T>>;
-export type IEntityQueryAllCleanResult<T> = ReturnType<typeof queryAllClean<T>>;
-export type IEntityQueryPerPageResult<T> = ReturnType<typeof queryPerPage<T>>;
+export interface IEntityCreateEntityReaderParams extends Omit<
+    IEntityReadBatchParams,
+    "schema" | "client"
+> {}
 
 export interface IEntity<T extends GenericRecord = GenericRecord> {
-    readonly entity: BaseEntity;
+    readonly schema: EntitySchema;
+    readonly client: DynamoDocClient;
     readonly name: string;
-    readonly table: TableDef;
     createEntityReader(params?: IEntityCreateEntityReaderParams): IEntityReadBatch<T>;
     createEntityWriter(params?: IEntityCreateEntityWriterParams<T>): IEntityWriteBatch<T>;
     createTableWriter(): ITableWriteBatch;
-    put(item: IPutParamsItem<T>): IEntityPutResult;
-    get<R extends T = T>(keys: GetRecordParamsKeys): IEntityGetResult<R>;
-    getClean<R extends T = T>(keys: GetRecordParamsKeys): IEntityGetCleanResult<R>;
-    delete(keys: IDeleteItemKeys): IEntityDeleteResult;
-    queryOne<R extends T = T>(params: IEntityQueryOneParams): IEntityQueryOneResult<R>;
-    queryOneClean<R extends T = T>(params: IEntityQueryOneParams): IEntityQueryOneCleanResult<R>;
-    queryAll<R extends T = T>(params: IEntityQueryAllParams): IEntityQueryAllResult<R>;
-    queryAllClean<R extends T = T>(params: IEntityQueryAllParams): IEntityQueryAllCleanResult<R>;
-    queryPerPage<R extends T = T>(params: IEntityQueryPerPageParams): IEntityQueryPerPageResult<R>;
+    put(item: IPutParamsItem<T>): Promise<void>;
+    get<R extends T = T>(keys: GetRecordParamsKeys): Promise<R | null>;
+    getClean<R extends T = T>(keys: GetRecordParamsKeys): Promise<R | null>;
+    delete(keys: IDeleteItemKeys): Promise<void>;
+    queryOne<R extends T = T>(params: IEntityQueryOneParams): Promise<R | null>;
+    queryOneClean<R extends T = T>(params: IEntityQueryOneParams): Promise<R | null>;
+    queryAll<R extends T = T>(params: IEntityQueryAllParams): Promise<R[]>;
+    queryAllClean<R extends T = T>(params: IEntityQueryAllParams): Promise<R[]>;
+    queryPerPage<R extends T = T>(
+        params: IEntityQueryPerPageParams
+    ): Promise<IQueryPageResponse<R>>;
 }
 
 export interface IEntityWriteBatchBuilder {
-    // readonly entity: Entity;
     put<T extends Record<string, any>>(item: IPutBatchItem<T>): BatchWriteItem;
     delete(item: IDeleteBatchItem): BatchWriteItem;
 }
@@ -88,11 +84,10 @@ export interface IEntityReadBatch<T = GenericRecord> {
     readonly total: number;
     readonly items: BatchReadItem[];
     get(input: IEntityReadBatchKey | IEntityReadBatchKey[]): void;
-    execute(): ReturnType<typeof batchReadAll<T>>;
+    execute(): Promise<T[]>;
 }
 
 export interface IEntityReadBatchBuilderGetResponse {
-    Table: TableDef;
     Key: IEntityReadBatchKey;
 }
 

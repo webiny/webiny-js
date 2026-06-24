@@ -10,7 +10,6 @@ import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.
 import { DbRegistry } from "@webiny/db/exports/api/db.js";
 import { Entity, type IEntity, type IStandardEntityAttributes } from "@webiny/db-dynamodb";
 import type { NonEmptyArray } from "@webiny/api/types.js";
-import type { TableDef } from "@webiny/db-dynamodb/toolbox.js";
 
 enum EntityType {
     CMS = "headless-cms"
@@ -59,15 +58,17 @@ class ElasticsearchSynchronizeImpl implements Abstraction.Interface {
 
         const readableItems = items.map(item => {
             const entity = this.getEntity(item);
-            return entity.item.entity.getBatch({
-                PK: item.PK,
-                SK: item.SK
-            });
+            return {
+                Key: entity.item.schema.toGetKeys({
+                    PK: item.PK,
+                    SK: item.SK
+                })
+            };
         });
 
         const tableItems = await batchReadAll<IDynamoDbItem>({
-            items: readableItems,
-            table
+            client: table,
+            items: readableItems
         });
 
         const elasticsearchSyncBuilder = createSynchronizationBuilder({
@@ -122,7 +123,7 @@ class ElasticsearchSynchronizeImpl implements Abstraction.Interface {
         if (!entity) {
             throw new Error(`Unknown entity type "${type}".`);
         }
-        return entity.table as TableDef;
+        return entity.client;
     }
 
     private getElasticsearchEntityType(params: IGetElasticsearchEntityTypeParams): EntityType {

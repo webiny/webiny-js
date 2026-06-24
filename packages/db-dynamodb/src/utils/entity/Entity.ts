@@ -1,25 +1,17 @@
 import type {
     AttributeDefinitions,
     EntityConstructor as BaseEntityConstructor,
-    Readonly,
-    TableDef
+    Readonly
 } from "~/toolbox.js";
-import { Entity as BaseEntity } from "~/toolbox.js";
+import { EntitySchema } from "~/utils/EntitySchema.js";
+import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
 import type { ITableWriteBatch } from "../table/types.js";
 import type {
     IEntity,
     IEntityCreateEntityReaderParams,
     IEntityCreateEntityWriterParams,
-    IEntityDeleteResult,
-    IEntityGetCleanResult,
-    IEntityGetResult,
-    IEntityPutResult,
-    IEntityQueryAllCleanResult,
     IEntityQueryAllParams,
-    IEntityQueryAllResult,
-    IEntityQueryOneCleanResult,
     IEntityQueryOneParams,
-    IEntityQueryOneResult,
     IEntityQueryPerPageParams,
     IEntityReadBatch,
     IEntityWriteBatch
@@ -41,34 +33,39 @@ export type EntityConstructor<
 > = BaseEntityConstructor<T>;
 
 export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<T> {
-    public readonly entity: BaseEntity;
+    public readonly schema: EntitySchema;
+    public readonly client: DynamoDocClient;
 
     public get name(): string {
-        return this.entity.name;
-    }
-
-    public get table(): TableDef {
-        /**
-         * Not possible to be undefined.
-         */
-        return this.entity.table!;
+        return this.schema.name;
     }
 
     public constructor(params: EntityConstructor) {
-        // @ts-expect-error
-        this.entity = new BaseEntity(params);
+        this.schema = new EntitySchema({
+            name: params.name,
+            attributes: params.attributes as AttributeDefinitions,
+            timestamps: params.timestamps
+        });
+
+        if (!params.table) {
+            throw new Error(`No table provided for entity "${params.name}".`);
+        }
+
+        this.client = params.table;
     }
 
     public createEntityReader(params?: IEntityCreateEntityReaderParams): IEntityReadBatch<T> {
         return createEntityReadBatch({
-            entity: this.entity,
+            schema: this.schema,
+            client: this.client,
             read: params?.read
         });
     }
 
     public createEntityWriter(params?: IEntityCreateEntityWriterParams): IEntityWriteBatch<T> {
         return createEntityWriteBatch({
-            entity: this.entity,
+            schema: this.schema,
+            client: this.client,
             put: params?.put,
             delete: params?.delete
         });
@@ -76,72 +73,80 @@ export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<
 
     public createTableWriter(): ITableWriteBatch {
         return createTableWriteBatch({
-            table: this.entity.table as TableDef
+            table: this.client
         });
     }
 
     public async put<T extends GenericRecord = GenericRecord>(
         item: IPutParamsItem<T>
-    ): IEntityPutResult {
+    ): Promise<void> {
         return put({
-            entity: this.entity,
+            client: this.client,
+            schema: this.schema,
             item
         });
     }
 
-    public async get<T>(keys: GetRecordParamsKeys): IEntityGetResult<T> {
+    public async get<T>(keys: GetRecordParamsKeys): Promise<T | null> {
         return get<T>({
-            entity: this.entity,
+            client: this.client,
+            schema: this.schema,
             keys
         });
     }
 
-    public async getClean<T>(keys: GetRecordParamsKeys): IEntityGetCleanResult<T> {
+    public async getClean<T>(keys: GetRecordParamsKeys): Promise<T | null> {
         return getClean<T>({
-            entity: this.entity,
+            client: this.client,
+            schema: this.schema,
             keys
         });
     }
 
-    public async delete(keys: IDeleteItemKeys): IEntityDeleteResult {
+    public async delete(keys: IDeleteItemKeys): Promise<void> {
         return deleteItem({
-            entity: this.entity,
+            client: this.client,
             keys
         });
     }
 
-    public async queryOne<T>(params: IEntityQueryOneParams): IEntityQueryOneResult<T> {
+    public async queryOne<T>(params: IEntityQueryOneParams): Promise<T | null> {
         return queryOne<T>({
             ...params,
-            entity: this.entity
+            client: this.client,
+            schema: this.schema
         });
     }
 
-    public async queryOneClean<T>(params: IEntityQueryOneParams): IEntityQueryOneCleanResult<T> {
+    public async queryOneClean<T>(params: IEntityQueryOneParams): Promise<T | null> {
         return queryOneClean<T>({
             ...params,
-            entity: this.entity
+            client: this.client,
+            schema: this.schema
         });
     }
 
-    public async queryAll<T>(params: IEntityQueryAllParams): IEntityQueryAllResult<T> {
+    public async queryAll<T>(params: IEntityQueryAllParams): Promise<T[]> {
         return queryAll<T>({
             ...params,
-            entity: this.entity
+            client: this.client,
+            schema: this.schema
         });
     }
 
-    public async queryAllClean<T>(params: IEntityQueryAllParams): IEntityQueryAllCleanResult<T> {
+    public async queryAllClean<T>(params: IEntityQueryAllParams): Promise<T[]> {
         return queryAllClean<T>({
             ...params,
-            entity: this.entity
+            client: this.client,
+            schema: this.schema
         });
     }
 
     public async queryPerPage<T>(params: IEntityQueryPerPageParams) {
         return queryPerPage<T>({
             ...params,
-            entity: this.entity
+            client: this.client,
+            schema: this.schema
         });
     }
 }

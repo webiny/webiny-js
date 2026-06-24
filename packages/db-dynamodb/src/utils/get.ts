@@ -1,5 +1,5 @@
-import type { Entity } from "~/toolbox.js";
-import { cleanupItem } from "~/utils/cleanup.js";
+import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { EntitySchema } from "~/utils/EntitySchema.js";
 
 export interface GetRecordParamsKeys {
     PK: string;
@@ -7,35 +7,25 @@ export interface GetRecordParamsKeys {
 }
 
 export interface GetRecordParams {
-    entity: Entity;
+    client: DynamoDocClient;
+    schema: EntitySchema;
     keys: GetRecordParamsKeys;
 }
 
-/**
- * Gets a single record from the DynamoDB table.
- * Returns either record or null.
- *
- * Be aware to wrap in try/catch to avoid the error killing your app.
- *
- * @throws
- */
 export const get = async <T>(params: GetRecordParams): Promise<T | null> => {
-    const { entity, keys } = params;
+    const { client, keys } = params;
 
-    const result = await entity.get(keys, {
-        execute: true
-    });
-
-    if (!result?.Item) {
-        return null;
-    }
-    return result.Item as T;
+    const result = await client.get<T>(keys);
+    return result;
 };
 
 export const getClean = async <T>(params: GetRecordParams): Promise<T | null> => {
-    const result = await get<T>(params);
+    const { client, schema, keys } = params;
+
+    const result = await client.get(keys);
     if (!result) {
         return null;
     }
-    return cleanupItem<T>(params.entity, result);
+
+    return schema.unmarshal<T>(result);
 };

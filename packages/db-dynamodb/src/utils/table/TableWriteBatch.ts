@@ -1,4 +1,5 @@
-import type { Entity, TableDef } from "~/toolbox.js";
+import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { EntitySchema } from "~/utils/EntitySchema.js";
 import type {
     BatchWriteItem,
     BatchWriteResult,
@@ -11,12 +12,12 @@ import { createEntityWriteBatchBuilder } from "~/utils/entity/EntityWriteBatchBu
 import type { ITableWriteBatch } from "./types.js";
 
 export interface ITableWriteBatchParams {
-    table: TableDef;
+    table: DynamoDocClient;
     items?: BatchWriteItem[];
 }
 
 export class TableWriteBatch implements ITableWriteBatch {
-    private readonly table: TableDef;
+    private readonly client: DynamoDocClient;
     private readonly _items: BatchWriteItem[] = [];
     private readonly builders: Map<string, IEntityWriteBatchBuilder> = new Map();
 
@@ -29,26 +30,26 @@ export class TableWriteBatch implements ITableWriteBatch {
     }
 
     public constructor(params: ITableWriteBatchParams) {
-        this.table = params.table;
+        this.client = params.table;
         if (!params.items?.length) {
             return;
         }
         this._items.push(...params.items);
     }
 
-    public put(entity: Entity, item: IPutBatchItem): void {
-        const builder = this.getBuilder(entity);
+    public put(schema: EntitySchema, item: IPutBatchItem): void {
+        const builder = this.getBuilder(schema);
         this._items.push(builder.put(item));
     }
 
-    public delete(entity: Entity, item: IDeleteBatchItem): void {
-        const builder = this.getBuilder(entity);
+    public delete(schema: EntitySchema, item: IDeleteBatchItem): void {
+        const builder = this.getBuilder(schema);
         this._items.push(builder.delete(item));
     }
 
     public combine(items: BatchWriteItem[]): ITableWriteBatch {
         return createTableWriteBatch({
-            table: this.table,
+            table: this.client,
             items: this._items.concat(items)
         });
     }
@@ -59,22 +60,25 @@ export class TableWriteBatch implements ITableWriteBatch {
         }
         const items = Array.from(this._items);
         this._items.length = 0;
+
         return await batchWriteAll({
             items,
-            table: this.table
+            table: this.client
         });
     }
 
-    private getBuilder(entity: Entity): IEntityWriteBatchBuilder {
-        if (!entity.name) {
-            throw new Error("Entity must have a name.");
+    private getBuilder(schema: EntitySchema): IEntityWriteBatchBuilder {
+        if (!schema.name) {
+            throw new Error("Entity schema must have a name.");
         }
-        const builder = this.builders.get(entity.name);
+
+        const builder = this.builders.get(schema.name);
         if (builder) {
             return builder;
         }
-        const newBuilder = createEntityWriteBatchBuilder(entity);
-        this.builders.set(entity.name, newBuilder);
+
+        const newBuilder = createEntityWriteBatchBuilder(schema);
+        this.builders.set(schema.name, newBuilder);
         return newBuilder;
     }
 }
