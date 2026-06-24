@@ -16,7 +16,7 @@ import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
 import { TenantFromHeaderInitializer } from "./mocks/TenantFromHeaderInitializer";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import type { ApiKey } from "@webiny/api-core/types/security.js";
+import { ApiKeyProvider } from "@webiny/api-core/features/security/apiKeys/shared/abstractions.js";
 import {
     createAbortTaskMutation,
     createGetTaskQuery,
@@ -63,33 +63,6 @@ const defaultPermissions: SecurityPermission[] = [
     { name: "*" }
 ];
 
-const apiKeyPlugin = {
-    type: "context",
-    name: "context-security-tenant",
-    async apply(context: any) {
-        context.security.getApiKeyByToken = async (token: string): Promise<ApiKey | null> => {
-            if (!token || token !== "aToken") {
-                return null;
-            }
-            const apiKey = "a1234567890";
-            return {
-                id: apiKey,
-                name: apiKey,
-                slug: `slug-${apiKey}`,
-                permissions: [],
-                token,
-                createdBy: {
-                    id: "test",
-                    displayName: "test",
-                    type: "admin"
-                },
-                description: "test",
-                createdOn: new Date().toISOString()
-            };
-        };
-    }
-};
-
 export const useGraphQLHandler = (params?: UseHandlerParams) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
@@ -114,6 +87,28 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
 
             BackgroundTasksFeature.register(container);
 
+            container.registerFactory(ApiKeyProvider, () => ({
+                async getByToken(token: string) {
+                    if (!token || token !== "aToken") {
+                        return null;
+                    }
+                    const apiKey = "a1234567890";
+                    return {
+                        id: apiKey,
+                        name: apiKey,
+                        slug: `slug-${apiKey}`,
+                        permissions: [],
+                        token,
+                        createdBy: { id: "test", displayName: "test", type: "admin" },
+                        description: "test",
+                        createdOn: new Date().toISOString()
+                    };
+                },
+                async getBySlug(_slug: string) {
+                    return null;
+                }
+            }));
+
             // Factory runs after HeadlessCmsContextEnhancer (class registration),
             // so ctx.plugins is available here for legacy plugin registration.
             container.registerFactory(GraphQLContextEnhancer, () => ({
@@ -121,7 +116,6 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
                     if (ctx.plugins) {
                         ctx.plugins.register(createMockTaskServicePlugin());
                     }
-                    await apiKeyPlugin.apply(ctx);
                     if (params?.plugins?.length) {
                         const flat = [params.plugins].flat(Infinity as 1).filter(Boolean) as any[];
                         for (const plugin of flat) {
