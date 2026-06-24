@@ -22,7 +22,9 @@
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
-    "@webiny/utils": "0.0.0"
+    "@webiny/utils": "0.0.0",
+    "@graphql-tools/merge": "^9.1.9",
+    "@graphql-tools/schema": "^10.0.33"
   },
   "devDependencies": {
     "@webiny/api-core": "0.0.0",

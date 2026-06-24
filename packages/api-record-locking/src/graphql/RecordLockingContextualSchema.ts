@@ -1,0 +1,80 @@
+import type { Container } from "@webiny/di";
+import type { GraphQLSchema } from "graphql";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { mergeResolvers } from "@graphql-tools/merge";
+import { GraphQLContextualSchema } from "@webiny/handler-graphql";
+import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
+import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import { RECORD_LOCKING_MODEL_ID } from "~/domain/RecordLockingModel.js";
+import {
+    RecordLockingAppConfig,
+    type IRecordLockingAppConfig
+} from "~/domain/RecordLockingAppConfig.js";
+import { RecordLockingFeature } from "~/features/RecordLockingFeature.js";
+import { createGraphQLSchema } from "~/graphql/schema.js";
+
+class RecordLockingContextualSchemaImpl implements IGraphQLContextualSchema {
+    constructor(
+        private wcp: WcpContext.Interface,
+        private tenantCtx: TenantContext.Interface,
+        private identityCtx: IdentityContext.Interface,
+        private getModel: GetModelUseCase.Interface,
+        private listModels: ListModelsUseCase.Interface,
+        private fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface,
+        private config: IRecordLockingAppConfig
+    ) {}
+
+    async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
+        if (!this.wcp.canUseRecordLocking() || !this.tenantCtx.getTenant()) {
+            return makeExecutableSchema({
+                typeDefs: "type Query\ntype Mutation",
+                assumeValidSDL: true
+            });
+        }
+
+        const [model, publicModels] = await this.identityCtx.withoutAuthorization(async () => {
+            const [modelResult, publicModelsResult] = await Promise.all([
+                this.getModel.execute(RECORD_LOCKING_MODEL_ID),
+                this.listModels.execute({ includePrivate: false })
+            ]);
+
+            return [modelResult.value, publicModelsResult.value];
+        });
+
+        const container = ctx.container as Container;
+        RecordLockingFeature.register(container, {
+            timeout: this.config.timeout,
+            model
+        });
+
+        const plugin = await createGraphQLSchema({
+            model,
+            models: publicModels,
+            fieldRegistry: this.fieldRegistry
+        });
+
+        return makeExecutableSchema({
+            typeDefs: ["type Query\ntype Mutation", plugin.schema.typeDefs as string],
+            resolvers: mergeResolvers([plugin.schema.resolvers as any]),
+            inheritResolversFromInterfaces: true
+        });
+    }
+}
+
+export const RecordLockingContextualSchema = GraphQLContextualSchema.createImplementation({
+    implementation: RecordLockingContextualSchemaImpl,
+    dependencies: [
+        WcpContext,
+        TenantContext,
+        IdentityContext,
+        GetModelUseCase,
+        ListModelsUseCase,
+        CmsModelFieldToGraphQLRegistry,
+        RecordLockingAppConfig
+    ]
+});
