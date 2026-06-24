@@ -13,9 +13,10 @@ import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
 import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
 import { DbInstance } from "@webiny/handler-db/abstractions.js";
+import { GetTaskUseCase } from "@webiny/background-tasks/api";
 
 export interface IGetDeleteModelProgress {
-    readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "container">;
+    readonly context: Pick<HcmsTasksContext, "cms" | "container">;
     readonly modelId: string;
 }
 
@@ -60,7 +61,9 @@ export const getDeleteModelProgress = async (
         throw new Error(`Model "${modelId}" is not being deleted.`);
     }
 
-    const task = await context.tasks.getTask<IDeleteModelTaskInput, IDeleteModelTaskOutput>(taskId);
+    const task = await context.container
+        .resolve(GetTaskUseCase)
+        .execute<IDeleteModelTaskInput, IDeleteModelTaskOutput>(taskId);
     if (task?.definitionId !== DELETE_MODEL_TASK) {
         throw new WebinyError({
             message: `The task which is deleting a model cannot be found.`,

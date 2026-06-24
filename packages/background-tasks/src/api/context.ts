@@ -18,6 +18,11 @@ import {
     CleanupTaskSubtreeUseCase,
     CleanupTaskSubtreeUseCaseImpl
 } from "~/api/features/CleanupTaskSubtree/index.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
+import { TriggerTaskFeature } from "~/api/features/TriggerTask/feature.js";
+import { AbortTaskFeature } from "~/api/features/AbortTask/feature.js";
+import { GetTaskFeature } from "~/api/features/GetTask/feature.js";
+import { ListTasksFeature } from "~/api/features/ListTasks/feature.js";
 import { TestingRunTaskDefinition } from "~/api/tasks/testingRunTask.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { BackgroundTaskSettingsModel } from "~/api/models/BackgroundTaskSettingsModel.js";
@@ -42,11 +47,17 @@ const createTasksCrud = () => {
             ...createServiceCrud(context)
         };
 
-        // The cleanup use case is a thin wrapper around `context.tasks.cleanupTaskSubtree`,
-        // so it must register AFTER the CRUD is wired onto the context.
+        // Register the full CRUD object as a DI abstraction for use cases that need it.
+        context.container.registerInstance(TasksCrud, context.tasks);
+
+        // Register task CRUD use cases (must be after TasksCrud is registered).
+        TriggerTaskFeature.register(context.container);
+        AbortTaskFeature.register(context.container);
+        GetTaskFeature.register(context.container);
+        ListTasksFeature.register(context.container);
         context.container.registerInstance(
             CleanupTaskSubtreeUseCase,
-            new CleanupTaskSubtreeUseCaseImpl(context)
+            new CleanupTaskSubtreeUseCaseImpl(context.container.resolve(TasksCrud))
         );
     });
 

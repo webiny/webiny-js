@@ -1,7 +1,6 @@
 import type { ITask, Context } from "@webiny/background-tasks/api";
-import { TaskLogItemType } from "@webiny/background-tasks/api";
+import { TaskLogItemType, TasksCrud } from "@webiny/background-tasks/api";
 import type { IUseCase } from "~/abstractions/index.js";
-import type { HcmsBulkActionsContext } from "~/types.js";
 
 export interface IChildTasksCleanupExecuteParams {
     context: Context;
@@ -15,8 +14,9 @@ export interface IChildTasksCleanupExecuteParams {
 export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecuteParams, void> {
     public async execute(params: IChildTasksCleanupExecuteParams): Promise<void> {
         const { context, task } = params;
+        const tasksCrud = context.container.resolve(TasksCrud);
 
-        const { items: childTasks } = await context.tasks.listTasks({
+        const { items: childTasks } = await tasksCrud.listTasks({
             where: {
                 parentId: task.id
             },
@@ -30,7 +30,7 @@ export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecutePara
 
         const childTaskIdList = childTasks.map(childTask => childTask.id);
 
-        const { items: childLogs } = await context.tasks.listLogs({
+        const { items: childLogs } = await tasksCrud.listLogs({
             where: {
                 task_in: childTaskIdList
             },
@@ -41,7 +41,7 @@ export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecutePara
          * No logs found. Proceed with deleting the child tasks.
          */
         if (childLogs.length === 0) {
-            await this.deleteTasks(context, childTaskIdList);
+            await this.deleteTasks(tasksCrud, childTaskIdList);
         }
 
         const deletedChildTaskLogIdList: string[] = [];
@@ -52,7 +52,7 @@ export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecutePara
             if (log.items.some(item => item.type === TaskLogItemType.ERROR)) {
                 continue;
             }
-            await context.tasks.deleteLog(log.id);
+            await tasksCrud.deleteLog(log.id);
             if (deletedChildTaskLogIdList.includes(log.task)) {
                 continue;
             }
@@ -61,15 +61,15 @@ export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecutePara
         /**
          * Now we can remove the tasks.
          */
-        await this.deleteTasks(context, deletedChildTaskLogIdList);
+        await this.deleteTasks(tasksCrud, deletedChildTaskLogIdList);
     }
 
     /**
      * Helper method to delete tasks by ID.
      */
-    private async deleteTasks(context: HcmsBulkActionsContext, taskIds: string[]): Promise<void> {
+    private async deleteTasks(tasksCrud: TasksCrud.Interface, taskIds: string[]): Promise<void> {
         for (const taskId of taskIds) {
-            await context.tasks.deleteTask(taskId);
+            await tasksCrud.deleteTask(taskId);
         }
     }
 }

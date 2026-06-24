@@ -8,9 +8,10 @@ import type {
     ITaskManagerStoreSetOutputOptions,
     ITaskManagerStoreUpdateTaskInputOptions,
     ITaskManagerStoreUpdateTaskOptions,
-    ITasksContextObject,
     TaskDataStatus
 } from "~/api/types.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
+import type { Container } from "@webiny/feature/api";
 import { TaskLogItemType } from "~/api/types.js";
 import type {
     ITaskManagerStoreAddLogOptions,
@@ -40,7 +41,7 @@ const getInput = <T extends ITaskDataInput = ITaskDataInput>(
 };
 
 export interface TaskManagerStoreContext {
-    tasks: Pick<ITasksContextObject, "updateTask" | "updateLog" | "listTasks">;
+    container: Container;
 }
 
 export interface ITaskManagerStoreParams {
@@ -87,7 +88,7 @@ export class TaskManagerStore<
         if (definitionId) {
             where.definitionId = definitionId;
         }
-        const result = await this.context.tasks.listTasks<I, O>({
+        const result = await this.context.container.resolve(TasksCrud).listTasks<I, O>({
             where,
             sort: ["createdOn_ASC"],
             limit: 1000000
@@ -222,20 +223,15 @@ export class TaskManagerStore<
         /**
          * Update both task and the log, if anything to update.
          */
+        const tasksCrud = this.context.container.resolve(TasksCrud);
         if (this.taskUpdater.isDirty()) {
-            this.task = await this.context.tasks.updateTask<T, O>(
-                this.task.id,
-                this.taskUpdater.fetch()
-            );
+            this.task = await tasksCrud.updateTask<T, O>(this.task.id, this.taskUpdater.fetch());
         }
         if (!this.databaseLogs) {
             return;
         }
         if (this.taskLogUpdater.isDirty()) {
-            this.taskLog = await this.context.tasks.updateLog(
-                this.taskLog.id,
-                this.taskLogUpdater.fetch()
-            );
+            this.taskLog = await tasksCrud.updateLog(this.taskLog.id, this.taskLogUpdater.fetch());
         }
     }
 }

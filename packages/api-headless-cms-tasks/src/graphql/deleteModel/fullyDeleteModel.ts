@@ -10,9 +10,10 @@ import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
 import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
 import { DbInstance } from "@webiny/handler-db/abstractions.js";
+import { TriggerTaskUseCase } from "@webiny/background-tasks/api";
 
 export interface IFullyDeleteModelParams {
-    readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "container">;
+    readonly context: Pick<HcmsTasksContext, "cms" | "container">;
     readonly modelId: string;
 }
 
@@ -48,13 +49,15 @@ export const fullyDeleteModel = async (
         throw new Error(`Model "${modelId}" is already getting deleted. Task id: ${taskId}.`);
     }
 
-    const triggerResult = await context.tasks.trigger<IDeleteModelTaskInput>({
-        input: {
-            modelId
-        },
-        definition: DELETE_MODEL_TASK,
-        name: `Fully delete model: ${modelId}`
-    });
+    const triggerResult = await context.container
+        .resolve(TriggerTaskUseCase)
+        .execute<IDeleteModelTaskInput>({
+            input: {
+                modelId
+            },
+            definition: DELETE_MODEL_TASK,
+            name: `Fully delete model: ${modelId}`
+        });
 
     const task = triggerResult.value;
 

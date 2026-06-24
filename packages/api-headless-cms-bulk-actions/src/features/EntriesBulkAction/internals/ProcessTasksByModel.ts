@@ -1,4 +1,4 @@
-import { TaskDataStatus } from "@webiny/background-tasks/api";
+import { TaskDataStatus, ListTasksUseCase } from "@webiny/background-tasks/api";
 import type { IBulkActionOperationByModelTaskParams } from "~/types.js";
 import { BulkActionOperationByModelAction } from "~/types.js";
 import { BulkActionContext } from "~/features/BulkActionContext/index.js";
@@ -28,7 +28,7 @@ export class ProcessTasksByModel {
                 });
             }
 
-            const { items } = await this.context.tasks.listTasks({
+            const { items } = await this.context.container.resolve(ListTasksUseCase).execute({
                 where: {
                     parentId: controller.state.getTask().id,
                     definitionId: this.taskDefinition,

@@ -1,4 +1,4 @@
-import { TaskDataStatus } from "@webiny/background-tasks/api";
+import { TaskDataStatus, AbortTaskUseCase, ListTasksUseCase } from "@webiny/background-tasks/api";
 import type {
     IMockDataManagerInput,
     IMockDataManagerOutput
@@ -101,7 +101,7 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
     }
 
     private async listChildTasksNotDone(context: Context, id: string): Promise<TaskService.Task[]> {
-        const { items } = await context.tasks.listTasks({
+        const { items } = await context.container.resolve(ListTasksUseCase).execute({
             where: {
                 parentId: id,
                 taskStatus_in: [TaskDataStatus.PENDING, TaskDataStatus.RUNNING]
@@ -114,7 +114,7 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
     private async abortChildTasks(context: Context, id: string): Promise<void> {
         const items = await this.listChildTasksNotDone(context, id);
         for (const item of items) {
-            await context.tasks.abort({
+            await context.container.resolve(AbortTaskUseCase).execute({
                 id: item.id,
                 message: "Aborted by parent task."
             });

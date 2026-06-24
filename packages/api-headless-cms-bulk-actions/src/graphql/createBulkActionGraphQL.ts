@@ -7,6 +7,7 @@ import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js"
 import { BulkActionName } from "~/domain/BulkActionName.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { TriggerTaskUseCase } from "@webiny/background-tasks/api";
 
 export const createBulkActionGraphQL = async (
     context: HcmsBulkActionsContext,
@@ -55,16 +56,18 @@ export const createBulkActionGraphQL = async (
                     [`bulkAction${model.singularApiName}`]: async (_, args, context) => {
                         const identity = context.container.resolve(IdentityContext).getIdentity();
 
-                        const response = await context.tasks.trigger({
-                            definition: `hcmsBulkList${args.action}Entries`,
-                            input: {
-                                modelId: model.modelId,
-                                where: args.where,
-                                search: args.search,
-                                data: args.data,
-                                identity
-                            }
-                        });
+                        const response = await context.container
+                            .resolve(TriggerTaskUseCase)
+                            .execute({
+                                definition: `hcmsBulkList${args.action}Entries`,
+                                input: {
+                                    modelId: model.modelId,
+                                    where: args.where,
+                                    search: args.search,
+                                    data: args.data,
+                                    identity
+                                }
+                            });
 
                         return new Response({
                             id: response.value.id

@@ -12533,6 +12533,7 @@ __metadata:
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-bulk-actions": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
+    "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"

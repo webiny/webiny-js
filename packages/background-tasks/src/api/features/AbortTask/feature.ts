@@ -1,11 +1,13 @@
 import { createFeature } from "@webiny/feature/api";
 import { AbortTaskUseCaseImpl } from "./AbortTaskUseCase.js";
-import type { Context } from "~/api/types.js";
 import { AbortTaskUseCase } from "./abstractions.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 
-export const AbortTaskFeature = createFeature<Context>({
+export const AbortTaskFeature = createFeature({
     name: "AbortTask",
-    register(container, context) {
-        container.registerInstance(AbortTaskUseCase, new AbortTaskUseCaseImpl(context!));
+    register(container) {
+        container.registerFactory(AbortTaskUseCase, () => {
+            return new AbortTaskUseCaseImpl(container.resolve(TaskService));
+        });
     }
 });
