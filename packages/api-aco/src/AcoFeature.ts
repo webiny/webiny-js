@@ -1,9 +1,11 @@
 import { createFeature } from "@webiny/feature/api";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
+import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
 import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
+import type { GraphQLSchema } from "graphql";
 import type { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
@@ -17,20 +19,23 @@ import type { AcoContext } from "~/types.js";
 import { FolderModel } from "~/domain/folder/folder.model.js";
 import { FilterPrivateModel } from "~/filter/filter.model.js";
 
-class AcoContextEnhancerImpl implements IGraphQLContextEnhancer {
+class AcoInitializerImpl implements IGraphQLContextualSchema {
     private initialized = false;
 
     constructor(private container: Container) {}
 
-    async enhance(ctx: Record<string, any>): Promise<void> {
-        if (this.initialized) {
-            return;
+    async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
+        if (!this.initialized) {
+            this.initialized = true;
+            await this._initialize(ctx);
         }
-        this.initialized = true;
-        await this._enhance(ctx);
+        return makeExecutableSchema({
+            typeDefs: "type Query\ntype Mutation",
+            assumeValidSDL: true
+        });
     }
 
-    async _enhance(ctx: Record<string, any>): Promise<void> {
+    private async _initialize(ctx: Record<string, any>): Promise<void> {
         if (!(await isHeadlessCmsReady(ctx as AcoContext))) {
             return;
         }
@@ -62,8 +67,8 @@ class AcoContextEnhancerImpl implements IGraphQLContextEnhancer {
     }
 }
 
-const AcoContextEnhancer = GraphQLContextEnhancer.createImplementation({
-    implementation: AcoContextEnhancerImpl,
+const AcoInitializer = GraphQLContextualSchema.createImplementation({
+    implementation: AcoInitializerImpl,
     dependencies: [RequestContainer]
 });
 
@@ -95,7 +100,7 @@ class AcoSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
         // createAcoGraphQL() returns [baseSchema, folderSchema, filterSchema].
         // baseSchema and filterSchema are static GraphQLSchemaPlugins — register them here.
-        // folderSchema is a ContextPlugin that needs ctx.cms; it is applied by the enhancer.
+        // folderSchema is a ContextPlugin that needs ctx.cms; it is applied by AcoInitializer.
         const [baseSchema, , filterSchema] =
             createAcoGraphQL() as unknown as IGraphQLSchemaPlugin[];
 
@@ -125,7 +130,7 @@ export const AcoFeature = createFeature({
     register(container: Container) {
         container.register(FolderModel);
         container.register(FilterPrivateModel);
-        container.register(AcoContextEnhancer);
+        container.register(AcoInitializer);
         container.register(AcoSchemaFactory);
     }
 });

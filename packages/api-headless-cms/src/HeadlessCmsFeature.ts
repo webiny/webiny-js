@@ -4,10 +4,10 @@ import {
     HeadlessCmsContextEnhancerImpl,
     HeadlessCmsEnhancerConfig
 } from "./HeadlessCmsContextEnhancer.js";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
-import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
+import type { IGraphQLContextEnhancer, IGraphQLContextualSchema } from "@webiny/handler-graphql";
 import type { ApiEndpoint } from "~/types/index.js";
 import { StorageOperationsFactory } from "~/features/shared/abstractions.js";
 import { CmsBaseErrorTypeFactory } from "~/graphql/schema/cms/CmsBaseErrorTypeFactory.js";
@@ -42,13 +42,17 @@ function createCmsRoute(type: ApiEndpoint) {
 
         constructor(
             private container: Container,
-            private enhancers: IGraphQLContextEnhancer[]
+            private enhancers: IGraphQLContextEnhancer[],
+            private contextualSchemas: IGraphQLContextualSchema[]
         ) {}
 
         async handle(request: IHttpRequest): Promise<IHttpResponse> {
             const ctx: Record<string, any> = { container: this.container };
             for (const enhancer of this.enhancers) {
                 await enhancer.enhance(ctx);
+            }
+            for (const schema of this.contextualSchemas) {
+                await schema.build(ctx);
             }
             const execute = await ctx.cms.getExecutableSchema(type);
             const result = await execute(request.body);
@@ -62,7 +66,11 @@ function createCmsRoute(type: ApiEndpoint) {
 
     return HttpRoute.createImplementation({
         implementation: CmsGraphQLRoute,
-        dependencies: [RequestContainer, [GraphQLContextEnhancer, { multiple: true }]]
+        dependencies: [
+            RequestContainer,
+            [GraphQLContextEnhancer, { multiple: true }],
+            [GraphQLContextualSchema, { multiple: true }]
+        ]
     });
 }
 

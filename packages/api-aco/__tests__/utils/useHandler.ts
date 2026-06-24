@@ -1,7 +1,7 @@
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { ApiCoreFeature } from "@webiny/api-core";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
 import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
@@ -83,11 +83,16 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         const identity = await authCtx.authenticate("");
         identityCtx.setIdentity(identity);
 
-        // Build context by running all GraphQL context enhancers (replicates GraphQLEngineImpl.buildContext).
+        // Build context by running all GraphQL context enhancers, then contextual schemas
+        // (replicates GraphQLEngineImpl.buildContext + CmsGraphQLRoute.handle order).
         const enhancers = container.resolveAll(GraphQLContextEnhancer);
+        const contextualSchemas = container.resolveAll(GraphQLContextualSchema);
         const ctx: Record<string, any> = { container };
         for (const enhancer of enhancers) {
             await enhancer.enhance(ctx);
+        }
+        for (const schema of contextualSchemas) {
+            await schema.build(ctx);
         }
 
         return ctx as AcoContext;

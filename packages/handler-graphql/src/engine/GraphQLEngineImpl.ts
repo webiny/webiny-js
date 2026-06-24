@@ -33,6 +33,12 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         const bm = ctx.benchmark as
             | { measure?: (name: string, fn: () => Promise<any>) => Promise<any> }
             | undefined;
+
+        // Run contextual schemas BEFORE composer.build() so that any ctx.plugins registrations
+        // they make (e.g. ACO folder schema plugins) are visible to GraphQLSchemaComposer,
+        // which reads ctx.plugins.byType("graphql-schema") during build.
+        const extraSchemas = await this.buildContextualSchemas(ctx);
+
         const schemaConfig = await this.composer.build(ctx);
 
         const resolverDecoration = new ResolverDecoration();
@@ -55,8 +61,10 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         });
 
         const schema = await (bm?.measure
-            ? bm.measure("headlessCms.graphql.getSchema", () => this.buildSchema(staticSchema, ctx))
-            : this.buildSchema(staticSchema, ctx));
+            ? bm.measure("headlessCms.graphql.getSchema", () =>
+                  this.buildSchema(staticSchema, extraSchemas)
+              )
+            : this.buildSchema(staticSchema, extraSchemas));
 
         const parsed = bm?.measure
             ? ((await bm.measure("headlessCms.graphql.createRequestBody", async () =>
@@ -96,15 +104,21 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         return ctx;
     }
 
+    private async buildContextualSchemas(ctx: Record<string, any>): Promise<GraphQLSchema[]> {
+        if (this.contextualSchemas.length === 0) {
+            return [];
+        }
+        return Promise.all(this.contextualSchemas.map(s => s.build(ctx)));
+    }
+
     private async buildSchema(
         staticSchema: GraphQLSchema,
-        ctx: Record<string, any>
+        extraSchemas: GraphQLSchema[]
     ): Promise<GraphQLSchema> {
-        if (this.contextualSchemas.length === 0) {
+        if (extraSchemas.length === 0) {
             return staticSchema;
         }
-        const extra = await Promise.all(this.contextualSchemas.map(s => s.build(ctx)));
-        return mergeSchemas({ schemas: [staticSchema, ...extra] });
+        return mergeSchemas({ schemas: [staticSchema, ...extraSchemas] });
     }
 
     private async executeOne(

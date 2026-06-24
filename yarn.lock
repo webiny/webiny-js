@@ -11988,6 +11988,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-aco@workspace:packages/api-aco"
   dependencies:
+    "@graphql-tools/schema": "npm:^10.0.33"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
