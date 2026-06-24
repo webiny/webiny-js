@@ -3,6 +3,7 @@ import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AUDIT } from "~/config.js";
 import { useHandler } from "~tests/helpers/useHandler.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 
 const createApiKeyCreateAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.CREATE);
 
@@ -14,7 +15,7 @@ describe.skipIf(isSql)("Audit Logs Tenant Index", () => {
     it("should have LastEvaluatedKey in the result and it should be the result", async () => {
         const context = await handler();
 
-        const tenantId = context.tenancy.getCurrentTenant().id;
+        const tenantId = context.container.resolve(TenantContext).getTenant().id;
 
         const auditLogs = [];
 

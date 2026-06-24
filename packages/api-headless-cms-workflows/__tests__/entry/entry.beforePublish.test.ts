@@ -11,6 +11,7 @@ import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
 import { GetUserTeamsUseCase } from "@webiny/api-workflows/features/internal/GetUserTeams/index.js";
 import { Result } from "@webiny/feature/api/index.js";
 import { WorkflowStateRecordState } from "@webiny/api-workflows/domain/workflowState/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
 describe("On Before Entry Publish", () => {
     it("should remove workflow information when publishing an entry", async () => {
@@ -60,12 +61,13 @@ describe("On Before Entry Publish", () => {
         });
         expect(state.isOk()).toBe(true);
 
-        const identity = context.security.getIdentity();
+        const identityCtx = context.container.resolve(IdentityContext);
+        const identity = identityCtx.getIdentity();
         // @ts-expect-error
         identity.data.id = "user-which-can-edit";
         // @ts-expect-error
         identity.profile.id = "user-which-can-edit";
-        context.security.setIdentity(identity);
+        identityCtx.setIdentity(identity);
 
         const startResult = await startWorkflowState.execute(state.value.id);
         expect(startResult.isOk()).toBe(true);

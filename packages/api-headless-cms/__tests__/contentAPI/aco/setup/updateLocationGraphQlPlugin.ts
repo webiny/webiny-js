@@ -2,6 +2,7 @@ import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { createCmsGraphQLSchemaPlugin } from "~/index";
 import { ACO_TEST_MODEL_ID } from "./model";
 import type { CmsContext } from "~/types";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
 const createUpdateLocationGraphQlPlugin = () => {
     const plugin = createCmsGraphQLSchemaPlugin<CmsContext>({
@@ -21,22 +22,24 @@ const createUpdateLocationGraphQlPlugin = () => {
         resolvers: {
             Mutation: {
                 updateTestAcoModelLocation: async (_, args, context) => {
-                    return context.security.withoutAuthorization(async () => {
-                        try {
-                            const model = await context.cms.getModel(ACO_TEST_MODEL_ID);
-                            if (!model) {
-                                throw new Error(`Model "${ACO_TEST_MODEL_ID}" not found!`);
-                            }
-                            const entry = await context.cms.updateEntry(model, args.id, {
-                                wbyAco_location: {
-                                    folderId: args.folderId
+                    return context.container
+                        .resolve(IdentityContext)
+                        .withoutAuthorization(async () => {
+                            try {
+                                const model = await context.cms.getModel(ACO_TEST_MODEL_ID);
+                                if (!model) {
+                                    throw new Error(`Model "${ACO_TEST_MODEL_ID}" not found!`);
                                 }
-                            });
-                            return new Response(entry);
-                        } catch (ex) {
-                            return new ErrorResponse(ex);
-                        }
-                    });
+                                const entry = await context.cms.updateEntry(model, args.id, {
+                                    wbyAco_location: {
+                                        folderId: args.folderId
+                                    }
+                                });
+                                return new Response(entry);
+                            } catch (ex) {
+                                return new ErrorResponse(ex);
+                            }
+                        });
                 }
             }
         }

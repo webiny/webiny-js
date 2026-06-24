@@ -17,6 +17,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@webiny/api-core": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-workflows": "0.0.0",
     "@webiny/error": "0.0.0",

@@ -1,5 +1,6 @@
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.public.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import { IdentityContext } from "~/features/security/IdentityContext/abstractions.js";
 
 export const PARALLEL_QUERY = /* GraphQL */ `
     query ParallelQueries {
@@ -34,9 +35,10 @@ class ParallelQueriesSchemaFactoryImpl {
             resolver:
                 () =>
                 ({ context }: any) =>
-                    context.security.withoutAuthorization(async () => {
-                        const permissions =
-                            await context.security.getPermissions("security.apiKey");
+                    context.container.resolve(IdentityContext).withoutAuthorization(async () => {
+                        const permissions = await context.container
+                            .resolve(IdentityContext)
+                            .getPermissions("security.apiKey");
                         if (!permissions.length) {
                             return "NOT_AUTHORIZED";
                         }
@@ -50,7 +52,9 @@ class ParallelQueriesSchemaFactoryImpl {
             resolver:
                 () =>
                 async ({ context }: any) => {
-                    const permissions = await context.security.getPermissions("security.apiKey");
+                    const permissions = await context.container
+                        .resolve(IdentityContext)
+                        .getPermissions("security.apiKey");
                     if (!permissions.length) {
                         return "NOT_AUTHORIZED";
                     }

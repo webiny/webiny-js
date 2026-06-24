@@ -14,6 +14,7 @@ import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index
 import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
 import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
 const NOT_AUTHORIZED = "WebsiteBuilder/Page/NotAuthorized";
 
@@ -227,9 +228,11 @@ describe("Pages Fine-Grained Permissions", () => {
                 // first we need to trash the page, as only trashed pages can be deleted
                 const trashPage = context.container.resolve(TrashPageUseCase);
                 // we will act like trashing is possible at this point. we tested trash permissions in another test
-                const trashResult = await context.security.withoutAuthorization(async () => {
-                    return trashPage.execute({ id: seedPageId });
-                });
+                const trashResult = await context.container
+                    .resolve(IdentityContext)
+                    .withoutAuthorization(async () => {
+                        return trashPage.execute({ id: seedPageId });
+                    });
                 expect(trashResult.isOk()).toBeTrue();
 
                 const deletePage = context.container.resolve(DeletePageUseCase);
