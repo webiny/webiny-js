@@ -7,6 +7,8 @@ import type { GraphQLSchema } from "graphql";
 import { generateCacheId } from "./getSchema/generateCacheId.js";
 import { generateCacheKey } from "./getSchema/generateCacheKey.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
+import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsContextEnhancer.js";
 
 interface SchemaCache {
     key: string;
@@ -32,14 +34,18 @@ export const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema>
      * We need all the API models.
      * Private models are hidden in the GraphQL, so filter them out.
      */
-    const models = await context.container
+    const modelsResult = await context.container
         .resolve(IdentityContext)
         .withoutAuthorization(async () => {
-            return await context.cms.listModels({
+            return context.container.resolve(ListModelsUseCase).execute({
                 includePrivate: false,
                 includePlugins: true
             });
         });
+    if (modelsResult.isFail()) {
+        throw modelsResult.error;
+    }
+    const models = modelsResult.value;
 
     const cacheId = generateCacheId(params);
 
@@ -66,7 +72,7 @@ export const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema>
                 code: err.code || "INVALID_GRAPHQL_SCHEMA_LOCATIONS",
                 data: {
                     ...(err.data || {}),
-                    endpoint: context.cms.type
+                    endpoint: context.container.resolve(HeadlessCmsEnhancerConfig).type
                 }
             });
         }

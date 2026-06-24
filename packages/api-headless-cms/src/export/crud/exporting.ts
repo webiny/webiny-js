@@ -1,11 +1,19 @@
 import type { HeadlessCmsExportStructure, SanitizedCmsModel } from "~/export/types.js";
 import type { CmsContext } from "~/types/index.js";
 import { sanitizeGroup, sanitizeModel } from "./sanitize.js";
+import { ListGroupsUseCase } from "~/features/contentModelGroup/ListGroups/index.js";
+import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 
 export const createExportStructureContext = (context: CmsContext): HeadlessCmsExportStructure => {
     return async params => {
         const { models: modelIdList } = params;
-        const groups = (await context.cms.listGroups()).map(sanitizeGroup);
+
+        const groupsResult = await context.container.resolve(ListGroupsUseCase).execute();
+        if (groupsResult.isFail()) {
+            throw groupsResult.error;
+        }
+        const groups = groupsResult.value.map(sanitizeGroup);
+
         /**
          * We need all the models which:
          * * are accessible by current user
@@ -13,7 +21,11 @@ export const createExportStructureContext = (context: CmsContext): HeadlessCmsEx
          * * are included (if targets are provided)
          * * are part of one of the groups we already fetched
          */
-        const models = (await context.cms.listModels())
+        const modelsResult = await context.container.resolve(ListModelsUseCase).execute();
+        if (modelsResult.isFail()) {
+            throw modelsResult.error;
+        }
+        const models = modelsResult.value
             .filter(model => {
                 if (model.isPrivate) {
                     return false;

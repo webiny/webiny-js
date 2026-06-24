@@ -1,5 +1,6 @@
 import type { HcmsBulkActionsContext } from "~/types.js";
 import { CmsGraphQLSchemaPlugin, isHeadlessCmsReady } from "@webiny/api-headless-cms";
+import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
 import { ContextPlugin } from "@webiny/api";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -27,21 +28,21 @@ export const createDefaultGraphQL = () => {
         });
         defaultPlugin.name = `headless-cms.graphql.schema.bulkAction.default`;
 
-        const models = await context.container
+        const modelsResult = await context.container
             .resolve(IdentityContext)
             .withoutAuthorization(async () => {
-                const allModels = await context.cms.listModels();
-                return allModels.filter(model => {
-                    if (model.isPrivate) {
-                        return false;
-                    }
-                    const tags = Array.isArray(model.tags) ? model.tags : [];
-                    if (tags.includes(CMS_MODEL_SINGLETON_TAG)) {
-                        return false;
-                    }
-                    return true;
-                });
+                return context.container.resolve(ListModelsUseCase).execute();
             });
+        if (modelsResult.isFail()) {
+            return;
+        }
+        const models = modelsResult.value.filter(model => {
+            if (model.isPrivate) {
+                return false;
+            }
+            const tags = Array.isArray(model.tags) ? model.tags : [];
+            return !tags.includes(CMS_MODEL_SINGLETON_TAG);
+        });
 
         const modelPlugins: CmsGraphQLSchemaPlugin<HcmsBulkActionsContext>[] = [];
 

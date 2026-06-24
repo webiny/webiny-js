@@ -1,6 +1,8 @@
 import type { CmsContext } from "~/types/index.js";
 import type { CmsGroupImportResult, ValidCmsGroupResult } from "~/export/types.js";
 import { CmsImportAction } from "~/export/types.js";
+import { CreateGroupUseCase } from "~/features/contentModelGroup/CreateGroup/index.js";
+import { UpdateGroupUseCase } from "~/features/contentModelGroup/UpdateGroup/index.js";
 
 interface Params {
     context: CmsContext;
@@ -39,32 +41,30 @@ export const importGroups = async (params: Params) => {
          */
         //
         else if (group.action === CmsImportAction.UPDATE) {
-            try {
-                const result = await context.cms.updateGroup(group.group.id, {
+            const updateResult = await context.container
+                .resolve(UpdateGroupUseCase)
+                .execute(group.group.id, {
                     ...group.group,
                     icon: group.group.icon ?? undefined,
                     description: group.group.description || undefined
                 });
-                results.push({
-                    action: group.action,
-                    group: {
-                        ...result
-                    },
-                    imported: true
-                });
-            } catch (ex) {
+            if (updateResult.isFail()) {
+                const ex = updateResult.error;
                 results.push({
                     action: group.action,
                     group: group.group,
                     imported: false,
                     error: {
                         message: ex.message,
-                        code: ex.code || "UPDATE_GROUP_ERROR",
-                        data: {
-                            ...ex.data,
-                            group
-                        }
+                        code: (ex as any).code || "UPDATE_GROUP_ERROR",
+                        data: { ...(ex as any).data, group }
                     }
+                });
+            } else {
+                results.push({
+                    action: group.action,
+                    group: { ...updateResult.value },
+                    imported: true
                 });
             }
             continue;
@@ -72,29 +72,26 @@ export const importGroups = async (params: Params) => {
         /**
          * Create the group
          */
-        //
-        try {
-            const result = await context.cms.createGroup(group.group);
-            results.push({
-                action: group.action,
-                group: {
-                    ...result
-                },
-                imported: true
-            });
-        } catch (ex) {
+        const createResult = await context.container
+            .resolve(CreateGroupUseCase)
+            .execute(group.group);
+        if (createResult.isFail()) {
+            const ex = createResult.error;
             results.push({
                 action: group.action,
                 group: group.group,
                 imported: false,
                 error: {
                     message: ex.message,
-                    code: ex.code || "CREATE_GROUP_ERROR",
-                    data: {
-                        ...ex.data,
-                        group
-                    }
+                    code: (ex as any).code || "CREATE_GROUP_ERROR",
+                    data: { ...(ex as any).data, group }
                 }
+            });
+        } else {
+            results.push({
+                action: group.action,
+                group: { ...createResult.value },
+                imported: true
             });
         }
     }

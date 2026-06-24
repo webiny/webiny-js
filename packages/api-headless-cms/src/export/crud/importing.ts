@@ -8,12 +8,22 @@ import type {
 import type { CmsContext } from "~/types/index.js";
 import { importData } from "./imports/importData.js";
 import { validateInput } from "./imports/validateInput.js";
+import { ListGroupsUseCase } from "~/features/contentModelGroup/ListGroups/index.js";
+import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 
 const fetchGroupsAndModels = async (context: CmsContext) => {
     return await context.container.resolve(IdentityContext).withoutAuthorization(async () => {
+        const groupsResult = await context.container.resolve(ListGroupsUseCase).execute();
+        if (groupsResult.isFail()) {
+            throw groupsResult.error;
+        }
+        const modelsResult = await context.container.resolve(ListModelsUseCase).execute();
+        if (modelsResult.isFail()) {
+            throw modelsResult.error;
+        }
         return {
-            groups: await context.cms.listGroups(),
-            models: await context.cms.listModels()
+            groups: groupsResult.value,
+            models: modelsResult.value
         };
     });
 };
