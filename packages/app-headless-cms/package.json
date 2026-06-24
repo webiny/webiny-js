@@ -58,7 +58,7 @@
     "dnd-core": "^16.0.1",
     "dot-prop-immutable": "^2.1.1",
     "graphql": "^16.14.2",
-    "graphql-tag": "^2.12.6",
+    "graphql-tag": "^2.12.7",
     "lodash": "^4.18.1",
     "mobx": "^6.16.1",
     "mobx-react-lite": "^4.1.1",

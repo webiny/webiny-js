@@ -14,7 +14,7 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@fastify/multipart": "^9.0.0",
+    "@fastify/multipart": "^10.0.0",
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
@@ -26,7 +26,7 @@
     "@webiny/validation": "0.0.0",
     "exifreader": "^4.41.0",
     "fastify": "5.8.5",
-    "sharp": "^0.35.1"
+    "sharp": "^0.35.2"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

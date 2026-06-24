@@ -40,7 +40,7 @@
     "dayjs": "^1.11.21",
     "dot-prop-immutable": "^2.1.1",
     "graphql": "^16.14.2",
-    "graphql-tag": "^2.12.6",
+    "graphql-tag": "^2.12.7",
     "lodash": "^4.18.1",
     "mime": "^4.1.0",
     "minimatch": "^10.2.5",
