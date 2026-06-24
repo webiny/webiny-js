@@ -1,4 +1,3 @@
-import { createContextPlugin } from "@webiny/api";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import {
@@ -10,15 +9,14 @@ import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import type { ApiKey } from "@webiny/api-core/types/security.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import { createTenancyAndSecurity } from "./tenancySecurity.js";
 import type { PermissionsArg } from "./helpers.js";
 import { createPermissions } from "./helpers.js";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins.js";
+import { TenancyAndSecurityFeature } from "./TenancyAndSecurityFeature.js";
 import type { Container } from "@webiny/di";
 
 export interface CreateHandlerCoreParams {
@@ -40,14 +38,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
         name: "Root",
         parent: null
     };
-    const {
-        permissions,
-        identity,
-        plugins = [],
-        topPlugins = [],
-        bottomPlugins = [],
-        setupTenancyAndSecurityGraphQL
-    } = params;
+    const { permissions, identity, plugins = [], topPlugins = [], bottomPlugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
@@ -57,6 +48,14 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
     const setup = async (container: Container, extraPlugins: any[] = []): Promise<void> => {
         const wcpLicense = await loadWcpLicense(testProjectLicense);
         ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense });
+
+        // DI-native replacement for the legacy createTenancyAndSecurity plugins.
+        // Runs as a contextual schema AFTER ApiCore's enhance (which sets ctx.security/tenancy)
+        // and BEFORE HeadlessCms so that the identity is seated before CMS initializes.
+        TenancyAndSecurityFeature.register(container, {
+            permissions: createPermissions(permissions),
+            identity
+        });
 
         const extraCmsPlugins: any[] = [];
 
@@ -84,34 +83,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
 
     const legacyPlugins = [
         topPlugins,
-        ...createTenancyAndSecurity({
-            setupGraphQL: setupTenancyAndSecurityGraphQL,
-            permissions: createPermissions(permissions),
-            identity
-        }),
-        createContextPlugin(context => {
-            // @ts-expect-error We're moving away from context object!
-            context.security.getApiKeyByToken = async (token: string): Promise<ApiKey | null> => {
-                if (!token || token !== "aToken") {
-                    return null;
-                }
-                const apiKey = "a1234567890";
-                return {
-                    id: apiKey,
-                    name: apiKey,
-                    slug: apiKey,
-                    permissions: identity?.permissions || [],
-                    token,
-                    createdBy: {
-                        id: "test",
-                        displayName: "test",
-                        type: "admin"
-                    },
-                    description: "test",
-                    createdOn: new Date().toISOString()
-                };
-            };
-        }),
         createBackgroundTaskContext(),
         ...createBackgroundTaskGraphQL(),
         plugins,

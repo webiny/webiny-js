@@ -16,6 +16,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.84",
     "@ai-sdk/openai": "^3.0.71",
+    "@graphql-tools/schema": "^10.0.33",
     "@webiny/api": "0.0.0",
     "@webiny/di": "^1.0.1",
     "@webiny/error": "0.0.0",
@@ -29,6 +30,7 @@
     "@webiny/wcp": "0.0.0",
     "ai": "^6.0.206",
     "dataloader": "^2.2.3",
+    "graphql": "^16.14.2",
     "jose": "^6.2.3",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.18.1",

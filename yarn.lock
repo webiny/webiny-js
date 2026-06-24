@@ -12151,6 +12151,7 @@ __metadata:
   dependencies:
     "@ai-sdk/anthropic": "npm:^3.0.84"
     "@ai-sdk/openai": "npm:^3.0.71"
+    "@graphql-tools/schema": "npm:^10.0.33"
     "@types/jsonwebtoken": "npm:^9.0.10"
     "@webiny/api": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -12168,6 +12169,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     ai: "npm:^6.0.206"
     dataloader: "npm:^2.2.3"
+    graphql: "npm:^16.14.2"
     jose: "npm:^6.2.3"
     jsonwebtoken: "npm:^9.0.3"
     lodash: "npm:^4.18.1"

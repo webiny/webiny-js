@@ -18,9 +18,9 @@ import { WcpFeature } from "~/features/wcp/WcpFeature.js";
 import { NullLicense } from "@webiny/wcp";
 import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/NullWebhookDispatcher.js";
 import { WebhookProviderFeature } from "~/features/webhooks/index.js";
-import { ApiCoreContextEnhancerImpl } from "~/graphql/ApiCoreContextEnhancer.js";
+import { ApiCoreInitializerImpl } from "~/graphql/ApiCoreContextEnhancer.js";
 import { ApiCoreSchemaFactory } from "~/graphql/ApiCoreSchemaFactory.js";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { RequestContainer } from "@webiny/event-handler-core";
 
 export const ApiCoreFeature = createFeature({
@@ -43,14 +43,16 @@ export const ApiCoreFeature = createFeature({
         IdpAuthenticatorFeature.register(container);
         container.register(NullWebhookDispatcher).inSingletonScope();
         WebhookProviderFeature.register(container);
-        // Use registerInstance so ApiCoreContextEnhancer runs as the very first enhancer
-        // (instance registrations precede class registrations in resolveAll). This ensures
-        // ctx.security / ctx.tenancy / ctx.wcp are available to all subsequent enhancers.
-        const coreEnhancer = container.resolveWithDependencies({
-            implementation: ApiCoreContextEnhancerImpl,
+        // Dual-register as both enhancer and contextual schema using registerInstance so it
+        // runs first in both chains. The enhance() role keeps ctx.security / ctx.tenancy /
+        // ctx.wcp available to legacy ContextPlugins; the build() role is a no-op (enhance
+        // already ran) but places ApiCore first in the contextual-schema ordering chain.
+        const coreInitializer = container.resolveWithDependencies({
+            implementation: ApiCoreInitializerImpl,
             dependencies: [RequestContainer]
         });
-        container.registerInstance(GraphQLContextEnhancer, coreEnhancer);
+        container.registerInstance(GraphQLContextEnhancer, coreInitializer);
+        container.registerInstance(GraphQLContextualSchema, coreInitializer);
         container.register(ApiCoreSchemaFactory);
     }
 });
