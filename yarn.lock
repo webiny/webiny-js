@@ -14415,7 +14415,7 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     bson-objectid: "npm:^2.0.4"
-    jsonpack: "npm:^2.0.0"
+    jsonpack: "npm:1.1.5"
     nanoid: "npm:^5.1.15"
     nanoid-dictionary: "npm:^5.0.0"
     p-retry: "npm:^8.0.0"
@@ -21226,10 +21226,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonpack@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "jsonpack@npm:2.0.0"
-  checksum: 10/aae12763b6b660578ef0d9229650c048ab4a7b1da15bd54775d43026432bac4e6069d0af5099dcd799b1e4b36829e88f8a22bc090f5b7ece249cffe35066795c
+"jsonpack@npm:1.1.5":
+  version: 1.1.5
+  resolution: "jsonpack@npm:1.1.5"
+  checksum: 10/1b676c36ae2f1475cbbb46c67a0606029bd08104d65dd4575ce1b38da175abb28b5b2801fdac6cbb22a8f0224b4f97bd5734eb2065dfbe17de28ced89be17ce8
   languageName: node
   linkType: hard
 
