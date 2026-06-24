@@ -17,6 +17,7 @@ import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins.js";
 import { TenancyAndSecurityFeature } from "./TenancyAndSecurityFeature.js";
+import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
 import type { Container } from "@webiny/di";
 
 export interface CreateHandlerCoreParams {
@@ -62,7 +63,9 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
         // RegisterExtensionPlugin instances are pre-registered before HeadlessCms enhancers run,
         // so private models reach the DI container before AcoContextEnhancer populates ModelCache.
         // Static plugins (CmsModelPlugin, GraphQLSchemaPlugin, etc.) are collected for ctx.plugins.
+        // ContextPlugin instances (e.g. dbPlugins() for ctx.db) run in the enhance phase.
         processLegacyPlugins(container, cmsStorage.plugins);
+        registerLegacyPluginsViaGqlContextEnhancer(container, cmsStorage.plugins);
         for (const p of [cmsStorage.plugins].flat(Infinity as 1)) {
             if (p && typeof (p as any).apply !== "function" && typeof p !== "function") {
                 extraCmsPlugins.push(p);
