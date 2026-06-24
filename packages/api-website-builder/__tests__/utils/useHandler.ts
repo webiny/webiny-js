@@ -10,8 +10,9 @@ import { PageModelPlugin } from "~/domain/page/page.model.js";
 import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema } from "@webiny/handler-graphql";
+import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
+import { buildSchema } from "graphql";
 
 type Params = Omit<UseContextHandlerParams, "features"> & {
     identity?: IdentityData | null;
@@ -24,7 +25,8 @@ export const useHandler = (params: Params = {}) => {
         ...rest,
         // Do not pass null identity to useContextHandler — TenancyAndSecurityFeature
         // does not support null (treats it same as undefined → defaultIdentity).
-        // We handle anonymous identity below via a second GraphQLContextEnhancer.
+        // We handle anonymous identity below via a contextual schema that runs after
+        // TenancyAndSecurityFeature's build() sets the identity.
         identity: identity === null ? undefined : identity,
         plugins: [
             createContextPlugin(ctx => {
@@ -43,13 +45,15 @@ export const useHandler = (params: Params = {}) => {
             // enhance() phase; we override it back to anonymous in a second enhancer that
             // runs after TenancyAndSecurityFeature's enhancer.
             if (identity === null) {
-                const anonymousOverride: IGraphQLContextEnhancer = {
-                    async enhance(_ctx: Record<string, any>): Promise<void> {
+                const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
+                const anonymousOverride: IGraphQLContextualSchema = {
+                    async build(_ctx: Record<string, any>) {
                         const identityCtx = container.resolve(IdentityContext);
                         identityCtx.setIdentity(undefined);
+                        return STUB_SCHEMA;
                     }
                 };
-                container.registerInstance(GraphQLContextEnhancer, anonymousOverride);
+                container.registerInstance(GraphQLContextualSchema, anonymousOverride);
             }
         }
     });

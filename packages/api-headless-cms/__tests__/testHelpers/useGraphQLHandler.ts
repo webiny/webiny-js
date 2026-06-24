@@ -1,7 +1,8 @@
 import { getIntrospectionQuery } from "graphql";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
-import { GraphQLContextEnhancer, GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { buildSchema } from "graphql";
 import { HeadlessCmsFeature } from "~/index";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
@@ -18,8 +19,6 @@ import { AuthTriggerHandler } from "~tests/testHelpers/handlers/AuthTriggerHandl
 import { CmsEndpointAccessDecorator } from "~tests/testHelpers/handlers/CmsEndpointAccessDecorator";
 import { defaultIdentity } from "~tests/testHelpers/helpers";
 import { processLegacyPlugins } from "~tests/testHelpers/bridgeLegacyPlugins";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import type {
     CmsExportStructureQueryVariables,
     CmsImportStructureMutationVariables,
@@ -114,11 +113,6 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
     const cmsType = extractCmsType(params.path);
     const resolvedPermissions = createPermissions(permissions);
 
-    // Build ctx.db from the test DynamoDB document client
-    const documentClient = getDocumentClient();
-    const dbDriver = new DynamoDbDriver({ documentClient });
-
-    // Context capture for getContext()
     const capturedCtx: { value?: Record<string, any> } = {};
 
     const handler = createTestHttpHandler({
@@ -135,20 +129,6 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         },
         request: async container => {
             const wcpLicense = await loadWcpLicense(createTestWcpLicense());
-
-            // ctx.db bridge — must run before HeadlessCmsContextEnhancer (instance order)
-            container.registerInstance(GraphQLContextEnhancer, {
-                enhance(ctx: Record<string, any>) {
-                    ctx.db = { driver: dbDriver };
-                }
-            });
-
-            // Context capture enhancer — runs after cms enhancer sets up ctx.cms
-            container.registerInstance(GraphQLContextEnhancer, {
-                enhance(ctx: Record<string, any>) {
-                    capturedCtx.value = ctx;
-                }
-            });
 
             ApiCoreFeature.register(container, {
                 ...apiCoreStorage.storageOperations,
@@ -181,6 +161,13 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             HeadlessCmsFeature.register(container, {
                 type: cmsType,
                 extraPlugins: extraCmsPlugins
+            });
+            const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
+            container.registerInstance(GraphQLContextualSchema, {
+                async build(ctx: Record<string, any>) {
+                    capturedCtx.value = ctx;
+                    return STUB_SCHEMA;
+                }
             });
             GraphQLEngineFeature.register(container);
         }

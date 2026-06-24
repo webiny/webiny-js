@@ -1,6 +1,7 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
-import { GraphQLContextEnhancer, GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { buildSchema } from "graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
@@ -13,8 +14,6 @@ import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
 import { AuthTriggerHandler } from "./handlers/AuthTriggerHandler";
 import { RootTenantInitializer } from "./handlers/RootTenantInitializer";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
@@ -30,9 +29,6 @@ export const useHandler = () => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
-    const documentClient = getDocumentClient();
-    const dbDriver = new DynamoDbDriver({ documentClient });
-
     const capturedCtx: { value?: Record<string, any> } = {};
 
     const handler = createTestHttpHandler({
@@ -47,18 +43,6 @@ export const useHandler = () => {
         request: async container => {
             const wcpLicense = await loadWcpLicense(createTestWcpLicense());
 
-            container.registerInstance(GraphQLContextEnhancer, {
-                enhance(ctx: Record<string, any>) {
-                    ctx.db = { driver: dbDriver };
-                }
-            });
-
-            container.registerInstance(GraphQLContextEnhancer, {
-                enhance(ctx: Record<string, any>) {
-                    capturedCtx.value = ctx;
-                }
-            });
-
             ApiCoreFeature.register(container, {
                 ...apiCoreStorage.storageOperations,
                 wcpLicense
@@ -68,12 +52,15 @@ export const useHandler = () => {
 
             HeadlessCmsFeature.register(container, { type: "manage" });
 
-            container.registerFactory(GraphQLContextEnhancer, () => ({
-                enhance(ctx: Record<string, any>) {
-                    Extension.register(ctx.container);
+            Extension.register(container);
+
+            const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
+            container.registerInstance(GraphQLContextualSchema, {
+                async build(ctx: Record<string, any>) {
                     capturedCtx.value = ctx;
+                    return STUB_SCHEMA;
                 }
-            }));
+            });
 
             GraphQLEngineFeature.register(container);
         }

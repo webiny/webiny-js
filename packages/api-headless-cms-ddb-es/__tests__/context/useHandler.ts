@@ -1,6 +1,10 @@
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import {
+    GraphQLContextEnhancer,
+    GraphQLContextualSchema,
+    registerLegacyPluginsViaGqlContextualSchema
+} from "@webiny/handler-graphql";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
@@ -77,29 +81,20 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
             extraPlugins: extraCmsPlugins
         });
 
-        // Create test tenants in DynamoDB so listTenantsUseCase returns them (mirrors old createTenancyAndSecurity).
-        const testTenants = [
+        const createTenantUseCase = container.resolve(CreateTenantUseCase);
+        for (const tenant of [
             { id: "root", name: "Root", parent: "" },
             { id: "webiny", name: "Webiny", parent: "" },
             { id: "dev", name: "Dev", parent: "" },
             { id: "sales", name: "Sales", parent: "" }
-        ];
-        container.registerFactory(GraphQLContextEnhancer, () => ({
-            async enhance(): Promise<void> {
-                const createTenantUseCase = container.resolve(CreateTenantUseCase);
-                for (const tenant of testTenants) {
-                    try {
-                        await createTenantUseCase.execute(tenant);
-                    } catch {
-                        // Tenant may already exist in DynamoDB
-                    }
-                }
+        ]) {
+            try {
+                await createTenantUseCase.execute(tenant);
+            } catch {
+                // Tenant may already exist in DynamoDB
             }
-        }));
+        }
 
-        // Background task context needs to run after ApiCore and CMS enhancers.
-        // Separate into: RegisterExtensionPlugin (apply now) and other plugins (apply in factory enhancer).
-        // Factory registrations run last in resolveAll, ensuring correct ordering.
         const bgPlugins = ([createBackgroundTaskContext()].flat(Infinity as 1) as any[]).filter(
             Boolean
         );
@@ -107,19 +102,10 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
             container,
             bgPlugins.filter(p => p instanceof RegisterExtensionPlugin)
         );
-        const bgOtherPlugins = bgPlugins.filter(p => !(p instanceof RegisterExtensionPlugin));
-
-        container.registerFactory(GraphQLContextEnhancer, () => ({
-            async enhance(ctx: Record<string, any>): Promise<void> {
-                for (const plugin of bgOtherPlugins) {
-                    if (typeof (plugin as any).apply === "function") {
-                        await (plugin as any).apply(ctx);
-                    } else if (ctx.plugins && plugin) {
-                        ctx.plugins.register(plugin);
-                    }
-                }
-            }
-        }));
+        registerLegacyPluginsViaGqlContextualSchema(
+            container,
+            bgPlugins.filter(p => !(p instanceof RegisterExtensionPlugin))
+        );
 
         const tenantCtx = container.resolve(TenantContext);
         tenantCtx.setTenant({
@@ -149,6 +135,10 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
         const ctx: Record<string, any> = { container };
         for (const enhancer of enhancers) {
             await enhancer.enhance(ctx);
+        }
+        const schemas = container.resolveAll(GraphQLContextualSchema);
+        for (const schema of schemas) {
+            await schema.build(ctx);
         }
 
         return ctx as C;

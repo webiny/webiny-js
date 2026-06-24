@@ -13917,6 +13917,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
+    graphql: "npm:^16.14.2"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.16.1"
     mobx-react-lite: "npm:^4.1.1"
@@ -14260,6 +14261,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/handler-db@workspace:packages/handler-db"
   dependencies:
+    "@graphql-tools/schema": "npm:^10.0.33"
     "@webiny/api": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -14381,6 +14383,7 @@ __metadata:
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
+    graphql: "npm:^16.14.2"
     mobx: "npm:^6.16.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -14988,6 +14991,7 @@ __metadata:
     "@webiny/sdk": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
+    graphql: "npm:^16.14.2"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.16.1"
     mobx-react-lite: "npm:^4.1.1"

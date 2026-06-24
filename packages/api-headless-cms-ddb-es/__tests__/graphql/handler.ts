@@ -1,6 +1,6 @@
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
@@ -108,6 +108,10 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         const ctx: Record<string, any> = { container };
         for (const enhancer of enhancers) {
             await enhancer.enhance(ctx);
+        }
+        const schemas = container.resolveAll(GraphQLContextualSchema);
+        for (const schema of schemas) {
+            await schema.build(ctx);
         }
 
         return ctx as CmsContext;

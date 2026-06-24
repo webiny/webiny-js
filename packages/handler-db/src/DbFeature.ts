@@ -2,7 +2,8 @@ import { createFeature } from "@webiny/feature/api";
 import { Db } from "@webiny/db";
 import { DynamoDbDriver, DynamoDBClientFeature, FilterUtilFeature } from "@webiny/db-dynamodb";
 import { ValueFilterFeature } from "@webiny/db-utils";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { makeExecutableSchema } from "@graphql-tools/schema";
 import type { Container } from "@webiny/di";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { DbInstance } from "./abstractions.js";
@@ -28,10 +29,14 @@ export const DbFeature = createFeature({
         // Register the full Db instance for code that needs driver + key-value store
         container.registerInstance(DbInstance, db as Db<unknown>);
 
-        // ctx.db bridge for legacy code that accesses context.db.driver.getClient() etc.
-        container.registerInstance(GraphQLContextEnhancer, {
-            enhance(ctx: Record<string, any>): void {
+        const EMPTY_SCHEMA = makeExecutableSchema({
+            typeDefs: "type Query\ntype Mutation",
+            assumeValidSDL: true
+        });
+        container.registerInstance(GraphQLContextualSchema, {
+            async build(ctx: Record<string, any>) {
                 ctx.db = db;
+                return EMPTY_SCHEMA;
             }
         });
     }

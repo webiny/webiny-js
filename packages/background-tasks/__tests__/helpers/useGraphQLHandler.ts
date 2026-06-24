@@ -1,7 +1,10 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { GraphQLEngineFeature, GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import {
+    GraphQLEngineFeature,
+    registerLegacyPluginsViaGqlContextualSchema
+} from "@webiny/handler-graphql";
 import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
@@ -109,25 +112,10 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
                 }
             }));
 
-            // Factory runs after HeadlessCmsContextEnhancer (class registration),
-            // so ctx.plugins is available here for legacy plugin registration.
-            container.registerFactory(GraphQLContextEnhancer, () => ({
-                async enhance(ctx: Record<string, any>): Promise<void> {
-                    if (ctx.plugins) {
-                        ctx.plugins.register(createMockTaskServicePlugin());
-                    }
-                    if (params?.plugins?.length) {
-                        const flat = [params.plugins].flat(Infinity as 1).filter(Boolean) as any[];
-                        for (const plugin of flat) {
-                            if (typeof plugin.apply === "function") {
-                                await plugin.apply(ctx);
-                            } else if (ctx.plugins) {
-                                ctx.plugins.register(plugin);
-                            }
-                        }
-                    }
-                }
-            }));
+            registerLegacyPluginsViaGqlContextualSchema(container, [
+                createMockTaskServicePlugin(),
+                ...(params?.plugins ?? [])
+            ]);
 
             GraphQLEngineFeature.register(container);
         }

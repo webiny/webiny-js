@@ -1,7 +1,10 @@
 import { getIntrospectionQuery } from "graphql";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
-import { GraphQLContextEnhancer, GraphQLEngineFeature } from "@webiny/handler-graphql";
+import {
+    GraphQLEngineFeature,
+    registerLegacyPluginsViaGqlContextualSchema
+} from "@webiny/handler-graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { HeadlessCmsContextualSchema } from "@webiny/api-headless-cms/HeadlessCmsContextualSchema.js";
 import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
@@ -86,17 +89,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             });
             container.register(HeadlessCmsContextualSchema);
 
-            container.registerFactory(GraphQLContextEnhancer, () => ({
-                async enhance(ctx: Record<string, any>): Promise<void> {
-                    for (const plugin of latePlugins) {
-                        if (typeof (plugin as any).apply === "function") {
-                            await (plugin as any).apply(ctx);
-                        } else if (ctx.plugins) {
-                            ctx.plugins.register(plugin);
-                        }
-                    }
-                }
-            }));
+            registerLegacyPluginsViaGqlContextualSchema(container, latePlugins);
 
             GraphQLEngineFeature.register(container);
         }

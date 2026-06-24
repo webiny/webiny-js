@@ -1,7 +1,12 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { GraphQLEngineFeature, GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import {
+    GraphQLEngineFeature,
+    GraphQLContextualSchema,
+    registerLegacyPluginsViaGqlContextualSchema
+} from "@webiny/handler-graphql";
+import { buildSchema } from "graphql";
 import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
@@ -70,15 +75,17 @@ export const useHandler = (params?: UseHandlerParams) => {
             WebsocketsGraphQLFactoryFeature.register(container);
             container.registerInstance(WebsocketsTransport, new MockWebsocketsTransport());
 
-            container.registerFactory(GraphQLContextEnhancer, () => ({
-                async enhance(ctx: Record<string, any>): Promise<void> {
-                    ctx.plugins.register(createWebsocketsRoutePlugins());
-                    if (params?.plugins?.length) {
-                        ctx.plugins.register(params.plugins);
-                    }
+            registerLegacyPluginsViaGqlContextualSchema(container, [
+                ...createWebsocketsRoutePlugins(),
+                ...(params?.plugins ?? [])
+            ]);
+            const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
+            container.registerInstance(GraphQLContextualSchema, {
+                async build(ctx: Record<string, any>) {
                     capturedCtx = ctx;
+                    return STUB_SCHEMA;
                 }
-            }));
+            });
 
             GraphQLEngineFeature.register(container);
         }
