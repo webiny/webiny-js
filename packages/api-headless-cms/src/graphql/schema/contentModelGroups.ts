@@ -2,16 +2,25 @@ import { ErrorResponse, NotFoundError, Response } from "@webiny/handler-graphql"
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { CmsContext } from "~/types/index.js";
 import type { Resolvers } from "@webiny/handler-graphql/types.js";
-import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
+import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js";
+import { ListGroupsUseCase } from "~/features/contentModelGroup/ListGroups/index.js";
+import { CreateGroupUseCase } from "~/features/contentModelGroup/CreateGroup/index.js";
+import { UpdateGroupUseCase } from "~/features/contentModelGroup/UpdateGroup/index.js";
+import { DeleteGroupUseCase } from "~/features/contentModelGroup/DeleteGroup/index.js";
+import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/index.js";
+import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
+import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsContextEnhancer.js";
 
 interface Params {
     context: CmsContext;
 }
 export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin => {
+    const isManage = context.container.resolve(HeadlessCmsEnhancerConfig).type === "manage";
+
     let manageSchema = "";
-    if (context.cms.MANAGE) {
+    if (isManage) {
         manageSchema = /* GraphQL */ `
             input CmsContentModelGroupInput {
                 id: ID
@@ -54,16 +63,19 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
 
     let resolvers: Resolvers<CmsContext> = {};
 
-    if (context.cms.MANAGE) {
+    if (isManage) {
         resolvers = {
             CmsContentModelGroup: {
                 contentModels: async (group, _, context) => {
-                    const models = await context.container
+                    const result = await context.container
                         .resolve(IdentityContext)
                         .withoutAuthorization(async () => {
-                            return context.cms.listModels();
+                            return context.container.resolve(ListModelsUseCase).execute();
                         });
-                    return models.filter(model => {
+                    if (result.isFail()) {
+                        return [];
+                    }
+                    return result.value.filter(model => {
                         if (model.isPrivate === true) {
                             return false;
                         }
@@ -71,29 +83,37 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
                     });
                 },
                 totalContentModels: async (group, _, context) => {
-                    const models = await context.container
+                    const result = await context.container
                         .resolve(IdentityContext)
                         .withoutAuthorization(async () => {
-                            return context.cms.listModels();
+                            return context.container.resolve(ListModelsUseCase).execute();
                         });
-                    return models.filter(model => {
+                    if (result.isFail()) {
+                        return 0;
+                    }
+                    return result.value.filter(model => {
                         if (model.isPrivate === true) {
                             return false;
                         }
                         return model.group === group.slug;
                     }).length;
                 },
-                plugin: async (group, _, context: CmsContext): Promise<boolean> => {
-                    return context.plugins
-                        .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
-                        .some(item => item.contentModelGroup.id === group.id);
+                plugin: async (group, _, context) => {
+                    const pluginGroups = await context.container
+                        .resolve(PluginGroupsProvider)
+                        .getGroups();
+                    return pluginGroups.some(pg => pg.id === group.id);
                 }
             },
             Query: {
                 getContentModelGroup: async (_, args: any, context) => {
                     try {
                         const { id } = args;
-                        const group = await context.cms.getGroup(id);
+                        const result = await context.container.resolve(GetGroupUseCase).execute(id);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        const group = result.value;
                         if (group?.isPrivate) {
                             throw new NotFoundError(`Cms Group "${id}" was not found!`);
                         }
@@ -104,8 +124,11 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
                 },
                 listContentModelGroups: async (_, __, context) => {
                     try {
-                        const groups = await context.cms.listGroups();
-                        return new Response(groups.filter(group => group.isPrivate !== true));
+                        const result = await context.container.resolve(ListGroupsUseCase).execute();
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return new Response(result.value.filter(group => group.isPrivate !== true));
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
@@ -114,23 +137,38 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
             Mutation: {
                 createContentModelGroup: async (_, args: any, context) => {
                     try {
-                        const model = await context.cms.createGroup(args.data);
-                        return new Response(model);
+                        const result = await context.container
+                            .resolve(CreateGroupUseCase)
+                            .execute(args.data);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return new Response(result.value);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
                 },
                 updateContentModelGroup: async (_, args: any, context) => {
                     try {
-                        const group = await context.cms.updateGroup(args.id, args.data);
-                        return new Response(group);
+                        const result = await context.container
+                            .resolve(UpdateGroupUseCase)
+                            .execute(args.id, args.data);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return new Response(result.value);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
                 },
                 deleteContentModelGroup: async (_, args: any, context) => {
                     try {
-                        await context.cms.deleteGroup(args.id);
+                        const result = await context.container
+                            .resolve(DeleteGroupUseCase)
+                            .execute(args.id);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
                         return new Response(true);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -162,7 +200,8 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
         resolvers
     });
 
-    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.content-model-groups`;
+    const endpointType = context.container.resolve(HeadlessCmsEnhancerConfig).type;
+    plugin.name = `headless-cms.graphql.schema.${endpointType}.content-model-groups`;
 
     return plugin;
 };

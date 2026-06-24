@@ -4,6 +4,13 @@ import type { Resolvers } from "@webiny/handler-graphql/types.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
+import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
+import { CreateModelUseCase } from "~/features/contentModel/CreateModel/index.js";
+import { CreateModelFromUseCase } from "~/features/contentModel/CreateModelFrom/index.js";
+import { UpdateModelUseCase } from "~/features/contentModel/UpdateModel/index.js";
+import { DeleteModelUseCase } from "~/features/contentModel/DeleteModel/index.js";
+import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsContextEnhancer.js";
 
 export interface CreateModelsSchemaParams {
     context: CmsContext;
@@ -12,28 +19,36 @@ export interface CreateModelsSchemaParams {
 export const createModelsSchema = ({
     context
 }: CreateModelsSchemaParams): ICmsGraphQLSchemaPlugin => {
+    const isManage = context.container.resolve(HeadlessCmsEnhancerConfig).type === "manage";
+
     const resolvers: Resolvers<CmsContext> = {
         Query: {
             getContentModel: async (_: unknown, args: GenericRecord, context) => {
                 try {
-                    const model = await context.cms.getModel(args.modelId);
-
-                    if (!model) {
+                    const result = await context.container
+                        .resolve(GetModelUseCase)
+                        .execute(args.modelId);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    if (!result.value) {
                         throw new NotFoundError(`Content model "${args.modelId}" was not found!`);
                     }
-
-                    return new Response(model);
+                    return new Response(result.value);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
             listContentModels: async (_: unknown, args: GenericRecord, context: CmsContext) => {
                 try {
-                    const models = await context.cms.listModels({
+                    const result = await context.container.resolve(ListModelsUseCase).execute({
                         includePrivate: false,
                         includePlugins: args?.includePlugins === false ? false : true
                     });
-                    return new Response(models);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return new Response(result.value);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
@@ -68,20 +83,30 @@ export const createModelsSchema = ({
     };
 
     let manageSchema = "";
-    if (context.cms.MANAGE) {
+    if (isManage) {
         resolvers["Mutation"] = {
             createContentModel: async (_: unknown, args: any, context) => {
                 try {
-                    const model = await context.cms.createModel(args.data);
-                    return new Response(model);
+                    const result = await context.container
+                        .resolve(CreateModelUseCase)
+                        .execute(args.data);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return new Response(result.value);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
             createContentModelFrom: async (_: unknown, args: any, context) => {
                 try {
-                    const model = await context.cms.createModelFrom(args.modelId, args.data);
-                    return new Response(model);
+                    const result = await context.container
+                        .resolve(CreateModelFromUseCase)
+                        .execute(args.modelId, args.data);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return new Response(result.value);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
@@ -89,8 +114,13 @@ export const createModelsSchema = ({
             updateContentModel: async (_: unknown, args: any, context) => {
                 const { modelId, data } = args;
                 try {
-                    const model = await context.cms.updateModel(modelId, data);
-                    return new Response(model);
+                    const result = await context.container
+                        .resolve(UpdateModelUseCase)
+                        .execute(modelId, data);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return new Response(result.value);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
@@ -98,7 +128,12 @@ export const createModelsSchema = ({
             deleteContentModel: async (_: unknown, args: any, context) => {
                 const { modelId } = args;
                 try {
-                    await context.cms.deleteModel(modelId);
+                    const result = await context.container
+                        .resolve(DeleteModelUseCase)
+                        .execute(modelId);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -316,6 +351,8 @@ export const createModelsSchema = ({
         `,
         resolvers
     });
-    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.content-models`;
+
+    const endpointType = context.container.resolve(HeadlessCmsEnhancerConfig).type;
+    plugin.name = `headless-cms.graphql.schema.${endpointType}.content-models`;
     return plugin;
 };
