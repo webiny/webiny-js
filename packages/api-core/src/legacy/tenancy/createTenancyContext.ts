@@ -5,6 +5,7 @@ import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js"
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { LegacyContext } from "~/legacy/tenancy/LegacyContext.js";
 import { RootTenantValue } from "~/domain/tenancy/RootTenantValue.js";
+import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 
 export const createTenancyContext = () => {
     return new ContextPlugin<ApiCoreContext>(async context => {
@@ -12,7 +13,7 @@ export const createTenancyContext = () => {
 
         const request = context.container.resolve(Request);
 
-        const multiTenancy = context.wcp.canUseFeature("multiTenancy");
+        const multiTenancy = context.container.resolve(WcpContext).canUseFeature("multiTenancy");
         if (!request) {
             throw new Error("MISSING CONTEXT REQUEST");
         }

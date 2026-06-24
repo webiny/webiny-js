@@ -11,6 +11,9 @@ import { AdminUser } from "~/types/users.js";
 import { GetUserUseCase } from "~/features/users/GetUser/index.js";
 import NotAuthorizedResponse from "~/graphql/security/NotAuthorizedResponse.js";
 import { ListUsersUseCase } from "~/features/users/ListUsers/index.js";
+import { IdentityContext } from "~/features/security/IdentityContext/abstractions.js";
+import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
+import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 
 const emptyResolver = () => ({});
 
@@ -98,12 +101,17 @@ export const createUsersGraphQL = () => {
             `,
             resolvers: {
                 AdminUser: {
-                    roles(user: AdminUser, _, context) {
+                    async roles(user: AdminUser, _, context) {
                         if (!user.roles) {
                             return null;
                         }
 
-                        return context.security.listRoles({ where: { id_in: user.roles } });
+                        const listRoles = context.container.resolve(ListRolesUseCase);
+                        const result = await listRoles.execute({ where: { id_in: user.roles } });
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value;
                     }
                 },
                 AdminUsersQuery: {
@@ -133,7 +141,8 @@ export const createUsersGraphQL = () => {
                         return new Response(userResult.value);
                     },
                     getCurrentUser: async (_, __, context) => {
-                        const identity = context.security.getIdentity();
+                        const identityContext = context.container.resolve(IdentityContext);
+                        const identity = identityContext.getIdentity();
 
                         if (!identity.isAdmin()) {
                             throw new NotAuthorizedResponse();
@@ -144,7 +153,7 @@ export const createUsersGraphQL = () => {
 
                         const getUser = context.container.resolve(GetUserUseCase);
 
-                        const userResponse = await context.security.withoutAuthorization(
+                        const userResponse = await identityContext.withoutAuthorization(
                             async () => {
                                 // Get user record using the identity ID.
                                 return await getUser.execute({ id: identity.id });
@@ -189,13 +198,18 @@ export const createUsersGraphQL = () => {
             `,
             resolvers: {
                 AdminUser: {
-                    teams(user: AdminUser, _, context) {
+                    async teams(user: AdminUser, _, context) {
                         const hasTeams = Array.isArray(user.teams) && user.teams.length > 0;
                         if (!hasTeams) {
                             return [];
                         }
 
-                        return context.security.listTeams({ where: { id_in: user.teams } });
+                        const listTeams = context.container.resolve(ListTeamsUseCase);
+                        const result = await listTeams.execute({ where: { id_in: user.teams } });
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value;
                     }
                 }
             }
