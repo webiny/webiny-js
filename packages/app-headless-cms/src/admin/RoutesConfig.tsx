@@ -33,7 +33,7 @@ const ContentModelsView = lazy(
     () =>
         import(
             /* webpackChunkName: "content-models" */
-            "./views/contentModels/ContentModels.js"
+            "../presentation/contentModels/components/ContentModels.js"
         )
 );
 const ContentModelGroupsView = lazy(
