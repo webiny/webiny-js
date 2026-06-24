@@ -1,5 +1,5 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
+import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import {
     ModelBuilderFeature,
     ModelsProvider
@@ -59,7 +59,7 @@ export const WebsiteBuilderFeature = createFeature({
         container.register(PageModelPlugin);
         container.register(RedirectModelPlugin);
 
-        registerLegacyPluginsViaGqlContextEnhancer(container, createWebsiteBuilder());
+        registerLegacyPluginsViaGqlContextualSchema(container, createWebsiteBuilder());
     }
 });
 

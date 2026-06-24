@@ -1,5 +1,5 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
+import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { createContextPlugin } from "@webiny/api";
 import { PageWorkflowsFeature } from "./features/PageWorkflows/feature.js";
 import { createWebsiteBuilderPageGraphQLExtension } from "./graphql/page.js";
@@ -19,7 +19,7 @@ export const WebsiteBuilderWorkflowsFeature = createFeature({
         });
         contextPlugin.name = "website-builder-workflows.context";
 
-        registerLegacyPluginsViaGqlContextEnhancer(container, [
+        registerLegacyPluginsViaGqlContextualSchema(container, [
             contextPlugin,
             createWebsiteBuilderPageGraphQLExtension()
         ]);

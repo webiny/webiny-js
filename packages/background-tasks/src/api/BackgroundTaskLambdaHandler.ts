@@ -1,6 +1,6 @@
 import type { Container } from "@webiny/feature/api";
 import { BackgroundTaskEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/BackgroundTaskEventHandler.js";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { timerFactory } from "@webiny/handler-aws/utils/index.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
@@ -20,6 +20,9 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Inte
         const ctx: Record<string, any> = { container: this.container };
         for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
             await enhancer.enhance(ctx);
+        }
+        for (const schema of this.container.resolveAll(GraphQLContextualSchema)) {
+            await schema.build(ctx);
         }
 
         const runner = new TaskRunner(ctx as Context, timerFactory(), new TaskEventValidation());

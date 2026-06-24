@@ -4,7 +4,7 @@ import {
     EventBridgeEventHandler,
     type EventBridgeResult
 } from "@webiny/event-handler-aws/abstractions/handlers/EventBridgeEventHandler.js";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
+import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
@@ -39,6 +39,9 @@ class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHan
         const ctx: Record<string, any> = { container: this.container };
         for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
             await enhancer.enhance(ctx);
+        }
+        for (const schema of this.container.resolveAll(GraphQLContextualSchema)) {
+            await schema.build(ctx);
         }
         const context = ctx as ApiCoreContext;
 

@@ -1,5 +1,5 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
+import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { createFileManagerS3 } from "./index.js";
 import { createS3AssetDeliveryFeature } from "./assetDelivery/feature.js";
 import type { AssetDeliveryParams } from "./assetDelivery/types.js";
@@ -15,6 +15,6 @@ export const FileManagerS3Feature = createFeature({
         // These replace the null implementations from AssetDeliveryFeature in FileManagerAppFeature
         createS3AssetDeliveryFeature(config.assetDelivery).register(container);
 
-        registerLegacyPluginsViaGqlContextEnhancer(container, createFileManagerS3());
+        registerLegacyPluginsViaGqlContextualSchema(container, createFileManagerS3());
     }
 });

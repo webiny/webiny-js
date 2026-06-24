@@ -1,6 +1,6 @@
 import type { CreateHandlerCoreParams } from "./plugins.js";
 import { createHandlerCore } from "./plugins.js";
-import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
+import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { defaultIdentity } from "./tenancySecurity.js";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
@@ -31,7 +31,7 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         root: () => {},
         request: async container => {
             await core.setup(container, core.legacyPlugins);
-            registerLegacyPluginsViaGqlContextEnhancer(container, core.legacyPlugins);
+            registerLegacyPluginsViaGqlContextualSchema(container, core.legacyPlugins);
             params.features?.(container);
             GraphQLEngineFeature.register(container);
         }
