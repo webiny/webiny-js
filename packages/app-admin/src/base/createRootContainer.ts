@@ -9,7 +9,7 @@ import { GraphQLClientFeature } from "@webiny/app/features/graphqlClient/feature
 import { MainGraphQLClientFeature } from "@webiny/app/features/mainGraphQLClient/feature.js";
 import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
-import { NotificationServiceFeature } from "~/features/notifications/feature.js";
+import { NotificationsFeature } from "~/features/notifications/feature.js";
 import { WcpFeature } from "~/features/wcp/feature.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
 import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/feature.js";
@@ -49,7 +49,7 @@ export function createRootContainer() {
 
     EventPublisherFeature.register(container);
 
-    NotificationServiceFeature.register(container);
+    NotificationsFeature.register(container);
 
     GraphQLClientFeature.register(container, { batching: true, retry: true });
 

@@ -1,5 +1,5 @@
 import { WebsocketEventHandler } from "@webiny/app-websockets";
-import { NotificationService } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { FilesListCache } from "~/features/shared/abstractions.js";
 
 const FILE_ENRICHMENT_ACTION = "fm.file.enrichment";
@@ -18,7 +18,7 @@ interface FileEnrichmentData {
 class AiImageEnrichmentEventHandlerImpl implements WebsocketEventHandler.Interface {
     constructor(
         private filesListCache: FilesListCache.Interface,
-        private notifications: NotificationService.Interface
+        private notifications: Notifications.Interface
     ) {}
 
     async handle(event: WebsocketEventHandler.Event): Promise<void> {
@@ -41,5 +41,5 @@ class AiImageEnrichmentEventHandlerImpl implements WebsocketEventHandler.Interfa
 
 export const AiImageEnrichmentEventHandler = WebsocketEventHandler.createImplementation({
     implementation: AiImageEnrichmentEventHandlerImpl,
-    dependencies: [FilesListCache, NotificationService]
+    dependencies: [FilesListCache, Notifications]
 });

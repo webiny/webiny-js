@@ -16,7 +16,7 @@ export interface INotification extends INotificationInput {
  * App-wide notification queue. Any feature can inject this and call `notify()` / `success()` /
  * `warning()` to surface a notification on screen, without depending on React or the toast UI.
  */
-export interface INotificationService {
+export interface INotifications {
     notify(notification: INotificationInput): void;
     success(notification: INotificationInput): void;
     warning(notification: INotificationInput): void;
@@ -24,10 +24,10 @@ export interface INotificationService {
     remove(id: string): void;
 }
 
-export const NotificationService = createAbstraction<INotificationService>("NotificationService");
+export const Notifications = createAbstraction<INotifications>("Notifications");
 
-export namespace NotificationService {
-    export type Interface = INotificationService;
+export namespace Notifications {
+    export type Interface = INotifications;
 }
 
 export interface INotificationsViewModel {

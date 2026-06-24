@@ -1,12 +1,12 @@
 import { makeAutoObservable } from "mobx";
 import {
-    NotificationService as Abstraction,
+    Notifications as Abstraction,
     type INotification,
     type INotificationInput,
     type NotificationVariant
 } from "./abstractions.js";
 
-class NotificationServiceImpl implements Abstraction.Interface {
+class NotificationsImpl implements Abstraction.Interface {
     private notifications: INotification[] = [];
     private counter = 0;
 
@@ -40,7 +40,7 @@ class NotificationServiceImpl implements Abstraction.Interface {
     }
 }
 
-export const NotificationService = Abstraction.createImplementation({
-    implementation: NotificationServiceImpl,
+export const Notifications = Abstraction.createImplementation({
+    implementation: NotificationsImpl,
     dependencies: []
 });

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { useToast } from "@webiny/admin-ui";
-import { NotificationServiceFeature } from "./feature.js";
+import { NotificationsFeature } from "./feature.js";
 import type { INotification } from "./abstractions.js";
 
 type Toast = ReturnType<typeof useToast>;
@@ -22,11 +22,11 @@ const showNotification = (toast: Toast, notification: INotification) => {
 };
 
 /**
- * Standalone consumer of the NotificationService queue. Drains queued notifications oldest-first
+ * Standalone consumer of the Notifications queue. Drains queued notifications oldest-first
  * and shows each one as a toast, then removes it from the queue. Mounted once, app-wide.
  */
-export const Notifications = observer(() => {
-    const { presenter } = useFeature(NotificationServiceFeature);
+export const NotificationsRenderer = observer(() => {
+    const { presenter } = useFeature(NotificationsFeature);
     const toast = useToast();
 
     const ids = presenter.vm.notifications.map(notification => notification.id).join("|");

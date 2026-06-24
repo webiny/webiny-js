@@ -1,12 +1,12 @@
 import { makeAutoObservable, computed } from "mobx";
 import {
-    NotificationService,
+    Notifications,
     NotificationsPresenter as Abstraction,
     type INotificationsViewModel
 } from "./abstractions.js";
 
 class NotificationsPresenterImpl implements Abstraction.Interface {
-    constructor(private service: NotificationService.Interface) {
+    constructor(private service: Notifications.Interface) {
         makeAutoObservable(this, { vm: computed });
     }
 
@@ -23,5 +23,5 @@ class NotificationsPresenterImpl implements Abstraction.Interface {
 
 export const NotificationsPresenter = Abstraction.createImplementation({
     implementation: NotificationsPresenterImpl,
-    dependencies: [NotificationService]
+    dependencies: [Notifications]
 });

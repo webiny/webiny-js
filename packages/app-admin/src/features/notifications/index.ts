@@ -1,3 +1,3 @@
 export * from "./abstractions.js";
-export { NotificationServiceFeature } from "./feature.js";
-export { Notifications } from "./Notifications.js";
+export { NotificationsFeature } from "./feature.js";
+export { NotificationsRenderer } from "./NotificationsRenderer.js";
