@@ -2,7 +2,13 @@ import type { CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js"
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { ListFoldersUseCase } from "@webiny/api-aco/features/folder/ListFolders/index.js";
 import { DeleteFolderUseCase } from "@webiny/api-aco/features/folder/DeleteFolder/index.js";
-import { CmsContext } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import {
+    CmsContext,
+    StorageOperations
+} from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { DeleteModelUseCase } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/index.js";
+import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { DbInstance } from "@webiny/handler-db/abstractions.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { IDeleteModelTaskInput } from "./types.js";
@@ -48,18 +54,23 @@ export class DeleteModel implements IDeleteModel {
             if (lastDeletedId) {
                 where.entryId_gte = lastDeletedId;
             }
-            const { items, hasMoreItems: metaHasMoreItems } =
-                await this.context.cms.storageOperations.entries.list(model, {
-                    limit: 1000,
-                    where,
-                    sort: ["entryId_ASC"]
-                });
+            const storageOps = this.context.container.resolve(StorageOperations);
+            const { items, hasMoreItems: metaHasMoreItems } = await storageOps.entries.list(model, {
+                limit: 1000,
+                where,
+                sort: ["entryId_ASC"]
+            });
             for (const item of items) {
                 try {
-                    await this.context.cms.deleteEntry(model, item.id, {
-                        permanently: true,
-                        force: true
-                    });
+                    const deleteResult = await this.context.container
+                        .resolve(DeleteEntryUseCase)
+                        .execute(model, item.id, {
+                            permanently: true,
+                            force: true
+                        });
+                    if (deleteResult.isFail()) {
+                        throw deleteResult.error;
+                    }
                 } catch {
                     console.error("Failed to delete entry.", {
                         model: model.modelId,
@@ -77,7 +88,8 @@ export class DeleteModel implements IDeleteModel {
         /**
          * Let's do one more check. If there are items, continue the task with 5 seconds delay.
          */
-        const { items } = await this.context.cms.storageOperations.entries.list(model, {
+        const storageOps = this.context.container.resolve(StorageOperations);
+        const { items } = await storageOps.entries.list(model, {
             limit: 1,
             where: {
                 latest: true
@@ -128,7 +140,12 @@ export class DeleteModel implements IDeleteModel {
             return controller.response.done();
         }
         try {
-            await this.context.cms.deleteModel(model.modelId);
+            const deleteModelResult = await this.context.container
+                .resolve(DeleteModelUseCase)
+                .execute(model.modelId);
+            if (deleteModelResult.isFail()) {
+                throw deleteModelResult.error;
+            }
         } catch (ex) {
             const message = `Failed to delete model "${model.modelId}".`;
             console.error(message);
@@ -139,11 +156,11 @@ export class DeleteModel implements IDeleteModel {
     }
 
     private async getModel(modelId: string): Promise<CmsModel> {
-        const model = await this.context.cms.getModel(modelId);
-        if (!model) {
-            throw new Error(`Model "${modelId}" not found.`);
+        const result = await this.context.container.resolve(GetModelUseCase).execute(modelId);
+        if (result.isFail()) {
+            throw result.error;
         }
-        return model;
+        return result.value;
     }
 
     private async removeBeingDeleted(model: Pick<CmsModel, "modelId" | "tenant">): Promise<void> {

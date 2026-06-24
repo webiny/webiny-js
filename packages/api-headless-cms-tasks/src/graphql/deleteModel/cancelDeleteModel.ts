@@ -11,11 +11,12 @@ import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
 import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { DbInstance } from "@webiny/handler-db/abstractions.js";
 import { GetTaskUseCase, AbortTaskUseCase } from "@webiny/background-tasks/api";
 
 export interface ICancelDeleteModelParams {
-    readonly context: Pick<HcmsTasksContext, "cms" | "container">;
+    readonly context: Pick<HcmsTasksContext, "container">;
     readonly modelId: string;
 }
 
@@ -24,7 +25,11 @@ export const cancelDeleteModel = async (
 ): Promise<IDeleteCmsModelTask> => {
     const { context, modelId } = params;
 
-    const model = await context.cms.getModel(modelId);
+    const modelResult = await context.container.resolve(GetModelUseCase).execute(modelId);
+    if (modelResult.isFail()) {
+        throw modelResult.error;
+    }
+    const model = modelResult.value;
     const accessControl = context.container.resolve(AccessControl);
 
     const canAccessModel = await accessControl.canAccessModel({ model, rwd: "d" });
