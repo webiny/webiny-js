@@ -12,6 +12,10 @@ import { CmsSecurityPermission } from "~/admin/plugins/permissionRenderer/index.
 import { CmsPermissionsFeature } from "~/features/permissions/feature.js";
 import { CmsGraphQLClientFeature } from "~/features/graphQLClient/feature.js";
 import { ModelFeature } from "~/features/model/feature.js";
+import { ModelGroupFeature } from "~/features/modelGroup/feature.js";
+import { ModelGroupPresenterFeature } from "~/presentation/modelGroup/feature.js";
+import { ContentGroupsMenuPresenterFeature } from "~/presentation/contentGroupsMenu/feature.js";
+import { CmsIconPickerRenderer } from "~/presentation/fieldRenderers/CmsIconPickerRenderer.js";
 import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.js";
 import { CmsFormModelFeature } from "~/features/formModel/feature.js";
 import { ContentEntryFeature } from "~/features/contentEntry/feature.js";
@@ -94,6 +98,9 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
             <RegisterFeature feature={CmsPermissionsFeature} />
             <RegisterFeature feature={CmsGraphQLClientFeature} />
             <RegisterFeature feature={ModelFeature} />
+            <RegisterFeature feature={ModelGroupFeature} />
+            <RegisterFeature feature={ModelGroupPresenterFeature} />
+            <RegisterFeature feature={ContentGroupsMenuPresenterFeature} />
             <RegisterFeature feature={FormModelFeature} />
             <RegisterFeature feature={CmsFormModelFeature} />
             <RegisterFeature feature={ContentEntryFeature} />
@@ -155,6 +162,10 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
                 <AdminConfig.Form.FieldRenderer
                     name={"cmsAccessControlRules"}
                     component={CmsAccessControlRulesRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"cmsIconPicker"}
+                    component={CmsIconPickerRenderer}
                 />
                 <AdminConfig.Form.FieldRenderer
                     name={"cmsConditionRules"}

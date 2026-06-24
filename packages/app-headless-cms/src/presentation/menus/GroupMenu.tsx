@@ -1,13 +1,13 @@
 import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { CmsGroup } from "~/types.js";
+import type { ModelGroupDto } from "~/features/modelGroup/listModelGroups/abstractions.js";
 import { normalizeIcon } from "~/utils/normalizeIcon.js";
 
 const { Menu } = AdminConfig;
 
 interface IGroupMenuProps {
-    group: Pick<CmsGroup, "slug" | "name" | "icon">;
+    group: Pick<ModelGroupDto, "slug" | "name" | "icon">;
 }
 /**
  * Renders a menu item for a given content group.

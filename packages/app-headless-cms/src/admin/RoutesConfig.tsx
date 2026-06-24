@@ -7,7 +7,7 @@ import { AdminConfig, AdminLayout } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { ContentEntriesRouteAdapter } from "~/presentation/contentEntries/views/ContentEntriesRouteAdapter.js";
 import { Routes } from "~/routes.js";
-import { CmsMenuLoader } from "~/admin/menus/CmsMenuLoader.js";
+import { CmsMenuLoader } from "~/presentation/menus/CmsMenuLoader.js";
 import { ContentModelsWidget } from "~/admin/components/ContentModelsWidget.js";
 
 const t = i18n.ns("app-headless-cms/admin/routes");
@@ -40,7 +40,7 @@ const ContentModelGroupsView = lazy(
     () =>
         import(
             /* webpackChunkName: "content-model-groups" */
-            "./views/contentModelGroups/ContentModelGroups.js"
+            "../presentation/modelGroup/components/ContentModelGroups.js"
         )
 );
 

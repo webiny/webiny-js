@@ -1,9 +1,9 @@
-import type { CmsGroup, CmsModel } from "~/types.js";
+import type { ModelGroupDto } from "~/features/modelGroup/listModelGroups/abstractions.js";
 import { usePermission } from "~/admin/hooks/usePermission.js";
 
 interface HasContentEntryPermissionsProps {
-    group: Pick<CmsGroup, "id" | "contentModels">;
-    contentModel?: Pick<CmsModel, "modelId">;
+    group: Pick<ModelGroupDto, "id" | "contentModels">;
+    contentModel?: { modelId: string };
     children: React.JSX.Element;
 }
 

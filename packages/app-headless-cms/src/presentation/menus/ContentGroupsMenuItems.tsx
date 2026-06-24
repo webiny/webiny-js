@@ -1,18 +1,21 @@
-import React from "react";
-import get from "lodash/get.js";
-import type { ListMenuCmsGroupsQueryResponse } from "~/admin/viewsGraphql.js";
-import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql.js";
-import useQuery from "~/admin/hooks/useQuery.js";
-import type { CmsGroup } from "~/types.js";
+import React, { useEffect } from "react";
+import { observer } from "mobx-react-lite";
+import { useFeature } from "@webiny/app";
+import { ContentGroupsMenuPresenterFeature } from "~/presentation/contentGroupsMenu/feature.js";
 import { GroupMenu } from "./GroupMenu.js";
 import { HasContentEntryPermissions } from "./HasContentEntryPermissions.js";
 import { GroupContentModels } from "./GroupContentModels.js";
 
-export const ContentGroupsMenuItems = () => {
-    const response = useQuery<ListMenuCmsGroupsQueryResponse>(LIST_MENU_CONTENT_GROUPS_MODELS);
-    const groups: CmsGroup[] = get(response, "data.listContentModelGroups.data") || [];
+export const ContentGroupsMenuItems = observer(() => {
+    const { presenter } = useFeature(ContentGroupsMenuPresenterFeature);
 
-    if (!groups || groups.length === 0) {
+    useEffect(() => {
+        presenter.init();
+    }, [presenter]);
+
+    const { groups, loading } = presenter.vm;
+
+    if (loading || groups.length === 0) {
         return null;
     }
 
@@ -28,4 +31,4 @@ export const ContentGroupsMenuItems = () => {
             ))}
         </>
     );
-};
+});

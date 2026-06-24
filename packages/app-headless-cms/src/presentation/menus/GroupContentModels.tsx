@@ -1,5 +1,5 @@
 import React from "react";
-import type { CmsGroup } from "~/types.js";
+import type { ModelGroupDto } from "~/features/modelGroup/listModelGroups/abstractions.js";
 import { AdminConfig, useRouter } from "@webiny/app-admin";
 import { HasContentEntryPermissions } from "./HasContentEntryPermissions.js";
 import { Routes } from "~/routes.js";
@@ -9,7 +9,7 @@ import { normalizeIcon } from "~/utils/normalizeIcon.js";
 const { Menu } = AdminConfig;
 
 interface IGroupContentModelsProps {
-    group: Pick<CmsGroup, "id" | "slug" | "contentModels">;
+    group: Pick<ModelGroupDto, "id" | "slug" | "contentModels">;
 }
 
 /**

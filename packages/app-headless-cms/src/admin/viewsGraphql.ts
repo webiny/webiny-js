@@ -34,7 +34,7 @@ const BASE_CONTENT_MODEL_FIELDS = `
 /**
  * ############################
  * List groups with models Query
- * * Fetches data needed for constructing content models list in the main menu.
+ * Fetches data needed for constructing content models list in the main menu.
  */
 export interface ListMenuCmsGroupsQueryResponse {
     listContentModelGroups: {
