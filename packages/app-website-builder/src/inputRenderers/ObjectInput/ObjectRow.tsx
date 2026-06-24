@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text } from "@webiny/admin-ui";
+import { cn, Text } from "@webiny/admin-ui";
 
 interface ObjectRowProps {
     title: React.ReactNode;
@@ -32,10 +32,10 @@ export const ObjectRow = ({ title, onOpen, actions }: ObjectRowProps) => {
             // Fixed height + vertical centering keeps the row the same height whether or not the
             // (taller) hover actions are shown.
             style={{ height: 40 }}
-            className={[
+            className={cn(
                 "flex items-center justify-between gap-xs rounded-md border border-neutral-dimmed-darker px-sm-extra cursor-pointer transition-colors",
                 hovered ? "bg-neutral-light" : "bg-neutral-base"
-            ].join(" ")}
+            )}
         >
             <div className={"flex flex-1 items-center min-w-0"}>
                 <Text size={"sm"} className={"truncate text-neutral-strong"}>
