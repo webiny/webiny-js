@@ -2,7 +2,7 @@ import type { Container } from "@webiny/di";
 import { Abstraction } from "@webiny/di";
 import { PluginsContainer } from "@webiny/plugins";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import type { IGraphQLContextEnhancer, IGraphQLContextualSchema } from "@webiny/handler-graphql";
+import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
 import type { GraphQLSchema } from "graphql";
 import { AccessControl } from "~/crud/AccessControl/AccessControl.js";
 import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud.js";
@@ -44,9 +44,7 @@ export const HeadlessCmsEnhancerConfig = new Abstraction<IHeadlessCmsEnhancerCon
     "HeadlessCmsEnhancerConfig"
 );
 
-export class HeadlessCmsInitializerImpl
-    implements IGraphQLContextEnhancer, IGraphQLContextualSchema
-{
+export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
     private initialized = false;
 
     constructor(
@@ -54,26 +52,15 @@ export class HeadlessCmsInitializerImpl
         private config: IHeadlessCmsEnhancerConfig
     ) {}
 
-    // Runs during the enhancer phase so that ctx.cms and all runtime DI registrations
-    // (CmsContextAbstraction, etc.) are available before any contextual schemas resolve
-    // their use cases from the container.
-    async enhance(ctx: Record<string, any>): Promise<void> {
-        await this._maybeInitialize(ctx);
-    }
-
     async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
-        await this._maybeInitialize(ctx);
-        return makeExecutableSchema({
-            typeDefs: "type Query\ntype Mutation",
-            assumeValidSDL: true
-        });
-    }
-
-    private async _maybeInitialize(ctx: Record<string, any>): Promise<void> {
         if (!this.initialized) {
             this.initialized = true;
             await this._initialize(ctx);
         }
+        return makeExecutableSchema({
+            typeDefs: "type Query\ntype Mutation",
+            assumeValidSDL: true
+        });
     }
 
     private async _initialize(ctx: Record<string, any>): Promise<void> {

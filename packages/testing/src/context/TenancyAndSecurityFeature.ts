@@ -1,6 +1,6 @@
 import type { Container } from "@webiny/di";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
-import type { IGraphQLContextEnhancer, IGraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema } from "@webiny/handler-graphql";
+import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
 import { buildSchema } from "graphql";
 import type { GraphQLSchema } from "graphql";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
@@ -20,6 +20,8 @@ interface Config {
     permissions: SecurityPermission[];
     identity?: IdentityData | null;
 }
+
+export { defaultIdentity };
 
 class FullAccessRoleFactory implements RoleFactory.Interface {
     async execute(): RoleFactory.Return {
@@ -62,22 +64,13 @@ const TEST_TENANTS = [
     { id: "sales", name: "Sales", parent: "", description: "Sales tenant", tags: [] as string[] }
 ];
 
-class TenancyAndSecurityInitializerImpl
-    implements IGraphQLContextEnhancer, IGraphQLContextualSchema
-{
+class TenancyAndSecurityInitializerImpl implements IGraphQLContextualSchema {
     private initialized = false;
 
     constructor(
         private container: Container,
         private config: Config
     ) {}
-
-    // Runs during the enhance phase so that ctx.security / ctx.tenancy are fully
-    // initialised (authenticated identity + current tenant) before HeadlessCms's
-    // enhance() runs, which needs them to bootstrap the CMS context.
-    async enhance(ctx: Record<string, any>): Promise<void> {
-        await this._maybeInitialize(ctx);
-    }
 
     async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
         await this._maybeInitialize(ctx);
@@ -152,7 +145,6 @@ class TenancyAndSecurityInitializerImpl
 export const TenancyAndSecurityFeature = {
     register(container: Container, config: Config): void {
         const initializer = new TenancyAndSecurityInitializerImpl(container, config);
-        container.registerInstance(GraphQLContextEnhancer, initializer);
         container.registerInstance(GraphQLContextualSchema, initializer);
     }
 };

@@ -142,16 +142,10 @@ export const HeadlessCmsFeature = createFeature({
         CmsSortMapperFeature.register(container);
         CmsWebhooksFeature.register(container);
 
-        // Register as both GraphQLContextEnhancer and GraphQLContextualSchema so that:
-        // - enhance() runs during buildContext() to set ctx.cms and register runtime DI
-        //   instances (CmsContextAbstraction, etc.) before contextual schemas resolve them.
-        // - build() runs during buildContextualSchemas() — if enhance() already ran, it's a
-        //   no-op that returns an empty schema for safe merging.
         const initializer = container.resolveWithDependencies({
             implementation: HeadlessCmsInitializerImpl,
             dependencies: [RequestContainer, HeadlessCmsEnhancerConfig]
         });
-        container.registerInstance(GraphQLContextEnhancer, initializer);
         container.registerInstance(GraphQLContextualSchema, initializer);
         container.register(createCmsRoute(config.type));
     }

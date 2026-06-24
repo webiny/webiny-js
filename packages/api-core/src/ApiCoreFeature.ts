@@ -20,7 +20,7 @@ import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/Nul
 import { WebhookProviderFeature } from "~/features/webhooks/index.js";
 import { ApiCoreInitializerImpl } from "~/graphql/ApiCoreContextEnhancer.js";
 import { ApiCoreSchemaFactory } from "~/graphql/ApiCoreSchemaFactory.js";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { RequestContainer } from "@webiny/event-handler-core";
 
 export const ApiCoreFeature = createFeature({
@@ -43,15 +43,10 @@ export const ApiCoreFeature = createFeature({
         IdpAuthenticatorFeature.register(container);
         container.register(NullWebhookDispatcher).inSingletonScope();
         WebhookProviderFeature.register(container);
-        // Dual-register as both enhancer and contextual schema using registerInstance so it
-        // runs first in both chains. The enhance() role keeps ctx.security / ctx.tenancy /
-        // ctx.wcp available to legacy ContextPlugins; the build() role is a no-op (enhance
-        // already ran) but places ApiCore first in the contextual-schema ordering chain.
         const coreInitializer = container.resolveWithDependencies({
             implementation: ApiCoreInitializerImpl,
             dependencies: [RequestContainer]
         });
-        container.registerInstance(GraphQLContextEnhancer, coreInitializer);
         container.registerInstance(GraphQLContextualSchema, coreInitializer);
         container.register(ApiCoreSchemaFactory);
     }

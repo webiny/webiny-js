@@ -17,7 +17,7 @@ import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins.js";
 import { TenancyAndSecurityFeature } from "./TenancyAndSecurityFeature.js";
-import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
+import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import type { Container } from "@webiny/di";
 
 export interface CreateHandlerCoreParams {
@@ -50,9 +50,11 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
         const wcpLicense = await loadWcpLicense(testProjectLicense);
         ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense });
 
-        // DI-native replacement for the legacy createTenancyAndSecurity plugins.
-        // Runs as a contextual schema AFTER ApiCore's enhance (which sets ctx.security/tenancy)
-        // and BEFORE HeadlessCms so that the identity is seated before CMS initializes.
+        // Registration order determines contextual-schema execution order:
+        // 1. ApiCore.build() — sets ctx.security, ctx.tenancy, ctx.wcp
+        // 2. TenancyAndSecurity.build() — seeds tenants, authenticates identity
+        // 3. cmsStorage.plugins enhancer — ctx.db (runs in the enhance phase, before all build() calls)
+        // 4. HeadlessCms.build() — uses ctx.security, ctx.tenancy, ctx.db to set up ctx.cms
         TenancyAndSecurityFeature.register(container, {
             permissions: createPermissions(permissions),
             identity
@@ -60,12 +62,12 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
 
         const extraCmsPlugins: any[] = [];
 
-        // RegisterExtensionPlugin instances are pre-registered before HeadlessCms enhancers run,
+        // RegisterExtensionPlugin instances are pre-registered before HeadlessCms build() runs,
         // so private models reach the DI container before AcoContextEnhancer populates ModelCache.
         // Static plugins (CmsModelPlugin, GraphQLSchemaPlugin, etc.) are collected for ctx.plugins.
         // ContextPlugin instances (e.g. dbPlugins() for ctx.db) run in the enhance phase.
         processLegacyPlugins(container, cmsStorage.plugins);
-        registerLegacyPluginsViaGqlContextEnhancer(container, cmsStorage.plugins);
+        registerLegacyPluginsViaGqlContextualSchema(container, cmsStorage.plugins);
         for (const p of [cmsStorage.plugins].flat(Infinity as 1)) {
             if (p && typeof (p as any).apply !== "function" && typeof p !== "function") {
                 extraCmsPlugins.push(p);
