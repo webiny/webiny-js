@@ -8,14 +8,9 @@
     { "path": "../feature" },
     { "path": "../handler-graphql" },
     { "path": "../api-core" },
-    { "path": "../api-headless-cms" },
     { "path": "../api-opensearch" },
     { "path": "../background-tasks" },
-    { "path": "../event-handler-core" },
-    { "path": "../handler" },
-    { "path": "../plugins" },
-    { "path": "../utils" },
-    { "path": "../wcp" }
+    { "path": "../testing" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -36,22 +31,12 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
-      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
-      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
       "@webiny/api-opensearch": ["../api-opensearch/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/testing/*": ["../testing/src/*"],
+      "@webiny/testing": ["../testing/src"]
     }
   }
 }

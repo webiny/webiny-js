@@ -25,16 +25,11 @@
   },
   "devDependencies": {
     "@webiny/api-core": "0.0.0",
-    "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-opensearch": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/event-handler-core": "0.0.0",
-    "@webiny/handler": "0.0.0",
-    "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "@webiny/utils": "0.0.0",
-    "@webiny/wcp": "0.0.0",
+    "@webiny/testing": "0.0.0",
     "typescript": "6.0.3",
     "vitest": "^4.1.9"
   },

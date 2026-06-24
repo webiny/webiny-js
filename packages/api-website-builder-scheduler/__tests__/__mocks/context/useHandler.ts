@@ -1,54 +1,40 @@
-import { Container } from "@webiny/feature/api";
-import { RequestContainer } from "@webiny/event-handler-core";
-import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import { PluginsContainer } from "@webiny/plugins";
-import { Request } from "@webiny/handler";
-import { CmsParametersPlugin } from "@webiny/api-headless-cms/plugins/CmsParametersPlugin.js";
-import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
-import { Benchmark } from "@webiny/api/Benchmark.js";
+import { useContextHandler } from "@webiny/testing";
+import type { UseContextHandlerParams } from "@webiny/testing";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { createWebsiteBuilderScheduleContext } from "~/context.js";
+import { WebsiteBuilderSchedulerFeature } from "~/WebsiteBuilderSchedulerFeature.js";
+import { registerSchedulerExtension, SchedulerService } from "@webiny/api-scheduler";
+import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
 import { PageModelPlugin } from "@webiny/api-website-builder/domain/page/page.model.js";
 import { RedirectModelPlugin } from "@webiny/api-website-builder/domain/redirect/redirect.model.js";
 import { SchedulePrivateModel } from "@webiny/api-scheduler/domain/SchedulePrivateModel.js";
-import { createHandlerCore } from "./plugins";
-import type { CreateHandlerCoreParams } from "./plugins";
-import { defaultIdentity } from "./tenancySecurity";
+import { createWebsiteBuilder } from "@webiny/api-website-builder";
+import { createMockBackgroundTasks } from "../mockBackgroundTasks.js";
 
-export const useHandler = <C extends ApiCoreContext>(params: CreateHandlerCoreParams) => {
-    const core = createHandlerCore(params);
-    const legacyPlugins = ([...core.plugins, createWebsiteBuilderScheduleContext()] as any[]).flat(
-        Infinity as 1
-    );
+type Params = Omit<UseContextHandlerParams, "features">;
 
-    const buildContext = async (): Promise<C> => {
-        const container = new Container();
-        container.registerInstance(RequestContainer, container);
-        container.registerInstance(Request, { headers: { "x-tenant": "root" } });
-        CompressionFeature.register(container);
-        // Pre-register all model plugins before the first GetModelUseCase call populates
-        // ModelCache. Without this, models registered later in the legacy plugin chain
-        // (modelsPlugin, extensionPlugin) would be absent from the cache.
-        container.register(PageModelPlugin);
-        container.register(RedirectModelPlugin);
-        container.register(SchedulePrivateModel);
-        registerLegacyPluginsViaGqlContextEnhancer(container, legacyPlugins);
-
-        const ctx: Record<string, any> = { container, plugins: new PluginsContainer() };
-        ctx.benchmark = new Benchmark();
-        ctx.plugins.register(new CmsParametersPlugin(async () => ({ type: "manage" })));
-        for (const enhancer of container.resolveAll(GraphQLContextEnhancer)) {
-            await enhancer.enhance(ctx);
+export const useHandler = <C extends ApiCoreContext = ApiCoreContext>(params: Params = {}) => {
+    const inner = useContextHandler<C>({
+        ...params,
+        plugins: [
+            createWebsiteBuilder(),
+            createMockBackgroundTasks(),
+            registerSchedulerExtension(),
+            ...[params.plugins].flat(Infinity as 1).filter(Boolean)
+        ],
+        features: container => {
+            container.register(PageModelPlugin);
+            container.register(RedirectModelPlugin);
+            container.register(SchedulePrivateModel);
+            WebsiteBuilderSchedulerFeature.register(container);
+            container.registerInstance(SchedulerService, new VoidSchedulerService());
         }
-        return ctx as unknown as C;
-    };
+    });
 
     return {
-        identity: params.identity || defaultIdentity,
-        tenant: core.tenant,
+        identity: inner.identity,
+        tenant: inner.tenant,
         elasticsearch: createTestOpenSearchClient(),
-        handler: buildContext
+        handler: inner.context
     };
 };
