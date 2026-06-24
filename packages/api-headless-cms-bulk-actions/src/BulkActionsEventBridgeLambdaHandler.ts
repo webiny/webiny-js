@@ -4,11 +4,10 @@ import {
     EventBridgeEventHandler,
     type EventBridgeResult
 } from "@webiny/event-handler-aws/abstractions/handlers/EventBridgeEventHandler.js";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/abstractions.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
-import type { HcmsBulkActionsContext } from "~/types.js";
 
 const DETAIL_TYPE = "WebinyEmptyTrashBin";
 
@@ -23,24 +22,10 @@ class BulkActionsEventBridgeLambdaHandlerImpl implements EventBridgeEventHandler
             return { success: true, message: "Not a bulk action event." };
         }
 
-        // TODO: remove once legacy ctx is gone — resolve services directly from the container.
-        const ctx: Record<string, any> = { container: this.container };
-        for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
-            await enhancer.enhance(ctx);
-        }
-        for (const schema of this.container.resolveAll(GraphQLContextualSchema)) {
-            await schema.build(ctx);
-        }
-
-        const context = ctx as HcmsBulkActionsContext;
-
-        if (!context.tasks || !context.tenancy) {
-            console.error("Missing tasks or tenancy definition on context.");
-            return { success: false, message: "Missing tasks or tenancy." };
-        }
-
-        await context.container.resolve(TenantContext).withRootTenant(async () => {
-            await context.tasks.trigger({ definition: "hcmsEntriesEmptyTrashBins" });
+        await this.container.resolve(TenantContext).withRootTenant(async () => {
+            await this.container
+                .resolve(TaskService)
+                .trigger({ definition: "hcmsEntriesEmptyTrashBins" });
         });
 
         return { success: true };

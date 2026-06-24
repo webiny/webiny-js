@@ -2,8 +2,6 @@ import type { Container } from "@webiny/di";
 import { Abstraction } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
-import { LegacyContext as SecurityLegacyContext } from "@webiny/api-core/legacy/security/LegacyContext.js";
-import { LegacyContext as TenancyLegacyContext } from "@webiny/api-core/legacy/tenancy/LegacyContext.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
@@ -71,12 +69,6 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
 
     private async _initialize(ctx: Record<string, any>): Promise<void> {
         const { type } = this.config;
-
-        // Populate legacy ctx.security / ctx.tenancy bridges so that CMS internals
-        // (CRUD methods, resolvers, GraphQL schema helpers) that still access these
-        // via ctx continue to work until they are fully migrated to DI.
-        ctx.security = new SecurityLegacyContext(this.container);
-        ctx.tenancy = new TenancyLegacyContext(this.container);
 
         // Provide a PluginsContainer with field converters and required scalar plugins
         ctx.plugins = new PluginsContainer([

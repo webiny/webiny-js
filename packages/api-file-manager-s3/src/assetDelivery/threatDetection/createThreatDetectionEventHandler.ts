@@ -4,7 +4,6 @@ import {
     EventBridgeEventHandler,
     type EventBridgeResult
 } from "@webiny/event-handler-aws/abstractions/handlers/EventBridgeEventHandler.js";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
@@ -12,6 +11,7 @@ import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantCon
 import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { processThreatScanResult } from "./processThreatScanResult.js";
 import { ObjectKey } from "./ObjectKey.js";
@@ -35,22 +35,12 @@ class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHan
             return { success: true };
         }
 
-        // TODO: remove once legacy ctx is gone — resolve services directly from the container.
-        const ctx: Record<string, any> = { container: this.container };
-        for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
-            await enhancer.enhance(ctx);
-        }
-        for (const schema of this.container.resolveAll(GraphQLContextualSchema)) {
-            await schema.build(ctx);
-        }
-        const context = ctx as ApiCoreContext;
-
-        if (!context.wcp?.canUseFileManagerThreatDetection()) {
+        if (!this.container.resolve(WcpContext).canUseFileManagerThreatDetection()) {
             return { success: true };
         }
 
         const objectKey = payload.detail.s3ObjectDetails.objectKey;
-        const keyValueStore = context.container.resolve(GlobalKeyValueStore);
+        const keyValueStore = this.container.resolve(GlobalKeyValueStore);
 
         try {
             const fileId = ObjectKey.from(objectKey).id();
@@ -68,7 +58,10 @@ class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHan
             // If metadata can't be loaded, ignore — likely a rendition file.
         }
 
-        await processThreatScanResult(context, payload.detail);
+        await processThreatScanResult(
+            { container: this.container } as unknown as ApiCoreContext,
+            payload.detail
+        );
         return { success: true };
     }
 }
