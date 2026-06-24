@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../api" },
     { "path": "../api-core" },
     { "path": "../api-headless-cms" },
     { "path": "../api-headless-cms-ddb-es" },
@@ -18,6 +19,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],

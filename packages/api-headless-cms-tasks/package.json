@@ -22,7 +22,6 @@
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-bulk-actions": "0.0.0",
-    "@webiny/background-tasks": "0.0.0",
     "@webiny/db": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",

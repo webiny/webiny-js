@@ -14,7 +14,7 @@ import { TestIdentity, TestAuthenticator } from "~tests/testHelpers/mocks/TestAu
 import { TestPermissions, TestAuthorizer } from "~tests/testHelpers/mocks/TestAuthorizer";
 import { RootTenantInitializer } from "~tests/testHelpers/handlers/RootTenantInitializer";
 import { AuthTriggerHandler } from "~tests/testHelpers/handlers/AuthTriggerHandler";
-import { defaultIdentity } from "~tests/testHelpers/tenancySecurity";
+import { defaultIdentity } from "~tests/testHelpers/helpers";
 import { processLegacyPlugins } from "~tests/testHelpers/bridgeLegacyPlugins";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";

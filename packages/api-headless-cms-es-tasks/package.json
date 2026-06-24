@@ -17,6 +17,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-ddb-es": "0.0.0",
