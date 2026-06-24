@@ -1,47 +1,24 @@
-import { Container } from "@webiny/feature/api";
-import { RequestContainer } from "@webiny/event-handler-core";
-import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import { PluginsContainer } from "@webiny/plugins";
-import { Request } from "@webiny/handler";
-import { CmsParametersPlugin } from "@webiny/api-headless-cms/plugins/CmsParametersPlugin.js";
-import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
-import { Benchmark } from "@webiny/api/Benchmark.js";
+import { useContextHandler } from "@webiny/testing";
+import type { UseContextHandlerParams } from "@webiny/testing";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import type { Context } from "~/types";
-import { createHandlerCore } from "./plugins";
-import type { CreateHandlerCoreParams } from "./plugins";
-import { defaultIdentity } from "./tenancySecurity";
+import { createHeadlessCmsEsTasks } from "~/index.js";
 
-type Params = CreateHandlerCoreParams;
+type Params = Omit<UseContextHandlerParams, "features">;
 
 export const useHandler = <C extends Context = Context>(params: Params = {}) => {
-    const core = createHandlerCore(params);
-    const legacyPlugins = (core.plugins as any[]).flat(Infinity as 1);
-
-    const buildContext = async (): Promise<C> => {
-        const container = new Container();
-        container.registerInstance(RequestContainer, container);
-        container.registerInstance(Request, { headers: { "x-tenant": "root" } });
-        CompressionFeature.register(container);
-        registerLegacyPluginsViaGqlContextEnhancer(container, legacyPlugins);
-
-        const ctx: Record<string, any> = { container, plugins: new PluginsContainer() };
-        // Pre-seed benchmark and CMS type before context plugins run:
-        // createContextPlugin() sets up context.cms (which uses context.benchmark.measure)
-        // before HeadlessCmsContextEnhancer gets a chance to set it.
-        ctx.benchmark = new Benchmark();
-        ctx.plugins.register(new CmsParametersPlugin(async () => ({ type: "manage" })));
-        for (const enhancer of container.resolveAll(GraphQLContextEnhancer)) {
-            await enhancer.enhance(ctx);
-        }
-        return ctx as unknown as C;
-    };
+    const inner = useContextHandler<C>({
+        ...params,
+        plugins: [
+            createHeadlessCmsEsTasks(),
+            ...[params.plugins].flat(Infinity as 1).filter(Boolean)
+        ]
+    });
 
     return {
-        identity: params.identity || defaultIdentity,
-        tenant: core.tenant,
+        identity: inner.identity,
+        tenant: inner.tenant,
         elasticsearch: createTestOpenSearchClient(),
-        handler: buildContext
+        handler: inner.context
     };
 };
