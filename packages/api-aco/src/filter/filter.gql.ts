@@ -5,6 +5,7 @@ import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";
 
 import type { AcoContext } from "~/types.js";
+import { AcoFilterCrud } from "~/features/folder/shared/abstractions.js";
 
 export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
     typeDefs: /* GraphQL */ `
@@ -102,13 +103,15 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
             getFilter: async (_, { id }, context) => {
                 return resolve(() => {
                     ensureAuthentication(context);
-                    return context.aco.filter.get(id);
+                    return context.container.resolve(AcoFilterCrud).get(id);
                 });
             },
             listFilters: async (_, args: any, context) => {
                 try {
                     ensureAuthentication(context);
-                    const [entries, meta] = await context.aco.filter.list(args);
+                    const [entries, meta] = await context.container
+                        .resolve(AcoFilterCrud)
+                        .list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -119,19 +122,19 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
             createFilter: async (_, { data }, context) => {
                 return resolve(() => {
                     ensureAuthentication(context);
-                    return context.aco.filter.create(data);
+                    return context.container.resolve(AcoFilterCrud).create(data);
                 });
             },
             updateFilter: async (_, { id, data }, context) => {
                 return resolve(() => {
                     ensureAuthentication(context);
-                    return context.aco.filter.update(id, data);
+                    return context.container.resolve(AcoFilterCrud).update(id, data);
                 });
             },
             deleteFilter: async (_, { id }, context) => {
                 return resolve(() => {
                     ensureAuthentication(context);
-                    return context.aco.filter.delete(id);
+                    return context.container.resolve(AcoFilterCrud).delete(id);
                 });
             }
         }

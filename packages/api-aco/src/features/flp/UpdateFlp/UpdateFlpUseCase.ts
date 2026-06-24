@@ -2,12 +2,13 @@ import { WebinyError } from "@webiny/error";
 import { Path } from "~/utils/Path.js";
 import { Permissions, ROOT_FOLDER } from "@webiny/shared-aco";
 import type { UpdateFlpParams, UpdateFlpUseCase as UseCaseAbstraction } from "./abstractions.js";
-import type { AcoContext, Folder, FolderLevelPermission, FolderPermission } from "~/types.js";
-import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
-import { FolderModel } from "~/domain/folder/abstractions.js";
+import type { Folder, FolderLevelPermission, FolderPermission } from "~/types.js";
+import type { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
+import type { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
+import type { FolderModel } from "~/domain/folder/abstractions.js";
 import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
-import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
+import type { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
+import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
 interface FlpUpdateData {
     parentId: string;
@@ -17,16 +18,19 @@ interface FlpUpdateData {
 }
 
 export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
-    private context: AcoContext;
     private isCloseToTimeout?: () => boolean;
     private handleTimeout?: (updated: string[]) => void;
 
     private readonly queued: Set<string> = new Set();
     private readonly flpsToUpdate: Map<string, FlpUpdateData> = new Map();
 
-    constructor(context: AcoContext) {
-        this.context = context;
-    }
+    constructor(
+        private flpCrud: AcoFlpCrud.Interface,
+        private listFoldersUseCase: ListFoldersUseCase.Interface,
+        private folderModel: FolderModel.Interface,
+        private updateEntryUseCase: UpdateEntryUseCase.Interface,
+        private identityContext: IdentityContext.Interface
+    ) {}
 
     async execute(params: UpdateFlpParams): Promise<void> {
         this.isCloseToTimeout = params.isCloseToTimeout;
@@ -48,9 +52,7 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
             }
 
             const flp = await this.getFlp(folder);
-            const parentFlp = folder.parentId
-                ? await this.context.aco.flp.get(folder.parentId)
-                : null;
+            const parentFlp = folder.parentId ? await this.flpCrud.get(folder.parentId) : null;
 
             // Add the root folder to the update collection
             this.flpsToUpdate.set(folder.id, {
@@ -144,17 +146,18 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
                 }
             );
 
-            await this.context.aco.flp.batchUpdate(items);
+            await this.flpCrud.batchUpdate(items);
 
             // Update all folders with the new path
-            const folderModel = this.context.container.resolve(FolderModel);
             for (const item of items) {
                 const { id, data } = item;
                 // Directly update the folder in CMS storage to bypass any folder update event triggers.
                 const entryId = EntryId.from(id);
-                const updateResult = await this.context.container
-                    .resolve(UpdateEntryUseCase)
-                    .execute(folderModel, entryId.toString(), { values: { path: data.path } });
+                const updateResult = await this.updateEntryUseCase.execute(
+                    this.folderModel,
+                    entryId.toString(),
+                    { values: { path: data.path } }
+                );
                 if (updateResult.isFail()) {
                     throw updateResult.error;
                 }
@@ -193,18 +196,14 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
     }
 
     private async listDirectChildren(flp: FolderLevelPermission): Promise<FolderLevelPermission[]> {
-        const listFolders = this.context.container.resolve(ListFoldersUseCase);
-
-        const result = await this.context.container
-            .resolve(IdentityContext)
-            .withoutAuthorization(() => {
-                return listFolders.execute({
-                    where: {
-                        type: flp.type,
-                        parentId: flp.id
-                    }
-                });
+        const result = await this.identityContext.withoutAuthorization(() => {
+            return this.listFoldersUseCase.execute({
+                where: {
+                    type: flp.type,
+                    parentId: flp.id
+                }
             });
+        });
 
         if (result.isFail()) {
             throw result.error;
@@ -220,12 +219,12 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
         slug,
         permissions
     }: Folder): Promise<FolderLevelPermission> {
-        const flp = await this.context.aco.flp.get(id);
+        const flp = await this.flpCrud.get(id);
 
         if (!flp) {
-            const parentFlp = parentId ? await this.context.aco.flp.get(parentId) : null;
+            const parentFlp = parentId ? await this.flpCrud.get(parentId) : null;
 
-            return await this.context.aco.flp.create({
+            return await this.flpCrud.create({
                 id,
                 type,
                 slug,

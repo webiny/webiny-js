@@ -11,9 +11,10 @@ import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
 import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { DbInstance } from "@webiny/handler-db/abstractions.js";
 
 export interface ICancelDeleteModelParams {
-    readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "db" | "container">;
+    readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "container">;
     readonly modelId: string;
 }
 
@@ -37,11 +38,12 @@ export const cancelDeleteModel = async (
 
     const storeKey = createStoreKey(model);
 
-    const result = await context.db.store.getValue<IStoreValue>(storeKey);
+    const db = context.container.resolve(DbInstance);
+    const result = await db.store.getValue<IStoreValue>(storeKey);
 
     const taskId = result.data?.task;
 
-    await context.db.store.removeValue(storeKey);
+    await db.store.removeValue(storeKey);
     if (!taskId) {
         if (result.error) {
             throw WebinyError.from(result.error, {

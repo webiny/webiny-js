@@ -1,5 +1,6 @@
 import type { HcmsTasksContext } from "~/types.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
+import { DbInstance } from "@webiny/handler-db/abstractions.js";
 import { createCacheKey } from "@webiny/api-headless-cms/utils/index.js";
 import { createMemoryCache } from "@webiny/api-headless-cms/utils/index.js";
 import type { IStoreValue } from "~/features/DeleteModelTask/types.js";
@@ -31,9 +32,11 @@ export const createDeleteModelCrud = () => {
                 const beginsWith = createStoreNamespace({
                     tenant
                 });
-                return await context.db.store.listValues<GenericRecord<string, IStoreValue>>({
-                    beginsWith
-                });
+                return await context.container
+                    .resolve(DbInstance)
+                    .store.listValues<GenericRecord<string, IStoreValue>>({
+                        beginsWith
+                    });
             });
 
             if (result.error) {

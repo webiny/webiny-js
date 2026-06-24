@@ -12,9 +12,10 @@ import { createStoreKey } from "~/helpers/store.js";
 import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
 import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
+import { DbInstance } from "@webiny/handler-db/abstractions.js";
 
 export interface IGetDeleteModelProgress {
-    readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "db">;
+    readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "container">;
     readonly modelId: string;
 }
 
@@ -50,7 +51,9 @@ export const getDeleteModelProgress = async (
     }
 
     const storeKey = createStoreKey(model);
-    const result = await context.db.store.getValue<IStoreValue>(storeKey);
+    const result = await context.container
+        .resolve(DbInstance)
+        .store.getValue<IStoreValue>(storeKey);
 
     const taskId = result.data?.task;
     if (!taskId) {

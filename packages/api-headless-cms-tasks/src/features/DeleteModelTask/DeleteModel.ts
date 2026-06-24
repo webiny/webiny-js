@@ -3,6 +3,7 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { ListFoldersUseCase } from "@webiny/api-aco/features/folder/ListFolders/index.js";
 import { DeleteFolderUseCase } from "@webiny/api-aco/features/folder/DeleteFolder/index.js";
 import { CmsContext } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { DbInstance } from "@webiny/handler-db/abstractions.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { IDeleteModelTaskInput } from "./types.js";
 import type { IDeleteModelTaskOutput } from "./types.js";
@@ -147,6 +148,6 @@ export class DeleteModel implements IDeleteModel {
 
     private async removeBeingDeleted(model: Pick<CmsModel, "modelId" | "tenant">): Promise<void> {
         const key = createStoreKey(model);
-        await this.context.db.store.removeValue(key);
+        await this.context.container.resolve(DbInstance).store.removeValue(key);
     }
 }

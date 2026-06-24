@@ -24,6 +24,8 @@ import { DeleteFlpFeature } from "~/features/flp/DeleteFlp/index.js";
 import { UpdateFlpFeature } from "~/features/flp/UpdateFlp/index.js";
 import { EnsureFolderIsEmptyOnDeleteFeature } from "~/features/folder/EnsureFolderIsEmptyOnDelete/index.js";
 import {
+    AcoFilterCrud,
+    AcoFlpCrud,
     FilterStorageOperations,
     FlpStorageOperations
 } from "~/features/folder/shared/abstractions.js";
@@ -71,6 +73,7 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
     FolderLevelPermissionsFeature.register(container);
 
     container.registerInstance(FilterStorageOperations, storageOperations.filter);
+    container.registerInstance(AcoFlpCrud, flpCrudMethods);
 
     CreateFolderFeature.register(container);
     UpdateFolderFeature.register(container);
@@ -82,9 +85,9 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
     GetAncestorsFeature.register(container);
     EnsureFolderIsEmptyFeature.register(container);
 
-    CreateFlpFeature.register(container, { context });
-    UpdateFlpFeature.register(container, { context });
-    DeleteFlpFeature.register(container, { context });
+    CreateFlpFeature.register(container);
+    UpdateFlpFeature.register(container);
+    DeleteFlpFeature.register(container);
     ListFlpsFeature.register(container, flpCrudMethods);
     GetFlpFeature.register(container, flpCrudMethods);
 
@@ -97,13 +100,16 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
 
     const folderLevelPermissions = container.resolve(FolderLevelPermissions);
 
+    const filterCrudMethods = createFilterCrudMethods({
+        container,
+        getTenant,
+        storageOperations,
+        folderLevelPermissions
+    });
+    container.registerInstance(AcoFilterCrud, filterCrudMethods);
+
     context.aco = {
-        filter: createFilterCrudMethods({
-            container,
-            getTenant,
-            storageOperations,
-            folderLevelPermissions
-        }),
+        filter: filterCrudMethods,
         flp: flpCrudMethods
     };
 

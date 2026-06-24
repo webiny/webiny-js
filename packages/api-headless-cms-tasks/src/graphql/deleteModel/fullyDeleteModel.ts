@@ -9,9 +9,10 @@ import { createStoreKey, createStoreValue } from "~/helpers/store.js";
 import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
 import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
+import { DbInstance } from "@webiny/handler-db/abstractions.js";
 
 export interface IFullyDeleteModelParams {
-    readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "db" | "container">;
+    readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "container">;
     readonly modelId: string;
 }
 
@@ -40,7 +41,8 @@ export const fullyDeleteModel = async (
         throw new Error(`Model "${modelId}" not found.`);
     }
     const storeKey = createStoreKey(model);
-    const result = await context.db.store.getValue<IStoreValue>(storeKey);
+    const db = context.container.resolve(DbInstance);
+    const result = await db.store.getValue<IStoreValue>(storeKey);
     const taskId = result.data?.task;
     if (taskId) {
         throw new Error(`Model "${modelId}" is already getting deleted. Task id: ${taskId}.`);
@@ -58,7 +60,7 @@ export const fullyDeleteModel = async (
 
     const identity = context.container.resolve(IdentityContext).getIdentity();
 
-    await context.db.store.storeValue(
+    await db.store.storeValue(
         storeKey,
         createStoreValue({
             ...model,

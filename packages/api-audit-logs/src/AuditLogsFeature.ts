@@ -97,7 +97,7 @@ export const AuditLogsFeature = createFeature({
                     eventPublisher
                 });
 
-                container.registerInstance(AuditLogsContext, ctx as any);
+                container.registerInstance(AuditLogsContext, ctx.auditLogs);
                 createSubscriptionHooks(ctx as any);
 
                 return STUB_SCHEMA;
