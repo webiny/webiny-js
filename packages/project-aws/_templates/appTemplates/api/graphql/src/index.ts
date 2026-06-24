@@ -10,7 +10,7 @@ import {
     BackgroundTaskEventType
 } from "@webiny/event-handler-aws";
 import { BackgroundTaskLambdaHandler } from "@webiny/background-tasks/api";
-import { registerLegacyPluginsViaGqlContextEnhancer } from "@webiny/handler-graphql";
+import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { DbFeature } from "@webiny/handler-db";
 import { ApiCoreFeature } from "@webiny/api-core";
@@ -117,13 +117,13 @@ export const handler = createLambdaHandler({
 
         // ── Scheduler ──────────────────────────────────────────────
         SchedulerFeature.register(container);
-        registerLegacyPluginsViaGqlContextEnhancer(container, [
+        registerLegacyPluginsViaGqlContextualSchema(container, [
             ...registerSchedulerAwsExtension({ getClient: config => createSchedulerClient(config) })
         ]);
         CmsSchedulerFeature.register(container);
 
         // ── Extensions (legacy escape hatch) ──────────────────────
-        registerLegacyPluginsViaGqlContextEnhancer(container, extensions());
+        registerLegacyPluginsViaGqlContextualSchema(container, extensions());
 
         // ── GraphQL engine (always last) ───────────────────────────
         GraphQLEngineFeature.register(container);
