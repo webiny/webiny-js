@@ -6,6 +6,13 @@ import { IdentityData } from "@webiny/api-core/features/security/IdentityContext
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { Authenticator } from "@webiny/api-core/features/security/authentication/Authenticator/index.js";
+import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/abstractions.js";
+import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
+import { CreateTenantUseCase } from "@webiny/api-core/features/tenancy/CreateTenant/index.js";
+import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 
 interface Config {
     setupGraphQL?: boolean;
@@ -57,65 +64,58 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
         }),
         new ContextPlugin<ApiCoreContext>(async context => {
             if (context.adminUsers) {
+                const listTeams = context.container.resolve(ListTeamsUseCase);
                 context.adminUsers.listUserTeams = async () => {
-                    return await context.security.listTeams();
+                    const result = await listTeams.execute();
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return result.value;
                 };
             }
         }),
         new ContextPlugin<ApiCoreContext>(async context => {
-            await context.tenancy.createTenant({
-                id: "root",
-                name: "Root",
-                parent: "",
-                description: "Root tenant",
-                tags: []
-            });
+            const createTenant = context.container.resolve(CreateTenantUseCase);
 
-            await context.tenancy.createTenant({
-                id: "webiny",
-                name: "Webiny",
-                parent: "",
-                description: "Webiny tenant",
-                tags: []
-            });
-
-            await context.tenancy.createTenant({
-                id: "dev",
-                name: "Dev",
-                parent: "",
-                description: "Dev tenant",
-                tags: []
-            });
-
-            await context.tenancy.createTenant({
-                id: "sales",
-                name: "Sales",
-                parent: "",
-                description: "Sales tenant",
-                tags: []
-            });
+            for (const data of [
+                { id: "root", name: "Root", parent: "", description: "Root tenant", tags: [] },
+                {
+                    id: "webiny",
+                    name: "Webiny",
+                    parent: "",
+                    description: "Webiny tenant",
+                    tags: []
+                },
+                { id: "dev", name: "Dev", parent: "", description: "Dev tenant", tags: [] },
+                { id: "sales", name: "Sales", parent: "", description: "Sales tenant", tags: [] }
+            ]) {
+                const result = await createTenant.execute(data);
+                if (result.isFail()) {
+                    throw result.error;
+                }
+            }
         }),
         new ContextPlugin<ApiCoreContext>(async context => {
-            context.tenancy.setCurrentTenant({
+            context.container.resolve(TenantContext).setTenant({
                 id: "root",
                 name: "Root"
             } as unknown as Tenant);
 
-            context.security.addAuthenticator(async () => {
-                return {
+            context.container.registerFactory(Authenticator, () => ({
+                authenticate: async () => ({
                     ...(identity || defaultIdentity),
                     teams: ["full-access-team"]
-                };
-            });
+                })
+            }));
 
-            context.security.addAuthorizer(async () => {
-                return permissions || [{ name: "*" }];
-            });
+            context.container.registerFactory(Authorizer, () => ({
+                authorize: async () => permissions || [{ name: "*" }]
+            }));
         }),
         new ContextPlugin<ApiCoreContext>(async context => {
-            // Triggers the authenticator chain and seats the resolved identity on the legacy
-            // context object so callers using context.security.getIdentity() get the right value.
-            await context.security.authenticate("");
+            const authCtx = context.container.resolve(AuthenticationContext);
+            const resolvedIdentity = await authCtx.authenticate("");
+            context.container.resolve(IdentityContext).setIdentity(resolvedIdentity);
         })
     ].filter(Boolean) as Plugin[];
 };
