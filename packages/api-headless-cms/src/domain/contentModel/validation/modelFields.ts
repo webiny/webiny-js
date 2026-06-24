@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 import { generateAlphaNumericId } from "@webiny/utils";
 import WebinyError from "@webiny/error";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { CmsContext, CmsModel, CmsModelField } from "~/types/index.js";
 import type { ValidateChildFieldsValidate } from "~/features/graphql/fields/abstractions/CmsModelFieldToGraphQL.js";
 import { createManageSDL } from "~/graphql/schema/createManageSDL.js";
@@ -194,11 +195,13 @@ interface CreateGraphQLSchemaParams {
 const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
     const { context, model } = params;
 
-    const models = await context.security.withoutAuthorization(async () => {
-        return (await context.cms.listModels()).filter((model): model is CmsModel => {
-            return model.isPrivate !== true;
+    const models = await context.container
+        .resolve(IdentityContext)
+        .withoutAuthorization(async () => {
+            return (await context.cms.listModels()).filter((model): model is CmsModel => {
+                return model.isPrivate !== true;
+            });
         });
-    });
 
     const modelPlugins = await buildSchemaPlugins({
         context,

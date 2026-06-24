@@ -1,4 +1,5 @@
 import WebinyError from "@webiny/error";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type {
     HeadlessCmsImport,
     ValidCmsGroupResult,
@@ -9,7 +10,7 @@ import { importData } from "./imports/importData.js";
 import { validateInput } from "./imports/validateInput.js";
 
 const fetchGroupsAndModels = async (context: CmsContext) => {
-    return await context.security.withoutAuthorization(async () => {
+    return await context.container.resolve(IdentityContext).withoutAuthorization(async () => {
         return {
             groups: await context.cms.listGroups(),
             models: await context.cms.listModels()

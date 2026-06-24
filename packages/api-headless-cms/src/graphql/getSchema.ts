@@ -1,5 +1,6 @@
 import { codeFrameColumns } from "@babel/code-frame";
 import WebinyError from "@webiny/error";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { generateSchema } from "./generateSchema.js";
 import type { ApiEndpoint, CmsContext } from "~/types/index.js";
 import type { GraphQLSchema } from "graphql";
@@ -31,12 +32,14 @@ export const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema>
      * We need all the API models.
      * Private models are hidden in the GraphQL, so filter them out.
      */
-    const models = await context.security.withoutAuthorization(async () => {
-        return await context.cms.listModels({
-            includePrivate: false,
-            includePlugins: true
+    const models = await context.container
+        .resolve(IdentityContext)
+        .withoutAuthorization(async () => {
+            return await context.cms.listModels({
+                includePrivate: false,
+                includePlugins: true
+            });
         });
-    });
 
     const cacheId = generateCacheId(params);
 

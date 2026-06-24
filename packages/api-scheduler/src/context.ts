@@ -4,6 +4,7 @@ import { ScheduledActionModel } from "~/shared/abstractions.js";
 import { SchedulePrivateModel } from "~/domain/SchedulePrivateModel.js";
 import { SchedulerFeature } from "~/features/SchedulerFeature.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { SchedulerPermissionsFeature } from "~/features/permissions/feature.js";
 import { ContextPlugin } from "@webiny/api";
@@ -29,7 +30,7 @@ export const registerSchedulerExtension = () => {
             return;
         }
 
-        await context.security.withoutAuthorization(async () => {
+        await context.container.resolve(IdentityContext).withoutAuthorization(async () => {
             const schedulerModel = await getModel.execute(SCHEDULE_MODEL_ID);
             if (schedulerModel.isFail()) {
                 throw schedulerModel.error;

@@ -1,4 +1,5 @@
 import { ErrorResponse, NotFoundError, Response } from "@webiny/handler-graphql";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { CmsContext } from "~/types/index.js";
 import type { Resolvers } from "@webiny/handler-graphql/types.js";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin.js";
@@ -57,9 +58,11 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
         resolvers = {
             CmsContentModelGroup: {
                 contentModels: async (group, _, context) => {
-                    const models = await context.security.withoutAuthorization(async () => {
-                        return context.cms.listModels();
-                    });
+                    const models = await context.container
+                        .resolve(IdentityContext)
+                        .withoutAuthorization(async () => {
+                            return context.cms.listModels();
+                        });
                     return models.filter(model => {
                         if (model.isPrivate === true) {
                             return false;
@@ -68,9 +71,11 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
                     });
                 },
                 totalContentModels: async (group, _, context) => {
-                    const models = await context.security.withoutAuthorization(async () => {
-                        return context.cms.listModels();
-                    });
+                    const models = await context.container
+                        .resolve(IdentityContext)
+                        .withoutAuthorization(async () => {
+                            return context.cms.listModels();
+                        });
                     return models.filter(model => {
                         if (model.isPrivate === true) {
                             return false;

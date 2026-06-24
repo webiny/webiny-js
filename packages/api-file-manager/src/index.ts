@@ -6,6 +6,7 @@ import { FmPermissionsFeature } from "~/features/permissions/feature.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FileModel as FileModelAbstraction } from "~/domain/file/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { FILE_MODEL_ID, FileModel } from "~/domain/file/file.model.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { AssetDeliveryFeature } from "~/features/assetDelivery/feature.js";
@@ -30,7 +31,7 @@ export const createFileManagerContext = () => {
             return;
         }
 
-        await context.security.withoutAuthorization(async () => {
+        await container.resolve(IdentityContext).withoutAuthorization(async () => {
             const fileModel = await getModel.execute(FILE_MODEL_ID);
             container.registerInstance(FileModelAbstraction, fileModel.value);
         });
