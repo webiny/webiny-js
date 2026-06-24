@@ -227,6 +227,7 @@ class TeamsPresenterImpl implements ITeamsPresenter {
                     .text()
                     .label("Description")
                     .renderer("textarea")
+                    .defaultValue("")
                     .disabled(!canModify),
                 roles: fields
                     .rolesMultiSelect()

@@ -35,7 +35,7 @@
     "@webiny/app-websockets": "0.0.0",
     "@webiny/app-workflows": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/lexical-editor-actions": "0.0.0",
     "@webiny/lexical-theme": "0.0.0",
     "@webiny/plugins": "0.0.0",

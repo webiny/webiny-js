@@ -27,7 +27,7 @@
     "@graphql-tools/schema": "^10.0.33",
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",

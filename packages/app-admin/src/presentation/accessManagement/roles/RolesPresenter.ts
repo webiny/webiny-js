@@ -220,6 +220,7 @@ class RolesPresenterImpl implements IRolesPresenter {
                 description: fields
                     .text()
                     .label("Description")
+                    .defaultValue("")
                     .renderer("textarea")
                     .disabled(!canModify),
                 permissions: fields

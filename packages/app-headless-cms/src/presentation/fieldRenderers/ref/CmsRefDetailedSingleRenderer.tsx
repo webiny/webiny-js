@@ -98,6 +98,7 @@ const RefDetailedSingleInner = observer(({ field }: InnerFieldProps) => {
     const invalid = validation.isValid === false;
     const disabled = field.disabled;
     const entry = presenter.vm.entries[0];
+    const models = presenter.vm.models;
 
     return (
         <div className={"@container"}>
@@ -129,7 +130,7 @@ const RefDetailedSingleInner = observer(({ field }: InnerFieldProps) => {
             {entry && <div className="mb-md" />}
             {!disabled && (
                 <RefFieldOptions
-                    models={presenter.vm.models}
+                    models={models}
                     onNewRecord={onNewRecord}
                     onLinkExistingRecord={onExistingRecord}
                 />

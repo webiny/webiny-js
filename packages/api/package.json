@@ -16,7 +16,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0"
   },

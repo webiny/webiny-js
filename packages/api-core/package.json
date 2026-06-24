@@ -17,7 +17,7 @@
     "@ai-sdk/anthropic": "^3.0.81",
     "@ai-sdk/openai": "^3.0.68",
     "@webiny/api": "0.0.0",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/feature-flags": "0.0.0",

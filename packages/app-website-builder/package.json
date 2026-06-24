@@ -27,7 +27,7 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-headless-cms-common": "0.0.0",
     "@webiny/app-utils": "0.0.0",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/form": "0.0.0",
