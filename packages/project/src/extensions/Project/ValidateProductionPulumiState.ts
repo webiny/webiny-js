@@ -1,5 +1,6 @@
 import {
     CoreBeforeDeploy,
+    GetProductionEnvironments,
     IsRemotePulumiBackendService,
     ProjectSdkParamsService
 } from "~/abstractions/index.js";
@@ -8,7 +9,8 @@ import { GracefulError } from "~/index.js";
 class ValidateProductionPulumiStateImpl implements CoreBeforeDeploy.Interface {
     constructor(
         private isRemotePulumiBackendService: IsRemotePulumiBackendService.Interface,
-        private projectSdkParamsService: ProjectSdkParamsService.Interface
+        private projectSdkParamsService: ProjectSdkParamsService.Interface,
+        private getProductionEnvironments: GetProductionEnvironments.Interface
     ) {}
 
     async execute(params: CoreBeforeDeploy.Params) {
@@ -16,7 +18,7 @@ class ValidateProductionPulumiStateImpl implements CoreBeforeDeploy.Interface {
         const { env } = sdkParams;
         const { allowLocalStateFiles } = params;
 
-        const prodEnvs = ["prod", "production"];
+        const prodEnvs = await this.getProductionEnvironments.execute();
         const isProdEnv = prodEnvs.includes(env);
 
         if (!isProdEnv) {
@@ -45,5 +47,5 @@ class ValidateProductionPulumiStateImpl implements CoreBeforeDeploy.Interface {
 
 export const ValidateProductionPulumiState = CoreBeforeDeploy.createImplementation({
     implementation: ValidateProductionPulumiStateImpl,
-    dependencies: [IsRemotePulumiBackendService, ProjectSdkParamsService]
+    dependencies: [IsRemotePulumiBackendService, ProjectSdkParamsService, GetProductionEnvironments]
 });
