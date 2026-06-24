@@ -14,7 +14,7 @@ import {
     ObjectRow,
     ObjectRowActions,
     useDrawerDepth
-} from "~/inputRenderers/ObjectInput.js";
+} from "~/inputRenderers/ObjectInput/index.js";
 
 interface InputFieldProps {
     node: InputAstNode;

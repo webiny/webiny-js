@@ -1,11 +1,8 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Button, Label, Text } from "@webiny/admin-ui";
-import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
-import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
-import { ReactComponent as MoveUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
-import { ReactComponent as MoveDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
+import { Button, Text } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
+import { DrawerDepthContext } from "./DrawerDepthContext.js";
 
 /**
  * Width of the first object-field panel. Slightly narrower than the editor sidebar (329px) so the
@@ -37,14 +34,6 @@ const ANCHOR_SELECTOR = "[data-role='wb-object-panel-anchor']";
  * parent panel a little more.
  */
 const Z_BASE = 50;
-
-/**
- * Tracks how deeply nested the current object panel is. Used to compute stacking order and width -
- * a nested object opens a new panel that renders over its parent within the sidebar.
- */
-const DrawerDepthContext = createContext(0);
-
-export const useDrawerDepth = () => useContext(DrawerDepthContext);
 
 interface ObjectFieldPanelProps {
     open: boolean;
@@ -167,169 +156,5 @@ export const ObjectFieldPanel = ({
             </div>
         </>,
         host
-    );
-};
-
-interface ObjectRowProps {
-    title: React.ReactNode;
-    onOpen: () => void;
-    actions?: React.ReactNode;
-}
-
-/**
- * A clickable row representing an object (a single object field, or one item of a list). Resting,
- * it shows a content icon + title. On hover it tints and reveals its trailing actions (reorder /
- * remove) - rows without actions (a single object field) just tint.
- */
-export const ObjectRow = ({ title, onOpen, actions }: ObjectRowProps) => {
-    const [hovered, setHovered] = useState(false);
-    const showActions = hovered && Boolean(actions);
-
-    return (
-        <div
-            role={"button"}
-            tabIndex={0}
-            onClick={onOpen}
-            onKeyDown={event => {
-                if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    onOpen();
-                }
-            }}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            // Fixed height + vertical centering keeps the row the same height whether or not the
-            // (taller) hover actions are shown.
-            style={{ height: 40 }}
-            className={[
-                "flex items-center justify-between gap-xs rounded-md border border-neutral-dimmed-darker px-sm-extra cursor-pointer transition-colors",
-                hovered ? "bg-neutral-light" : "bg-neutral-base"
-            ].join(" ")}
-        >
-            <div className={"flex flex-1 items-center min-w-0"}>
-                <Text size={"sm"} className={"truncate text-neutral-strong"}>
-                    {title}
-                </Text>
-            </div>
-            {showActions ? (
-                <div
-                    className={"flex items-center gap-xs shrink-0"}
-                    onClick={event => event.stopPropagation()}
-                >
-                    {actions}
-                </div>
-            ) : null}
-        </div>
-    );
-};
-
-interface ObjectRowActionsProps {
-    onMoveUp: () => void;
-    onMoveDown: () => void;
-    onRemove: () => void;
-    canMoveUp: boolean;
-    canMoveDown: boolean;
-}
-
-/**
- * The trailing reorder / remove controls shown on a list item row.
- */
-export const ObjectRowActions = ({
-    onMoveUp,
-    onMoveDown,
-    onRemove,
-    canMoveUp,
-    canMoveDown
-}: ObjectRowActionsProps) => {
-    return (
-        <>
-            <Button
-                variant={"ghost"}
-                size={"sm"}
-                icon={<MoveUpIcon />}
-                disabled={!canMoveUp}
-                onClick={onMoveUp}
-            />
-            <Button
-                variant={"ghost"}
-                size={"sm"}
-                icon={<MoveDownIcon />}
-                disabled={!canMoveDown}
-                onClick={onMoveDown}
-            />
-            <Button variant={"ghost"} size={"sm"} icon={<DeleteIcon />} onClick={onRemove} />
-        </>
-    );
-};
-
-interface ObjectFieldHeaderProps {
-    label?: React.ReactNode;
-    description?: React.ReactNode;
-}
-
-export const ObjectFieldHeader = ({ label, description }: ObjectFieldHeaderProps) => {
-    if (!label) {
-        return null;
-    }
-
-    return (
-        <div className={"flex flex-col"}>
-            <Label text={label} className={"pb-xs"} />
-            {description ? (
-                <Text size={"sm"} className={"font-normal text-neutral-strong"}>
-                    {description}
-                </Text>
-            ) : null}
-        </div>
-    );
-};
-
-interface ObjectAddButtonProps {
-    text?: string;
-    onClick: () => void;
-}
-
-export const ObjectAddButton = ({ text = "Add", onClick }: ObjectAddButtonProps) => {
-    return (
-        <div>
-            <Button
-                variant={"ghost"}
-                size={"sm"}
-                icon={<AddIcon />}
-                text={text}
-                onClick={onClick}
-            />
-        </div>
-    );
-};
-
-interface ObjectEmptyStateProps {
-    text?: string;
-    addText?: string;
-    onAdd: () => void;
-}
-
-export const ObjectEmptyState = ({
-    text = "Add your first item here",
-    addText = "Add",
-    onAdd
-}: ObjectEmptyStateProps) => {
-    return (
-        <div
-            className={
-                "flex flex-col items-center justify-center gap-sm rounded-md border border-dashed border-neutral-dimmed px-sm py-lg"
-            }
-        >
-            <Text size={"sm"} className={"text-neutral-strong"}>
-                {text}
-            </Text>
-            <Button
-                variant={"secondary"}
-                size={"sm"}
-                icon={<AddIcon />}
-                text={addText}
-                onClick={onAdd}
-            />
-        </div>
     );
 };
