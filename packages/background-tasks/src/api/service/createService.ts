@@ -1,6 +1,7 @@
 import type { Context } from "~/api/types.js";
 import type { ITaskService } from "~/api/plugins/index.js";
 import { TaskServicePlugin } from "~/api/plugins/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { WebinyError } from "@webiny/error";
 
 export interface ICreateTransport {
@@ -20,7 +21,7 @@ export const createService = (params: ICreateTransport): ITaskService => {
     }
 
     const getTenant = (): string => {
-        return params.context.tenancy.getCurrentTenant().id;
+        return params.context.container.resolve(TenantContext).getTenant().id;
     };
 
     return plugin.createService({

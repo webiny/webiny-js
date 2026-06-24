@@ -1,4 +1,5 @@
 import type { Context, TaskPermission } from "~/api/types.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 
 /**
@@ -8,7 +9,9 @@ export const checkPermissions = async (
     context: Context,
     check: { rwd?: string } = {}
 ): Promise<void> => {
-    const taskPermissions = await context.security.getPermissions<TaskPermission>("tasks");
+    const taskPermissions = await context.container
+        .resolve(IdentityContext)
+        .getPermissions<TaskPermission>("tasks");
 
     const relevant = taskPermissions.filter(current => {
         if (check.rwd && !hasRwd(current, check.rwd)) {

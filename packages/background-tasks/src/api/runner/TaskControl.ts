@@ -7,7 +7,10 @@ import type { IResponse, IResponseResult } from "~/api/response/abstractions/ind
 import { DatabaseResponse, TaskResponse } from "~/api/response/index.js";
 import { TaskManagerStore } from "./TaskManagerStore.js";
 import { getErrorProperties } from "~/api/utils/getErrorProperties.js";
-import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import {
+    AuthenticatedIdentity,
+    IdentityContext
+} from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TaskExecutionContext } from "~/api/features/TaskExecutionContext/index.js";
 import {
     TaskDefinition,
@@ -41,7 +44,7 @@ export class TaskControl implements ITaskControl {
         let task: ITask<ITaskDataInput>;
         try {
             task = await this.getTask(taskId);
-            this.context.security.setIdentity(
+            this.context.container.resolve(IdentityContext).setIdentity(
                 new AuthenticatedIdentity({
                     id: task.createdBy.id,
                     type: task.createdBy.type,

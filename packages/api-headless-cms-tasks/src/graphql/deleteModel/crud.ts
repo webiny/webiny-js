@@ -1,4 +1,5 @@
 import type { HcmsTasksContext } from "~/types.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { createCacheKey } from "@webiny/api-headless-cms/utils/index.js";
 import { createMemoryCache } from "@webiny/api-headless-cms/utils/index.js";
 import type { IStoreValue } from "~/features/DeleteModelTask/types.js";
@@ -14,7 +15,7 @@ import { getDeleteModelProgress } from "~/graphql/deleteModel/getDeleteModelProg
 export const createDeleteModelCrud = () => {
     const plugin = new ContextPlugin<HcmsTasksContext>(async context => {
         const getTenant = (): string => {
-            return context.tenancy.getCurrentTenant().id;
+            return context.container.resolve(TenantContext).getTenant().id;
         };
 
         const cache = createMemoryCache<ListStoreKeysResult>();

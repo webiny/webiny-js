@@ -1,4 +1,5 @@
 import type { HcmsTasksContext } from "~/types.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type {
     IDeleteCmsModelTask,
     IDeleteModelTaskInput,
@@ -10,7 +11,7 @@ import { getStatus } from "~/graphql/deleteModel/status.js";
 import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
 
 export interface IFullyDeleteModelParams {
-    readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "db" | "security">;
+    readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "db" | "container">;
     readonly modelId: string;
 }
 
@@ -55,7 +56,7 @@ export const fullyDeleteModel = async (
 
     const task = triggerResult.value;
 
-    const identity = context.security.getIdentity();
+    const identity = context.container.resolve(IdentityContext).getIdentity();
 
     await context.db.store.storeValue(
         storeKey,
