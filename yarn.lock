@@ -25841,7 +25841,7 @@ __metadata:
     type-fest: "npm:^5.7.0"
     typescript: "npm:6.0.3"
     validator: "npm:^13.15.35"
-    verdaccio: "npm:^6.7.3"
+    verdaccio: "npm:^6.7.4"
     vitest: "npm:^4.1.9"
     write-json-file: "npm:^7.0.0"
     yargs: "npm:^18.0.0"
@@ -28845,9 +28845,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"verdaccio@npm:^6.7.3":
-  version: 6.7.3
-  resolution: "verdaccio@npm:6.7.3"
+"verdaccio@npm:^6.7.4":
+  version: 6.7.4
+  resolution: "verdaccio@npm:6.7.4"
   dependencies:
     "@cypress/request": "npm:3.0.10"
     "@verdaccio/auth": "npm:8.0.4"
@@ -28882,7 +28882,7 @@ __metadata:
     verdaccio-htpasswd: "npm:13.0.3"
   bin:
     verdaccio: bin/verdaccio
-  checksum: 10/72ccfb0762f02e9c50a31c5b06233d025cca38ddc11dc578200fa4bb68dbb9d0dff03be7278809f5cddc742f8e508b299804eb11f497748836c6be3c7291ec8f
+  checksum: 10/2ca3ea01a087fb9a7f2f6083ae6e400aa33390c28723cffbf67bc2dd38c558640f3cfb8439b47fc2d914d70c5558fc6aa52c1cbfc3f74e18165fdf45783f1207
   languageName: node
   linkType: hard
 
