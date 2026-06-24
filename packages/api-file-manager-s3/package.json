@@ -27,7 +27,7 @@
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "exifreader": "^4.41.0",
-    "sharp": "^0.35.1"
+    "sharp": "^0.35.2"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

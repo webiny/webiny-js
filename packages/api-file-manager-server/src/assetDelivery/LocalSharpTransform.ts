@@ -1,4 +1,5 @@
 import sharp from "sharp";
+import type { Sharp } from "sharp";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { AssetRequestOptions } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
@@ -122,7 +123,7 @@ export class LocalSharpTransform implements AssetTransformationStrategyAbstracti
             console.log("Create an optimized version of the original asset", asset.getKey());
             const buffer = await asset.getContents();
 
-            const optimizationMap: Record<string, ((buffer: Buffer) => sharp.Sharp) | undefined> = {
+            const optimizationMap: Record<string, ((buffer: Buffer) => Sharp) | undefined> = {
                 "image/png": (buffer: Buffer) => this.optimizePng(buffer),
                 "image/jpeg": (buffer: Buffer) => this.optimizeJpeg(buffer),
                 "image/jpg": (buffer: Buffer) => this.optimizeJpeg(buffer)

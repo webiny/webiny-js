@@ -24,7 +24,7 @@
     "@webiny/form": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/validation": "0.0.0",
-    "graphql-tag": "^2.12.6",
+    "graphql-tag": "^2.12.7",
     "lodash": "^4.18.1",
     "react": "18.3.1",
     "react-dom": "18.3.1"
