@@ -3,6 +3,7 @@ import { makeExecutableSchema, mergeSchemas } from "@graphql-tools/schema";
 import { mergeResolvers } from "@graphql-tools/merge";
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
+import { PluginsContainerAbstraction } from "@webiny/api";
 import { GraphQLEngine } from "./abstractions.js";
 import { GraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
 import { GraphQLContextualSchema } from "./GraphQLContextualSchema.js";
@@ -30,9 +31,6 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
     async execute(body: any): Promise<any> {
         // Build context first — enhancers may be async (e.g. CMS storage init)
         const ctx = await this.buildContext();
-        const bm = ctx.benchmark as
-            | { measure?: (name: string, fn: () => Promise<any>) => Promise<any> }
-            | undefined;
 
         // Run contextual schemas BEFORE composer.build() so that any ctx.plugins registrations
         // they make (e.g. ACO folder schema plugins) are visible to GraphQLSchemaComposer,
@@ -60,40 +58,18 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
             inheritResolversFromInterfaces: true
         });
 
-        const schema = await (bm?.measure
-            ? bm.measure("headlessCms.graphql.getSchema", () =>
-                  this.buildSchema(staticSchema, extraSchemas)
-              )
-            : this.buildSchema(staticSchema, extraSchemas));
+        const schema = await this.buildSchema(staticSchema, extraSchemas);
+        const parsed = createRequestBody(body);
 
-        const parsed = bm?.measure
-            ? ((await bm.measure("headlessCms.graphql.createRequestBody", async () =>
-                  createRequestBody(body)
-              )) as ReturnType<typeof createRequestBody>)
-            : createRequestBody(body);
-
-        const executeAll = async () => {
-            if (!Array.isArray(parsed)) {
-                return this.executeOne(parsed, schema, ctx);
-            }
-            // Run sequentially so per-request state (e.g. ctx.debug.logs) is scoped per query.
-            const results = [];
-            for (const b of parsed) {
-                results.push(await this.executeOne(b, schema, ctx));
-            }
-            return results;
-        };
-
-        const result = await (bm?.measure
-            ? bm.measure("headlessCms.graphql.processRequestBody", executeAll)
-            : executeAll());
-
-        // Fire benchmark output callbacks if a benchmark is attached to the context
-        if (bm && typeof (bm as any).output === "function") {
-            await (bm as any).output();
+        if (!Array.isArray(parsed)) {
+            return this.executeOne(parsed, schema, ctx);
         }
-
-        return result;
+        // Run sequentially so per-request state (e.g. ctx.debug.logs) is scoped per query.
+        const results = [];
+        for (const b of parsed) {
+            results.push(await this.executeOne(b, schema, ctx));
+        }
+        return results;
     }
 
     private async buildContext(): Promise<Record<string, any>> {
@@ -133,8 +109,15 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
     ): Promise<any> {
         const { query, variables, operationName } = body;
 
-        if (ctx.plugins && typeof ctx.plugins.byType === "function") {
-            const byType = (ctx.plugins.byType as <T>(type: string) => T[]).bind(ctx.plugins);
+        let plugins: PluginsContainerAbstraction.Interface | undefined;
+        try {
+            plugins = this.container.resolve(PluginsContainerAbstraction);
+        } catch {
+            // Not registered — no before/after query hooks to run.
+        }
+
+        if (plugins) {
+            const byType = plugins.byType.bind(plugins);
             for (const pl of byType<GraphQLBeforeQueryPlugin>("graphql-before-query")) {
                 pl.apply({ body, schema, context: ctx as any });
             }
@@ -149,8 +132,8 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
             operationName: operationName ?? undefined
         });
 
-        if (ctx.plugins && typeof ctx.plugins.byType === "function") {
-            const byType = (ctx.plugins.byType as <T>(type: string) => T[]).bind(ctx.plugins);
+        if (plugins) {
+            const byType = plugins.byType.bind(plugins);
             for (const pl of byType<GraphQLAfterQueryPlugin>("graphql-after-query")) {
                 pl.apply({ result, body, schema, context: ctx as any });
             }

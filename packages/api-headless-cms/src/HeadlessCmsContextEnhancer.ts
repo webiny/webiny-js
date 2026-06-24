@@ -18,6 +18,7 @@ import { createImportCrud } from "~/export/crud/importing.js";
 import { getSchema } from "~/graphql/getSchema.js";
 import { processRequestBody } from "@webiny/handler-graphql";
 import { Benchmark } from "@webiny/api/Benchmark.js";
+import { BenchmarkAbstraction } from "@webiny/api";
 import { createBaseSchema } from "~/graphql/schema/baseSchema.js";
 import { createExportGraphQL } from "~/export/graphql/index.js";
 import { createRevisionIdScalarPlugin } from "~/graphql/scalars/RevisionIdScalarPlugin.js";
@@ -81,6 +82,7 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
         if (!ctx.benchmark) {
             ctx.benchmark = new Benchmark();
         }
+        this.container.registerInstance(BenchmarkAbstraction, ctx.benchmark);
 
         ctx.plugins.register(
             new StorageOperationsCmsModelPlugin(
@@ -138,28 +140,25 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
                 // Apply base schema plugins to the forked context's plugin list
                 await createBaseSchema().apply(schemaCtx as CmsContext);
 
-                const schema = await ctx.benchmark.measure(
-                    "headlessCms.graphql.getSchema",
-                    async () => {
-                        return this.identityContext.withoutAuthorization(() => {
-                            return getSchema({
-                                context: schemaCtx as CmsContext,
-                                getTenant,
-                                type: schemaType
-                            });
+                const bm = this.container.resolve(BenchmarkAbstraction);
+                const schema = await bm.measure("headlessCms.graphql.getSchema", async () => {
+                    return this.identityContext.withoutAuthorization(() => {
+                        return getSchema({
+                            context: schemaCtx as CmsContext,
+                            getTenant,
+                            type: schemaType
                         });
-                    }
-                );
+                    });
+                });
 
                 // Execution uses the original ctx so CRUD methods and security have correct context
                 return async (input: any) => {
-                    const body = await ctx.benchmark.measure(
+                    const body = await bm.measure(
                         "headlessCms.graphql.createRequestBody",
                         async () => input
                     );
-                    return ctx.benchmark.measure(
-                        "headlessCms.graphql.processRequestBody",
-                        async () => processRequestBody(body, schema, ctx as CmsContext)
+                    return bm.measure("headlessCms.graphql.processRequestBody", async () =>
+                        processRequestBody(body, schema, ctx as CmsContext)
                     );
                 };
             },
