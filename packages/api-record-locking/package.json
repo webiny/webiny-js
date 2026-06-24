@@ -16,15 +16,15 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@graphql-tools/merge": "^9.1.9",
+    "@graphql-tools/schema": "^10.0.33",
     "@webiny/api": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
-    "@webiny/utils": "0.0.0",
-    "@graphql-tools/merge": "^9.1.9",
-    "@graphql-tools/schema": "^10.0.33"
+    "@webiny/utils": "0.0.0"
   },
   "devDependencies": {
     "@webiny/api-core": "0.0.0",

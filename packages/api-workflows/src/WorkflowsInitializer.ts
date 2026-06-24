@@ -1,6 +1,8 @@
 import type { Container } from "@webiny/di";
-import { GraphQLContextEnhancer } from "@webiny/handler-graphql";
-import type { IGraphQLContextEnhancer } from "@webiny/handler-graphql";
+import type { GraphQLSchema } from "graphql";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { GraphQLContextualSchema } from "@webiny/handler-graphql";
+import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -42,7 +44,11 @@ import { GetUserTeamsFeature } from "~/features/internal/GetUserTeams/feature.js
 import { ListNotificationTypesFeature } from "~/features/notifications/ListNotificationTypes/index.js";
 import { NotificationTransportFeature } from "./features/notifications/NotificationTransport/index.js";
 
-class WorkflowsContextEnhancerImpl implements IGraphQLContextEnhancer {
+// GraphQLContextualSchema is used here not to contribute schema content (the static schema is
+// already registered via WorkflowsSchemaFactory) but purely for its build(ctx) timing guarantee:
+// it runs after context is established but before any resolver fires, making it the right hook
+// for the async CMS model fetch and lazy feature registrations that resolvers depend on.
+class WorkflowsInitializerImpl implements IGraphQLContextualSchema {
     private initialized = false;
 
     constructor(
@@ -53,16 +59,22 @@ class WorkflowsContextEnhancerImpl implements IGraphQLContextEnhancer {
         private getModel: GetModelUseCase.Interface
     ) {}
 
-    async enhance(_ctx: Record<string, any>): Promise<void> {
-        if (this.initialized) {
-            return;
-        }
-        this.initialized = true;
+    async build(_ctx: Record<string, any>): Promise<GraphQLSchema> {
+        if (!this.initialized) {
+            this.initialized = true;
 
-        if (!this.tenantCtx.getTenant() || !this.wcp.canUseWorkflows()) {
-            return;
+            if (this.tenantCtx.getTenant() && this.wcp.canUseWorkflows()) {
+                await this.init();
+            }
         }
 
+        return makeExecutableSchema({
+            typeDefs: "type Query\ntype Mutation",
+            assumeValidSDL: true
+        });
+    }
+
+    private async init(): Promise<void> {
         // Register private models
         this.container.register(WorkflowPrivateModel);
         this.container.register(WorkflowStatePrivateModel);
@@ -115,7 +127,7 @@ class WorkflowsContextEnhancerImpl implements IGraphQLContextEnhancer {
     }
 }
 
-export const WorkflowsContextEnhancer = GraphQLContextEnhancer.createImplementation({
-    implementation: WorkflowsContextEnhancerImpl,
+export const WorkflowsInitializer = GraphQLContextualSchema.createImplementation({
+    implementation: WorkflowsInitializerImpl,
     dependencies: [RequestContainer, TenantContext, IdentityContext, WcpContext, GetModelUseCase]
 });
