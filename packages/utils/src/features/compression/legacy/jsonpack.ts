@@ -1,11 +1,11 @@
-import { pack, unpack } from "jsonpack";
+import jsonpack from "jsonpack";
 
 export const compress = async (value: any) => {
-    return pack(value, {
+    return jsonpack.pack(value, {
         verbose: false
     });
 };
 
 export const decompress = async (value: string) => {
-    return unpack(value);
+    return jsonpack.unpack(value);
 };
