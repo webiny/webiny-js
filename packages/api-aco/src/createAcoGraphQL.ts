@@ -9,6 +9,8 @@ import { createGraphQLSchemaPluginFromFieldPlugins } from "@webiny/api-headless-
 import { FOLDER_MODEL_ID } from "~/domain/folder/folder.model.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 
 const emptyResolver = () => ({});
 
@@ -86,8 +88,18 @@ export const createAcoGraphQL = () => {
         const fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
 
         await context.container.resolve(IdentityContext).withoutAuthorization(async () => {
-            const model = (await context.cms.getModel(FOLDER_MODEL_ID)) as CmsModel;
-            const models = await context.cms.listModels();
+            const modelResult = await context.container
+                .resolve(GetModelUseCase)
+                .execute(FOLDER_MODEL_ID);
+            if (modelResult.isFail()) {
+                throw modelResult.error;
+            }
+            const model = modelResult.value as CmsModel;
+            const modelsResult = await context.container.resolve(ListModelsUseCase).execute();
+            if (modelsResult.isFail()) {
+                throw modelsResult.error;
+            }
+            const models = modelsResult.value;
             /**
              * We need to register all plugins for all the CMS fields.
              */

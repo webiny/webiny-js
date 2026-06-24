@@ -7,6 +7,7 @@ import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
 import { FolderModel } from "~/domain/folder/abstractions.js";
 import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 
 interface FlpUpdateData {
     parentId: string;
@@ -151,11 +152,12 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
                 const { id, data } = item;
                 // Directly update the folder in CMS storage to bypass any folder update event triggers.
                 const entryId = EntryId.from(id);
-                await this.context.cms.updateEntry(folderModel, entryId.toString(), {
-                    values: {
-                        path: data.path
-                    }
-                });
+                const updateResult = await this.context.container
+                    .resolve(UpdateEntryUseCase)
+                    .execute(folderModel, entryId.toString(), { values: { path: data.path } });
+                if (updateResult.isFail()) {
+                    throw updateResult.error;
+                }
             }
         } catch (error) {
             throw WebinyError.from(error, {
