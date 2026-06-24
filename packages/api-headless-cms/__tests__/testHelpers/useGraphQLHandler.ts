@@ -193,7 +193,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
     }: InvokeParams = {}): Promise<[IBaseGraphQLResponse<T>, any]> => {
         const response = await handler({
             method: httpMethod,
-            path: "/graphql",
+            path: `/cms/${cmsType}`,
             headers: {
                 "x-tenant": "root",
                 "content-type": "application/json",
