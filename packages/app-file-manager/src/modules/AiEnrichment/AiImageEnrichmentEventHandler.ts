@@ -1,4 +1,5 @@
 import { WebsocketEventHandler } from "@webiny/app-websockets";
+import { NotificationService } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { FilesListCache } from "~/features/shared/abstractions.js";
 
 const FILE_ENRICHMENT_ACTION = "fm.file.enrichment";
@@ -10,13 +11,15 @@ interface FileEnrichmentData {
 }
 
 /**
- * Reacts to the `fm.file.enrichment` websocket message (published as a `WebsocketEvent`) and
- * patches the affected file in the shared list cache with the AI-generated tags and description.
- * The data is already persisted server-side by the enrichment task, so this is a cache-only
- * update — no GraphQL mutation is issued.
+ * Reacts to the `fm.file.enrichment` websocket message (published as a `WebsocketEvent`):
+ * patches the affected file in the shared list cache with the AI-generated tags and description
+ * (cache-only — the data is already persisted server-side), then surfaces a success notification.
  */
 class AiImageEnrichmentEventHandlerImpl implements WebsocketEventHandler.Interface {
-    constructor(private filesListCache: FilesListCache.Interface) {}
+    constructor(
+        private filesListCache: FilesListCache.Interface,
+        private notificationService: NotificationService.Interface
+    ) {}
 
     async handle(event: WebsocketEventHandler.Event): Promise<void> {
         if (event.payload.action !== FILE_ENRICHMENT_ACTION) {
@@ -28,10 +31,16 @@ class AiImageEnrichmentEventHandlerImpl implements WebsocketEventHandler.Interfa
         this.filesListCache.updateItems(item =>
             item.id === id ? { ...item, tags, description } : item
         );
+
+        this.notificationService.add({
+            title: "Image enriched",
+            description: "AI-generated tags and description have been added.",
+            variant: "success"
+        });
     }
 }
 
 export const AiImageEnrichmentEventHandler = WebsocketEventHandler.createImplementation({
     implementation: AiImageEnrichmentEventHandlerImpl,
-    dependencies: [FilesListCache]
+    dependencies: [FilesListCache, NotificationService]
 });

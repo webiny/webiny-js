@@ -21,6 +21,7 @@ import type { PluginCollection } from "@webiny/plugins/types.js";
 import { AdminConfigPlugin, AdminConfigProvider } from "~/config/AdminConfig.js";
 import { WebinySdkFeature } from "~/features/webinySdk/feature.js";
 import { ListPresenterFeature } from "~/presentation/listPresenter/index.js";
+import { Notifications } from "~/features/notifications/Notifications.js";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
@@ -69,6 +70,7 @@ export const Admin = ({ children, createApolloClient, createLegacyPlugins }: Adm
                     >
                         <Base />
                         <DefaultIcons />
+                        <Notifications />
                         {children}
                     </App>
                 </WcpProvider>
