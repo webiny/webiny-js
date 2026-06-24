@@ -1,10 +1,6 @@
-import type { CreateHandlerCoreParams } from "~tests/testHelpers/plugins";
-import { createHandlerCore } from "~tests/testHelpers/plugins";
 import { PluginsContainer } from "@webiny/plugins";
+import { createCmsExtension } from "~/index";
 
-export type UsePluginsParams = CreateHandlerCoreParams;
-export const usePlugins = (params?: UsePluginsParams) => {
-    const core = createHandlerCore(params);
-
-    return new PluginsContainer(core.plugins);
+export const usePlugins = () => {
+    return new PluginsContainer([createCmsExtension()].flat(Infinity as 1) as any[]);
 };
