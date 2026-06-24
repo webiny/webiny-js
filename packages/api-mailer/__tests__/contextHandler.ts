@@ -2,10 +2,6 @@
 // context object, bypassing HTTP entirely. createTestHttpHandler spins up an HTTP router
 // and requires a POST /graphql invocation; that overhead is only warranted in graphQLHandler.ts
 // where we're testing the full request/response cycle.
-//
-// TODO: revisit this handler. It works, but the manual container/child setup, tenant seeding,
-// and identity seeding are boilerplate that should probably be extracted into a shared
-// test utility (similar to how createTestHttpHandler abstracts the HTTP side).
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { ApiCoreFeature } from "@webiny/api-core/ApiCoreFeature.js";
@@ -20,11 +16,18 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { until, sleep, createPermissions } from "./context/helpers";
 import type { PermissionsArg } from "./context/helpers";
-import type { CreateHandlerParams } from "./handlerPlugins";
+import type { Plugin, PluginCollection } from "@webiny/plugins/types";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { IAuthorizer } from "@webiny/api-core/features/security/authorization/Authorizer/abstractions.js";
 import type { Identity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+
+export interface CreateHandlerParams {
+    permissions?: PermissionsArg[];
+    identity?: IdentityData;
+    plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
+}
 
 function createTestAuthorizer(permissions: PermissionsArg[]) {
     class TestAuthorizerImpl implements IAuthorizer {

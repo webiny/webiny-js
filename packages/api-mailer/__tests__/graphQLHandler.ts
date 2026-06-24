@@ -12,13 +12,13 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/a
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { sleep, until, createPermissions } from "./context/helpers";
-import type { CreateHandlerParams } from "./handlerPlugins";
+import type { CreateHandlerParams } from "./contextHandler";
 import type { IAuthorizer } from "@webiny/api-core/features/security/authorization/Authorizer/abstractions.js";
 import type { Identity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { GET_SETTINGS_QUERY, SAVE_SETTINGS_MUTATION } from "./graphql/settings";
 
-// contextSecurity kept for external imports (handlerPlugins.ts uses it)
+// contextSecurity is a no-op kept for any external imports that may reference it
 export const contextSecurity = (_params: any) => [];
 
 export interface InvokeParams {
