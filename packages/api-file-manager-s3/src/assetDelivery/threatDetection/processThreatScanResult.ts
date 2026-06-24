@@ -6,14 +6,15 @@ import {
     WebsocketsSendToConnectionsUseCase,
     ConnectionRegistry
 } from "@webiny/api-websockets/exports/api.js";
+import { ObjectKey } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import type { GuardDutyEvent } from "./types.js";
-import { ObjectKey } from "./ObjectKey.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 
 export const processThreatScanResult = async (
     context: ApiCoreContext,
     eventDetail: GuardDutyEvent
 ) => {
+    const objectKey = context.container.resolve(ObjectKey);
     const listConnections = context.container.resolve(WebsocketsListConnectionsUseCase);
     const sendToConnections = context.container.resolve(WebsocketsSendToConnectionsUseCase);
     const getFile = context.container.resolve(GetFileUseCase);
@@ -24,7 +25,7 @@ export const processThreatScanResult = async (
         const scanStatus = eventDetail.scanResultDetails.scanResultStatus;
         const s3Object = eventDetail.s3ObjectDetails;
 
-        const fileId = ObjectKey.from(s3Object.objectKey).id();
+        const fileId = objectKey.from(s3Object.objectKey).id();
         const fileResult = await getFile.execute(fileId);
 
         if (fileResult.isFail()) {

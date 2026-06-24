@@ -40,7 +40,7 @@ const createUpdateFields = (fields: CmsModelField[]): CmsModelField[] => {
     }, []);
 };
 
-class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
+class FmGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface {
     public constructor(
         private readonly identityContext: IdentityContext.Interface,
         private readonly listModelsUseCase: ListModelsUseCase.Interface,
@@ -52,10 +52,6 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
     public async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
-        if (this.fileUrlGenerator.init) {
-            await this.fileUrlGenerator.init();
-        }
-
         this.addBaseTypeDefs(builder);
         await this.addFileTypeDefs(builder);
         this.addSettingsResolvers(builder);
@@ -362,8 +358,8 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
             path: "FmFile.src",
             dependencies: [FileUrlGenerator],
             resolver: (urlGenerator: FileUrlGenerator.Interface) => {
-                return ({ parent }) => {
-                    return urlGenerator.generateUrl(parent);
+                return async ({ parent }) => {
+                    return await urlGenerator.generateUrl(parent);
                 };
             }
         });
@@ -529,7 +525,7 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
 }
 
 export const FmGraphQLSchema = GraphQLSchemaFactory.createImplementation({
-    implementation: FmGraphQLSchema_,
+    implementation: FmGraphQLSchemaImpl,
     dependencies: [
         IdentityContext,
         ListModelsUseCase,

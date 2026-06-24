@@ -10,8 +10,6 @@ import { FILE_MODEL_ID, FileModel } from "~/domain/file/file.model.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { AssetDeliveryFeature } from "~/features/assetDelivery/feature.js";
 
-export * from "./delivery/index.js";
-
 export const createFileManagerContext = () => {
     const extensionPlugin = createRegisterExtensionPlugin(context => {
         const container = context.container;

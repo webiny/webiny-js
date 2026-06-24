@@ -1,29 +1,37 @@
 import { createFeature } from "@webiny/feature/api";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
-import { FilesAssetRequestResolverImpl } from "./FilesAssetRequestResolver.js";
-import { NullAssetResolverImpl } from "./NullAssetResolver.js";
-import { NullAssetOutputStrategyImpl } from "./NullAssetOutputStrategy.js";
-import { PassthroughAssetTransformationStrategyImpl } from "./transformation/PassthroughAssetTransformationStrategy.js";
-import { TransformationAssetProcessorImpl } from "./transformation/TransformationAssetProcessor.js";
-import { PrivateFileAssetRequestResolverDecorator } from "./privateFiles/PrivateFileAssetRequestResolver.js";
-import { PrivateAuthenticatedAuthorizerImpl } from "./privateFiles/PrivateAuthenticatedAuthorizer.js";
-import { PrivateFilesAssetProcessorDecorator } from "./privateFiles/PrivateFilesAssetProcessor.js";
+import { AssetFactory } from "./Asset/Asset.js";
+import { AssetRequestFactory } from "./AssetRequest/AssetRequest.js";
+import { FilesAssetRequestResolver } from "./FilesAssetRequestResolver.js";
+import { NullAssetResolver } from "./NullAssetResolver.js";
+import { NullAssetOutputStrategy } from "./NullAssetOutputStrategy.js";
+import { StreamAssetReply } from "./StreamAssetReply/StreamAssetReply.js";
+import { ObjectKey } from "./ObjectKey/ObjectKey.js";
+import { PassthroughAssetTransformationStrategy } from "./transformation/PassthroughAssetTransformationStrategy.js";
+import { TransformationAssetProcessor } from "./transformation/TransformationAssetProcessor.js";
+import { PrivateFileAssetRequestResolver } from "./privateFiles/PrivateFileAssetRequestResolver.js";
+import { PrivateAuthenticatedAuthorizer } from "./privateFiles/PrivateAuthenticatedAuthorizer.js";
+import { PrivateFilesAssetProcessor } from "./privateFiles/PrivateFilesAssetProcessor.js";
 
 export const AssetDeliveryFeature = createFeature({
     name: "AssetDelivery",
     register(container) {
-        container.register(FilesAssetRequestResolverImpl);
-        container.register(NullAssetResolverImpl);
-        container.register(NullAssetOutputStrategyImpl);
-        container.register(PassthroughAssetTransformationStrategyImpl);
-        container.register(TransformationAssetProcessorImpl);
+        container.register(AssetFactory).inSingletonScope();
+        container.register(AssetRequestFactory).inSingletonScope();
+        container.register(FilesAssetRequestResolver).inSingletonScope();
+        container.register(NullAssetResolver).inSingletonScope();
+        container.register(NullAssetOutputStrategy).inSingletonScope();
+        container.register(StreamAssetReply).inSingletonScope();
+        container.register(ObjectKey).inSingletonScope();
+        container.register(PassthroughAssetTransformationStrategy).inSingletonScope();
+        container.register(TransformationAssetProcessor);
 
-        container.registerDecorator(PrivateFileAssetRequestResolverDecorator);
+        container.registerDecorator(PrivateFileAssetRequestResolver);
 
         const wcp = container.resolve(WcpContext);
         if (wcp.canUsePrivateFiles()) {
-            container.register(PrivateAuthenticatedAuthorizerImpl);
-            container.registerDecorator(PrivateFilesAssetProcessorDecorator);
+            container.register(PrivateAuthenticatedAuthorizer);
+            container.registerDecorator(PrivateFilesAssetProcessor);
         }
     }
 });
