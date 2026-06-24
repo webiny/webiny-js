@@ -115,7 +115,7 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         const { query, variables, operationName } = body;
 
         if (ctx.plugins && typeof ctx.plugins.byType === "function") {
-            const byType = ctx.plugins.byType as <T>(type: string) => T[];
+            const byType = (ctx.plugins.byType as <T>(type: string) => T[]).bind(ctx.plugins);
             for (const pl of byType<GraphQLBeforeQueryPlugin>("graphql-before-query")) {
                 pl.apply({ body, schema, context: ctx as any });
             }
@@ -131,7 +131,7 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         });
 
         if (ctx.plugins && typeof ctx.plugins.byType === "function") {
-            const byType = ctx.plugins.byType as <T>(type: string) => T[];
+            const byType = (ctx.plugins.byType as <T>(type: string) => T[]).bind(ctx.plugins);
             for (const pl of byType<GraphQLAfterQueryPlugin>("graphql-after-query")) {
                 pl.apply({ result, body, schema, context: ctx as any });
             }
