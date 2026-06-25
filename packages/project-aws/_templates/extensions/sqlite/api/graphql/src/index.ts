@@ -48,9 +48,8 @@ export const handler = createHandler({
         registerSQLCore({
             knex
         }),
-        createApiCore({
-            storageOperations: createApiCoreSql({ knex })
-        }),
+        createApiCoreSql({ knex }),
+        createApiCore(),
         graphqlPlugins({ debug }),
         securityPlugins(),
         createWebsockets(),

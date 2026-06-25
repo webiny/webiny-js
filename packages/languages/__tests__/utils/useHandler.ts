@@ -19,8 +19,8 @@ export const useHandler = () => {
 
     const handler = createHandler<any, ApiCoreContext>({
         plugins: [
+            apiCoreStorage.storageOperations,
             createApiCore({
-                storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
             }),
             ...cmsStorage.plugins,

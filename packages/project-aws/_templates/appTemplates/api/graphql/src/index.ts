@@ -43,9 +43,8 @@ const documentClient = getDocumentClient();
 export const handler = createHandler({
     plugins: [
         registerDynamoDBCore({ documentClient }),
-        createApiCore({
-            storageOperations: createApiCoreDdb({ documentClient })
-        }),
+        createApiCoreDdb(),
+        createApiCore(),
         graphqlPlugins({ debug }),
         dbPlugins({
             table: process.env.DB_TABLE,

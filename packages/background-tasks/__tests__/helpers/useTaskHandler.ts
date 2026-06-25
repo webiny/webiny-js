@@ -25,9 +25,8 @@ export const useTaskHandler = (params?: UseTaskHandlerParams) => {
 
     const handler = createHandler({
         plugins: [
-            createApiCore({
-                storageOperations: apiCoreStorage.storageOperations
-            }),
+            apiCoreStorage.storageOperations,
+            createApiCore(),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: false,

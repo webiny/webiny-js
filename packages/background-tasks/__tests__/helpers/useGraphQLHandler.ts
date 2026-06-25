@@ -59,9 +59,8 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
 
     const handler = createApiGatewayHandler({
         plugins: [
-            createApiCore({
-                storageOperations: apiCoreStorage.storageOperations
-            }),
+            apiCoreStorage.storageOperations,
+            createApiCore(),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: false,

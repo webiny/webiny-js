@@ -58,8 +58,8 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
         tenant,
         plugins: [
             topPlugins,
+            apiCoreStorage.storageOperations,
             createApiCore({
-                storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
             }),
             ...apiAcoStorage.plugins,

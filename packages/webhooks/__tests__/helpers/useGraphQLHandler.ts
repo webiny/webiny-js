@@ -49,9 +49,8 @@ export const useGraphQLHandler = (params?: UseGraphQLHandlerParams) => {
 
     const handler = createHandler({
         plugins: [
-            createApiCore({
-                storageOperations: apiCoreStorage.storageOperations
-            }),
+            apiCoreStorage.storageOperations,
+            createApiCore(),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 permissions: createPermissions(params?.permissions),

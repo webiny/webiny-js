@@ -24,9 +24,8 @@ export const useRawHandler = <C extends Context = Context>(params?: UseHandlerPa
 
     const handler = createRawHandler<any, C>({
         plugins: [
-            createApiCore({
-                storageOperations: apiCoreStorage.storageOperations
-            }),
+            apiCoreStorage.storageOperations,
+            createApiCore(),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: false,

@@ -11,7 +11,7 @@ export interface ApiCoreConfig {
     testProjectLicense?: DecryptedWcpProjectLicense;
 }
 
-export const createApiCore = (config: ApiCoreConfig) => {
+export const createApiCore = (config: ApiCoreConfig = {}) => {
     const plugin = createRegisterExtensionPlugin(context => {
         ApiCoreFeature.register(context.container);
     });

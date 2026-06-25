@@ -55,9 +55,8 @@ export const handler = createHandler({
     plugins: [
         registerDynamoDBCore({ documentClient }),
         registerOpenSearchCore(openSearchClientOptions),
-        createApiCore({
-            storageOperations: createApiCoreDdb({ documentClient })
-        }),
+        createApiCoreDdb(),
+        createApiCore(),
         graphqlPlugins({ debug }),
         dbPlugins({
             table: process.env.DB_TABLE,

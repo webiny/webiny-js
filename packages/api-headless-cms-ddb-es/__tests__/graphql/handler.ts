@@ -52,8 +52,8 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
     const handler = createRawHandler<any, CmsContext>({
         plugins: [
+            apiCoreStorage.storageOperations,
             createApiCore({
-                storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
             }),
             ...cmsStorage.plugins,

@@ -58,9 +58,8 @@ export const useHandler = (params?: UseHandlerParams) => {
 
     const handler = createRawHandler<any, any>({
         plugins: [
-            createApiCore({
-                storageOperations: apiCoreStorage.storageOperations
-            }),
+            apiCoreStorage.storageOperations,
+            createApiCore(),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 permissions: createPermissions(params?.permissions),
