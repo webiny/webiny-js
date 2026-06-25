@@ -19,9 +19,10 @@ import { getSchema } from "~/graphql/getSchema.js";
 import { processRequestBody } from "@webiny/handler-graphql";
 import { Benchmark } from "@webiny/api/Benchmark.js";
 import { BenchmarkAbstraction } from "@webiny/api";
-import { createBaseSchema } from "~/graphql/schema/baseSchema.js";
-import { createExportGraphQL } from "~/export/graphql/index.js";
+import { createBaseSchemaPlugins } from "~/graphql/schema/baseSchema.js";
+import { exportPlugin } from "~/export/graphql/index.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { CmsGraphQLSchemaFactory } from "~/graphql/CmsGraphQLSchemaFactory.js";
 import { RevisionIdScalar } from "~/graphql/scalars/RevisionId.js";
 import {
     AccessControl as AccessControlAbstraction,
@@ -142,9 +143,6 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
                         }
                     }
                 );
-                // Apply base schema plugins to the forked context's plugin list
-                await createBaseSchema().apply(schemaCtx as CmsContext);
-
                 const bm = this.container.resolve(BenchmarkAbstraction);
                 const schema = await bm.measure("headlessCms.graphql.getSchema", async () => {
                     return this.identityContext.withoutAuthorization(() => {
@@ -174,11 +172,16 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
             importing: { ...createImportCrud(ctx as CmsContext) }
         };
 
-        // Apply base and export schema context plugins —
-        // these register CmsGraphQLSchemaPlugin instances into ctx.plugins.
-        // createCmsSchema() is pre-registered in HeadlessCmsFeature (CoreGraphQLSchemaFactory).
-        await createBaseSchema().apply(ctx as CmsContext);
-        await createExportGraphQL().apply(ctx as CmsContext);
+        // Register CMS sub-schema factories: base types (CmsError, CmsIdentity, etc.)
+        // and, for manage endpoints, the import/export operations.
+        this.container.registerInstance(CmsGraphQLSchemaFactory, {
+            execute: () => createBaseSchemaPlugins(ctx as CmsContext)
+        });
+        if (type === "manage") {
+            this.container.registerInstance(CmsGraphQLSchemaFactory, {
+                execute: () => [exportPlugin]
+            });
+        }
 
         // Register legacy DI abstractions for use-cases that resolve them
         this.container.registerInstance(StorageOperations, storageOperations);

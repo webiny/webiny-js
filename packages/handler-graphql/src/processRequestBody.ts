@@ -1,10 +1,6 @@
 import type { ExecutionResult, GraphQLSchema } from "graphql";
 import { graphql } from "graphql";
-import type {
-    GraphQLAfterQueryPlugin,
-    GraphQLBeforeQueryPlugin,
-    GraphQLRequestBody
-} from "~/types.js";
+import type { GraphQLRequestBody } from "~/types.js";
 import type { Context } from "@webiny/api/types.js";
 
 const executeGraphQl = async <TData = Record<string, any>, TExtensions = Record<string, any>>(
@@ -13,25 +9,14 @@ const executeGraphQl = async <TData = Record<string, any>, TExtensions = Record<
     context: Context
 ): Promise<ExecutionResult<TData, TExtensions>> => {
     const { query, variables, operationName } = body;
-
-    context.plugins
-        .byType<GraphQLBeforeQueryPlugin>("graphql-before-query")
-        .forEach(pl => pl.apply({ body, schema, context }));
-
-    const result = await graphql({
+    return graphql({
         schema,
         source: query,
         rootValue: {},
         contextValue: context,
         variableValues: variables,
         operationName
-    });
-
-    context.plugins.byType<GraphQLAfterQueryPlugin>("graphql-after-query").forEach(pl => {
-        pl.apply({ result, body, schema, context });
-    });
-
-    return result as ExecutionResult<TData, TExtensions>;
+    }) as Promise<ExecutionResult<TData, TExtensions>>;
 };
 
 export const processRequestBody = async <

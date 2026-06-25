@@ -1,5 +1,6 @@
 import type { CmsContext } from "~/types/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
+import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { ContextPlugin } from "@webiny/api";
@@ -177,4 +178,9 @@ export const createBaseSchema = () => {
     plugin.name = "headless-cms.graphql.createBaseSchema";
 
     return plugin;
+};
+
+export const createBaseSchemaPlugins = (context: CmsContext): ICmsGraphQLSchemaPlugin[] => {
+    const [cmsPlugin] = createSchema(context);
+    return [cmsPlugin as ICmsGraphQLSchemaPlugin];
 };

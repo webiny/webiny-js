@@ -1,5 +1,9 @@
 import type { HcmsBulkActionsContext } from "~/types.js";
-import { CmsGraphQLSchemaPlugin, isHeadlessCmsReady } from "@webiny/api-headless-cms";
+import {
+    CmsGraphQLSchemaPlugin,
+    CmsGraphQLSchemaFactory,
+    isHeadlessCmsReady
+} from "@webiny/api-headless-cms";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { Response } from "@webiny/handler-graphql";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
@@ -15,7 +19,6 @@ export const createBulkActionGraphQL = async (
 ) => {
     const tenant = context.container.resolve(TenantContext).getTenant();
 
-    // TODO: once we have GraphSchema plugin via an abstraction, we'll be able to remove this.
     if (!(await isHeadlessCmsReady(context))) {
         return;
     }
@@ -83,5 +86,7 @@ export const createBulkActionGraphQL = async (
         plugins.push(plugin);
     });
 
-    context.plugins.register([...plugins]);
+    context.container.registerInstance(CmsGraphQLSchemaFactory, {
+        execute: () => plugins
+    });
 };

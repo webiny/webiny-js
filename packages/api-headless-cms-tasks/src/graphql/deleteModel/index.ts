@@ -1,7 +1,10 @@
 import zod from "zod";
 import { ContextPlugin } from "@webiny/api";
-import { CmsGraphQLSchemaPlugin } from "@webiny/api-headless-cms";
-import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
+import {
+    CmsGraphQLSchemaPlugin,
+    CmsGraphQLSchemaFactory,
+    isHeadlessCmsReady
+} from "@webiny/api-headless-cms";
 import type { HcmsTasksContext } from "~/types.js";
 import { createResolverDecorator } from "@webiny/handler-graphql";
 import { ErrorResponse } from "@webiny/handler-graphql";
@@ -184,7 +187,9 @@ export const createDeleteModelGraphQl = <T extends HcmsTasksContext = HcmsTasksC
             }
         });
         plugin.name = "headless-cms.graphql.fullyDeleteModel";
-        inputContext.plugins.register(plugin);
+        inputContext.container.registerInstance(CmsGraphQLSchemaFactory, {
+            execute: () => [plugin]
+        });
     });
     contextPlugin.name = "headless-cms.context.createDeleteModelGraphQl";
     return contextPlugin;

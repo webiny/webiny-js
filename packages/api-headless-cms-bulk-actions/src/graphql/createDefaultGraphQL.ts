@@ -1,5 +1,9 @@
 import type { HcmsBulkActionsContext } from "~/types.js";
-import { CmsGraphQLSchemaPlugin, isHeadlessCmsReady } from "@webiny/api-headless-cms";
+import {
+    CmsGraphQLSchemaPlugin,
+    CmsGraphQLSchemaFactory,
+    isHeadlessCmsReady
+} from "@webiny/api-headless-cms";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
 import { ContextPlugin } from "@webiny/api";
@@ -70,6 +74,8 @@ export const createDefaultGraphQL = () => {
             modelPlugins.push(plugin);
         });
 
-        context.plugins.register([defaultPlugin, ...modelPlugins]);
+        context.container.registerInstance(CmsGraphQLSchemaFactory, {
+            execute: () => [defaultPlugin, ...modelPlugins]
+        });
     });
 };

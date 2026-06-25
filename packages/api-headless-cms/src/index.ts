@@ -14,6 +14,8 @@ export { createCmsExtension } from "./extension.js";
 export type { ICreateCmsExtensionParams } from "./extension.js";
 
 export * from "~/plugins/index.js";
+export { CmsGraphQLSchemaFactory } from "~/graphql/CmsGraphQLSchemaFactory.js";
+export type { ICmsGraphQLSchemaFactory } from "~/graphql/CmsGraphQLSchemaFactory.js";
 export * from "~/utils/incrementEntryIdVersion.js";
 export * from "./features/contentEntry/ContentEntryTraverser/ContentEntryTraverser.js";
 export { ContentEntryTraverserProvider } from "./features/contentEntry/ContentEntryTraverser/abstractions.js";

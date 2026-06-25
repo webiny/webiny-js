@@ -3,7 +3,7 @@ import { buildSchemaPlugins } from "./buildSchemaPlugins.js";
 import { createExecutableSchema } from "./createExecutableSchema.js";
 import type { GraphQLSchema } from "graphql/type/index.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
-import { CmsGraphQLSchemaPlugin } from "~/plugins/index.js";
+import { CmsGraphQLSchemaFactory } from "./CmsGraphQLSchemaFactory.js";
 
 interface GenerateSchemaParams {
     context: CmsContext;
@@ -20,18 +20,20 @@ export const generateSchema = async (params: GenerateSchemaParams): Promise<Grap
         throw ex;
     }
 
-    context.plugins.register(generatedSchemaPlugins);
+    const staticFactories = context.container.resolveAll(CmsGraphQLSchemaFactory);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const staticPlugins: ICmsGraphQLSchemaPlugin<any>[] = [];
+    for (const factory of staticFactories) {
+        const plugins = await factory.execute();
+        staticPlugins.push(...plugins);
+    }
 
-    const schemaPlugins = context.plugins
-        .byType<ICmsGraphQLSchemaPlugin>(CmsGraphQLSchemaPlugin.type)
-        .filter(pl => {
-            if (typeof pl.isApplicable === "function") {
-                return pl.isApplicable(context);
-            }
-            return true;
-        });
-
-    return createExecutableSchema({
-        plugins: schemaPlugins
+    const schemaPlugins = [...staticPlugins, ...generatedSchemaPlugins].filter(pl => {
+        if (typeof pl.isApplicable === "function") {
+            return pl.isApplicable(context);
+        }
+        return true;
     });
+
+    return createExecutableSchema({ plugins: schemaPlugins });
 };
