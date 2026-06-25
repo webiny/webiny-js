@@ -10,8 +10,7 @@ import type {
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 import type { IWebsocketsRunner } from "./abstractions/WebsocketsRunner.js";
 import type { IWebsocketsRunnerResponse } from "./abstractions/WebsocketsRunner.js";
-import type { IWebsocketsRoutePluginCallableParams } from "~/plugins/index.js";
-import { WebsocketsRoutePlugin } from "~/plugins/index.js";
+import { WebsocketsRouteHandler } from "~/features/Routes/abstractions.js";
 import { middleware } from "~/utils/middleware.js";
 import { WebsocketsResponse } from "~/response/index.js";
 import { WebsocketsTransport } from "~/transport/index.js";
@@ -19,10 +18,7 @@ import { WebsocketsSendToConnectionsUseCase } from "~/features/SendToConnections
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
-type MiddlewareParams<C extends Context = Context> = Pick<
-    IWebsocketsRoutePluginCallableParams<C>,
-    "context" | "event" | "registry"
->;
+type MiddlewareParams = Pick<WebsocketsRouteHandler.Params, "event" | "registry" | "container">;
 
 interface IWebsocketsRunnerRespondParams extends Pick<
     IWebsocketsEventContext,
@@ -87,26 +83,24 @@ export class WebsocketsRunner implements IWebsocketsRunner {
         }
     }
 
-    private getRoutePlugins(route: WebsocketsRoute | string): WebsocketsRoutePlugin[] {
-        const plugins = this.context.plugins
-            .byType<WebsocketsRoutePlugin>(WebsocketsRoutePlugin.type)
-            .filter(plugin => {
-                return plugin.route === route;
-            });
-        if (plugins.length === 0) {
+    private getRouteHandlers(route: WebsocketsRoute | string): WebsocketsRouteHandler.Interface[] {
+        const handlers = this.context.container
+            .resolveAll(WebsocketsRouteHandler)
+            .filter(handler => handler.route === route);
+        if (handlers.length === 0) {
             throw new WebinyError(
-                `There are no plugins for the route: ${route}.`,
-                "NO_ROUTE_PLUGINS",
+                `There are no handlers for the route: ${route}.`,
+                "NO_ROUTE_HANDLERS",
                 {
                     route
                 }
             );
         }
-        return plugins;
+        return handlers;
     }
 
     private async executeRoute(event: IWebsocketsEvent): Promise<IWebsocketsRunnerResponse> {
-        const plugins = this.getRoutePlugins(event.context.route).reverse();
+        const handlers = this.getRouteHandlers(event.context.route).reverse();
 
         const getTenant = () => {
             const tenant = this.context.container.resolve(TenantContext).getTenant();
@@ -119,12 +113,12 @@ export class WebsocketsRunner implements IWebsocketsRunner {
         };
 
         const action = middleware<MiddlewareParams, IWebsocketsRunnerResponse>(
-            plugins.map(plugin => {
+            handlers.map(handler => {
                 return async (params, next) => {
-                    return plugin.run({
+                    return handler.run({
                         registry: params.registry,
                         event: params.event,
-                        context: params.context,
+                        container: params.container,
                         getTenant,
                         getIdentity,
                         response: this.response,
@@ -137,7 +131,7 @@ export class WebsocketsRunner implements IWebsocketsRunner {
         const result = await action({
             event,
             registry: this.registry,
-            context: this.context
+            container: this.context.container
         });
         if (result) {
             return result;

@@ -6,7 +6,6 @@ export { WebsocketsDisconnectUseCase } from "~/features/Disconnect/abstractions.
 export { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 export { WebsocketsEventValidator } from "~/validator/index.js";
 export { WebsocketsRunner } from "~/runner/WebsocketsRunner.js";
-export { createWebsocketsRoutePlugins } from "~/runner/routes/index.js";
-export { createWebsocketsRoutePlugin } from "~/plugins/WebsocketsRoutePlugin.js";
+export { WebsocketsRouteHandler } from "~/features/Routes/abstractions.js";
 export { WebsocketsResponse } from "~/response/index.js";
 export type { WebsocketsError } from "~/features/shared/errors.js";

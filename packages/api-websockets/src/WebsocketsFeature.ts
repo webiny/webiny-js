@@ -5,6 +5,7 @@ import { SendToIdentityUseCase } from "~/features/SendToIdentity/SendToIdentityU
 import { DisconnectUseCase } from "~/features/Disconnect/DisconnectUseCase.js";
 import { NullWebsocketsTransport } from "~/transport/NullWebsocketsTransport.js";
 import { DefaultWebsocketsResponse } from "~/response/WebsocketsResponse.js";
+import { registerWebsocketsRoutes } from "~/runner/routes/index.js";
 
 export const WebsocketsFeature = createFeature({
     name: "Websockets",
@@ -15,5 +16,6 @@ export const WebsocketsFeature = createFeature({
         container.register(SendToConnectionsUseCase);
         container.register(SendToIdentityUseCase);
         container.register(DisconnectUseCase);
+        registerWebsocketsRoutes(container);
     }
 });

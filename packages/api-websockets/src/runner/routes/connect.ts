@@ -1,5 +1,5 @@
 import type { WebsocketsRoute } from "~/types.js";
-import { createWebsocketsRoutePlugin } from "~/plugins/WebsocketsRoutePlugin.js";
+import type { WebsocketsRouteHandler } from "~/features/Routes/abstractions.js";
 
 const CONNECT: WebsocketsRoute = "connect";
 
@@ -10,10 +10,9 @@ const getConnectedOn = (connectedAt?: number) => {
     return new Date(connectedAt).toISOString();
 };
 
-export const createWebsocketsRouteConnectPlugin = () => {
-    const plugin = createWebsocketsRoutePlugin(CONNECT, async params => {
-        const { registry, event, response, getTenant, getIdentity } = params;
-
+export const websocketsRouteConnect: WebsocketsRouteHandler.Interface = {
+    route: CONNECT,
+    async run({ registry, event, response, getTenant, getIdentity }) {
         const tenant = getTenant();
         const identity = getIdentity();
         if (!tenant) {
@@ -39,7 +38,5 @@ export const createWebsocketsRouteConnectPlugin = () => {
         });
 
         return response.ok();
-    });
-    plugin.name = "websockets.route.connect.default";
-    return plugin;
+    }
 };

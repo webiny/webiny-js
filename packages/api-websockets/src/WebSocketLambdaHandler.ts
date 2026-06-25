@@ -1,7 +1,6 @@
 import type { Container } from "@webiny/feature/api";
 import { WebSocketEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/WebSocketEventHandler.js";
 import type { IWebSocketEvent } from "@webiny/event-handler-aws/eventTypes/WebSocketEventType.js";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -64,15 +63,9 @@ class WebSocketLambdaHandlerImpl implements WebSocketEventHandler.Interface {
         eventCtx: EventContext<IWebSocketEvent>,
         _next: NextFunction
     ): Promise<APIGatewayProxyResult> {
-        // TODO: remove once legacy ctx is gone — already resolves authCtx/identityCtx/tenantCtx
-        // directly from DI; enhancer loop is the remaining legacy dependency.
+        // Route handlers and all websockets services are resolved from the DI container;
+        // the runner only needs `container` on the context object.
         const ctx: Record<string, any> = { container: this.container };
-        for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
-            await enhancer.enhance(ctx);
-        }
-        for (const schema of this.container.resolveAll(GraphQLContextualSchema)) {
-            await schema.build(ctx);
-        }
 
         const raw = eventCtx.event as IWebsocketsIncomingEvent;
         const { token, tenant, endpoint } = getEventValues(raw);

@@ -1,11 +1,7 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import {
-    GraphQLEngineFeature,
-    GraphQLContextualSchema,
-    registerLegacyPluginsViaGqlContextualSchema
-} from "@webiny/handler-graphql";
+import { GraphQLEngineFeature, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { buildSchema } from "graphql";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
@@ -15,7 +11,7 @@ import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { WebsocketsFeature } from "@webiny/api-websockets/features/feature.js";
 import { WebsocketsGraphQLFactoryFeature } from "@webiny/api-websockets/graphql/feature.js";
-import { createWebsocketsRoutePlugins } from "@webiny/api-websockets/runner/routes/index.js";
+import { WebsocketsRouteHandler } from "@webiny/api-websockets/features/Routes/abstractions.js";
 import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
 import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
 import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
@@ -72,10 +68,10 @@ export const useHandler = (params?: UseHandlerParams) => {
             WebsocketsFeature.register(container);
             WebsocketsGraphQLFactoryFeature.register(container);
 
-            registerLegacyPluginsViaGqlContextualSchema(container, [
-                ...createWebsocketsRoutePlugins(),
-                ...(params?.plugins ?? [])
-            ]);
+            // Built-in routes are registered by WebsocketsFeature; register any custom routes.
+            for (const route of params?.plugins ?? []) {
+                container.registerInstance(WebsocketsRouteHandler, route);
+            }
             const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
             container.registerInstance(GraphQLContextualSchema, {
                 async build(ctx: Record<string, any>) {

@@ -21,8 +21,7 @@ export { WebsocketsDisconnectUseCase } from "@webiny/api-websockets/features/Dis
 export { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 export { WebsocketsEventValidator } from "@webiny/api-websockets/validator/index.js";
 export { WebsocketsRunner } from "@webiny/api-websockets/runner/WebsocketsRunner.js";
-export { createWebsocketsRoutePlugins } from "@webiny/api-websockets/runner/routes/index.js";
-export { createWebsocketsRoutePlugin } from "@webiny/api-websockets/plugins/WebsocketsRoutePlugin.js";
+export { WebsocketsRouteHandler } from "@webiny/api-websockets/features/Routes/abstractions.js";
 export { WebsocketsResponse } from "@webiny/api-websockets/response/index.js";
 export type { WebsocketsError } from "@webiny/api-websockets/features/shared/errors.js";
 export { createFeature, createAbstraction, Result, BaseError } from "@webiny/feature/api/index.js";

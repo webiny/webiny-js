@@ -2,8 +2,8 @@
  * DI-native WebSocket Lambda handler.
  *
  * Receives AWS API Gateway WebSocket events ($connect, $disconnect, $default)
- * and routes them through WebSocketLambdaHandler, which builds context via
- * GraphQLContextEnhancers and runs WebsocketsRunner.
+ * and routes them through WebSocketLambdaHandler, which runs WebsocketsRunner.
+ * Route handlers are resolved from the DI container (registered by WebsocketsFeature).
  */
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createLambdaHandler, WebSocketEventType } from "@webiny/event-handler-aws";
