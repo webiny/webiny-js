@@ -1,4 +1,5 @@
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import type { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import { createEntity } from "~/entity.js";
 import type {
     IStorage,
@@ -17,7 +18,8 @@ import { CompressionHandler } from "@webiny/utils/exports/api.js";
 
 export interface IStorageParams {
     compressionHandler: CompressionHandler.Interface;
-    client: DynamoDBDocument;
+    tableFactory: DynamoDbTableFactory.Interface;
+    entityFactory: DynamoDbEntityFactory.Interface;
     tableName: string | undefined;
 }
 
@@ -28,7 +30,8 @@ export class Storage implements IStorage {
 
     public constructor(params: IStorageParams) {
         const { entity } = createEntity({
-            client: params.client,
+            tableFactory: params.tableFactory,
+            entityFactory: params.entityFactory,
             tableName: params.tableName,
             gsiAmount: 10
         });

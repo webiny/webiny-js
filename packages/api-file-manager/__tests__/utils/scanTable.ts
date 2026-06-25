@@ -1,5 +1,5 @@
 import type { TableDef } from "@webiny/db-dynamodb/toolbox.js";
-import type { IScanParams } from "@webiny/db-dynamodb/utils/DynamoDocClient.js";
+import type { IScanParams } from "@webiny/db-dynamodb/exports/api/db.js";
 
 export const scanTable = async (table: TableDef, options?: IScanParams) => {
     const items: any[] = [];

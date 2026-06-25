@@ -1,25 +1,28 @@
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { createStandardEntity, createTable } from "@webiny/db-dynamodb";
+import type { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { IEntity } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { IStandardEntityAttributes } from "@webiny/db-dynamodb/exports/api/db.js";
 import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 
 const name = "SocketsConnectionRegistry";
 
-export const createEntity = (documentClient: DynamoDBDocument) => {
-    const table = createTable({
-        name: String(process.env.DB_TABLE),
-        documentClient
+interface Params {
+    tableFactory: DynamoDbTableFactory.Interface;
+    entityFactory: DynamoDbEntityFactory.Interface;
+}
+
+export const createEntity = (
+    params: Params
+): IEntity<IStandardEntityAttributes<ConnectionRegistry.Data>> => {
+    const { tableFactory, entityFactory } = params;
+    const table = tableFactory.create({
+        name: String(process.env.DB_TABLE)
     });
 
-    return createStandardEntity<ConnectionRegistry.Data>({
+    return entityFactory.createStandard<ConnectionRegistry.Data>({
         name,
-        table: table.table,
+        client: table,
         attributes: {
-            PK: {
-                partitionKey: true
-            },
-            SK: {
-                sortKey: true
-            },
             GSI1_PK: {
                 type: "string",
                 required: true

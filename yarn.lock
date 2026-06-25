@@ -11743,7 +11743,6 @@ __metadata:
     "@webiny/api-dynamodb-to-elasticsearch": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db": "npm:0.0.0"
@@ -12195,7 +12194,6 @@ __metadata:
   dependencies:
     "@opensearch-project/opensearch": "npm:^3.6.0"
     "@webiny/api": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"

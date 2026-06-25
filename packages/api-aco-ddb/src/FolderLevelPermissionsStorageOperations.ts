@@ -1,5 +1,5 @@
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { createStandardEntity, createTable } from "@webiny/db-dynamodb";
+import type { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import { WebinyError } from "@webiny/error";
 import type {
     AcoFolderLevelPermissionsStorageOperations,
@@ -14,7 +14,8 @@ import type {
 import { executeWithRetry } from "@webiny/utils";
 
 export interface StorageOperationsConfig {
-    documentClient: DynamoDBDocument;
+    tableFactory: DynamoDbTableFactory.Interface;
+    entityFactory: DynamoDbEntityFactory.Interface;
 }
 
 interface CreateKeysParams {
@@ -32,16 +33,14 @@ interface CreateGsiKeysParams {
 
 export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPermissionsStorageOperations {
     private readonly entity;
-    private readonly table;
 
-    constructor({ documentClient }: StorageOperationsConfig) {
-        this.table = createTable({
-            name: String(process.env.DB_TABLE),
-            documentClient
+    constructor({ tableFactory, entityFactory }: StorageOperationsConfig) {
+        const table = tableFactory.create({
+            name: String(process.env.DB_TABLE)
         });
 
-        this.entity = createStandardEntity<FolderLevelPermission>({
-            table: this.table.table,
+        this.entity = entityFactory.createStandard<FolderLevelPermission>({
+            client: table,
             name: "ACO.flp"
         });
     }

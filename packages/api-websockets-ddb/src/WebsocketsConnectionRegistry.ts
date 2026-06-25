@@ -1,7 +1,8 @@
 import WebinyError from "@webiny/error";
 import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import { createEntity } from "./entity.js";
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import type { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import type { EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";
 
 const PK = `WS#CONNECTIONS`;
@@ -11,8 +12,11 @@ const GSI2_PK = "WS#CONNECTIONS#TENANT";
 export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interface {
     private readonly entity;
 
-    public constructor(documentClient: DynamoDBDocument) {
-        this.entity = createEntity(documentClient);
+    public constructor(
+        tableFactory: DynamoDbTableFactory.Interface,
+        entityFactory: DynamoDbEntityFactory.Interface
+    ) {
+        this.entity = createEntity({ tableFactory, entityFactory });
     }
 
     public async register(

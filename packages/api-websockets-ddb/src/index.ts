@@ -1,19 +1,16 @@
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { WebsocketsConnectionRegistry } from "./WebsocketsConnectionRegistry.js";
 import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 
 export { WebsocketsConnectionRegistry } from "./WebsocketsConnectionRegistry.js";
 
-interface RegisterWebsocketsDdbStorageOperationsParams {
-    documentClient: DynamoDBDocument;
-}
-
-export const registerWebsocketsDdbStorageOperations = (
-    params: RegisterWebsocketsDdbStorageOperationsParams
-) => {
+export const registerWebsocketsDdbStorageOperations = () => {
     return createRegisterExtensionPlugin(context => {
-        const registry = new WebsocketsConnectionRegistry(params.documentClient);
+        const tableFactory = context.container.resolve(DynamoDbTableFactory);
+        const entityFactory = context.container.resolve(DynamoDbEntityFactory);
+        const registry = new WebsocketsConnectionRegistry(tableFactory, entityFactory);
         context.container.registerInstance(ConnectionRegistry, registry);
     });
 };

@@ -9,7 +9,8 @@ import type {
     IAccessPatternListResult
 } from "~/abstractions/AccessPattern.js";
 import type { AuditLogsEntity } from "~/entity.js";
-import type { IEntityQueryAllParams, IEntityQueryPerPageResult } from "@webiny/db-dynamodb";
+import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 const toGteTime = (date?: Date): number => {
     if (!date) {
@@ -86,11 +87,12 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
         });
     }
 
-    protected async populateResult(
-        input: Awaited<IEntityQueryPerPageResult<IIndexStorageItem>>
-    ): Promise<IEntityQueryPerPageResult<IStorageItem>> {
+    protected async populateResult(input: {
+        items: IIndexStorageItem[];
+        lastEvaluatedKey: GenericRecord;
+    }): Promise<{ items: IStorageItem[]; lastEvaluatedKey: GenericRecord }> {
         const reader = this.entity.createEntityReader({
-            read: input.items.map(item => {
+            read: input.items.map((item: IIndexStorageItem) => {
                 return {
                     PK: item.PK,
                     SK: item.SK
@@ -102,8 +104,8 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
         return {
             ...input,
             items: input.items
-                .map(item => {
-                    return result.find(i => {
+                .map((item: IIndexStorageItem) => {
+                    return result.find((i: IStorageItem) => {
                         return i.PK === item.PK && i.SK === item.SK;
                     });
                 })

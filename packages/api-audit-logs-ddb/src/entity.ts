@@ -1,6 +1,8 @@
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { IEntity, IStandardEntityAttributes } from "@webiny/db-dynamodb";
-import { createEntity as baseCreateEntity, createTable } from "@webiny/db-dynamodb";
+import type { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbDocumentClient } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { IEntity } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { IStandardEntityAttributes } from "@webiny/db-dynamodb/exports/api/db.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { IStorageAuditLog } from "~/types.js";
 
@@ -32,14 +34,15 @@ export interface IAuditLogsEntityAttributes extends Omit<
 export type AuditLogsEntity = IEntity<IAuditLogsEntityAttributes>;
 
 export interface ICreateEntityParams {
-    client: DynamoDBDocument;
+    tableFactory: DynamoDbTableFactory.Interface;
+    entityFactory: DynamoDbEntityFactory.Interface;
     gsiAmount: number;
     tableName: string | undefined;
 }
 
 export interface ICreateEntityResult {
     entity: AuditLogsEntity;
-    table: ReturnType<typeof createTable>;
+    table: DynamoDbDocumentClient.Interface;
 }
 
 const createTableGSIIndexes = (count: number) => {
@@ -54,22 +57,19 @@ const createTableGSIIndexes = (count: number) => {
 };
 
 export const createEntity = (params: ICreateEntityParams): ICreateEntityResult => {
-    const { gsiAmount, client, tableName } = params;
+    const { gsiAmount, tableFactory, entityFactory, tableName } = params;
     const name = tableName || process.env.DB_TABLE_AUDIT_LOGS;
     if (!name) {
         throw new Error("Missing env.DB_TABLE_AUDIT_LOGS environment variable.");
     }
-    const table = createTable({
-        documentClient: client,
+    const table = tableFactory.create({
         name,
-        indexes: {
-            ...createTableGSIIndexes(gsiAmount)
-        }
+        indexes: createTableGSIIndexes(gsiAmount)
     });
 
-    const entity = baseCreateEntity<IAuditLogsEntityAttributes>({
+    const entity = entityFactory.create<IAuditLogsEntityAttributes>({
         name: "AuditLogs",
-        table: table.table,
+        client: table,
         attributes: {
             PK: {
                 partitionKey: true
