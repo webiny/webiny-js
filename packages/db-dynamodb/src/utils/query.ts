@@ -3,7 +3,7 @@ import type {
     IQueryParams as IClientQueryParams
 } from "~/features/DynamoDbDocumentClient/abstractions.js";
 import type { EntitySchema } from "~/utils/EntitySchema.js";
-import type { EntityQueryOptions } from "~/toolbox.js";
+import type { EntityQueryOptions } from "~/utils/entity/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface QueryAllParams {

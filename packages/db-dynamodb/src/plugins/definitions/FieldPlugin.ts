@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins";
-import type { DynamoDBTypes } from "~/toolbox.js";
+import type { DynamoDBTypes } from "~/utils/EntitySchema.js";
 
 export type FieldType = DynamoDBTypes & "date" & any;
 

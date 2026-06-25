@@ -1,7 +1,7 @@
-import type { TableDef } from "@webiny/db-dynamodb/toolbox.js";
+import type { DynamoDbDocumentClient } from "@webiny/db-dynamodb/exports/api/db.js";
 import type { IScanParams } from "@webiny/db-dynamodb/exports/api/db.js";
 
-export const scanTable = async (table: TableDef, options?: IScanParams) => {
+export const scanTable = async (table: DynamoDbDocumentClient.Interface, options?: IScanParams) => {
     const items: any[] = [];
     let result = await table.scan(options);
     items.push(...result.items);

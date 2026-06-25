@@ -1,10 +1,21 @@
-import type {
-    AttributeDefinitions,
-    EntityConstructor as BaseEntityConstructor,
-    Readonly
-} from "~/toolbox.js";
+import type { AttributeDefinitions } from "~/utils/EntitySchema.js";
 import { EntitySchema } from "~/utils/EntitySchema.js";
 import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
+
+type Readonly<T> = T extends ((...args: any[]) => any) | undefined
+    ? T
+    : T extends object
+      ? { readonly [P in keyof T]: Readonly<T[P]> }
+      : T;
+
+interface EntityConstructor<
+    T extends Readonly<AttributeDefinitions> = Readonly<AttributeDefinitions>
+> {
+    name: string;
+    attributes: T;
+    table?: DynamoDbDocumentClient.Interface;
+    timestamps?: boolean;
+}
 import type { DynamoDbBatchFactory } from "~/features/DynamoDbBatchFactory/abstractions.js";
 import type { ITableWriteBatch } from "../table/types.js";
 import type { ITableReadBatch } from "../table/types.js";
@@ -27,9 +38,7 @@ import { deleteItem } from "../delete.js";
 import { queryAll, queryAllClean, queryOne, queryOneClean, queryPerPage } from "../query.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
-export type EntityConstructor<
-    T extends Readonly<AttributeDefinitions> = Readonly<AttributeDefinitions>
-> = BaseEntityConstructor<T>;
+export type { EntityConstructor };
 
 export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<T> {
     public readonly schema: EntitySchema;

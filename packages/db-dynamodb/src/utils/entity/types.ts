@@ -17,19 +17,36 @@ import type { IEntityWriteBatchParams } from "./EntityWriteBatch.js";
 import type { IEntityReadBatchParams } from "./EntityReadBatch.js";
 import type { IQueryPageResponse } from "~/utils/query.js";
 
+export interface EntityQueryOptions {
+    index?: string;
+    limit?: number;
+    reverse?: boolean;
+    consistent?: boolean;
+    eq?: string | number;
+    lt?: string | number;
+    lte?: string | number;
+    gt?: string | number;
+    gte?: string | number;
+    between?: [string, string] | [number, number] | [bigint, bigint];
+    beginsWith?: string;
+    startKey?: Record<string, unknown>;
+    filters?: Record<string, unknown>;
+    attributes?: string[];
+}
+
 export type IEntityQueryOneParams = {
     partitionKey: string;
-    options?: Omit<import("~/toolbox.js").EntityQueryOptions, "limit">;
+    options?: Omit<EntityQueryOptions, "limit">;
 };
 
 export type IEntityQueryAllParams = {
     partitionKey: string;
-    options?: import("~/toolbox.js").EntityQueryOptions;
+    options?: EntityQueryOptions;
 };
 
 export type IEntityQueryPerPageParams = {
     partitionKey: string;
-    options?: import("~/toolbox.js").EntityQueryOptions;
+    options?: EntityQueryOptions;
 };
 
 export interface IEntityCreateEntityWriterParams<T = GenericRecord> extends Omit<
