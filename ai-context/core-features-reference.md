@@ -572,6 +572,38 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 - **Interface Type:** See `packages/db-dynamodb/src/features/DynamoDbDocumentClient/abstractions.ts`
 - **Usage:** Table-name-bound facade over `DynamoDBDocument`. Not DI-resolved — instances are created by `DynamoDbTableFactory.create()`. Replaces the deleted `DynamoDocClient` class and the `TableDef`/`ITable` type aliases. The namespace is a type carrier only: use `DynamoDbDocumentClient.Interface` in type positions.
 
+### TenancyStorageOperations (api-core-ddb)
+
+- **Abstraction:** `import { TenancyStorageOperations } from "@webiny/api-core/features/tenancy/shared/storageOperations.js"`
+- **Implementation:** `packages/api-core-ddb/src/tenancy/TenancyStorageOperations.ts`
+- **Feature:** `TenancyApiCoreDdbFeature` — registered in `createApiCoreDdb()`
+- **Dependencies:** `[DynamoDbTableFactory, DynamoDbEntityFactory]`
+- **Usage:** DDB storage for tenants. CRUD + list + batch get by IDs. Uses `DB_TABLE_TENANCY || DB_TABLE` env var.
+
+### AdminUsersStorageOperations (api-core-ddb)
+
+- **Abstraction:** `import { AdminUsersStorageOperations } from "@webiny/api-core/features/users/shared/storageAbstractions.js"`
+- **Implementation:** `packages/api-core-ddb/src/adminUsers/AdminUsersStorageOperations.ts`
+- **Feature:** `AdminUsersApiCoreDdbFeature` — registered in `createApiCoreDdb()`
+- **Dependencies:** `[DynamoDbTableFactory, DynamoDbEntityFactory]`
+- **Usage:** DDB storage for admin users. CRUD + list with sorting. GSI1 lookup by email.
+
+### SecurityStorageOperations (api-core-ddb)
+
+- **Abstraction:** `import { SecurityStorageOperations } from "@webiny/api-core/features/security/shared/abstractions.js"`
+- **Implementation:** `packages/api-core-ddb/src/security/SecurityStorageOperations.ts`
+- **Feature:** `SecurityApiCoreDdbFeature` — registered in `createApiCoreDdb()`
+- **Dependencies:** `[DynamoDbTableFactory, DynamoDbEntityFactory]`
+- **Usage:** DDB storage for roles, teams, and API keys. CRUD + list with filtering (id_in, slug_in). API keys have GSI1 (by token) and GSI2 (by slug) lookups.
+
+### KeyValueStorageOperations (api-core-ddb)
+
+- **Abstraction:** `import { KeyValueStorageOperations } from "@webiny/api-core/features/keyValueStore/abstractions.js"`
+- **Implementation:** `packages/api-core-ddb/src/keyValueStore/KeyValueStoreStorageOperations.ts`
+- **Feature:** `KeyValueStoreApiCoreDdbFeature` — registered in `createApiCoreDdb()`
+- **Dependencies:** `[DynamoDbTableFactory, DynamoDbEntityFactory]`
+- **Usage:** DDB storage for key-value pairs with scoping and TTL. Scoped keys use `scope:key` format. TTL via DynamoDB `expiresAt` attribute.
+
 ### DbRegistry
 
 - **Import:** `import { DbRegistry } from "@webiny/db/exports/api/db.js"`
