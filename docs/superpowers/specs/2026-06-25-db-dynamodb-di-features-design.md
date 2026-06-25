@@ -152,7 +152,7 @@ export const DynamoDbTableFactoryFeature = createFeature({
 });
 ```
 
-Default GSI indexes: the current `createTable()` hardcodes GSI_TENANT, GSI1, and GSI2 as defaults. `DynamoDbDocumentClient` already handles index key resolution internally (its `getKeyAttributes()` method maps index names like `"GSI1"` to `GSI1_PK`/`GSI1_SK`). The `indexes` param on `create()` exists for consumers that need additional indexes beyond the standard set (e.g., `api-audit-logs-ddb` with dynamic GSI counts). No default index injection is needed in the factory — the document client resolves them at query time.
+Default GSI indexes: the current `createTable()` hardcodes GSI_TENANT, GSI1, and GSI2 as defaults. `DynamoDbDocumentClient` already handles index key resolution internally — its `getKeyAttributes()` method maps known names (`"GSI1"` to `GSI1_PK`/`GSI1_SK`) and has a dynamic fallback (`return { pk: \`${index}_PK\`, sk: \`${index}_SK\` }`) for any index name. This means the `indexes` param on `create()` is a no-op in the current implementation — the document client resolves index key attributes dynamically at query time based on the index name string, not from stored configuration. The `indexes` param exists in the interface for future use (e.g., validation or explicit key mapping) but is not passed to the `DynamoDbDocumentClient` constructor.
 
 ## Abstraction: DynamoDbEntityFactory
 
@@ -203,11 +203,49 @@ export namespace DynamoDbEntityFactory {
 }
 ```
 
-Standard and global attribute sets (`standardEntityAttributes`, `globalEntityAttributes`) move from `utils/createEntity.ts` to `features/DynamoDbEntityFactory/attributes.ts`.
+Standard and global attribute sets (`standardEntityAttributes`, `globalEntityAttributes`) and their type exports (`IStandardEntityAttributes`, `IGlobalEntityAttributes`) move from `utils/createEntity.ts` to `features/DynamoDbEntityFactory/attributes.ts`. The `abstractions.ts` file re-exports everything from `attributes.ts` so consumers can import from a single path.
 
-Feature registration (uses `createFeature` for internal package registration):
+Implementation and feature registration:
 
 ```typescript
+class DynamoDbEntityFactoryImpl implements DynamoDbEntityFactory.Interface {
+    public constructor(
+        private readonly batchFactory: DynamoDbBatchFactory.Interface
+    ) {}
+
+    public create<T extends GenericRecord = GenericRecord>(
+        params: IDynamoDbEntityFactoryCreateParams
+    ): IEntity<T> {
+        return new Entity<T>(
+            {
+                name: params.name,
+                attributes: params.attributes,
+                table: params.client,
+                timestamps: params.timestamps
+            },
+            this.batchFactory
+        );
+    }
+
+    public createStandard<T extends GenericRecord = GenericRecord>(
+        params: IDynamoDbEntityFactoryCreateStandardParams
+    ): IEntity<IStandardEntityAttributes<T>> {
+        return this.create({
+            ...params,
+            attributes: { ...standardEntityAttributes, ...params.attributes }
+        });
+    }
+
+    public createGlobal<T extends GenericRecord = GenericRecord>(
+        params: IDynamoDbEntityFactoryCreateGlobalParams
+    ): IEntity<IGlobalEntityAttributes<T>> {
+        return this.create({
+            ...params,
+            attributes: { ...globalEntityAttributes, ...params.attributes }
+        });
+    }
+}
+
 export const DynamoDbEntityFactoryFeature = createFeature({
     name: "Db/DynamoDB/DynamoDbEntityFactoryFeature",
     register(container) {
@@ -340,7 +378,7 @@ All features register in `registerDynamoDBCore()`. Registration order matters �
 ```typescript
 export const registerDynamoDBCore = ({ documentClient }: IRegisterDbDynamoDbExtension) => {
     return createRegisterExtensionPlugin(async context => {
-        /* 1. Raw AWS client — no dependencies. */
+        /* 1. Raw AWS client — no dependencies. Uses createFeature<DynamoDBDocument> which accepts a typed second arg. */
         DynamoDBClientFeature.register(context.container, documentClient);
         /* 2. Batch factory — no dependencies. */
         DynamoDbBatchFactoryFeature.register(context.container);
