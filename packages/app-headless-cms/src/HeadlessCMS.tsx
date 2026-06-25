@@ -18,6 +18,7 @@ import { ContentGroupsMenuPresenterFeature } from "~/presentation/contentGroupsM
 import { ContentModelsPresenterFeature } from "~/presentation/contentModels/feature.js";
 import { NewContentModelPresenterFeature } from "~/presentation/newContentModel/feature.js";
 import { CloneContentModelPresenterFeature } from "~/presentation/cloneContentModel/feature.js";
+import { ImportContentModelsPresenterFeature } from "~/presentation/importContentModels/feature.js";
 import { CmsIconPickerRenderer } from "~/presentation/fieldRenderers/CmsIconPickerRenderer.js";
 import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.js";
 import { CmsFormModelFeature } from "~/features/formModel/feature.js";
@@ -107,6 +108,7 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
             <RegisterFeature feature={ContentModelsPresenterFeature} />
             <RegisterFeature feature={NewContentModelPresenterFeature} />
             <RegisterFeature feature={CloneContentModelPresenterFeature} />
+            <RegisterFeature feature={ImportContentModelsPresenterFeature} />
             <RegisterFeature feature={FormModelFeature} />
             <RegisterFeature feature={CmsFormModelFeature} />
             <RegisterFeature feature={ContentEntryFeature} />

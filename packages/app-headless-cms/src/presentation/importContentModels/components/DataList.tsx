@@ -1,7 +1,8 @@
 import React from "react";
 import { DataListGroup } from "./DataListGroup.js";
 import type { ImportGroupData, ImportModelData } from "../types.js";
-import { useImport } from "~/admin/views/contentModels/importing/useImport.js";
+import { observer } from "mobx-react-lite";
+import { useImportContentModelsPresenter } from "../useImportContentModelsPresenter.js";
 
 const getGroupModels = (group: ImportGroupData, models?: ImportModelData[] | null) => {
     if (!models) {
@@ -10,8 +11,9 @@ const getGroupModels = (group: ImportGroupData, models?: ImportModelData[] | nul
     return models.filter(model => model.group === group.slug);
 };
 
-export const DataList = () => {
-    const { groups, models } = useImport();
+export const DataList = observer(() => {
+    const presenter = useImportContentModelsPresenter();
+    const { groups, models } = presenter.vm;
     if (!groups) {
         return null;
     }
@@ -29,4 +31,4 @@ export const DataList = () => {
             })}
         </>
     );
-};
+});

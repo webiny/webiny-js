@@ -4,7 +4,7 @@ import {
     type ImportStructureResponse,
     type ImportStructureResponseData,
     type ImportStructureVariables
-} from "~/admin/views/contentModels/importing/graphql.js";
+} from "~/presentation/importContentModels/graphql.js";
 import { ImportModelsGateway as GatewayAbstraction } from "./abstractions.js";
 
 class ImportModelsGatewayImpl implements GatewayAbstraction.Interface {

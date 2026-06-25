@@ -6,26 +6,19 @@ import type { CmsModel } from "~/types.js";
 import { FullyDeleteModelStateStatus } from "./types.js";
 import { Content } from "./dialog/Content.js";
 import { createValidationValue } from "./dialog/validationValue.js";
-import { createProcessConfirmation } from "./dialog/process.js";
-import { useApolloClient } from "~/admin/hooks/index.js";
 import { useDialogState } from "./dialog/state.js";
-import { updateModelInCache } from "~/admin/views/contentModels/cache.js";
+import { useContentModelsPresenter } from "~/presentation/contentModels/useContentModelsPresenter.js";
 
 export interface FullyDeleteModelDialogProps {
     model: CmsModel;
     onClose: () => void;
 }
 
-/**
- * It's not a mistake to use cancel to accept and accept to cancel. It is just a matter of styling.
- * We want the accept button to be less visible.
- */
 export const FullyDeleteModelDialog = ({
     model: inputModel,
     onClose
 }: FullyDeleteModelDialogProps) => {
-    const client = useApolloClient();
-
+    const presenter = useContentModelsPresenter();
     const state = useDialogState(inputModel);
 
     const {
@@ -40,12 +33,6 @@ export const FullyDeleteModelDialog = ({
         setError
     } = state;
 
-    const processConfirmation = useMemo(() => {
-        return createProcessConfirmation({
-            client
-        });
-    }, [client]);
-
     const startProcessing = useCallback(() => {
         const value = createValidationValue(model!);
         if (confirmation !== value) {
@@ -58,22 +45,16 @@ export const FullyDeleteModelDialog = ({
         setStatusConfirmed();
 
         (async () => {
-            const result = await processConfirmation({
-                model: model!,
-                confirmation,
-                onSuccess: cache => {
-                    updateModelInCache(cache, {
-                        ...model!,
-                        isBeingDeleted: true
-                    });
-                }
-            });
-            if (result.error) {
-                setStatusError(result.error);
-                return;
+            try {
+                const result = await presenter.deleteModel(model!.modelId, confirmation);
+                setStatusProcessed(result);
+            } catch (ex: any) {
+                setStatusError({
+                    message: ex.message,
+                    code: "FULLY_DELETE_MODEL_ERROR",
+                    data: {}
+                });
             }
-
-            setStatusProcessed(result.data);
         })();
     }, [state]);
 

@@ -2,11 +2,14 @@ import React from "react";
 import { BrowserFilePicker } from "@webiny/app-admin/presentation/browserFilePicker/index.js";
 import { Text } from "@webiny/admin-ui";
 import { getError } from "./Errors.js";
-import { useImport } from "~/admin/views/contentModels/importing/useImport.js";
+import { observer } from "mobx-react-lite";
+import { useImportContentModelsPresenter } from "../useImportContentModelsPresenter.js";
 
-export const FileUpload = () => {
-    const { onFile, onFileError, file } = useImport();
-    const fileName = file?.name;
+export const FileUpload = observer(() => {
+    const presenter = useImportContentModelsPresenter();
+    const onFile = (file: File) => presenter.onFile(file);
+    const onFileError = (error: string) => presenter.onFileError(error);
+    const fileName = presenter.vm.file?.name;
 
     return (
         <BrowserFilePicker
@@ -51,4 +54,4 @@ export const FileUpload = () => {
             }}
         </BrowserFilePicker>
     );
-};
+});

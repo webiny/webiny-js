@@ -5,7 +5,7 @@ import {
     type ValidateImportStructureResponse,
     type ValidateImportStructureResponseData,
     type ImportStructureVariables
-} from "~/admin/views/contentModels/importing/graphql.js";
+} from "~/presentation/importContentModels/graphql.js";
 import { ValidateImportGateway as GatewayAbstraction } from "./abstractions.js";
 
 class ValidateImportGatewayImpl implements GatewayAbstraction.Interface {

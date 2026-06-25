@@ -1,5 +1,5 @@
 import { ImportModelsUseCase as UseCaseAbstraction, ImportModelsGateway } from "./abstractions.js";
-import type { ImportStructureVariables } from "~/admin/views/contentModels/importing/graphql.js";
+import type { ImportStructureVariables } from "~/presentation/importContentModels/graphql.js";
 
 class ImportModelsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private gateway: ImportModelsGateway.Interface) {}

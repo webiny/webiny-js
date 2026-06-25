@@ -20,14 +20,14 @@ import type { CmsEditorContentModel, CmsModel } from "~/types.js";
 import { usePermission } from "~/admin/hooks/usePermission.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { ModelIsBeingDeleted } from "~/admin/views/contentModels/fullDelete/ModelIsBeingDeleted.js";
-import { FullyDeleteModelDialog } from "~/admin/views/contentModels/fullDelete/FullyDeleteModelDialog.js";
+import { ModelIsBeingDeleted } from "./fullDelete/ModelIsBeingDeleted.js";
+import { FullyDeleteModelDialog } from "./fullDelete/FullyDeleteModelDialog.js";
 import { Button, DropdownMenu, Icon, IconButton, Select, Tooltip } from "@webiny/admin-ui";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
 import { Routes } from "~/routes.js";
 import { normalizeIcon } from "~/utils/normalizeIcon.js";
 import { useContentModelsPresenter } from "../useContentModelsPresenter.js";
-import { download } from "~/admin/views/contentModels/exporting/download.js";
+import { download } from "../utils/download.js";
 
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
 

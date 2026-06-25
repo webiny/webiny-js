@@ -7,7 +7,7 @@ import { useContentModelsPresenter } from "../useContentModelsPresenter.js";
 import ContentModelsDataList from "./ContentModelsDataList.js";
 import NewContentModelDialog from "./NewContentModelDialog.js";
 import { CloneContentModelDialog } from "./CloneContentModelDialog.js";
-import { ImportContentModelsDialog } from "~/admin/views/contentModels/importing/ImportContentModelsDialog.js";
+import { ImportContentModelsDialog } from "~/presentation/importContentModels/ImportContentModelsDialog.js";
 
 const ContentModels = observer(() => {
     const presenter = useContentModelsPresenter();

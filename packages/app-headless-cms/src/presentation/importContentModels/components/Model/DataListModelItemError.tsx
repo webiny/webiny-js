@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import styled from "@emotion/styled";
 import type { CmsErrorResponse } from "~/types.js";
-import type { InvalidField } from "~/admin/views/contentModels/importing/types.js";
+import type { InvalidField } from "../../types.js";
 
 const Note = styled("div")({
     color: "var(--mdc-theme-error)",

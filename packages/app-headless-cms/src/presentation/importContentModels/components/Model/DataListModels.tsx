@@ -2,7 +2,8 @@ import React from "react";
 import type { ImportModelData } from "../../types.js";
 import styled from "@emotion/styled";
 import { DataListModelItem } from "./DataListModelItem.js";
-import { useImport } from "~/admin/views/contentModels/importing/useImport.js";
+import { observer } from "mobx-react-lite";
+import { useImportContentModelsPresenter } from "../../useImportContentModelsPresenter.js";
 
 const Container = styled("div")({
     backgroundColor: "var(--mdc-theme-surface)",
@@ -15,8 +16,12 @@ interface DataListModelsProps {
     models: ImportModelData[];
 }
 
-export const DataListModels = ({ models }: DataListModelsProps) => {
-    const { toggleModel, isModelSelected } = useImport();
+export const DataListModels = observer(({ models }: DataListModelsProps) => {
+    const presenter = useImportContentModelsPresenter();
+    const toggleModel = (item: Pick<ImportModelData, "id" | "name" | "related">) =>
+        presenter.toggleModel(item);
+    const isModelSelected = (item: Pick<ImportModelData, "id">) =>
+        presenter.isModelSelected(item);
     return (
         <Container>
             {models.map(model => {
@@ -31,4 +36,4 @@ export const DataListModels = ({ models }: DataListModelsProps) => {
             })}
         </Container>
     );
-};
+});

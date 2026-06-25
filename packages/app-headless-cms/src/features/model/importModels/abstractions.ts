@@ -3,7 +3,7 @@ import type {
     ValidateImportStructureResponseData,
     ImportStructureResponseData,
     ImportStructureVariables
-} from "~/admin/views/contentModels/importing/graphql.js";
+} from "~/presentation/importContentModels/graphql.js";
 
 export interface IValidateImportGateway {
     execute(data: ImportStructureVariables["data"]): Promise<ValidateImportStructureResponseData>;
