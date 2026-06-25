@@ -1,7 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
-import type { TenancyStorageOperations as ITenancyStorageOperations } from "~/types/tenancy.js";
-import { TenantCache } from "./shared/abstractions.js";
-import { TenantCache as TenantCacheImpl } from "./shared/TenantCache.js";
+import { TenantCache as TenantCacheAbstraction } from "./shared/abstractions.js";
+import { TenantCache } from "./shared/TenantCache.js";
 import { TenancyStorageOperations } from "./shared/storageOperations.js";
 import { GetRootTenantFeature } from "./GetRootTenant/feature.js";
 import { ListTenantsFeature } from "./ListTenants/feature.js";
@@ -12,20 +11,18 @@ import { GetTenantByIdFeature } from "./GetTenantById/feature.js";
 import { TenantContextFeature } from "./TenantContext/feature.js";
 import { InstallTenantFeature } from "./InstallTenant/index.js";
 
-export const TenancyFeature = createFeature<ITenancyStorageOperations>({
+export const TenancyFeature = createFeature({
     name: "TenancyFeature",
-    register: (container, storageOperations) => {
-        // Register storage operations abstraction (singleton)
-        container.registerInstance(TenancyStorageOperations, storageOperations);
-
+    register: container => {
+        const tenantStorageOperations = container.resolve(TenancyStorageOperations);
         // Register shared cache (singleton) - batch loader provided here
         container.registerInstance(
-            TenantCache,
-            new TenantCacheImpl(async (ids: readonly string[]) => {
+            TenantCacheAbstraction,
+            new TenantCache(async ids => {
                 if (ids.length === 0) {
                     return [];
                 }
-                const tenants = await storageOperations.getTenantsByIds(ids);
+                const tenants = await tenantStorageOperations.getTenantsByIds(ids);
                 return ids.map((_, index) => tenants[index]);
             })
         );

@@ -1,7 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
-import type { SecurityStorageOperations as ISecurityStorageOperations } from "~/types/security.js";
-import { SecurityStorageOperations } from "./shared/abstractions.js";
 import { AuthenticationContextFeature } from "./authentication/AuthenticationContext/index.js";
 import { AuthorizationContextFeature } from "./authorization/AuthorizationContext/index.js";
 import { GroupsTeamsAuthorizerFeature } from "./authorization/GroupsTeamsAuthorizer/feature.js";
@@ -19,10 +17,7 @@ import { RolesFeature } from "~/features/security/roles/feature.js";
  */
 export const SecurityFeature = createFeature({
     name: "SecurityFeature",
-    register(container: Container, storageOperations: ISecurityStorageOperations) {
-        // Register storage operations abstraction (singleton)
-        container.registerInstance(SecurityStorageOperations, storageOperations);
-
+    register(container: Container) {
         AuthorizationContextFeature.register(container);
         AuthenticationContextFeature.register(container);
         IdentityContextFeature.register(container);

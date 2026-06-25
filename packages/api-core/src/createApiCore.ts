@@ -6,16 +6,14 @@ import { createSecurityContext } from "~/legacy/security/createSecurityContext.j
 import { createAdminUsersContext } from "~/legacy/users/createAdminUsersContext.js";
 import { createTenancyContext } from "~/legacy/tenancy/createTenancyContext.js";
 import { createSystemGraphQL } from "~/graphql/system/createSystemGraphQL.js";
-import type { ApiCoreStorageOperations } from "~/types/core.js";
 
 export interface ApiCoreConfig {
-    storageOperations: ApiCoreStorageOperations;
     testProjectLicense?: DecryptedWcpProjectLicense;
 }
 
 export const createApiCore = (config: ApiCoreConfig) => {
     const plugin = createRegisterExtensionPlugin(context => {
-        ApiCoreFeature.register(context.container, config.storageOperations);
+        ApiCoreFeature.register(context.container);
     });
     plugin.name = "apiCore.extension";
 

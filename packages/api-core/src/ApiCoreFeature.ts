@@ -6,7 +6,6 @@ import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { SystemFeature } from "~/features/system/SystemFeature.js";
 import { TenancyFeature } from "./features/tenancy/TenancyFeature.js";
 import { AdminUsersFeature } from "~/features/users/AdminUsersFeature.js";
-import type { ApiCoreStorageOperations } from "~/types/core.js";
 import { IdpAuthenticatorFeature } from "~/idp/feature.js";
 import { KeyValueStoreFeature } from "~/features/keyValueStore/feature.js";
 import { BuildParamsFeature } from "~/features/buildParams/feature.js";
@@ -19,7 +18,7 @@ import { WebhookProviderFeature } from "~/features/webhooks/index.js";
 
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
-    register(container: Container, config: ApiCoreStorageOperations) {
+    register(container: Container) {
         // Register features
         MaskerFeature.register(container);
         AiFeature.register(container);
@@ -28,10 +27,10 @@ export const ApiCoreFeature = createFeature({
         BuildParamsFeature.register(container);
         EncryptionFeature.register(container);
         FeatureFlagsFeature.register(container);
-        TenancyFeature.register(container, config.tenancyStorageOperations);
-        SecurityFeature.register(container, config.securityStorageOperations);
-        AdminUsersFeature.register(container, config.usersStorageOperations);
-        KeyValueStoreFeature.register(container, config.keyValueStorageOperations);
+        TenancyFeature.register(container);
+        SecurityFeature.register(container);
+        AdminUsersFeature.register(container);
+        KeyValueStoreFeature.register(container);
         SystemFeature.register(container);
         IdpAuthenticatorFeature.register(container);
         container.register(NullWebhookDispatcher).inSingletonScope();

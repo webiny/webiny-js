@@ -51,11 +51,12 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
 
+    console.log(apiCoreStorage.storageOperations)
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
         plugins: [
+            apiCoreStorage.storageOperations,
             createApiCore({
-                storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense: opts.wcpLicense
             }),
             graphqlHandlerPlugins(),

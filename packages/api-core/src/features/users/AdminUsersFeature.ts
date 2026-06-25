@@ -7,12 +7,11 @@ import { CreateUserFeature } from "./CreateUser/feature.js";
 import { UpdateUserFeature } from "./UpdateUser/feature.js";
 import { DeleteUserFeature } from "./DeleteUser/feature.js";
 import { ListUserTeamsFeature } from "./ListUserTeams/feature.js";
-import { AdminUsersStorageOperations } from "./shared/storageAbstractions.js";
 import { ExternalIdpUserSyncFeature } from "./ExternalIdpUserSync/index.js";
 
-export const AdminUsersFeature = createFeature<AdminUsersStorageOperations.Interface>({
+export const AdminUsersFeature = createFeature({
     name: "AdminUsers",
-    register(container, storageOperations) {
+    register(container) {
         // Register repository in singleton scope
         container.register(AdminUsersRepository).inSingletonScope();
 
@@ -25,8 +24,5 @@ export const AdminUsersFeature = createFeature<AdminUsersStorageOperations.Inter
         UpdateUserFeature.register(container);
         DeleteUserFeature.register(container);
         ExternalIdpUserSyncFeature.register(container);
-
-        // Legacy storage ops
-        container.registerInstance(AdminUsersStorageOperations, storageOperations);
     }
 });

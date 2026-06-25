@@ -1,5 +1,9 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { TenancyStorageOperations as ITenancyStorageOperations } from "~/types/tenancy.js";
+import type {
+    TenancyStorageOperations as ITenancyStorageOperations,
+    Tenant as ITenant,
+    ListTenantsParams as IListTenantsParams
+} from "~/types/tenancy.js";
 
 /**
  * Abstraction for Tenancy Storage Operations
@@ -11,4 +15,6 @@ export const TenancyStorageOperations = createAbstraction<ITenancyStorageOperati
 
 export namespace TenancyStorageOperations {
     export type Interface = ITenancyStorageOperations;
+    export type Tenant = ITenant;
+    export type ListTenantsParams = IListTenantsParams;
 }
