@@ -12,6 +12,7 @@ import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
 import { createTypeName } from "~/utils/createTypeName.js";
 import { parseIdentifier } from "@webiny/utils";
 import { createGraphQLInputField } from "./utils/createGraphQLInputField.js";
+import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";
 import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntry/GetLatestEntriesByIds/index.js";
@@ -145,7 +146,8 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
 
         /* @ts-expect-error Mixed return types for createResolver. */
         return async (parent: CmsEntry, args: any, context: CmsContext) => {
-            const { cms, container } = context;
+            const { container } = context;
+            const cms = container.resolve(HeadlessCms);
 
             const getModel = container.resolve(GetModelUseCase);
             const getPublishedByIds = container.resolve(GetPublishedEntriesByIdsUseCase);

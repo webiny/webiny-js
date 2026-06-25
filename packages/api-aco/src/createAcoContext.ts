@@ -35,6 +35,7 @@ import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folder/List
 import { Tenant } from "@webiny/api-core/types/tenancy";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { CmsFlpFeature } from "~/features/cms/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FolderModel as FolderModelAbstraction } from "~/domain/folder/abstractions.js";
@@ -46,8 +47,9 @@ import { createRegisterExtensionPlugin } from "@webiny/handler";
 import type { AcoStorageOperations } from "~/types.js";
 
 const setupAcoContext = async (context: AcoContext): Promise<void> => {
-    const { cms, container } = context;
+    const { container } = context;
 
+    const cms = container.resolve(HeadlessCms);
     const identityContext = container.resolve(IdentityContext);
     const tenantContext = container.resolve(TenantContext);
 
