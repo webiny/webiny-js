@@ -2,17 +2,13 @@ import { useMemo } from "react";
 import { createConfigurableComponent } from "@webiny/react-properties";
 import type { ActionsConfig } from "./Actions/index.js";
 import { Actions } from "./Actions/index.js";
-import { FieldElement } from "./FieldElement.js";
 import { Width } from "./Width.js";
-import { ValidationIndicatorsConfig } from "~/admin/config/contentEntries/editor/ValidationIndicators.js";
 
 const base = createConfigurableComponent<ContentEntryEditorConfig>("ContentEntryEditorConfig");
 
 export const ContentEntryEditorConfig = Object.assign(base.Config, {
     Actions,
-    FieldElement,
-    Width,
-    ValidationIndicators: ValidationIndicatorsConfig
+    Width
 });
 
 export const ContentEntryEditorWithConfig = base.WithConfig;

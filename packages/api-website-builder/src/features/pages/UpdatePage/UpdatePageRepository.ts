@@ -34,6 +34,7 @@ class UpdatePageRepositoryImpl implements RepositoryAbstraction.Interface {
         // Update the entry
         const result = await this.updateEntry.execute(this.pageModel, id, {
             location: data.location,
+            system: data.system,
             values: data
         });
 

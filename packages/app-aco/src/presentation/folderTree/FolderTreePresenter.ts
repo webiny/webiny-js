@@ -88,9 +88,10 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
     }
 
     selectFolder(folderId: string | null): void {
-        this.currentFolderId = folderId;
-        if (folderId) {
-            void this.loadChildFolders([folderId]);
+        const normalized = folderId === ROOT_FOLDER ? null : folderId;
+        this.currentFolderId = normalized;
+        if (normalized) {
+            void this.loadChildFolders([normalized]);
         }
     }
 
@@ -251,8 +252,6 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
                 permissions: folder?.permissions ?? []
             });
         }
-
-        await this.loadFolders();
 
         runInAction(() => {
             this.operation = { active: false, mode: null };

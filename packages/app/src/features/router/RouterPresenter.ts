@@ -42,8 +42,23 @@ class RouterPresenterImpl implements Abstraction.Interface {
         this.goToRoute(currentRoute, newParams);
     };
 
+    replaceRouteParams = (cb: any) => {
+        const currentRoute = this.routerRepository.getCurrentRoute();
+        if (!currentRoute) {
+            return;
+        }
+
+        const matchedRoute = this.routerRepository.getMatchedRoute();
+        const newParams = cb(matchedRoute?.params ?? {});
+        this.routerRepository.replaceRoute(currentRoute, newParams);
+    };
+
     getLink = (route: any, params?: any) => {
         return this.routerRepository.getLink(route, params);
+    };
+
+    goBack = (): void => {
+        this.routerRepository.goBack();
     };
 
     addTransitionGuard = (config: RouteTransitionGuardConfig): GuardDisposer => {

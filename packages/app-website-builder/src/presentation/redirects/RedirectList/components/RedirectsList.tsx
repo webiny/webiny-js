@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect } from "react";
 import { useRoute, AdminLayout, DialogsProvider } from "@webiny/app-admin";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
+import { RouteParamsSync } from "@webiny/app/presentation/router/components/RouteParamsSync.js";
 import { observer } from "mobx-react-lite";
 import { FoldersFeature } from "@webiny/app-aco/features/folders/feature.js";
 import { FolderTreePresenterFeature } from "@webiny/app-aco/presentation/folderTree/feature.js";
@@ -35,6 +36,29 @@ const RedirectsListInner = observer(() => {
             <RedirectListWithConfig>
                 <RedirectListPresenterProvider presenter={presenter}>
                     <DocumentList />
+                    <RouteParamsSync
+                        route={Routes.Redirects.List}
+                        fields={fields => [
+                            fields.create<string>({
+                                param: "folderId",
+                                read: () => presenter.vm.folders.currentFolderId ?? undefined,
+                                write: value => {
+                                    presenter.actions.folders.selectFolder(value ?? null);
+                                }
+                            }),
+                            fields.create<string>({
+                                param: "search",
+                                read: () => presenter.vm.list.search || undefined,
+                                write: value => {
+                                    if (value) {
+                                        presenter.actions.search.set(value);
+                                    } else {
+                                        presenter.actions.search.clear();
+                                    }
+                                }
+                            })
+                        ]}
+                    />
                 </RedirectListPresenterProvider>
             </RedirectListWithConfig>
         </DialogsProvider>

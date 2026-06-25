@@ -4,6 +4,7 @@ import { DeleteWorkflowStateOnPageAfterDelete } from "./handlers/DeleteWorkflowS
 import { UpdatePageOnWorkflowStateAfterCreate } from "./handlers/UpdatePageOnWorkflowStateAfterCreate.js";
 import { UpdatePageOnWorkflowStateAfterUpdate } from "./handlers/UpdatePageOnWorkflowStateAfterUpdate.js";
 import { ClearPageStateOnWorkflowStateAfterDelete } from "./handlers/ClearPageStateOnWorkflowStateAfterDelete.js";
+import { ClearPageStateOnWorkflowStateCancel } from "./handlers/ClearPageStateOnWorkflowStateCancel.js";
 
 export const PageWorkflowsFeature = createFeature({
     name: "PageWorkflows",
@@ -13,5 +14,6 @@ export const PageWorkflowsFeature = createFeature({
         container.register(UpdatePageOnWorkflowStateAfterCreate);
         container.register(UpdatePageOnWorkflowStateAfterUpdate);
         container.register(ClearPageStateOnWorkflowStateAfterDelete);
+        container.register(ClearPageStateOnWorkflowStateCancel);
     }
 });

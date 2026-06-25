@@ -51,7 +51,7 @@ class GetSingletonEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                     // safe to cast
                 } as T
             },
-            { skipValidators: ["required"] }
+            { skipValidation: true }
         );
     }
 }

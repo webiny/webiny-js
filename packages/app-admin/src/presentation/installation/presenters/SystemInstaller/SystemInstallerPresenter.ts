@@ -68,8 +68,8 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
         return {
             error: this.error,
             loading: this.loading,
-            isInstalled: this.isInstalled,
-            startUsing: this.startUsing,
+            isInstalled: false,
+            startUsing: false,
             currentStep: this.wizardSteps[this.currentStep].name,
             steps: this.wizardSteps.map((step, index) => {
                 let state: WizardStepState = "idle";

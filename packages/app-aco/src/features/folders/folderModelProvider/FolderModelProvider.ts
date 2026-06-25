@@ -1,5 +1,5 @@
-import { createFieldsList } from "@webiny/app-headless-cms-common";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
+
 import { GetFolderModelRepository } from "./abstractions.js";
 import { FolderModelProvider as Provider } from "~/features/folders/abstractions.js";
 
@@ -11,7 +11,6 @@ class FolderModelProviderImpl implements Provider.Interface {
 
         const model = this.repository.getModel();
         if (!model) {
-            // Something went seriously wrong!
             throw new Error("Unable to load File model!");
         }
 
@@ -21,36 +20,41 @@ class FolderModelProviderImpl implements Provider.Interface {
     async getGraphQLSelection(): Promise<string> {
         const model = await this.getModel();
 
-        const fields = createFieldsList({ model, fields: model.fields });
+        const valuesBlock =
+            model.valuesSelection && model.valuesSelection !== "_empty"
+                ? model.valuesSelection
+                : "";
 
-        return /* GraphQL */ `{
-            id
-            createdOn
-            createdBy {
+        return /* GraphQL */ `
+            {
                 id
-                displayName
+                createdOn
+                createdBy {
+                    id
+                    displayName
+                }
+                savedOn
+                savedBy {
+                    id
+                    displayName
+                }
+                modifiedOn
+                modifiedBy {
+                    id
+                    displayName
+                }
+                permissions {
+                    target
+                    level
+                    inheritedFrom
+                }
+                hasNonInheritedPermissions
+                canManagePermissions
+                canManageStructure
+                canManageContent
+                ${valuesBlock}
             }
-            savedOn
-            savedBy {
-                id
-                displayName
-            }
-            modifiedOn
-            modifiedBy {
-                id
-                displayName
-            }
-            permissions {
-                target
-                level
-                inheritedFrom
-            }
-            hasNonInheritedPermissions
-            canManagePermissions
-            canManageStructure
-            canManageContent
-            ${fields}
-        }`;
+        `;
     }
 }
 

@@ -49,6 +49,7 @@ import { TagsList } from "~/presentation/FileList/components/TagsList/index.js";
 import { UploadProgress } from "~/presentation/FileList/components/Upload/index.js";
 import { GetSettingsRepository } from "~/features/settings/abstractions.js";
 import { OverlayProvider, useOverlay } from "./OverlayContext.js";
+import { RouteParamsSync } from "./RouteParamsSync.js";
 
 import type { FmFile } from "~/features/shared/types.js";
 import type {
@@ -309,6 +310,7 @@ const FileManagerViewInner = observer(
                     <FileManagerPresenterProvider presenter={presenter}>
                         <FileManagerViewLayout />
                         {children}
+                        {!overlayConfig && <RouteParamsSync />}
                     </FileManagerPresenterProvider>
                 </FileManagerViewWithConfig>
             </DialogsProvider>

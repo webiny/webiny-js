@@ -103,7 +103,7 @@ export const Extensions = () => {
                     fileManager: {
                         threatDetection: false
                     },
-                    recordLocking: false
+                    recordLocking: true
                 }}
             />
             {process.env.WEBINY_CLI_AUTO_INSTALL && (

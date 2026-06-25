@@ -112,7 +112,6 @@
     "./admin/router": "./admin/router.js",
     "./admin/security": "./admin/security.js",
     "./admin": "./admin.js",
-    "./admin/aco": "./admin/aco.js",
     "./admin/build-params": "./admin/build-params.js",
     "./admin/configs": "./admin/configs.js",
     "./admin/form": "./admin/form.js",
@@ -121,7 +120,6 @@
     "./admin/ui/lexical": "./admin/ui/lexical.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
-    "./admin/cms/field-renderers/common": "./admin/cms/field-renderers/common.js",
     "./admin/cms/field-renderers/dynamic-zone": "./admin/cms/field-renderers/dynamic-zone.js",
     "./admin/cms/field-renderers/object": "./admin/cms/field-renderers/object.js",
     "./admin/cms/lexical": "./admin/cms/lexical.js",
@@ -144,7 +142,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "b091a9061cb99e0f687c8b13d997ef6c864e960378f2d201afa175d0b8d033fe",
+  "exportGenerationHash": "6d5908bc6d5fda87fdff4442017abbfeb71d5baadafa64e77133c3d0040a010d",
   "webiny": {
     "publishFrom": "dist"
   }
