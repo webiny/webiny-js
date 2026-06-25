@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { BreeSchedulerService } from "~/BreeSchedulerService.js";
+import { BreeSchedulerService, type IBreeSchedulerServiceParams } from "~/BreeSchedulerService.js";
 import { createMockLogger } from "./createMockLogger.js";
 
 describe("BreeSchedulerService — trigger", () => {
     const namespace = "Test/SomeEntry";
+    const tenant = "root";
     let service: BreeSchedulerService;
-    let onTrigger: ReturnType<typeof vi.fn>;
+    let onTrigger: IBreeSchedulerServiceParams["onTrigger"];
 
     beforeEach(async () => {
         onTrigger = vi.fn().mockResolvedValue(undefined);
@@ -26,6 +27,7 @@ describe("BreeSchedulerService — trigger", () => {
         await service.create({
             id: "trigger-1",
             namespace,
+            tenant,
             scheduleFor: new Date(Date.now() + 2_000)
         });
 
@@ -38,17 +40,28 @@ describe("BreeSchedulerService — trigger", () => {
         );
 
         /* Job should be cleaned up after firing. */
-        expect(await service.exists("trigger-1")).toBe(false);
+        expect(
+            await service.exists({
+                id: "trigger-1",
+                tenant,
+                namespace
+            })
+        ).toBe(false);
     });
 
     it("should not fire onTrigger if the schedule is deleted before it fires", async () => {
         await service.create({
             id: "deleted-1",
             namespace,
+            tenant,
             scheduleFor: new Date(Date.now() + 3_000)
         });
 
-        await service.delete("deleted-1");
+        await service.delete({
+            id: "deleted-1",
+            tenant,
+            namespace
+        });
 
         /* Wait a bit past the scheduled time to confirm it doesn't fire. */
         await new Promise(resolve => setTimeout(resolve, 4_000));
