@@ -1,7 +1,7 @@
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { DdbServiceManifestLoader } from "./serviceDiscovery/index.js";
 import { DynamoDBClient } from "@webiny/db-dynamodb/features/DynamoDBClient/abstractions.js";
-import { createRegisterExtensionPlugin } from "@webiny/handler/src/plugins/RegisterExtensionPlugin.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { TenancyApiCoreDdbFeature } from "~/tenancy/feature.js";
 import { AdminUsersApiCoreDdbFeature } from "~/adminUsers/feature.js";
 import { SecurityApiCoreDdbFeature } from "~/security/feature.js";
