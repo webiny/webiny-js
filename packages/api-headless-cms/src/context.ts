@@ -21,6 +21,7 @@ import { ContentEntriesFeature } from "~/features/contentEntry/ContentEntriesFea
 import {
     AccessControl as AccessControlAbstraction,
     CmsContext as CmsContextAbstraction,
+    HeadlessCms,
     StorageOperations,
     StorageOperationsFactory
 } from "~/features/shared/abstractions.js";
@@ -139,6 +140,7 @@ export const createContextPlugin = () => {
             }
         };
 
+        context.container.registerInstance(HeadlessCms, context.cms);
         context.container.registerInstance(CmsExport, context.cms.export);
         context.container.registerInstance(CmsImport, context.cms.importing);
 

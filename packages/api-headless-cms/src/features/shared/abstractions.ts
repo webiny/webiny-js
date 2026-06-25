@@ -1,9 +1,21 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type {
     CmsContext as CmsCtx,
+    HeadlessCms as HeadlessCmsApi,
     HeadlessCmsStorageOperations as StorageOps
 } from "~/types/types.js";
 import type { AccessControl as AccessControlClass } from "~/crud/AccessControl/AccessControl.js";
+
+/**
+ * DI token for the HeadlessCms facade (the object previously exposed as `context.cms`).
+ * Resolve it via the container instead of reading `context.cms`. The facade itself is a
+ * legacy god-object and is expected to be decomposed into use-cases in a later phase.
+ */
+export const HeadlessCms = createAbstraction<HeadlessCmsApi>("HeadlessCms");
+
+export namespace HeadlessCms {
+    export type Interface = HeadlessCmsApi;
+}
 
 /**
  * StorageOperations abstraction for legacy storage operations.

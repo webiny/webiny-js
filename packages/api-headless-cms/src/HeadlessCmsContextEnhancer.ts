@@ -30,6 +30,7 @@ import { RevisionIdScalar } from "~/graphql/scalars/RevisionId.js";
 import {
     AccessControl as AccessControlAbstraction,
     CmsContext as CmsContextAbstraction,
+    HeadlessCms,
     StorageOperations,
     StorageOperationsFactory
 } from "~/features/shared/abstractions.js";
@@ -139,6 +140,7 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
             importing: { ...createImportCrud(ctx as CmsContext) }
         };
 
+        this.container.registerInstance(HeadlessCms, ctx.cms);
         this.container.registerInstance(CmsExport, ctx.cms.export);
         this.container.registerInstance(CmsImport, ctx.cms.importing);
 
