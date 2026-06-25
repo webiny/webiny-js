@@ -1,5 +1,3 @@
-import type { GraphQLScalarPlugin } from "@webiny/handler-graphql/types.js";
-import type { CmsContext } from "~/types/index.js";
 import {
     AnyScalar,
     DateScalar,
@@ -12,22 +10,14 @@ import {
     TimeScalar,
     IconScalar
 } from "@webiny/handler-graphql/builtInTypes/index.js";
-import type { GraphQLScalarType } from "graphql";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
+import { RevisionIdScalar } from "~/graphql/scalars/RevisionId.js";
 
-interface Params {
-    context: CmsContext;
-}
-
-export const createBaseContentSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin => {
-    const scalars = context.plugins
-        .byType<GraphQLScalarPlugin>("graphql-scalar")
-        .map(item => item.scalar);
-
+export const createBaseContentSchema = (): ICmsGraphQLSchemaPlugin => {
     const plugin = createCmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
-            ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
+            scalar RevisionId
             scalar JSON
             scalar Long
             scalar RefInput
@@ -51,10 +41,7 @@ export const createBaseContentSchema = ({ context }: Params): ICmsGraphQLSchemaP
             }
         `,
         resolvers: {
-            ...scalars.reduce<Record<string, GraphQLScalarType>>((acc, s) => {
-                acc[s.name] = s;
-                return acc;
-            }, {}),
+            RevisionId: RevisionIdScalar,
             JSON: JsonScalar,
             Long: LongScalar,
             RefInput: RefInputScalar,

@@ -3,7 +3,6 @@ import { makeExecutableSchema, mergeSchemas } from "@graphql-tools/schema";
 import { mergeResolvers } from "@graphql-tools/merge";
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
-import { PluginsContainerAbstraction } from "@webiny/api";
 import { GraphQLEngine } from "./abstractions.js";
 import { GraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
 import { GraphQLContextualSchema } from "./GraphQLContextualSchema.js";
@@ -13,11 +12,7 @@ import { createRequestBody } from "~/createRequestBody.js";
 import type { IGraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 import type { IGraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
 import type { IGraphQLContextualSchema } from "./GraphQLContextualSchema.js";
-import type {
-    GraphQLAfterQueryPlugin,
-    GraphQLBeforeQueryPlugin,
-    GraphQLRequestBody
-} from "~/types.js";
+import type { GraphQLRequestBody } from "~/types.js";
 import type { GraphQLSchema } from "graphql";
 
 class GraphQLEngineImplClass implements GraphQLEngine.Interface {
@@ -32,9 +27,8 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         // Build context first — enhancers may be async (e.g. CMS storage init)
         const ctx = await this.buildContext();
 
-        // Run contextual schemas BEFORE composer.build() so that any ctx.plugins registrations
-        // they make (e.g. ACO folder schema plugins) are visible to GraphQLSchemaComposer,
-        // which reads ctx.plugins.byType("graphql-schema") during build.
+        // Run contextual schemas BEFORE composer.build() so that any CoreGraphQLSchemaFactory
+        // registrations they make (e.g. ACO folder schema plugins) are picked up by GraphQLSchemaComposer.
         const extraSchemas = await this.buildContextualSchemas(ctx);
 
         const schemaConfig = await this.composer.build(ctx);
@@ -109,21 +103,7 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
     ): Promise<any> {
         const { query, variables, operationName } = body;
 
-        let plugins: PluginsContainerAbstraction.Interface | undefined;
-        try {
-            plugins = this.container.resolve(PluginsContainerAbstraction);
-        } catch {
-            // Not registered — no before/after query hooks to run.
-        }
-
-        if (plugins) {
-            const byType = plugins.byType.bind(plugins);
-            for (const pl of byType<GraphQLBeforeQueryPlugin>("graphql-before-query")) {
-                pl.apply({ body, schema, context: ctx as any });
-            }
-        }
-
-        const result = await graphql({
+        return graphql({
             schema,
             source: query,
             rootValue: {},
@@ -131,15 +111,6 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
             variableValues: variables ?? undefined,
             operationName: operationName ?? undefined
         });
-
-        if (plugins) {
-            const byType = plugins.byType.bind(plugins);
-            for (const pl of byType<GraphQLAfterQueryPlugin>("graphql-after-query")) {
-                pl.apply({ result, body, schema, context: ctx as any });
-            }
-        }
-
-        return result;
     }
 }
 

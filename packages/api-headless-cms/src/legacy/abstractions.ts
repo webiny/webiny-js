@@ -1,10 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { PluginsContainerAbstraction } from "@webiny/api";
 import type { PluginsContainer as PluginsContainerType } from "@webiny/plugins";
 import type { CmsEntry, CmsEntryValues, CmsModel, CmsModelField } from "~/types/index.js";
 
-// Re-export the canonical token from @webiny/api so CMS and handler-graphql share the same DI symbol.
-export const PluginsContainer = PluginsContainerAbstraction;
+export const PluginsContainer = createAbstraction<PluginsContainerType>("PluginsContainer");
 export namespace PluginsContainer {
     export type Interface = PluginsContainerType;
 }

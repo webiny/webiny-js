@@ -1,7 +1,10 @@
 import { createFeature } from "@webiny/feature/api";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { GraphQLContextualSchema } from "@webiny/handler-graphql";
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import {
+    GraphQLSchemaFactory,
+    CoreGraphQLSchemaFactory
+} from "@webiny/handler-graphql/graphql/abstractions.js";
 import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
 import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
@@ -9,6 +12,14 @@ import type { GraphQLSchema } from "graphql";
 import type { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
+import { createGraphQLSchemaPluginFromFieldPlugins } from "@webiny/api-headless-cms/utils/getSchemaFromFieldPlugins.js";
+import { createFoldersSchema } from "~/folder/folder.gql.js";
+import { FOLDER_MODEL_ID } from "~/domain/folder/folder.model.js";
 import { createAcoContext } from "./createAcoContext.js";
 import { createAcoGraphQL } from "./createAcoGraphQL.js";
 import { CreateFlpTask } from "~/flp/tasks/createFlp.task.js";
@@ -16,6 +27,7 @@ import { UpdateFlpTask } from "~/flp/tasks/updateFlp.task.js";
 import { DeleteFlpTask } from "~/flp/tasks/deleteFlp.task.js";
 import { SyncFlpTask } from "~/flp/tasks/syncFlp.task.js";
 import type { AcoContext } from "~/types.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { FolderModel } from "~/domain/folder/folder.model.js";
 import { FilterPrivateModel } from "~/filter/filter.model.js";
 
@@ -58,12 +70,61 @@ class AcoInitializerImpl implements IGraphQLContextualSchema {
             await acoContextPlugin.apply(ctx as AcoContext);
         }
 
-        // Apply the dynamic folderSchema ContextPlugin so it registers the folder GraphQL schema
-        // into ctx.plugins (it depends on ctx.cms being populated by the step above).
-        const [, folderSchema] = createAcoGraphQL();
-        if (folderSchema && typeof (folderSchema as any).apply === "function") {
-            await (folderSchema as any).apply(ctx as AcoContext);
-        }
+        // Inline the folderSchema ContextPlugin logic (was: folderSchema.apply(ctx) which
+        // called context.plugins.register([...fieldPlugins, graphQlPlugin])). Register each
+        // plugin as a CoreGraphQLSchemaFactory instead.
+        const fieldRegistry = this.container.resolve(CmsModelFieldToGraphQLRegistry);
+        await this.container.resolve(IdentityContext).withoutAuthorization(async () => {
+            const modelResult = await this.container
+                .resolve(GetModelUseCase)
+                .execute(FOLDER_MODEL_ID);
+            if (modelResult.isFail()) {
+                throw modelResult.error;
+            }
+            const model = modelResult.value as CmsModel;
+
+            const modelsResult = await this.container.resolve(ListModelsUseCase).execute();
+            if (modelsResult.isFail()) {
+                throw modelsResult.error;
+            }
+            const models = modelsResult.value;
+
+            const fieldPlugins = createGraphQLSchemaPluginFromFieldPlugins({
+                models,
+                type: "manage",
+                fieldRegistry,
+                createPlugin: ({ schema, type, fieldType }) => {
+                    const plugin = new GraphQLSchemaPlugin(schema);
+                    plugin.name = `aco.graphql.folder.schema.${type}.field.${fieldType}`;
+                    return plugin;
+                }
+            });
+
+            const graphQlPlugin = createFoldersSchema({ model, models, fieldRegistry });
+
+            for (const p of [...fieldPlugins, graphQlPlugin] as IGraphQLSchemaPlugin[]) {
+                this.container.registerInstance(CoreGraphQLSchemaFactory, {
+                    async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
+                        if (p.schema.typeDefs) {
+                            builder.addTypeDefs(p.schema.typeDefs);
+                        }
+                        if (p.schema.resolvers) {
+                            builder.addLegacyResolvers(p.schema.resolvers as Record<string, any>);
+                        }
+                        if (p.schema.resolverDecorators) {
+                            for (const [path, decorators] of Object.entries(
+                                p.schema.resolverDecorators
+                            )) {
+                                for (const decorator of decorators as any[]) {
+                                    builder.addResolverDecorator(path, decorator);
+                                }
+                            }
+                        }
+                        return builder;
+                    }
+                });
+            }
+        });
     }
 }
 
@@ -71,30 +132,6 @@ const AcoInitializer = GraphQLContextualSchema.createImplementation({
     implementation: AcoInitializerImpl,
     dependencies: [RequestContainer]
 });
-
-function addResolvers(
-    builder: IGraphQLSchemaBuilder,
-    resolvers: Record<string, any>,
-    prefix: string
-): void {
-    for (const [key, value] of Object.entries(resolvers)) {
-        const path = prefix ? `${prefix}.${key}` : key;
-
-        if (typeof value === "function") {
-            const fn = value;
-            builder.addResolver({
-                path,
-                dependencies: [],
-                resolver:
-                    () =>
-                    ({ parent, args, context, info }: any) =>
-                        fn(parent, args, context, info)
-            });
-        } else if (typeof value === "object" && value !== null) {
-            addResolvers(builder, value, path);
-        }
-    }
-}
 
 class AcoSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
@@ -112,7 +149,7 @@ class AcoSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             }
 
             if (schema.resolvers) {
-                addResolvers(builder, schema.resolvers as Record<string, any>, "");
+                builder.addLegacyResolvers(schema.resolvers as Record<string, any>);
             }
         }
 

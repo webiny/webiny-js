@@ -34,6 +34,26 @@ export class GraphQLSchemaBuilder implements Abstraction.Interface {
         return this;
     }
 
+    addLegacyResolvers(resolvers: Record<string, any>, prefix = ""): this {
+        for (const [key, value] of Object.entries(resolvers)) {
+            const path = prefix ? `${prefix}.${key}` : key;
+            if (typeof value === "function") {
+                const fn = value;
+                this.addResolver({
+                    path,
+                    dependencies: [],
+                    resolver:
+                        () =>
+                        ({ parent, args, context, info }: any) =>
+                            fn(parent, args, context, info)
+                });
+            } else if (typeof value === "object" && value !== null) {
+                this.addLegacyResolvers(value, path);
+            }
+        }
+        return this;
+    }
+
     /**
      * @internal This method needs revisiting, to align with DI concepts.
      */

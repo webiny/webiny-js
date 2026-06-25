@@ -1,4 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";
 import { ContextPlugin } from "@webiny/handler";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
@@ -371,7 +372,18 @@ const createGraphQL = () => {
 
         plugin.name = "tasks.graphql.schema";
 
-        ctx.plugins.register(plugin);
+        ctx.container.registerInstance(CoreGraphQLSchemaFactory, {
+            async execute(builder) {
+                const { schema } = plugin;
+                if (schema.typeDefs) {
+                    builder.addTypeDefs(schema.typeDefs);
+                }
+                if (schema.resolvers) {
+                    builder.addLegacyResolvers(schema.resolvers as Record<string, any>);
+                }
+                return builder;
+            }
+        });
     });
 
     plugin.name = "tasks.graphql";

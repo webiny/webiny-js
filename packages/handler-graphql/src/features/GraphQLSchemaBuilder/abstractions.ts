@@ -15,6 +15,11 @@ export interface IGraphQLSchemaBuilder {
     addTypeDefs(typeDefs: TypeDefs): this;
     addResolver<TArgs = any, TParent = any>(config: ResolverConfig<TArgs, TParent>): this;
     /**
+     * Bridge for legacy (parent, args, ctx, info) resolver objects.
+     * Walks a nested resolvers map and registers each leaf as an addResolver() call.
+     */
+    addLegacyResolvers(resolvers: Record<string, any>, prefix?: string): this;
+    /**
      * @internal This method needs revisiting, to align with DI concepts.
      */
     addResolverDecorator(path: string, decorator: ResolverDecorator): this;

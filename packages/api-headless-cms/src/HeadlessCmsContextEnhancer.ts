@@ -21,7 +21,8 @@ import { Benchmark } from "@webiny/api/Benchmark.js";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { createBaseSchema } from "~/graphql/schema/baseSchema.js";
 import { createExportGraphQL } from "~/export/graphql/index.js";
-import { createRevisionIdScalarPlugin } from "~/graphql/scalars/RevisionIdScalarPlugin.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { RevisionIdScalar } from "~/graphql/scalars/RevisionId.js";
 import {
     AccessControl as AccessControlAbstraction,
     CmsContext as CmsContextAbstraction,
@@ -74,7 +75,6 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
         // Provide a PluginsContainer with field converters and required scalar plugins
         ctx.plugins = new PluginsContainer([
             ...createFieldConverters(),
-            ...createRevisionIdScalarPlugin(),
             ...(this.config.extraPlugins ?? [])
         ]);
 
@@ -83,6 +83,14 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
             ctx.benchmark = new Benchmark();
         }
         this.container.registerInstance(BenchmarkAbstraction, ctx.benchmark);
+
+        this.container.registerInstance(CoreGraphQLSchemaFactory, {
+            execute: async builder => {
+                builder.addTypeDefs("scalar RevisionId");
+                builder.addLegacyResolvers({ RevisionId: RevisionIdScalar });
+                return builder;
+            }
+        });
 
         ctx.plugins.register(
             new StorageOperationsCmsModelPlugin(
@@ -124,10 +132,7 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
                     Object.create(Object.getPrototypeOf(ctx)),
                     ctx,
                     {
-                        plugins: new PluginsContainer([
-                            ...createFieldConverters(),
-                            ...createRevisionIdScalarPlugin()
-                        ]),
+                        plugins: new PluginsContainer([...createFieldConverters()]),
                         cms: {
                             ...ctx.cms,
                             type: schemaType,

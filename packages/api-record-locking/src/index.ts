@@ -8,6 +8,7 @@ import { RecordLockingModel, RECORD_LOCKING_MODEL_ID } from "~/domain/RecordLock
 import { getTimeout } from "~/utils/getTimeout.js";
 import { RecordLockingFeature } from "~/features/RecordLockingFeature.js";
 import { createGraphQLSchema } from "~/graphql/schema.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
@@ -55,7 +56,18 @@ const createContextPlugin = (params?: ICreateContextPluginParams) => {
             fieldRegistry
         });
 
-        context.plugins.register(graphQlPlugin);
+        context.container.registerInstance(CoreGraphQLSchemaFactory, {
+            async execute(builder) {
+                const { schema } = graphQlPlugin;
+                if (schema.typeDefs) {
+                    builder.addTypeDefs(schema.typeDefs);
+                }
+                if (schema.resolvers) {
+                    builder.addLegacyResolvers(schema.resolvers as Record<string, any>);
+                }
+                return builder;
+            }
+        });
 
         // Register features
         RecordLockingFeature.register(context.container, {
