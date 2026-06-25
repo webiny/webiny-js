@@ -5,6 +5,7 @@ import {
     CmsGraphQLSchemaFactory,
     isHeadlessCmsReady
 } from "@webiny/api-headless-cms";
+import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
 import type { HcmsTasksContext } from "~/types.js";
 import { createResolverDecorator } from "@webiny/handler-graphql";
@@ -50,7 +51,7 @@ export const createDeleteModelGraphQl = <T extends HcmsTasksContext = HcmsTasksC
     const contextPlugin = new ContextPlugin<T>(async inputContext => {
         const ready = await isHeadlessCmsReady(inputContext);
 
-        if (!ready || !inputContext.cms.MANAGE) {
+        if (!ready || !inputContext.container.resolve(HeadlessCms).MANAGE) {
             return;
         }
 
