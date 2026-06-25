@@ -1,5 +1,9 @@
-import type { WriteRequest } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+
+export interface IWriteRequest {
+    PutRequest?: { Item: GenericRecord };
+    DeleteRequest?: { Key: GenericRecord };
+}
 
 export interface BatchWriteResponse {
     next?: () => Promise<BatchWriteResponse>;
@@ -10,7 +14,7 @@ export interface BatchWriteResponse {
         totalRetryDelay: number;
     };
     UnprocessedItems?: {
-        [table: string]: WriteRequest[];
+        [table: string]: IWriteRequest[];
     };
 }
 
@@ -27,7 +31,7 @@ export type IPutBatchItem<T = GenericRecord> = {
 } & T;
 
 export interface BatchWriteItem {
-    [key: string]: WriteRequest;
+    [key: string]: IWriteRequest;
 }
 
 export interface IReadBatchItem {

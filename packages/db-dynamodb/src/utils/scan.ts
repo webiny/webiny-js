@@ -1,4 +1,3 @@
-import type { ScanInput, ScanOutput } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
 import type { IScanParams } from "~/features/DynamoDbDocumentClient/abstractions.js";
 import type { IScanResponse } from "~/features/DynamoDbDocumentClient/abstractions.js";
@@ -6,7 +5,6 @@ import type { ExecuteWithRetryOptions } from "@webiny/utils";
 import { executeWithRetry } from "@webiny/utils";
 
 export type { IScanParams as ScanOptions };
-export type { ScanInput, ScanOutput };
 
 export type BaseScanParams = IScanParams;
 
