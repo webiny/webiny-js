@@ -1,5 +1,7 @@
 # db-dynamodb DI Features — Implementation Plan
 
+> **Status: COMPLETED (2026-06-25)** — All 11 tasks done. Plus bonus: api-aco-ddb converted to full DI feature, toolbox.ts deleted.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Restructure `packages/db-dynamodb` internals into DI features (DynamoDbDocumentClient, DynamoDbTableFactory, DynamoDbEntityFactory, DynamoDbBatchFactory) so consumers resolve factories from DI instead of manually wiring `documentClient` and calling `createTable()`/`createStandardEntity()`.

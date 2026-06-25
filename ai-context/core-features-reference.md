@@ -548,6 +548,30 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 
 ## Database Features
 
+### DynamoDbTableFactory
+
+- **Import:** `import { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js"`
+- **Interface Type:** See `packages/db-dynamodb/src/features/DynamoDbTableFactory/abstractions.ts`
+- **Usage:** Creates `DynamoDbDocumentClient.Interface` instances (table-bound DynamoDB facades). Call `tableFactory.create({ name })` instead of the deleted `createTable()`. Resolves the shared `DynamoDBDocument` from the `DynamoDBClient` DI abstraction internally. The `indexes` param is a no-op (document client resolves index keys dynamically).
+
+### DynamoDbEntityFactory
+
+- **Import:** `import { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js"`
+- **Interface Type:** See `packages/db-dynamodb/src/features/DynamoDbEntityFactory/abstractions.ts`
+- **Usage:** Creates `IEntity` instances. Call `entityFactory.createStandard({ client, name })` instead of the deleted `createStandardEntity()`, or `entityFactory.createGlobal()` for global entities. The `client` param is a `DynamoDbDocumentClient.Interface` from `DynamoDbTableFactory.create()`. Namespace exports attribute types: `IStandardEntityAttributes`, `IGlobalEntityAttributes`.
+
+### DynamoDbBatchFactory
+
+- **Import:** `import { DynamoDbBatchFactory } from "@webiny/db-dynamodb/exports/api/db.js"`
+- **Interface Type:** See `packages/db-dynamodb/src/features/DynamoDbBatchFactory/abstractions.ts`
+- **Usage:** Creates batch reader/writer instances. Pure factory, no DI dependencies. Provides `createEntityWriter()`, `createEntityReader()`, `createTableWriter()`, `createTableReader()`. Used internally by `Entity` — consumer packages rarely need this directly.
+
+### DynamoDbDocumentClient
+
+- **Import:** `import type { DynamoDbDocumentClient } from "@webiny/db-dynamodb/exports/api/db.js"`
+- **Interface Type:** See `packages/db-dynamodb/src/features/DynamoDbDocumentClient/abstractions.ts`
+- **Usage:** Table-name-bound facade over `DynamoDBDocument`. Not DI-resolved — instances are created by `DynamoDbTableFactory.create()`. Replaces the deleted `DynamoDocClient` class and the `TableDef`/`ITable` type aliases. The namespace is a type carrier only: use `DynamoDbDocumentClient.Interface` in type positions.
+
 ### DbRegistry
 
 - **Import:** `import { DbRegistry } from "@webiny/db/exports/api/db.js"`
