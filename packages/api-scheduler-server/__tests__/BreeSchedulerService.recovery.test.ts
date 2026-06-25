@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { BreeSchedulerService } from "~/BreeSchedulerService.js";
+import { BreeSchedulerService, type IBreeSchedulerServiceParams } from "~/BreeSchedulerService.js";
 import { createMockLogger } from "./createMockLogger.js";
 
 const futureDate = (ms: number) => new Date(Date.now() + ms);
@@ -7,8 +7,9 @@ const pastDate = (ms: number) => new Date(Date.now() - ms);
 
 describe("BreeSchedulerService — recovery", () => {
     const namespace = "Test/SomeEntry";
+    const tenant = "root";
     let service: BreeSchedulerService;
-    let onTrigger: ReturnType<typeof vi.fn>;
+    let onTrigger: IBreeSchedulerServiceParams["onTrigger"];
 
     afterEach(async () => {
         await service.stop();
@@ -41,8 +42,8 @@ describe("BreeSchedulerService — recovery", () => {
             }
         ]);
 
-        expect(await svc.exists("future-1")).toBe(true);
-        expect(await svc.exists("future-2")).toBe(true);
+        expect(await svc.exists({ id: "future-1", namespace, tenant })).toBe(true);
+        expect(await svc.exists({ id: "future-2", namespace, tenant })).toBe(true);
         expect(onTrigger).not.toHaveBeenCalled();
     });
 
@@ -58,7 +59,7 @@ describe("BreeSchedulerService — recovery", () => {
         ]);
 
         expect(onTrigger).toHaveBeenCalledWith("overdue-1", namespace);
-        expect(await svc.exists("overdue-1")).toBe(false);
+        expect(await svc.exists({ id: "overdue-1", namespace, tenant })).toBe(false);
     });
 
     it("should handle a mix of overdue and future actions", async () => {
@@ -79,7 +80,7 @@ describe("BreeSchedulerService — recovery", () => {
 
         expect(onTrigger).toHaveBeenCalledTimes(1);
         expect(onTrigger).toHaveBeenCalledWith("overdue-1", namespace);
-        expect(await svc.exists("future-1")).toBe(true);
+        expect(await svc.exists({ id: "future-1", namespace, tenant })).toBe(true);
     });
 
     it("should be a noop with an empty list", async () => {
