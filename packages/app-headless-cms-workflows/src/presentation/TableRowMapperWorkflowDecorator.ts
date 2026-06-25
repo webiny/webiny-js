@@ -1,16 +1,12 @@
-import {
-    TableRowMapper,
-    type ITableRowMapper,
-    type EntryTableRow
-} from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
+import { TableRowMapper } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
 import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
 import { WorkflowStateValue } from "@webiny/app-workflows/types.js";
 import type { ICmsEntrySystemWithWorkflow } from "~/types.js";
 
-class TableRowMapperWithWorkflows implements ITableRowMapper {
-    constructor(private decoratee: ITableRowMapper) {}
+class TableRowMapperWithWorkflows implements TableRowMapper.Interface {
+    constructor(private decoratee: TableRowMapper.Interface) {}
 
-    fromEntry(entry: CmsContentEntry): EntryTableRow {
+    fromEntry(entry: CmsContentEntry): TableRowMapper.EntryTableRow {
         const row = this.decoratee.fromEntry(entry);
 
         const meta = entry.meta as Record<string, unknown>;
