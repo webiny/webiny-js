@@ -9,15 +9,16 @@ import type {
 } from "@webiny/wcp/types.js";
 import { WcpContext } from "./abstractions.js";
 import { wcpFetch } from "./utils.js";
+import type { WcpLicenseProvider } from "../WcpLicenseProvider.js";
 
 const wcpProjectEnvironment = getWcpProjectEnvironment();
 
-export interface CreateWcpContextParams {
-    testProjectLicense?: DecryptedWcpProjectLicense;
-}
-
 export class WcpContextImpl implements WcpContext.Interface {
-    constructor(private license: ILicense) {}
+    constructor(private licenseProvider: WcpLicenseProvider.Interface) {}
+
+    private get license(): ILicense {
+        return this.licenseProvider.get();
+    }
 
     private getWcpProjectUrl(path = ""): string | null {
         if (!wcpProjectEnvironment) {
