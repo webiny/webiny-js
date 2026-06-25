@@ -25,6 +25,11 @@ const toLteTime = (date?: Date): number => {
     return date.getTime();
 };
 
+interface IPopulateResultInput {
+    items: IIndexStorageItem[];
+    lastEvaluatedKey: GenericRecord;
+}
+
 export interface ICreateOptionsParams {
     limit?: number;
     sort?: "ASC" | "DESC";
@@ -87,12 +92,9 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
         });
     }
 
-    protected async populateResult(input: {
-        items: IIndexStorageItem[];
-        lastEvaluatedKey: GenericRecord;
-    }): Promise<{ items: IStorageItem[]; lastEvaluatedKey: GenericRecord }> {
+    protected async populateResult(input: IPopulateResultInput): Promise<IAccessPatternListResult> {
         const reader = this.entity.createEntityReader({
-            read: input.items.map((item: IIndexStorageItem) => {
+            read: input.items.map((item) => {
                 return {
                     PK: item.PK,
                     SK: item.SK
@@ -104,8 +106,8 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
         return {
             ...input,
             items: input.items
-                .map((item: IIndexStorageItem) => {
-                    return result.find((i: IStorageItem) => {
+                .map((item) => {
+                    return result.find((i) => {
                         return i.PK === item.PK && i.SK === item.SK;
                     });
                 })
