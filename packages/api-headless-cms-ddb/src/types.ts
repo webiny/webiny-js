@@ -6,7 +6,7 @@ import type {
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
 import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
-import type { ITable } from "@webiny/db-dynamodb";
+import type { DynamoDbDocumentClient } from "@webiny/db-dynamodb/exports/api/db.js";
 
 export type { CmsContext };
 
@@ -31,7 +31,7 @@ export interface IHeadlessCmsStorageOperationsGetEntitiesResult {
 }
 
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {
-    getTable: () => ITable;
+    getTable: () => DynamoDbDocumentClient.Interface;
     getEntities: () => IHeadlessCmsStorageOperationsGetEntitiesResult;
 }
 

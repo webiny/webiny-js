@@ -11,7 +11,7 @@ import type {
 import WebinyError from "@webiny/error";
 import { sortItems } from "@webiny/db-dynamodb";
 import type { IGroupEntity } from "~/definitions/types.js";
-import { FilterUtil } from "@webiny/db-dynamodb/feature/FilterUtil/index.js";
+import { FilterUtil } from "@webiny/db-dynamodb/exports/api/db.js";
 
 interface PartitionKeyParams {
     tenant: string;

@@ -34,7 +34,7 @@ export const createGetLatestRevisionByEntryId = (params: IDataLoaderParams) => {
             }
 
             const records = await reader.execute();
-            const items = cleanupItems(entity.entity, records).map(item => {
+            const items = cleanupItems(entity.schema, records).map(item => {
                 return item.data;
             });
 

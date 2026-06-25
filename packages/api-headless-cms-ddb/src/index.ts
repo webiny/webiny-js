@@ -12,42 +12,46 @@ import { createTable } from "~/definitions/table.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
-import { DynamoDBClient } from "@webiny/db-dynamodb";
+import { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 
 export * from "./plugins/index.js";
 
 const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
     const { table, plugins, container } = params;
 
-    const db = container.resolve(DynamoDBClient);
-    const documentClient = db.client;
+    const tableFactory = container.resolve(DynamoDbTableFactory);
+    const entityFactory = container.resolve(DynamoDbEntityFactory);
 
-    const tableInstance = createTable({
+    const client = createTable({
         name: table,
-        documentClient
+        tableFactory
     });
 
     const entities = {
         groups: createGroupEntity({
             entityName: ENTITIES.GROUPS,
-            table: tableInstance
+            client,
+            entityFactory
         }),
         models: createModelEntity({
             entityName: ENTITIES.MODELS,
-            table: tableInstance
+            client,
+            entityFactory
         }),
         entries: createEntryEntity({
             entityName: ENTITIES.ENTRIES,
-            table: tableInstance
+            client,
+            entityFactory
         })
     };
 
     plugins.register([
-        /**
+        /*
          * Field plugins for DynamoDB.
          */
         dynamoDbPlugins(),
-        /**
+        /*
          * Filter create plugins.
          */
         createFilterCreatePlugins()
@@ -65,7 +69,7 @@ const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
             entries.dataLoaders.clearAll();
         },
         getEntities: () => entities,
-        getTable: () => tableInstance,
+        getTable: () => client,
         groups: createGroupsStorageOperations({
             entity: entities.groups,
             container
