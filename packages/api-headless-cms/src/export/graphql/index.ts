@@ -1,8 +1,5 @@
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { ContextPlugin } from "@webiny/handler";
-import type { CmsContext } from "~/types/index.js";
-import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsContextEnhancer.js";
 import { CmsExport, CmsImport } from "~/export/abstractions.js";
 
 const plugin = createCmsGraphQLSchemaPlugin({
@@ -176,12 +173,3 @@ const plugin = createCmsGraphQLSchemaPlugin({
 plugin.name = "headless-cms.graphql.export";
 
 export { plugin as exportPlugin };
-
-export const createExportGraphQL = () => {
-    return new ContextPlugin<CmsContext>(async context => {
-        if (context.container.resolve(HeadlessCmsEnhancerConfig).type !== "manage") {
-            return;
-        }
-        context.plugins.register(plugin);
-    });
-};

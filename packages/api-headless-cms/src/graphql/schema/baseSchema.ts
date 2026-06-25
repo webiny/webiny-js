@@ -3,7 +3,6 @@ import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import { ContextPlugin } from "@webiny/api";
 import camelCase from "lodash/camelCase.js";
 import { CmsModelFieldValidatorRegistry } from "~/features/validation/index.js";
 import type { Container } from "@webiny/di";
@@ -168,16 +167,6 @@ const createSchema = (context: CmsContext): IGraphQLSchemaPlugin<CmsContext>[] =
      * Due to splitting of CMS and Core schema plugins, we must have both defined for CMS to work.
      */
     return [cmsPlugin, corePlugin];
-};
-
-export const createBaseSchema = () => {
-    const plugin = new ContextPlugin<CmsContext>(async context => {
-        context.plugins.register(...createSchema(context));
-    });
-
-    plugin.name = "headless-cms.graphql.createBaseSchema";
-
-    return plugin;
 };
 
 export const createBaseSchemaPlugins = (context: CmsContext): ICmsGraphQLSchemaPlugin[] => {
