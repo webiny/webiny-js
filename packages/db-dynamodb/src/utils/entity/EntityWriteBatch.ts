@@ -1,5 +1,5 @@
 import type { EntitySchema } from "~/utils/EntitySchema.js";
-import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
 import { batchWriteAll } from "~/utils/batch/batchWrite.js";
 import type {
     BatchWriteItem,
@@ -15,14 +15,14 @@ import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface IEntityWriteBatchParams<T = GenericRecord> {
     schema: EntitySchema;
-    client: DynamoDocClient;
+    client: DynamoDbDocumentClient.Interface;
     put?: IPutBatchItem<T>[];
     delete?: IDeleteBatchItem[];
 }
 
 export class EntityWriteBatch<T> implements IEntityWriteBatch<T> {
     private readonly schema: EntitySchema;
-    private readonly client: DynamoDocClient;
+    private readonly client: DynamoDbDocumentClient.Interface;
     private readonly _items: BatchWriteItem[] = [];
     private readonly builder: IEntityWriteBatchBuilder;
 

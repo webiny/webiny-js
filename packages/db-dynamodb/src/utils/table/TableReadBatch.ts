@@ -1,4 +1,4 @@
-import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
 import type { EntitySchema } from "~/utils/EntitySchema.js";
 import type {
     IEntityReadBatchBuilder,
@@ -10,11 +10,11 @@ import type { GenericRecord } from "@webiny/api/types.js";
 import type { ITableReadBatch, ITableReadBatchKey } from "./types.js";
 
 export interface ITableReadBatchParams {
-    table: DynamoDocClient;
+    table: DynamoDbDocumentClient.Interface;
 }
 
 export class TableReadBatch implements ITableReadBatch {
-    private readonly client: DynamoDocClient;
+    private readonly client: DynamoDbDocumentClient.Interface;
     private readonly _items: IEntityReadBatchBuilderGetResponse[] = [];
     private readonly builders: Map<string, IEntityReadBatchBuilder> = new Map();
 

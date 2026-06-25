@@ -1,4 +1,5 @@
-import type { IEntity, IGlobalEntityAttributes } from "~/utils/index.js";
+import type { IEntity } from "~/utils/index.js";
+import type { IGlobalEntityAttributes } from "~/features/DynamoDbEntityFactory/abstractions.js";
 
 export interface IStoreEntityValue {
     key: string;

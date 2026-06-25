@@ -11,7 +11,6 @@ import type { IStandardEntityAttributes } from "./abstractions.js";
 import { globalEntityAttributes } from "./attributes.js";
 import { standardEntityAttributes } from "./attributes.js";
 
-/* Type errors on the batchFactory constructor param are expected until Task 5 updates Entity. */
 export class DynamoDbEntityFactoryImpl implements IDynamoDbEntityFactory {
     public constructor(private readonly batchFactory: DynamoDbBatchFactory.Interface) {}
 
@@ -25,7 +24,6 @@ export class DynamoDbEntityFactoryImpl implements IDynamoDbEntityFactory {
                 table: params.client,
                 timestamps: params.timestamps
             },
-            // @ts-expect-error — will be fixed in Task 5 when Entity constructor accepts batchFactory.
             this.batchFactory
         );
     }

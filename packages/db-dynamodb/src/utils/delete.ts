@@ -1,4 +1,4 @@
-import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
 
 export interface IDeleteItemKeys {
     PK: string;
@@ -6,7 +6,7 @@ export interface IDeleteItemKeys {
 }
 
 export interface IDeleteItemParams {
-    client: DynamoDocClient;
+    client: DynamoDbDocumentClient.Interface;
     keys: IDeleteItemKeys;
 }
 

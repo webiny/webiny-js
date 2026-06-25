@@ -4,10 +4,11 @@ export type {
     AttributeDefinitions
 } from "~/utils/EntitySchema.js";
 
-export type { DynamoDocClient as TableDef } from "~/utils/DynamoDocClient.js";
+import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
+
+export type TableDef = DynamoDbDocumentClient.Interface;
 
 import type { AttributeDefinitions } from "~/utils/EntitySchema.js";
-import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
 
 export type Readonly<T> = T extends ((...args: any[]) => any) | undefined
     ? T
@@ -15,22 +16,12 @@ export type Readonly<T> = T extends ((...args: any[]) => any) | undefined
       ? { readonly [P in keyof T]: Readonly<T[P]> }
       : T;
 
-export interface TableConstructor {
-    name: string;
-    DocumentClient: any;
-    partitionKey: string;
-    sortKey?: string;
-    indexes?: Record<string, { partitionKey: string; sortKey?: string }>;
-    autoExecute?: boolean;
-    autoParse?: boolean;
-}
-
 export interface EntityConstructor<
     T extends Readonly<AttributeDefinitions> = Readonly<AttributeDefinitions>
 > {
     name: string;
     attributes: T;
-    table?: DynamoDocClient;
+    table?: DynamoDbDocumentClient.Interface;
     timestamps?: boolean;
 }
 

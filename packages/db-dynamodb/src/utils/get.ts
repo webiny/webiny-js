@@ -1,4 +1,4 @@
-import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
 import type { EntitySchema } from "~/utils/EntitySchema.js";
 
 export interface GetRecordParamsKeys {
@@ -7,7 +7,7 @@ export interface GetRecordParamsKeys {
 }
 
 export interface GetRecordParams {
-    client: DynamoDocClient;
+    client: DynamoDbDocumentClient.Interface;
     schema: EntitySchema;
     keys: GetRecordParamsKeys;
 }

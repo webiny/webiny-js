@@ -13,15 +13,12 @@ import type { IEntityReadBatch } from "~/utils/entity/types.js";
 import type { ITableWriteBatch } from "~/utils/table/types.js";
 import type { ITableReadBatch } from "~/utils/table/types.js";
 
-/* Type errors on `client` params are expected until Task 5 updates batch param types
-   from DynamoDocClient to DynamoDbDocumentClient.Interface. */
 export class DynamoDbBatchFactoryImpl implements IDynamoDbBatchFactory {
     public createEntityWriter<T extends GenericRecord = GenericRecord>(
         params: IDynamoDbBatchFactoryCreateEntityWriterParams<T>
     ): IEntityWriteBatch<T> {
         return createEntityWriteBatch({
             schema: params.schema,
-            // @ts-expect-error — will be fixed in Task 5
             client: params.client,
             put: params.put,
             delete: params.delete
@@ -33,7 +30,6 @@ export class DynamoDbBatchFactoryImpl implements IDynamoDbBatchFactory {
     ): IEntityReadBatch<T> {
         return createEntityReadBatch<T>({
             schema: params.schema,
-            // @ts-expect-error — will be fixed in Task 5
             client: params.client,
             read: params.read
         });
@@ -43,7 +39,6 @@ export class DynamoDbBatchFactoryImpl implements IDynamoDbBatchFactory {
         params: IDynamoDbBatchFactoryCreateTableWriterParams
     ): ITableWriteBatch {
         return createTableWriteBatch({
-            // @ts-expect-error — will be fixed in Task 5
             table: params.client
         });
     }
@@ -52,7 +47,6 @@ export class DynamoDbBatchFactoryImpl implements IDynamoDbBatchFactory {
         params: IDynamoDbBatchFactoryCreateTableReaderParams
     ): ITableReadBatch {
         return createTableReadBatch({
-            // @ts-expect-error — will be fixed in Task 5
             table: params.client
         });
     }

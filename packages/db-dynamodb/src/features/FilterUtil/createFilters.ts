@@ -2,7 +2,7 @@ import * as dotProp from "dot-prop";
 import { WebinyError } from "@webiny/error";
 import type { FieldPlugin } from "~/plugins/definitions/FieldPlugin.js";
 import type { DynamoDbContainsFilter } from "~/types.js";
-import type { ValueFilter, ValueFilterRegistry } from "~/feature/ValueFilter/index.js";
+import type { ValueFilter, ValueFilterRegistry } from "~/features/ValueFilter/index.js";
 import { extractWhereArgs } from "./extractWhereArgs.js";
 
 type TransformValue = (value: any) => any;

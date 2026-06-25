@@ -1,14 +1,15 @@
-import type { ITable } from "~/utils/index.js";
-import { createGlobalEntity as baseCreateGlobalEntity } from "~/utils/index.js";
+import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
+import type { DynamoDbEntityFactory } from "~/features/DynamoDbEntityFactory/abstractions.js";
 import type { IStoreEntity, IStoreEntityValue } from "~/store/types.js";
 
 export interface ICreateEntityParams {
-    table: ITable;
+    client: DynamoDbDocumentClient.Interface;
+    entityFactory: DynamoDbEntityFactory.Interface;
 }
 
-export const createEntity = ({ table }: ICreateEntityParams): IStoreEntity => {
-    return baseCreateGlobalEntity<IStoreEntityValue>({
-        table: table.table,
+export const createEntity = ({ client, entityFactory }: ICreateEntityParams): IStoreEntity => {
+    return entityFactory.createGlobal<IStoreEntityValue>({
+        client,
         name: "WebinyKeyValue"
     });
 };

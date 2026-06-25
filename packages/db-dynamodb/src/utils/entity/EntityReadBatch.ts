@@ -1,5 +1,5 @@
 import type { EntitySchema } from "~/utils/EntitySchema.js";
-import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
 import type { IReadBatchItem } from "~/utils/batch/types.js";
 import type {
     IEntityReadBatch,
@@ -12,13 +12,13 @@ import { createEntityReadBatchBuilder } from "./EntityReadBatchBuilder.js";
 
 export interface IEntityReadBatchParams {
     schema: EntitySchema;
-    client: DynamoDocClient;
+    client: DynamoDbDocumentClient.Interface;
     read?: IReadBatchItem[];
 }
 
 export class EntityReadBatch<T> implements IEntityReadBatch<T> {
     private readonly schema: EntitySchema;
-    private readonly client: DynamoDocClient;
+    private readonly client: DynamoDbDocumentClient.Interface;
     private readonly builder: IEntityReadBatchBuilder;
     private readonly _items: IEntityReadBatchBuilderGetResponse[] = [];
 

@@ -1,5 +1,5 @@
 import { WebinyError } from "@webiny/error";
-import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface BatchReadItem {
@@ -7,7 +7,7 @@ export interface BatchReadItem {
 }
 
 export interface BatchReadParams {
-    client: DynamoDocClient;
+    client: DynamoDbDocumentClient.Interface;
     items: BatchReadItem[];
 }
 

@@ -4,21 +4,14 @@ import type {
     IDeleteBatchItem,
     IPutBatchItem
 } from "~/utils/batch/types.js";
-import type { IScanParams, IScanResponse } from "~/utils/DynamoDocClient.js";
-import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { IScanParams } from "~/features/DynamoDbDocumentClient/abstractions.js";
+import type { IScanResponse } from "~/features/DynamoDbDocumentClient/abstractions.js";
 import type { EntitySchema } from "~/utils/EntitySchema.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 export type ITableScanParams = IScanParams;
 
 export type ITableScanResponse<T> = IScanResponse<T>;
-
-export interface ITable {
-    table: DynamoDocClient;
-    createWriter(): ITableWriteBatch;
-    createReader(): ITableReadBatch;
-    scan<T>(params: ITableScanParams): Promise<ITableScanResponse<T>>;
-}
 
 export interface ITableWriteBatch {
     readonly total: number;

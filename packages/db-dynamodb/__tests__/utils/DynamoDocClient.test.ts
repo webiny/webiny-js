@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { DynamoDocClient } from "~/utils/DynamoDocClient";
+import { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/DynamoDbDocumentClient";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 const TABLE_NAME = "TestTable";
@@ -22,14 +22,14 @@ const createMockDocClient = (responses: Record<string, any> = {}) => {
 
 const createClient = (responses: Record<string, any> = {}) => {
     const mock = createMockDocClient(responses);
-    const client = new DynamoDocClient({
+    const client = new DynamoDbDocumentClient({
         documentClient: mock,
         tableName: TABLE_NAME
     });
     return { client, mock };
 };
 
-describe("DynamoDocClient", () => {
+describe("DynamoDbDocumentClient", () => {
     describe("constructor and getters", () => {
         it("should return the table name", () => {
             const { client } = createClient();

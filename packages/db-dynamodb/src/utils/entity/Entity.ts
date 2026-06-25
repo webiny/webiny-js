@@ -4,8 +4,10 @@ import type {
     Readonly
 } from "~/toolbox.js";
 import { EntitySchema } from "~/utils/EntitySchema.js";
-import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
+import type { DynamoDbBatchFactory } from "~/features/DynamoDbBatchFactory/abstractions.js";
 import type { ITableWriteBatch } from "../table/types.js";
+import type { ITableReadBatch } from "../table/types.js";
 import type {
     IEntity,
     IEntityCreateEntityReaderParams,
@@ -22,9 +24,6 @@ import type { GetRecordParamsKeys } from "../get.js";
 import { get, getClean } from "../get.js";
 import type { IDeleteItemKeys } from "../delete.js";
 import { deleteItem } from "../delete.js";
-import { createEntityReadBatch } from "./EntityReadBatch.js";
-import { createEntityWriteBatch } from "./EntityWriteBatch.js";
-import { createTableWriteBatch } from "~/utils/table/TableWriteBatch.js";
 import { queryAll, queryAllClean, queryOne, queryOneClean, queryPerPage } from "../query.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
@@ -34,13 +33,14 @@ export type EntityConstructor<
 
 export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<T> {
     public readonly schema: EntitySchema;
-    public readonly client: DynamoDocClient;
+    public readonly client: DynamoDbDocumentClient.Interface;
+    private readonly batchFactory: DynamoDbBatchFactory.Interface;
 
     public get name(): string {
         return this.schema.name;
     }
 
-    public constructor(params: EntityConstructor) {
+    public constructor(params: EntityConstructor, batchFactory: DynamoDbBatchFactory.Interface) {
         this.schema = new EntitySchema({
             name: params.name,
             attributes: params.attributes as AttributeDefinitions,
@@ -52,10 +52,11 @@ export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<
         }
 
         this.client = params.table;
+        this.batchFactory = batchFactory;
     }
 
     public createEntityReader(params?: IEntityCreateEntityReaderParams): IEntityReadBatch<T> {
-        return createEntityReadBatch({
+        return this.batchFactory.createEntityReader({
             schema: this.schema,
             client: this.client,
             read: params?.read
@@ -63,7 +64,7 @@ export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<
     }
 
     public createEntityWriter(params?: IEntityCreateEntityWriterParams): IEntityWriteBatch<T> {
-        return createEntityWriteBatch({
+        return this.batchFactory.createEntityWriter({
             schema: this.schema,
             client: this.client,
             put: params?.put,
@@ -72,9 +73,11 @@ export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<
     }
 
     public createTableWriter(): ITableWriteBatch {
-        return createTableWriteBatch({
-            table: this.client
-        });
+        return this.batchFactory.createTableWriter({ client: this.client });
+    }
+
+    public createTableReader(): ITableReadBatch {
+        return this.batchFactory.createTableReader({ client: this.client });
     }
 
     public async put<T extends GenericRecord = GenericRecord>(
@@ -152,7 +155,8 @@ export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<
 }
 
 export const createEntity = <T extends GenericRecord = GenericRecord>(
-    params: EntityConstructor
+    params: EntityConstructor,
+    batchFactory: DynamoDbBatchFactory.Interface
 ): IEntity<T> => {
-    return new Entity<T>(params);
+    return new Entity<T>(params, batchFactory);
 };

@@ -1,8 +1,8 @@
-import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
 import type { BatchWriteItem, BatchWriteResult } from "./types.js";
 
 export interface BatchWriteParams {
-    table: DynamoDocClient;
+    table: DynamoDbDocumentClient.Interface;
     items: BatchWriteItem[];
 }
 
@@ -21,7 +21,7 @@ export const batchWriteAll = async (
         return [];
     }
 
-    /* Convert BatchWriteItem[] to the format DynamoDocClient expects. */
+    /* Convert BatchWriteItem[] to the format DynamoDbDocumentClient expects. */
     const writeRequests = collection.map(item => {
         if (item.PutRequest) {
             return { PutRequest: item.PutRequest };

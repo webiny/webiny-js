@@ -1,13 +1,13 @@
 import type {
-    DynamoDocClient,
+    DynamoDbDocumentClient,
     IQueryParams as IClientQueryParams
-} from "~/utils/DynamoDocClient.js";
+} from "~/features/DynamoDbDocumentClient/abstractions.js";
 import type { EntitySchema } from "~/utils/EntitySchema.js";
 import type { EntityQueryOptions } from "~/toolbox.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface QueryAllParams {
-    client: DynamoDocClient;
+    client: DynamoDbDocumentClient.Interface;
     schema: EntitySchema;
     partitionKey: string;
     options?: EntityQueryOptions;

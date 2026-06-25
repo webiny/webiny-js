@@ -1,5 +1,5 @@
 import { FilterUtil as Abstraction } from "./abstractions/FilterUtil.js";
-import { ValueFilterRegistry } from "~/feature/ValueFilter/index.js";
+import { ValueFilterRegistry } from "~/features/ValueFilter/index.js";
 import { createFilterCallable } from "./createFilters.js";
 
 class FilterUtilImpl implements Abstraction.Interface {

@@ -11,29 +11,28 @@ import type {
     StoreValueResult,
     StoreValuesResult
 } from "@webiny/db";
-import { createTable } from "~/utils/createTable.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
+import type { DynamoDbEntityFactory } from "~/features/DynamoDbEntityFactory/abstractions.js";
 import { createEntity } from "~/store/entity.js";
 import { createPartitionKey, createSortKey, createType } from "~/store/keys.js";
 
 interface ConstructorArgs {
     documentClient: DynamoDBDocument;
+    client: DynamoDbDocumentClient.Interface;
+    entityFactory: DynamoDbEntityFactory.Interface;
 }
 
 class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
     public readonly documentClient;
 
-    public readonly table;
     public readonly entity;
 
-    constructor({ documentClient }: ConstructorArgs) {
+    constructor({ documentClient, client, entityFactory }: ConstructorArgs) {
         this.documentClient = documentClient;
-        this.table = createTable({
-            name: process.env.DB_TABLE as string,
-            documentClient
-        });
         this.entity = createEntity({
-            table: this.table
+            client,
+            entityFactory
         });
     }
 

@@ -1,5 +1,5 @@
 import type { EntitySchema } from "~/utils/EntitySchema.js";
-import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
 import type {
     BatchWriteItem,
     BatchWriteResult,
@@ -8,6 +8,7 @@ import type {
 } from "~/utils/batch/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { ITableWriteBatch } from "~/utils/table/types.js";
+import type { ITableReadBatch } from "~/utils/table/types.js";
 import type { IPutParamsItem } from "~/utils/put.js";
 import type { GetRecordParamsKeys } from "~/utils/get.js";
 import type { IDeleteItemKeys } from "~/utils/delete.js";
@@ -42,11 +43,12 @@ export interface IEntityCreateEntityReaderParams extends Omit<
 
 export interface IEntity<T extends GenericRecord = GenericRecord> {
     readonly schema: EntitySchema;
-    readonly client: DynamoDocClient;
+    readonly client: DynamoDbDocumentClient.Interface;
     readonly name: string;
     createEntityReader(params?: IEntityCreateEntityReaderParams): IEntityReadBatch<T>;
     createEntityWriter(params?: IEntityCreateEntityWriterParams<T>): IEntityWriteBatch<T>;
     createTableWriter(): ITableWriteBatch;
+    createTableReader(): ITableReadBatch;
     put(item: IPutParamsItem<T>): Promise<void>;
     get<R extends T = T>(keys: GetRecordParamsKeys): Promise<R | null>;
     getClean<R extends T = T>(keys: GetRecordParamsKeys): Promise<R | null>;

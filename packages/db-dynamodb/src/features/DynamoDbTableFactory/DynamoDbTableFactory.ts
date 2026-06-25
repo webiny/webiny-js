@@ -2,7 +2,7 @@ import { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/Dynamo
 import type { DynamoDbDocumentClient as IDynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
 import type { IDynamoDbTableFactory } from "./abstractions.js";
 import type { IDynamoDbTableFactoryCreateParams } from "./abstractions.js";
-import type { DynamoDBClient } from "~/feature/DynamoDBClient/abstractions.js";
+import type { DynamoDBClient } from "~/features/DynamoDBClient/abstractions.js";
 
 export class DynamoDbTableFactoryImpl implements IDynamoDbTableFactory {
     public constructor(private readonly dynamoDBClient: DynamoDBClient.Interface) {}

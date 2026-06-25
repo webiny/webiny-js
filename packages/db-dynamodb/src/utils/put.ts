@@ -1,4 +1,4 @@
-import type { DynamoDocClient } from "~/utils/DynamoDocClient.js";
+import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
 import type { EntitySchema } from "~/utils/EntitySchema.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
@@ -9,7 +9,7 @@ export type IPutParamsItem<T extends GenericRecord = GenericRecord> = {
 } & T;
 
 export interface IPutParams<T extends GenericRecord = GenericRecord> {
-    client: DynamoDocClient;
+    client: DynamoDbDocumentClient.Interface;
     schema: EntitySchema;
     item: IPutParamsItem<T>;
 }

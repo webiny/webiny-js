@@ -1,28 +1,34 @@
 import { describe, it, expect } from "vitest";
 import DynamoDbDriver from "~/DynamoDbDriver";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/DynamoDbDocumentClient";
+import { DynamoDbBatchFactoryImpl } from "~/features/DynamoDbBatchFactory/DynamoDbBatchFactory";
+import { DynamoDbEntityFactoryImpl } from "~/features/DynamoDbEntityFactory/DynamoDbEntityFactory";
+
+const createDriver = () => {
+    const documentClient = getDocumentClient();
+    const client = new DynamoDbDocumentClient({
+        documentClient,
+        tableName: process.env.DB_TABLE as string
+    });
+    const batchFactory = new DynamoDbBatchFactoryImpl();
+    const entityFactory = new DynamoDbEntityFactoryImpl(batchFactory);
+
+    return {
+        driver: new DynamoDbDriver({ documentClient, client, entityFactory }),
+        documentClient
+    };
+};
 
 describe("DynamoDbDriver", () => {
-    const __testing = "aTestingTag";
-    const documentClient = getDocumentClient();
-    // @ts-expect-error
-    documentClient.__testing = __testing;
-
     it("should properly construct DynamoDbDriver", () => {
-        const driver = new DynamoDbDriver({
-            documentClient
-        });
+        const { driver, documentClient } = createDriver();
 
-        // @ts-expect-error
-        expect(driver.documentClient.__testing).toEqual(__testing);
-        // @ts-expect-error
-        expect(driver.getClient().__testing).toEqual(documentClient.__testing);
+        expect(driver.getClient()).toBe(documentClient);
     });
 
     it("should properly store an item", async () => {
-        const driver = new DynamoDbDriver({
-            documentClient
-        });
+        const { driver } = createDriver();
 
         const key = "test";
         const value = {
@@ -43,9 +49,7 @@ describe("DynamoDbDriver", () => {
     });
 
     it("should properly store an item and retrieve it", async () => {
-        const driver = new DynamoDbDriver({
-            documentClient
-        });
+        const { driver } = createDriver();
 
         const key = "test";
         const value = {
@@ -81,9 +85,7 @@ describe("DynamoDbDriver", () => {
     });
 
     it("should properly store a list of items and retrieve them", async () => {
-        const driver = new DynamoDbDriver({
-            documentClient
-        });
+        const { driver } = createDriver();
 
         const items = {
             testing1: {
@@ -128,9 +130,7 @@ describe("DynamoDbDriver", () => {
     });
 
     it("should properly remove an item", async () => {
-        const driver = new DynamoDbDriver({
-            documentClient
-        });
+        const { driver } = createDriver();
 
         const key = "test";
         const value = {
@@ -163,9 +163,7 @@ describe("DynamoDbDriver", () => {
     });
 
     it("should remove a list of items", async () => {
-        const driver = new DynamoDbDriver({
-            documentClient
-        });
+        const { driver } = createDriver();
 
         const items = {
             testing1: {
