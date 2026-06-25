@@ -7,6 +7,7 @@ import {
     HeadlessCmsEnhancerConfig
 } from "./HeadlessCmsContextEnhancer.js";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { BenchmarkAbstraction } from "@webiny/api";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import { GraphQLFeature } from "~/features/graphql/index.js";
 import { ValidationFeature } from "~/features/validation/index.js";
@@ -72,6 +73,8 @@ function createCmsRoute(type: ApiEndpoint) {
             const result = await this.container
                 .resolve(CmsSchemaExecutor)
                 .execute(type, request.body);
+            // Flush benchmark measurements (no-op unless benchmarking was enabled for the request).
+            await this.container.resolve(BenchmarkAbstraction).output();
             return {
                 statusCode: 200,
                 headers: { "Content-Type": "application/json" },

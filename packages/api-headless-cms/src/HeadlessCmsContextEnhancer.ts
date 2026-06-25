@@ -24,7 +24,7 @@ import { CmsGroupPluginInstance } from "~/features/contentModelGroup/shared/abst
 import { createExportCrud } from "~/export/index.js";
 import { createImportCrud } from "~/export/crud/importing.js";
 import { getSchema } from "~/graphql/getSchema.js";
-import { processRequestBody } from "@webiny/handler-graphql";
+import { createRequestBody, processRequestBody } from "@webiny/handler-graphql";
 import { Benchmark } from "@webiny/api/Benchmark.js";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { createBaseSchemaPlugins } from "~/graphql/schema/baseSchema.js";
@@ -191,8 +191,12 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
                         getSchema({ context: ctx as CmsContext, getTenant, type: schemaType })
                     )
                 );
+                const requestBody = await bm.measure(
+                    "headlessCms.graphql.createRequestBody",
+                    async () => createRequestBody(body)
+                );
                 return bm.measure("headlessCms.graphql.processRequestBody", () =>
-                    processRequestBody(body, schema, ctx as CmsContext)
+                    processRequestBody(requestBody, schema, ctx as CmsContext)
                 );
             }
         });

@@ -51,18 +51,14 @@ describe("benchmark points", () => {
         });
 
         expect(logs).toHaveLength(3);
+        // The GraphQL request flow is measured at the graphql layer (getSchema ->
+        // createRequestBody -> processRequestBody). Per-operation CRUD measures live on the
+        // HeadlessCms facade, which the DI resolvers no longer route through, so they are not
+        // part of the request's benchmark output.
         expect(logs).toMatchObject([
             `Benchmark total time elapsed: ${elapsed}ms`,
             "Benchmark measurements:",
             [
-                {
-                    elapsed: expect.any(Number),
-                    end: expect.any(Date),
-                    memory: expect.any(Number),
-                    name: "headlessCms.crud.models.listModels",
-                    category: "webiny",
-                    start: expect.any(Date)
-                },
                 {
                     elapsed: expect.any(Number),
                     end: expect.any(Date),
@@ -76,14 +72,6 @@ describe("benchmark points", () => {
                     end: expect.any(Date),
                     memory: expect.any(Number),
                     name: "headlessCms.graphql.createRequestBody",
-                    category: "webiny",
-                    start: expect.any(Date)
-                },
-                {
-                    elapsed: expect.any(Number),
-                    end: expect.any(Date),
-                    memory: expect.any(Number),
-                    name: "headlessCms.crud.groups.createGroup",
                     category: "webiny",
                     start: expect.any(Date)
                 },
