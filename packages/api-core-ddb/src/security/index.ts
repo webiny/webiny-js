@@ -7,22 +7,22 @@ import type {
 } from "@webiny/api-core/types/security.js";
 import WebinyError from "@webiny/error";
 import { createApiKeyEntity, createRoleEntity, createTeamEntity } from "./definitions/entities.js";
-import { createTable, type IEntityQueryOneParams, sortItems } from "@webiny/db-dynamodb";
+import type { IEntityQueryOneParams } from "@webiny/db-dynamodb";
+import { sortItems } from "@webiny/db-dynamodb";
 
 export const createStorageOperations = (
     params: SecurityStorageParams
 ): SecurityStorageOperations => {
-    const { table: tableName, documentClient } = params;
+    const { table: tableName, tableFactory, entityFactory } = params;
 
-    const table = createTable({
-        name: tableName || (process.env.DB_TABLE as string),
-        documentClient
+    const client = tableFactory.create({
+        name: tableName || (process.env.DB_TABLE as string)
     });
 
     const entities = {
-        apiKeys: createApiKeyEntity(table.table),
-        roles: createRoleEntity(table.table),
-        teams: createTeamEntity(table.table)
+        apiKeys: createApiKeyEntity({ client, entityFactory }),
+        roles: createRoleEntity({ client, entityFactory }),
+        teams: createTeamEntity({ client, entityFactory })
     };
 
     const createApiKeyKeys = ({ id, tenant }: Pick<StorageApiKey, "id" | "tenant">) => ({

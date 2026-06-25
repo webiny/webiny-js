@@ -1,10 +1,14 @@
 import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import type { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 
 export enum ENTITIES {
     TENANT = "TenancyTenant"
 }
 
 export interface CreateTenancyStorageOperations {
-    (params: { documentClient: DynamoDBDocument }): TenancyStorageOperations;
+    (params: {
+        tableFactory: DynamoDbTableFactory.Interface;
+        entityFactory: DynamoDbEntityFactory.Interface;
+    }): TenancyStorageOperations;
 }

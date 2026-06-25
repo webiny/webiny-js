@@ -1,32 +1,31 @@
-import { createStandardEntity, standardEntityAttributes } from "@webiny/db-dynamodb";
+import type { DynamoDbDocumentClient } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import type { StorageApiKey, StorageRole, StorageTeam } from "@webiny/api-core/types/security.js";
-import type { TableDef } from "@webiny/db-dynamodb/toolbox.js";
 import { ENTITIES } from "../types.js";
 import type { IApiKeyEntity, IRoleEntity, ITeamEntity } from "~/security/definitions/types.js";
 
-export const createRoleEntity = (table: TableDef): IRoleEntity => {
-    return createStandardEntity<StorageRole>({
+interface Params {
+    client: DynamoDbDocumentClient.Interface;
+    entityFactory: DynamoDbEntityFactory.Interface;
+}
+
+export const createRoleEntity = ({ client, entityFactory }: Params): IRoleEntity => {
+    return entityFactory.createStandard<StorageRole>({
         name: ENTITIES.ROLE,
-        table
+        client
     });
 };
 
-export const createTeamEntity = (table: TableDef): ITeamEntity => {
-    return createStandardEntity<StorageTeam>({
+export const createTeamEntity = ({ client, entityFactory }: Params): ITeamEntity => {
+    return entityFactory.createStandard<StorageTeam>({
         name: ENTITIES.TEAM,
-        table,
-        attributes: {
-            ...standardEntityAttributes
-        }
+        client
     });
 };
 
-export const createApiKeyEntity = (table: TableDef): IApiKeyEntity => {
-    return createStandardEntity<StorageApiKey>({
+export const createApiKeyEntity = ({ client, entityFactory }: Params): IApiKeyEntity => {
+    return entityFactory.createStandard<StorageApiKey>({
         name: ENTITIES.API_KEY,
-        table,
-        attributes: {
-            ...standardEntityAttributes
-        }
+        client
     });
 };

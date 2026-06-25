@@ -6,6 +6,10 @@ import { createStorageOperations as createTenancyStorageOperations } from "./ten
 import { createStorageOperations as createSecurityStorageOperations } from "./security/index.js";
 import { createStorageOperations as createKeyValueStorageOperations } from "./keyValueStore/index.js";
 import { DdbServiceManifestLoader } from "./serviceDiscovery/index.js";
+import { DynamoDBClient } from "@webiny/db-dynamodb/features/DynamoDBClient/DynamoDBClient.js";
+import { DynamoDbTableFactoryImpl } from "@webiny/db-dynamodb/features/DynamoDbTableFactory/DynamoDbTableFactory.js";
+import { DynamoDbBatchFactoryImpl } from "@webiny/db-dynamodb/features/DynamoDbBatchFactory/DynamoDbBatchFactory.js";
+import { DynamoDbEntityFactoryImpl } from "@webiny/db-dynamodb/features/DynamoDbEntityFactory/DynamoDbEntityFactory.js";
 
 interface CreateApiCoreDdbParams {
     documentClient: DynamoDBDocument;
@@ -16,18 +20,27 @@ export const createApiCoreDdb = ({
 }: CreateApiCoreDdbParams): ApiCoreStorageOperations => {
     ServiceDiscovery.setLoader(new DdbServiceManifestLoader(documentClient));
 
+    const dynamoDBClient = new DynamoDBClient({ client: documentClient });
+    const tableFactory = new DynamoDbTableFactoryImpl(dynamoDBClient);
+    const batchFactory = new DynamoDbBatchFactoryImpl();
+    const entityFactory = new DynamoDbEntityFactoryImpl(batchFactory);
+
     return {
         usersStorageOperations: createUsersStorageOperations({
-            documentClient
+            tableFactory,
+            entityFactory
         }),
         tenancyStorageOperations: createTenancyStorageOperations({
-            documentClient
+            tableFactory,
+            entityFactory
         }),
         securityStorageOperations: createSecurityStorageOperations({
-            documentClient
+            tableFactory,
+            entityFactory
         }),
         keyValueStorageOperations: createKeyValueStorageOperations({
-            documentClient
+            tableFactory,
+            entityFactory
         })
     };
 };

@@ -1,4 +1,4 @@
-import { createTable, type IEntityQueryAllParams } from "@webiny/db-dynamodb";
+import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
 import WebinyError from "@webiny/error";
 import { createTenantEntity } from "./definitions/tenantEntity.js";
 import type { CreateTenancyStorageOperations } from "./types.js";
@@ -18,23 +18,23 @@ const setTenantDefaults = (item: Tenant) => {
 };
 
 export const createStorageOperations: CreateTenancyStorageOperations = params => {
-    const { documentClient } = params;
+    const { tableFactory, entityFactory } = params;
 
-    const tableInstance = createTable({
-        name: (process.env.DB_TABLE_TENANCY || process.env.DB_TABLE) as string,
-        documentClient
+    const client = tableFactory.create({
+        name: (process.env.DB_TABLE_TENANCY || process.env.DB_TABLE) as string
     });
 
     const entities = {
         tenants: createTenantEntity({
             entityName: ENTITIES.TENANT,
-            table: tableInstance.table
+            client,
+            entityFactory
         })
     };
 
     return {
         getTable() {
-            return tableInstance;
+            return client;
         },
         getEntities() {
             return entities;

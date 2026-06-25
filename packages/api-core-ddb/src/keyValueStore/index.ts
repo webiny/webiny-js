@@ -1,10 +1,14 @@
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import type { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import { KeyValueStoreStorageOperations } from "./KeyValueStoreStorageOperations.js";
 
 export interface CreateKeyValueStoreStorageOperations {
-    (params: { documentClient: DynamoDBDocument }): KeyValueStoreStorageOperations;
+    (params: {
+        tableFactory: DynamoDbTableFactory.Interface;
+        entityFactory: DynamoDbEntityFactory.Interface;
+    }): KeyValueStoreStorageOperations;
 }
 
 export const createStorageOperations: CreateKeyValueStoreStorageOperations = params => {
-    return new KeyValueStoreStorageOperations(params.documentClient);
+    return new KeyValueStoreStorageOperations(params.tableFactory, params.entityFactory);
 };

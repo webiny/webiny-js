@@ -1,15 +1,20 @@
-import type { TableDef } from "@webiny/db-dynamodb/toolbox.js";
-import { createStandardEntity } from "@webiny/db-dynamodb";
+import type { DynamoDbDocumentClient } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import type { ITenantEntity } from "~/tenancy/definitions/types.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
 interface Params {
     entityName: string;
-    table: TableDef;
+    client: DynamoDbDocumentClient.Interface;
+    entityFactory: DynamoDbEntityFactory.Interface;
 }
-export const createTenantEntity = ({ entityName, table }: Params): ITenantEntity => {
-    return createStandardEntity<Tenant>({
+export const createTenantEntity = ({
+    entityName,
+    client,
+    entityFactory
+}: Params): ITenantEntity => {
+    return entityFactory.createStandard<Tenant>({
         name: entityName,
-        table
+        client
     });
 };

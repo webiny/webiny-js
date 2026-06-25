@@ -1,6 +1,6 @@
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { createGlobalEntity, createTable, globalEntityAttributes } from "@webiny/db-dynamodb";
+import type { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 
 interface CreateKeysParams {
     scopedKey: string;
@@ -9,17 +9,16 @@ interface CreateKeysParams {
 export class KeyValueStoreDynamoTable<T extends GenericRecord> {
     private readonly entity;
 
-    constructor(documentClient: DynamoDBDocument) {
-        const table = createTable({
-            name: process.env.DB_TABLE as string,
-            documentClient
+    constructor(
+        tableFactory: DynamoDbTableFactory.Interface,
+        entityFactory: DynamoDbEntityFactory.Interface
+    ) {
+        const client = tableFactory.create({
+            name: process.env.DB_TABLE as string
         });
-        this.entity = createGlobalEntity<T>({
+        this.entity = entityFactory.createGlobal<T>({
             name: "KeyValueStore",
-            table: table.table,
-            attributes: {
-                ...globalEntityAttributes
-            }
+            client
         });
     }
 

@@ -1,4 +1,5 @@
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import type { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 
 export enum ENTITIES {
     API_KEY = "SecurityApiKey",
@@ -7,6 +8,7 @@ export enum ENTITIES {
 }
 
 export interface SecurityStorageParams {
-    documentClient: DynamoDBDocument;
+    tableFactory: DynamoDbTableFactory.Interface;
+    entityFactory: DynamoDbEntityFactory.Interface;
     table?: string;
 }

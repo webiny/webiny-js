@@ -1,6 +1,7 @@
 import type { AdminUsersStorageOperations, CreateAdminUsersStorageOperations } from "./types.js";
 import WebinyError from "@webiny/error";
-import { createTable, type IStandardEntityAttributes, sortItems } from "@webiny/db-dynamodb";
+import type { IStandardEntityAttributes } from "@webiny/db-dynamodb/exports/api/db.js";
+import { sortItems } from "@webiny/db-dynamodb";
 import { createUserEntity } from "./definitions/entities.js";
 import type {
     AdminUser,
@@ -9,15 +10,14 @@ import type {
 } from "@webiny/api-core/types/users.js";
 
 export const createStorageOperations: CreateAdminUsersStorageOperations = params => {
-    const { table: tableName, documentClient } = params;
+    const { table: tableName, tableFactory, entityFactory } = params;
 
-    const table = createTable({
-        name: tableName || (process.env.DB_TABLE as string),
-        documentClient
+    const client = tableFactory.create({
+        name: tableName || (process.env.DB_TABLE as string)
     });
 
     const entities = {
-        users: createUserEntity(table.table)
+        users: createUserEntity({ client, entityFactory })
     };
 
     const createUserKeys = (user: Pick<AdminUser, "tenant" | "id">) => ({
@@ -35,7 +35,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
 
     const storageOperations: AdminUsersStorageOperations = {
         getTable() {
-            return table;
+            return client;
         },
         getEntities() {
             return entities;

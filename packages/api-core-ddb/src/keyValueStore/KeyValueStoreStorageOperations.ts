@@ -1,4 +1,5 @@
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import type { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import { WebinyError } from "@webiny/error";
 import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import { KeyValueStoreDynamoTable } from "./KeyValueStoreDynamoTable.js";
@@ -13,8 +14,11 @@ export class KeyValueStoreStorageOperations {
     private readonly table;
     private readonly entity;
 
-    constructor(dynamoDbClient: DynamoDBDocument) {
-        this.table = new KeyValueStoreDynamoTable<KeyValueRecord>(dynamoDbClient);
+    constructor(
+        tableFactory: DynamoDbTableFactory.Interface,
+        entityFactory: DynamoDbEntityFactory.Interface
+    ) {
+        this.table = new KeyValueStoreDynamoTable<KeyValueRecord>(tableFactory, entityFactory);
         this.entity = this.table.getEntity();
     }
 
