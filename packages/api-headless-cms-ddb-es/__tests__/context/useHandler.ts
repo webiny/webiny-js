@@ -11,7 +11,7 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/a
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CreateTenantUseCase } from "@webiny/api-core/exports/api/tenancy.js";
-import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { RegisterExtensionPlugin } from "@webiny/handler";
 import { createBackgroundTaskContext } from "@webiny/background-tasks/api";

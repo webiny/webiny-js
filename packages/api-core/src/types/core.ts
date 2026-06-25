@@ -1,16 +1,15 @@
 import { Context as BaseContext } from "@webiny/api/types.js";
-import type { SecurityContext, SecurityStorageOperations } from "~/types/security.js";
-import type { TenancyContext, TenancyStorageOperations } from "~/types/tenancy.js";
-import type { WcpContext } from "~/features/wcp/WcpContext/types.js";
-import type { AdminUsersContext, AdminUsersStorageOperations } from "~/types/users.js";
+import type { SecurityStorageOperations } from "~/types/security.js";
+import type { TenancyStorageOperations } from "~/types/tenancy.js";
+import type { AdminUsersStorageOperations } from "~/types/users.js";
 import { KeyValueStorageOperations } from "~/features/keyValueStore/index.js";
 import type { ILicense } from "@webiny/wcp/types.js";
 
-export type ApiCoreContext = BaseContext &
-    SecurityContext &
-    TenancyContext &
-    WcpContext &
-    AdminUsersContext;
+/**
+ * The base handler context available to all api-core GraphQL resolvers and event handlers.
+ * Services are accessed via `context.container.resolve(...)`, not via context properties.
+ */
+export type ApiCoreContext = BaseContext;
 
 export type ApiCoreStorageOperations = {
     usersStorageOperations: AdminUsersStorageOperations;

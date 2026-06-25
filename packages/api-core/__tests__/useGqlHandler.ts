@@ -2,7 +2,7 @@ import { createTestHttpHandler } from "@webiny/event-handler-core/features/testi
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { loadWcpLicense } from "~/legacy/wcp/context.js";
+import { loadWcpLicense } from "~/features/wcp/loadWcpLicense.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
 import { TestAuthenticator } from "./mocks/TestAuthenticator.js";

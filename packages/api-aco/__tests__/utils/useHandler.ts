@@ -4,7 +4,7 @@ import { ApiCoreFeature } from "@webiny/api-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
-import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";

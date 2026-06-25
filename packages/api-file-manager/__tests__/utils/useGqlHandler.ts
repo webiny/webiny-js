@@ -3,7 +3,7 @@ import { createTestHttpHandler } from "@webiny/event-handler-core/features/testi
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
-import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { FileManagerAppFeature } from "~/FileManagerAppFeature";

@@ -6,7 +6,7 @@ import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { RegisterExtensionPlugin } from "@webiny/handler";
 import type { PluginCollection } from "@webiny/plugins/types";

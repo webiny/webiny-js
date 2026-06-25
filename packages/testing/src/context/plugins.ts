@@ -14,7 +14,7 @@ import type { PermissionsArg } from "./helpers.js";
 import { createPermissions } from "./helpers.js";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins.js";
 import { TenancyAndSecurityFeature } from "./TenancyAndSecurityFeature.js";
 import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";

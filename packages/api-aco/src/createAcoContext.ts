@@ -33,6 +33,8 @@ import { ListFlpsFeature } from "~/features/flp/ListFlps/feature.js";
 import { GetFlpFeature } from "~/features/flp/GetFlp/feature.js";
 import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folder/ListFolderLevelPermissionsTargets/feature.js";
 import { Tenant } from "@webiny/api-core/types/tenancy";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { CmsFlpFeature } from "~/features/cms/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FolderModel as FolderModelAbstraction } from "~/domain/folder/abstractions.js";
@@ -44,21 +46,24 @@ import { createRegisterExtensionPlugin } from "@webiny/handler";
 import type { AcoStorageOperations } from "~/types.js";
 
 const setupAcoContext = async (context: AcoContext): Promise<void> => {
-    const { tenancy, security, cms, container } = context;
+    const { cms, container } = context;
+
+    const identityContext = container.resolve(IdentityContext);
+    const tenantContext = container.resolve(TenantContext);
 
     const getModel = container.resolve(GetModelUseCase);
 
-    await security.withoutAuthorization(async () => {
+    await identityContext.withoutAuthorization(async () => {
         const folderModel = await getModel.execute(FOLDER_MODEL_ID);
         container.registerInstance(FolderModelAbstraction, folderModel.value);
     });
 
     const getTenant = (): Tenant => {
-        return tenancy.getCurrentTenant();
+        return tenantContext.getTenant();
     };
 
     const flpSo = container.resolve(FlpStorageOperations);
-    const filterSo = createFilterOperations({ cms, security, container });
+    const filterSo = createFilterOperations({ cms, identityContext, container });
 
     const storageOperations: AcoStorageOperations = {
         filter: filterSo,

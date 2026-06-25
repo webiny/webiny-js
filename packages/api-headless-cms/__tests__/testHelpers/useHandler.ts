@@ -5,7 +5,7 @@ import { buildSchema } from "graphql";
 import { HeadlessCmsFeature } from "~/index";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { HeadlessCmsStorageOperations } from "~/types";
 import type { PermissionsArg } from "~tests/testHelpers/helpers";

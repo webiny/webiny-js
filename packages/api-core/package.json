@@ -16,7 +16,6 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.84",
     "@ai-sdk/openai": "^3.0.71",
-    "@graphql-tools/schema": "^10.0.33",
     "@webiny/api": "0.0.0",
     "@webiny/di": "^1.0.1",
     "@webiny/error": "0.0.0",
@@ -24,7 +23,6 @@
     "@webiny/feature": "0.0.0",
     "@webiny/feature-flags": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/handler-db": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",

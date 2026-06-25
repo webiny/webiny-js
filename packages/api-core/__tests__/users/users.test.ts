@@ -32,7 +32,10 @@ describe("Users", function () {
         const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
         const testLicense = License.fromLicenseDto(createTestWcpLicense());
 
-        ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense: testLicense });
+        ApiCoreFeature.register(container, {
+            ...apiCoreStorage.storageOperations,
+            wcpLicense: testLicense
+        });
         container.registerInstance(Authorizer, new TestAuthorizer());
 
         const tenantContext = container.resolve(TenantContext);

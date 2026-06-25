@@ -12,7 +12,6 @@ import { Authenticator } from "@webiny/api-core/features/security/authentication
 import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/abstractions.js";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { CreateTenantUseCase } from "@webiny/api-core/features/tenancy/CreateTenant/index.js";
-import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 
 interface Config {
     setupGraphQL?: boolean;
@@ -61,18 +60,6 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
         new ContextPlugin<ApiCoreContext>(async context => {
             context.container.registerInstance(RoleFactory, new FullAccessRoleFactory());
             context.container.registerInstance(TeamFactory, new FullAccessTeamFactory());
-        }),
-        new ContextPlugin<ApiCoreContext>(async context => {
-            if (context.adminUsers) {
-                const listTeams = context.container.resolve(ListTeamsUseCase);
-                context.adminUsers.listUserTeams = async () => {
-                    const result = await listTeams.execute();
-                    if (result.isFail()) {
-                        throw result.error;
-                    }
-                    return result.value;
-                };
-            }
         }),
         new ContextPlugin<ApiCoreContext>(async context => {
             const createTenant = context.container.resolve(CreateTenantUseCase);

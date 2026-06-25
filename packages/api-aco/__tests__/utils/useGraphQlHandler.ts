@@ -4,7 +4,7 @@ import { ApiCoreFeature } from "@webiny/api-core";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
-import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { until } from "@webiny/project-utils/testing/helpers/until.js";

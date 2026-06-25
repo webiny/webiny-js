@@ -12153,7 +12153,6 @@ __metadata:
   dependencies:
     "@ai-sdk/anthropic": "npm:^3.0.84"
     "@ai-sdk/openai": "npm:^3.0.71"
-    "@graphql-tools/schema": "npm:^10.0.33"
     "@types/jsonwebtoken": "npm:^9.0.10"
     "@webiny/api": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -12164,7 +12163,6 @@ __metadata:
     "@webiny/feature-flags": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"

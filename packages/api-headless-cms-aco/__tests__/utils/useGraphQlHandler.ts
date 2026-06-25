@@ -6,7 +6,7 @@ import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { HeadlessCmsContextualSchema } from "@webiny/api-headless-cms/HeadlessCmsContextualSchema.js";
 import { AcoFeature } from "@webiny/api-aco";
 import { AcoHcmsFeature } from "~/AcoHcmsFeature.js";
-import { loadWcpLicense } from "@webiny/api-core/legacy/wcp/context.js";
+import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { until } from "@webiny/project-utils/testing/helpers/until.js";
