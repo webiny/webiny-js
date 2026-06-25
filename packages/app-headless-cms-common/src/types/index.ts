@@ -12,8 +12,8 @@ import type { CmsEditorFieldsLayout, CmsLayoutField, CmsModel, CmsModelField } f
 import type { CmsIdentity } from "~/types/shared.js";
 import type { SourceType } from "dnd-core";
 import type { IconPickerIconDto } from "@webiny/admin-ui";
-import { GenericRecord } from "@webiny/app/types.js";
-import { Identity } from "@webiny/app-admin/domain/Identity.js";
+import type { GenericRecord } from "@webiny/app/types.js";
+import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 import type { CmsModelFieldValidator } from "./model.js";
 
 export type DragObjectWithType = {

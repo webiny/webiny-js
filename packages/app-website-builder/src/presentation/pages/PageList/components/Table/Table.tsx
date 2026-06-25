@@ -8,7 +8,7 @@ import { usePageListConfig } from "../../configs/index.js";
 import { TableRowMapper, folderToTableRow, type TableRow } from "./TableRowMapper.js";
 
 export const Table = observer(() => {
-    const { vm, folders, list } = usePageListPresenter();
+    const { vm, list } = usePageListPresenter();
     const { browser } = usePageListConfig();
     const container = useContainer();
     const mapper = container.resolve(TableRowMapper);

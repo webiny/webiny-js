@@ -12578,10 +12578,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-headless-cms-common@workspace:packages/app-headless-cms-common"
   dependencies:
-    "@emotion/react": "npm:^11.14.0"
-    "@emotion/styled": "npm:^11.14.1"
     "@fortawesome/fontawesome-svg-core": "npm:^7.2.0"
-    "@fortawesome/react-fontawesome": "npm:^3.3.1"
     "@types/react": "npm:18.3.31"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
@@ -12589,12 +12586,8 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
-    "@webiny/react-composition": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     dnd-core: "npm:^16.0.1"
-    graphql: "npm:^16.14.2"
-    graphql-tag: "npm:^2.12.6"
-    lodash: "npm:^4.18.1"
     react: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.3"
