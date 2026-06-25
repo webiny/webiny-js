@@ -1,18 +1,21 @@
-import { createEntity, type ITable, standardEntityAttributes } from "@webiny/db-dynamodb";
-import type { IOpenSearchEntity, IOpenSearchEntityAttributes } from "~/db/types.js";
+import { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import { standardEntityAttributes } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbDocumentClient } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { IOpenSearchEntity } from "~/db/types.js";
 
 export interface ICreateOpenSearchEntityParams {
-    table: ITable;
+    client: DynamoDbDocumentClient.Interface;
+    entityFactory: DynamoDbEntityFactory.Interface;
     entityName: string;
 }
 
 export const createOpenSearchEntity = (
     params: ICreateOpenSearchEntityParams
 ): IOpenSearchEntity => {
-    const { table, entityName } = params;
-    return createEntity<IOpenSearchEntityAttributes>({
+    const { client, entityFactory, entityName } = params;
+    return entityFactory.create({
         name: entityName,
-        table: table.table,
+        client,
         attributes: {
             ...standardEntityAttributes,
             index: {
@@ -20,5 +23,5 @@ export const createOpenSearchEntity = (
                 required: true
             }
         }
-    });
+    }) as IOpenSearchEntity;
 };

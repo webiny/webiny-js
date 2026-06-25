@@ -1,10 +1,10 @@
 import type { ScanOptions } from "@webiny/db-dynamodb";
 import { scan as tableScan } from "@webiny/db-dynamodb";
-import type { TableDef } from "@webiny/db-dynamodb/toolbox.js";
+import type { DynamoDbDocumentClient } from "@webiny/db-dynamodb/exports/api/db.js";
 import type { IElasticsearchIndexingTaskValuesKeys } from "~/types.js";
 
 interface Params {
-    table: TableDef;
+    table: DynamoDbDocumentClient.Interface;
     keys?: IElasticsearchIndexingTaskValuesKeys;
     options?: ScanOptions;
 }

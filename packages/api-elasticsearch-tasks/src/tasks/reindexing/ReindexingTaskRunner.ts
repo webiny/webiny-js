@@ -48,7 +48,7 @@ class ReindexingTaskRunnerImpl implements Abstraction.Interface {
                 }
 
                 const results = await scan<IDynamoDbElasticsearchRecord>({
-                    table: this.manager.table.table,
+                    table: this.manager.table,
                     keys: this.keys,
                     options: {
                         limit
@@ -60,7 +60,7 @@ class ReindexingTaskRunnerImpl implements Abstraction.Interface {
                 }
 
                 const tableWriteBatch = createTableWriteBatch({
-                    table: this.manager.table.table
+                    table: this.manager.table
                 });
 
                 for (const item of results.items) {

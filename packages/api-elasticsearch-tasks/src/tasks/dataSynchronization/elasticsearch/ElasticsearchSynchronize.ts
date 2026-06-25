@@ -8,7 +8,8 @@ import {
 } from "./abstractions/ElasticsearchSynchronize.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { DbRegistry } from "@webiny/db/exports/api/db.js";
-import { Entity, type IEntity, type IStandardEntityAttributes } from "@webiny/db-dynamodb";
+import type { IEntity } from "@webiny/db-dynamodb";
+import type { IStandardEntityAttributes } from "@webiny/db-dynamodb/exports/api/db.js";
 import type { NonEmptyArray } from "@webiny/api/types.js";
 
 enum EntityType {
@@ -115,7 +116,7 @@ class ElasticsearchSynchronizeImpl implements Abstraction.Interface {
 
     private getTable(type: "regular" | "es") {
         const getByPredicate = (predicate: (item: DbRegistry.RegistryItem) => boolean) => {
-            const item = this.dbRegistry.getOneItem<Entity>(predicate);
+            const item = this.dbRegistry.getOneItem<IEntity>(predicate);
             return item.item;
         };
 

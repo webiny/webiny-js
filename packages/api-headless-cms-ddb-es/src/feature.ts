@@ -1,7 +1,5 @@
 import { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
-import type { DynamoDbDocumentClient } from "@webiny/db-dynamodb/exports/api/db.js";
-import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import type { CmsContext, StorageOperationsFactory as IStorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
@@ -60,12 +58,9 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         name: table || (process.env.DB_TABLE as string)
     });
 
-    /* TODO(Task 9): replace with factory-based ES table once api-opensearch is migrated. */
-    const db = container.resolve(DynamoDBClient);
-    const documentClient = db.client;
     const tableElasticsearchInstance = createOpenSearchTable({
         name: esTable,
-        documentClient
+        tableFactory
     });
 
     const entities = {
@@ -86,7 +81,8 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         }),
         entriesEs: createOpenSearchEntity({
             entityName: ENTITIES.ENTRIES_ES,
-            table: tableElasticsearchInstance
+            client: tableElasticsearchInstance,
+            entityFactory
         })
     };
 
@@ -174,8 +170,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         },
         getEntities: () => entities,
         getTable: () => client,
-        /* TODO(Task 9): remove cast once api-opensearch is migrated to factory pattern. */
-        getEsTable: () => tableElasticsearchInstance as unknown as DynamoDbDocumentClient.Interface,
+        getEsTable: () => tableElasticsearchInstance,
         groups: createGroupsStorageOperations({
             entity: entities.groups,
             container
