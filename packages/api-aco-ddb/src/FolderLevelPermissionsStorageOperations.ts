@@ -1,22 +1,7 @@
-import type { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
-import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import { DynamoDbEntityFactory, DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import { WebinyError } from "@webiny/error";
-import type {
-    AcoFolderLevelPermissionsStorageOperations,
-    FolderLevelPermission,
-    StorageOperationsBatchUpdateFlpParams,
-    StorageOperationsCreateFlpParams,
-    StorageOperationsDeleteFlpParams,
-    StorageOperationsGetFlpParams,
-    StorageOperationsListFlpsParams,
-    StorageOperationsUpdateFlpParams
-} from "@webiny/api-aco/types.js";
 import { executeWithRetry } from "@webiny/utils";
-
-export interface StorageOperationsConfig {
-    tableFactory: DynamoDbTableFactory.Interface;
-    entityFactory: DynamoDbEntityFactory.Interface;
-}
+import { FlpStorageOperations } from "@webiny/api-aco/features/folder/shared/abstractions.js";
 
 interface CreateKeysParams {
     tenant: string;
@@ -31,15 +16,18 @@ interface CreateGsiKeysParams {
     parentId: string;
 }
 
-export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPermissionsStorageOperations {
+class FolderLevelPermissionsStorageOperationsImpl implements FlpStorageOperations.Interface {
     private readonly entity;
 
-    constructor({ tableFactory, entityFactory }: StorageOperationsConfig) {
+    public constructor(
+        tableFactory: DynamoDbTableFactory.Interface,
+        entityFactory: DynamoDbEntityFactory.Interface
+    ) {
         const table = tableFactory.create({
             name: String(process.env.DB_TABLE)
         });
 
-        this.entity = entityFactory.createStandard<FolderLevelPermission>({
+        this.entity = entityFactory.createStandard<FlpStorageOperations.Permission>({
             client: table,
             name: "ACO.flp"
         });
@@ -47,7 +35,7 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
 
     public async list({
         where: { tenant, type, path_startsWith, parentId }
-    }: StorageOperationsListFlpsParams): Promise<FolderLevelPermission[]> {
+    }: FlpStorageOperations.ListParams): Promise<FlpStorageOperations.Permission[]> {
         try {
             if (parentId) {
                 const entries = await this.entity.queryAll({
@@ -88,7 +76,7 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
     public async get({
         tenant,
         id
-    }: StorageOperationsGetFlpParams): Promise<FolderLevelPermission | null> {
+    }: FlpStorageOperations.GetParams): Promise<FlpStorageOperations.Permission | null> {
         try {
             const entry = await this.entity.get(this.createKeys({ tenant, id }));
 
@@ -108,7 +96,7 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
 
     public async create({
         data
-    }: StorageOperationsCreateFlpParams): Promise<FolderLevelPermission> {
+    }: FlpStorageOperations.CreateParams): Promise<FlpStorageOperations.Permission> {
         const keys = {
             ...this.createKeys(data),
             ...this.createGsiKeys(data)
@@ -133,7 +121,7 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
     public async update({
         data: inputData,
         original
-    }: StorageOperationsUpdateFlpParams): Promise<FolderLevelPermission> {
+    }: FlpStorageOperations.UpdateParams): Promise<FlpStorageOperations.Permission> {
         try {
             const data = {
                 ...original,
@@ -160,7 +148,7 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         }
     }
 
-    public async delete({ flp }: StorageOperationsDeleteFlpParams): Promise<void> {
+    public async delete({ flp }: FlpStorageOperations.DeleteParams): Promise<void> {
         const keys = this.createKeys(flp);
 
         try {
@@ -179,11 +167,11 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
 
     public async batchUpdate({
         items
-    }: StorageOperationsBatchUpdateFlpParams): Promise<FolderLevelPermission[]> {
+    }: FlpStorageOperations.BatchUpdateParams): Promise<FlpStorageOperations.Permission[]> {
         try {
             const batch = this.entity.createEntityWriter();
 
-            const updatedItems: FolderLevelPermission[] = [];
+            const updatedItems: FlpStorageOperations.Permission[] = [];
 
             for (const { original, data: inputData } of items) {
                 const data = {
@@ -236,3 +224,8 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         };
     }
 }
+
+export const FolderLevelPermissionsStorageOperations = FlpStorageOperations.createImplementation({
+    implementation: FolderLevelPermissionsStorageOperationsImpl,
+    dependencies: [DynamoDbTableFactory, DynamoDbEntityFactory]
+});
