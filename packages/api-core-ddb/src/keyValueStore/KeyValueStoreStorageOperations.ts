@@ -1,6 +1,7 @@
-import type { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
-import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import { WebinyError } from "@webiny/error";
+import { KeyValueStorageOperations as KeyValueStorageOperationsAbstraction } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import { KeyValueStoreDynamoTable } from "./KeyValueStoreDynamoTable.js";
 
@@ -10,7 +11,7 @@ interface KeyValueRecord {
     scope: string;
 }
 
-export class KeyValueStoreStorageOperations {
+class KeyValueStoreStorageOperations implements KeyValueStorageOperationsAbstraction.Interface {
     private readonly table;
     private readonly entity;
 
@@ -26,7 +27,7 @@ export class KeyValueStoreStorageOperations {
         return `${scope}:${key}`;
     }
 
-    async get(key: string, scope: string): Promise<KeyValueRecord | null> {
+    public async get(key: string, scope: string): Promise<KeyValueRecord | null> {
         try {
             const scopedKey = this.createScopedKey(key, scope);
             const entry = await this.entity.get(this.table.createKeys({ scopedKey }));
@@ -54,7 +55,7 @@ export class KeyValueStoreStorageOperations {
         }
     }
 
-    async set(
+    public async set(
         key: string,
         value: any,
         scope: string,
@@ -85,7 +86,7 @@ export class KeyValueStoreStorageOperations {
         }
     }
 
-    async delete(key: string, scope: string): Promise<void> {
+    public async delete(key: string, scope: string): Promise<void> {
         try {
             const scopedKey = this.createScopedKey(key, scope);
             await this.entity.delete(this.table.createKeys({ scopedKey }));
@@ -98,3 +99,8 @@ export class KeyValueStoreStorageOperations {
         }
     }
 }
+
+export const KeyValueStorageOperations = KeyValueStorageOperationsAbstraction.createImplementation({
+    implementation: KeyValueStoreStorageOperations,
+    dependencies: [DynamoDbTableFactory, DynamoDbEntityFactory]
+});
