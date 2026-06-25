@@ -8,3 +8,10 @@ export const FilterStorageOperations =
 export namespace FilterStorageOperations {
     export type Interface = IAcoStorageOperations["filter"];
 }
+
+export const FlpStorageOperations =
+    createAbstraction<IAcoStorageOperations["flp"]>("FlpStorageOperations");
+
+export namespace FlpStorageOperations {
+    export type Interface = IAcoStorageOperations["flp"];
+}

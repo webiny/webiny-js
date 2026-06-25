@@ -1,1 +1,2 @@
-export * from "./useMoveRedirect.js";
+export { MoveRedirectFeature } from "./feature.js";
+export { MoveRedirectUseCase, MoveRedirectGateway } from "./abstractions.js";

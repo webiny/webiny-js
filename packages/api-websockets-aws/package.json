@@ -1,0 +1,49 @@
+{
+  "name": "@webiny/api-websockets-aws",
+  "version": "0.0.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "AWS Lambda handler and API Gateway transport for @webiny/api-websockets",
+  "contributors": [
+    "Bruno Zorić <bruno@webiny.com>"
+  ],
+  "exports": {
+    "./*": "./*",
+    ".": "./index.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
+    "@webiny/error": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/handler-aws": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "type-fest": "^5.7.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/handler-db": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "graphql": "^16.14.2",
+    "rimraf": "^6.1.3",
+    "type-fest": "^5.7.0",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.8"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

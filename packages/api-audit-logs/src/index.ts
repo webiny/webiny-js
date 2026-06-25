@@ -2,13 +2,10 @@ import { ContextPlugin } from "@webiny/api";
 import { createSubscriptionHooks } from "~/subscriptions/index.js";
 import { createAuditLogsContext } from "~/context/index.js";
 import { createGraphQLSchema } from "~/graphql/schema.js";
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { AuditLogsContext } from "./abstractions.js";
 
 export interface ICreateAuditLogsParams {
-    deleteLogsAfterDays: number | undefined;
-    tableName?: string;
-    documentClient?: DynamoDBDocument;
+    deleteLogsAfterDays?: number | undefined;
 }
 
 export const createAuditLogs = (params?: ICreateAuditLogsParams) => {
@@ -27,9 +24,7 @@ export const createAuditLogs = (params?: ICreateAuditLogsParams) => {
         subscriptionsPlugin,
         createGraphQLSchema(),
         createAuditLogsContext({
-            tableName: params?.tableName,
-            deleteLogsAfterDays: params?.deleteLogsAfterDays,
-            documentClient: params?.documentClient
+            deleteLogsAfterDays: params?.deleteLogsAfterDays
         })
     ];
 };

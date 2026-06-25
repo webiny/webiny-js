@@ -1,136 +1,33 @@
 import { describe, it, expect } from "vitest";
 import { WebsocketsRunner } from "~/runner";
 import { useHandler } from "~tests/helpers/useHandler";
-import { WebsocketsEventValidator } from "~/validator";
 import { MockWebsocketsEventValidator } from "~tests/mocks/MockWebsocketsEventValidator";
-import { WebsocketsContext } from "~/context/WebsocketsContext.js";
-import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport";
-import { WebsocketsEventRoute } from "~/handler/types";
 import { createWebsocketsRoutePlugin } from "~/plugins";
-import { WebsocketsResponse } from "~/response";
+import { WebsocketsResponse } from "~/response/abstractions/WebsocketsResponse.js";
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 
 describe("websockets runner", () => {
-    it("should run and fail the validation", async () => {
-        const handler = useHandler();
-
-        const context = await handler.handle();
-        const registry = context.websockets.registry;
-        /**
-         * We need to replace the context received from the handler with the one we create here.
-         */
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
-        const validator = new WebsocketsEventValidator();
-        const response = new WebsocketsResponse();
-
-        const runner = new WebsocketsRunner(context, registry, validator, response);
-
-        const resultRootLevel = await runner.run({});
-
-        expect(resultRootLevel).toEqual({
-            statusCode: 200,
-            message: "Validation failed.",
-            error: {
-                message: "Validation failed.",
-                code: "VALIDATION_FAILED_INVALID_FIELDS",
-                data: {
-                    invalidFields: {
-                        requestContext: {
-                            code: "invalid_type",
-                            message: "Invalid input: expected object, received undefined",
-                            data: {
-                                path: ["requestContext"]
-                            }
-                        }
-                    }
-                },
-                stack: expect.any(String)
-            }
-        });
-
-        const resultRequestContext = await runner.run({
-            requestContext: {}
-        });
-
-        expect(resultRequestContext).toEqual({
-            error: {
-                code: "VALIDATION_FAILED_INVALID_FIELDS",
-                data: {
-                    invalidFields: {
-                        "requestContext.connectionId": {
-                            code: "invalid_type",
-                            message: "Invalid input: expected string, received undefined",
-                            data: {
-                                path: ["requestContext", "connectionId"]
-                            }
-                        },
-                        "requestContext.connectedAt": {
-                            code: "invalid_type",
-                            message: "Invalid input: expected number, received undefined",
-                            data: {
-                                path: ["requestContext", "connectedAt"]
-                            }
-                        },
-                        "requestContext.domainName": {
-                            code: "invalid_type",
-                            message: "Invalid input: expected string, received undefined",
-                            data: {
-                                path: ["requestContext", "domainName"]
-                            }
-                        },
-                        "requestContext.eventType": {
-                            code: "invalid_value",
-                            message:
-                                'Invalid option: expected one of "CONNECT"|"MESSAGE"|"DISCONNECT"',
-                            data: {
-                                path: ["requestContext", "eventType"]
-                            }
-                        },
-                        "requestContext.routeKey": {
-                            code: "invalid_type",
-                            message: "Invalid input: expected string, received undefined",
-                            data: {
-                                path: ["requestContext", "routeKey"]
-                            }
-                        },
-                        "requestContext.stage": {
-                            code: "invalid_type",
-                            message: "Invalid input: expected string, received undefined",
-                            data: {
-                                path: ["requestContext", "stage"]
-                            }
-                        }
-                    }
-                },
-                message: "Validation failed.",
-                stack: expect.any(String)
-            },
-            message: "Validation failed.",
-            statusCode: 200
-        });
-    });
-
     it("should run and fail the route action - missing route", async () => {
         const handler = useHandler();
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
+        const runner = new WebsocketsRunner(context, response);
 
-        const runner = new WebsocketsRunner(context, registry, validator, response);
-
-        const result = await runner.run({
-            requestContext: {
-                // cast so we can trigger an error
-                routeKey: "aRouteKey" as unknown as WebsocketsEventRoute
+        const rawEvent = {
+            context: {
+                route: "aRouteKey"
             },
             body: JSON.stringify({
                 token: "aToken",
                 tenant: "root"
             })
-        });
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
         expect(result).toEqual({
             error: {
                 code: "NO_ROUTE_PLUGINS",
@@ -149,23 +46,23 @@ describe("websockets runner", () => {
         const handler = useHandler();
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
+        const runner = new WebsocketsRunner(context, response);
 
-        const runner = new WebsocketsRunner(context, registry, validator, response);
-
-        const result = await runner.run({
-            requestContext: {
-                routeKey: WebsocketsEventRoute.default
+        const rawEvent = {
+            context: {
+                route: "default"
             },
             body: JSON.stringify({
                 token: "aToken",
                 tenant: "root"
             })
-        });
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
         expect(result).toEqual({
             statusCode: 200
         });
@@ -175,24 +72,25 @@ describe("websockets runner", () => {
         const handler = useHandler();
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
+        const runner = new WebsocketsRunner(context, response);
 
-        const runner = new WebsocketsRunner(context, registry, validator, response);
-
-        const result = await runner.run({
-            requestContext: {
+        const rawEvent = {
+            context: {
                 connectionId: "myConnectionIdAbcdefg",
-                routeKey: WebsocketsEventRoute.connect
+                route: "connect",
+                endpoint: "https://test.execute-api.us-east-1.amazonaws.com/dev"
             },
             body: JSON.stringify({
                 token: "aToken",
                 tenant: "root"
             })
-        });
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
         expect(result).toEqual({
             statusCode: 200
         });
@@ -202,35 +100,31 @@ describe("websockets runner", () => {
         const handler = useHandler();
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
+        const runner = new WebsocketsRunner(context, response);
 
-        const runner = new WebsocketsRunner(context, registry, validator, response);
-
-        const result = await runner.run({
-            requestContext: {
+        const rawEvent = {
+            context: {
                 connectionId: "myConnectionIdAbcdefg",
-                routeKey: WebsocketsEventRoute.disconnect
+                route: "disconnect"
             },
             body: JSON.stringify({
                 token: "aToken",
                 tenant: "root"
             })
-        });
-        expect(result).toEqual({
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
+        expect(result).toMatchObject({
             error: {
-                code: "CONNECTION_NOT_FOUND",
-                data: {
-                    PK: "WS#CONNECTIONS",
-                    SK: "myConnectionIdAbcdefg"
-                },
-                message: 'There is no connection with ID "myConnectionIdAbcdefg".',
+                code: expect.stringContaining("CONNECTION_NOT_FOUND"),
+                message: expect.stringContaining("myConnectionIdAbcdefg"),
                 stack: expect.any(String)
             },
-            message: 'Route "$disconnect" action failed.',
+            message: 'Route "disconnect" action failed.',
             statusCode: 200
         });
     });
@@ -239,13 +133,11 @@ describe("websockets runner", () => {
         const handler = useHandler();
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
+        const registry = context.container.resolve(ConnectionRegistry);
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
-
-        const runner = new WebsocketsRunner(context, registry, validator, response);
+        const runner = new WebsocketsRunner(context, response);
 
         const beforeConnectConnectionsViaTenant = await registry.listViaTenant("root");
         expect(beforeConnectConnectionsViaTenant).toHaveLength(0);
@@ -253,16 +145,20 @@ describe("websockets runner", () => {
         const beforeConnectConnectionsViaIdentity = await registry.listViaIdentity("id-1");
         expect(beforeConnectConnectionsViaIdentity).toHaveLength(0);
 
-        const connectResult = await runner.run({
-            requestContext: {
+        const connectRawEvent = {
+            context: {
                 connectionId: "myConnectionIdAbcdefg",
-                routeKey: WebsocketsEventRoute.connect
+                route: "connect",
+                endpoint: "https://test.execute-api.us-east-1.amazonaws.com/dev"
             },
             body: JSON.stringify({
                 token: "aToken",
                 tenant: "root"
             })
-        });
+        };
+
+        const connectEvent = await validator.validate(connectRawEvent);
+        const connectResult = await runner.run(connectEvent);
         expect(connectResult).toEqual({
             statusCode: 200
         });
@@ -283,16 +179,19 @@ describe("websockets runner", () => {
             }
         ]);
 
-        const result = await runner.run({
-            requestContext: {
+        const disconnectRawEvent = {
+            context: {
                 connectionId: "myConnectionIdAbcdefg",
-                routeKey: WebsocketsEventRoute.disconnect
+                route: "disconnect"
             },
             body: JSON.stringify({
                 token: "aToken",
                 tenant: "root"
             })
-        });
+        };
+
+        const disconnectEvent = await validator.validate(disconnectRawEvent);
+        const result = await runner.run(disconnectEvent);
         expect(result).toEqual({
             statusCode: 200
         });
@@ -314,46 +213,46 @@ describe("websockets runner", () => {
         });
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
+        const runner = new WebsocketsRunner(context, response);
 
-        const runner = new WebsocketsRunner(context, registry, validator, response);
-
-        const result = await runner.run({
-            requestContext: {
-                routeKey: "myCustomRouteKey"
+        const rawEvent = {
+            context: {
+                route: "myCustomRouteKey"
             },
             body: JSON.stringify({
                 token: "aToken",
                 tenant: "root"
             })
-        });
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
         expect(result).toEqual({
             statusCode: 200
         });
     });
 
-    it("should return error due to body validation error", async () => {
+    it("should return ok status even when body is not valid JSON", async () => {
         const handler = useHandler();
 
         const context = await handler.handle();
-        const registry = context.websockets.registry;
         const validator = new MockWebsocketsEventValidator();
-        const response = new WebsocketsResponse();
+        const response = context.container.resolve(WebsocketsResponse);
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
+        const runner = new WebsocketsRunner(context, response);
 
-        const runner = new WebsocketsRunner(context, registry, validator, response);
-
-        const result = await runner.run({
-            requestContext: {
-                routeKey: WebsocketsEventRoute.default
+        const rawEvent = {
+            context: {
+                route: "default"
             },
             body: "somethingWrong"
-        });
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
         expect(result).toEqual({
             statusCode: 200
         });

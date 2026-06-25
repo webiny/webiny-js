@@ -1,22 +1,18 @@
-import type {
-    DeleteRedirectParams,
-    IDeleteRedirectUseCase
-} from "~/features/redirects/deleteRedirect/IDeleteRedirectUseCase.js";
-import type { IDeleteRedirectRepository } from "~/features/redirects/deleteRedirect/IDeleteRedirectRepository.js";
-import { Redirect } from "~/domain/Redirect/index.js";
+import {
+    DeleteRedirectUseCase as UseCaseAbstraction,
+    DeleteRedirectRepository,
+    type DeleteRedirectParams
+} from "./abstractions.js";
 
-export class DeleteRedirectUseCase implements IDeleteRedirectUseCase {
-    private repository: IDeleteRedirectRepository;
+class DeleteRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: DeleteRedirectRepository.Interface) {}
 
-    constructor(repository: IDeleteRedirectRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: DeleteRedirectParams) {
-        await this.repository.execute(
-            Redirect.create({
-                id: params.id
-            })
-        );
+    async execute(params: DeleteRedirectParams): Promise<void> {
+        return this.repository.execute(params);
     }
 }
+
+export const DeleteRedirectUseCase = UseCaseAbstraction.createImplementation({
+    implementation: DeleteRedirectUseCaseImpl,
+    dependencies: [DeleteRedirectRepository]
+});

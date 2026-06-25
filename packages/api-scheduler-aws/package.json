@@ -1,0 +1,50 @@
+{
+  "name": "@webiny/api-scheduler-aws",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-scheduler-aws"
+  },
+  "keywords": [
+    "scheduler:aws"
+  ],
+  "author": "Webiny Ltd",
+  "description": "AWS EventBridge implementation for the Webiny action scheduler.",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-scheduler": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
+    "@webiny/error": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/handler-aws": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "@webiny/testing": "0.0.0",
+    "@webiny/wcp": "0.0.0",
+    "aws-sdk-client-mock": "^4.1.0",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.8"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

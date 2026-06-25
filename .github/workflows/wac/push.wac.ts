@@ -11,10 +11,11 @@ import {
     withCommonParams
 } from "./steps/index.js";
 import { AbstractStorageOps } from "./storageOps/AbstractStorageOps.js";
-import { DdbOsStorageOps, DdbStorageOps } from "./storageOps/index.js";
+import { DdbOsStorageOps, DdbStorageOps, SqlStorageOps } from "./storageOps/index.js";
 
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
+const sqlStorageOps = new SqlStorageOps();
 
 const DIR_WEBINY_JS = "v6";
 const DIR_TEST_PROJECT = "new-webiny-project";
@@ -376,7 +377,7 @@ export const push = createWorkflow({
                         { name: "Lint", run: "yarn lint" },
                         {
                             name: "Check Package Node Modules",
-                            run: "yarn check-package-dependencies"
+                            run: "yarn check:node-modules:ci"
                         }
                     ],
                     { "working-directory": DIR_WEBINY_JS }
@@ -424,6 +425,7 @@ export const push = createWorkflow({
         ...createVitestTestsJobs(),
         ...createVitestTestsJobs(ddbStorageOps),
         ...createVitestTestsJobs(ddbOsStorageOps),
+        ...createVitestTestsJobs(sqlStorageOps),
         ...createE2EJobs(ddbStorageOps),
         ...createE2EJobs(ddbOsStorageOps)
     }

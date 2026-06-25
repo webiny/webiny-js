@@ -1,5 +1,4 @@
-import { createHeadlessCmsContext } from "@webiny/api-headless-cms";
-import { createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
@@ -40,6 +39,14 @@ export const useGraphQLHandler = (params?: UseGraphQLHandlerParams) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
+    const webhookPlugin = createRegisterExtensionPlugin(context => {
+        NoopTaskServiceFeature.register(context.container);
+        TestWebhookProviderFeature.register(context.container);
+        Extension.register(context.container);
+    });
+
+    webhookPlugin.name = "test-graphql-webhooks-extension-plugin";
+
     const handler = createHandler({
         plugins: [
             createApiCore({
@@ -50,14 +57,9 @@ export const useGraphQLHandler = (params?: UseGraphQLHandlerParams) => {
                 permissions: createPermissions(params?.permissions),
                 identity: createIdentity(params?.identity)
             }),
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
+            createCmsExtension(),
             graphQLHandlerPlugins(),
-            createRegisterExtensionPlugin(context => {
-                NoopTaskServiceFeature.register(context.container);
-                TestWebhookProviderFeature.register(context.container);
-                Extension.register(context.container);
-            }),
+            webhookPlugin,
             ...plugins
         ],
         debug: false

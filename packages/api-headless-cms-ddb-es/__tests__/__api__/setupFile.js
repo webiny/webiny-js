@@ -1,6 +1,6 @@
 import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { ContextPlugin } from "@webiny/api";
 import { registerCmsOpenSearchStorageOperations } from "../../src/index";
@@ -25,6 +25,7 @@ if (!prefix.includes("api-")) {
 
 setStorageOps("cms", () => {
     const documentClient = getDocumentClient();
+
     const { elasticsearchClient, plugins } = getElasticsearchClient({
         name: "api-headless-cms-ddb-es",
         prefix: "api-headless-cms-env-"
@@ -78,36 +79,43 @@ setStorageOps("cms", () => {
     createOrRefreshIndexSubscription.name =
         "headlessCmsDdbEs.context.createOrRefreshIndexSubscription";
 
+    const fruitModifierPlugin = createRegisterExtensionPlugin(({ container }) => {
+        const FruitBodyModifier = CmsEntryOpenSearchBodyModifier.createImplementation({
+            implementation: class {
+                modelId = "fruit";
+                modifyBody({ body }) {
+                    if (!body.sort.customSorter) {
+                        return;
+                    }
+                    const order = body.sort.customSorter.order;
+                    delete body.sort.customSorter;
+                    body.sort = {
+                        createdOn: {
+                            order,
+                            unmapped_type: "date"
+                        }
+                    };
+                }
+            },
+            dependencies: []
+        });
+        container.register(FruitBodyModifier);
+    });
+
+    fruitModifierPlugin.name = "headlessCmsDdbEs.plugins.fruitModifierPlugin";
+
     return {
         storageOperations: {},
         plugins: [
+            registerDynamoDBCore({
+                documentClient
+            }),
             registerCmsOpenSearchStorageOperations(),
             ...plugins,
             ...initializedDbPlugins,
             createOrRefreshIndexSubscription,
             getOpenSearchOperators(),
-            createRegisterExtensionPlugin(({ container }) => {
-                const FruitBodyModifier = CmsEntryOpenSearchBodyModifier.createImplementation({
-                    implementation: class {
-                        modelId = "fruit";
-                        modifyBody({ body }) {
-                            if (!body.sort.customSorter) {
-                                return;
-                            }
-                            const order = body.sort.customSorter.order;
-                            delete body.sort.customSorter;
-                            body.sort = {
-                                createdOn: {
-                                    order,
-                                    unmapped_type: "date"
-                                }
-                            };
-                        }
-                    },
-                    dependencies: []
-                });
-                container.register(FruitBodyModifier);
-            })
+            fruitModifierPlugin
         ]
     };
 });

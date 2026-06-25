@@ -86,6 +86,7 @@
   --color-primary-strong: var(--color-primary-700);
   --color-primary-subtle: var(--color-primary-100);
   --color-primary-xstrong: var(--color-primary-900);
+  --color-primary-light: var(--color-primary-200);
 
   --color-secondary: var(--color-success-500);
   --color-secondary-disabled: var(--color-success-400);
@@ -351,7 +352,7 @@
 @utility fill-grid {
   background-image: radial-gradient(var(--color-neutral-strong) 1px, transparent 0px);
   background-size: 15px 15px;
-  @apply bg-neutral-subtle;
+  @apply bg-neutral-light;
 }
 
 @layer base {

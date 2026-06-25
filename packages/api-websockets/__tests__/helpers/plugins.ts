@@ -2,12 +2,15 @@ import { createWebsocketsRoutePlugins } from "~/runner/routes";
 import { createTenancyAndSecurity } from "~tests/helpers/tenancySecurity";
 import { createIdentity, createPermissions } from "~tests/helpers/helpers";
 import { createWebsockets } from "~/index";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { WebsocketsTransport } from "~/transport/index";
+import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createRawEventHandler } from "@webiny/handler-aws";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { PluginsContainer } from "@webiny/plugins";
 import type { PluginCollection } from "@webiny/plugins/types";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
@@ -23,6 +26,7 @@ export const createPlugins = (params?: Params): PluginsContainer => {
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const websocketsStorage = getStorageOps("websockets");
 
     const container = plugins instanceof PluginsContainer ? plugins : new PluginsContainer();
     container.register([
@@ -37,8 +41,11 @@ export const createPlugins = (params?: Params): PluginsContainer => {
             identity: createIdentity()
         }),
         createWebsockets(),
-        createHeadlessCmsContext(),
-        createHeadlessCmsGraphQL(),
+        createRegisterExtensionPlugin(context => {
+            context.container.registerInstance(WebsocketsTransport, new MockWebsocketsTransport());
+        }),
+        ...websocketsStorage.plugins,
+        createCmsExtension(),
         graphQLHandlerPlugins(),
 
         createRawEventHandler(async ({ context }) => {

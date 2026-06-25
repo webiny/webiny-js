@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import type { CallbackParams } from "@webiny/app-admin";
 import { useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
@@ -54,19 +54,14 @@ const useWorker = () => {
     const { vm, selectItems } = useTrashBin();
     const { current: worker } = useRef(new Worker<TrashBinItemDTO>());
 
-    useEffect(() => {
-        worker.items = vm.selectedItems;
-    }, [vm.selectedItems.length]);
-
-    // Reset selected items in both repository and Worker
     const resetItems = useCallback(() => {
-        worker.items = [];
         selectItems([]);
     }, []);
 
     return {
         items: vm.selectedItems,
-        process: (callback: (items: TrashBinItemDTO[]) => void) => worker.process(callback),
+        process: (callback: (items: TrashBinItemDTO[]) => void) =>
+            worker.process(vm.selectedItems, callback),
         processInSeries: async (
             callback: ({
                 item,
@@ -74,7 +69,7 @@ const useWorker = () => {
                 report
             }: CallbackParams<TrashBinItemDTO>) => Promise<void>,
             chunkSize?: number
-        ) => worker.processInSeries(callback, chunkSize),
+        ) => worker.processInSeries(vm.selectedItems, callback, chunkSize),
         processInBulk: async (
             callback: (params: TrashBinBulkActionsParams) => Promise<void>,
             data?: Record<string, any>

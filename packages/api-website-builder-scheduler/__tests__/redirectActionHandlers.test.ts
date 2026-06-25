@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "./__mocks/context/useHandler.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
 import { createWebsiteBuilderScheduler } from "~/index.js";
 import {
     CreateRedirectUseCase,
@@ -22,10 +21,7 @@ describe("Redirect Action Handlers", () => {
 
     beforeEach(async () => {
         const contextHandler = useHandler({
-            plugins: [createWebsiteBuilderScheduler()],
-            getScheduleClient: () => {
-                return createMockScheduleClient();
-            }
+            plugins: [createWebsiteBuilderScheduler()]
         });
         context = await contextHandler.handler();
     });
