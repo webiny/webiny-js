@@ -1,3 +1,4 @@
+import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { describe, expect, it } from "vitest";
 import { ContextPlugin } from "@webiny/handler";
 import { useHandler } from "~tests/testHelpers/useHandler";
@@ -36,13 +37,13 @@ describe("onEntryBeforePublish", () => {
             }
         });
 
-        const model = await context.cms.getModel("article");
+        const model = await context.container.resolve(HeadlessCms).getModel("article");
 
         if (!model) {
             throw new Error(`Missing "article" model!`);
         }
 
-        const entry = await context.cms.createEntry(model, {
+        const entry = await context.container.resolve(HeadlessCms).createEntry(model, {
             values: {
                 title: "Article #1",
                 desiredEmbargoDate: null,
@@ -50,7 +51,9 @@ describe("onEntryBeforePublish", () => {
             }
         });
 
-        const publishedEntry = await context.cms.publishEntry(model, entry.id);
+        const publishedEntry = await context.container
+            .resolve(HeadlessCms)
+            .publishEntry(model, entry.id);
 
         expect(publishedEntry.values).toEqual({
             title: "Article #1",
@@ -58,26 +61,34 @@ describe("onEntryBeforePublish", () => {
             articleEmbargoDate: null
         });
 
-        const revision1 = await context.cms.createEntryRevisionFrom(model, publishedEntry.id, {
-            values: {
-                desiredEmbargoDate: "2024-04-20T00:00:00.000Z"
-            }
-        });
+        const revision1 = await context.container
+            .resolve(HeadlessCms)
+            .createEntryRevisionFrom(model, publishedEntry.id, {
+                values: {
+                    desiredEmbargoDate: "2024-04-20T00:00:00.000Z"
+                }
+            });
 
-        const publishedEntry1 = await context.cms.publishEntry(model, revision1.id);
+        const publishedEntry1 = await context.container
+            .resolve(HeadlessCms)
+            .publishEntry(model, revision1.id);
         expect(publishedEntry1.values).toEqual({
             title: "Article #1",
             desiredEmbargoDate: new Date("2024-04-20T00:00:00.000Z"),
             articleEmbargoDate: new Date("2024-04-20T00:00:00.000Z")
         });
 
-        const revision2 = await context.cms.createEntryRevisionFrom(model, publishedEntry.id, {
-            values: {
-                desiredEmbargoDate: "2024-04-25T00:00:00.000Z"
-            }
-        });
+        const revision2 = await context.container
+            .resolve(HeadlessCms)
+            .createEntryRevisionFrom(model, publishedEntry.id, {
+                values: {
+                    desiredEmbargoDate: "2024-04-25T00:00:00.000Z"
+                }
+            });
 
-        const publishedEntry2 = await context.cms.publishEntry(model, revision2.id);
+        const publishedEntry2 = await context.container
+            .resolve(HeadlessCms)
+            .publishEntry(model, revision2.id);
         expect(publishedEntry2.values).toEqual({
             title: "Article #1",
             desiredEmbargoDate: new Date("2024-04-25T00:00:00.000Z"),

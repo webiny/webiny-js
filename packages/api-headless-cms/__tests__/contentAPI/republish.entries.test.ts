@@ -1,3 +1,4 @@
+import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { beforeEach, describe, expect, it } from "vitest";
 import { mdbid } from "@webiny/utils";
 import type { CmsEntry, CmsModel } from "~/types";
@@ -255,7 +256,7 @@ describe("Republish entries", () => {
         const { applePublished, bananaPublished } = await createPublishedCategories();
         const { publishProduct, republishProduct } = useProductManageHandler(manageOpts);
         const context = categoryManager.getContext();
-        const storageOperations = context.cms.storageOperations;
+        const storageOperations = context.container.resolve(HeadlessCms).storageOperations;
 
         const { entry: galaEntry } = createEntry(productModel, {
             title: "Gala",

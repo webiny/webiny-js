@@ -14,7 +14,6 @@ import {
     CmsGraphQLSchemaSorter,
     CmsModelFieldToGraphQLRegistry
 } from "~/features/graphql/index.js";
-import { HeadlessCms } from "~/features/shared/abstractions.js";
 
 interface GenerateSchemaPluginsParams {
     context: CmsContext;
@@ -25,7 +24,11 @@ export const generateSchemaPlugins = async (
     params: GenerateSchemaPluginsParams
 ): Promise<ICmsGraphQLSchemaPlugin[]> => {
     const { context, models } = params;
-    const cms = context.container.resolve(HeadlessCms);
+    // NOTE: read the (possibly forked) context.cms here — `type`/`READ` are BUILD-time schema
+    // parameters set per endpoint by CmsSchemaExecutor's fork, not the request-fixed facade.
+    // TODO(phase1): thread `type` through getSchema -> generateSchema -> generateSchemaPlugins
+    // so this no longer depends on the context bag, enabling ctx.cms removal.
+    const { cms } = context;
 
     /**
      * If type does not exist, we are not generating schema plugins for models.

@@ -1,3 +1,4 @@
+import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import models, { createModelPlugins } from "~tests/contentAPI/mocks/contentModels";
 import { ModelFieldTraverser } from "~/utils";
@@ -26,11 +27,11 @@ describe("model field traverser", () => {
                 "x-tenant": "root"
             }
         });
-        converter = context.cms.getModelToAstConverter();
+        converter = context.container.resolve(HeadlessCms).getModelToAstConverter();
     });
 
     it("should properly traverse through model fields - product", async () => {
-        const model = await context.cms.getModel("product");
+        const model = await context.container.resolve(HeadlessCms).getModel("product");
         const ast = converter.toAst(model);
         const traverser = new ModelFieldTraverser();
 
@@ -76,7 +77,7 @@ describe("model field traverser", () => {
 
     // TODO: update the test
     it("should properly traverse through model fields - page builder", async () => {
-        const model = await context.cms.getModel(pageModel.modelId);
+        const model = await context.container.resolve(HeadlessCms).getModel(pageModel.modelId);
         const ast = converter.toAst(model);
         const traverser = new ModelFieldTraverser();
 
