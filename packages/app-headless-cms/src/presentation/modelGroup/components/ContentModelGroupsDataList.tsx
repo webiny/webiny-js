@@ -4,7 +4,15 @@ import orderBy from "lodash/orderBy.js";
 import { useFeature } from "@webiny/app";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { useSnackbar, useConfirmationDialog, SearchUI, useRouter } from "@webiny/app-admin";
-import { Button, DataList, DataListModal, DeleteIcon, List, Select, Tooltip } from "@webiny/admin-ui";
+import {
+    Button,
+    DataList,
+    DataListModal,
+    DeleteIcon,
+    List,
+    Select,
+    Tooltip
+} from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ModelGroupPresenterFeature } from "~/presentation/modelGroup/feature.js";
 import { usePermission } from "~/admin/hooks/index.js";
@@ -62,9 +70,7 @@ export const ContentModelGroupsDataList = observer(
                 showConfirmation(async () => {
                     try {
                         await presenter.deleteGroup(item.id);
-                        showSnackbar(
-                            t`Content model group "{name}" deleted.`({ name: item.name })
-                        );
+                        showSnackbar(t`Content model group "{name}" deleted.`({ name: item.name }));
                         if (activeId === item.id) {
                             goToRoute(Routes.ContentModelGroups.List);
                         }
@@ -84,9 +90,7 @@ export const ContentModelGroupsDataList = observer(
                     canCreate("cms.contentModelGroup") ? (
                         <Button
                             data-testid="new-group-button"
-                            onClick={() =>
-                                goToRoute(Routes.ContentModelGroups.List, { new: true })
-                            }
+                            onClick={() => goToRoute(Routes.ContentModelGroups.List, { new: true })}
                             text={t`New`}
                             icon={<AddIcon />}
                             size={"sm"}

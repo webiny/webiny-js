@@ -2,7 +2,7 @@ import React from "react";
 import { ReactComponent as DynamicZoneIcon } from "@webiny/icons/dynamic_form.svg";
 import { CmsFieldType } from "../abstractions.js";
 import type { CmsModelField } from "~/types.js";
-import type { CmsModelFieldValidatorsGroup } from "@webiny/app-headless-cms-common/types/validation.js";
+import type { CmsModelFieldValidatorsGroup } from "../abstractions.js";
 import { DynamicZone } from "./dynamicZone/DynamicZone.js";
 
 const listValidators: CmsModelFieldValidatorsGroup = {

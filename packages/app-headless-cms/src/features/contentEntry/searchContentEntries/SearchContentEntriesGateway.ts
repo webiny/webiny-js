@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsErrorResponse } from "~/types.js";
 import type { CmsReferenceEntry } from "../refTypes.js";
@@ -16,7 +15,7 @@ interface SearchContentEntriesResponse {
     };
 }
 
-const SEARCH_CONTENT_ENTRIES = gql`
+const SEARCH_CONTENT_ENTRIES = /* GraphQL */ `
     query CmsSearchContentEntries($modelIds: [ID!]!, $query: String, $limit: Int) {
         content: searchContentEntries(modelIds: $modelIds, query: $query, limit: $limit) {
             ${REFERENCE_ENTRY_FIELDS}

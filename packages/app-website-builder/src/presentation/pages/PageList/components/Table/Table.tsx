@@ -23,9 +23,9 @@ export const Table = observer(() => {
         if (!vm.showFolders) {
             return pageRows;
         }
-        const folderRows = (folders.vm.childFolders ?? []).map(f => folderToTableRow(f));
+        const folderRows = vm.childFolders.map(f => folderToTableRow(f));
         return [...folderRows, ...pageRows];
-    }, [list.vm.rows, folders.vm.childFolders, vm.showFolders]);
+    }, [list.vm.rows, vm.childFolders, vm.showFolders]);
 
     const selected = useMemo<TableRow[]>(() => {
         return data.filter(row => tableProps.selectedIds.has(row.id));

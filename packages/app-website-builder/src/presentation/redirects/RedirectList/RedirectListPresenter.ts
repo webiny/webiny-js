@@ -2,6 +2,7 @@ import { makeAutoObservable, reaction, computed } from "mobx";
 import { Worker } from "@webiny/app-admin";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import { sortFolders } from "@webiny/app-aco";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import { ListRedirectsUseCase } from "~/features/redirects/listRedirects/abstractions.js";
 import { RedirectsListCache } from "~/features/redirects/shared/abstractions.js";
@@ -48,6 +49,7 @@ class RedirectListPresenterImpl implements IRedirectListPresenter {
             createRedirect: this._createRedirect,
             editRedirect: this._editRedirect,
             showFolders: this.shouldShowFolders(),
+            childFolders: this.getSortedChildFolders(),
             showingFilters: this._showingFilters
         };
     }
@@ -181,6 +183,16 @@ class RedirectListPresenterImpl implements IRedirectListPresenter {
             },
             resetResults: () => worker.resetResults()
         };
+    }
+
+    private getSortedChildFolders() {
+        if (!this.shouldShowFolders()) {
+            return [];
+        }
+        return sortFolders(
+            this.folderTreePresenter.vm.childFolders ?? [],
+            this.listPresenter.vm.appliedQuery?.sort
+        );
     }
 
     private shouldShowFolders(): boolean {

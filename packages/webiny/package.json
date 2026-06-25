@@ -110,7 +110,6 @@
     "./admin/router": "./admin/router.js",
     "./admin/security": "./admin/security.js",
     "./admin": "./admin.js",
-    "./admin/aco": "./admin/aco.js",
     "./admin/build-params": "./admin/build-params.js",
     "./admin/configs": "./admin/configs.js",
     "./admin/form": "./admin/form.js",
@@ -141,7 +140,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "bd12be0b99082f2f83c3d359c73467e58a13b8028c7edc239ae69096d96a9450",
+  "exportGenerationHash": "84a9373d92ca5d5b1bd27c00be16dd199b8a74517eee23e088ea8aa5c9b8a747",
   "webiny": {
     "publishFrom": "dist"
   }

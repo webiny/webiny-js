@@ -1,6 +1,5 @@
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsErrorResponse } from "~/types.js";
-import { createDeleteMutation } from "@webiny/app-headless-cms-common";
+import type { CmsErrorResponse, CmsModel } from "~/types.js";
 import {
     DeleteEntryRevisionGateway as GatewayAbstraction,
     type IDeleteEntryRevisionParams
@@ -13,14 +12,23 @@ interface DeleteEntryRevisionResponse {
     };
 }
 
+function createMutation(model: CmsModel) {
+    return /* GraphQL */ `
+        mutation CmsEntriesDelete${model.singularApiName}($revision: ID!) {
+            content: delete${model.singularApiName}(revision: $revision) {
+                data
+                error { message code data }
+            }
+        }
+    `;
+}
+
 class DeleteEntryRevisionGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: CmsGraphQLClient.Interface) {}
 
     async execute({ model, revisionId }: IDeleteEntryRevisionParams) {
-        const mutation = createDeleteMutation(model);
-
         const response = await this.client.execute<DeleteEntryRevisionResponse>({
-            query: mutation,
+            query: createMutation(model),
             variables: { revision: revisionId }
         });
 

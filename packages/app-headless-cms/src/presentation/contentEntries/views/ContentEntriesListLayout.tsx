@@ -30,7 +30,7 @@ const DocumentList = observer(() => {
 
     const folderId = presenter.folders.vm.currentFolderId ?? "root";
     const isRoot = folderId === "root";
-    const hasFolders = presenter.vm.showFolders && presenter.folders.vm.childFolders.length > 0;
+    const hasFolders = presenter.vm.showFolders && presenter.vm.childFolders.length > 0;
 
     const onCreateFolder = useCallback(() => {
         showCreateFolderDialog({ currentParentId: folderId });

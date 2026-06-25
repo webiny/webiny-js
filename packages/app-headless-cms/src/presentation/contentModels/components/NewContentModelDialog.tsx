@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { useRouter, useSnackbar } from "@webiny/app-admin";
+import { useRouter } from "@webiny/app-admin";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
-import { Button, OverlayLoader } from "@webiny/admin-ui";
+import { OverlayLoader } from "@webiny/admin-ui";
 import { Dialog as AdminUiDialog } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { type DialogProps } from "~/admin/components/Dialog.js";
@@ -19,7 +19,6 @@ export interface NewContentModelDialogProps {
 const NewContentModelDialog = observer(({ open, onClose }: NewContentModelDialogProps) => {
     const presenter = useNewContentModelPresenter();
     const { goToRoute } = useRouter();
-    const { showSnackbar } = useSnackbar();
 
     useEffect(() => {
         if (open) {

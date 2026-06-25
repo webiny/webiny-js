@@ -93,42 +93,36 @@ export const ContentModelGroupsForm = observer(
                         text={t`Cancel`}
                         onClick={() => goToRoute(Routes.ContentModelGroups.List)}
                     />
-                    {vm.selectedGroup
-                        ? canEdit(vm.selectedGroup, "cms.contentModelGroup") && vm.canModify
-                            ? (
-                                <Button
-                                    variant={"primary"}
-                                    text={t`Save`}
-                                    onClick={handleSave}
-                                    data-testid={"cms.form.group.submit"}
-                                />
-                            )
-                            : vm.isPluginGroup
-                                ? (
-                                    <Tooltip
-                                        content={
-                                            "Content model group is registered via a plugin."
-                                        }
-                                        side={"bottom"}
-                                        trigger={
-                                            <Button
-                                                disabled
-                                                variant={"primary"}
-                                                text={t`Save`}
-                                                data-testid={"cms.form.group.submit"}
-                                            />
-                                        }
-                                    />
-                                )
-                                : null
-                        : (
+                    {vm.selectedGroup ? (
+                        canEdit(vm.selectedGroup, "cms.contentModelGroup") && vm.canModify ? (
                             <Button
                                 variant={"primary"}
                                 text={t`Save`}
                                 onClick={handleSave}
                                 data-testid={"cms.form.group.submit"}
                             />
-                        )}
+                        ) : vm.isPluginGroup ? (
+                            <Tooltip
+                                content={"Content model group is registered via a plugin."}
+                                side={"bottom"}
+                                trigger={
+                                    <Button
+                                        disabled
+                                        variant={"primary"}
+                                        text={t`Save`}
+                                        data-testid={"cms.form.group.submit"}
+                                    />
+                                }
+                            />
+                        ) : null
+                    ) : (
+                        <Button
+                            variant={"primary"}
+                            text={t`Save`}
+                            onClick={handleSave}
+                            data-testid={"cms.form.group.submit"}
+                        />
+                    )}
                 </SimpleFormFooter>
             </SimpleForm>
         );

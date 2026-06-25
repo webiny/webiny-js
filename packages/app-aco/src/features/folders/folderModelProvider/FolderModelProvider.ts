@@ -11,7 +11,6 @@ class FolderModelProviderImpl implements Provider.Interface {
 
         const model = this.repository.getModel();
         if (!model) {
-            // Something went seriously wrong!
             throw new Error("Unable to load File model!");
         }
 
@@ -19,6 +18,13 @@ class FolderModelProviderImpl implements Provider.Interface {
     }
 
     async getGraphQLSelection(): Promise<string> {
+        const model = await this.getModel();
+
+        const valuesBlock =
+            model.valuesSelection && model.valuesSelection !== "_empty"
+                ? model.valuesSelection
+                : "";
+
         return /* GraphQL */ `
             {
                 id
@@ -46,6 +52,7 @@ class FolderModelProviderImpl implements Provider.Interface {
                 canManagePermissions
                 canManageStructure
                 canManageContent
+                ${valuesBlock}
             }
         `;
     }

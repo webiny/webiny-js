@@ -525,7 +525,7 @@ describe("FolderTreePresenter", () => {
             await presenter.submitOperation();
 
             expect(createFolderUseCase.execute).toHaveBeenCalledTimes(1);
-            expect(listFolders.execute).toHaveBeenCalledTimes(2);
+            expect(listFolders.execute).toHaveBeenCalledTimes(1);
         });
     });
 

@@ -1,6 +1,5 @@
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsErrorResponse } from "~/types.js";
-import { createBulkActionMutation } from "@webiny/app-headless-cms-common";
+import type { CmsErrorResponse, CmsModel } from "~/types.js";
 import {
     BulkActionGateway as GatewayAbstraction,
     type IBulkActionParams,
@@ -14,11 +13,27 @@ interface BulkActionResponse {
     };
 }
 
+function createMutation(model: CmsModel) {
+    return /* GraphQL */ `
+        mutation CmsBulkAction${model.singularApiName}($action: BulkAction${model.singularApiName}Name!, $where: ${model.singularApiName}ListWhereInput, $search: String, $data: JSON) {
+            content: bulkAction${model.singularApiName}(action: $action, where: $where, search: $search, data: $data) {
+                data {
+                    id
+                }
+                error {
+                    message
+                    code
+                    data
+                }
+            }
+        }`;
+}
+
 class BulkActionGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: CmsGraphQLClient.Interface) {}
 
     async execute({ model, action, where, search, data }: IBulkActionParams) {
-        const mutation = createBulkActionMutation(model);
+        const mutation = createMutation(model);
 
         const response = await this.client.execute<BulkActionResponse>({
             query: mutation,

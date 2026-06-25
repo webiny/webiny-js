@@ -1,9 +1,4 @@
-export {
-    FormComponentDescription,
-    FormComponentLabel,
-    FormComponentNote,
-    FormComponentErrorMessage
-} from "@webiny/admin-ui/FormComponent/index.js";
+export { FormComponentDescription, FormComponentLabel, FormComponentNote, FormComponentErrorMessage } from "@webiny/admin-ui/FormComponent/index.js";
 export { Accordion } from "@webiny/admin-ui/Accordion/index.js";
 export { Alert } from "@webiny/admin-ui/Alert/index.js";
 export { AutoComplete } from "@webiny/admin-ui/AutoComplete/index.js";
@@ -14,25 +9,7 @@ export { Checkbox } from "@webiny/admin-ui/Checkbox/index.js";
 export { CheckboxGroup } from "@webiny/admin-ui/CheckboxGroup/index.js";
 export { CodeEditor } from "@webiny/admin-ui/CodeEditor/index.js";
 export { ColorPicker } from "@webiny/admin-ui/ColorPicker/index.js";
-export {
-    CloneIcon,
-    CreateIcon,
-    DataList,
-    DataListModal,
-    DataListWithSections,
-    DeleteIcon,
-    DownloadIcon,
-    EditIcon,
-    FilterIcon,
-    ListIcon,
-    LoginIcon,
-    NextPageIcon,
-    OptionsIcon,
-    PreviousPageIcon,
-    RefreshIcon,
-    SortIcon,
-    UploadIcon
-} from "@webiny/admin-ui/DataList/index.js";
+export { CloneIcon, CreateIcon, DataList, DataListModal, DataListWithSections, DeleteIcon, DownloadIcon, EditIcon, FilterIcon, ListIcon, LoginIcon, NextPageIcon, OptionsIcon, PreviousPageIcon, RefreshIcon, SortIcon, UploadIcon } from "@webiny/admin-ui/DataList/index.js";
 export { DataTable } from "@webiny/admin-ui/DataTable/index.js";
 export { DelayedOnChange } from "@webiny/admin-ui/DelayedOnChange/index.js";
 export { Dialog } from "@webiny/admin-ui/Dialog/index.js";
@@ -40,11 +17,7 @@ export { Drawer } from "@webiny/admin-ui/Drawer/index.js";
 export { DropdownMenu } from "@webiny/admin-ui/DropdownMenu/index.js";
 export { DynamicFieldset } from "@webiny/admin-ui/DynamicFieldset/index.js";
 export { FilePicker } from "@webiny/admin-ui/FilePicker/index.js";
-export {
-    FillViewportHeight,
-    FillViewportWidth,
-    FillViewport
-} from "@webiny/admin-ui/FillViewport/index.js";
+export { FillViewportHeight, FillViewportWidth, FillViewport } from "@webiny/admin-ui/FillViewport/index.js";
 export { Grid } from "@webiny/admin-ui/Grid/index.js";
 export { HeaderBar } from "@webiny/admin-ui/HeaderBar/index.js";
 export { Heading } from "@webiny/admin-ui/Heading/index.js";

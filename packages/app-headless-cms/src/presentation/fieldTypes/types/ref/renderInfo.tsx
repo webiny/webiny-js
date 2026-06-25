@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
+import { observer } from "mobx-react-lite";
+import { useFeature } from "@webiny/app";
 import type { CmsModel as BaseCmsModel, CmsModelField } from "~/types.js";
-import { useQuery } from "~/admin/hooks/index.js";
-import type { ListReferencedModelsQueryResult } from "./graphql.js";
-import { LIST_REFERENCED_MODELS } from "./graphql.js";
-import { useSnackbar } from "@webiny/app-admin";
 import { Tag } from "@webiny/admin-ui";
+import { ListModelsFeature } from "~/features/model/listModels/feature.js";
 
 type CmsModel = Pick<BaseCmsModel, "modelId" | "name">;
 
@@ -19,29 +18,14 @@ export const renderInfo = ({ model, field }: RenderInfoParams) => {
     return <RenderInfo model={model} field={field} />;
 };
 
-const RenderInfo = ({ field }: RenderInfoParams) => {
-    const hasAnyModels = (field.settings?.models || []).length > 0;
-    const { data, loading, error } = useQuery<ListReferencedModelsQueryResult>(
-        LIST_REFERENCED_MODELS,
-        {
-            skip: !hasAnyModels
-        }
-    );
+const RenderInfo = observer(({ field }: RenderInfoParams) => {
+    const { useCase } = useFeature(ListModelsFeature);
 
-    const { showSnackbar } = useSnackbar();
+    const [models, setModels] = React.useState<CmsModel[]>([]);
 
-    const [models, setModels] = useState<CmsModel[]>([]);
-
-    useEffect(() => {
-        if (!data || loading) {
-            return;
-        } else if (error) {
-            showSnackbar(error.message);
-            return;
-        }
-
-        setModels(data.listContentModels?.data || []);
-    }, [data, loading]);
+    React.useEffect(() => {
+        useCase.execute().then(setModels).catch(console.error);
+    }, []);
 
     const { items, badges } = useMemo(() => {
         const fieldModels = (field.settings?.models || [])
@@ -67,7 +51,7 @@ const RenderInfo = ({ field }: RenderInfoParams) => {
             {badges > 0 && <Tag content={`+${badges}`} />}
         </div>
     );
-};
+});
 
 const Badge = ({ model }: { model: CmsModel }) => {
     return <Tag content={model.name} />;

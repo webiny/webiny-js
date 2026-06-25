@@ -3,6 +3,7 @@ import type { IReactionDisposer } from "mobx";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
+import { sortFolders } from "@webiny/app-aco";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { CmsContentEntry } from "~/types.js";
 import { ListEntriesUseCase } from "~/features/contentEntry/listEntries/abstractions.js";
@@ -80,12 +81,18 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
         const appliedQuery = this._listPresenter.vm.appliedQuery;
         const hasSearch = !!appliedQuery?.search;
         const hasFilters = Object.keys(this._listPresenter.vm.filters).some(k => k !== "folderId");
+        const showFolders = !hasSearch && !hasFilters;
+
+        const childFolders = showFolders
+            ? sortFolders(this._foldersPresenter.vm.childFolders ?? [], appliedQuery?.sort)
+            : [];
 
         return {
             model: this.model,
             selectedEntryId: this._selectedEntryId,
             showingEntry: this._selectedEntryId !== null,
-            showFolders: !hasSearch && !hasFilters
+            showFolders,
+            childFolders
         };
     }
 

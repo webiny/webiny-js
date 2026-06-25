@@ -1,11 +1,7 @@
 import React from "react";
 import { ReactComponent as TabsIcon } from "@webiny/icons/tab.svg";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
-import type {
-    CmsTabLayoutField,
-    CmsLayoutField
-} from "@webiny/app-headless-cms-common/types/model.js";
-import type { CmsModelField } from "~/types.js";
+import type { CmsTabLayoutField, CmsLayoutField, CmsModelField } from "~/types.js";
 import { CmsLayoutFieldType, type ICmsLayoutFieldType } from "../../abstractions.js";
 import { TabsLayoutEditor } from "./TabsLayoutEditor.js";
 

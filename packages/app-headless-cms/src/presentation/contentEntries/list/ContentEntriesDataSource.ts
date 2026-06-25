@@ -32,10 +32,23 @@ export class ContentEntriesDataSource extends FolderAwareDataSource<CmsContentEn
         return this.listEntriesUseCase.execute({
             model: this.model,
             where: params.where,
-            sort: params.sort,
+            sort: this.mapSort(params.sort),
             search: params.search,
             limit: params.limit,
             after: params.after
         });
+    }
+
+    private mapSort(sort: string[] | undefined): string[] | undefined {
+        if (!sort) {
+            return undefined;
+        }
+
+        const titleFieldId = this.model.titleFieldId;
+        if (!titleFieldId) {
+            return sort.map(s => s.replace(/^name_/, "id_"));
+        }
+
+        return sort.map(s => s.replace(/^name_/, `values_${titleFieldId}_`));
     }
 }

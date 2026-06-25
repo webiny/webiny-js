@@ -53,7 +53,7 @@ const App = (props: AdminProps) => {
             <Websockets />
             <RecordLocking />
             <LexicalEditorActions />
-            <HeadlessCMS createApolloClient={createApolloClient} />
+            <HeadlessCMS />
             <FileManager />
             <AuditLogs />
             <MailerSettings />

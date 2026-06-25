@@ -1,6 +1,6 @@
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsContentEntry, CmsErrorResponse, CmsModelField } from "~/types.js";
-import { createUpdateMutation } from "@webiny/app-headless-cms-common";
+import type { CmsContentEntry, CmsErrorResponse, CmsModel, CmsModelField } from "~/types.js";
+import { EntryGraphQLFields } from "../abstractions.js";
 import {
     UpdateEntryGateway as GatewayAbstraction,
     type IUpdateEntryParams
@@ -14,18 +14,32 @@ interface UpdateEntryResponse {
     };
 }
 
+function createMutation(model: CmsModel, fields: EntryGraphQLFields.Interface) {
+    return /* GraphQL */ `
+        mutation CmsUpdate${model.singularApiName}($revision: ID!, $data: ${model.singularApiName}Input!, $options: UpdateCmsEntryOptionsInput) {
+            content: update${model.singularApiName}(revision: $revision, data: $data, options: $options) {
+                data {
+                    ${fields.getSystemFields(model)}
+                    ${fields.getValuesBlock(model)}
+                }
+                error { message code data }
+            }
+        }
+    `;
+}
+
 class UpdateEntryGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
         private client: CmsGraphQLClient.Interface,
-        private preparer: EntryDataPreparer.Interface
+        private preparer: EntryDataPreparer.Interface,
+        private fields: EntryGraphQLFields.Interface
     ) {}
 
     async execute({ model, revisionId, data, options }: IUpdateEntryParams) {
-        const mutation = createUpdateMutation(model);
         const preparedData = this.prepareData(data, model.fields);
 
         const response = await this.client.execute<UpdateEntryResponse>({
-            query: mutation,
+            query: createMutation(model, this.fields),
             variables: { revision: revisionId, data: preparedData, options }
         });
 
@@ -55,5 +69,5 @@ class UpdateEntryGatewayImpl implements GatewayAbstraction.Interface {
 
 export const UpdateEntryGateway = GatewayAbstraction.createImplementation({
     implementation: UpdateEntryGatewayImpl,
-    dependencies: [CmsGraphQLClient, EntryDataPreparer]
+    dependencies: [CmsGraphQLClient, EntryDataPreparer, EntryGraphQLFields]
 });

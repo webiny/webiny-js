@@ -1,6 +1,6 @@
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsContentEntry, CmsErrorResponse } from "~/types.js";
-import { createUnpublishMutation } from "@webiny/app-headless-cms-common";
+import type { CmsContentEntry, CmsErrorResponse, CmsModel } from "~/types.js";
+import { EntryGraphQLFields } from "../abstractions.js";
 import {
     UnpublishEntryGateway as GatewayAbstraction,
     type IUnpublishEntryParams
@@ -13,14 +13,28 @@ interface UnpublishEntryResponse {
     };
 }
 
+function createMutation(model: CmsModel, fields: EntryGraphQLFields.Interface) {
+    return /* GraphQL */ `
+        mutation CmsUnpublish${model.singularApiName}($revision: ID!) {
+            content: unpublish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${fields.getSystemFields(model)}
+                    ${fields.getValuesBlock(model)}
+                }
+                error { message code data }
+            }
+        }`;
+}
+
 class UnpublishEntryGatewayImpl implements GatewayAbstraction.Interface {
-    constructor(private client: CmsGraphQLClient.Interface) {}
+    constructor(
+        private client: CmsGraphQLClient.Interface,
+        private fields: EntryGraphQLFields.Interface
+    ) {}
 
     async execute({ model, revisionId }: IUnpublishEntryParams) {
-        const mutation = createUnpublishMutation(model);
-
         const response = await this.client.execute<UnpublishEntryResponse>({
-            query: mutation,
+            query: createMutation(model, this.fields),
             variables: { revision: revisionId }
         });
 
@@ -36,5 +50,5 @@ class UnpublishEntryGatewayImpl implements GatewayAbstraction.Interface {
 
 export const UnpublishEntryGateway = GatewayAbstraction.createImplementation({
     implementation: UnpublishEntryGatewayImpl,
-    dependencies: [CmsGraphQLClient]
+    dependencies: [CmsGraphQLClient, EntryGraphQLFields]
 });

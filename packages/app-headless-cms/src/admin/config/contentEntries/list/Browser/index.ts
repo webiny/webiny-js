@@ -1,4 +1,3 @@
-import { createFolderFieldDecoratorFactory } from "@webiny/app-aco";
 import type { AdvancedSearchConfig } from "./AdvancedSearch/index.js";
 import { AdvancedSearch } from "./AdvancedSearch/index.js";
 import type { BulkActionConfig } from "./BulkAction.js";
@@ -11,7 +10,6 @@ import { FiltersToWhere } from "./FiltersToWhere.js";
 import { FolderAction } from "./FolderAction.js";
 import type { TableConfig } from "./Table/index.js";
 import { Table } from "./Table/index.js";
-import { shouldDecorateFolderField } from "./FolderFieldDecorator.js";
 import { FolderDropConfirmation } from "./FolderDropConfirmation.js";
 import { FolderConfig } from "@webiny/app-aco/config/folder";
 import { RecordConfig } from "@webiny/app-aco/config/record";
@@ -41,12 +39,6 @@ export const Browser = {
         Footer: SidebarFooter
     },
     Folder: {
-        ExtensionField: {
-            createDecorator: createFolderFieldDecoratorFactory({
-                scope: "cms",
-                shouldDecorate: shouldDecorateFolderField
-            })
-        },
         Action: FolderAction,
         DropConfirmation: FolderDropConfirmation
     },

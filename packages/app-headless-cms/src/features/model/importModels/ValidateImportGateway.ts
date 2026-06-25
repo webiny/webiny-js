@@ -1,5 +1,4 @@
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsErrorResponse } from "~/types.js";
 import {
     VALIDATE_IMPORT_STRUCTURE,
     type ValidateImportStructureResponse,

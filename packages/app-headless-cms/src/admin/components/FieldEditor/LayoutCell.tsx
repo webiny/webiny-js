@@ -1,5 +1,5 @@
 import React from "react";
-import type { CmsLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
+import type { CmsLayoutField } from "~/types.js";
 import { useModelFieldEditor } from "./useModelFieldEditor.js";
 import { Text } from "@webiny/admin-ui";
 

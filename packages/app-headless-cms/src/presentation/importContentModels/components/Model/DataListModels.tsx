@@ -20,8 +20,7 @@ export const DataListModels = observer(({ models }: DataListModelsProps) => {
     const presenter = useImportContentModelsPresenter();
     const toggleModel = (item: Pick<ImportModelData, "id" | "name" | "related">) =>
         presenter.toggleModel(item);
-    const isModelSelected = (item: Pick<ImportModelData, "id">) =>
-        presenter.isModelSelected(item);
+    const isModelSelected = (item: Pick<ImportModelData, "id">) => presenter.isModelSelected(item);
     return (
         <Container>
             {models.map(model => {

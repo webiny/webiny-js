@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { IFieldBuilder } from "@webiny/app-admin/features/formModel/abstractions.js";
-import type { CmsModelFieldValidator } from "@webiny/app-headless-cms-common/types/validation.js";
+import type { CmsModelFieldValidator } from "~/types.js";
 import type { CmsModelField } from "~/types.js";
 import { CmsFieldValidator } from "../abstractions.js";
 import type { ICmsFieldValidatorFormBuilder, ICmsFieldValidatorContext } from "../abstractions.js";

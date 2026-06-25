@@ -1,6 +1,6 @@
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsContentEntryRevision, CmsErrorResponse } from "~/types.js";
-import { createRevisionsQuery } from "@webiny/app-headless-cms-common";
+import type { CmsContentEntryRevision, CmsErrorResponse, CmsModel } from "~/types.js";
+import { EntryGraphQLFields } from "../abstractions.js";
 import {
     ListRevisionsGateway as GatewayAbstraction,
     type IListRevisionsParams
@@ -13,14 +13,28 @@ interface ListRevisionsResponse {
     };
 }
 
+function createQuery(model: CmsModel, fields: EntryGraphQLFields.Interface) {
+    return /* GraphQL */ `
+        query CmsEntriesGet${model.singularApiName}Revisions($id: ID!) {
+            revisions: get${model.singularApiName}Revisions(id: $id) {
+                data {
+                    ${fields.getSystemFields(model)}
+                }
+                error { message code data }
+            }
+        }
+    `;
+}
+
 class ListRevisionsGatewayImpl implements GatewayAbstraction.Interface {
-    constructor(private client: CmsGraphQLClient.Interface) {}
+    constructor(
+        private client: CmsGraphQLClient.Interface,
+        private fields: EntryGraphQLFields.Interface
+    ) {}
 
     async execute({ model, entryId }: IListRevisionsParams) {
-        const query = createRevisionsQuery(model);
-
         const response = await this.client.execute<ListRevisionsResponse>({
-            query,
+            query: createQuery(model, this.fields),
             variables: { id: entryId }
         });
 
@@ -36,5 +50,5 @@ class ListRevisionsGatewayImpl implements GatewayAbstraction.Interface {
 
 export const ListRevisionsGateway = GatewayAbstraction.createImplementation({
     implementation: ListRevisionsGatewayImpl,
-    dependencies: [CmsGraphQLClient]
+    dependencies: [CmsGraphQLClient, EntryGraphQLFields]
 });

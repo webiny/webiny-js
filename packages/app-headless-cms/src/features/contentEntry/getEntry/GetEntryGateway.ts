@@ -1,7 +1,6 @@
-import gql from "graphql-tag";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsContentEntry, CmsErrorResponse } from "~/types.js";
-import { createEntrySystemFields, getValuesBlock } from "@webiny/app-headless-cms-common";
+import { EntryGraphQLFields } from "../abstractions.js";
 import {
     GetEntryGateway as GatewayAbstraction,
     GetEntryGraphQLFieldSelection,
@@ -16,18 +15,11 @@ interface GetEntryResponse {
     };
 }
 
-const ERROR_FIELD = /* GraphQL */ `
-    {
-        message
-        code
-        data
-    }
-`;
-
 class GetEntryGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
         private client: CmsGraphQLClient.Interface,
-        private fieldSelections: IGetEntryGraphQLFieldSelection[]
+        private fieldSelections: IGetEntryGraphQLFieldSelection[],
+        private fields: EntryGraphQLFields.Interface
     ) {}
 
     async execute({ model, id }: IGetEntryParams) {
@@ -36,15 +28,15 @@ class GetEntryGatewayImpl implements GatewayAbstraction.Interface {
             extraSelection.push(...selection.getSelection());
         }
 
-        const query = gql`
+        const query = /* GraphQL */ `
             query CmsEntriesGet${model.singularApiName}($revision: ID, $entryId: ID) {
                 content: get${model.singularApiName}(revision: $revision, entryId: $entryId) {
                     data {
-                        ${createEntrySystemFields(model)}
+                        ${this.fields.getSystemFields(model)}
                         ${extraSelection.join("\n")}
-                        ${getValuesBlock(model)}
+                        ${this.fields.getValuesBlock(model)}
                     }
-                    error ${ERROR_FIELD}
+                    error { message code data }
                 }
             }
         `;
@@ -68,5 +60,9 @@ class GetEntryGatewayImpl implements GatewayAbstraction.Interface {
 
 export const GetEntryGateway = GatewayAbstraction.createImplementation({
     implementation: GetEntryGatewayImpl,
-    dependencies: [CmsGraphQLClient, [GetEntryGraphQLFieldSelection, { multiple: true }]]
+    dependencies: [
+        CmsGraphQLClient,
+        [GetEntryGraphQLFieldSelection, { multiple: true }],
+        EntryGraphQLFields
+    ]
 });

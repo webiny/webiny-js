@@ -11,7 +11,7 @@ import type {
     CmsTabLayoutTab,
     CmsLayoutField,
     CmsEditorFieldsLayout
-} from "@webiny/app-headless-cms-common/types/model.js";
+} from "~/types.js";
 import { useConfirmationDialog, useDialogs } from "@webiny/app-admin";
 import { Grid } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
@@ -28,7 +28,7 @@ import { useModelFieldEditor } from "~/admin/hooks/index.js";
 import { PermissionsEditor } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsEditor/PermissionsEditor.js";
 import { RulesEditor } from "~/admin/components/FieldEditor/EditFieldDialog/RulesEditor/RulesEditor.js";
 import { useModelEditor } from "~/admin/components/ContentModelEditor/useModelEditor.js";
-import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
+import type { FieldOption } from "~/admin/components/ContentModelEditor/fieldOptions.js";
 
 interface TabsLayoutEditorProps {
     field: CmsTabLayoutField;

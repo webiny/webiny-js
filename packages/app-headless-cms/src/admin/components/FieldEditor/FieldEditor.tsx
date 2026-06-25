@@ -10,9 +10,8 @@ import { LayoutCell } from "./LayoutCell.js";
 import { useModelFieldEditor } from "./useModelFieldEditor.js";
 import type { IsVisibleCallable } from "./FieldEditorContext.js";
 import { FieldEditorProvider } from "./FieldEditorContext.js";
-import type { CmsEditorFieldsLayout, CmsModelField, DragSource } from "~/types.js";
-import type { CmsLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
-import { isLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
+import type { CmsEditorFieldsLayout, CmsModelField, CmsLayoutField, DragSource } from "~/types.js";
+import { isLayoutField } from "~/types.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
 import { IconButton } from "@webiny/admin-ui";
 

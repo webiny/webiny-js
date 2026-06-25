@@ -35,7 +35,10 @@ export const ImportContentModelsDialog = observer((props: ImportContentModelsDia
         : () => presenter.handleModelsValidation();
 
     const disabledConfirm =
-        vm.errors.length > 0 || vm.loading || !vm.file || (vm.validated && !presenter.hasSelected());
+        vm.errors.length > 0 ||
+        vm.loading ||
+        !vm.file ||
+        (vm.validated && !presenter.hasSelected());
 
     return (
         <Dialog

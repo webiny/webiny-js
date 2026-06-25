@@ -4,10 +4,7 @@ import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abst
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { IFormModel } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { ModelGroupDto } from "~/features/modelGroup/listModelGroups/abstractions.js";
-import {
-    ListModelGroupsUseCase,
-    type IListModelGroupsUseCase
-} from "~/features/modelGroup/listModelGroups/abstractions.js";
+import { ListModelGroupsUseCase } from "~/features/modelGroup/listModelGroups/abstractions.js";
 import { GetModelGroupUseCase } from "~/features/modelGroup/getModelGroup/abstractions.js";
 import { CreateModelGroupUseCase } from "~/features/modelGroup/createModelGroup/abstractions.js";
 import { UpdateModelGroupUseCase } from "~/features/modelGroup/updateModelGroup/abstractions.js";

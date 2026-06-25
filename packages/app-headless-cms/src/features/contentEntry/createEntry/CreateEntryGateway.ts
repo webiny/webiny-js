@@ -1,6 +1,6 @@
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsContentEntry, CmsErrorResponse, CmsModelField } from "~/types.js";
-import { createCreateMutation } from "@webiny/app-headless-cms-common";
+import type { CmsContentEntry, CmsErrorResponse, CmsModel, CmsModelField } from "~/types.js";
+import { EntryGraphQLFields } from "../abstractions.js";
 import {
     CreateEntryGateway as GatewayAbstraction,
     type ICreateEntryGatewayParams
@@ -14,18 +14,32 @@ interface CreateEntryResponse {
     };
 }
 
+function createMutation(model: CmsModel, fields: EntryGraphQLFields.Interface) {
+    return /* GraphQL */ `
+        mutation CmsEntriesCreate${model.singularApiName}($data: ${model.singularApiName}Input!, $options: CreateCmsEntryOptionsInput) {
+            content: create${model.singularApiName}(data: $data, options: $options) {
+                data {
+                    ${fields.getSystemFields(model)}
+                    ${fields.getValuesBlock(model)}
+                }
+                error { message code data }
+            }
+        }
+    `;
+}
+
 class CreateEntryGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
         private client: CmsGraphQLClient.Interface,
-        private preparer: EntryDataPreparer.Interface
+        private preparer: EntryDataPreparer.Interface,
+        private fields: EntryGraphQLFields.Interface
     ) {}
 
     async execute({ model, data, options }: ICreateEntryGatewayParams) {
-        const mutation = createCreateMutation(model);
         const preparedData = this.prepareData(data, model.fields);
 
         const response = await this.client.execute<CreateEntryResponse>({
-            query: mutation,
+            query: createMutation(model, this.fields),
             variables: { data: preparedData, options }
         });
 
@@ -55,5 +69,5 @@ class CreateEntryGatewayImpl implements GatewayAbstraction.Interface {
 
 export const CreateEntryGateway = GatewayAbstraction.createImplementation({
     implementation: CreateEntryGatewayImpl,
-    dependencies: [CmsGraphQLClient, EntryDataPreparer]
+    dependencies: [CmsGraphQLClient, EntryDataPreparer, EntryGraphQLFields]
 });

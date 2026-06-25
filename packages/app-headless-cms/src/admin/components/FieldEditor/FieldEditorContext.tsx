@@ -6,14 +6,12 @@ import type {
     CmsEditorFieldId,
     CmsEditorFieldsLayout,
     CmsModelField,
+    CmsLayoutField,
+    CmsEditorLayoutCell,
     DragSource,
     FieldLayoutPosition
 } from "~/types.js";
-import type {
-    CmsLayoutField,
-    CmsEditorLayoutCell
-} from "@webiny/app-headless-cms-common/types/model.js";
-import { isLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
+import { isLayoutField } from "~/types.js";
 import * as utils from "./utils/index.js";
 import type { FieldEditorProps } from "./FieldEditor.js";
 import type { DragSourceMonitor } from "react-dnd";

@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { IFolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import type { FolderDto } from "@webiny/app-aco";
 import type { Page } from "~/domain/Page/Page.js";
 
 export interface IPageListInitConfig {
@@ -10,6 +11,7 @@ export interface IPageListInitConfig {
 
 export interface IPageListViewModel {
     showFolders: boolean;
+    childFolders: FolderDto[];
 }
 
 export interface IPageListPresenter {

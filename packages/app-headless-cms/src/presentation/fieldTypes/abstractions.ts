@@ -1,11 +1,26 @@
 import React from "react";
 import { createAbstraction } from "@webiny/feature/admin";
-import type { CmsModel, CmsModelField, DragSource } from "~/types.js";
-import type {
-    CmsModelFieldValidatorsGroup,
-    CmsModelFieldValidatorsFactory
-} from "@webiny/app-headless-cms-common/types/validation.js";
-import type { CmsLayoutField } from "~/types.js";
+import type { CmsModel, CmsModelField, CmsLayoutField, DragSource } from "~/types.js";
+
+export interface CmsModelFieldValidatorConfig {
+    name: string;
+    required?: boolean;
+    label?: string;
+    description?: string;
+    defaultMessage?: string;
+    defaultSettings?: Record<string, any>;
+    variables?: { name: string; description: string }[];
+}
+
+export interface CmsModelFieldValidatorsGroup {
+    validators: (string | CmsModelFieldValidatorConfig)[];
+    title?: string;
+    description?: string;
+}
+
+export interface CmsModelFieldValidatorsFactory {
+    (field: CmsModelField): string[] | CmsModelFieldValidatorsGroup;
+}
 
 export interface ICmsFieldType {
     readonly type: string;

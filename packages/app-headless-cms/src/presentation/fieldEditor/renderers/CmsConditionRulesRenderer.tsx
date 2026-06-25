@@ -6,12 +6,12 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { Grid, Select, Input, Button, Separator } from "@webiny/admin-ui";
 import type { FieldRule, FieldRuleAction } from "~/types.js";
-import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
+import type { FieldOption } from "~/admin/components/ContentModelEditor/fieldOptions.js";
 import {
     getOperatorOptions,
     VALUE_HIDDEN_OPERATORS
-} from "@webiny/app-headless-cms-common/Fields/operatorOptions.js";
-import type { Operator } from "@webiny/app-headless-cms-common/Fields/evaluateExpression.js";
+} from "~/admin/components/ContentModelEditor/operatorOptions.js";
+import type { Operator } from "~/admin/components/ContentModelEditor/evaluateExpression.js";
 import { useModelEditor } from "~/admin/components/ContentModelEditor/useModelEditor.js";
 
 const DEFAULT_ACTION_OPTIONS = [

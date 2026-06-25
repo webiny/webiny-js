@@ -3,6 +3,7 @@ import type { FmFile } from "@webiny/sdk";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import { sortFolders } from "@webiny/app-aco";
 import { LocalStorage } from "@webiny/app/features/localStorage";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import {
@@ -91,6 +92,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             },
             tags: this.tagsRepository.tags,
             showFolders: this.shouldShowFolders(),
+            childFolders: this.getSortedChildFolders(),
             viewMode: this._viewMode,
             dragging: this._dragging,
             showingFilters: this._showingFilters
@@ -238,6 +240,16 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             this._disposeReaction();
             this._disposeReaction = null;
         }
+    }
+
+    private getSortedChildFolders() {
+        if (!this.shouldShowFolders()) {
+            return [];
+        }
+        return sortFolders(
+            this.folderTreePresenter.vm.childFolders ?? [],
+            this.listPresenter.vm.appliedQuery?.sort
+        );
     }
 
     // Hide folders when the user is actively filtering or searching.

@@ -1,7 +1,6 @@
-import gql from "graphql-tag";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsContentEntry, CmsErrorResponse, CmsMetaResponse } from "~/types.js";
-import { createListQueryDataSelection } from "@webiny/app-headless-cms-common";
+import { EntryGraphQLFields } from "../abstractions.js";
 import {
     ListEntriesGateway as GatewayAbstraction,
     ListEntriesGraphQLFieldSelection,
@@ -18,18 +17,11 @@ interface ListEntriesResponse {
     };
 }
 
-const ERROR_FIELD = /* GraphQL */ `
-    {
-        message
-        code
-        data
-    }
-`;
-
 class ListEntriesGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
         private client: CmsGraphQLClient.Interface,
-        private fieldSelections: IListEntriesGraphQLFieldSelection[]
+        private fieldSelections: IListEntriesGraphQLFieldSelection[],
+        private fields: EntryGraphQLFields.Interface
     ) {}
 
     async execute(params: IListEntriesGatewayParams): Promise<IListEntriesGatewayResult> {
@@ -38,28 +30,18 @@ class ListEntriesGatewayImpl implements GatewayAbstraction.Interface {
             extraSelection.push(...selection.getSelection());
         }
 
-        const baseSelection = createListQueryDataSelection(params.model);
         const queryName = params.model.pluralApiName;
 
-        const query = gql`
+        const query = /* GraphQL */ `
             query CmsEntriesList${queryName}($where: ${params.model.singularApiName}ListWhereInput, $sort: [${params.model.singularApiName}ListSorter], $limit: Int, $after: String, $search: String) {
-                content: list${queryName}(
-                    where: $where
-                    sort: $sort
-                    limit: $limit
-                    after: $after
-                    search: $search
-                ) {
+                content: list${queryName}(where: $where, sort: $sort, limit: $limit, after: $after, search: $search) {
                     data {
-                        ${baseSelection}
+                        ${this.fields.getSystemFields(params.model)}
+                        ${this.fields.getValuesBlock(params.model)}
                         ${extraSelection.join("\n")}
                     }
-                    meta {
-                        cursor
-                        hasMoreItems
-                        totalCount
-                    }
-                    error ${ERROR_FIELD}
+                    meta { cursor hasMoreItems totalCount }
+                    error { message code data }
                 }
             }
         `;
@@ -87,5 +69,9 @@ class ListEntriesGatewayImpl implements GatewayAbstraction.Interface {
 
 export const ListEntriesGateway = GatewayAbstraction.createImplementation({
     implementation: ListEntriesGatewayImpl,
-    dependencies: [CmsGraphQLClient, [ListEntriesGraphQLFieldSelection, { multiple: true }]]
+    dependencies: [
+        CmsGraphQLClient,
+        [ListEntriesGraphQLFieldSelection, { multiple: true }],
+        EntryGraphQLFields
+    ]
 });

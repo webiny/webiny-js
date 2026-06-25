@@ -14,14 +14,11 @@ import {
 } from "@webiny/admin-ui";
 import { useDialogs } from "@webiny/app-admin";
 import { Bind } from "@webiny/form";
-import type {
-    CmsAlertLayoutField,
-    CmsLayoutField
-} from "@webiny/app-headless-cms-common/types/model.js";
+import type { CmsAlertLayoutField, CmsLayoutField } from "~/types.js";
 import { PermissionsEditor } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsEditor/PermissionsEditor.js";
 import { RulesEditor } from "~/admin/components/FieldEditor/EditFieldDialog/RulesEditor/RulesEditor.js";
 import { useModelEditor } from "~/admin/components/ContentModelEditor/useModelEditor.js";
-import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
+import type { FieldOption } from "~/admin/components/ContentModelEditor/fieldOptions.js";
 import { CmsLayoutFieldType, type ICmsLayoutFieldType } from "../../abstractions.js";
 
 const AlertSettings = () => {

@@ -1,12 +1,13 @@
-import type { Validator } from "@webiny/validation/types.js";
-import type { CmsModelFieldValidator } from "~/types/validation.js";
-import type {
-    CmsDynamicZoneTemplate,
-    CmsEditorFieldPredefinedValues,
-    CmsModelFieldRendererPlugin
-} from "~/types/index.js";
-import type { CmsIdentity } from "~/types/shared.js";
 import type React from "react";
+import type { Validator } from "@webiny/validation/types.js";
+import type { CmsDynamicZoneTemplate, CmsEditorFieldPredefinedValues } from "~/types/index.js";
+import type { CmsIdentity } from "~/types/shared.js";
+
+export interface CmsModelFieldValidator {
+    name: string;
+    message?: string;
+    settings?: any;
+}
 
 export interface CmsModelFieldSettings<T = unknown> {
     defaultValue?: string | boolean | number | null | undefined;
@@ -45,16 +46,10 @@ export type CmsModelField<T = unknown> = T & {
     list?: boolean;
     predefinedValues?: CmsEditorFieldPredefinedValues;
     settings?: CmsModelFieldSettings<T>;
-    renderer:
-        | {
-              name: string;
-              settings?: Record<string, any>;
-          }
-        /**
-         * Use this only for programmatic assignment of renderers.
-         * Since functions cannot be serialized, this can only work via code.
-         */
-        | CmsModelFieldRendererPlugin["renderer"]["render"];
+    renderer: {
+        name: string;
+        settings?: Record<string, any>;
+    };
     tags?: string[];
     rules?: FieldRule[];
 };
@@ -123,17 +118,6 @@ export function isLayoutField(cell: unknown): cell is CmsLayoutField {
         !("fieldId" in cell)
     );
 }
-
-/**
- * @deprecated Use `isLayoutField` instead.
- */
-export const isLayoutDescriptor = isLayoutField;
-
-/**
- * @category GraphQL
- * @category Model
- */
-export type CmsEditorContentModel = CmsModel;
 
 /**
  * @category GraphQL

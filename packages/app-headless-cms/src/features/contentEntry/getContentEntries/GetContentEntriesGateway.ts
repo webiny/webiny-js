@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsErrorResponse } from "~/types.js";
 import type { CmsReferenceEntry } from "../refTypes.js";
@@ -20,7 +19,7 @@ interface GetContentEntriesResponse {
     };
 }
 
-const GET_CONTENT_ENTRIES = gql`
+const GET_CONTENT_ENTRIES = /* GraphQL */ `
     query CmsGetContentEntries($entries: [CmsModelEntryInput!]!) {
         latest: getLatestContentEntries(entries: $entries) {
             ${REFERENCE_ENTRY_FIELDS}

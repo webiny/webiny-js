@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { IFolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import type { FolderDto } from "@webiny/app-aco";
 import type { CmsContentEntry, CmsModel } from "~/types.js";
 
 export interface IContentEntriesInitConfig {
@@ -14,6 +15,7 @@ export interface IContentEntriesViewModel {
     selectedEntryId: string | null;
     showingEntry: boolean;
     showFolders: boolean;
+    childFolders: FolderDto[];
 }
 
 export interface IContentEntriesPresenter {

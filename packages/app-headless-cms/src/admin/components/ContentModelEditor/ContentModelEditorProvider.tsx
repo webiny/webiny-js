@@ -7,11 +7,8 @@ import { useContainer } from "@webiny/app";
 import { ModelProvider } from "~/admin/components/ModelProvider/index.js";
 import { createHashing } from "@webiny/app/utils/index.js";
 import { Routes } from "~/routes.js";
-import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
-import {
-    buildFieldOptions,
-    buildFieldLabelPrefixes
-} from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
+import type { FieldOption } from "./fieldOptions.js";
+import { buildFieldOptions, buildFieldLabelPrefixes } from "./fieldOptions.js";
 import { CmsLayoutFieldType } from "~/presentation/fieldTypes/abstractions.js";
 import { GetModelFeature } from "~/features/model/getModel/feature.js";
 import { UpdateModelFeature } from "~/features/model/updateModel/feature.js";

@@ -253,8 +253,6 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
             });
         }
 
-        await this.loadFolders();
-
         runInAction(() => {
             this.operation = { active: false, mode: null };
         });

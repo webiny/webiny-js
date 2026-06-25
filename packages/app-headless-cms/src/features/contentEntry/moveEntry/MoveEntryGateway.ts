@@ -1,10 +1,9 @@
-import gql from "graphql-tag";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsErrorResponse, CmsModel } from "~/types.js";
 import { MoveEntryGateway as GatewayAbstraction, type IMoveEntryParams } from "./abstractions.js";
 
 function createMoveMutation(model: CmsModel) {
-    return gql`
+    return /* GraphQL */ `
         mutation CmsMove${model.singularApiName}($revision: ID!, $folderId: ID!) {
             content: move${model.singularApiName}(revision: $revision, folderId: $folderId) {
                 data

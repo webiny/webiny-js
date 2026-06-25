@@ -124,7 +124,7 @@ export const DocumentList = observer(() => {
 
     const canCreatePage = wbPermissions.canCreate("page") && canCreateContent(folderId);
     const isSearch = !vm.showFolders;
-    const hasFolders = vm.showFolders && folders.vm.childFolders.length > 0;
+    const hasFolders = vm.showFolders && vm.childFolders.length > 0;
 
     return (
         <ListView

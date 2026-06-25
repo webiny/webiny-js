@@ -145,6 +145,7 @@ function createMockPresenter(
         },
         tags: [],
         showFolders: true,
+        childFolders: [],
         viewMode: "table" as const,
         dragging: false,
         showingFilters: false,

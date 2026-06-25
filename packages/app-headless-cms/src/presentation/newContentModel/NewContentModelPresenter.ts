@@ -6,7 +6,7 @@ import { ListModelGroupsUseCase } from "~/features/modelGroup/listModelGroups/ab
 import { CreateModelUseCase } from "~/features/model/createModel/abstractions.js";
 import { ModelGroupsCache } from "~/features/modelGroup/abstractions.js";
 import { ModelsCache } from "~/features/model/abstractions.js";
-import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
+const CMS_MODEL_SINGLETON_TAG = "singleEntry";
 import {
     NewContentModelPresenter as Abstraction,
     type INewContentModelPresenter,

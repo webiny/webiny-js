@@ -16,7 +16,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as CloneIcon } from "@webiny/icons/flip_to_front.svg";
 import { DataList, DataListModal, List } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
-import type { CmsEditorContentModel, CmsModel } from "~/types.js";
+import type { CmsModel } from "~/types.js";
 import { usePermission } from "~/admin/hooks/usePermission.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
@@ -46,7 +46,7 @@ const deserializeSorters = (data: string): [string, "asc" | "desc"] => {
 interface ContentModelsDataListProps {
     canCreate: boolean;
     onCreate: () => void;
-    onClone: (contentModel: CmsEditorContentModel) => void;
+    onClone: (contentModel: CmsModel) => void;
     showImportModelModal: () => void;
 }
 
@@ -223,10 +223,7 @@ const ContentModelsDataList = observer(
                                         contentModel,
                                         "cms.contentModel"
                                     );
-                                    const canEditModel = canEdit(
-                                        contentModel,
-                                        "cms.contentModel"
-                                    );
+                                    const canEditModel = canEdit(contentModel, "cms.contentModel");
 
                                     return (
                                         <List.Item
@@ -357,9 +354,7 @@ const ContentModelsDataList = observer(
                                                                     icon={
                                                                         <DropdownMenu.Item.Icon
                                                                             label={"Delete"}
-                                                                            element={
-                                                                                <DeleteIcon />
-                                                                            }
+                                                                            element={<DeleteIcon />}
                                                                         />
                                                                     }
                                                                     onClick={() => {

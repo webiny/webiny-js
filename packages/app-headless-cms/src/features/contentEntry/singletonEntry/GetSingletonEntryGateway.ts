@@ -1,6 +1,6 @@
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsContentEntry, CmsErrorResponse } from "~/types.js";
-import { createReadSingletonQuery } from "@webiny/app-headless-cms-common";
+import type { CmsContentEntry, CmsErrorResponse, CmsModel } from "~/types.js";
+import { EntryGraphQLFields } from "../abstractions.js";
 import {
     GetSingletonEntryGateway as GatewayAbstraction,
     type IGetSingletonEntryParams
@@ -13,14 +13,29 @@ interface GetSingletonEntryResponse {
     };
 }
 
+function createQuery(model: CmsModel, fields: EntryGraphQLFields.Interface) {
+    return /* GraphQL */ `
+        query CmsEntryGetSingleton${model.singularApiName} {
+            content: get${model.singularApiName} {
+                data {
+                    ${fields.getSystemFields(model)}
+                    ${fields.getValuesBlock(model)}
+                }
+                error { message code data }
+            }
+        }
+    `;
+}
+
 class GetSingletonEntryGatewayImpl implements GatewayAbstraction.Interface {
-    constructor(private client: CmsGraphQLClient.Interface) {}
+    constructor(
+        private client: CmsGraphQLClient.Interface,
+        private fields: EntryGraphQLFields.Interface
+    ) {}
 
     async execute({ model }: IGetSingletonEntryParams) {
-        const query = createReadSingletonQuery(model);
-
         const response = await this.client.execute<GetSingletonEntryResponse>({
-            query
+            query: createQuery(model, this.fields)
         });
 
         const { data, error } = response.content;
@@ -35,5 +50,5 @@ class GetSingletonEntryGatewayImpl implements GatewayAbstraction.Interface {
 
 export const GetSingletonEntryGateway = GatewayAbstraction.createImplementation({
     implementation: GetSingletonEntryGatewayImpl,
-    dependencies: [CmsGraphQLClient]
+    dependencies: [CmsGraphQLClient, EntryGraphQLFields]
 });

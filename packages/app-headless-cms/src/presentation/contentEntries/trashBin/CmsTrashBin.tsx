@@ -5,7 +5,7 @@ import { TrashBinFeature } from "@webiny/app-admin/presentation/trashBin/feature
 import { TrashBinOverlay } from "@webiny/app-admin/presentation/trashBin/components/TrashBinOverlay.js";
 import { Sidebar } from "@webiny/admin-ui";
 import { ReactComponent as Delete } from "@webiny/icons/delete.svg";
-import { useModel } from "@webiny/app-headless-cms-common";
+import { useModel } from "~/admin/components/ModelProvider/index.js";
 
 export const CmsTrashBin = observer(() => {
     const [open, setOpen] = useState(false);

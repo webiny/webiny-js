@@ -110,6 +110,7 @@ function createMockPresenter(
         },
         tags: [],
         showFolders: true,
+        childFolders: [],
         viewMode: "grid" as const,
         dragging: false,
         showingFilters: false,

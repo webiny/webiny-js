@@ -2,6 +2,7 @@ import { computed, makeAutoObservable, reaction } from "mobx";
 import type { IReactionDisposer } from "mobx";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import { sortFolders } from "@webiny/app-aco";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { Page } from "~/domain/Page/Page.js";
@@ -61,13 +62,32 @@ class PageListPresenterImpl implements Abstraction.Interface {
     }
 
     get vm(): IPageListViewModel {
-        const appliedQuery = this._listPresenter.vm.appliedQuery;
-        const hasSearch = !!appliedQuery?.search;
-        const hasFilters = Object.keys(this._listPresenter.vm.filters).some(k => k !== "folderId");
-
         return {
-            showFolders: !hasSearch && !hasFilters
+            showFolders: this.shouldShowFolders(),
+            childFolders: this.getSortedChildFolders()
         };
+    }
+
+    private getSortedChildFolders() {
+        if (!this.shouldShowFolders()) {
+            return [];
+        }
+        return sortFolders(
+            this._foldersPresenter.vm.childFolders ?? [],
+            this._listPresenter.vm.appliedQuery?.sort
+        );
+    }
+
+    private shouldShowFolders(): boolean {
+        const { appliedQuery } = this._listPresenter.vm;
+        if (!appliedQuery) {
+            return true;
+        }
+        if (appliedQuery.search) {
+            return false;
+        }
+        const hasFilters = Object.keys(this._listPresenter.vm.filters).some(k => k !== "folderId");
+        return !hasFilters;
     }
 
     get list(): ListPresenter.Interface<Page> {

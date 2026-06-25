@@ -1,7 +1,7 @@
 import { CmsFieldEditorGroup } from "../abstractions.js";
 import type { ICmsFieldEditorFormBuilder, ICmsFieldEditorContext } from "../abstractions.js";
 import type { CmsModelField } from "~/types.js";
-import type { CmsModelFieldValidatorsGroup } from "@webiny/app-headless-cms-common/types/validation.js";
+import type { CmsModelFieldValidatorsGroup } from "~/presentation/fieldTypes/abstractions.js";
 import { CmsFieldValidator } from "~/presentation/fieldValidators/abstractions.js";
 import type {
     ICmsFieldValidator,
