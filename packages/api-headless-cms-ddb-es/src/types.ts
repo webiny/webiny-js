@@ -8,7 +8,7 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import type { Client, IOpenSearchEntity as IElasticsearchEntity } from "@webiny/api-opensearch";
 import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
-import type { ITable } from "@webiny/db-dynamodb";
+import type { DynamoDbDocumentClient } from "@webiny/db-dynamodb/exports/api/db.js";
 import type { PluginsContainer } from "@webiny/plugins";
 
 export { CmsContext };
@@ -52,8 +52,8 @@ export interface IGetEntitiesResponse {
 }
 
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {
-    getTable: () => ITable;
-    getEsTable: () => ITable;
+    getTable: () => DynamoDbDocumentClient.Interface;
+    getEsTable: () => DynamoDbDocumentClient.Interface;
     getEntities: () => IGetEntitiesResponse;
 }
 

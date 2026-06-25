@@ -1,14 +1,17 @@
-import { createStandardEntity, type ITable } from "@webiny/db-dynamodb";
+import type { DynamoDbDocumentClient } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import type { IEntryEntity, IEntryEntityAttributesData } from "~/definitions/types.js";
 
 export interface CreateEntryEntityParams {
-    table: ITable;
+    client: DynamoDbDocumentClient.Interface;
+    entityFactory: DynamoDbEntityFactory.Interface;
     entityName: string;
 }
+
 export const createEntryEntity = (params: CreateEntryEntityParams): IEntryEntity => {
-    const { table, entityName } = params;
-    return createStandardEntity<IEntryEntityAttributesData>({
+    const { client, entityFactory, entityName } = params;
+    return entityFactory.createStandard<IEntryEntityAttributesData>({
         name: entityName,
-        table: table.table
+        client
     });
 };

@@ -1,4 +1,7 @@
-import { createTable, DynamoDBClient } from "@webiny/db-dynamodb";
+import { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { DynamoDbDocumentClient } from "@webiny/db-dynamodb/exports/api/db.js";
+import { DynamoDBClient } from "@webiny/db-dynamodb";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import type { CmsContext, StorageOperationsFactory as IStorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
@@ -50,13 +53,16 @@ import { CreateElasticsearchIndexTask } from "~/tasks/CreateElasticsearchIndexTa
 const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const { table, esTable, elasticsearch, plugins, container } = params;
 
+    const tableFactory = container.resolve(DynamoDbTableFactory);
+    const entityFactory = container.resolve(DynamoDbEntityFactory);
+
+    const client = tableFactory.create({
+        name: table || (process.env.DB_TABLE as string)
+    });
+
+    /* TODO(Task 9): replace with factory-based ES table once api-opensearch is migrated. */
     const db = container.resolve(DynamoDBClient);
     const documentClient = db.client;
-
-    const tableInstance = createTable({
-        name: table || (process.env.DB_TABLE as string),
-        documentClient
-    });
     const tableElasticsearchInstance = createOpenSearchTable({
         name: esTable,
         documentClient
@@ -65,15 +71,18 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const entities = {
         groups: createGroupEntity({
             entityName: ENTITIES.GROUPS,
-            table: tableInstance
+            client,
+            entityFactory
         }),
         models: createModelEntity({
             entityName: ENTITIES.MODELS,
-            table: tableInstance
+            client,
+            entityFactory
         }),
         entries: createEntryEntity({
             entityName: ENTITIES.ENTRIES,
-            table: tableInstance
+            client,
+            entityFactory
         }),
         entriesEs: createOpenSearchEntity({
             entityName: ENTITIES.ENTRIES_ES,
@@ -164,8 +173,9 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
             entries.dataLoaders.clearAll();
         },
         getEntities: () => entities,
-        getTable: () => tableInstance,
-        getEsTable: () => tableElasticsearchInstance,
+        getTable: () => client,
+        /* TODO(Task 9): remove cast once api-opensearch is migrated to factory pattern. */
+        getEsTable: () => tableElasticsearchInstance as unknown as DynamoDbDocumentClient.Interface,
         groups: createGroupsStorageOperations({
             entity: entities.groups,
             container

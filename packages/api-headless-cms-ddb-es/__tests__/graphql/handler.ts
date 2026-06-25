@@ -5,7 +5,11 @@ import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { CmsParametersPlugin, createCmsExtension } from "@webiny/api-headless-cms";
 import { CmsContext } from "~/types";
 import { createSecurity } from "~tests/graphql/security";
-import { createTable, DynamoDbDriver } from "@webiny/db-dynamodb";
+import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import { DynamoDBClient } from "@webiny/db-dynamodb/features/DynamoDBClient/DynamoDBClient.js";
+import { DynamoDbTableFactoryImpl } from "@webiny/db-dynamodb/features/DynamoDbTableFactory/DynamoDbTableFactory.js";
+import { DynamoDbBatchFactoryImpl } from "@webiny/db-dynamodb/features/DynamoDbBatchFactory/DynamoDbBatchFactory.js";
+import { DynamoDbEntityFactoryImpl } from "@webiny/db-dynamodb/features/DynamoDbEntityFactory/DynamoDbEntityFactory.js";
 import { createIndexConfigurationPlugin } from "~tests/graphql/createIndexConfigurationPlugin";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
@@ -32,12 +36,17 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
     const testProjectLicense = createTestWcpLicense();
 
-    const table = createTable({
-        name: process.env.DB_TABLE as string,
-        documentClient
+    const dynamoDBClient = new DynamoDBClient({ client: documentClient });
+    const tableFactory = new DynamoDbTableFactoryImpl(dynamoDBClient);
+    const batchFactory = new DynamoDbBatchFactoryImpl();
+    const entityFactory = new DynamoDbEntityFactoryImpl(batchFactory);
+
+    const client = tableFactory.create({
+        name: process.env.DB_TABLE as string
     });
     const entryEntity = createEntryEntity({
-        table,
+        client,
+        entityFactory,
         entityName: "CmsEntries"
     });
 
@@ -86,7 +95,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         },
         elasticsearch: elasticsearchClient,
         documentClient,
-        table,
+        table: client,
         entryEntity
     };
 };
