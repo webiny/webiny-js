@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroup, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
+import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { createModelField } from "~/utils/createModelField.js";
 import { createIcon } from "~tests/__helpers/icon.js";
 
@@ -149,7 +150,7 @@ describe("content model plugins", () => {
         if (!handler.getContext()) {
             await handler.isInstalledQuery();
         }
-        return handler.getContext().cms.storageOperations;
+        return handler.getContext().container.resolve(HeadlessCms).storageOperations;
     };
 
     beforeEach(async () => {

@@ -100,7 +100,7 @@ export const createEntriesStorageOperations = (
 
     const storageTransformRegistry = container.resolve(StorageTransformRegistry);
 
-    const { getModel: getStorageOperationsModel } = createStorageModelAccessor(plugins);
+    const { getModel: getStorageOperationsModel } = createStorageModelAccessor(container);
 
     const dataLoaders = new DataLoadersHandler({
         entity

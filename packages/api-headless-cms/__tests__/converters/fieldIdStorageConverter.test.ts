@@ -4,11 +4,11 @@ import { createValueKeyFromStorageConverter } from "~/utils/converters/valueKeyF
 import { createValueKeyToStorageConverter } from "~/utils/converters/valueKeyToStorageConverter.js";
 import type { CmsModelObjectField } from "~/types/index.js";
 import { useHandler } from "~tests/testHelpers/useHandler.js";
-import type { PluginsContainer } from "@webiny/plugins";
+import { createFieldConverters } from "~/fieldConverters/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 describe("field id storage converter", () => {
-    let plugins: PluginsContainer;
+    let fieldConverters: ReturnType<typeof createFieldConverters>;
     let fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 
     beforeEach(async () => {
@@ -20,7 +20,7 @@ describe("field id storage converter", () => {
                 "x-tenant": tenant.id
             }
         });
-        plugins = context.plugins;
+        fieldConverters = createFieldConverters();
         fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
     });
 
@@ -41,7 +41,7 @@ describe("field id storage converter", () => {
 
         const convertToStorage = createValueKeyToStorageConverter({
             model,
-            plugins,
+            fieldConverters,
             fieldRegistry
         });
 
@@ -95,7 +95,7 @@ describe("field id storage converter", () => {
          */
         const convertFromStorage = createValueKeyFromStorageConverter({
             model,
-            plugins,
+            fieldConverters,
             fieldRegistry
         });
 
@@ -125,7 +125,7 @@ describe("field id storage converter", () => {
 
         const convert = createValueKeyFromStorageConverter({
             model,
-            plugins,
+            fieldConverters,
             fieldRegistry
         });
 
@@ -179,7 +179,7 @@ describe("field id storage converter", () => {
 
         const convertToStorage = createValueKeyToStorageConverter({
             model,
-            plugins,
+            fieldConverters,
             fieldRegistry
         });
 

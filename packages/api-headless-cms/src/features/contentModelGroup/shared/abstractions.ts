@@ -1,6 +1,18 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { CmsGroup, CmsIcon } from "~/types/index.js";
 import type { ICache } from "~/utils/caching/types.js";
+import type { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin.js";
+
+/**
+ * Multi-instance DI token holding the code-defined CmsGroupPlugin instances
+ * (previously read from the plugins container via byType). PluginGroupsProvider
+ * resolves all of these to expose plugin-defined groups.
+ */
+export const CmsGroupPluginInstance = createAbstraction<CmsGroupPlugin>("CmsGroupPluginInstance");
+
+export namespace CmsGroupPluginInstance {
+    export type Interface = CmsGroupPlugin;
+}
 
 /**
  * PluginGroupsProvider provides access to plugin-defined (code) groups.

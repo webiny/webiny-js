@@ -50,7 +50,7 @@ export const createEntriesStorageOperations = (
     const { knex, entryTableManager, container, plugins } = params;
 
     const storageTransformRegistry = container.resolve(StorageTransformRegistry);
-    const { getModel: getStorageOperationsModel } = createStorageModelAccessor(plugins);
+    const { getModel: getStorageOperationsModel } = createStorageModelAccessor(container);
 
     const query = (): Knex.QueryBuilder<IEntryRow> => {
         return knex.client<IEntryRow>(entryTableManager.getTableName());

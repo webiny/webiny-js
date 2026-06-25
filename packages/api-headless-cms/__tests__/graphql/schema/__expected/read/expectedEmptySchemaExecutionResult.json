@@ -454,6 +454,768 @@
           "fields": null
         },
         {
+          "name": "CmsExportStructureResponse",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "data",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "error",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsError",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsImportStructureGroupInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsImportStructureModelInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsImportGroupStructureAction",
+          "kind": "ENUM",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsImportModelStructureAction",
+          "kind": "ENUM",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsImportStructureInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsImportValidateResponseDataGroupResultItem",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "name",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "slug",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsImportValidateResponseDataGroupResult",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "group",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsImportValidateResponseDataGroupResultItem"
+                }
+              }
+            },
+            {
+              "name": "error",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsError",
+                "ofType": null
+              }
+            },
+            {
+              "name": "action",
+              "description": null,
+              "type": {
+                "kind": "ENUM",
+                "name": "CmsImportGroupStructureAction",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsImportValidateResponseDataModelResultItem",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "modelId",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "name",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "group",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsImportValidateResponseDataModelResult",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "model",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsImportValidateResponseDataModelResultItem"
+                }
+              }
+            },
+            {
+              "name": "related",
+              "description": null,
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null
+                }
+              }
+            },
+            {
+              "name": "error",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsError",
+                "ofType": null
+              }
+            },
+            {
+              "name": "action",
+              "description": null,
+              "type": {
+                "kind": "ENUM",
+                "name": "CmsImportModelStructureAction",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsImportValidateResponseData",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "groups",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null
+                }
+              }
+            },
+            {
+              "name": "models",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null
+                }
+              }
+            },
+            {
+              "name": "message",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsImportValidateResponse",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "data",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsImportValidateResponseData",
+                "ofType": null
+              }
+            },
+            {
+              "name": "error",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsError",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsImportStructureResponseDataGroupResultItem",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              }
+            },
+            {
+              "name": "name",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsImportStructureResponseDataGroupResult",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "group",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsImportStructureResponseDataGroupResultItem"
+                }
+              }
+            },
+            {
+              "name": "error",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsError",
+                "ofType": null
+              }
+            },
+            {
+              "name": "action",
+              "description": null,
+              "type": {
+                "kind": "ENUM",
+                "name": "CmsImportGroupStructureAction",
+                "ofType": null
+              }
+            },
+            {
+              "name": "imported",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsImportStructureResponseDataResultItem",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "modelId",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              }
+            },
+            {
+              "name": "name",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              }
+            },
+            {
+              "name": "group",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsImportStructureResponseDataModelResult",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "model",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsImportStructureResponseDataResultItem"
+                }
+              }
+            },
+            {
+              "name": "related",
+              "description": null,
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null
+                }
+              }
+            },
+            {
+              "name": "error",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsError",
+                "ofType": null
+              }
+            },
+            {
+              "name": "action",
+              "description": null,
+              "type": {
+                "kind": "ENUM",
+                "name": "CmsImportModelStructureAction",
+                "ofType": null
+              }
+            },
+            {
+              "name": "imported",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsImportStructureResponseData",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "groups",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null
+                }
+              }
+            },
+            {
+              "name": "models",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null
+                }
+              }
+            },
+            {
+              "name": "message",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsImportStructureResponse",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "data",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsImportStructureResponseData",
+                "ofType": null
+              }
+            },
+            {
+              "name": "error",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsError",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "Query",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "exportStructure",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsExportStructureResponse"
+                }
+              }
+            },
+            {
+              "name": "getContentModel",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelResponse",
+                "ofType": null
+              }
+            },
+            {
+              "name": "listContentModels",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelListResponse",
+                "ofType": null
+              }
+            },
+            {
+              "name": "searchContentEntries",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsContentEntriesResponse"
+                }
+              }
+            },
+            {
+              "name": "getContentEntry",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsContentEntryResponse"
+                }
+              }
+            },
+            {
+              "name": "getLatestContentEntry",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsContentEntryResponse"
+                }
+              }
+            },
+            {
+              "name": "getPublishedContentEntry",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsContentEntryResponse"
+                }
+              }
+            },
+            {
+              "name": "getContentEntries",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsContentEntriesResponse"
+                }
+              }
+            },
+            {
+              "name": "getLatestContentEntries",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsContentEntriesResponse"
+                }
+              }
+            },
+            {
+              "name": "getPublishedContentEntries",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsContentEntriesResponse"
+                }
+              }
+            },
+            {
+              "name": "getContentModelGroup",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelGroupResponse",
+                "ofType": null
+              }
+            },
+            {
+              "name": "listContentModelGroups",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelGroupListResponse",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mutation",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "validateImportStructure",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsImportValidateResponse"
+                }
+              }
+            },
+            {
+              "name": "importStructure",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsImportStructureResponse"
+                }
+              }
+            },
+            {
+              "name": "_empty",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "createContentModel",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelResponse",
+                "ofType": null
+              }
+            },
+            {
+              "name": "createContentModelFrom",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelResponse",
+                "ofType": null
+              }
+            },
+            {
+              "name": "updateContentModel",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelResponse",
+                "ofType": null
+              }
+            },
+            {
+              "name": "deleteContentModel",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsDeleteResponse",
+                "ofType": null
+              }
+            },
+            {
+              "name": "createContentModelGroup",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelGroupResponse",
+                "ofType": null
+              }
+            },
+            {
+              "name": "updateContentModelGroup",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelGroupResponse",
+                "ofType": null
+              }
+            },
+            {
+              "name": "deleteContentModelGroup",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsDeleteResponse",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
           "name": "RevisionId",
           "kind": "SCALAR",
           "description": "A Headless CMS Reference field input type.",
@@ -518,47 +1280,6 @@
           "kind": "SCALAR",
           "description": "Icon scalar that accepts string or object {type, name, value}",
           "fields": null
-        },
-        {
-          "name": "Query",
-          "kind": "OBJECT",
-          "description": null,
-          "fields": [
-            {
-              "name": "getContentModel",
-              "description": null,
-              "type": {
-                "kind": "OBJECT",
-                "name": "CmsContentModelResponse",
-                "ofType": null
-              }
-            },
-            {
-              "name": "listContentModels",
-              "description": null,
-              "type": {
-                "kind": "OBJECT",
-                "name": "CmsContentModelListResponse",
-                "ofType": null
-              }
-            }
-          ]
-        },
-        {
-          "name": "Mutation",
-          "kind": "OBJECT",
-          "description": null,
-          "fields": [
-            {
-              "name": "_empty",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            }
-          ]
         },
         {
           "name": "CmsEntryStatusType",
@@ -1200,6 +1921,563 @@
           ]
         },
         {
+          "name": "CmsPredefinedValueInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsPredefinedValuesInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsFieldRendererInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsFieldValidationInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsFieldRuleInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsContentModelFieldInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsContentModelCreateInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsContentModelCreateFromInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsContentModelUpdateInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsModelMeta",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "modelId",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              }
+            },
+            {
+              "name": "name",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsPublishedContentEntry",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID"
+                }
+              }
+            },
+            {
+              "name": "entryId",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              }
+            },
+            {
+              "name": "title",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "description",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "image",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsContentEntry",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID"
+                }
+              }
+            },
+            {
+              "name": "entryId",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              }
+            },
+            {
+              "name": "model",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsModelMeta"
+                }
+              }
+            },
+            {
+              "name": "status",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              }
+            },
+            {
+              "name": "published",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsPublishedContentEntry",
+                "ofType": null
+              }
+            },
+            {
+              "name": "title",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              }
+            },
+            {
+              "name": "description",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "image",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "createdOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "modifiedOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "savedOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "deletedOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "restoredOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "firstPublishedOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "lastPublishedOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "createdBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "modifiedBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "savedBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "deletedBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "restoredBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "firstPublishedBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "lastPublishedBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionCreatedOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionModifiedOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionSavedOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionDeletedOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionRestoredOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionFirstPublishedOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionLastPublishedOn",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionCreatedBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionModifiedBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionSavedBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionDeletedBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionRestoredBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionFirstPublishedBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "revisionLastPublishedBy",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsIdentity",
+                "ofType": null
+              }
+            },
+            {
+              "name": "wbyAco_location",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "WbyAcoLocation",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsContentEntriesResponse",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "data",
+              "description": null,
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null
+                }
+              }
+            },
+            {
+              "name": "error",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsError",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsContentEntryResponse",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "data",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentEntry",
+                "ofType": null
+              }
+            },
+            {
+              "name": "error",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsError",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsModelEntryInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
           "name": "CmsContentModelGroup",
           "kind": "OBJECT",
           "description": null,
@@ -1319,6 +2597,74 @@
                   "kind": "SCALAR",
                   "name": "Boolean"
                 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsContentModelGroupInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "CmsContentModelGroupResponse",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "data",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelGroup",
+                "ofType": null
+              }
+            },
+            {
+              "name": "error",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsError",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsContentModelGroupListResponse",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "data",
+              "description": null,
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CmsContentModelGroup"
+                }
+              }
+            },
+            {
+              "name": "meta",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsListMeta",
+                "ofType": null
+              }
+            },
+            {
+              "name": "error",
+              "description": null,
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsError",
+                "ofType": null
               }
             }
           ]

@@ -1,10 +1,13 @@
 import { createImplementation } from "@webiny/feature/api";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { CmsContext } from "~/features/shared/abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { ModelGroupFactory, PluginGroupsProvider as ProviderAbstraction } from "./abstractions.js";
-import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin.js";
+import {
+    CmsGroupPluginInstance,
+    ModelGroupFactory,
+    PluginGroupsProvider as ProviderAbstraction
+} from "./abstractions.js";
+import type { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin.js";
 import { filterAsync } from "~/utils/filterAsync.js";
 import { createCacheKey } from "~/utils/index.js";
 import { createMemoryCache } from "~/utils/index.js";
@@ -22,7 +25,7 @@ class PluginGroupsProviderImpl implements ProviderAbstraction.Interface {
 
     public constructor(
         private tenantContext: TenantContext.Interface,
-        private cmsContext: CmsContext.Interface,
+        private pluginGroups: CmsGroupPlugin[],
         private accessControl: AccessControl.Interface,
         private identityContext: IdentityContext.Interface,
         private groupFactories: ModelGroupFactory.Interface[]
@@ -30,7 +33,7 @@ class PluginGroupsProviderImpl implements ProviderAbstraction.Interface {
 
     async getGroups(): Promise<CmsGroup[]> {
         const tenant = this.tenantContext.getTenant();
-        const pluginGroups = this.cmsContext.plugins.byType<CmsGroupPlugin>(CmsGroupPlugin.type);
+        const pluginGroups = this.pluginGroups;
 
         const cacheKey = createCacheKey({
             tenant: tenant.id,
@@ -92,7 +95,7 @@ export const PluginGroupsProvider = createImplementation({
     implementation: PluginGroupsProviderImpl,
     dependencies: [
         TenantContext,
-        CmsContext,
+        [CmsGroupPluginInstance, { multiple: true }],
         AccessControl,
         IdentityContext,
         [ModelGroupFactory, { multiple: true }]

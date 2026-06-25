@@ -1,9 +1,12 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type {
     CmsContext as CmsCtx,
+    CmsEntryValues,
     HeadlessCms as HeadlessCmsApi,
-    HeadlessCmsStorageOperations as StorageOps
+    HeadlessCmsStorageOperations as StorageOps,
+    StorageOperationsCmsModel
 } from "~/types/types.js";
+import type { CmsModel } from "~/types/model.js";
 import type { AccessControl as AccessControlClass } from "~/crud/AccessControl/AccessControl.js";
 
 /**
@@ -15,6 +18,24 @@ export const HeadlessCms = createAbstraction<HeadlessCmsApi>("HeadlessCms");
 
 export namespace HeadlessCms {
     export type Interface = HeadlessCmsApi;
+}
+
+/**
+ * Provides the storage representation of a CMS model (with value-key converters attached),
+ * cached per model. Replaces the StorageOperationsCmsModelPlugin read from the plugins
+ * container; storage adapters resolve this from the DI container.
+ */
+export interface ICmsStorageModelProvider {
+    getModel<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel
+    ): StorageOperationsCmsModel<T>;
+}
+
+export const CmsStorageModelProvider =
+    createAbstraction<ICmsStorageModelProvider>("CmsStorageModelProvider");
+
+export namespace CmsStorageModelProvider {
+    export type Interface = ICmsStorageModelProvider;
 }
 
 /**

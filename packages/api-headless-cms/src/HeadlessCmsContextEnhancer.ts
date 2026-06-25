@@ -10,9 +10,17 @@ import { AccessControl } from "~/crud/AccessControl/AccessControl.js";
 import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud.js";
 import { createModelsCrud } from "~/crud/contentModel.crud.js";
 import { createContentEntryCrud } from "~/crud/contentEntry.crud.js";
-import { StorageOperationsCmsModelPlugin } from "~/plugins/index.js";
+import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
+import {
+    CmsGraphQLSchemaPlugin,
+    CmsGroupPlugin,
+    CmsModelPlugin,
+    StorageOperationsCmsModelPlugin
+} from "~/plugins/index.js";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter.js";
 import { registerFieldConverters } from "~/fieldConverters/abstractions.js";
+import { CmsModelPluginInstance } from "~/features/contentModel/shared/abstractions.js";
+import { CmsGroupPluginInstance } from "~/features/contentModelGroup/shared/abstractions.js";
 import { createExportCrud } from "~/export/index.js";
 import { createImportCrud } from "~/export/crud/importing.js";
 import { getSchema } from "~/graphql/getSchema.js";
@@ -30,6 +38,7 @@ import { RevisionIdScalar } from "~/graphql/scalars/RevisionId.js";
 import {
     AccessControl as AccessControlAbstraction,
     CmsContext as CmsContextAbstraction,
+    CmsStorageModelProvider,
     HeadlessCms,
     StorageOperations,
     StorageOperationsFactory
@@ -80,9 +89,30 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
         // Field value converters are resolved from the DI container.
         registerFieldConverters(this.container);
 
-        // PluginsContainer still carries legacy extension plugins (code models/groups, etc.)
-        // until the model/group plugin registry is migrated to DI.
-        ctx.plugins = new PluginsContainer([...(this.config.extraPlugins ?? [])]);
+        // PluginsContainer still carries legacy extension plugins (e.g. CmsGraphQLSchemaPlugin)
+        // until those remaining consumers are migrated to DI.
+        const pluginsContainer = new PluginsContainer([...(this.config.extraPlugins ?? [])]);
+        ctx.plugins = pluginsContainer;
+
+        // Code-defined model/group plugins are exposed via DI tokens so the
+        // Plugin{Models,Groups}Provider can resolve them without the plugins container.
+        for (const plugin of pluginsContainer.byType<CmsModelPlugin>(CmsModelPlugin.type)) {
+            this.container.registerInstance(CmsModelPluginInstance, plugin);
+        }
+        for (const plugin of pluginsContainer.byType<CmsGroupPlugin>(CmsGroupPlugin.type)) {
+            this.container.registerInstance(CmsGroupPluginInstance, plugin);
+        }
+
+        // User-provided GraphQL schema extension plugins (added via extraPlugins) are bridged
+        // to the CmsGraphQLSchemaFactory DI token so generateSchema includes them.
+        const userSchemaPlugins = pluginsContainer.byType<ICmsGraphQLSchemaPlugin>(
+            CmsGraphQLSchemaPlugin.type
+        );
+        if (userSchemaPlugins.length > 0) {
+            this.container.registerInstance(CmsGraphQLSchemaFactory, {
+                execute: () => userSchemaPlugins
+            });
+        }
 
         // Use the real Benchmark implementation if not already set
         if (!ctx.benchmark) {
@@ -98,7 +128,8 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
             }
         });
 
-        ctx.plugins.register(
+        this.container.registerInstance(
+            CmsStorageModelProvider,
             new StorageOperationsCmsModelPlugin(
                 createCmsModelFieldConvertersAttachFactory(ctx as CmsContext)
             )

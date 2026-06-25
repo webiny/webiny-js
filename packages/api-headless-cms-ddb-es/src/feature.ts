@@ -48,7 +48,7 @@ import {
 import { CreateElasticsearchIndexTask } from "~/tasks/CreateElasticsearchIndexTask.js";
 
 const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
-    const { table, esTable, elasticsearch, plugins, container } = params;
+    const { table, esTable, elasticsearch, container } = params;
 
     const db = container.resolve(DynamoDBClient);
     const documentClient = db.client;
@@ -129,7 +129,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const entries = createEntriesStorageOperations({
         entity: entities.entries,
         esEntity: entities.entriesEs,
-        plugins,
+        container,
         operatorRegistry,
         elasticsearch,
         fieldRegistry,
