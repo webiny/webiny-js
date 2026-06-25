@@ -1,6 +1,5 @@
 import type { Context, GenericRecord } from "@webiny/api/types.js";
 import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
-import type { DbContext } from "@webiny/handler-db/types.js";
 import type { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection.js";
 import type { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
@@ -16,7 +15,6 @@ import type {
 } from "./model.js";
 import type { CmsGroup } from "./modelGroup.js";
 import type { CmsIdentity } from "./identity.js";
-import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type {
     DateStringInterfaceGenerator,
@@ -77,15 +75,15 @@ export interface HeadlessCms extends CmsGroupContext, CmsModelContext, CmsEntryC
 }
 
 /**
- * @description This combines all contexts used in the CMS into a single one.
+ * The CMS request context. Services are resolved from the DI container
+ * (`context.container.resolve(...)`); the CMS facade is the `HeadlessCms` token
+ * (see ~/features/shared/abstractions.js). ApiCoreContext aliases the base Context
+ * and DbContext only adds an unused `db`, so the historical
+ * `Context & DbContext & ApiCoreContext` merge collapses to the base Context.
  *
  * @category Context
  */
-/**
- * The CMS facade is no longer exposed on the context; resolve `HeadlessCms` from the DI
- * container instead (see ~/features/shared/abstractions.js).
- */
-export type CmsContext = Context & DbContext & ApiCoreContext;
+export type CmsContext = Context;
 
 /**
  * Used for our internal functionality.

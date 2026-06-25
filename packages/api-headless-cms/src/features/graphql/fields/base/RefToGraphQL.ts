@@ -144,7 +144,6 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
             return parent[field.fieldId];
         };
 
-        /* @ts-expect-error Mixed return types for createResolver. */
         return async (parent: CmsEntry, args: any, context: CmsContext) => {
             const { container } = context;
             const cms = container.resolve(HeadlessCms);

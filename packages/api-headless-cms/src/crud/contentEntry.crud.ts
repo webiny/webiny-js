@@ -1,4 +1,5 @@
 import WebinyError from "@webiny/error";
+import { BenchmarkAbstraction } from "@webiny/api";
 import type {
     CmsContext,
     CmsEntry,
@@ -48,6 +49,7 @@ interface CreateContentEntryCrudParams {
 
 export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
     const { context } = params;
+    const benchmark = context.container.resolve(BenchmarkAbstraction);
 
     const createEntry: CmsEntryContext["createEntry"] = async <
         T extends CmsEntryValues = CmsEntryValues
@@ -299,34 +301,31 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             model: CmsModel,
             ids: string[]
         ) {
-            return context.benchmark.measure(
-                "headlessCms.crud.entries.getEntriesByIds",
-                async () => {
-                    const useCase = context.container.resolve(GetEntriesByIdsUseCase);
-                    const result = await useCase.execute<T>(model, ids);
+            return benchmark.measure("headlessCms.crud.entries.getEntriesByIds", async () => {
+                const useCase = context.container.resolve(GetEntriesByIdsUseCase);
+                const result = await useCase.execute<T>(model, ids);
 
-                    if (result.isFail()) {
-                        const error = result.error;
-                        throw new WebinyError(
-                            error.message || "Could not get entries by IDs.",
-                            error.code || "GET_ENTRIES_BY_IDS_ERROR",
-                            {
-                                error,
-                                ids,
-                                model
-                            }
-                        );
-                    }
-
-                    return result.value;
+                if (result.isFail()) {
+                    const error = result.error;
+                    throw new WebinyError(
+                        error.message || "Could not get entries by IDs.",
+                        error.code || "GET_ENTRIES_BY_IDS_ERROR",
+                        {
+                            error,
+                            ids,
+                            model
+                        }
+                    );
                 }
-            );
+
+                return result.value;
+            });
         },
         /**
          * Get a single entry by revision ID from the database.
          */
         async getEntryById<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string) {
-            return context.benchmark.measure("headlessCms.crud.entries.getEntryById", async () => {
+            return benchmark.measure("headlessCms.crud.entries.getEntryById", async () => {
                 const useCase = context.container.resolve(GetEntryByIdUseCase);
                 const result = await useCase.execute<T>(model, id);
 
@@ -349,7 +348,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             model: CmsModel,
             ids: string[]
         ) {
-            return context.benchmark.measure(
+            return benchmark.measure(
                 "headlessCms.crud.entries.getPublishedEntriesByIds",
                 async () => {
                     const useCase = context.container.resolve(GetPublishedEntriesByIdsUseCase);
@@ -379,55 +378,49 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             model: CmsModel,
             ids: string[]
         ) {
-            return context.benchmark.measure(
-                "headlessCms.crud.entries.getLatestEntriesByIds",
-                async () => {
-                    const useCase = context.container.resolve(GetLatestEntriesByIdsUseCase);
-                    const result = await useCase.execute<T>(model, ids);
+            return benchmark.measure("headlessCms.crud.entries.getLatestEntriesByIds", async () => {
+                const useCase = context.container.resolve(GetLatestEntriesByIdsUseCase);
+                const result = await useCase.execute<T>(model, ids);
 
-                    if (result.isFail()) {
-                        const error = result.error;
-                        throw new WebinyError(
-                            error.message || "Could not get latest entries by IDs.",
-                            error.code || "GET_LATEST_ENTRIES_BY_IDS_ERROR",
-                            {
-                                error,
-                                ids,
-                                model
-                            }
-                        );
-                    }
-
-                    return result.value;
+                if (result.isFail()) {
+                    const error = result.error;
+                    throw new WebinyError(
+                        error.message || "Could not get latest entries by IDs.",
+                        error.code || "GET_LATEST_ENTRIES_BY_IDS_ERROR",
+                        {
+                            error,
+                            ids,
+                            model
+                        }
+                    );
                 }
-            );
+
+                return result.value;
+            });
         },
         async getEntryRevisions<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
             entryId: string
         ) {
-            return context.benchmark.measure(
-                "headlessCms.crud.entries.getEntryRevisions",
-                async () => {
-                    const useCase = context.container.resolve(GetRevisionsByEntryIdUseCase);
-                    const result = await useCase.execute<T>(model, entryId);
+            return benchmark.measure("headlessCms.crud.entries.getEntryRevisions", async () => {
+                const useCase = context.container.resolve(GetRevisionsByEntryIdUseCase);
+                const result = await useCase.execute<T>(model, entryId);
 
-                    if (result.isFail()) {
-                        const error = result.error;
-                        throw new WebinyError(
-                            error.message || "Could not get entry revisions.",
-                            error.code || "GET_ENTRY_REVISIONS_ERROR",
-                            {
-                                error,
-                                entryId,
-                                model
-                            }
-                        );
-                    }
-
-                    return result.value;
+                if (result.isFail()) {
+                    const error = result.error;
+                    throw new WebinyError(
+                        error.message || "Could not get entry revisions.",
+                        error.code || "GET_ENTRY_REVISIONS_ERROR",
+                        {
+                            error,
+                            entryId,
+                            model
+                        }
+                    );
                 }
-            );
+
+                return result.value;
+            });
         },
         /**
          * @internal
@@ -436,7 +429,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             model: CmsModel,
             params: CmsEntryGetParams
         ): Promise<CmsEntry<T>> {
-            return context.benchmark.measure("headlessCms.crud.entries.getEntry", async () => {
+            return benchmark.measure("headlessCms.crud.entries.getEntry", async () => {
                 const useCase = context.container.resolve(GetEntryUseCase);
                 const result = await useCase.execute<T>(model, params);
 
@@ -561,7 +554,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             input: CreateCmsEntryInput<T>,
             options?: CreateCmsEntryOptionsInput
         ): Promise<CmsEntry<T>> {
-            return context.benchmark.measure("headlessCms.crud.entries.createEntry", async () => {
+            return benchmark.measure("headlessCms.crud.entries.createEntry", async () => {
                 return createEntry(model, input, options);
             });
         },
@@ -571,7 +564,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             input: CreateFromCmsEntryInput<T>,
             options?: CreateRevisionCmsEntryOptionsInput
         ) {
-            return context.benchmark.measure(
+            return benchmark.measure(
                 "headlessCms.crud.entries.createEntryRevisionFrom",
                 async () => {
                     return createEntryRevisionFrom<T>(model, sourceId, input, options);
@@ -584,13 +577,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             input: UpdateCmsEntryInput<T>,
             options?: UpdateCmsEntryOptionsInput
         ) {
-            return context.benchmark.measure("headlessCms.crud.entries.updateEntry", async () => {
+            return benchmark.measure("headlessCms.crud.entries.updateEntry", async () => {
                 return updateEntry<T>(model, id, input, options);
             });
         },
 
         async updateRevisionDescription(model, id, revisionDescription) {
-            return context.benchmark.measure(
+            return benchmark.measure(
                 "headlessCms.crud.entries.updateRevisionDescription",
                 async () => {
                     return updateRevisionDescription(model, id, revisionDescription);
@@ -602,7 +595,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             id: string,
             input: UpdateCmsEntryInput<T>
         ) {
-            return context.benchmark.measure("headlessCms.crud.entries.validateEntry", async () => {
+            return benchmark.measure("headlessCms.crud.entries.validateEntry", async () => {
                 return validateEntry<T>(model, id, input);
             });
         },
@@ -611,7 +604,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             id: string,
             folderId: string
         ) {
-            return context.benchmark.measure("headlessCms.crud.entries.moveEntry", async () => {
+            return benchmark.measure("headlessCms.crud.entries.moveEntry", async () => {
                 return moveEntry<T>(model, id, folderId);
             });
         },
@@ -623,24 +616,18 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             model: CmsModel,
             id: string
         ) {
-            return context.benchmark.measure(
-                "headlessCms.crud.entries.republishEntry",
-                async () => {
-                    return republishEntry<T>(model, id);
-                }
-            );
+            return benchmark.measure("headlessCms.crud.entries.republishEntry", async () => {
+                return republishEntry<T>(model, id);
+            });
         },
         async deleteEntryRevision(model, id) {
-            return context.benchmark.measure(
-                "headlessCms.crud.entries.deleteEntryRevision",
-                async () => {
-                    return deleteEntryRevision(model, id);
-                }
-            );
+            return benchmark.measure("headlessCms.crud.entries.deleteEntryRevision", async () => {
+                return deleteEntryRevision(model, id);
+            });
         },
         async deleteEntry(model, entryId, options) {
             const deleteEntryUseCase = context.container.resolve(DeleteEntryUseCase);
-            return context.benchmark.measure("headlessCms.crud.entries.deleteEntry", async () => {
+            return benchmark.measure("headlessCms.crud.entries.deleteEntry", async () => {
                 const result = await deleteEntryUseCase.execute(model, entryId, options ?? {});
 
                 if (result.isFail()) {
@@ -656,32 +643,26 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             model: CmsModel,
             entryId: string
         ) {
-            return context.benchmark.measure(
-                "headlessCms.crud.entries.restoreEntryFromBin",
-                async () => {
-                    const useCase = context.container.resolve(RestoreEntryFromBinUseCase);
-                    const result = await useCase.execute<T>(model, entryId);
-                    if (result.isFail()) {
-                        throw new WebinyError(
-                            result.error.message,
-                            result.error.code,
-                            result.error.data
-                        );
-                    }
-                    return result.value;
+            return benchmark.measure("headlessCms.crud.entries.restoreEntryFromBin", async () => {
+                const useCase = context.container.resolve(RestoreEntryFromBinUseCase);
+                const result = await useCase.execute<T>(model, entryId);
+                if (result.isFail()) {
+                    throw new WebinyError(
+                        result.error.message,
+                        result.error.code,
+                        result.error.data
+                    );
                 }
-            );
+                return result.value;
+            });
         },
         async deleteMultipleEntries(model, ids) {
-            return context.benchmark.measure(
-                "headlessCms.crud.entries.deleteMultipleEntries",
-                async () => {
-                    return deleteMultipleEntries(model, ids);
-                }
-            );
+            return benchmark.measure("headlessCms.crud.entries.deleteMultipleEntries", async () => {
+                return deleteMultipleEntries(model, ids);
+            });
         },
         async publishEntry<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string) {
-            return context.benchmark.measure("headlessCms.crud.entries.publishEntry", async () => {
+            return benchmark.measure("headlessCms.crud.entries.publishEntry", async () => {
                 return publishEntry<T>(model, id);
             });
         },
@@ -689,20 +670,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             model: CmsModel,
             id: string
         ) {
-            return context.benchmark.measure(
-                "headlessCms.crud.entries.unpublishEntry",
-                async () => {
-                    return unpublishEntry<T>(model, id);
-                }
-            );
+            return benchmark.measure("headlessCms.crud.entries.unpublishEntry", async () => {
+                return unpublishEntry<T>(model, id);
+            });
         },
         async getUniqueFieldValues(model, params) {
-            return context.benchmark.measure(
-                "headlessCms.crud.entries.getUniqueFieldValues",
-                async () => {
-                    return getUniqueFieldValues(model, params);
-                }
-            );
+            return benchmark.measure("headlessCms.crud.entries.getUniqueFieldValues", async () => {
+                return getUniqueFieldValues(model, params);
+            });
         }
     };
 };

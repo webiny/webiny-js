@@ -1,4 +1,5 @@
 import WebinyError from "@webiny/error";
+import { BenchmarkAbstraction } from "@webiny/api";
 import type { CmsContext, CmsGroup, CmsGroupContext } from "~/types/index.js";
 import { createMemoryCache } from "~/utils/index.js";
 import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js";
@@ -13,6 +14,7 @@ export interface CreateModelGroupsCrudParams {
 
 export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsGroupContext => {
     const { context } = params;
+    const benchmark = context.container.resolve(BenchmarkAbstraction);
 
     const listDatabaseGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
     const listFilteredDatabaseGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
@@ -88,27 +90,27 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
     return {
         clearGroupsCache,
         getGroup: async id => {
-            return context.benchmark.measure("headlessCms.crud.groups.getGroup", async () => {
+            return benchmark.measure("headlessCms.crud.groups.getGroup", async () => {
                 return getGroup(id);
             });
         },
         listGroups: async params => {
-            return context.benchmark.measure("headlessCms.crud.groups.listGroups", async () => {
+            return benchmark.measure("headlessCms.crud.groups.listGroups", async () => {
                 return listGroups(params);
             });
         },
         createGroup: async input => {
-            return context.benchmark.measure("headlessCms.crud.groups.createGroup", async () => {
+            return benchmark.measure("headlessCms.crud.groups.createGroup", async () => {
                 return createGroup(input);
             });
         },
         updateGroup: async (id, input) => {
-            return context.benchmark.measure("headlessCms.crud.groups.updateGroup", async () => {
+            return benchmark.measure("headlessCms.crud.groups.updateGroup", async () => {
                 return updateGroup(id, input);
             });
         },
         deleteGroup: async id => {
-            return context.benchmark.measure("headlessCms.crud.groups.deleteGroup", async () => {
+            return benchmark.measure("headlessCms.crud.groups.deleteGroup", async () => {
                 return deleteGroup(id);
             });
         }
