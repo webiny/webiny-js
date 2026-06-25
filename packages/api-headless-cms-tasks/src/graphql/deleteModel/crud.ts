@@ -12,6 +12,7 @@ import { createStoreNamespace } from "~/helpers/store.js";
 import { fullyDeleteModel } from "~/graphql/deleteModel/fullyDeleteModel.js";
 import { cancelDeleteModel } from "~/graphql/deleteModel/cancelDeleteModel.js";
 import { getDeleteModelProgress } from "~/graphql/deleteModel/getDeleteModelProgress.js";
+import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
 
 export const createDeleteModelCrud = () => {
     const plugin = new ContextPlugin<HcmsTasksContext>(async context => {
@@ -21,7 +22,7 @@ export const createDeleteModelCrud = () => {
 
         const cache = createMemoryCache<ListStoreKeysResult>();
 
-        context.cms.listModelsBeingDeleted = async () => {
+        const listModelsBeingDeleted = async (): Promise<IStoreValue[]> => {
             const tenant = getTenant();
             const cacheKey = createCacheKey({
                 tenant: getTenant(),
@@ -47,39 +48,32 @@ export const createDeleteModelCrud = () => {
             return Object.values(result.data);
         };
 
-        context.cms.isModelBeingDeleted = async (modelId: string) => {
-            const items = await context.cms.listModelsBeingDeleted();
+        const isModelBeingDeleted = async (modelId: string): Promise<boolean> => {
+            const items = await listModelsBeingDeleted();
             return items.some(item => item.modelId === modelId);
         };
-        context.cms.fullyDeleteModel = async (modelId: string) => {
-            const result = await fullyDeleteModel({
-                context,
-                modelId
-            });
-            cache.clear();
-            return result;
+
+        const operations: DeleteModelOperations.Interface = {
+            listModelsBeingDeleted,
+            isModelBeingDeleted,
+            fullyDeleteModel: async (modelId: string) => {
+                const result = await fullyDeleteModel({ context, modelId });
+                cache.clear();
+                return result;
+            },
+            cancelFullyDeleteModel: async (modelId: string) => {
+                const result = await cancelDeleteModel({ context, modelId });
+                cache.clear();
+                return result;
+            },
+            getDeleteModelProgress: async (modelId: string) => {
+                return getDeleteModelProgress({ context, modelId });
+            }
         };
 
-        context.cms.cancelFullyDeleteModel = async (modelId: string) => {
-            const result = await cancelDeleteModel({
-                context,
-                modelId
-            });
-            cache.clear();
-            return result;
-        };
+        context.container.registerInstance(DeleteModelOperations, operations);
 
-        context.cms.getDeleteModelProgress = async (modelId: string) => {
-            return await getDeleteModelProgress({
-                context,
-                modelId
-            });
-        };
-
-        // Register feature
-        DisableModelFeature.register(context.container, {
-            isModelBeingDeleted: context.cms.isModelBeingDeleted
-        });
+        DisableModelFeature.register(context.container);
     });
 
     plugin.name = "headlessCms.context.cms.fullyDeleteModel";

@@ -1,8 +1,8 @@
 import type { ApiEndpoint, CmsContext } from "~/types/index.js";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
-import type { GraphQLRequestBody } from "@webiny/handler-graphql/types.js";
 import { processRequestBody } from "@webiny/handler-graphql";
+import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 import type { CmsParametersPluginResponse } from "~/plugins/CmsParametersPlugin.js";
 import { CmsParametersPlugin } from "~/plugins/CmsParametersPlugin.js";
 import { AccessControl } from "~/crud/AccessControl/AccessControl.js";
@@ -87,27 +87,6 @@ export const createContextPlugin = () => {
         ValidationFeature.register(context.container);
         StorageFeature.register(context.container);
 
-        async function getExecutableSchema(type: ApiEndpoint) {
-            const originalType = context.cms.type;
-            setSchemaType(type);
-
-            const schema = await context.container
-                .resolve(IdentityContext)
-                .withoutAuthorization(() => {
-                    return getSchema({
-                        context,
-                        getTenant,
-                        type
-                    });
-                });
-
-            setSchemaType(originalType);
-
-            return async <TData, TExtensions>(input: GraphQLRequestBody | GraphQLRequestBody[]) => {
-                return processRequestBody<TData, TExtensions>(input, schema, context);
-            };
-        }
-
         context.plugins.register(
             new StorageOperationsCmsModelPlugin(createCmsModelFieldConvertersAttachFactory(context))
         );
@@ -137,7 +116,6 @@ export const createContextPlugin = () => {
             MANAGE: type === "manage",
             storageOperations,
             accessControl,
-            getExecutableSchema,
             ...createModelGroupsCrud({
                 context
             }),
@@ -154,6 +132,20 @@ export const createContextPlugin = () => {
                 ...createImportCrud(context)
             }
         };
+
+        context.container.registerInstance(CmsSchemaExecutor, {
+            execute: async (schemaType: ApiEndpoint, body) => {
+                const originalType = context.cms.type;
+                setSchemaType(schemaType);
+                const schema = await context.container
+                    .resolve(IdentityContext)
+                    .withoutAuthorization(() => {
+                        return getSchema({ context, getTenant, type: schemaType });
+                    });
+                setSchemaType(originalType);
+                return processRequestBody(body, schema, context);
+            }
+        });
 
         // Register legacy dependencies
         context.container.registerInstance(StorageOperations, storageOperations);

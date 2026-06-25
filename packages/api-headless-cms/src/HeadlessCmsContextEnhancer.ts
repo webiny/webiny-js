@@ -23,6 +23,7 @@ import { createBaseSchemaPlugins } from "~/graphql/schema/baseSchema.js";
 import { exportPlugin } from "~/export/graphql/index.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { CmsGraphQLSchemaFactory } from "~/graphql/CmsGraphQLSchemaFactory.js";
+import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 import { RevisionIdScalar } from "~/graphql/scalars/RevisionId.js";
 import {
     AccessControl as AccessControlAbstraction,
@@ -125,11 +126,19 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
             MANAGE: type === "manage",
             storageOperations,
             accessControl,
-            getExecutableSchema: async (schemaType: ApiEndpoint) => {
-                // Use a forked context so that type flags (READ/PREVIEW/MANAGE)
-                // are correct for the requested schema type.
-                // The container is shared, so CmsGraphQLSchemaFactory factories
-                // registered during _initialize() are accessible from the fork.
+            ...createModelGroupsCrud({ context: ctx as CmsContext }),
+            ...createModelsCrud({ context: ctx as CmsContext }),
+            ...createContentEntryCrud({ context: ctx as CmsContext }),
+            export: { ...createExportCrud(ctx as CmsContext) },
+            importing: { ...createImportCrud(ctx as CmsContext) }
+        };
+
+        // Register CmsSchemaExecutor so proxy resolvers can build and execute the CMS sub-schema
+        // without accessing ctx.cms directly. Uses a forked context so type flags are correct
+        // for the requested schema type; the DI container is shared so all registered factories
+        // are accessible from the fork.
+        this.container.registerInstance(CmsSchemaExecutor, {
+            execute: async (schemaType: ApiEndpoint, body: any) => {
                 const schemaCtx: Record<string, any> = Object.assign(
                     Object.create(Object.getPrototypeOf(ctx)),
                     ctx,
@@ -145,33 +154,16 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
                     }
                 );
                 const bm = this.container.resolve(BenchmarkAbstraction);
-                const schema = await bm.measure("headlessCms.graphql.getSchema", async () => {
-                    return this.identityContext.withoutAuthorization(() => {
-                        return getSchema({
-                            context: schemaCtx as CmsContext,
-                            getTenant,
-                            type: schemaType
-                        });
-                    });
-                });
-
-                // Execution uses the original ctx so CRUD methods and security have correct context
-                return async (input: any) => {
-                    const body = await bm.measure(
-                        "headlessCms.graphql.createRequestBody",
-                        async () => input
-                    );
-                    return bm.measure("headlessCms.graphql.processRequestBody", async () =>
-                        processRequestBody(body, schema, ctx as CmsContext)
-                    );
-                };
-            },
-            ...createModelGroupsCrud({ context: ctx as CmsContext }),
-            ...createModelsCrud({ context: ctx as CmsContext }),
-            ...createContentEntryCrud({ context: ctx as CmsContext }),
-            export: { ...createExportCrud(ctx as CmsContext) },
-            importing: { ...createImportCrud(ctx as CmsContext) }
-        };
+                const schema = await bm.measure("headlessCms.graphql.getSchema", () =>
+                    this.identityContext.withoutAuthorization(() =>
+                        getSchema({ context: schemaCtx as CmsContext, getTenant, type: schemaType })
+                    )
+                );
+                return bm.measure("headlessCms.graphql.processRequestBody", () =>
+                    processRequestBody(body, schema, ctx as CmsContext)
+                );
+            }
+        });
 
         // Register CMS sub-schema factories: base types (CmsError, CmsIdentity, etc.)
         // and, for manage endpoints, the import/export operations.

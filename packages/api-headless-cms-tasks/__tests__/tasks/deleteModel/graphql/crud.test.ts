@@ -2,13 +2,16 @@ import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/context/useHandler";
 import type { IStoreValue } from "~/features/DeleteModelTask/types.js";
 import { createStoreKey } from "~/helpers/store.js";
+import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
 
 describe("headless cms tasks crud", () => {
     it("should list models being deleted", async () => {
         const { handler, identity, tenant } = useHandler();
         const context = await handler();
 
-        const results = await context.cms.listModelsBeingDeleted();
+        const results = await context.container
+            .resolve(DeleteModelOperations)
+            .listModelsBeingDeleted();
         expect(results).toHaveLength(0);
 
         const value: IStoreValue = {
@@ -22,7 +25,9 @@ describe("headless cms tasks crud", () => {
 
         const secondaryContext = await handler();
 
-        const resultsPopulated = await secondaryContext.cms.listModelsBeingDeleted();
+        const resultsPopulated = await secondaryContext.container
+            .resolve(DeleteModelOperations)
+            .listModelsBeingDeleted();
         expect(resultsPopulated).toHaveLength(1);
         expect(resultsPopulated).toEqual([value]);
 
@@ -30,7 +35,9 @@ describe("headless cms tasks crud", () => {
 
         const tertiaryContext = await handler();
 
-        const resultsRemoved = await tertiaryContext.cms.listModelsBeingDeleted();
+        const resultsRemoved = await tertiaryContext.container
+            .resolve(DeleteModelOperations)
+            .listModelsBeingDeleted();
         expect(resultsRemoved).toHaveLength(0);
     });
 
@@ -63,7 +70,9 @@ describe("headless cms tasks crud", () => {
         const secondaryContext = await handler();
         const tertiaryContext = await handler();
 
-        const fullyDeleteResult = await context.cms.fullyDeleteModel(model.modelId);
+        const fullyDeleteResult = await context.container
+            .resolve(DeleteModelOperations)
+            .fullyDeleteModel(model.modelId);
         expect(fullyDeleteResult).toEqual({
             total: 0,
             deleted: 0,
@@ -77,7 +86,9 @@ describe("headless cms tasks crud", () => {
             tenant: tenant.id
         };
 
-        const results = await context.cms.listModelsBeingDeleted();
+        const results = await context.container
+            .resolve(DeleteModelOperations)
+            .listModelsBeingDeleted();
         expect(results).toHaveLength(1);
         expect(results).toEqual([
             {
@@ -86,7 +97,9 @@ describe("headless cms tasks crud", () => {
             }
         ]);
 
-        const cancelDeleteResult = await secondaryContext.cms.cancelFullyDeleteModel(model.modelId);
+        const cancelDeleteResult = await secondaryContext.container
+            .resolve(DeleteModelOperations)
+            .cancelFullyDeleteModel(model.modelId);
 
         expect(cancelDeleteResult).toEqual({
             total: 0,
@@ -95,7 +108,9 @@ describe("headless cms tasks crud", () => {
             id: expect.any(String)
         });
 
-        const resultsCanceled = await tertiaryContext.cms.listModelsBeingDeleted();
+        const resultsCanceled = await tertiaryContext.container
+            .resolve(DeleteModelOperations)
+            .listModelsBeingDeleted();
         expect(resultsCanceled).toHaveLength(0);
     });
 });

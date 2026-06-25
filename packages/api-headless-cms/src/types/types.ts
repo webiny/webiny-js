@@ -1,6 +1,5 @@
 import type { Context, GenericRecord } from "@webiny/api/types.js";
-import type { GraphQLFieldResolver, GraphQLRequestBody } from "@webiny/handler-graphql/types.js";
-import type { processRequestBody } from "@webiny/handler-graphql";
+import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
 import type { DbContext } from "@webiny/handler-db/types.js";
 import type { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection.js";
 import type { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types.js";
@@ -75,16 +74,7 @@ export interface HeadlessCms extends CmsGroupContext, CmsModelContext, CmsEntryC
      */
     export: HeadlessCmsExport;
     importing: HeadlessCmsImport;
-    getExecutableSchema: GetExecutableSchema;
 }
-
-export type GetExecutableSchema = (
-    type: ApiEndpoint
-) => Promise<
-    <TData = Record<string, any>, TExtensions = Record<string, any>>(
-        input: GraphQLRequestBody | GraphQLRequestBody[]
-    ) => ReturnType<typeof processRequestBody<TData, TExtensions>>
->;
 
 /**
  * @description This combines all contexts used in the CMS into a single one.

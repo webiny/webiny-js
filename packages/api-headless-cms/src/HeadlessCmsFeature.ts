@@ -25,6 +25,7 @@ import type { IGraphQLContextEnhancer, IGraphQLContextualSchema } from "@webiny/
 import type { ApiEndpoint } from "~/types/index.js";
 import { StorageOperationsFactory } from "~/features/shared/abstractions.js";
 import { CmsBaseErrorTypeFactory } from "~/graphql/schema/cms/CmsBaseErrorTypeFactory.js";
+import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 import {
     CmsResponseTypeDefsImpl,
     CmsQueryTypeDefsImpl,
@@ -68,8 +69,9 @@ function createCmsRoute(type: ApiEndpoint) {
             for (const schema of this.contextualSchemas) {
                 await schema.build(ctx);
             }
-            const execute = await ctx.cms.getExecutableSchema(type);
-            const result = await execute(request.body);
+            const result = await this.container
+                .resolve(CmsSchemaExecutor)
+                .execute(type, request.body);
             return {
                 statusCode: 200,
                 headers: { "Content-Type": "application/json" },

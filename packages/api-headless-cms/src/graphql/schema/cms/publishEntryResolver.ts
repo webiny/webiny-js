@@ -1,7 +1,7 @@
-import type { CmsContext } from "~/types/index.js";
-import type { ApiEndpoint } from "~/types/index.js";
+import type { CmsContext, ApiEndpoint } from "~/types/index.js";
 import type { ExecutionResult } from "graphql";
 import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
+import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 
 export interface PublishEntryRevisionArgs {
     modelId: string;
@@ -18,7 +18,6 @@ export const createPublishEntryRevisionResolver = () => {
 
             // Use manage API for publishing entries.
             const apiType: ApiEndpoint = "manage";
-            const executeSchema = await context.cms.getExecutableSchema(apiType);
 
             const fieldsSelection = buildFieldsSelection(fields);
 
@@ -37,10 +36,9 @@ export const createPublishEntryRevisionResolver = () => {
                 }
             `;
 
-            const result = (await executeSchema({
-                query,
-                variables: { revisionId }
-            })) as ExecutionResult;
+            const result = (await context.container
+                .resolve(CmsSchemaExecutor)
+                .execute(apiType, { query, variables: { revisionId } })) as ExecutionResult;
 
             if (result.errors && result.errors.length > 0) {
                 return {
