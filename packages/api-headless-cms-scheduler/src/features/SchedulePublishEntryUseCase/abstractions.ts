@@ -8,6 +8,7 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 export interface ISchedulePublishEntryUseCaseParams {
     id: string;
     model: Pick<CmsModel, "modelId">;
+    tenant: string;
     scheduleFor: Date;
 }
 

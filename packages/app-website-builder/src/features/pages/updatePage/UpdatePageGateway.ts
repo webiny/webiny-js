@@ -9,7 +9,7 @@ const UPDATE_PAGE = /* GraphQL */ `
         websiteBuilder {
             updatePage(id: $id, data: $data) {
                 data {
-                    ${getPageGraphQLFields(["properties", "metadata"]).join("\n")}
+                    ${getPageGraphQLFields(["properties", "metadata", "bindings", "elements", "extensions"]).join("\n")}
                 }
                 error {
                     code

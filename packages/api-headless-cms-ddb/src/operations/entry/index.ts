@@ -162,7 +162,7 @@ export const createEntriesStorageOperations = (
         try {
             await entityBatch.execute();
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -246,7 +246,7 @@ export const createEntriesStorageOperations = (
         try {
             await entityBatch.execute();
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -355,7 +355,7 @@ export const createEntriesStorageOperations = (
         try {
             await entityBatch.execute();
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
             return initialStorageEntry;
         } catch (ex) {
@@ -494,7 +494,7 @@ export const createEntriesStorageOperations = (
         try {
             await entityBatch.execute();
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -550,7 +550,7 @@ export const createEntriesStorageOperations = (
         try {
             await entityBatch.execute();
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -635,7 +635,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
 
             return initialStorageEntry;
@@ -711,7 +711,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code, {
@@ -1238,7 +1238,7 @@ export const createEntriesStorageOperations = (
         try {
             await entityBatch.execute();
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
             return initialStorageEntry;
         } catch (ex) {
@@ -1343,7 +1343,7 @@ export const createEntriesStorageOperations = (
         try {
             await entityBatch.execute();
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
             return initialStorageEntry;
         } catch (ex) {

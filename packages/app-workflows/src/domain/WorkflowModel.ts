@@ -6,25 +6,11 @@ import type { IWorkflow, IWorkflowStep } from "~/types.js";
 import type { NonEmptyArray } from "@webiny/app/types.js";
 
 const createSnapshot = (data: IWorkflow) => {
-    return JSON.stringify({
-        id: data.id,
-        app: data.app,
-        name: data.name,
-        steps: data.steps.map(step => ({
-            id: step.id,
-            title: step.title,
-            color: step.color,
-            description: step.description,
-            teams: step.teams.map(team => ({ id: team.id })),
-            notifications: step.notifications
-                ? step.notifications.map(notification => ({ id: notification.id }))
-                : undefined
-        }))
-    });
+    return JSON.stringify(toJS(data));
 };
 
 export class WorkflowModel implements IWorkflowModel {
-    private snapshot: string;
+    private readonly snapshot: string;
     public id;
     public app;
     public name;

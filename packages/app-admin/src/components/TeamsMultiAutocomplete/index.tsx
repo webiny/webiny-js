@@ -27,6 +27,7 @@ export const TeamsMultiAutocomplete = ({
 
     return (
         <MultiAutoComplete
+            uniqueValues
             {...props}
             options={options}
             values={loading ? undefined : (values as string[] | undefined)}

@@ -231,7 +231,7 @@ export const createEntriesStorageOperations = (
         try {
             await entityBatch.execute();
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -352,7 +352,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -570,7 +570,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -652,7 +652,7 @@ export const createEntriesStorageOperations = (
         try {
             await entityBatch.execute();
             dataLoaders.clearAll({
-                model
+                tenant: initialModel.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -811,7 +811,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -981,7 +981,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -1118,7 +1118,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -1244,7 +1244,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -1731,7 +1731,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -1852,7 +1852,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
