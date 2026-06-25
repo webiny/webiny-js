@@ -23,18 +23,18 @@ const createFieldRegistry = (plugins: PluginsContainer) => {
 export const getConverters = async (
     model: Pick<CmsModel, "fields">
 ): Promise<IConvertersResponse> => {
-    const plugins = new PluginsContainer([...createFieldConverters()]);
-    const fieldRegistry = createFieldRegistry(plugins);
+    const fieldConverters = createFieldConverters();
+    const fieldRegistry = createFieldRegistry(new PluginsContainer([]));
 
     const convertToStorage = createValueKeyToStorageConverter({
         model,
-        plugins,
+        fieldConverters,
         fieldRegistry
     });
 
     const convertFromStorage = createValueKeyFromStorageConverter({
         model,
-        plugins,
+        fieldConverters,
         fieldRegistry
     });
     return {

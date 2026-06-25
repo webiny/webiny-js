@@ -12,7 +12,7 @@ import { createModelsCrud } from "~/crud/contentModel.crud.js";
 import { createContentEntryCrud } from "~/crud/contentEntry.crud.js";
 import { StorageOperationsCmsModelPlugin } from "~/plugins/index.js";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter.js";
-import { createFieldConverters } from "~/fieldConverters/index.js";
+import { registerFieldConverters } from "~/fieldConverters/abstractions.js";
 import { createExportCrud } from "~/export/index.js";
 import { createImportCrud } from "~/export/crud/importing.js";
 import { getSchema } from "~/graphql/getSchema.js";
@@ -77,11 +77,12 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
     private async _initialize(ctx: Record<string, any>): Promise<void> {
         const { type } = this.config;
 
-        // Provide a PluginsContainer with field converters and required scalar plugins
-        ctx.plugins = new PluginsContainer([
-            ...createFieldConverters(),
-            ...(this.config.extraPlugins ?? [])
-        ]);
+        // Field value converters are resolved from the DI container.
+        registerFieldConverters(this.container);
+
+        // PluginsContainer still carries legacy extension plugins (code models/groups, etc.)
+        // until the model/group plugin registry is migrated to DI.
+        ctx.plugins = new PluginsContainer([...(this.config.extraPlugins ?? [])]);
 
         // Use the real Benchmark implementation if not already set
         if (!ctx.benchmark) {
@@ -150,20 +151,13 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
         // are accessible from the fork.
         this.container.registerInstance(CmsSchemaExecutor, {
             execute: async (schemaType: ApiEndpoint, body: any) => {
-                // Fork only the plugins container (fresh field converters per build); the
-                // schema endpoint type is passed explicitly to getSchema, so there is no
-                // need to carry a per-type `cms` bag on the context anymore.
-                const schemaCtx: Record<string, any> = Object.assign(
-                    Object.create(Object.getPrototypeOf(ctx)),
-                    ctx,
-                    {
-                        plugins: new PluginsContainer([...createFieldConverters()])
-                    }
-                );
+                // The schema endpoint type is passed explicitly to getSchema and field
+                // converters resolve from the DI container, so no per-build context fork
+                // is needed — the request context is used directly.
                 const bm = this.container.resolve(BenchmarkAbstraction);
                 const schema = await bm.measure("headlessCms.graphql.getSchema", () =>
                     this.identityContext.withoutAuthorization(() =>
-                        getSchema({ context: schemaCtx as CmsContext, getTenant, type: schemaType })
+                        getSchema({ context: ctx as CmsContext, getTenant, type: schemaType })
                     )
                 );
                 return bm.measure("headlessCms.graphql.processRequestBody", () =>
