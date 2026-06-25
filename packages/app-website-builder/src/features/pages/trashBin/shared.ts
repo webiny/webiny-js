@@ -12,12 +12,12 @@ export const TRASH_PAGE_FIELDS = `
         displayName
         type
     }
-    modifiedBy {
+    deletedBy {
         id
         displayName
         type
     }
-    modifiedOn
+    deletedOn
 `;
 
 export interface TrashPageDto {
@@ -26,8 +26,8 @@ export interface TrashPageDto {
     properties: { title: string };
     location: { folderId: string | undefined };
     createdBy: { id: string; displayName: string; type: string };
-    modifiedBy: { id: string; displayName: string; type: string } | null;
-    modifiedOn: string | null;
+    deletedBy: { id: string; displayName: string; type: string } | null;
+    deletedOn: string | null;
 }
 
 export function toTrashBinItem(page: TrashPageDto): TrashBinItem {
@@ -37,10 +37,10 @@ export function toTrashBinItem(page: TrashPageDto): TrashBinItem {
         location: page.location,
         createdBy: page.createdBy,
         deletedBy: {
-            id: page.modifiedBy?.id || "",
-            displayName: page.modifiedBy?.displayName || "",
-            type: page.modifiedBy?.type || ""
+            id: page.deletedBy?.id || "",
+            displayName: page.deletedBy?.displayName || "",
+            type: page.deletedBy?.type || ""
         },
-        deletedOn: page.modifiedOn || ""
+        deletedOn: page.deletedOn || ""
     };
 }
