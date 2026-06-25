@@ -8,8 +8,7 @@
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
-    { "path": "../api-opensearch/tsconfig.build.json" },
-    { "path": "../testing/tsconfig.build.json" }
+    { "path": "../api-opensearch/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -31,9 +30,7 @@
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
-      "@webiny/api-opensearch": ["../api-opensearch/src"],
-      "@webiny/testing/*": ["../testing/src/*"],
-      "@webiny/testing": ["../testing/src"]
+      "@webiny/api-opensearch": ["../api-opensearch/src"]
     }
   }
 }

@@ -57,6 +57,15 @@ async function output(target, content) {
             .filter(name => workspaces.find(pkg => pkg.packageJson.name === name).isTs)
             .map(name => workspaces.find(pkg => pkg.packageJson.name === name));
 
+        // `tsconfig.build.json` compiles only `src`, never `__tests__`. Test-only packages (e.g.
+        // `@webiny/testing`) are never imported from `src`, and because they depend back on the very
+        // packages that consume them, including them as build references creates a circular project
+        // reference that breaks the `composite` build with TS6305. Exclude them from the build config.
+        const buildExcludedPackages = ["@webiny/testing"];
+        const buildDependencies = dependencies.filter(
+            dep => !buildExcludedPackages.includes(dep.name)
+        );
+
         // Generate `tsconfig.json`
         const tsconfigJson = {
             extends: "../../tsconfig.json",
@@ -87,7 +96,7 @@ async function output(target, content) {
         const tsconfigBuildJson = {
             extends: "../../tsconfig.build.json",
             include: ["src"],
-            references: dependencies.map(dep => ({
+            references: buildDependencies.map(dep => ({
                 path: `${getRelativePath(
                     wpObject.packageFolder,
                     dep.packageFolder
@@ -100,7 +109,7 @@ async function output(target, content) {
                 paths: {
                     "~/*": ["./src/*"],
                     "~tests/*": ["./__tests__/*"],
-                    ...dependencies.reduce((acc, dep) => {
+                    ...buildDependencies.reduce((acc, dep) => {
                         const relPath = getRelativePath(wpObject.packageFolder, dep.packageFolder);
                         acc[`${dep.name}/*`] = [`${relPath}/src/*`];
                         acc[`${dep.name}`] = [`${relPath}/src`];
