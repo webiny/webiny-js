@@ -182,7 +182,7 @@ class WorkflowsEditorPresenterImpl implements IWorkflowsEditorPresenter {
     };
 }
 
-export const WorkflowsEditorPresenterImplementation = Abstraction.createImplementation({
+export const WorkflowsEditorPresenter = Abstraction.createImplementation({
     implementation: WorkflowsEditorPresenterImpl,
     dependencies: [
         ListWorkflowsUseCase,

@@ -13,9 +13,9 @@ import {
 } from "./abstractions.js";
 
 class SingleEntryPresenterImpl implements ISingleEntryPresenter {
-    private _entry: CmsContentEntry | null = null;
-    private _form: IFormModel | null = null;
-    private _loading: string | null = null;
+    private entry: CmsContentEntry | null = null;
+    private form: IFormModel | null = null;
+    private loading: string | null = null;
 
     constructor(
         private formModelFactory: FormModelFactory.Interface,
@@ -47,25 +47,25 @@ class SingleEntryPresenterImpl implements ISingleEntryPresenter {
 
     get vm(): ISingleEntryViewModel {
         return {
-            loading: this._loading,
-            entry: this._entry,
-            form: this._form?.vm ?? null,
-            canSave: this._form !== null,
-            isDirty: this._form?.isDirty ?? false
+            loading: this.loading,
+            entry: this.entry,
+            form: this.form?.vm ?? null,
+            canSave: this.form !== null,
+            isDirty: this.form?.isDirty ?? false
         };
     }
 
     async save(): Promise<boolean> {
-        if (!this._form) {
+        if (!this.form) {
             return false;
         }
 
-        const data = await this._form.submit();
+        const data = await this.form.submit();
         if (!data) {
             return false;
         }
 
-        this._loading = "Saving...";
+        this.loading = "Saving...";
 
         try {
             const entry = await this.updateSingletonEntryUseCase.execute({
@@ -76,9 +76,9 @@ class SingleEntryPresenterImpl implements ISingleEntryPresenter {
             });
 
             runInAction(() => {
-                this._entry = entry;
-                this._form!.setData(entry.values);
-                this._form!.reset();
+                this.entry = entry;
+                this.form!.setData(entry.values);
+                this.form!.reset();
             });
 
             return true;
@@ -86,13 +86,13 @@ class SingleEntryPresenterImpl implements ISingleEntryPresenter {
             return false;
         } finally {
             runInAction(() => {
-                this._loading = null;
+                this.loading = null;
             });
         }
     }
 
     async init(): Promise<void> {
-        this._loading = "Loading...";
+        this.loading = "Loading...";
 
         try {
             const entry = await this.getSingletonEntryUseCase.execute({
@@ -100,22 +100,22 @@ class SingleEntryPresenterImpl implements ISingleEntryPresenter {
             });
 
             runInAction(() => {
-                this._entry = entry;
+                this.entry = entry;
                 const formConfig = this.cmsFormModelBuilder.build(this.model);
-                this._form = this.formModelFactory.create(formConfig);
-                this._form.setData(entry.values);
-                this._form.reset();
+                this.form = this.formModelFactory.create(formConfig);
+                this.form.setData(entry.values);
+                this.form.reset();
             });
         } finally {
             runInAction(() => {
-                this._loading = null;
+                this.loading = null;
             });
         }
     }
 
     dispose(): void {
-        this._form = null;
-        this._entry = null;
+        this.form = null;
+        this.entry = null;
     }
 }
 

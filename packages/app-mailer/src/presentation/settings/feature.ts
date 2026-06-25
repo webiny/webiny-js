@@ -1,15 +1,15 @@
 import { createFeature } from "@webiny/feature/admin";
-import { SettingsPresenter } from "./abstractions.js";
-import { SettingsPresenterImplementation } from "./SettingsPresenter.js";
+import { SettingsPresenter as Abstraction } from "./abstractions.js";
+import { SettingsPresenter } from "./SettingsPresenter.js";
 
 export const SettingsPresenterFeature = createFeature({
     name: "Mailer/SettingsPresenter",
     register(container) {
-        container.register(SettingsPresenterImplementation).inSingletonScope();
+        container.register(SettingsPresenter).inSingletonScope();
     },
     resolve(container) {
         return {
-            presenter: container.resolve(SettingsPresenter)
+            presenter: container.resolve(Abstraction)
         };
     }
 });

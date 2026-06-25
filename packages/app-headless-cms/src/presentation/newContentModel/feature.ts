@@ -1,15 +1,15 @@
 import { createFeature } from "@webiny/feature/admin";
-import { NewContentModelPresenter } from "./abstractions.js";
-import { NewContentModelPresenterImplementation } from "./NewContentModelPresenter.js";
+import { NewContentModelPresenter as Abstraction } from "./abstractions.js";
+import { NewContentModelPresenter } from "./NewContentModelPresenter.js";
 
 export const NewContentModelPresenterFeature = createFeature({
     name: "CmsNewContentModel/Presenter",
     register(container) {
-        container.register(NewContentModelPresenterImplementation).inSingletonScope();
+        container.register(NewContentModelPresenter).inSingletonScope();
     },
     resolve(container) {
         return {
-            presenter: container.resolve(NewContentModelPresenter)
+            presenter: container.resolve(Abstraction)
         };
     }
 });

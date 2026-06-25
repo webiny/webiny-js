@@ -8,5 +8,6 @@ export { DeleteFileRepository, DeleteFileUseCase } from "@webiny/api-file-manage
 export { FileAfterDeleteEventHandler, FileBeforeDeleteEventHandler } from "@webiny/api-file-manager/features/file/DeleteFile/events.js";
 export { FileUrlGenerator } from "@webiny/api-file-manager/features/file/FileUrlGenerator/abstractions.js";
 export { GetFileRepository, GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/abstractions.js";
+export { GetFileByUrlUseCase } from "@webiny/api-file-manager/features/file/GetFileByUrl/abstractions.js";
 export { ListFilesRepository, ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/abstractions.js";
 export { ListTagsRepository, ListTagsUseCase } from "@webiny/api-file-manager/features/file/ListTags/abstractions.js";

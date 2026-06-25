@@ -3,39 +3,39 @@ import { ContentEntryFormPresenter } from "~/presentation/contentEntries/form/ab
 import { NewEntryPresenter as Abstraction } from "./abstractions.js";
 
 class NewEntryPresenterImpl implements Abstraction.Interface {
-    private _disposeOnFolderChange: (() => void) | null = null;
+    private disposeOnFolderChange: (() => void) | null = null;
 
     constructor(
-        private _formPresenter: ContentEntryFormPresenter.Interface,
-        private _foldersPresenter: FolderTreePresenter.Interface
+        private formPresenter: ContentEntryFormPresenter.Interface,
+        private foldersPresenter: FolderTreePresenter.Interface
     ) {}
 
     get form(): ContentEntryFormPresenter.Interface {
-        return this._formPresenter;
+        return this.formPresenter;
     }
 
     get folders(): FolderTreePresenter.Interface {
-        return this._foldersPresenter;
+        return this.foldersPresenter;
     }
 
     init(): void {
-        this._formPresenter.newEntry();
+        this.formPresenter.newEntry();
 
-        this._disposeOnFolderChange = this._foldersPresenter.onFolderChange(folderId => {
-            this._formPresenter.setFolderId(folderId);
+        this.disposeOnFolderChange = this.foldersPresenter.onFolderChange(folderId => {
+            this.formPresenter.setFolderId(folderId);
         });
     }
 
     dispose(): void {
-        if (this._disposeOnFolderChange) {
-            this._disposeOnFolderChange();
-            this._disposeOnFolderChange = null;
+        if (this.disposeOnFolderChange) {
+            this.disposeOnFolderChange();
+            this.disposeOnFolderChange = null;
         }
-        this._formPresenter.reset();
+        this.formPresenter.reset();
     }
 }
 
-export const NewEntryPresenterImplementation = Abstraction.createImplementation({
+export const NewEntryPresenter = Abstraction.createImplementation({
     implementation: NewEntryPresenterImpl,
     dependencies: [ContentEntryFormPresenter, FolderTreePresenter]
 });

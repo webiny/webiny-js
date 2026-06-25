@@ -48,7 +48,7 @@ class BulkMovePresenterImpl implements Abstraction.Interface {
     }
 }
 
-export const BulkMovePresenterImplementation = Abstraction.createImplementation({
+export const BulkMovePresenter = Abstraction.createImplementation({
     implementation: BulkMovePresenterImpl,
     dependencies: [MoveEntryUseCase, BulkActionUseCase, CmsModelContext]
 });

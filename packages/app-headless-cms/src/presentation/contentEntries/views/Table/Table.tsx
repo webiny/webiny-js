@@ -5,7 +5,8 @@ import { useListViewTableProps } from "@webiny/app-admin";
 import { useContainer } from "@webiny/app";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries/list/ContentEntryListConfig.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
-import { TableRowMapper, folderToTableRow, type TableRow } from "./TableRowMapper.js";
+import { folderToTableRow } from "./TableRowMapper.js";
+import { TableRowMapper } from "./abstractions.js";
 
 export const Table = observer(() => {
     const presenter = useContentEntriesPresenter();
@@ -18,7 +19,7 @@ export const Table = observer(() => {
         nameColumnId: "name"
     });
 
-    const data = useMemo<TableRow[]>(() => {
+    const data = useMemo<TableRowMapper.TableRow[]>(() => {
         const entryRows = presenter.list.vm.rows.map(entry => mapper.fromEntry(entry));
 
         if (!presenter.vm.showFolders) {
@@ -29,12 +30,12 @@ export const Table = observer(() => {
         return [...folderRows, ...entryRows];
     }, [presenter.list.vm.rows, presenter.vm.childFolders, presenter.vm.showFolders]);
 
-    const selected = useMemo<TableRow[]>(() => {
+    const selected = useMemo<TableRowMapper.TableRow[]>(() => {
         return data.filter(row => tableProps.selectedIds.has(row.id));
     }, [data, tableProps.selectedIds]);
 
     return (
-        <AcoTable<TableRow>
+        <AcoTable<TableRowMapper.TableRow>
             columns={browser.table.columns}
             data={data}
             loading={tableProps.loading}

@@ -5,7 +5,7 @@ import type { CmsModel } from "~/types.js";
 import { ContentModelFormPreviewPresenter as Abstraction } from "./abstractions.js";
 
 class ContentModelFormPreviewPresenterImpl implements Abstraction.Interface {
-    private _form: FormModel.Interface | null = null;
+    private form: FormModel.Interface | null = null;
 
     constructor(
         private formModelFactory: FormModelFactory.Interface,
@@ -23,21 +23,21 @@ class ContentModelFormPreviewPresenterImpl implements Abstraction.Interface {
 
     get vm(): Abstraction.ViewModel {
         return {
-            form: this._form?.vm ?? null
+            form: this.form?.vm ?? null
         };
     }
 
     buildForm(model: CmsModel): void {
         const formConfig = this.cmsFormModelBuilder.build(model);
-        this._form = this.formModelFactory.create(formConfig);
+        this.form = this.formModelFactory.create(formConfig);
     }
 
     reset(): void {
-        this._form = null;
+        this.form = null;
     }
 }
 
-export const ContentModelFormPreviewPresenterImplementation = Abstraction.createImplementation({
+export const ContentModelFormPreviewPresenter = Abstraction.createImplementation({
     implementation: ContentModelFormPreviewPresenterImpl,
     dependencies: [FormModelFactory, CmsFormModelBuilder]
 });

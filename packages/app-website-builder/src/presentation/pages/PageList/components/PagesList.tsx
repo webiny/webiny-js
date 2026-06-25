@@ -22,7 +22,7 @@ import {
     BulkDuplicateFeature,
     BulkMoveFeature
 } from "~/presentation/pages/bulkActions/feature.js";
-import { TableRowMapperImplementation } from "./Table/TableRowMapper.js";
+import { TableRowMapper } from "./Table/TableRowMapper.js";
 import { WB_PAGE_APP } from "~/constants.js";
 import { Routes } from "~/routes.js";
 import { PageListWithConfig } from "../configs/index.js";
@@ -93,7 +93,7 @@ export const PagesList = () => {
         BulkDeleteFeature.register(child);
         BulkDuplicateFeature.register(child);
         BulkMoveFeature.register(child);
-        child.register(TableRowMapperImplementation);
+        child.register(TableRowMapper);
         PageListPresenterFeature.register(child);
 
         return child;

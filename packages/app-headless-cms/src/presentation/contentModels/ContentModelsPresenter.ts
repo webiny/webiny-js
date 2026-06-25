@@ -14,10 +14,10 @@ import {
 import { ContentModelsDataSource } from "./ContentModelsDataSource.js";
 
 class ContentModelsPresenterImpl implements IContentModelsPresenter {
-    private _loading = true;
+    private loading = true;
 
     constructor(
-        private _listPresenter: ListPresenter.Interface<CmsModel>,
+        private listPresenter: ListPresenter.Interface<CmsModel>,
         private listModelsUseCase: ListModelsUseCase.Interface,
         private deleteModelUseCase: DeleteModelUseCase.Interface,
         private cancelDeleteModelUseCase: CancelDeleteModelUseCase.Interface,
@@ -50,26 +50,26 @@ class ContentModelsPresenterImpl implements IContentModelsPresenter {
         });
 
         return {
-            loading: this._loading,
+            loading: this.loading,
             models
         };
     }
 
     get list(): ListPresenter.Interface<CmsModel> {
-        return this._listPresenter;
+        return this.listPresenter;
     }
 
     init(): void {
         const dataSource = new ContentModelsDataSource(this.listModelsUseCase, this.cache);
 
-        this._listPresenter.init({
+        this.listPresenter.init({
             dataSource,
             initialSort: { field: "savedOn", direction: "DESC" },
             limit: 1000
         });
 
         runInAction(() => {
-            this._loading = false;
+            this.loading = false;
         });
     }
 
@@ -86,7 +86,7 @@ class ContentModelsPresenterImpl implements IContentModelsPresenter {
     }
 }
 
-export const ContentModelsPresenterImplementation = Abstraction.createImplementation({
+export const ContentModelsPresenter = Abstraction.createImplementation({
     implementation: ContentModelsPresenterImpl,
     dependencies: [
         ListPresenter,

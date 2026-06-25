@@ -1,15 +1,15 @@
 import { createFeature } from "@webiny/feature/admin";
-import { ContentModelFormPreviewPresenter } from "./abstractions.js";
-import { ContentModelFormPreviewPresenterImplementation } from "./ContentModelFormPreviewPresenter.js";
+import { ContentModelFormPreviewPresenter as Abstraction } from "./abstractions.js";
+import { ContentModelFormPreviewPresenter } from "./ContentModelFormPreviewPresenter.js";
 
 export const ContentModelFormPreviewFeature = createFeature({
     name: "CmsContentModelEditor/FormPreview",
     register(container) {
-        container.register(ContentModelFormPreviewPresenterImplementation).inSingletonScope();
+        container.register(ContentModelFormPreviewPresenter).inSingletonScope();
     },
     resolve(container) {
         return {
-            presenter: container.resolve(ContentModelFormPreviewPresenter)
+            presenter: container.resolve(Abstraction)
         };
     }
 });

@@ -120,7 +120,7 @@ class WorkflowStateListPresenterImpl implements IWorkflowStateListPresenter {
     }
 }
 
-export const WorkflowStateListPresenterImplementation = Abstraction.createImplementation({
+export const WorkflowStateListPresenter = Abstraction.createImplementation({
     implementation: WorkflowStateListPresenterImpl,
     dependencies: [ListWorkflowStatesUseCase]
 });

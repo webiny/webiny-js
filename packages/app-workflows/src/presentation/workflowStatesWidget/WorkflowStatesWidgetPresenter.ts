@@ -268,7 +268,7 @@ class WorkflowStatesWidgetPresenterImpl implements IWorkflowStatesWidgetPresente
     };
 }
 
-export const WorkflowStatesWidgetPresenterImplementation = Abstraction.createImplementation({
+export const WorkflowStatesWidgetPresenter = Abstraction.createImplementation({
     implementation: WorkflowStatesWidgetPresenterImpl,
     dependencies: [
         ListWorkflowStatesUseCase,

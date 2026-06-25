@@ -139,7 +139,7 @@ class SettingsPresenterImpl implements ISettingsPresenter {
     }
 }
 
-export const SettingsPresenterImplementation = Abstraction.createImplementation({
+export const SettingsPresenter = Abstraction.createImplementation({
     implementation: SettingsPresenterImpl,
     dependencies: [GetSettingsUseCase, SaveSettingsUseCase, FormModelFactory]
 });

@@ -9,7 +9,7 @@ import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abs
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { CmsContentEntry, CmsModel } from "~/types.js";
-import { ContentEntriesCacheProviderImplementation } from "~/features/contentEntry/ContentEntriesCacheProvider.js";
+import { ContentEntriesCacheProvider } from "~/features/contentEntry/ContentEntriesCacheProvider.js";
 import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import { CmsModelContext as CmsModelContextImpl } from "~/features/contentEntry/CmsModelContext.js";
 import { ListEntriesFeature } from "~/features/contentEntry/listEntries/feature.js";
@@ -24,8 +24,8 @@ import { PublishEntryGateway } from "~/features/contentEntry/publishEntry/abstra
 import { UnpublishEntryGateway } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { MoveEntryGateway } from "~/features/contentEntry/moveEntry/abstractions.js";
 import { UpdateRevisionDescriptionGateway } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
-import { ContentEntriesPresenter } from "./abstractions.js";
-import { ContentEntriesPresenterImplementation } from "./ContentEntriesPresenter.js";
+import { ContentEntriesPresenter as Abstraction } from "./abstractions.js";
+import { ContentEntriesPresenter } from "./ContentEntriesPresenter.js";
 import type { IContentEntriesPresenter } from "./abstractions.js";
 import type {
     IFolderTreeViewModel,
@@ -147,7 +147,7 @@ function setup(): TestSetup {
         execute: getDescendantFolders
     });
 
-    container.register(ContentEntriesCacheProviderImplementation).inSingletonScope();
+    container.register(ContentEntriesCacheProvider).inSingletonScope();
     container.register(CmsModelContextImpl).inSingletonScope();
     container.resolve(CmsModelContext).setModel(MODEL);
 
@@ -169,8 +169,8 @@ function setup(): TestSetup {
     container.registerInstance(UnpublishEntryGateway, { execute: vi.fn() });
     container.registerInstance(UpdateRevisionDescriptionGateway, { execute: vi.fn() });
 
-    container.register(ContentEntriesPresenterImplementation).inSingletonScope();
-    const presenter = container.resolve(ContentEntriesPresenter);
+    container.register(ContentEntriesPresenter).inSingletonScope();
+    const presenter = container.resolve(Abstraction);
 
     return {
         presenter,

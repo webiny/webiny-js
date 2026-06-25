@@ -14,9 +14,9 @@ import {
 export const DELETE_REVISION_DIALOG = "delete-revision";
 
 class RevisionsListPresenterImpl implements IRevisionsListPresenter {
-    private _loading = false;
-    private _revisions: CmsContentEntryRevision[] = [];
-    private _visible = false;
+    private loading = false;
+    private revisions: CmsContentEntryRevision[] = [];
+    private visible = false;
 
     constructor(
         private modelAccessor: CmsModelContext.Interface,
@@ -48,14 +48,14 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
 
     get vm(): IRevisionsListViewModel {
         return {
-            loading: this._loading,
-            revisions: this._revisions,
-            visible: this._visible
+            loading: this.loading,
+            revisions: this.revisions,
+            visible: this.visible
         };
     }
 
     async init(entryId: string): Promise<void> {
-        this._loading = true;
+        this.loading = true;
 
         try {
             const revisions = await this.listRevisionsUseCase.execute({
@@ -64,27 +64,27 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
             });
 
             runInAction(() => {
-                this._revisions = revisions;
+                this.revisions = revisions;
             });
         } catch {
             // Silently fail — revisions are supplementary
         } finally {
             runInAction(() => {
-                this._loading = false;
+                this.loading = false;
             });
         }
     }
 
     show(): void {
-        this._visible = true;
+        this.visible = true;
     }
 
     hide(): void {
-        this._visible = false;
+        this.visible = false;
     }
 
     async createRevision(revisionId: string): Promise<CmsContentEntry | null> {
-        this._loading = true;
+        this.loading = true;
 
         try {
             return await this.createRevisionFromUseCase.execute({
@@ -95,7 +95,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
             return null;
         } finally {
             runInAction(() => {
-                this._loading = false;
+                this.loading = false;
             });
         }
     }
@@ -108,7 +108,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
         }
 
         runInAction(() => {
-            this._loading = true;
+            this.loading = true;
         });
 
         try {
@@ -122,19 +122,19 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
             return false;
         } finally {
             runInAction(() => {
-                this._loading = false;
+                this.loading = false;
             });
         }
     }
 
     dispose(): void {
-        this._revisions = [];
-        this._visible = false;
-        this._loading = false;
+        this.revisions = [];
+        this.visible = false;
+        this.loading = false;
     }
 }
 
-export const RevisionsListPresenterImplementation = Abstraction.createImplementation({
+export const RevisionsListPresenter = Abstraction.createImplementation({
     implementation: RevisionsListPresenterImpl,
     dependencies: [
         CmsModelContext,

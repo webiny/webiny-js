@@ -1,23 +1,9 @@
-import { createAbstraction } from "@webiny/feature/admin";
-import type { FolderTableRow, RecordTableRow } from "@webiny/app-aco";
-import type { FolderDto } from "@webiny/app-aco/domain/folder/FolderDto.js";
-import { type Page, PageDtoMapper, type PageDto } from "~/domain/Page/index.js";
+import type { Page } from "~/domain/Page/index.js";
+import { PageDtoMapper } from "~/domain/Page/index.js";
+import { TableRowMapper as Abstraction } from "./abstractions.js";
 
-export type PageTableRow = RecordTableRow<PageDto>;
-export type TableRow = FolderTableRow | PageTableRow;
-
-export interface ITableRowMapper {
-    fromPage(page: Page): TableRow;
-}
-
-export const TableRowMapper = createAbstraction<ITableRowMapper>("WB/PageTableRowMapper");
-
-export namespace TableRowMapper {
-    export type Interface = ITableRowMapper;
-}
-
-class TableRowMapperImpl implements ITableRowMapper {
-    fromPage(page: Page): TableRow {
+class TableRowMapperImpl implements Abstraction.Interface {
+    fromPage(page: Page): Abstraction.TableRow {
         return {
             id: page.entryId,
             $type: "RECORD",
@@ -27,16 +13,7 @@ class TableRowMapperImpl implements ITableRowMapper {
     }
 }
 
-export const TableRowMapperImplementation = TableRowMapper.createImplementation({
+export const TableRowMapper = Abstraction.createImplementation({
     implementation: TableRowMapperImpl,
     dependencies: []
 });
-
-export function folderToTableRow(folder: FolderDto): TableRow {
-    return {
-        id: folder.id,
-        $type: "FOLDER",
-        $selectable: false,
-        data: folder
-    };
-}

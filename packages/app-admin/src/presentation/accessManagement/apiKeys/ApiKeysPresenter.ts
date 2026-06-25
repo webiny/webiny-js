@@ -221,7 +221,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
     }
 }
 
-export const ApiKeysPresenterImplementation = Abstraction.createImplementation({
+export const ApiKeysPresenter = Abstraction.createImplementation({
     implementation: ApiKeysPresenterImpl,
     dependencies: [
         ListPresenter,

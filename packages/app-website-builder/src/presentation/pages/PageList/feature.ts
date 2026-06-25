@@ -1,15 +1,15 @@
 import { createFeature } from "@webiny/feature/admin";
-import { PageListPresenter } from "./abstractions.js";
-import { PageListPresenterImplementation } from "./PageListPresenter.js";
+import { PageListPresenter as Abstraction } from "./abstractions.js";
+import { PageListPresenter } from "./PageListPresenter.js";
 
 export const PageListPresenterFeature = createFeature({
     name: "WebsiteBuilder/PageListPresenter",
     register(container) {
-        container.register(PageListPresenterImplementation).inSingletonScope();
+        container.register(PageListPresenter).inSingletonScope();
     },
     resolve(container) {
         return {
-            presenter: container.resolve(PageListPresenter)
+            presenter: container.resolve(Abstraction)
         };
     }
 });

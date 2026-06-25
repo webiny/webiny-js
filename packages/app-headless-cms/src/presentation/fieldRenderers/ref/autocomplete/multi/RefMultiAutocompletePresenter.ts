@@ -12,7 +12,7 @@ import {
 
 class RefMultiAutocompletePresenterImpl implements Abstraction.Interface {
     private base: BaseAutocompletePresenter;
-    private _resolved: IRefEntryOption[] = [];
+    private resolved: IRefEntryOption[] = [];
 
     constructor(
         searchUseCase: SearchContentEntriesUseCase.Interface,
@@ -28,7 +28,7 @@ class RefMultiAutocompletePresenterImpl implements Abstraction.Interface {
         const seen = new Set<string>();
         const merged: IDropdownOption[] = [];
 
-        for (const opt of this._resolved) {
+        for (const opt of this.resolved) {
             if (!seen.has(opt.entryId)) {
                 seen.add(opt.entryId);
                 merged.push({ label: opt.name, value: opt.entryId });
@@ -42,8 +42,8 @@ class RefMultiAutocompletePresenterImpl implements Abstraction.Interface {
             }
         }
 
-        const values = this._resolved.map(v => v.entryId);
-        const ready = this._resolved.length > 0;
+        const values = this.resolved.map(v => v.entryId);
+        const ready = this.resolved.length > 0;
 
         return {
             loading: this.base.loading,
@@ -74,13 +74,13 @@ class RefMultiAutocompletePresenterImpl implements Abstraction.Interface {
             .map(entryId => allOptions.find(o => o.entryId === entryId))
             .filter((o): o is IRefEntryOption => o != null);
 
-        this._resolved = selected;
+        this.resolved = selected;
         return selected.map(opt => ({ id: opt.id, modelId: opt.modelId }));
     }
 
     clear(): void {
         this.base.clearSearch();
-        this._resolved = [];
+        this.resolved = [];
     }
 
     dispose(): void {}
@@ -88,7 +88,7 @@ class RefMultiAutocompletePresenterImpl implements Abstraction.Interface {
     private async resolve(values: CmsReferenceValue[]): Promise<void> {
         const options = await this.base.resolveEntries(values);
         runInAction(() => {
-            this._resolved = options;
+            this.resolved = options;
         });
     }
 
@@ -96,7 +96,7 @@ class RefMultiAutocompletePresenterImpl implements Abstraction.Interface {
         const seen = new Set<string>();
         const result: IRefEntryOption[] = [];
 
-        for (const source of [this._resolved, this.base.searchOptions, this.base.defaultOptions]) {
+        for (const source of [this.resolved, this.base.searchOptions, this.base.defaultOptions]) {
             for (const opt of source) {
                 if (!seen.has(opt.entryId)) {
                     seen.add(opt.entryId);

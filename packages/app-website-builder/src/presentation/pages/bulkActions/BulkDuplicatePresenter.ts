@@ -30,7 +30,7 @@ class BulkDuplicatePresenterImpl implements Abstraction.Interface {
     }
 }
 
-export const BulkDuplicatePresenterImplementation = Abstraction.createImplementation({
+export const BulkDuplicatePresenter = Abstraction.createImplementation({
     implementation: BulkDuplicatePresenterImpl,
     dependencies: [DuplicatePageUseCase]
 });

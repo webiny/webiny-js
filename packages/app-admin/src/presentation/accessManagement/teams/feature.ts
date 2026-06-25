@@ -1,15 +1,15 @@
 import { createFeature } from "@webiny/feature/admin";
-import { TeamsPresenter } from "./abstractions.js";
-import { TeamsPresenterImplementation } from "./TeamsPresenter.js";
+import { TeamsPresenter as Abstraction } from "./abstractions.js";
+import { TeamsPresenter } from "./TeamsPresenter.js";
 
 export const TeamsPresenterFeature = createFeature({
     name: "AccessManagement/TeamsPresenter",
     register(container) {
-        container.register(TeamsPresenterImplementation).inSingletonScope();
+        container.register(TeamsPresenter).inSingletonScope();
     },
     resolve(container) {
         return {
-            presenter: container.resolve(TeamsPresenter)
+            presenter: container.resolve(Abstraction)
         };
     }
 });

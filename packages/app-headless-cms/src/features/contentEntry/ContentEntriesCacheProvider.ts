@@ -18,7 +18,7 @@ class ContentEntriesCacheProviderImpl implements IContentEntriesCacheProvider {
     }
 }
 
-export const ContentEntriesCacheProviderImplementation = Abstraction.createImplementation({
+export const ContentEntriesCacheProvider = Abstraction.createImplementation({
     implementation: ContentEntriesCacheProviderImpl,
     dependencies: []
 });

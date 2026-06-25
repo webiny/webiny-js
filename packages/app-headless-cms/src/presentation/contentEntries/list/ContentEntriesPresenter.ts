@@ -27,12 +27,12 @@ export const PUBLISH_ENTRY_DIALOG = "publish-entry";
 export const UNPUBLISH_ENTRY_DIALOG = "unpublish-entry";
 
 class ContentEntriesPresenterImpl implements Abstraction.Interface {
-    private _selectedEntryId: string | null = null;
-    private _disposeReaction: IReactionDisposer | null = null;
+    private selectedEntryId: string | null = null;
+    private disposeReaction: IReactionDisposer | null = null;
 
     constructor(
-        private _listPresenter: ListPresenter.Interface<CmsContentEntry>,
-        private _foldersPresenter: FolderTreePresenter.Interface,
+        private listPresenter: ListPresenter.Interface<CmsContentEntry>,
+        private foldersPresenter: FolderTreePresenter.Interface,
         private confirmation: Confirmation.Interface,
         private modelAccessor: CmsModelContext.Interface,
         private listEntriesUseCase: ListEntriesUseCase.Interface,
@@ -46,7 +46,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
     ) {
         makeAutoObservable<
             ContentEntriesPresenterImpl,
-            | "_disposeReaction"
+            | "disposeReaction"
             | "confirmation"
             | "modelAccessor"
             | "listEntriesUseCase"
@@ -58,7 +58,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             | "cacheProvider"
             | "getDescendantFoldersUseCase"
         >(this, {
-            _disposeReaction: false,
+            disposeReaction: false,
             confirmation: false,
             modelAccessor: false,
             listEntriesUseCase: false,
@@ -78,19 +78,19 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
     }
 
     get vm(): IContentEntriesViewModel {
-        const appliedQuery = this._listPresenter.vm.appliedQuery;
+        const appliedQuery = this.listPresenter.vm.appliedQuery;
         const hasSearch = !!appliedQuery?.search;
-        const hasFilters = Object.keys(this._listPresenter.vm.filters).some(k => k !== "folderId");
+        const hasFilters = Object.keys(this.listPresenter.vm.filters).some(k => k !== "folderId");
         const showFolders = !hasSearch && !hasFilters;
 
         const childFolders = showFolders
-            ? sortFolders(this._foldersPresenter.vm.childFolders ?? [], appliedQuery?.sort)
+            ? sortFolders(this.foldersPresenter.vm.childFolders ?? [], appliedQuery?.sort)
             : [];
 
         return {
             model: this.model,
-            selectedEntryId: this._selectedEntryId,
-            showingEntry: this._selectedEntryId !== null,
+            selectedEntryId: this.selectedEntryId,
+            showingEntry: this.selectedEntryId !== null,
             showFolders,
             childFolders
         };
@@ -108,7 +108,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             config.filterNames
         );
 
-        this._listPresenter.init({
+        this.listPresenter.init({
             dataSource,
             initialSort: { field: "savedOn", direction: "DESC" },
             initialFilters: { folderId: initialFolderId },
@@ -118,36 +118,36 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
         });
 
         if (initialFolderId !== "root") {
-            this._foldersPresenter.selectFolder(initialFolderId);
+            this.foldersPresenter.selectFolder(initialFolderId);
         }
 
-        this._disposeReaction = reaction(
-            () => this._foldersPresenter.vm.currentFolderId,
+        this.disposeReaction = reaction(
+            () => this.foldersPresenter.vm.currentFolderId,
             folderId => {
                 const effectiveFolderId = folderId ?? "root";
-                this._listPresenter.actions.filter.set("folderId", effectiveFolderId);
+                this.listPresenter.actions.filter.set("folderId", effectiveFolderId);
             }
         );
     }
 
     get list(): ListPresenter.Interface<CmsContentEntry> {
-        return this._listPresenter;
+        return this.listPresenter;
     }
 
     get folders(): FolderTreePresenter.Interface {
-        return this._foldersPresenter;
+        return this.foldersPresenter;
     }
 
     selectEntry(id: string): void {
-        this._selectedEntryId = id;
+        this.selectedEntryId = id;
     }
 
     deselectEntry(): void {
-        this._selectedEntryId = null;
+        this.selectedEntryId = null;
     }
 
     createEntry(): void {
-        this._selectedEntryId = "new";
+        this.selectedEntryId = "new";
     }
 
     async deleteEntry(id: string): Promise<boolean> {
@@ -199,14 +199,14 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
     }
 
     dispose(): void {
-        if (this._disposeReaction) {
-            this._disposeReaction();
-            this._disposeReaction = null;
+        if (this.disposeReaction) {
+            this.disposeReaction();
+            this.disposeReaction = null;
         }
     }
 }
 
-export const ContentEntriesPresenterImplementation = Abstraction.createImplementation({
+export const ContentEntriesPresenter = Abstraction.createImplementation({
     implementation: ContentEntriesPresenterImpl,
     dependencies: [
         ListPresenter,

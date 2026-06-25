@@ -14,9 +14,9 @@ import {
 } from "./abstractions.js";
 
 class NewContentModelPresenterImpl implements INewContentModelPresenter {
-    private _loading = true;
-    private _saving = false;
-    private _form: IFormModel;
+    private loading = true;
+    private saving = false;
+    private form: IFormModel;
 
     constructor(
         private formModelFactory: FormModelFactory.Interface,
@@ -25,7 +25,7 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
         private groupsCache: ModelGroupsCache.Interface,
         private modelsCache: ModelsCache.Interface
     ) {
-        this._form = this.buildForm();
+        this.form = this.buildForm();
         makeAutoObservable<
             NewContentModelPresenterImpl,
             | "formModelFactory"
@@ -50,11 +50,11 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
         }));
 
         return {
-            loading: this._loading,
-            saving: this._saving,
+            loading: this.loading,
+            saving: this.saving,
             groups,
             models: this.modelsCache.getItems(),
-            form: this._form.vm
+            form: this.form.vm
         };
     }
 
@@ -63,23 +63,23 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
             await this.listModelGroupsUseCase.execute();
         } finally {
             runInAction(() => {
-                this._loading = false;
+                this.loading = false;
                 const groups = this.groupsCache.getItems();
                 if (groups.length > 0) {
-                    this._form.setData({ group: groups[0].slug });
+                    this.form.setData({ group: groups[0].slug });
                 }
             });
         }
     }
 
     async save(): Promise<CmsModel | null> {
-        const data = await this._form.submit<Record<string, any>>();
+        const data = await this.form.submit<Record<string, any>>();
         if (!data) {
             return null;
         }
 
         runInAction(() => {
-            this._saving = true;
+            this.saving = true;
         });
 
         try {
@@ -107,16 +107,16 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
             return null;
         } finally {
             runInAction(() => {
-                this._saving = false;
+                this.saving = false;
             });
         }
     }
 
     reset(): void {
-        this._form = this.buildForm();
+        this.form = this.buildForm();
         const groups = this.groupsCache.getItems();
         if (groups.length > 0) {
-            this._form.setData({ group: groups[0].slug });
+            this.form.setData({ group: groups[0].slug });
         }
     }
 
@@ -152,7 +152,7 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
     }
 }
 
-export const NewContentModelPresenterImplementation = Abstraction.createImplementation({
+export const NewContentModelPresenter = Abstraction.createImplementation({
     implementation: NewContentModelPresenterImpl,
     dependencies: [
         FormModelFactory,

@@ -27,7 +27,7 @@ class BulkDeletePresenterImpl implements Abstraction.Interface {
     }
 }
 
-export const BulkDeletePresenterImplementation = Abstraction.createImplementation({
+export const BulkDeletePresenter = Abstraction.createImplementation({
     implementation: BulkDeletePresenterImpl,
     dependencies: [DeletePageUseCase]
 });

@@ -125,7 +125,7 @@ class TrashBinPresenterImpl implements ITrashBinPresenter {
     }
 }
 
-export const TrashBinPresenterImplementation = Abstraction.createImplementation({
+export const TrashBinPresenter = Abstraction.createImplementation({
     implementation: TrashBinPresenterImpl,
     dependencies: [
         ListPresenter,

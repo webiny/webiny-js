@@ -244,7 +244,7 @@ class TeamsPresenterImpl implements ITeamsPresenter {
     }
 }
 
-export const TeamsPresenterImplementation = Abstraction.createImplementation({
+export const TeamsPresenter = Abstraction.createImplementation({
     implementation: TeamsPresenterImpl,
     dependencies: [
         ListPresenter,

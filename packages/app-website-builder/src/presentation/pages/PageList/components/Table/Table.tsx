@@ -5,7 +5,7 @@ import { useListViewTableProps } from "@webiny/app-admin";
 import { useContainer } from "@webiny/app";
 import { usePageListPresenter } from "../../PageListPresenterProvider.js";
 import { usePageListConfig } from "../../configs/index.js";
-import { TableRowMapper, folderToTableRow, type TableRow } from "./TableRowMapper.js";
+import { TableRowMapper, folderToTableRow } from "./abstractions.js";
 
 export const Table = observer(() => {
     const { vm, list } = usePageListPresenter();
@@ -18,7 +18,7 @@ export const Table = observer(() => {
         nameColumnId: "name"
     });
 
-    const data = useMemo<TableRow[]>(() => {
+    const data = useMemo<TableRowMapper.TableRow[]>(() => {
         const pageRows = list.vm.rows.map(r => mapper.fromPage(r));
         if (!vm.showFolders) {
             return pageRows;
@@ -27,12 +27,12 @@ export const Table = observer(() => {
         return [...folderRows, ...pageRows];
     }, [list.vm.rows, vm.childFolders, vm.showFolders]);
 
-    const selected = useMemo<TableRow[]>(() => {
+    const selected = useMemo<TableRowMapper.TableRow[]>(() => {
         return data.filter(row => tableProps.selectedIds.has(row.id));
     }, [data, tableProps.selectedIds]);
 
     return (
-        <AcoTable<TableRow>
+        <AcoTable<TableRowMapper.TableRow>
             columns={browser.table.columns}
             data={data}
             loading={tableProps.loading}

@@ -8,7 +8,7 @@ import {
 } from "./abstractions.js";
 
 class ContentGroupsMenuPresenterImpl implements IContentGroupsMenuPresenter {
-    private _loading = true;
+    private loading = true;
 
     constructor(
         private listModelGroupsUseCase: ListModelGroupsUseCase.Interface,
@@ -26,7 +26,7 @@ class ContentGroupsMenuPresenterImpl implements IContentGroupsMenuPresenter {
 
     get vm(): IContentGroupsMenuPresenterViewModel {
         return {
-            loading: this._loading,
+            loading: this.loading,
             groups: this.cache.getItems()
         };
     }
@@ -36,7 +36,7 @@ class ContentGroupsMenuPresenterImpl implements IContentGroupsMenuPresenter {
             await this.listModelGroupsUseCase.execute();
         } finally {
             runInAction(() => {
-                this._loading = false;
+                this.loading = false;
             });
         }
     }

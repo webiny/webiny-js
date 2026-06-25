@@ -13,10 +13,10 @@ import {
 } from "./abstractions.js";
 
 class CloneContentModelPresenterImpl implements ICloneContentModelPresenter {
-    private _loading = true;
-    private _saving = false;
-    private _form: IFormModel;
-    private _sourceModel: CmsModel | null = null;
+    private loading = true;
+    private saving = false;
+    private form: IFormModel;
+    private sourceModel: CmsModel | null = null;
 
     constructor(
         private formModelFactory: FormModelFactory.Interface,
@@ -25,7 +25,7 @@ class CloneContentModelPresenterImpl implements ICloneContentModelPresenter {
         private groupsCache: ModelGroupsCache.Interface,
         private modelsCache: ModelsCache.Interface
     ) {
-        this._form = this.buildForm();
+        this.form = this.buildForm();
         makeAutoObservable<
             CloneContentModelPresenterImpl,
             | "formModelFactory"
@@ -50,24 +50,24 @@ class CloneContentModelPresenterImpl implements ICloneContentModelPresenter {
         }));
 
         return {
-            loading: this._loading,
-            saving: this._saving,
+            loading: this.loading,
+            saving: this.saving,
             groups,
             models: this.modelsCache.getItems(),
-            form: this._form.vm
+            form: this.form.vm
         };
     }
 
     async init(sourceModel: CmsModel): Promise<void> {
-        this._sourceModel = sourceModel;
+        this.sourceModel = sourceModel;
 
         try {
             await this.listModelGroupsUseCase.execute();
         } finally {
             runInAction(() => {
-                this._loading = false;
-                this._form = this.buildForm();
-                this._form.setData({
+                this.loading = false;
+                this.form = this.buildForm();
+                this.form.setData({
                     name: sourceModel.name,
                     group: sourceModel.group
                 });
@@ -76,22 +76,22 @@ class CloneContentModelPresenterImpl implements ICloneContentModelPresenter {
     }
 
     async save(): Promise<CmsModel | null> {
-        if (!this._sourceModel) {
+        if (!this.sourceModel) {
             return null;
         }
 
-        const data = await this._form.submit<Record<string, any>>();
+        const data = await this.form.submit<Record<string, any>>();
         if (!data) {
             return null;
         }
 
         runInAction(() => {
-            this._saving = true;
+            this.saving = true;
         });
 
         try {
             const model = await this.cloneModelUseCase.execute({
-                modelId: this._sourceModel.modelId,
+                modelId: this.sourceModel.modelId,
                 data: {
                     name: data.name as string,
                     singularApiName: data.singularApiName as string | undefined,
@@ -107,14 +107,14 @@ class CloneContentModelPresenterImpl implements ICloneContentModelPresenter {
             return null;
         } finally {
             runInAction(() => {
-                this._saving = false;
+                this.saving = false;
             });
         }
     }
 
     reset(): void {
-        this._sourceModel = null;
-        this._form = this.buildForm();
+        this.sourceModel = null;
+        this.form = this.buildForm();
     }
 
     private buildForm(): IFormModel {
@@ -145,7 +145,7 @@ class CloneContentModelPresenterImpl implements ICloneContentModelPresenter {
     }
 }
 
-export const CloneContentModelPresenterImplementation = Abstraction.createImplementation({
+export const CloneContentModelPresenter = Abstraction.createImplementation({
     implementation: CloneContentModelPresenterImpl,
     dependencies: [
         FormModelFactory,

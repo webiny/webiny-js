@@ -205,7 +205,7 @@ class RecordLockingPresenterImpl implements IRecordLockingPresenter {
     }
 }
 
-export const RecordLockingPresenterImplementation = Abstraction.createImplementation({
+export const RecordLockingPresenter = Abstraction.createImplementation({
     implementation: RecordLockingPresenterImpl,
     dependencies: [
         AcquireLockUseCase,

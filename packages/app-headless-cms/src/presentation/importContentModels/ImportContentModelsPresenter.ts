@@ -53,14 +53,14 @@ interface DataToImportResult {
 }
 
 class ImportContentModelsPresenterImpl implements IImportContentModelsPresenter {
-    private _data: Data | null = null;
-    private _loading = false;
-    private _groups: ImportGroupData[] = [];
-    private _models: ImportModelData[] = [];
-    private _file: File | null = null;
-    private _errors: string[] = [];
-    private _validated = false;
-    private _selected: Selected = new Map();
+    private data: Data | null = null;
+    private loading = false;
+    private groups: ImportGroupData[] = [];
+    private models: ImportModelData[] = [];
+    private file: File | null = null;
+    private errors: string[] = [];
+    private validated = false;
+    private selected: Selected = new Map();
 
     constructor(
         private validateUseCase: ValidateImportUseCase.Interface,
@@ -77,30 +77,30 @@ class ImportContentModelsPresenterImpl implements IImportContentModelsPresenter 
 
     get vm(): IImportContentModelsPresenterViewModel {
         return {
-            data: this._data,
-            loading: this._loading,
-            groups: this._groups,
-            models: this._models,
-            file: this._file,
-            errors: this._errors,
-            validated: this._validated
+            data: this.data,
+            loading: this.loading,
+            groups: this.groups,
+            models: this.models,
+            file: this.file,
+            errors: this.errors,
+            validated: this.validated
         };
     }
 
     hasSelected(): boolean {
-        return this._selected.size > 0;
+        return this.selected.size > 0;
     }
 
     isModelSelected(item: Pick<ImportModelData, "id">): boolean {
-        return this._selected.has(item.id);
+        return this.selected.has(item.id);
     }
 
     isModelRelated({ id: target }: Pick<ImportModelData, "id">): boolean {
-        for (const id of this._selected.keys()) {
+        for (const id of this.selected.keys()) {
             if (id === target) {
                 continue;
             }
-            const related = this._selected.get(id);
+            const related = this.selected.get(id);
             if (related && related.includes(target)) {
                 return true;
             }
@@ -114,23 +114,23 @@ class ImportContentModelsPresenterImpl implements IImportContentModelsPresenter 
             try {
                 const data = this.parseFileContent(event.target?.result);
                 runInAction(() => {
-                    this._models = [];
-                    this._groups = [];
-                    this._selected = new Map();
-                    this._errors = [];
-                    this._validated = false;
-                    this._file = file;
-                    this._data = data;
+                    this.models = [];
+                    this.groups = [];
+                    this.selected = new Map();
+                    this.errors = [];
+                    this.validated = false;
+                    this.file = file;
+                    this.data = data;
                 });
             } catch (ex: any) {
                 runInAction(() => {
-                    this._file = file;
-                    this._selected = new Map();
-                    this._validated = false;
-                    this._groups = [];
-                    this._models = [];
-                    this._data = null;
-                    this._errors = [ex.message];
+                    this.file = file;
+                    this.selected = new Map();
+                    this.validated = false;
+                    this.groups = [];
+                    this.models = [];
+                    this.data = null;
+                    this.errors = [ex.message];
                 });
             }
         });
@@ -138,8 +138,8 @@ class ImportContentModelsPresenterImpl implements IImportContentModelsPresenter 
     }
 
     onFileError(error: string): void {
-        this._file = null;
-        this._errors = [error];
+        this.file = null;
+        this.errors = [error];
     }
 
     toggleModel(item: Pick<ImportModelData, "id" | "name" | "related">): void {
@@ -151,25 +151,25 @@ class ImportContentModelsPresenterImpl implements IImportContentModelsPresenter 
     }
 
     async handleModelsValidation(): Promise<void> {
-        if (!this._data) {
+        if (!this.data) {
             return;
         }
 
-        this._loading = true;
+        this.loading = true;
 
         try {
-            const data = await this.validateUseCase.execute(this._data as any);
+            const data = await this.validateUseCase.execute(this.data as any);
 
             runInAction(() => {
-                this._loading = false;
-                this._groups = data.groups.map(group => ({
+                this.loading = false;
+                this.groups = data.groups.map(group => ({
                     id: group.group.id,
                     name: group.group.name,
                     slug: group.group.slug,
                     error: group.error,
                     action: group.action
                 }));
-                this._models = data.models.map(model => ({
+                this.models = data.models.map(model => ({
                     id: model.model.modelId,
                     name: model.model.name,
                     group: model.model.group,
@@ -177,22 +177,22 @@ class ImportContentModelsPresenterImpl implements IImportContentModelsPresenter 
                     error: model.error,
                     action: model.action
                 }));
-                this._validated = true;
+                this.validated = true;
             });
         } catch (ex: any) {
             runInAction(() => {
-                this._loading = false;
-                this._errors = [ex.message];
+                this.loading = false;
+                this.errors = [ex.message];
             });
         }
     }
 
     async handleModelsImport(): Promise<void> {
-        if (!this._data || !this._groups.length || !this._models.length || !this._selected.size) {
+        if (!this.data || !this.groups.length || !this.models.length || !this.selected.size) {
             return;
         }
 
-        this._loading = true;
+        this.loading = true;
 
         const dataToImport = this.getDataToImport();
 
@@ -200,9 +200,9 @@ class ImportContentModelsPresenterImpl implements IImportContentModelsPresenter 
             const data = await this.importUseCase.execute(dataToImport);
 
             runInAction(() => {
-                this._loading = false;
-                this._selected = new Map();
-                this._groups = this._groups.map(group => {
+                this.loading = false;
+                this.selected = new Map();
+                this.groups = this.groups.map(group => {
                     const result = data.groups.find(item => item.group.id === group.id);
                     return {
                         id: result?.group.id || group.id,
@@ -212,7 +212,7 @@ class ImportContentModelsPresenterImpl implements IImportContentModelsPresenter 
                         imported: result ? result.imported : group.imported
                     };
                 });
-                this._models = this._models.map(model => {
+                this.models = this.models.map(model => {
                     const result = data.models.find(item => item.model.modelId === model.id);
                     return {
                         id: result?.model.modelId || model.id,
@@ -224,34 +224,34 @@ class ImportContentModelsPresenterImpl implements IImportContentModelsPresenter 
                         imported: result ? result.imported : model.imported
                     };
                 });
-                this._validated = true;
+                this.validated = true;
             });
         } catch (ex: any) {
             runInAction(() => {
-                this._loading = false;
-                this._errors = [ex.message];
+                this.loading = false;
+                this.errors = [ex.message];
             });
         }
     }
 
     reset(): void {
-        this._data = null;
-        this._loading = false;
-        this._groups = [];
-        this._models = [];
-        this._file = null;
-        this._errors = [];
-        this._validated = false;
-        this._selected = new Map();
+        this.data = null;
+        this.loading = false;
+        this.groups = [];
+        this.models = [];
+        this.file = null;
+        this.errors = [];
+        this.validated = false;
+        this.selected = new Map();
     }
 
     private addModel(item: Pick<ImportModelData, "id" | "name" | "related">): void {
         if (this.isModelSelected(item)) {
             return;
         }
-        this._selected = createSelected({
-            previous: this._selected,
-            models: this._models,
+        this.selected = createSelected({
+            previous: this.selected,
+            models: this.models,
             item
         });
     }
@@ -260,19 +260,19 @@ class ImportContentModelsPresenterImpl implements IImportContentModelsPresenter 
         if (this.isModelRelated(item)) {
             return;
         }
-        const selected = new Map(this._selected);
+        const selected = new Map(this.selected);
         selected.delete(item.id);
-        this._selected = selected;
+        this.selected = selected;
     }
 
     private getDataToImport(): DataToImportResult {
-        const selected = Array.from(this._selected.keys());
+        const selected = Array.from(this.selected.keys());
         const groups: Map<string, ImportStructureVariablesGroup> = new Map();
         const models: Map<string, ImportStructureVariablesModel> = new Map();
         const noAction = [ImportAction.CODE, ImportAction.NONE];
 
         for (const id of selected) {
-            const validatedModel = this._models.find(model => model.id === id);
+            const validatedModel = this.models.find(model => model.id === id);
             if (
                 !validatedModel?.action ||
                 validatedModel.error ||
@@ -280,12 +280,12 @@ class ImportContentModelsPresenterImpl implements IImportContentModelsPresenter 
             ) {
                 continue;
             }
-            const validatedGroup = this._groups.find(group => group.slug === validatedModel.group);
+            const validatedGroup = this.groups.find(group => group.slug === validatedModel.group);
             if (!validatedGroup?.action || validatedGroup.error) {
                 continue;
             }
 
-            const model = this._data?.models?.find(model => model.modelId === id);
+            const model = this.data?.models?.find(model => model.modelId === id);
             if (!model) {
                 continue;
             }
@@ -302,7 +302,7 @@ class ImportContentModelsPresenterImpl implements IImportContentModelsPresenter 
                 continue;
             }
 
-            const group = this._data?.groups?.find(group => group.slug === validatedModel.group);
+            const group = this.data?.groups?.find(group => group.slug === validatedModel.group);
             if (!group) {
                 continue;
             }

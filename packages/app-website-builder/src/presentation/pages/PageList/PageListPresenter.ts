@@ -164,7 +164,7 @@ class PageListPresenterImpl implements Abstraction.Interface {
     }
 }
 
-export const PageListPresenterImplementation = Abstraction.createImplementation({
+export const PageListPresenter = Abstraction.createImplementation({
     implementation: PageListPresenterImpl,
     dependencies: [
         ListPresenter,

@@ -12,7 +12,7 @@ import {
 
 class RefSingleAutocompletePresenterImpl implements Abstraction.Interface {
     private base: BaseAutocompletePresenter;
-    private _resolved: IRefEntryOption | null = null;
+    private resolved: IRefEntryOption | null = null;
 
     constructor(
         searchUseCase: SearchContentEntriesUseCase.Interface,
@@ -28,9 +28,9 @@ class RefSingleAutocompletePresenterImpl implements Abstraction.Interface {
         const seen = new Set<string>();
         const merged: IDropdownOption[] = [];
 
-        if (this._resolved) {
-            seen.add(this._resolved.entryId);
-            merged.push({ label: this._resolved.name, value: this._resolved.entryId });
+        if (this.resolved) {
+            seen.add(this.resolved.entryId);
+            merged.push({ label: this.resolved.name, value: this.resolved.entryId });
         }
 
         for (const opt of baseOptions) {
@@ -43,8 +43,8 @@ class RefSingleAutocompletePresenterImpl implements Abstraction.Interface {
         return {
             loading: this.base.loading,
             options: merged,
-            value: this._resolved ? this._resolved.entryId : undefined,
-            canReset: this._resolved !== null
+            value: this.resolved ? this.resolved.entryId : undefined,
+            canReset: this.resolved !== null
         };
     }
 
@@ -68,13 +68,13 @@ class RefSingleAutocompletePresenterImpl implements Abstraction.Interface {
         if (!opt) {
             return null;
         }
-        this._resolved = opt;
+        this.resolved = opt;
         return { id: opt.id, modelId: opt.modelId };
     }
 
     clear(): void {
         this.base.clearSearch();
-        this._resolved = null;
+        this.resolved = null;
     }
 
     dispose(): void {}
@@ -82,13 +82,13 @@ class RefSingleAutocompletePresenterImpl implements Abstraction.Interface {
     private async resolve(value: CmsReferenceValue): Promise<void> {
         const options = await this.base.resolveEntries([value]);
         runInAction(() => {
-            this._resolved = options[0] ?? null;
+            this.resolved = options[0] ?? null;
         });
     }
 
     private findOption(entryId: string): IRefEntryOption | undefined {
         const sources = [
-            this._resolved ? [this._resolved] : [],
+            this.resolved ? [this.resolved] : [],
             this.base.searchOptions,
             this.base.defaultOptions
         ];

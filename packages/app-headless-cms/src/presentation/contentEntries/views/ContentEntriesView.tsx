@@ -14,7 +14,7 @@ import {
     BulkMoveFeature
 } from "../bulkActions/feature.js";
 import { RevisionsListFeature } from "../revisionsList/feature.js";
-import { TableRowMapperImplementation } from "./Table/TableRowMapper.js";
+import { TableRowMapper } from "./Table/TableRowMapper.js";
 import { ModelLoader } from "./ModelLoader.js";
 
 export interface ContentEntriesViewProps {
@@ -46,7 +46,7 @@ export const ContentEntriesView = ({
         BulkUnpublishFeature.register(child);
         BulkDeleteFeature.register(child);
         BulkMoveFeature.register(child);
-        child.register(TableRowMapperImplementation);
+        child.register(TableRowMapper);
 
         return child;
     }, []);

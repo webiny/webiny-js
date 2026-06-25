@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/admin";
-import { ContentEntriesCacheProviderImplementation } from "./ContentEntriesCacheProvider.js";
+import { ContentEntriesCacheProvider } from "./ContentEntriesCacheProvider.js";
 import { GetEntryFeature } from "./getEntry/feature.js";
 import { ListEntriesFeature } from "./listEntries/feature.js";
 import { CreateEntryFeature } from "./createEntry/feature.js";
@@ -24,7 +24,7 @@ export const ContentEntryFeature = createFeature({
     name: "CmsContentEntry",
     register(container) {
         container.register(EntryGraphQLFields).inSingletonScope();
-        container.register(ContentEntriesCacheProviderImplementation).inSingletonScope();
+        container.register(ContentEntriesCacheProvider).inSingletonScope();
 
         ValueTransformersFeature.register(container);
         GetEntryFeature.register(container);

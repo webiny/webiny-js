@@ -1,37 +1,10 @@
-import { createAbstraction } from "@webiny/feature/admin";
+import { CmsContentEntry } from "~/types.js";
+import { TableRowMapper as Abstraction } from "./abstractions.js";
+import type { IEntryTableRow, IFolderTableRow } from "./abstractions.js";
 import type { FolderDto } from "@webiny/app-aco";
-import type { CmsContentEntry } from "~/types.js";
 
-interface BaseTableRow<TData = unknown> {
-    id: string;
-    $selectable: boolean;
-    $type: string;
-    data: TData;
-}
-
-export interface FolderTableRow extends BaseTableRow<FolderDto> {
-    $type: "FOLDER";
-    $selectable: false;
-}
-
-export interface EntryTableRow extends BaseTableRow<CmsContentEntry> {
-    $type: "RECORD";
-}
-
-export type TableRow = FolderTableRow | EntryTableRow;
-
-export interface ITableRowMapper {
-    fromEntry(entry: CmsContentEntry): EntryTableRow;
-}
-
-export const TableRowMapper = createAbstraction<ITableRowMapper>("Cms/EntryTableRowMapper");
-
-export namespace TableRowMapper {
-    export type Interface = ITableRowMapper;
-}
-
-class TableRowMapperImpl implements ITableRowMapper {
-    fromEntry(entry: CmsContentEntry): EntryTableRow {
+class TableRowMapperImpl implements Abstraction.Interface {
+    fromEntry(entry: CmsContentEntry): IEntryTableRow {
         return {
             id: entry.id,
             $type: "RECORD",
@@ -41,12 +14,12 @@ class TableRowMapperImpl implements ITableRowMapper {
     }
 }
 
-export const TableRowMapperImplementation = TableRowMapper.createImplementation({
+export const TableRowMapper = Abstraction.createImplementation({
     implementation: TableRowMapperImpl,
     dependencies: []
 });
 
-export function folderToTableRow(folder: FolderDto): FolderTableRow {
+export function folderToTableRow(folder: FolderDto): IFolderTableRow {
     return {
         id: folder.id,
         $type: "FOLDER",

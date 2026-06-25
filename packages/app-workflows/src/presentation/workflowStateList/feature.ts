@@ -1,15 +1,15 @@
 import { createFeature } from "@webiny/feature/admin";
-import { WorkflowStateListPresenter } from "./abstractions.js";
-import { WorkflowStateListPresenterImplementation } from "./WorkflowStateListPresenter.js";
+import { WorkflowStateListPresenter as Abstraction } from "./abstractions.js";
+import { WorkflowStateListPresenter } from "./WorkflowStateListPresenter.js";
 
 export const WorkflowStateListPresenterFeature = createFeature({
     name: "Workflows/WorkflowStateListPresenter",
     register(container) {
-        container.register(WorkflowStateListPresenterImplementation).inSingletonScope();
+        container.register(WorkflowStateListPresenter).inSingletonScope();
     },
     resolve(container) {
         return {
-            presenter: container.resolve(WorkflowStateListPresenter)
+            presenter: container.resolve(Abstraction)
         };
     }
 });

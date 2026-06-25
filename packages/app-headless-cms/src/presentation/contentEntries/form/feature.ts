@@ -1,15 +1,15 @@
 import { createFeature } from "@webiny/feature/admin";
-import { ContentEntryFormPresenter } from "./abstractions.js";
-import { ContentEntryFormPresenterImplementation } from "./ContentEntryFormPresenter.js";
+import { ContentEntryFormPresenter as Abstraction } from "./abstractions.js";
+import { ContentEntryFormPresenter } from "./ContentEntryFormPresenter.js";
 
 export const ContentEntryFormPresenterFeature = createFeature({
     name: "CmsContentEntries/FormPresenter",
     register(container) {
-        container.register(ContentEntryFormPresenterImplementation).inSingletonScope();
+        container.register(ContentEntryFormPresenter).inSingletonScope();
     },
     resolve(container) {
         return {
-            presenter: container.resolve(ContentEntryFormPresenter)
+            presenter: container.resolve(Abstraction)
         };
     }
 });

@@ -28,20 +28,20 @@ function toReferenceEntry(entry: CmsContentEntry, model: CmsModel): CmsReference
 }
 
 export class RefDialogSingleModelDataSource extends SimpleDataSource<CmsReferenceEntry> {
-    private _items: CmsReferenceEntry[] = [];
+    private items: CmsReferenceEntry[] = [];
 
     constructor(
         private model: CmsModel,
         private listEntriesUseCase: IListEntriesUseCase
     ) {
         super();
-        makeObservable<RefDialogSingleModelDataSource, "_items">(this, {
-            _items: observable
+        makeObservable<RefDialogSingleModelDataSource, "items">(this, {
+            items: observable
         });
     }
 
     get rows(): CmsReferenceEntry[] {
-        return this._items;
+        return this.items;
     }
 
     async fetch(params: IDataSourceQuery): Promise<FetchResult<CmsReferenceEntry>> {
@@ -66,13 +66,13 @@ export class RefDialogSingleModelDataSource extends SimpleDataSource<CmsReferenc
 
     protected override onQueryResult(data: CmsReferenceEntry[]): void {
         runInAction(() => {
-            this._items = data;
+            this.items = data;
         });
     }
 
     protected override onLoadMoreResult(data: CmsReferenceEntry[]): void {
         runInAction(() => {
-            this._items = [...this._items, ...data];
+            this.items = [...this.items, ...data];
         });
     }
 }

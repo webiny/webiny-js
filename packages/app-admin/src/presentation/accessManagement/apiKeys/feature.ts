@@ -1,15 +1,15 @@
 import { createFeature } from "@webiny/feature/admin";
-import { ApiKeysPresenter } from "./abstractions.js";
-import { ApiKeysPresenterImplementation } from "./ApiKeysPresenter.js";
+import { ApiKeysPresenter as Abstraction } from "./abstractions.js";
+import { ApiKeysPresenter } from "./ApiKeysPresenter.js";
 
 export const ApiKeysPresenterFeature = createFeature({
     name: "AccessManagement/ApiKeysPresenter",
     register(container) {
-        container.register(ApiKeysPresenterImplementation).inSingletonScope();
+        container.register(ApiKeysPresenter).inSingletonScope();
     },
     resolve(container) {
         return {
-            presenter: container.resolve(ApiKeysPresenter)
+            presenter: container.resolve(Abstraction)
         };
     }
 });

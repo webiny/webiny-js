@@ -32,14 +32,14 @@ function toIconValue(name: string): { type: string; name: string } {
 }
 
 class ModelGroupPresenterImpl implements IModelGroupPresenter {
-    private _selectedGroup: ModelGroupDto | null = null;
-    private _loading = false;
-    private _saving = false;
-    private _showForm = false;
-    private _form: IFormModel;
+    private selectedGroup: ModelGroupDto | null = null;
+    private loading = false;
+    private saving = false;
+    private showForm = false;
+    private form: IFormModel;
 
     constructor(
-        private _listPresenter: ListPresenter.Interface<ModelGroupDto>,
+        private listPresenter: ListPresenter.Interface<ModelGroupDto>,
         private formModelFactory: FormModelFactory.Interface,
         private listModelGroupsUseCase: ListModelGroupsUseCase.Interface,
         private getRoleUseCase: GetModelGroupUseCase.Interface,
@@ -48,7 +48,7 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
         private deleteModelGroupUseCase: DeleteModelGroupUseCase.Interface,
         private cache: ModelGroupsCache.Interface
     ) {
-        this._form = this.buildForm(false, false);
+        this.form = this.buildForm(false, false);
         makeAutoObservable<
             ModelGroupPresenterImpl,
             | "formModelFactory"
@@ -71,28 +71,28 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
     }
 
     get vm(): IModelGroupPresenterViewModel {
-        const group = this._selectedGroup;
+        const group = this.selectedGroup;
         const isPluginGroup = group !== null && (group.plugin ?? false);
 
         return {
-            selectedGroup: this._selectedGroup,
-            loading: this._loading,
-            saving: this._saving,
-            showForm: this._showForm,
+            selectedGroup: this.selectedGroup,
+            loading: this.loading,
+            saving: this.saving,
+            showForm: this.showForm,
             canModify: !isPluginGroup,
             isPluginGroup,
-            form: this._form.vm
+            form: this.form.vm
         };
     }
 
     get list(): ListPresenter.Interface<ModelGroupDto> {
-        return this._listPresenter;
+        return this.listPresenter;
     }
 
     init(): void {
         const dataSource = new ModelGroupDataSource(this.listModelGroupsUseCase, this.cache);
 
-        this._listPresenter.init({
+        this.listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
             limit: 1000
@@ -101,8 +101,8 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
 
     async selectGroup(id: string): Promise<void> {
         runInAction(() => {
-            this._loading = true;
-            this._showForm = true;
+            this.loading = true;
+            this.showForm = true;
         });
 
         try {
@@ -111,9 +111,9 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
             const canModify = !isPluginGroup;
 
             runInAction(() => {
-                this._selectedGroup = group;
-                this._form = this.buildForm(false, canModify);
-                this._form.setData({
+                this.selectedGroup = group;
+                this.form = this.buildForm(false, canModify);
+                this.form.setData({
                     name: group.name,
                     slug: group.slug,
                     description: group.description,
@@ -122,48 +122,48 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
             });
         } finally {
             runInAction(() => {
-                this._loading = false;
+                this.loading = false;
             });
         }
     }
 
     createNew(): void {
-        this._selectedGroup = null;
-        this._form = this.buildForm(true, true);
-        this._form.setData({ icon: "fas/star", description: "" });
-        this._showForm = true;
+        this.selectedGroup = null;
+        this.form = this.buildForm(true, true);
+        this.form.setData({ icon: "fas/star", description: "" });
+        this.showForm = true;
     }
 
     deselect(): void {
-        this._selectedGroup = null;
-        this._showForm = false;
+        this.selectedGroup = null;
+        this.showForm = false;
     }
 
     async save(): Promise<ModelGroupDto | null> {
-        const data = await this._form.submit<ModelGroupDto>();
+        const data = await this.form.submit<ModelGroupDto>();
         if (!data) {
             return null;
         }
 
         runInAction(() => {
-            this._saving = true;
+            this.saving = true;
         });
 
         try {
-            const isUpdate = this._selectedGroup !== null && this._selectedGroup.createdOn;
+            const isUpdate = this.selectedGroup !== null && this.selectedGroup.createdOn;
 
             const iconValue = toIconValue(data.icon as unknown as string);
 
             if (isUpdate) {
                 const group = await this.updateModelGroupUseCase.execute({
-                    id: this._selectedGroup!.id,
+                    id: this.selectedGroup!.id,
                     name: data.name as unknown as string,
-                    slug: this._selectedGroup!.slug,
+                    slug: this.selectedGroup!.slug,
                     description: data.description as unknown as string,
                     icon: iconValue as unknown as string
                 });
                 runInAction(() => {
-                    this._selectedGroup = group;
+                    this.selectedGroup = group;
                 });
                 return group;
             } else {
@@ -174,9 +174,9 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
                     icon: iconValue as unknown as string
                 });
                 runInAction(() => {
-                    this._selectedGroup = group;
-                    this._form = this.buildForm(false, true);
-                    this._form.setData({
+                    this.selectedGroup = group;
+                    this.form = this.buildForm(false, true);
+                    this.form.setData({
                         name: group.name,
                         slug: group.slug,
                         description: group.description,
@@ -189,7 +189,7 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
             return null;
         } finally {
             runInAction(() => {
-                this._saving = false;
+                this.saving = false;
             });
         }
     }
@@ -198,9 +198,9 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
         await this.deleteModelGroupUseCase.execute(id);
 
         runInAction(() => {
-            if (this._selectedGroup !== null && this._selectedGroup.id === id) {
-                this._selectedGroup = null;
-                this._showForm = false;
+            if (this.selectedGroup !== null && this.selectedGroup.id === id) {
+                this.selectedGroup = null;
+                this.showForm = false;
             }
         });
     }
@@ -255,7 +255,7 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
     }
 }
 
-export const ModelGroupPresenterImplementation = Abstraction.createImplementation({
+export const ModelGroupPresenter = Abstraction.createImplementation({
     implementation: ModelGroupPresenterImpl,
     dependencies: [
         ListPresenter,

@@ -1,61 +1,63 @@
 import { createFeature } from "@webiny/feature/admin";
-import { BulkPublishPresenterImplementation } from "./BulkPublishPresenter.js";
-import { BulkUnpublishPresenterImplementation } from "./BulkUnpublishPresenter.js";
-import { BulkDeletePresenterImplementation } from "./BulkDeletePresenter.js";
-import { BulkDuplicatePresenterImplementation } from "./BulkDuplicatePresenter.js";
-import { BulkMovePresenterImplementation } from "./BulkMovePresenter.js";
-import { BulkPublishPresenter } from "./abstractions.js";
-import { BulkUnpublishPresenter } from "./abstractions.js";
-import { BulkDeletePresenter } from "./abstractions.js";
-import { BulkDuplicatePresenter } from "./abstractions.js";
-import { BulkMovePresenter } from "./abstractions.js";
+import {
+    BulkPublishPresenter as BulkPublishAbstraction,
+    BulkUnpublishPresenter as BulkUnpublishAbstraction,
+    BulkDeletePresenter as BulkDeleteAbstraction,
+    BulkDuplicatePresenter as BulkDuplicateAbstraction,
+    BulkMovePresenter as BulkMoveAbstraction
+} from "./abstractions.js";
+import { BulkPublishPresenter } from "./BulkPublishPresenter.js";
+import { BulkUnpublishPresenter } from "./BulkUnpublishPresenter.js";
+import { BulkDeletePresenter } from "./BulkDeletePresenter.js";
+import { BulkDuplicatePresenter } from "./BulkDuplicatePresenter.js";
+import { BulkMovePresenter } from "./BulkMovePresenter.js";
 
 export const BulkPublishFeature = createFeature({
     name: "WbPages/BulkPublish",
     register(container) {
-        container.register(BulkPublishPresenterImplementation);
+        container.register(BulkPublishPresenter);
     },
     resolve(container) {
-        return { presenter: container.resolve(BulkPublishPresenter) };
+        return { presenter: container.resolve(BulkPublishAbstraction) };
     }
 });
 
 export const BulkUnpublishFeature = createFeature({
     name: "WbPages/BulkUnpublish",
     register(container) {
-        container.register(BulkUnpublishPresenterImplementation);
+        container.register(BulkUnpublishPresenter);
     },
     resolve(container) {
-        return { presenter: container.resolve(BulkUnpublishPresenter) };
+        return { presenter: container.resolve(BulkUnpublishAbstraction) };
     }
 });
 
 export const BulkDeleteFeature = createFeature({
     name: "WbPages/BulkDelete",
     register(container) {
-        container.register(BulkDeletePresenterImplementation);
+        container.register(BulkDeletePresenter);
     },
     resolve(container) {
-        return { presenter: container.resolve(BulkDeletePresenter) };
+        return { presenter: container.resolve(BulkDeleteAbstraction) };
     }
 });
 
 export const BulkDuplicateFeature = createFeature({
     name: "WbPages/BulkDuplicate",
     register(container) {
-        container.register(BulkDuplicatePresenterImplementation);
+        container.register(BulkDuplicatePresenter);
     },
     resolve(container) {
-        return { presenter: container.resolve(BulkDuplicatePresenter) };
+        return { presenter: container.resolve(BulkDuplicateAbstraction) };
     }
 });
 
 export const BulkMoveFeature = createFeature({
     name: "WbPages/BulkMove",
     register(container) {
-        container.register(BulkMovePresenterImplementation);
+        container.register(BulkMovePresenter);
     },
     resolve(container) {
-        return { presenter: container.resolve(BulkMovePresenter) };
+        return { presenter: container.resolve(BulkMoveAbstraction) };
     }
 });

@@ -8,8 +8,8 @@ import {
 } from "./abstractions.js";
 
 class RefSimplePresenterImpl implements Abstraction.Interface {
-    private _loading = false;
-    private _entries: IRefSimpleEntry[] = [];
+    private loading = false;
+    private entries: IRefSimpleEntry[] = [];
 
     constructor(private searchContentEntriesUseCase: SearchContentEntriesUseCase.Interface) {
         makeAutoObservable<RefSimplePresenterImpl, "searchContentEntriesUseCase">(this, {
@@ -20,20 +20,20 @@ class RefSimplePresenterImpl implements Abstraction.Interface {
 
     get vm(): IRefSimpleViewModel {
         return {
-            loading: this._loading,
-            entries: this._entries
+            loading: this.loading,
+            entries: this.entries
         };
     }
 
     async init(config: IRefSimplePresenterInitConfig): Promise<void> {
-        this._loading = true;
+        this.loading = true;
         try {
             const result = await this.searchContentEntriesUseCase.execute({
                 modelIds: config.modelIds
             });
 
             runInAction(() => {
-                this._entries = result.data.map(entry => ({
+                this.entries = result.data.map(entry => ({
                     id: entry.id,
                     entryId: entry.entryId,
                     title: entry.title,
@@ -42,7 +42,7 @@ class RefSimplePresenterImpl implements Abstraction.Interface {
             });
         } finally {
             runInAction(() => {
-                this._loading = false;
+                this.loading = false;
             });
         }
     }
@@ -52,7 +52,7 @@ class RefSimplePresenterImpl implements Abstraction.Interface {
     }
 }
 
-export const RefSimplePresenterImplementation = Abstraction.createImplementation({
+export const RefSimplePresenter = Abstraction.createImplementation({
     implementation: RefSimplePresenterImpl,
     dependencies: [SearchContentEntriesUseCase]
 });

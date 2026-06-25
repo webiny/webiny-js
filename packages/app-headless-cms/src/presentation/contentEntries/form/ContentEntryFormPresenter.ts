@@ -22,10 +22,10 @@ import { ContentEntryFormPresenter as Abstraction } from "./abstractions.js";
 import { TRASH_ENTRY_DIALOG } from "~/presentation/contentEntries/list/ContentEntriesPresenter.js";
 
 class ContentEntryFormPresenterImpl implements Abstraction.Interface {
-    private _entry: CmsContentEntry | null = null;
-    private _form: FormModel.Interface | null = null;
-    private _loading: string | null = null;
-    private _folderId: string | null = null;
+    private entry: CmsContentEntry | null = null;
+    private form: FormModel.Interface | null = null;
+    private loading: string | null = null;
+    private folderId: string | null = null;
 
     constructor(
         private formModelFactory: FormModelFactory.Interface,
@@ -74,46 +74,46 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     }
 
     get vm(): Abstraction.ViewModel {
-        const entry = this._entry;
+        const entry = this.entry;
         const meta = entry?.meta;
         const isLocked = meta?.locked ?? false;
         const status = meta?.status;
 
         return {
-            loading: this._loading,
+            loading: this.loading,
             model: this.model,
-            entry: this._entry,
-            form: this._form?.vm ?? null,
-            canSave: !isLocked && this._form !== null,
-            canPublish: this._entry !== null && status !== "published",
-            canUnpublish: this._entry !== null && status === "published",
-            canDelete: this._entry !== null,
-            isNewEntry: this._entry === null && this._form !== null,
-            isDirty: this._form?.isDirty ?? false
+            entry: this.entry,
+            form: this.form?.vm ?? null,
+            canSave: !isLocked && this.form !== null,
+            canPublish: this.entry !== null && status !== "published",
+            canUnpublish: this.entry !== null && status === "published",
+            canDelete: this.entry !== null,
+            isNewEntry: this.entry === null && this.form !== null,
+            isDirty: this.form?.isDirty ?? false
         };
     }
 
     async saveRevision(options?: { skipValidation?: boolean }): Promise<boolean> {
-        if (!this._form) {
+        if (!this.form) {
             return false;
         }
 
         const skipValidation = options?.skipValidation ?? true;
-        const data = await this._form.submit({ skipValidation });
+        const data = await this.form.submit({ skipValidation });
 
         if (!data) {
             return false;
         }
 
         runInAction(() => {
-            this._loading = "Saving...";
+            this.loading = "Saving...";
         });
 
         try {
-            if (this._entry) {
+            if (this.entry) {
                 const entry = await this.updateEntryUseCase.execute({
                     model: this.model,
-                    revisionId: this._entry.id,
+                    revisionId: this.entry.id,
                     data: {
                         values: data
                     },
@@ -121,14 +121,14 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
                 });
 
                 runInAction(() => {
-                    this._entry = entry;
-                    this._form!.setData(entry.values);
-                    this._form!.reset();
+                    this.entry = entry;
+                    this.form!.setData(entry.values);
+                    this.form!.reset();
                 });
             } else {
                 const createData: Record<string, unknown> = { values: data };
-                if (this._folderId) {
-                    createData.wbyAco_location = { folderId: this._folderId };
+                if (this.folderId) {
+                    createData.wbyAco_location = { folderId: this.folderId };
                 }
 
                 const entry = await this.createEntryUseCase.execute({
@@ -138,9 +138,9 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
                 });
 
                 runInAction(() => {
-                    this._entry = entry;
-                    this._form!.setData(entry.values);
-                    this._form!.reset();
+                    this.entry = entry;
+                    this.form!.setData(entry.values);
+                    this.form!.reset();
                 });
             }
 
@@ -149,19 +149,19 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             return false;
         } finally {
             runInAction(() => {
-                this._loading = null;
+                this.loading = null;
             });
         }
     }
 
     async publishRevision(): Promise<boolean> {
-        if (!this._entry) {
+        if (!this.entry) {
             return false;
         }
 
         const result = await this.confirmation.confirm<PublishEntryDialogData>(
             PUBLISH_ENTRY_DIALOG,
-            { entry: this._entry }
+            { entry: this.entry }
         );
 
         if (result === false) {
@@ -169,25 +169,25 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         }
 
         runInAction(() => {
-            this._loading = "Publishing...";
+            this.loading = "Publishing...";
         });
 
         try {
             if (result.revisionDescription) {
                 await this.updateRevisionDescriptionUseCase.execute({
                     model: this.model,
-                    id: this._entry.id,
+                    id: this.entry.id,
                     revisionDescription: result.revisionDescription
                 });
             }
 
             const entry = await this.publishEntryUseCase.execute({
                 model: this.model,
-                revisionId: this._entry.id
+                revisionId: this.entry.id
             });
 
             runInAction(() => {
-                this._entry = entry;
+                this.entry = entry;
             });
 
             return true;
@@ -195,26 +195,26 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             return false;
         } finally {
             runInAction(() => {
-                this._loading = null;
+                this.loading = null;
             });
         }
     }
 
     async unpublishRevision(): Promise<boolean> {
-        if (!this._entry) {
+        if (!this.entry) {
             return false;
         }
 
-        this._loading = "Unpublishing...";
+        this.loading = "Unpublishing...";
 
         try {
             const entry = await this.unpublishEntryUseCase.execute({
                 model: this.model,
-                revisionId: this._entry.id
+                revisionId: this.entry.id
             });
 
             runInAction(() => {
-                this._entry = entry;
+                this.entry = entry;
             });
 
             return true;
@@ -222,18 +222,18 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             return false;
         } finally {
             runInAction(() => {
-                this._loading = null;
+                this.loading = null;
             });
         }
     }
 
     async deleteEntry(): Promise<boolean> {
-        if (!this._entry) {
+        if (!this.entry) {
             return false;
         }
 
         const model = this.model;
-        const entry = this._entry;
+        const entry = this.entry;
 
         return this.confirmation.confirm(
             TRASH_ENTRY_DIALOG,
@@ -246,8 +246,8 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
                     });
 
                     runInAction(() => {
-                        this._entry = null;
-                        this._form = null;
+                        this.entry = null;
+                        this.form = null;
                     });
 
                     return true;
@@ -259,7 +259,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     }
 
     async loadRevision(id: string): Promise<void> {
-        this._loading = "Loading entry...";
+        this.loading = "Loading entry...";
 
         try {
             const entry = await this.getEntryUseCase.execute({
@@ -268,41 +268,41 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             });
 
             runInAction(() => {
-                this._entry = entry;
+                this.entry = entry;
                 this.buildAndPopulateForm(entry);
             });
         } finally {
             runInAction(() => {
-                this._loading = null;
+                this.loading = null;
             });
         }
     }
 
     setFolderId(folderId: string | null): void {
-        this._folderId = folderId;
+        this.folderId = folderId;
     }
 
     newEntry(): void {
-        this._entry = null;
+        this.entry = null;
 
         const formConfig = this.cmsFormModelBuilder.build(this.model);
-        this._form = this.formModelFactory.create(formConfig);
+        this.form = this.formModelFactory.create(formConfig);
     }
 
     reset(): void {
-        this._form = null;
-        this._entry = null;
+        this.form = null;
+        this.entry = null;
     }
 
     private buildAndPopulateForm(entry: CmsContentEntry): void {
         const formConfig = this.cmsFormModelBuilder.build(this.model);
-        this._form = this.formModelFactory.create(formConfig);
-        this._form.setData(entry.values);
-        this._form.reset();
+        this.form = this.formModelFactory.create(formConfig);
+        this.form.setData(entry.values);
+        this.form.reset();
     }
 }
 
-export const ContentEntryFormPresenterImplementation = Abstraction.createImplementation({
+export const ContentEntryFormPresenter = Abstraction.createImplementation({
     implementation: ContentEntryFormPresenterImpl,
     dependencies: [
         FormModelFactory,

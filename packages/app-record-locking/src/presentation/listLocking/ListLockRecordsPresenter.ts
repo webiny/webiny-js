@@ -58,7 +58,7 @@ class ListLockRecordsPresenterImpl implements IListLockRecordsPresenter {
     }
 }
 
-export const ListLockRecordsPresenterImplementation = Abstraction.createImplementation({
+export const ListLockRecordsPresenter = Abstraction.createImplementation({
     implementation: ListLockRecordsPresenterImpl,
     dependencies: [ListLockRecordsUseCase]
 });

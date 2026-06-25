@@ -1,15 +1,15 @@
 import { createFeature } from "@webiny/feature/admin";
-import { RevisionsListPresenter } from "./abstractions.js";
-import { RevisionsListPresenterImplementation } from "./RevisionsListPresenter.js";
+import { RevisionsListPresenter as Abstraction } from "./abstractions.js";
+import { RevisionsListPresenter } from "./RevisionsListPresenter.js";
 
 export const RevisionsListFeature = createFeature({
     name: "CmsContentEntries/RevisionsList",
     register(container) {
-        container.register(RevisionsListPresenterImplementation).inSingletonScope();
+        container.register(RevisionsListPresenter).inSingletonScope();
     },
     resolve(container) {
         return {
-            presenter: container.resolve(RevisionsListPresenter)
+            presenter: container.resolve(Abstraction)
         };
     }
 });

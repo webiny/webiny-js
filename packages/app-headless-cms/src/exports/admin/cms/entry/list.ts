@@ -1,11 +1,6 @@
 export { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 export { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
-export { TableRowMapper } from "~/presentation/contentEntries/views/Table/TableRowMapper.js";
-export type {
-    ITableRowMapper,
-    TableRow,
-    EntryTableRow
-} from "~/presentation/contentEntries/views/Table/TableRowMapper.js";
+export { TableRowMapper } from "~/presentation/contentEntries/views/Table/abstractions.js";
 export { ListEntriesGraphQLFieldSelection } from "~/features/contentEntry/listEntries/abstractions.js";
 export type { IListEntriesGraphQLFieldSelection } from "~/features/contentEntry/listEntries/abstractions.js";
 export { GetEntryGraphQLFieldSelection } from "~/features/contentEntry/getEntry/abstractions.js";

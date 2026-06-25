@@ -243,7 +243,7 @@ class RolesPresenterImpl implements IRolesPresenter {
     }
 }
 
-export const RolesPresenterImplementation = Abstraction.createImplementation({
+export const RolesPresenter = Abstraction.createImplementation({
     implementation: RolesPresenterImpl,
     dependencies: [
         ListPresenter,

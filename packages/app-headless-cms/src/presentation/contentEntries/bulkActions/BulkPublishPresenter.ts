@@ -44,7 +44,7 @@ class BulkPublishPresenterImpl implements Abstraction.Interface {
     }
 }
 
-export const BulkPublishPresenterImplementation = Abstraction.createImplementation({
+export const BulkPublishPresenter = Abstraction.createImplementation({
     implementation: BulkPublishPresenterImpl,
     dependencies: [PublishEntryUseCase, BulkActionUseCase, CmsModelContext]
 });

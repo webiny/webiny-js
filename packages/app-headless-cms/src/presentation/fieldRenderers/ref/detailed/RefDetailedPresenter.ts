@@ -12,12 +12,12 @@ import {
 const PER_PAGE = 10;
 
 class RefDetailedPresenterImpl implements Abstraction.Interface {
-    private _loading = false;
-    private _entries: CmsReferenceEntry[] = [];
-    private _models: CmsModel[] = [];
-    private _multiSelect = false;
-    private _currentPage = 0;
-    private _allValues: CmsReferenceValue[] = [];
+    private loading = false;
+    private entries: CmsReferenceEntry[] = [];
+    private models: CmsModel[] = [];
+    private multiSelect = false;
+    private currentPage = 0;
+    private allValues: CmsReferenceValue[] = [];
 
     constructor(
         private getContentEntriesUseCase: GetContentEntriesUseCase.Interface,
@@ -35,28 +35,28 @@ class RefDetailedPresenterImpl implements Abstraction.Interface {
 
     get vm(): IRefDetailedViewModel {
         return {
-            loading: this._loading,
-            entries: this._entries,
-            models: this._models,
-            multiSelect: this._multiSelect
+            loading: this.loading,
+            entries: this.entries,
+            models: this.models,
+            multiSelect: this.multiSelect
         };
     }
 
     async init(config: IRefDetailedPresenterInitConfig): Promise<void> {
-        this._multiSelect = config.multiSelect;
+        this.multiSelect = config.multiSelect;
 
         const allModels = await this.listModelsUseCase.execute();
         runInAction(() => {
-            this._models = allModels.filter(m => config.modelIds.includes(m.modelId));
+            this.models = allModels.filter(m => config.modelIds.includes(m.modelId));
         });
     }
 
     async resolveValues(values: CmsReferenceValue[]): Promise<void> {
-        this._allValues = values;
-        this._currentPage = 0;
+        this.allValues = values;
+        this.currentPage = 0;
 
         if (values.length === 0) {
-            this._entries = [];
+            this.entries = [];
             return;
         }
 
@@ -64,19 +64,19 @@ class RefDetailedPresenterImpl implements Abstraction.Interface {
     }
 
     addEntries(entries: CmsReferenceEntry[]): void {
-        const existingIds = new Set(this._entries.map(e => e.entryId));
+        const existingIds = new Set(this.entries.map(e => e.entryId));
         const newEntries = entries.filter(e => !existingIds.has(e.entryId));
-        this._entries = [...this._entries, ...newEntries];
+        this.entries = [...this.entries, ...newEntries];
     }
 
     removeEntry(entryId: string): void {
-        this._entries = this._entries.filter(e => e.entryId !== entryId);
+        this.entries = this.entries.filter(e => e.entryId !== entryId);
     }
 
     loadMore(): void {
-        const nextPage = this._currentPage + 1;
+        const nextPage = this.currentPage + 1;
         const start = nextPage * PER_PAGE;
-        if (start >= this._allValues.length) {
+        if (start >= this.allValues.length) {
             return;
         }
         this.loadPage(nextPage);
@@ -88,13 +88,13 @@ class RefDetailedPresenterImpl implements Abstraction.Interface {
 
     private async loadPage(page: number): Promise<void> {
         const start = page * PER_PAGE;
-        const chunk = this._allValues.slice(start, start + PER_PAGE);
+        const chunk = this.allValues.slice(start, start + PER_PAGE);
 
         if (chunk.length === 0) {
             return;
         }
 
-        this._loading = true;
+        this.loading = true;
 
         try {
             const result = await this.getContentEntriesUseCase.execute({
@@ -102,7 +102,7 @@ class RefDetailedPresenterImpl implements Abstraction.Interface {
             });
 
             runInAction(() => {
-                this._currentPage = page;
+                this.currentPage = page;
 
                 const entryMap = new Map<string, CmsReferenceEntry>();
                 for (const entry of result.latest) {
@@ -128,20 +128,20 @@ class RefDetailedPresenterImpl implements Abstraction.Interface {
                     .filter((e): e is CmsReferenceEntry => e != null);
 
                 if (page === 0) {
-                    this._entries = resolved;
+                    this.entries = resolved;
                 } else {
-                    this._entries = [...this._entries, ...resolved];
+                    this.entries = [...this.entries, ...resolved];
                 }
             });
         } finally {
             runInAction(() => {
-                this._loading = false;
+                this.loading = false;
             });
         }
     }
 }
 
-export const RefDetailedPresenterImplementation = Abstraction.createImplementation({
+export const RefDetailedPresenter = Abstraction.createImplementation({
     implementation: RefDetailedPresenterImpl,
     dependencies: [GetContentEntriesUseCase, ListModelsUseCase]
 });
