@@ -1,8 +1,6 @@
 import type { CmsContext } from "~/types/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
-import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import camelCase from "lodash/camelCase.js";
 import { CmsModelFieldValidatorRegistry } from "~/features/validation/index.js";
 import type { Container } from "@webiny/di";
@@ -28,7 +26,7 @@ const createSkipValidatorEnum = (container: Container) => {
     `;
 };
 
-const createSchema = (context: CmsContext): IGraphQLSchemaPlugin<CmsContext>[] => {
+export const createBaseSchemaPlugins = (context: CmsContext): ICmsGraphQLSchemaPlugin[] => {
     const skipValidatorEnum = createSkipValidatorEnum(context.container);
 
     const cmsPlugin = createCmsGraphQLSchemaPlugin({
@@ -158,18 +156,6 @@ const createSchema = (context: CmsContext): IGraphQLSchemaPlugin<CmsContext>[] =
         resolvers: {}
     });
     cmsPlugin.name = "headless-cms.graphql.schema.base";
-    const corePlugin = new GraphQLSchemaPlugin<CmsContext>({
-        typeDefs: cmsPlugin.schema.typeDefs,
-        resolvers: cmsPlugin.schema.resolvers
-    });
-    corePlugin.name = "headless-cms.graphql.core.schema.base";
-    /**
-     * Due to splitting of CMS and Core schema plugins, we must have both defined for CMS to work.
-     */
-    return [cmsPlugin, corePlugin];
-};
 
-export const createBaseSchemaPlugins = (context: CmsContext): ICmsGraphQLSchemaPlugin[] => {
-    const [cmsPlugin] = createSchema(context);
-    return [cmsPlugin as ICmsGraphQLSchemaPlugin];
+    return [cmsPlugin];
 };
