@@ -3,7 +3,6 @@ import type {
     CmsEntry,
     CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
     CmsEntryValues,
-    CmsModel,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
 import type { Client, IOpenSearchEntity as IElasticsearchEntity } from "@webiny/api-opensearch";
@@ -66,7 +65,7 @@ export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations
 }
 
 export interface DataLoadersHandlerInterfaceClearAllParams {
-    model: Pick<CmsModel, "tenant">;
+    tenant: string;
 }
 export interface IDataLoadersHandler {
     clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;

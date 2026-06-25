@@ -6,6 +6,7 @@ import type {
 
 export interface IScheduleUnpublishRedirectUseCaseParams {
     id: string;
+    tenant: string;
     scheduleFor: Date;
 }
 
