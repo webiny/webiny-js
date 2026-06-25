@@ -15,5 +15,7 @@ export {
     type IGlobalEntityAttributes
 } from "~/features/DynamoDbEntityFactory/abstractions.js";
 export { DynamoDbBatchFactory } from "~/features/DynamoDbBatchFactory/abstractions.js";
-export { ValueFilter, ValueFilterRegistry } from "~/features/ValueFilter/index.js";
+export type { IEntity } from "~/utils/entity/types.js";
+export { ValueFilter } from "~/features/ValueFilter/index.js";
+export { ValueFilterRegistry } from "~/features/ValueFilter/index.js";
 export { FilterUtil } from "~/features/FilterUtil/index.js";

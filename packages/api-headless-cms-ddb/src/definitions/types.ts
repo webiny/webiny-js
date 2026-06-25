@@ -1,4 +1,4 @@
-import type { IEntity } from "@webiny/db-dynamodb";
+import type { IEntity } from "@webiny/db-dynamodb/exports/api/db.js";
 import type { IStandardEntityAttributes } from "@webiny/db-dynamodb/exports/api/db.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type {
