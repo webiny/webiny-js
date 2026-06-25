@@ -12,15 +12,14 @@ import type {
     StoreValuesResult
 } from "@webiny/db";
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/abstractions.js";
-import type { DynamoDbEntityFactory } from "~/features/DynamoDbEntityFactory/abstractions.js";
+import { DynamoDbDocumentClient } from "~/features/DynamoDbDocumentClient/DynamoDbDocumentClient.js";
+import { DynamoDbBatchFactoryImpl } from "~/features/DynamoDbBatchFactory/DynamoDbBatchFactory.js";
+import { DynamoDbEntityFactoryImpl } from "~/features/DynamoDbEntityFactory/DynamoDbEntityFactory.js";
 import { createEntity } from "~/store/entity.js";
 import { createPartitionKey, createSortKey, createType } from "~/store/keys.js";
 
 interface ConstructorArgs {
     documentClient: DynamoDBDocument;
-    client: DynamoDbDocumentClient.Interface;
-    entityFactory: DynamoDbEntityFactory.Interface;
 }
 
 class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
@@ -28,8 +27,16 @@ class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
 
     public readonly entity;
 
-    constructor({ documentClient, client, entityFactory }: ConstructorArgs) {
+    constructor({ documentClient }: ConstructorArgs) {
         this.documentClient = documentClient;
+
+        const client = new DynamoDbDocumentClient({
+            documentClient,
+            tableName: String(process.env.DB_TABLE)
+        });
+        const batchFactory = new DynamoDbBatchFactoryImpl();
+        const entityFactory = new DynamoDbEntityFactoryImpl(batchFactory);
+
         this.entity = createEntity({
             client,
             entityFactory

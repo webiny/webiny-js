@@ -105,6 +105,7 @@ class FolderLevelPermissionsStorageOperationsImpl implements FlpStorageOperation
         try {
             await this.entity.put({
                 ...keys,
+                TYPE: "aco.flp",
                 data
             });
 
@@ -135,6 +136,7 @@ class FolderLevelPermissionsStorageOperationsImpl implements FlpStorageOperation
 
             await this.entity.put({
                 ...keys,
+                TYPE: "aco.flp",
                 data
             });
 
@@ -186,6 +188,7 @@ class FolderLevelPermissionsStorageOperationsImpl implements FlpStorageOperation
 
                 batch.put({
                     ...keys,
+                    TYPE: "aco.flp",
                     data
                 });
 
@@ -209,8 +212,7 @@ class FolderLevelPermissionsStorageOperationsImpl implements FlpStorageOperation
     private createKeys({ id, tenant }: CreateKeysParams) {
         return {
             PK: `T#${tenant}#FLP#${id}`,
-            SK: `A`,
-            TYPE: "aco.flp"
+            SK: `A`
         };
     }
 
