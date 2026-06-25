@@ -126,9 +126,10 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
             storageOperations,
             accessControl,
             getExecutableSchema: async (schemaType: ApiEndpoint) => {
-                // Use a forked context for schema generation so that:
-                // 1. Type flags are correct for the requested schema type
-                // 2. generateSchema's ctx.plugins.register() doesn't pollute the main context's plugin list
+                // Use a forked context so that type flags (READ/PREVIEW/MANAGE)
+                // are correct for the requested schema type.
+                // The container is shared, so CmsGraphQLSchemaFactory factories
+                // registered during _initialize() are accessible from the fork.
                 const schemaCtx: Record<string, any> = Object.assign(
                     Object.create(Object.getPrototypeOf(ctx)),
                     ctx,
