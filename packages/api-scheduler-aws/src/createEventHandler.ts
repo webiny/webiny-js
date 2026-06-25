@@ -2,8 +2,8 @@ import { registry } from "@webiny/handler-aws/registry.js";
 import type { HandlerFactoryParams } from "@webiny/handler-aws/types.js";
 import { createSourceHandler } from "@webiny/handler-aws/sourceHandler.js";
 import { createEventHandler, createHandler } from "@webiny/handler-aws/raw/index.js";
-import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
-import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/index.js";
+import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "@webiny/api-scheduler/constants.js";
+import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 

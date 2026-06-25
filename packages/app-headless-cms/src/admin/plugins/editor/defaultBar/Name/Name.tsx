@@ -46,28 +46,6 @@ export const Name = () => {
             onEditingChange={setEditing}
             tooltip={<span>{t`Rename content model`}</span>}
             data-testid="cms-editor-model-title"
-            value={localName}
-            onChange={setLocalName}
-            onBlur={saveName}
-            variant={"ghost"}
-            size={"md"}
-        />
-    ) : (
-        <Tooltip
-            side={"bottom"}
-            content={<span>{t`Rename content model`}</span>}
-            trigger={
-                <Heading
-                    level={5}
-                    className={
-                        "px-xs text-accent-primary border-sm border-neutral-base rounded-md hover:border-neutral-muted"
-                    }
-                    data-testid="cms-editor-model-title"
-                    onClick={startEditing}
-                >
-                    {data.name}
-                </Heading>
-            }
         />
     );
 };

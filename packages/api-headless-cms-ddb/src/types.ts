@@ -2,8 +2,6 @@ import { PluginsContainer } from "@webiny/plugins/types.js";
 import type {
     CmsContext,
     CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
-    CmsModelField,
-    CmsModel,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
 import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";

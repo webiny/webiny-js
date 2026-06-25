@@ -26,7 +26,7 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
     ) {}
 
     public async create(params: SchedulerService.CreateParams): Promise<void> {
-        const { id, scheduleFor, tenant } = params;
+        const { id, scheduleFor, tenant, namespace } = params;
 
         if (scheduleFor <= new Date()) {
             throw new WebinyError(
@@ -42,7 +42,11 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
 
         const client = this.getClient();
 
-        const exists = await this.exists(id);
+        const exists = await this.exists({
+            id,
+            tenant,
+            namespace
+        });
         if (exists) {
             return this.update(params);
         }

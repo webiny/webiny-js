@@ -109,8 +109,6 @@ function createMockPresenter(
             isUploading: false
         },
         tags: [],
-        loading: false,
-        empty: false,
         showFolders: true,
         viewMode: "grid" as const,
         dragging: false,
