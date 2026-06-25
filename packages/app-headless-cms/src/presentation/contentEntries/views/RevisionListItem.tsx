@@ -8,7 +8,8 @@ import { ReactComponent as BeenHereIcon } from "@webiny/icons/beenhere.svg";
 import { ReactComponent as GestureIcon } from "@webiny/icons/gesture.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
-import { ReactComponent as PublishIcon } from "@webiny/icons/visibility.svg";
+// import { ReactComponent as PublishIcon } from "@webiny/icons/visibility.svg";
+// import { ReactComponent as UnpublishIcon } from "@webiny/icons/visibility_off.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import type { CmsContentEntryRevision } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
@@ -78,11 +79,12 @@ interface RevisionListItemProps {
 }
 
 export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
-    const { vm: formVm } = useContentEntryFormPresenter();
+    const presenter = useContentEntryFormPresenter();
+    const formVm = presenter.vm;
     const { presenter: revisionsPresenter } = useFeature(RevisionsListFeature);
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.ContentEntries.List);
-    const { canEdit, canDelete, canPublish } = usePermission();
+    const { canEdit, canDelete } = usePermission();
     const { icon, text: tooltipText } = getIcon(revision);
 
     const navigateToRevision = (id: string) => {
@@ -167,7 +169,7 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                                 />
                             )}
 
-                        {revision.meta.status !== "published" && canPublish("cms.contentEntry") && (
+                        {/*{revision.meta.status !== "published" && canPublish("cms.contentEntry") && (
                             <DropdownMenu.Item
                                 onClick={handleEditRevision}
                                 icon={<PublishIcon />}
@@ -175,10 +177,10 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                             />
                         )}
 
-                        {/*{revision.meta.status === "published" &&
-                            canUnpublish(formVm.entry, "cms.contentEntry") && (
+                        {revision.meta.status === "published" &&
+                            canUnpublish("cms.contentEntry") && (
                                 <DropdownMenu.Item
-                                    onClick={() => unpublishRevision()}
+                                    onClick={}
                                     data-testid={"cms.revision.unpublish"}
                                     icon={<UnpublishIcon />}
                                     text={t`Unpublish revision`}
