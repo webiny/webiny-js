@@ -1,7 +1,7 @@
 import { DynamoDbTableFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import { DynamoDbEntityFactory } from "@webiny/db-dynamodb/exports/api/db.js";
 import type { DynamoDbDocumentClient } from "@webiny/db-dynamodb/exports/api/db.js";
-import { DynamoDBClient } from "@webiny/db-dynamodb";
+import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import type { CmsContext, StorageOperationsFactory as IStorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
