@@ -3,6 +3,8 @@ import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import { processRequestBody } from "@webiny/handler-graphql";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
+import { CmsExport, CmsImport } from "~/export/abstractions.js";
+import { ListGroupsUseCase } from "~/features/contentModelGroup/ListGroups/index.js";
 import type { CmsParametersPluginResponse } from "~/plugins/CmsParametersPlugin.js";
 import { CmsParametersPlugin } from "~/plugins/CmsParametersPlugin.js";
 import { AccessControl } from "~/crud/AccessControl/AccessControl.js";
@@ -97,10 +99,14 @@ export const createContextPlugin = () => {
             getGroupsPermissions: () => identityContext.getPermissions("cms.contentModelGroup"),
             getModelsPermissions: () => identityContext.getPermissions("cms.contentModel"),
             getEntriesPermissions: () => identityContext.getPermissions("cms.contentEntry"),
-            listAllGroups: () => {
-                return identityContext.withoutAuthorization(() => {
-                    return context.cms.listGroups();
-                });
+            listAllGroups: async () => {
+                const result = await identityContext.withoutAuthorization(() =>
+                    context.container.resolve(ListGroupsUseCase).execute()
+                );
+                if (result.isFail()) {
+                    throw result.error;
+                }
+                return result.value;
             }
         });
 
@@ -132,6 +138,9 @@ export const createContextPlugin = () => {
                 ...createImportCrud(context)
             }
         };
+
+        context.container.registerInstance(CmsExport, context.cms.export);
+        context.container.registerInstance(CmsImport, context.cms.importing);
 
         context.container.registerInstance(CmsSchemaExecutor, {
             execute: async (schemaType: ApiEndpoint, body) => {

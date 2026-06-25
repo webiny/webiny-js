@@ -24,6 +24,8 @@ import { exportPlugin } from "~/export/graphql/index.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { CmsGraphQLSchemaFactory } from "~/graphql/CmsGraphQLSchemaFactory.js";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
+import { CmsExport, CmsImport } from "~/export/abstractions.js";
+import { ListGroupsUseCase } from "~/features/contentModelGroup/ListGroups/index.js";
 import { RevisionIdScalar } from "~/graphql/scalars/RevisionId.js";
 import {
     AccessControl as AccessControlAbstraction,
@@ -106,10 +108,14 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
                 this.identityContext.getPermissions("cms.contentModelGroup"),
             getModelsPermissions: () => this.identityContext.getPermissions("cms.contentModel"),
             getEntriesPermissions: () => this.identityContext.getPermissions("cms.contentEntry"),
-            listAllGroups: () => {
-                return this.identityContext.withoutAuthorization(() => {
-                    return ctx.cms.listGroups();
-                });
+            listAllGroups: async () => {
+                const result = await this.identityContext.withoutAuthorization(() =>
+                    this.container.resolve(ListGroupsUseCase).execute()
+                );
+                if (result.isFail()) {
+                    throw result.error;
+                }
+                return result.value;
             }
         });
 
@@ -132,6 +138,9 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
             export: { ...createExportCrud(ctx as CmsContext) },
             importing: { ...createImportCrud(ctx as CmsContext) }
         };
+
+        this.container.registerInstance(CmsExport, ctx.cms.export);
+        this.container.registerInstance(CmsImport, ctx.cms.importing);
 
         // Register CmsSchemaExecutor so proxy resolvers can build and execute the CMS sub-schema
         // without accessing ctx.cms directly. Uses a forked context so type flags are correct

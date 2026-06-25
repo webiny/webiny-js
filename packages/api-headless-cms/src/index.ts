@@ -18,6 +18,7 @@ export { CmsGraphQLSchemaFactory } from "~/graphql/CmsGraphQLSchemaFactory.js";
 export type { ICmsGraphQLSchemaFactory } from "~/graphql/CmsGraphQLSchemaFactory.js";
 export { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 export type { ICmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
+export { CmsExport, CmsImport } from "~/export/abstractions.js";
 export * from "~/utils/incrementEntryIdVersion.js";
 export * from "./features/contentEntry/ContentEntryTraverser/ContentEntryTraverser.js";
 export { ContentEntryTraverserProvider } from "./features/contentEntry/ContentEntryTraverser/abstractions.js";
