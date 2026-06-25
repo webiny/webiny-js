@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { cn, Text } from "@webiny/admin-ui";
+import React from "react";
+import { Text } from "@webiny/admin-ui";
 
 interface ObjectRowProps {
     title: React.ReactNode;
@@ -13,9 +13,6 @@ interface ObjectRowProps {
  * without actions (a single object field) just tint.
  */
 export const ObjectRow = ({ title, onOpen, actions }: ObjectRowProps) => {
-    const [hovered, setHovered] = useState(false);
-    const showActions = hovered && Boolean(actions);
-
     return (
         <div
             role={"button"}
@@ -27,24 +24,21 @@ export const ObjectRow = ({ title, onOpen, actions }: ObjectRowProps) => {
                     onOpen();
                 }
             }}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
             // Fixed height + vertical centering keeps the row the same height whether or not the
             // (taller) hover actions are shown.
             style={{ height: 40 }}
-            className={cn(
-                "flex item¬s-center justify-between gap-xs rounded-md border border-neutral-dimmed-darker px-sm-extra cursor-pointer transition-colors",
-                hovered ? "bg-neutral-light" : "bg-neutral-base"
-            )}
+            className={
+                "group flex items-center justify-between gap-xs rounded-md border border-neutral-dimmed-darker px-sm-extra cursor-pointer transition-colors bg-neutral-base hover:bg-neutral-light"
+            }
         >
             <div className={"flex flex-1 items-center min-w-0"}>
                 <Text size={"sm"} className={"truncate text-neutral-strong"}>
                     {title}
                 </Text>
             </div>
-            {showActions ? (
+            {actions ? (
                 <div
-                    className={"flex items-center gap-xs shrink-0"}
+                    className={"hidden group-hover:flex items-center gap-xs shrink-0"}
                     onClick={event => event.stopPropagation()}
                 >
                     {actions}
