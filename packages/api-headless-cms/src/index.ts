@@ -10,9 +10,6 @@ export * from "./utils/isHeadlessCmsReady.js";
 export * from "./utils/createModelField.js";
 export * from "./graphql/schema/resolvers/manage/normalizeGraphQlInput.js";
 
-export { createCmsExtension } from "./extension.js";
-export type { ICreateCmsExtensionParams } from "./extension.js";
-
 export * from "~/plugins/index.js";
 export { CmsGraphQLSchemaFactory } from "~/graphql/CmsGraphQLSchemaFactory.js";
 export type { ICmsGraphQLSchemaFactory } from "~/graphql/CmsGraphQLSchemaFactory.js";
