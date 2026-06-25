@@ -94,7 +94,7 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
 
     protected async populateResult(input: IPopulateResultInput): Promise<IAccessPatternListResult> {
         const reader = this.entity.createEntityReader({
-            read: input.items.map((item) => {
+            read: input.items.map(item => {
                 return {
                     PK: item.PK,
                     SK: item.SK
@@ -106,8 +106,8 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
         return {
             ...input,
             items: input.items
-                .map((item) => {
-                    return result.find((i) => {
+                .map(item => {
+                    return result.find(i => {
                         return i.PK === item.PK && i.SK === item.SK;
                     });
                 })

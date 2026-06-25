@@ -413,7 +413,7 @@ describe("DynamoDbDocumentClient", () => {
             let callCount = 0;
 
             const { client } = createClient({
-                QueryCommand: (command: any) => {
+                QueryCommand: () => {
                     callCount++;
                     if (callCount === 1) {
                         return {
@@ -453,7 +453,7 @@ describe("DynamoDbDocumentClient", () => {
             const secondPageStartKey = { PK: "pk-1", SK: "sk-1" };
 
             const { client, mock } = createClient({
-                QueryCommand: (command: any) => {
+                QueryCommand: () => {
                     callCount++;
                     if (callCount === 1) {
                         return {

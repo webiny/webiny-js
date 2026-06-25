@@ -11497,7 +11497,6 @@ __metadata:
   resolution: "@webiny/api-aco-ddb@workspace:packages/api-aco-ddb"
   dependencies:
     "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -11562,7 +11561,6 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -12428,7 +12426,6 @@ __metadata:
   resolution: "@webiny/api-websockets-ddb@workspace:packages/api-websockets-ddb"
   dependencies:
     "@webiny/api-websockets": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
