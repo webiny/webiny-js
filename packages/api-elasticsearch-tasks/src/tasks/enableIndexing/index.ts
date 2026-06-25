@@ -1,19 +1,15 @@
-import { createContextPlugin } from "@webiny/api";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type { Context, IElasticsearchTaskConfig } from "~/types.js";
 import type { IElasticsearchEnableIndexingTaskInput } from "./types.js";
-import { Manager } from "../Manager.js";
-import { IndexManager } from "~/settings/index.js";
-import { EnableIndexingTaskRunner } from "./EnableIndexingTaskRunner.js";
-import { getClients } from "~/helpers/getClients.js";
+import { EnableIndexingTaskRunner } from "./abstractions/EnableIndexingTaskRunner.js";
+import { IndexManagerFactory } from "~/settings/abstractions/IndexManagerFactory.js";
 
-class ElasticsearchEnableIndexingTask implements TaskDefinition.Interface<IElasticsearchEnableIndexingTaskInput> {
-    id = "elasticsearchEnableIndexing";
-    title = "Enable Indexing on Elasticsearch Indexes";
+class ElasticsearchEnableIndexingTaskImpl implements TaskDefinition.Interface<IElasticsearchEnableIndexingTaskInput> {
+    public readonly id = "elasticsearchEnableIndexing";
+    public readonly title = "Enable Indexing on Elasticsearch Indexes";
 
     constructor(
-        private elasticsearchClient: IElasticsearchTaskConfig["elasticsearchClient"],
-        private documentClient: IElasticsearchTaskConfig["documentClient"]
+        private readonly indexManagerFactory: IndexManagerFactory.Interface,
+        private readonly runner: EnableIndexingTaskRunner.Interface
     ) {}
 
     async run({
@@ -24,37 +20,21 @@ class ElasticsearchEnableIndexingTask implements TaskDefinition.Interface<IElast
             return controller.response.aborted();
         }
 
-        const manager = new Manager<IElasticsearchEnableIndexingTaskInput>({
-            elasticsearchClient: this.elasticsearchClient,
-            documentClient: this.documentClient,
-            controller
-        });
-
-        const indexManager = new IndexManager(
-            manager.elasticsearch,
-            {},
-            {
+        const indexManager = this.indexManagerFactory.createIndexManager({
+            settings: {},
+            defaults: {
                 refreshInterval: input.refreshInterval,
                 numberOfReplicas: input.numberOfReplicas
             }
-        );
+        });
 
-        const enableIndexing = new EnableIndexingTaskRunner(manager, indexManager);
-
-        return enableIndexing.exec(input.matching);
+        return this.runner.exec(input.matching, indexManager);
     }
 }
 
-export const createEnableIndexingTask = (params?: Partial<IElasticsearchTaskConfig>) => {
-    return createContextPlugin<Context>(context => {
-        const clients = getClients(context, params);
+export const ElasticsearchEnableIndexingTask = TaskDefinition.createImplementation({
+    implementation: ElasticsearchEnableIndexingTaskImpl,
+    dependencies: [IndexManagerFactory, EnableIndexingTaskRunner]
+});
 
-        // Register the task definition
-        context.container.registerFactory(TaskDefinition, () => {
-            return new ElasticsearchEnableIndexingTask(
-                clients.elasticsearchClient,
-                clients.documentClient
-            );
-        });
-    });
-};
+export { EnableIndexingTaskRunner } from "./EnableIndexingTaskRunner.js";

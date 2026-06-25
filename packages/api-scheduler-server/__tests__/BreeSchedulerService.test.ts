@@ -11,6 +11,7 @@ const pastDate = (ms: number) => new Date(Date.now() - ms);
 
 describe("BreeSchedulerService", () => {
     const namespace = "Test/SomeEntry";
+    const tenant = "root";
     let service: BreeSchedulerService;
     let onTrigger: ReturnType<typeof vi.fn>;
     let logger: ReturnType<typeof createMockLogger>;
@@ -36,12 +37,13 @@ describe("BreeSchedulerService", () => {
             const input: CreateInput = {
                 id: "schedule-1",
                 namespace,
+                tenant,
                 scheduleFor: futureDate(60_000)
             };
 
             await service.create(input);
 
-            const exists = await service.exists("schedule-1");
+            const exists = await service.exists({ id: "schedule-1", namespace, tenant });
             expect(exists).toBe(true);
         });
 
@@ -49,6 +51,7 @@ describe("BreeSchedulerService", () => {
             const input: CreateInput = {
                 id: "schedule-1",
                 namespace,
+                tenant,
                 scheduleFor: pastDate(10_000)
             };
 
@@ -59,6 +62,7 @@ describe("BreeSchedulerService", () => {
             const input: CreateInput = {
                 id: "schedule-1",
                 namespace,
+                tenant,
                 scheduleFor: futureDate(60_000)
             };
 
@@ -67,12 +71,13 @@ describe("BreeSchedulerService", () => {
             const updatedInput: CreateInput = {
                 id: "schedule-1",
                 namespace,
+                tenant,
                 scheduleFor: futureDate(120_000)
             };
 
             await service.create(updatedInput);
 
-            const exists = await service.exists("schedule-1");
+            const exists = await service.exists({ id: "schedule-1", namespace, tenant });
             expect(exists).toBe(true);
         });
     });
@@ -82,16 +87,18 @@ describe("BreeSchedulerService", () => {
             await service.create({
                 id: "schedule-1",
                 namespace,
+                tenant,
                 scheduleFor: futureDate(60_000)
             });
 
             await service.update({
                 id: "schedule-1",
                 namespace,
+                tenant,
                 scheduleFor: futureDate(120_000)
             });
 
-            const exists = await service.exists("schedule-1");
+            const exists = await service.exists({ id: "schedule-1", namespace, tenant });
             expect(exists).toBe(true);
         });
 
@@ -99,6 +106,7 @@ describe("BreeSchedulerService", () => {
             await service.create({
                 id: "schedule-1",
                 namespace,
+                tenant,
                 scheduleFor: futureDate(60_000)
             });
 
@@ -106,6 +114,7 @@ describe("BreeSchedulerService", () => {
                 service.update({
                     id: "schedule-1",
                     namespace,
+                    tenant,
                     scheduleFor: pastDate(10_000)
                 })
             ).rejects.toThrow(WebinyError);
@@ -117,17 +126,20 @@ describe("BreeSchedulerService", () => {
             await service.create({
                 id: "schedule-1",
                 namespace,
+                tenant,
                 scheduleFor: futureDate(60_000)
             });
 
-            await service.delete("schedule-1");
+            await service.delete({ id: "schedule-1", namespace, tenant });
 
-            const exists = await service.exists("schedule-1");
+            const exists = await service.exists({ id: "schedule-1", namespace, tenant });
             expect(exists).toBe(false);
         });
 
         it("should throw when deleting a non-existent job", async () => {
-            await expect(service.delete("non-existent")).rejects.toThrow(WebinyError);
+            await expect(service.delete({ id: "non-existent", namespace, tenant })).rejects.toThrow(
+                WebinyError
+            );
         });
     });
 
@@ -136,14 +148,15 @@ describe("BreeSchedulerService", () => {
             await service.create({
                 id: "schedule-1",
                 namespace,
+                tenant,
                 scheduleFor: futureDate(60_000)
             });
 
-            expect(await service.exists("schedule-1")).toBe(true);
+            expect(await service.exists({ id: "schedule-1", namespace, tenant })).toBe(true);
         });
 
         it("should return false for an unknown job", async () => {
-            expect(await service.exists("unknown")).toBe(false);
+            expect(await service.exists({ id: "unknown", namespace, tenant })).toBe(false);
         });
     });
 
@@ -152,15 +165,16 @@ describe("BreeSchedulerService", () => {
             await service.create({
                 id: "schedule-1",
                 namespace,
+                tenant,
                 scheduleFor: futureDate(60_000)
             });
 
             /* Delete once to remove the bree job. */
-            await service.delete("schedule-1");
+            await service.delete({ id: "schedule-1", namespace, tenant });
 
             /* Manually re-add namespace so delete doesn't throw "does not exist". */
             (service as any).namespaces.set("schedule-1", namespace);
-            await service.delete("schedule-1");
+            await service.delete({ id: "schedule-1", namespace, tenant });
 
             expect(logger.debug).toHaveBeenCalled();
         });

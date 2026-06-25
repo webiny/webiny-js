@@ -7,7 +7,9 @@
     { "path": "../app-admin" },
     { "path": "../app-headless-cms" },
     { "path": "../app-headless-cms-common" },
-    { "path": "../app-workflows" }
+    { "path": "../app-workflows" },
+    { "path": "../feature" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -27,7 +29,13 @@
       "@webiny/app-headless-cms-common/*": ["../app-headless-cms-common/src/*"],
       "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
       "@webiny/app-workflows/*": ["../app-workflows/src/*"],
-      "@webiny/app-workflows": ["../app-workflows/src"]
+      "@webiny/app-workflows": ["../app-workflows/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }

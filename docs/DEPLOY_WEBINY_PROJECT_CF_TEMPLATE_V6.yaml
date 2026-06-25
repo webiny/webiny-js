@@ -168,6 +168,7 @@ Resources:
               - dynamodb:DescribeTable
               - dynamodb:DescribeContinuousBackups
               - dynamodb:DescribeTimeToLive
+              - dynamodb:UpdateTimeToLive
               - dynamodb:ListTagsOfResource
               - dynamodb:TagResource
               - dynamodb:UntagResource

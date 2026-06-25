@@ -4,11 +4,14 @@ import { createSourceHandler } from "@webiny/handler-aws/sourceHandler.js";
 import { createEventHandler, createHandler } from "@webiny/handler-aws/raw/index.js";
 import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "@webiny/api-scheduler/constants.js";
 import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 
 export interface IScheduledActionEventPayload {
     namespace: string;
     id: string;
     scheduleFor: string;
+    tenant: string;
 }
 
 export interface IScheduledActionEvent {
@@ -47,17 +50,36 @@ export const createScheduledActionEventHandler = () => {
             const { payload, context } = params;
             const input = payload[SCHEDULED_ACTION_EVENT_IDENTIFIER];
 
-            const executeScheduledAction = context.container.resolve(ExecuteScheduledActionUseCase);
-            const result = await executeScheduledAction.execute(input);
-
-            if (result.isFail()) {
-                const error = result.error;
-                console.error(error.code, error.message);
-                throw error;
+            const tenantContext = context.container.resolve(TenantContext);
+            /**
+             * Use default tenant if tenant is not provided in the payload.
+             * This allows backward compatibility with existing scheduled actions that do not have tenant information in their payload.
+             */
+            if (!input.tenant) {
+                input.tenant = tenantContext.getTenant().id;
             }
-            return {
-                success: true
-            };
+            const getTenantByIdUseCase = context.container.resolve(GetTenantByIdUseCase);
+            const tenantResult = await getTenantByIdUseCase.execute(input.tenant);
+            if (tenantResult.isFail()) {
+                throw tenantResult.error;
+            }
+            const tenant = tenantResult.value;
+
+            return tenantContext.withTenant(tenant, async () => {
+                const executeScheduledAction = context.container.resolve(
+                    ExecuteScheduledActionUseCase
+                );
+                const result = await executeScheduledAction.execute(input);
+
+                if (result.isFail()) {
+                    const error = result.error;
+                    console.error(error.code, error.message);
+                    throw error;
+                }
+                return {
+                    success: true
+                };
+            });
         }
     });
 };

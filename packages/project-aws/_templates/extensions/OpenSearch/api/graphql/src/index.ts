@@ -5,8 +5,8 @@ import { createApiCore } from "@webiny/api-core";
 import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
-import { createOpenSearchContext, createOpenSearchClient } from "@webiny/api-opensearch";
-import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { OpenSearchClientOptions, registerOpenSearchCore } from "@webiny/api-opensearch";
+import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAssetDelivery, createFileManagerS3 } from "@webiny/api-file-manager-s3";
 import { createCmsExtension } from "@webiny/api-headless-cms";
@@ -44,23 +44,21 @@ const documentClient = getDocumentClient();
 const osUsername = process.env.OPENSEARCH_USERNAME;
 const osPassword = process.env.OPENSEARCH_PASSWORD;
 
-const openSearchClientOptions: Parameters<typeof createOpenSearchClient>[0] = {
+const openSearchClientOptions: OpenSearchClientOptions = {
     endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
 };
 if (osUsername && osPassword) {
     openSearchClientOptions.auth = { username: osUsername, password: osPassword };
 }
 
-const openSearchClient = createOpenSearchClient(openSearchClientOptions);
-
 export const handler = createHandler({
     plugins: [
         registerDynamoDBCore({ documentClient }),
+        registerOpenSearchCore(openSearchClientOptions),
         createApiCore({
             storageOperations: createApiCoreDdb({ documentClient })
         }),
         graphqlPlugins({ debug }),
-        createOpenSearchContext(openSearchClient),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({ documentClient })
@@ -77,7 +75,6 @@ export const handler = createHandler({
         createRecordLocking(),
         createBackgroundTasks(),
         createFileManagerContext(),
-        createFileManagerGraphQL(),
         createFileManagerAco(),
         createAssetDelivery(),
         createFileManagerS3(),

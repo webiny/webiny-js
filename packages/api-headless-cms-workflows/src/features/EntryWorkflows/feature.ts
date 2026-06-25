@@ -5,6 +5,7 @@ import { ValidateWorkflowStateOnEntryBeforePublish } from "./handlers/ValidateWo
 import { UpdateEntryOnWorkflowStateAfterCreate } from "./handlers/UpdateEntryOnWorkflowStateAfterCreate.js";
 import { UpdateEntryOnWorkflowStateAfterUpdate } from "./handlers/UpdateEntryOnWorkflowStateAfterUpdate.js";
 import { ClearEntryStateOnWorkflowStateAfterDelete } from "./handlers/ClearEntryStateOnWorkflowStateAfterDelete.js";
+import { ClearEntryStateOnWorkflowStateCancel } from "./handlers/ClearEntryStateOnWorkflowStateCancel.js";
 
 export const EntryWorkflowsFeature = createFeature({
     name: "EntryWorkflows",
@@ -15,5 +16,6 @@ export const EntryWorkflowsFeature = createFeature({
         container.register(UpdateEntryOnWorkflowStateAfterCreate);
         container.register(UpdateEntryOnWorkflowStateAfterUpdate);
         container.register(ClearEntryStateOnWorkflowStateAfterDelete);
+        container.register(ClearEntryStateOnWorkflowStateCancel);
     }
 });

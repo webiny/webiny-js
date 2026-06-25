@@ -4,6 +4,7 @@ import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import type { IListViewModel } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { IListActions } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { IFolderTreeViewModel } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import type { FolderDto } from "@webiny/app-aco";
 import type { IFileDetailsPresenter } from "../FileDetails/abstractions.js";
 import type { FmFile } from "../../features/shared/types.js";
 import type { FmTag } from "../../features/shared/types.js";
@@ -33,7 +34,10 @@ export interface IFileManagerViewModel {
         overallProgress: { percentage: number; bytesSent: number; totalBytes: number };
         isUploading: boolean;
     };
+    loading: boolean;
+    empty: boolean;
     showFolders: boolean;
+    childFolders: FolderDto[];
     viewMode: "table" | "grid";
     dragging: boolean;
     showingFilters: boolean;

@@ -1,7 +1,7 @@
 import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { Layout } from "./Layout.js";
-import { Navigation } from "./Navigation.js";
+import { Navigation } from "./Navigation/Navigation.js";
 import { UserMenu } from "~/UserMenu.js";
 import { Dialog } from "./Dialog.js";
 import { NotFound } from "./NotFound.js";

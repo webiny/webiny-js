@@ -1,9 +1,7 @@
 import { describe, it, expect } from "vitest";
-import {
-    WebsocketsServerAdapter,
-    WebsocketsUpgradeHandler,
-    WebsocketsConnectionManager
-} from "~/abstractions.js";
+import { WebsocketsServerAdapter } from "~/adapter/abstractions.js";
+import { WebsocketsUpgradeHandler } from "~/upgradeHandler/abstractions.js";
+import { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
 
 describe("abstractions", () => {
     it("WebsocketsServerAdapter should be defined and have createImplementation method", () => {

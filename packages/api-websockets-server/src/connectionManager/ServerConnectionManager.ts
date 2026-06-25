@@ -1,5 +1,5 @@
 import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
-import { WebsocketsConnectionManager } from "~/abstractions.js";
+import { WebsocketsConnectionManager } from "./abstractions.js";
 
 export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.Interface<unknown> {
     private readonly sockets = new Map<string, unknown>();

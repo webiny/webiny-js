@@ -1,10 +1,7 @@
-import React, { useCallback, useRef } from "react";
-import type { CallbackParams } from "@webiny/app-admin";
-import { makeDecoratable, useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
+import React from "react";
+import { makeDecoratable, useButtons, useDialogWithReport } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { useCms, useContentEntriesList, useModel } from "~/admin/hooks/index.js";
-import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
-import merge from "lodash/merge.js";
+import { useModel } from "~/admin/hooks/index.js";
 
 export interface BulkActionConfig {
     name: string;
@@ -18,12 +15,6 @@ export interface BulkActionProps {
     after?: string;
     modelIds?: string[];
     element?: React.ReactElement;
-}
-
-export interface ProcessInBulkParams {
-    action: string;
-    where?: Record<string, any>;
-    data?: Record<string, any>;
 }
 
 export const BaseBulkAction = makeDecoratable(
@@ -66,40 +57,7 @@ export const BaseBulkAction = makeDecoratable(
     }
 );
 
-const useWorker = () => {
-    const { model } = useModel();
-    const { selected, setSelected, getWhere, isSelectedAll, search } = useContentEntriesList();
-    const { bulkAction } = useCms();
-    const { current: worker } = useRef(new Worker<CmsContentEntry>());
-
-    const resetItems = useCallback(() => {
-        setSelected([]);
-    }, []);
-
-    return {
-        items: selected,
-        process: (callback: (items: CmsContentEntry[]) => void) =>
-            worker.process(selected, callback),
-        processInSeries: async (
-            callback: ({
-                item,
-                allItems,
-                report
-            }: CallbackParams<CmsContentEntry>) => Promise<void>,
-            chunkSize?: number
-        ) => worker.processInSeries(selected, callback, chunkSize),
-        processInBulk: async ({ action, where: initialWhere, data }: ProcessInBulkParams) => {
-            const where = merge(getWhere(), initialWhere);
-            await bulkAction({ model, action, where, search, data });
-        },
-        resetItems: resetItems,
-        results: worker.results,
-        isSelectedAll
-    };
-};
-
 export const BulkAction = Object.assign(BaseBulkAction, {
     useButtons,
-    useWorker,
     useDialog: useDialogWithReport
 });

@@ -1,3 +1,5 @@
+import { createAbstraction } from "@webiny/feature/api";
+
 export interface IElasticsearchSynchronizeExecuteParamsItem {
     PK: string;
     SK: string;
@@ -14,8 +16,17 @@ export interface IElasticsearchSynchronizeExecuteParams {
 export interface IElasticsearchSynchronizeExecuteResponse {
     done: boolean;
 }
+
 export interface IElasticsearchSynchronize {
     execute(
         params: IElasticsearchSynchronizeExecuteParams
     ): Promise<IElasticsearchSynchronizeExecuteResponse>;
+}
+
+export const ElasticsearchSynchronize = createAbstraction<IElasticsearchSynchronize>(
+    "ElasticsearchSynchronize"
+);
+
+export namespace ElasticsearchSynchronize {
+    export type Interface = IElasticsearchSynchronize;
 }

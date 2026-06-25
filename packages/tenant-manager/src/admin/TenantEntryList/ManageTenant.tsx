@@ -10,7 +10,6 @@ interface ManageTenantProps {
 export const ManageTenant = ({ tenant }: ManageTenantProps) => {
     const { setTenant } = useTenantContext();
     const switchToTenant = useCallback(() => {
-        localStorage.removeItem("webiny_wb_page_latest_visited_folder");
         setTenant(tenant.entryId);
     }, [tenant]);
 

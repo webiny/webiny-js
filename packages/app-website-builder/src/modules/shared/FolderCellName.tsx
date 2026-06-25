@@ -1,15 +1,16 @@
 import React from "react";
-import { type FolderTableRow, useNavigateFolder } from "@webiny/app-aco";
+import type { FolderTableRow } from "@webiny/app-aco";
 import { Icon, Text } from "@webiny/admin-ui";
 import { ReactComponent as Folder } from "@webiny/icons/folder.svg";
 import { ReactComponent as FolderShared } from "@webiny/icons/folder_shared.svg";
+import { usePageListPresenter } from "~/presentation/pages/PageList/PageListPresenterProvider.js";
 
 interface FolderCellNameProps {
     folder: FolderTableRow["data"];
 }
 
 export const FolderCellName = ({ folder }: FolderCellNameProps) => {
-    const { navigateToFolder } = useNavigateFolder();
+    const { folders } = usePageListPresenter();
 
     let icon = <Folder />;
     if (folder.hasNonInheritedPermissions && folder.canManagePermissions) {
@@ -21,7 +22,7 @@ export const FolderCellName = ({ folder }: FolderCellNameProps) => {
             className={
                 "flex items-center gap-sm truncate cursor-pointer font-semibold hover:underline"
             }
-            onClick={() => navigateToFolder(folder.id)}
+            onClick={() => folders.selectFolder(folder.id)}
         >
             <Icon
                 size={"sm"}

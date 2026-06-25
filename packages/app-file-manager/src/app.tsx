@@ -4,7 +4,6 @@ import { FolderTreeFieldRenderer } from "@webiny/app-aco/presentation/folderTree
 import { SettingsModule } from "~/modules/Settings/index.js";
 import { FileModelModule } from "~/modules/FileModelModule.js";
 import { DefaultFileManagerConfig } from "~/presentation/config/DefaultFileManagerConfig.js";
-import { HeadlessCmsModule } from "~/modules/HeadlessCms/index.js";
 import { EnterpriseModule } from "~/modules/Enterprise/index.js";
 import { AiEnrichmentModule } from "~/modules/AiEnrichment/index.js";
 import { SecurityPermissions } from "./modules/SecurityPermissions.js";
@@ -23,6 +22,9 @@ import { FileManagerPresenterFeature } from "~/presentation/FileList/index.js";
 import { FileManagerRoutes } from "~/modules/FileManagerRoutes.js";
 import { FileManagerRendererDecorator } from "~/presentation/FileManager/FileManagerRenderer.js";
 import { FileModelProviderFeature } from "~/features/fileModel/index.js";
+import { FileFieldTypeFeature } from "~/modules/HeadlessCms/fieldType/feature.js";
+import { CmsFilePickerRenderer } from "~/presentation/fieldRenderers/CmsFilePickerRenderer.js";
+import { CmsMultiFilePickerRenderer } from "~/presentation/fieldRenderers/CmsMultiFilePickerRenderer.js";
 
 export const FileManager = () => {
     return (
@@ -49,13 +51,21 @@ export const FileManager = () => {
                     name={"folderTree"}
                     component={FolderTreeFieldRenderer}
                 />
+                <AdminConfig.Form.FieldRenderer
+                    name={"cmsFilePicker"}
+                    component={CmsFilePickerRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"cmsMultiFilePicker"}
+                    component={CmsMultiFilePickerRenderer}
+                />
             </AdminConfig>
             {/* Legacy modules. */}
             <FileManagerRoutes />
             <SettingsModule />
             <FileManagerRendererDecorator />
             <DefaultFileManagerConfig />
-            <HeadlessCmsModule />
+            <RegisterFeature feature={FileFieldTypeFeature} />
             <EnterpriseModule />
             <AiEnrichmentModule />
             <SecurityPermissions />

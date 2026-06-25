@@ -1,58 +1,51 @@
 import React from "react";
-import { plugins } from "@webiny/plugins";
-import type {
-    CmsModelFieldTypePlugin,
-    CmsModelLayoutFieldTypePlugin,
-    DragSource
-} from "~/types.js";
+import type { DragSource } from "~/types.js";
+import type { ICmsFieldType } from "~/presentation/fieldTypes/abstractions.js";
+import type { ICmsLayoutFieldType } from "~/presentation/fieldTypes/abstractions.js";
 
 export interface DragInfo {
     label: string;
     icon?: React.ReactElement;
 }
 
-export const getDragInfo = (item: DragSource | null): DragInfo => {
+export const getDragInfo = (
+    item: DragSource | null,
+    fieldTypesMap: Map<string, ICmsFieldType>,
+    layoutFieldTypesMap: Map<string, ICmsLayoutFieldType>
+): DragInfo => {
     if (!item) {
         return { label: "" };
     }
 
     if (item.type === "newField" && item.fieldType) {
-        const plugin = plugins
-            .byType<CmsModelFieldTypePlugin>("cms-editor-field-type")
-            .find(p => p.field.type === item.fieldType);
+        const ft = fieldTypesMap.get(item.fieldType);
         return {
-            label: plugin?.field.label ?? item.fieldType,
-            icon: plugin?.field.icon as React.ReactElement | undefined
+            label: ft ? ft.label : item.fieldType,
+            icon: ft ? ft.icon : undefined
         };
     }
 
     if (item.type === "field" && item.field) {
-        const plugin = plugins
-            .byType<CmsModelFieldTypePlugin>("cms-editor-field-type")
-            .find(p => p.field.type === item.field!.type);
+        const ft = fieldTypesMap.get(item.field.type);
         return {
             label: item.field.label,
-            icon: plugin?.field.icon as React.ReactElement | undefined
+            icon: ft ? ft.icon : undefined
         };
     }
 
     if (item.type === "newLayoutField" && item.layoutFieldType) {
-        const plugin = plugins
-            .byType<CmsModelLayoutFieldTypePlugin>("cms-editor-layout-field-type")
-            .find(p => p.field.type === item.layoutFieldType);
+        const lft = layoutFieldTypesMap.get(item.layoutFieldType);
         return {
-            label: plugin?.field.label ?? item.layoutFieldType,
-            icon: plugin?.field.icon as React.ReactElement | undefined
+            label: lft ? lft.label : item.layoutFieldType,
+            icon: lft ? lft.icon : undefined
         };
     }
 
     if (item.type === "layoutField" && item.layoutField) {
-        const plugin = plugins
-            .byType<CmsModelLayoutFieldTypePlugin>("cms-editor-layout-field-type")
-            .find(p => p.field.type === item.layoutField!.type);
+        const lft = layoutFieldTypesMap.get(item.layoutField.type);
         return {
-            label: plugin?.field.label ?? "Layout",
-            icon: plugin?.field.icon as React.ReactElement | undefined
+            label: lft ? lft.label : "Layout",
+            icon: lft ? lft.icon : undefined
         };
     }
 

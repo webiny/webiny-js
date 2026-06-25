@@ -1,4 +1,4 @@
-import type { OpenSearchQueryBuilderOperatorPlugin } from "@webiny/api-opensearch";
+import type { OpenSearchQueryBuilderOperator } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 
 /**
@@ -30,9 +30,6 @@ export interface ModelFields {
     [fieldId: string]: ModelField;
 }
 
-/**
- * ./plugins/operator
- */
-export interface OpenSearchQueryBuilderOperatorPlugins {
-    [key: string]: OpenSearchQueryBuilderOperatorPlugin;
+export interface OpenSearchQueryBuilderOperators {
+    [key: string]: OpenSearchQueryBuilderOperator.Interface;
 }

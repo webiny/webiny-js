@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { OpenSearchCatHealth } from "~/operations/OpenSearchCatHealth.js";
-import { createOpenSearchClient } from "../helpers";
+import { getTestOpenSearchClient } from "~/testing/index.js";
 import { IOpenSearchCatHealthResponse } from "~/operations/types.js";
 
 describe("cat health", () => {
     it("should fetch health information", async () => {
-        const client = createOpenSearchClient();
+        const client = getTestOpenSearchClient();
         const catHealth = new OpenSearchCatHealth(client);
 
         const expected: IOpenSearchCatHealthResponse = {

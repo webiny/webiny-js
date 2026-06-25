@@ -7,7 +7,6 @@ import type {
     CmsModelField,
     CmsModelFieldValidation
 } from "~/types/index.js";
-import camelCase from "lodash/camelCase.js";
 import { EntryValidationError } from "~/domain/contentEntry/errors.js";
 import {
     type CmsModelFieldValidator,
@@ -159,22 +158,17 @@ interface IValidateModelEntryDataParams<TValues extends CmsEntryValues = CmsEntr
     model: CmsModel;
     values: TValues;
     entry?: CmsEntry<TValues>;
-    skipValidators?: string[];
+    skipValidation?: boolean;
 }
 
 export const validateModelEntryData = async <TValues extends CmsEntryValues = CmsEntryValues>(
     params: IValidateModelEntryDataParams<TValues>
 ) => {
-    const { context, model, entry, values, skipValidators } = params;
+    const { context, model, entry, values, skipValidation } = params;
 
-    const isValidatorSkipped = (validator: CmsModelFieldValidator.Interface) => {
-        if (!skipValidators) {
-            return false;
-        }
-        return skipValidators.includes(camelCase(validator.name));
-    };
-
-    const skippedValidators = new Set<string>();
+    if (skipValidation) {
+        return [];
+    }
 
     const validatorList: PluginValidationList = {};
     const registry = context.container.resolve(CmsModelFieldValidatorRegistry);
@@ -184,24 +178,9 @@ export const validateModelEntryData = async <TValues extends CmsEntryValues = Cm
         if (!validatorList[name]) {
             validatorList[name] = [];
         }
-        const isSkipped = isValidatorSkipped(validator);
-        if (isSkipped) {
-            skippedValidators.add(name);
-            validatorList[name].push(async () => {
-                return true;
-            });
-            continue;
-        }
         validatorList[name].push(params => {
             return validator.validate(params);
         });
-    }
-    /**
-     * No point in continuing if all validators are skipped.
-     */
-    const keys = Object.keys(validatorList);
-    if (keys.length === skippedValidators.size) {
-        return [];
     }
 
     return await validate<TValues>({

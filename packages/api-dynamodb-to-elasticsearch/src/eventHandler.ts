@@ -3,6 +3,7 @@ import type { Context } from "~/types.js";
 import { OperationsBuilder } from "~/OperationsBuilder.js";
 import { executeWithRetry } from "~/executeWithRetry.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 
 /**
  * Also, we need to set the maximum running time for the Lambda Function.
@@ -15,8 +16,13 @@ export const createEventHandler = () => {
     return createDynamoDBEventHandler(async ({ event, context: ctx, lambdaContext }) => {
         const timer = timerFactory(lambdaContext);
         const context = ctx as unknown as Context;
-        if (!context.opensearch) {
+
+        let client: OpenSearchClient.Interface;
+        try {
+            client = context.container.resolve(OpenSearchClient);
+        } catch (ex) {
             console.error("Missing opensearch definition on context.");
+            console.info(ex);
             return null;
         }
 
@@ -41,7 +47,7 @@ export const createEventHandler = () => {
         await executeWithRetry({
             timer,
             maxRunningTime: MAX_RUNNING_TIME,
-            context,
+            openSearchClient: client.use(),
             operations
         });
 
