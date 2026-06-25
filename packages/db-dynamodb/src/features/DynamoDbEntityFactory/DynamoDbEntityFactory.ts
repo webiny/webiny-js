@@ -6,8 +6,8 @@ import type { IDynamoDbEntityFactory } from "./abstractions.js";
 import type { IDynamoDbEntityFactoryCreateParams } from "./abstractions.js";
 import type { IDynamoDbEntityFactoryCreateStandardParams } from "./abstractions.js";
 import type { IDynamoDbEntityFactoryCreateGlobalParams } from "./abstractions.js";
-import type { IGlobalEntityAttributes } from "./attributes.js";
-import type { IStandardEntityAttributes } from "./attributes.js";
+import type { IGlobalEntityAttributes } from "./abstractions.js";
+import type { IStandardEntityAttributes } from "./abstractions.js";
 import { globalEntityAttributes } from "./attributes.js";
 import { standardEntityAttributes } from "./attributes.js";
 
@@ -22,11 +22,11 @@ export class DynamoDbEntityFactoryImpl implements IDynamoDbEntityFactory {
             {
                 name: params.name,
                 attributes: params.attributes,
-                // @ts-expect-error — will be fixed in Task 5 when Entity accepts DynamoDbDocumentClient.Interface
+                // @ts-expect-error — will be fixed in Task 5 when Entity accepts DynamoDbDocumentClient.Interface.
                 table: params.client,
                 timestamps: params.timestamps
             },
-            // @ts-expect-error — will be fixed in Task 5 when Entity constructor accepts batchFactory
+            // @ts-expect-error — will be fixed in Task 5 when Entity constructor accepts batchFactory.
             this.batchFactory
         );
     }
