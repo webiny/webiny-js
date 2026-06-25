@@ -22,7 +22,6 @@ export class DynamoDbEntityFactoryImpl implements IDynamoDbEntityFactory {
             {
                 name: params.name,
                 attributes: params.attributes,
-                // @ts-expect-error — will be fixed in Task 5 when Entity accepts DynamoDbDocumentClient.Interface.
                 table: params.client,
                 timestamps: params.timestamps
             },
