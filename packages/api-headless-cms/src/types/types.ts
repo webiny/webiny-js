@@ -81,9 +81,11 @@ export interface HeadlessCms extends CmsGroupContext, CmsModelContext, CmsEntryC
  *
  * @category Context
  */
-export interface CmsContext extends Context, DbContext, ApiCoreContext {
-    cms: HeadlessCms;
-}
+/**
+ * The CMS facade is no longer exposed on the context; resolve `HeadlessCms` from the DI
+ * container instead (see ~/features/shared/abstractions.js).
+ */
+export type CmsContext = Context & DbContext & ApiCoreContext;
 
 /**
  * Used for our internal functionality.

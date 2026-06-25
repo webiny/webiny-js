@@ -1,4 +1,4 @@
-import type { CmsContext, CmsModel } from "~/types/index.js";
+import type { ApiEndpoint, CmsContext, CmsModel } from "~/types/index.js";
 import { createModelsSchema } from "./schema/contentModels.js";
 import { createContentEntriesSchema } from "./schema/contentEntries.js";
 import { createGroupsSchema } from "./schema/contentModelGroups.js";
@@ -12,6 +12,7 @@ import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 interface BuildSchemaPluginsParams {
     context: CmsContext;
     models: CmsModel[];
+    type: ApiEndpoint | null;
 }
 export const buildSchemaPlugins = async (
     params: BuildSchemaPluginsParams

@@ -3,6 +3,7 @@ import { useHandler } from "~tests/context/useHandler";
 import type { IStoreValue } from "~/features/DeleteModelTask/types.js";
 import { createStoreKey } from "~/helpers/store.js";
 import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
+import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 
 describe("headless cms tasks crud", () => {
     it("should list models being deleted", async () => {
@@ -45,7 +46,7 @@ describe("headless cms tasks crud", () => {
         const { handler, identity, tenant } = useHandler();
         const context = await handler();
 
-        const group = await context.cms.createGroup({
+        const group = await context.container.resolve(HeadlessCms).createGroup({
             name: "group",
             description: "description",
             id: "group",
@@ -56,7 +57,7 @@ describe("headless cms tasks crud", () => {
             }
         });
 
-        const model = await context.cms.createModel({
+        const model = await context.container.resolve(HeadlessCms).createModel({
             modelId: "modelId",
             description: "description",
             name: "name",

@@ -18,23 +18,18 @@ import {
 interface GenerateSchemaPluginsParams {
     context: CmsContext;
     models: CmsModel[];
+    type: ApiEndpoint | null;
 }
 
 export const generateSchemaPlugins = async (
     params: GenerateSchemaPluginsParams
 ): Promise<ICmsGraphQLSchemaPlugin[]> => {
-    const { context, models } = params;
-    // NOTE: read the (possibly forked) context.cms here — `type`/`READ` are BUILD-time schema
-    // parameters set per endpoint by CmsSchemaExecutor's fork, not the request-fixed facade.
-    // TODO(phase1): thread `type` through getSchema -> generateSchema -> generateSchemaPlugins
-    // so this no longer depends on the context bag, enabling ctx.cms removal.
-    const { cms } = context;
+    const { context, models, type } = params;
 
     /**
      * If type does not exist, we are not generating schema plugins for models.
      * It should not come to this point, but we check it anyways.
      */
-    const { type } = cms;
     if (!type) {
         return [];
     }
@@ -104,17 +99,18 @@ export const generateSchemaPlugins = async (
                             fieldRegistry,
                             sorters
                         }),
-                        resolvers: cms.READ
-                            ? createReadResolvers({
-                                  models,
-                                  model,
-                                  fieldRegistry
-                              })
-                            : createPreviewResolvers({
-                                  models,
-                                  model,
-                                  fieldRegistry
-                              })
+                        resolvers:
+                            type === "read"
+                                ? createReadResolvers({
+                                      models,
+                                      model,
+                                      fieldRegistry
+                                  })
+                                : createPreviewResolvers({
+                                      models,
+                                      model,
+                                      fieldRegistry
+                                  })
                     });
                     plugin.name = `headless-cms.graphql.schema.${type}.${model.modelId}`;
                     schemaPlugins.push(plugin);

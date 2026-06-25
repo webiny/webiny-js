@@ -1,4 +1,4 @@
-import type { CmsContext, CmsModel } from "~/types/index.js";
+import type { ApiEndpoint, CmsContext, CmsModel } from "~/types/index.js";
 import { buildSchemaPlugins } from "./buildSchemaPlugins.js";
 import { createExecutableSchema } from "./createExecutableSchema.js";
 import type { GraphQLSchema } from "graphql/type/index.js";
@@ -8,13 +8,14 @@ import { CmsGraphQLSchemaFactory } from "./CmsGraphQLSchemaFactory.js";
 interface GenerateSchemaParams {
     context: CmsContext;
     models: CmsModel[];
+    type: ApiEndpoint | null;
 }
 export const generateSchema = async (params: GenerateSchemaParams): Promise<GraphQLSchema> => {
-    const { context, models } = params;
+    const { context, models, type } = params;
 
     let generatedSchemaPlugins: ICmsGraphQLSchemaPlugin[] = [];
     try {
-        generatedSchemaPlugins = await buildSchemaPlugins({ context, models });
+        generatedSchemaPlugins = await buildSchemaPlugins({ context, models, type });
     } catch (ex) {
         console.log(`Error while building schema plugins.`);
         throw ex;

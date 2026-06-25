@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { DeleteModelUseCase } from "./abstractions.js";
-import { CmsContext } from "~/features/shared/abstractions.js";
+import { CmsContext, HeadlessCms } from "~/features/shared/abstractions.js";
 import { CMS_MODEL_SINGLETON_TAG } from "~/constants.js";
 import {
     ModelCannotDeleteHasEntriesError,
@@ -24,12 +24,16 @@ class DeleteModelWithEntryCleanupImpl implements DeleteModelUseCase.Interface {
         private decoratee: DeleteModelUseCase.Interface
     ) {}
 
+    private get cms(): HeadlessCms.Interface {
+        return this.cmsContext.container.resolve(HeadlessCms);
+    }
+
     async execute(modelId: string): Promise<Result<void, DeleteModelUseCase.Error>> {
         // First, get the model through the decorated use case's flow (up to before deletion)
         // We need to perform validation before the actual deletion happens
 
         // Get the model from context to check entries
-        const model = await this.cmsContext.cms.getModel(modelId);
+        const model = await this.cms.getModel(modelId);
 
         const tags = Array.isArray(model.tags) ? model.tags : [];
 
@@ -61,23 +65,23 @@ class DeleteModelWithEntryCleanupImpl implements DeleteModelUseCase.Interface {
 
     private async deleteSingletonEntries(model: any): Promise<void> {
         // Delete all latest entries
-        const [latestEntries] = await this.cmsContext.cms.listLatestEntries(model, {
+        const [latestEntries] = await this.cms.listLatestEntries(model, {
             limit: 10000
         });
 
         for (const item of latestEntries) {
-            await this.cmsContext.cms.deleteEntry(model, item.id, {
+            await this.cms.deleteEntry(model, item.id, {
                 permanently: true
             });
         }
 
         // Delete all deleted entries (trash)
-        const [deletedEntries] = await this.cmsContext.cms.listDeletedEntries(model, {
+        const [deletedEntries] = await this.cms.listDeletedEntries(model, {
             limit: 10000
         });
 
         for (const item of deletedEntries) {
-            await this.cmsContext.cms.deleteEntry(model, item.id, {
+            await this.cms.deleteEntry(model, item.id, {
                 permanently: true
             });
         }
@@ -95,7 +99,7 @@ class DeleteModelWithEntryCleanupImpl implements DeleteModelUseCase.Interface {
     > {
         try {
             // Check for latest entries
-            const [latestEntries] = await this.cmsContext.cms.listLatestEntries(model, {
+            const [latestEntries] = await this.cms.listLatestEntries(model, {
                 limit: 1
             });
 
@@ -104,7 +108,7 @@ class DeleteModelWithEntryCleanupImpl implements DeleteModelUseCase.Interface {
             }
 
             // Check for deleted entries (trash)
-            const [deletedEntries] = await this.cmsContext.cms.listDeletedEntries(model, {
+            const [deletedEntries] = await this.cms.listDeletedEntries(model, {
                 limit: 1
             });
 

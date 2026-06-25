@@ -15,6 +15,7 @@ import { getContentModelImageFieldId } from "./fields/imageField.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { CmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins.js";
+import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema.js";
 import {
     CmsGraphQLSchemaSorter,
@@ -213,7 +214,8 @@ const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<a
         /**
          * Must remove the current model from the list, as we are possibly updating it - there would be two if we didn't.
          */
-        models: models.filter(m => m.modelId !== model.modelId).concat([model])
+        models: models.filter(m => m.modelId !== model.modelId).concat([model]),
+        type: context.container.resolve(HeadlessCms).type
     });
 
     const plugins = context.plugins

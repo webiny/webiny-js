@@ -65,25 +65,6 @@ export const createContextPlugin = () => {
             return context.container.resolve(TenantContext).getTenant();
         };
 
-        const setSchemaType = (type: ApiEndpoint | null) => {
-            if (!type) {
-                return;
-            }
-
-            context.cms.type = type;
-
-            switch (type) {
-                case "read":
-                    context.cms.READ = true;
-                    break;
-                case "preview":
-                    context.cms.PREVIEW = true;
-                    break;
-                default:
-                    context.cms.MANAGE = true;
-            }
-        };
-
         // TODO figure out a better way. maybe this stuff should be on before handler?
         // GraphQL fields must be loaded before anything else
         GraphQLFeature.register(context.container);
@@ -116,7 +97,7 @@ export const createContextPlugin = () => {
         const storageOperations = await storageOperationsFactory.create(context);
         await storageOperations.beforeInit(context);
 
-        context.cms = {
+        const cms = {
             type,
             READ: type === "read",
             PREVIEW: type === "preview",
@@ -140,20 +121,17 @@ export const createContextPlugin = () => {
             }
         };
 
-        context.container.registerInstance(HeadlessCms, context.cms);
-        context.container.registerInstance(CmsExport, context.cms.export);
-        context.container.registerInstance(CmsImport, context.cms.importing);
+        context.container.registerInstance(HeadlessCms, cms);
+        context.container.registerInstance(CmsExport, cms.export);
+        context.container.registerInstance(CmsImport, cms.importing);
 
         context.container.registerInstance(CmsSchemaExecutor, {
             execute: async (schemaType: ApiEndpoint, body) => {
-                const originalType = context.cms.type;
-                setSchemaType(schemaType);
                 const schema = await context.container
                     .resolve(IdentityContext)
                     .withoutAuthorization(() => {
                         return getSchema({ context, getTenant, type: schemaType });
                     });
-                setSchemaType(originalType);
                 return processRequestBody(body, schema, context);
             }
         });

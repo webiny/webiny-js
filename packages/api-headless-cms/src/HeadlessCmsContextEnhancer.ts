@@ -126,7 +126,7 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
 
         const getTenant = () => this.tenantContext.getTenant();
 
-        ctx.cms = {
+        const cms = {
             type,
             READ: type === "read",
             PREVIEW: type === "preview",
@@ -140,9 +140,9 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
             importing: { ...createImportCrud(ctx as CmsContext) }
         };
 
-        this.container.registerInstance(HeadlessCms, ctx.cms);
-        this.container.registerInstance(CmsExport, ctx.cms.export);
-        this.container.registerInstance(CmsImport, ctx.cms.importing);
+        this.container.registerInstance(HeadlessCms, cms);
+        this.container.registerInstance(CmsExport, cms.export);
+        this.container.registerInstance(CmsImport, cms.importing);
 
         // Register CmsSchemaExecutor so proxy resolvers can build and execute the CMS sub-schema
         // without accessing ctx.cms directly. Uses a forked context so type flags are correct
@@ -150,18 +150,14 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
         // are accessible from the fork.
         this.container.registerInstance(CmsSchemaExecutor, {
             execute: async (schemaType: ApiEndpoint, body: any) => {
+                // Fork only the plugins container (fresh field converters per build); the
+                // schema endpoint type is passed explicitly to getSchema, so there is no
+                // need to carry a per-type `cms` bag on the context anymore.
                 const schemaCtx: Record<string, any> = Object.assign(
                     Object.create(Object.getPrototypeOf(ctx)),
                     ctx,
                     {
-                        plugins: new PluginsContainer([...createFieldConverters()]),
-                        cms: {
-                            ...ctx.cms,
-                            type: schemaType,
-                            READ: schemaType === "read",
-                            PREVIEW: schemaType === "preview",
-                            MANAGE: schemaType === "manage"
-                        }
+                        plugins: new PluginsContainer([...createFieldConverters()])
                     }
                 );
                 const bm = this.container.resolve(BenchmarkAbstraction);
