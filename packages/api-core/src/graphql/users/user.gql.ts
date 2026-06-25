@@ -5,7 +5,7 @@ import {
     NotFoundResponse,
     Response
 } from "@webiny/handler-graphql/responses.js";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
+import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
 import type { ApiCoreContext } from "~/types/core.js";
 import { AdminUser } from "~/types/users.js";
 import { GetUserUseCase } from "~/features/users/GetUser/index.js";
@@ -17,9 +17,9 @@ import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 
 const emptyResolver = () => ({});
 
-export const createUsersGraphQL = () => {
+export const createUsersGraphQL = (): GraphQLSchemaDefinition<ApiCoreContext>[] => {
     return [
-        new GraphQLSchemaPlugin<ApiCoreContext>({
+        {
             typeDefs: /* GraphQL */ `
                 type AdminUsersQuery {
                     _empty: String
@@ -62,8 +62,8 @@ export const createUsersGraphQL = () => {
                     adminUsers: emptyResolver
                 }
             }
-        }),
-        new GraphQLSchemaPlugin<ApiCoreContext>({
+        },
+        {
             typeDefs: /* GraphQL */ `
                 type AdminUser {
                     id: ID!
@@ -189,8 +189,8 @@ export const createUsersGraphQL = () => {
                     }
                 }
             }
-        }),
-        new GraphQLSchemaPlugin<ApiCoreContext>({
+        },
+        {
             typeDefs: /* GraphQL */ `
                 extend type AdminUser {
                     teams: [SecurityTeam]
@@ -213,6 +213,6 @@ export const createUsersGraphQL = () => {
                     }
                 }
             }
-        })
-    ].filter(Boolean);
+        }
+    ];
 };

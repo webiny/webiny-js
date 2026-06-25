@@ -4,7 +4,7 @@ import {
     ListResponse,
     Response
 } from "@webiny/handler-graphql/responses.js";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
+import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
 import type { ApiCoreContext } from "~/types/core.js";
 import type { Team } from "~/types/security.js";
 import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
@@ -14,7 +14,7 @@ import { CreateTeam } from "~/features/security/teams/CreateTeam/index.js";
 import { UpdateTeam } from "~/features/security/teams/UpdateTeam/index.js";
 import { DeleteTeam } from "~/features/security/teams/DeleteTeam/index.js";
 
-export default new GraphQLSchemaPlugin<ApiCoreContext>({
+const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
     typeDefs: /* GraphQL */ `
         type SecurityTeam {
             id: ID
@@ -146,4 +146,6 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
             }
         }
     }
-});
+};
+
+export default schema;

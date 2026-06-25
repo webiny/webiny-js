@@ -1,4 +1,4 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/index.js";
+import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { type AppInstallationData } from "~/features/tenancy/InstallTenant/index.js";
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";
@@ -10,8 +10,8 @@ interface InstallTenantArgs {
     installationInput: AppInstallationData[];
 }
 
-export const createSystemGraphQL = () => {
-    return new GraphQLSchemaPlugin({
+export const createSystemGraphQL = (): GraphQLSchemaDefinition => {
+    return {
         typeDefs: /* GraphQL */ `
             type SystemQuery {
                 isSystemInstalled: BooleanResponse
@@ -62,5 +62,5 @@ export const createSystemGraphQL = () => {
                 }
             }
         }
-    });
+    };
 };

@@ -1,9 +1,9 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
 import type { ApiCoreContext } from "~/types/core.js";
 
 const emptyResolver = () => ({});
 
-export default new GraphQLSchemaPlugin<ApiCoreContext>({
+const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
     typeDefs: /* GraphQL */ `
         type SecurityMutation {
             _empty: String
@@ -46,4 +46,6 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
             security: emptyResolver
         }
     }
-});
+};
+
+export default schema;

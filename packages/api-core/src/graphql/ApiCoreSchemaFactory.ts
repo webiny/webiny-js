@@ -1,6 +1,6 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
-import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
+import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
 import {
     JsonScalar,
     LongScalar,
@@ -55,71 +55,36 @@ const SCALAR_RESOLVERS: Record<string, any> = {
     Time: TimeScalar
 };
 
-function addPluginsToBuilder(
-    plugins: IGraphQLSchemaPlugin[],
-    builder: IGraphQLSchemaBuilder
-): void {
-    for (const plugin of plugins) {
-        const schema = plugin.schema;
-
-        if (schema.typeDefs) {
-            builder.addTypeDefs(schema.typeDefs);
-        }
-
-        if (schema.resolvers) {
-            addResolvers(builder, schema.resolvers as Record<string, any>, "");
-        }
-
-        if (schema.resolverDecorators) {
-            for (const [path, decorators] of Object.entries(schema.resolverDecorators)) {
-                for (const decorator of decorators as any[]) {
-                    builder.addResolverDecorator(path, decorator);
-                }
-            }
-        }
-    }
-}
-
-function addResolvers(
-    builder: IGraphQLSchemaBuilder,
-    resolvers: Record<string, any>,
-    prefix: string
-): void {
-    for (const [key, value] of Object.entries(resolvers)) {
-        const path = prefix ? `${prefix}.${key}` : key;
-
-        if (typeof value === "function") {
-            const oldResolver = value;
-            builder.addResolver({
-                path,
-                dependencies: [],
-                resolver:
-                    () =>
-                    ({ parent, args, context, info }: any) =>
-                        oldResolver(parent, args, context, info)
-            });
-        } else if (typeof value === "object" && value !== null) {
-            addResolvers(builder, value, path);
-        }
-    }
-}
-
 class ApiCoreSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
         // Base types + scalars must come before any extend type directives
         builder.addTypeDefs(BASE_TYPES);
 
         // Scalar implementations
-        addResolvers(builder, SCALAR_RESOLVERS, "");
+        builder.addLegacyResolvers(SCALAR_RESOLVERS);
 
-        const plugins = [
+        const schemas: GraphQLSchemaDefinition[] = [
             ...createSecurityGraphQL(),
             ...createUsersGraphQL(),
             createSystemGraphQL(),
             createWcpGraphQL()
-        ] as unknown as IGraphQLSchemaPlugin[];
+        ];
 
-        addPluginsToBuilder(plugins, builder);
+        for (const schema of schemas) {
+            builder.addTypeDefs(schema.typeDefs as string);
+
+            if (schema.resolvers) {
+                builder.addLegacyResolvers(schema.resolvers as Record<string, any>);
+            }
+
+            if (schema.resolverDecorators) {
+                for (const [path, decorators] of Object.entries(schema.resolverDecorators)) {
+                    for (const decorator of decorators) {
+                        builder.addResolverDecorator(path, decorator);
+                    }
+                }
+            }
+        }
 
         return builder;
     }

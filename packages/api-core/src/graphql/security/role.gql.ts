@@ -4,7 +4,7 @@ import {
     ListResponse,
     Response
 } from "@webiny/handler-graphql/responses.js";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
+import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
 import type { ApiCoreContext } from "~/types/core.js";
 import { GetRoleUseCase } from "~/features/security/roles/GetRole/index.js";
 import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
@@ -12,7 +12,7 @@ import { CreateRoleUseCase } from "~/features/security/roles/CreateRole/index.js
 import { UpdateRoleUseCase } from "~/features/security/roles/UpdateRole/index.js";
 import { DeleteRoleUseCase } from "~/features/security/roles/DeleteRole/index.js";
 
-export default new GraphQLSchemaPlugin<ApiCoreContext>({
+const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
     typeDefs: /* GraphQL */ `
         type SecurityRole {
             id: ID
@@ -130,4 +130,6 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
             }
         }
     }
-});
+};
+
+export default schema;

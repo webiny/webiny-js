@@ -1,4 +1,4 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
+import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import type { ApiCoreContext } from "~/types/core.js";
@@ -31,7 +31,7 @@ const getDefaultTenant = async (context: ApiCoreContext) => {
     return rootResult.value;
 };
 
-export default new GraphQLSchemaPlugin<ApiCoreContext>({
+const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
     typeDefs: /* GraphQL */ `
         type SecurityIdentityTenant {
             id: ID!
@@ -145,7 +145,9 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
             }
         }
     }
-});
+};
+
+export default schema;
 
 const getRoles = async (user: AdminUser, rolesRepo: RolesRepository.Interface) => {
     const roleIds = user.roles ?? [];

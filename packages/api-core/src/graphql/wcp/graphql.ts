@@ -1,11 +1,11 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/index.js";
+import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
 import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 
 const emptyResolver = () => ({});
 
-export const createWcpGraphQL = () => {
-    return new GraphQLSchemaPlugin({
+export const createWcpGraphQL = (): GraphQLSchemaDefinition => {
+    return {
         typeDefs: /* GraphQL */ `
             type WcpProjectPackageFeaturesFeature {
                 enabled: Boolean
@@ -87,5 +87,5 @@ export const createWcpGraphQL = () => {
                 }
             }
         }
-    });
+    };
 };
