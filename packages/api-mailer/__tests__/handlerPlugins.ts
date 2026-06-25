@@ -1,7 +1,7 @@
 import createGraphQLHandlerPlugins from "@webiny/handler-graphql";
-import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
+import { CmsParametersPlugin, createCmsExtension } from "@webiny/api-headless-cms";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createMailerContext, createMailerGraphQL } from "~/index";
 import { createTenancyAndSecurity } from "./context/tenancySecurity";
@@ -47,7 +47,7 @@ export const createHandlerPlugins = (params?: CreateHandlerParams) => {
                 type: "read"
             };
         }),
-        createHeadlessCmsContext(),
+        createCmsExtension(),
         createMailerContext(),
         createMailerGraphQL(),
         plugins

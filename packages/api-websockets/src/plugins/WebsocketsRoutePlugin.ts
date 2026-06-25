@@ -1,14 +1,9 @@
 import { Plugin } from "@webiny/plugins";
-import type {
-    IWebsocketsEvent,
-    IWebsocketsEventData,
-    WebsocketsEventRoute
-} from "~/handler/types.js";
 import type { Context } from "~/types.js";
 import type { IWebsocketsRunnerResponse } from "~/runner/index.js";
-import type { IWebsocketsConnectionRegistry } from "~/registry/index.js";
-import type { IWebsocketsResponse } from "~/response/abstractions/IWebsocketsResponse.js";
-import type { IWebsocketsIdentity } from "~/context/index.js";
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
+import { WebsocketsResponse } from "~/response/index.js";
+import type { IWebsocketsEvent, IWebsocketsEventData, WebsocketsRoute } from "~/types.js";
 
 export interface IWebsocketsRoutePluginCallableParams<
     C extends Context = Context,
@@ -16,11 +11,11 @@ export interface IWebsocketsRoutePluginCallableParams<
     T extends IWebsocketsEventData = IWebsocketsEventData
 > {
     event: IWebsocketsEvent<T>;
-    registry: IWebsocketsConnectionRegistry;
+    registry: ConnectionRegistry.Interface;
     context: C;
-    response: IWebsocketsResponse;
+    response: WebsocketsResponse.Interface;
     getTenant: () => string | null;
-    getIdentity: () => IWebsocketsIdentity | null;
+    getIdentity: () => ConnectionRegistry.Identity | null;
     next: () => Promise<R>;
 }
 
@@ -39,11 +34,11 @@ export class WebsocketsRoutePlugin<
 > extends Plugin {
     public static override readonly type: string = "websockets.route";
 
-    public readonly route: WebsocketsEventRoute | string;
+    public readonly route: WebsocketsRoute | string;
     private readonly cb: IWebsocketsRoutePluginCallable<C, R, T>;
 
     public constructor(
-        route: WebsocketsEventRoute | string,
+        route: WebsocketsRoute | string,
         cb: IWebsocketsRoutePluginCallable<C, R, T>
     ) {
         super();
@@ -61,7 +56,7 @@ export const createWebsocketsRoutePlugin = <
     R extends IWebsocketsRunnerResponse = IWebsocketsRunnerResponse,
     T extends IWebsocketsEventData = IWebsocketsEventData
 >(
-    route: WebsocketsEventRoute | string,
+    route: WebsocketsRoute | string,
     cb: IWebsocketsRoutePluginCallable<C, R, T>
 ) => {
     return new WebsocketsRoutePlugin<C, R, T>(route, cb);

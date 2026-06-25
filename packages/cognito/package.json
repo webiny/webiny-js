@@ -25,9 +25,9 @@
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
     "@webiny/validation": "0.0.0",
-    "aws-amplify": "^6.17.0",
+    "aws-amplify": "^6.18.0",
     "graphql": "^16.14.2",
-    "graphql-tag": "^2.12.6",
+    "graphql-tag": "^2.12.7",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.18.1",
     "mobx": "^6.16.1",
@@ -40,7 +40,7 @@
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.9"
   },
   "publishConfig": {
     "access": "public"

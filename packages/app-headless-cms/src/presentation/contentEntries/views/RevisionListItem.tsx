@@ -175,6 +175,16 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                             />
                         )}
 
+                        {/*{revision.meta.status === "published" &&
+                            canUnpublish(formVm.entry, "cms.contentEntry") && (
+                                <DropdownMenu.Item
+                                    onClick={() => unpublishRevision()}
+                                    data-testid={"cms.revision.unpublish"}
+                                    icon={<UnpublishIcon />}
+                                    text={t`Unpublish revision`}
+                                />
+                            )}*/}
+
                         {!revision.meta.locked &&
                             formVm.entry &&
                             canDelete(formVm.entry, "cms.contentEntry") && (
@@ -184,9 +194,7 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                                         onClick={handleDeleteRevision}
                                         icon={<DeleteIcon />}
                                         text={t`Delete revision`}
-                                        className={
-                                            "text-destructive-primary! [&_svg]:fill-destructive"
-                                        }
+                                        variant={"destructive"}
                                     />
                                 </>
                             )}

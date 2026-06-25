@@ -1,14 +1,10 @@
 import createGraphQLHandler from "@webiny/handler-graphql";
-import {
-    CmsParametersPlugin,
-    createHeadlessCmsContext,
-    createHeadlessCmsGraphQL
-} from "@webiny/api-headless-cms";
+import { CmsParametersPlugin, createCmsExtension } from "@webiny/api-headless-cms";
 import { createHandler } from "@webiny/handler-aws";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createAco } from "@webiny/api-aco";
 import { createAcoSdk } from "../../../api-aco/__tests__/utils/createAcoSdk.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getIntrospectionQuery } from "graphql";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
@@ -19,7 +15,7 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createFileManagerSdk } from "../../../api-file-manager/__tests__/utils/createFileManagerSdk.js";
 import { createFileManagerAco } from "~/index.js";
 
@@ -70,11 +66,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                     type: "manage"
                 };
             }),
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
+            createCmsExtension(),
             createAco(),
             createFileManagerContext(),
-            createFileManagerGraphQL(),
             createFileManagerAco(),
             plugins
         ],

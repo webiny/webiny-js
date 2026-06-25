@@ -1,18 +1,27 @@
-import type {
-    IWebsocketsEventValidator,
-    IWebsocketsEventValidatorValidateParams
-} from "~/validator";
-import type { IWebsocketsEvent, IWebsocketsEventData } from "~/handler/types";
+import type { IWebsocketsEventValidator } from "~/validator/abstractions/IWebsocketsEventValidator";
+import type { IWebsocketsEvent, IWebsocketsEventData } from "~/types";
 
 export class MockWebsocketsEventValidator implements IWebsocketsEventValidator {
     public async validate<T extends IWebsocketsEventData = IWebsocketsEventData>(
-        input: IWebsocketsEventValidatorValidateParams
+        input: unknown
     ): Promise<IWebsocketsEvent<T>> {
+        const raw = input as Record<string, any>;
         return {
-            requestContext: {
-                ...(input.requestContext || {})
+            context: {
+                ...(raw?.context || {})
             },
-            body: input.body || JSON.stringify({})
+            body: raw?.body
+                ? (() => {
+                      if (typeof raw.body !== "string") {
+                          return raw.body;
+                      }
+                      try {
+                          return JSON.parse(raw.body);
+                      } catch {
+                          return {};
+                      }
+                  })()
+                : {}
         } as unknown as IWebsocketsEvent<T>;
     }
 }

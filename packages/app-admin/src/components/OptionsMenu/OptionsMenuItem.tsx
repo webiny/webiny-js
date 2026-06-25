@@ -6,6 +6,7 @@ export interface OptionsMenuItemProps {
     disabled?: boolean;
     icon: React.ReactElement;
     label: string;
+    variant?: "destructive";
     ["data-testid"]?: string;
     className?: string;
 }
@@ -20,6 +21,7 @@ export const OptionsMenuItem = (props: OptionsMenuItemProps) => {
             data-testid={props["data-testid"]}
             icon={<DropdownMenu.Item.Icon label={props.label} element={props.icon} />}
             text={props.label}
+            variant={props.variant}
             className={props.className}
         />
     );

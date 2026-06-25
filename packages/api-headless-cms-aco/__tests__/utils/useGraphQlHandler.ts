@@ -1,9 +1,5 @@
 import createGraphQLHandler from "@webiny/handler-graphql";
-import {
-    CmsParametersPlugin,
-    createHeadlessCmsContext,
-    createHeadlessCmsGraphQL
-} from "@webiny/api-headless-cms";
+import { CmsParametersPlugin, createCmsExtension } from "@webiny/api-headless-cms";
 import { createHandler } from "@webiny/handler-aws";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
@@ -79,8 +75,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                     type: "manage"
                 };
             }),
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
+            createCmsExtension(),
             createAco(),
             createAcoHcmsContext(),
             plugins

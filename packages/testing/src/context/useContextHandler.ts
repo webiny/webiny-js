@@ -1,6 +1,6 @@
 import type { LambdaContext } from "@webiny/handler-aws/types.js";
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import type { CreateHandlerCoreParams } from "./plugins.js";
 import { createHandlerCore } from "./plugins.js";
 import { defaultIdentity } from "./tenancySecurity.js";
@@ -32,7 +32,7 @@ export const useContextHandler = <C extends CmsContext = CmsContext>(
         })
     ]);
 
-    const { elasticsearchClient } = getElasticsearchClient({ name: "testing-ddb-es" });
+    const elasticsearchClient = createTestOpenSearchClient();
 
     return {
         plugins,

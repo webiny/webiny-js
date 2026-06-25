@@ -120,15 +120,12 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
         return <OverlayLoader text={t`Preparing File Manager...`} />;
     }
 
-    const isLoading = vm.list.pagination.loading && vm.list.rows.length === 0;
-    const isEmpty = !vm.list.pagination.loading && vm.list.rows.length === 0;
-
     const renderList = (browseFiles: BrowserFilePickerRenderProps["browseFiles"]) => {
-        if (isLoading) {
+        if (vm.loading) {
             return <OverlayLoader text={t`Loading files...`} size={"lg"} />;
         }
 
-        if (isEmpty) {
+        if (vm.empty) {
             return <Empty isSearchResult={!vm.showFolders} browseFiles={browseFiles} />;
         }
 

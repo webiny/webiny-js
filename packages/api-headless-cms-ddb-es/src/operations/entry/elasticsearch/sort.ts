@@ -1,6 +1,9 @@
 import type { Sort as OpenSearchSort } from "@webiny/api-opensearch/types.js";
-import { createSort, OpenSearchFieldPlugin } from "@webiny/api-opensearch";
-import type { CmsEntryListSort, CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import { createSort } from "@webiny/api-opensearch";
+import type { OpenSearchField } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import type { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { ModelFields } from "./types.js";
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword.js";
 import { createFieldPathFactory } from "~/operations/entry/elasticsearch/filtering/path.js";
@@ -40,10 +43,11 @@ interface Params {
     modelFields: ModelFields;
     model: CmsModel;
     valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
+    fieldFactory: OpenSearchFieldFactory.Interface;
 }
 
 export const createElasticsearchSort = (params: Params): OpenSearchSort => {
-    const { sort, modelFields, valueSearchRegistry } = params;
+    const { sort, modelFields, valueSearchRegistry, fieldFactory } = params;
 
     if (!sort || sort.length === 0) {
         return [
@@ -61,11 +65,10 @@ export const createElasticsearchSort = (params: Params): OpenSearchSort => {
 
     const fieldIdToStorageIdIdMap: Record<string, string> = {};
 
-    const sortPlugins = Object.values(modelFields).reduce<Record<string, OpenSearchFieldPlugin>>(
+    const sortPlugins = Object.values(modelFields).reduce<
+        Record<string, OpenSearchField.Interface>
+    >(
         (plugins, field) => {
-            /**
-             * We do not support sorting by nested fields.
-             */
             const isValues = field.parents.length === 1 && field.parents[0].fieldId === "values";
             if (field.parents.length > 0 && !isValues) {
                 return plugins;
@@ -83,10 +86,7 @@ export const createElasticsearchSort = (params: Params): OpenSearchSort => {
                 keyword: false,
                 originalValue: NoValueContainer.create()
             });
-            /**
-             * Plugins must be stored with fieldId as key because it is later used to find the sorting plugin.
-             */
-            plugins[fieldIdPath] = new OpenSearchFieldPlugin({
+            plugins[fieldIdPath] = fieldFactory.create({
                 unmappedType: field.unmappedType,
                 keyword: hasKeyword(field),
                 sortable: field.sortable,
@@ -97,8 +97,8 @@ export const createElasticsearchSort = (params: Params): OpenSearchSort => {
             return plugins;
         },
         {
-            ["*"]: new OpenSearchFieldPlugin({
-                field: OpenSearchFieldPlugin.ALL,
+            ["*"]: fieldFactory.create({
+                field: "*",
                 keyword: false
             })
         }

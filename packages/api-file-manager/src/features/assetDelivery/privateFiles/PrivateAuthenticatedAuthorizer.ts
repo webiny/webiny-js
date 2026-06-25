@@ -1,9 +1,9 @@
 import Error from "@webiny/error";
 import type { File } from "~/domain/file/types.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { AssetAuthorizer, type IAssetAuthorizer } from "../abstractions.js";
+import { AssetAuthorizer } from "../abstractions/AssetAuthorizer.js";
 
-export class PrivateAuthenticatedAuthorizer implements IAssetAuthorizer {
+export class PrivateAuthenticatedAuthorizer implements AssetAuthorizer.Interface {
     private identityContext: IdentityContext.Interface;
 
     constructor(identityContext: IdentityContext.Interface) {

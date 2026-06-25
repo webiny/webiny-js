@@ -3,7 +3,7 @@ import createGraphQLHandler from "@webiny/handler-graphql";
 import { createEventHandler, createHandler } from "@webiny/handler-aws/raw";
 import type { AcoContext } from "~/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { createAco } from "~/index";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createIdentity } from "./identity";
@@ -38,8 +38,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             ...cmsStorage.plugins,
             createGraphQLHandler(),
             ...createTenancyAndSecurity({ permissions, identity: createIdentity() }),
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
+            createCmsExtension(),
             createAco(),
             createEventHandler<any, AcoContext, AcoContext>(async ({ context }) => {
                 return context;

@@ -31,7 +31,7 @@ export const DeleteEntry = () => {
             label={"Trash"}
             onAction={handleDelete}
             data-testid={"aco.actions.entry.delete"}
-            className={"text-destructive-primary! [&_svg]:fill-destructive"}
+            variant={"destructive"}
         />
     );
 };

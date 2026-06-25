@@ -103,7 +103,7 @@ jobs:
         run: yarn lint
         working-directory: v6
       - name: Check Package Node Modules
-        run: yarn check-package-dependencies
+        run: yarn check:node-modules:ci
         working-directory: v6
     runs-on: ubuntu-latest
     env:

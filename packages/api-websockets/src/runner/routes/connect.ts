@@ -1,5 +1,7 @@
-import { WebsocketsEventRoute } from "~/handler/types.js";
+import type { WebsocketsRoute } from "~/types.js";
 import { createWebsocketsRoutePlugin } from "~/plugins/WebsocketsRoutePlugin.js";
+
+const CONNECT: WebsocketsRoute = "connect";
 
 const getConnectedOn = (connectedAt?: number) => {
     if (!connectedAt) {
@@ -9,7 +11,7 @@ const getConnectedOn = (connectedAt?: number) => {
 };
 
 export const createWebsocketsRouteConnectPlugin = () => {
-    const plugin = createWebsocketsRoutePlugin(WebsocketsEventRoute.connect, async params => {
+    const plugin = createWebsocketsRoutePlugin(CONNECT, async params => {
         const { registry, event, response, getTenant, getIdentity } = params;
 
         const tenant = getTenant();
@@ -30,11 +32,10 @@ export const createWebsocketsRouteConnectPlugin = () => {
                 displayName: identity.displayName,
                 type: identity.type
             },
-            connectionId: event.requestContext.connectionId,
+            connectionId: event.context.connectionId,
             tenant,
-            domainName: event.requestContext.domainName,
-            stage: event.requestContext.stage,
-            connectedOn: getConnectedOn(event.requestContext.connectedAt)
+            endpoint: event.context.endpoint,
+            connectedOn: getConnectedOn(event.context.connectedAt)
         });
 
         return response.ok();

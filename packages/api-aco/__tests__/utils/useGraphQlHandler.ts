@@ -1,5 +1,5 @@
 import { createApiCore } from "@webiny/api-core";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { createHandler } from "@webiny/handler-aws";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
@@ -32,7 +32,7 @@ import { getIntrospectionQuery } from "graphql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerContext } from "@webiny/api-file-manager";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -80,11 +80,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 permissions,
                 identity: identity === undefined ? createIdentity() : identity
             }),
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
+            createCmsExtension(),
             createFileManagerContext(),
-            createFileManagerGraphQL(),
-            createHeadlessCmsGraphQL(),
             createAco(),
             plugins
         ],

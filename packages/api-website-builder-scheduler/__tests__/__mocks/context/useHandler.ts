@@ -3,7 +3,7 @@ import { createHandlerCore } from "./plugins";
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { defaultIdentity } from "./tenancySecurity";
 import type { LambdaContext } from "@webiny/handler-aws/types";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { createWebsiteBuilderScheduleContext } from "~/context.js";
 
@@ -30,7 +30,7 @@ export const useHandler = <C extends ApiCoreContext>(params: CreateHandlerCorePa
         debug: process.env.DEBUG === "true"
     });
 
-    const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
+    const elasticsearchClient = createTestOpenSearchClient();
 
     return {
         plugins,

@@ -1,11 +1,11 @@
-import { makeAutoObservable, reaction, runInAction, computed } from "mobx";
-import type { FmFile } from "@webiny/sdk";
-import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
-import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
-import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
-import { sortFolders } from "@webiny/app-aco";
-import { LocalStorage } from "@webiny/app/features/localStorage";
-import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
+import {makeAutoObservable, reaction, runInAction, computed} from "mobx";
+import type {FmFile} from "@webiny/sdk";
+import type {CmsModel} from "@webiny/app-headless-cms-common/types/index.js";
+import {ListPresenter} from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
+import {FolderTreePresenter} from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import {sortFolders} from "@webiny/app-aco";
+import {LocalStorage} from "@webiny/app/features/localStorage";
+import {GetDescendantFoldersUseCase} from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import {
     FileManagerPresenter as Abstraction,
     type IFileManagerPresenter,
@@ -13,16 +13,16 @@ import {
     type IFileManagerActions,
     type IFileManagerInitConfig
 } from "./abstractions.js";
-import { FileListDataSource } from "./FileListDataSource.js";
-import { FileDetailsPresenter } from "../FileDetails/abstractions.js";
-import { FileManagerPermissions } from "~/features/permissions/abstractions.js";
-import { ListTagsRepository } from "~/features/tags/index.js";
-import { FileUploader } from "~/features/fileUploader/index.js";
-import { ListFilesUseCase } from "~/features/listFiles/index.js";
-import { FilesListCache } from "~/features/shared/index.js";
-import { FileModelProvider } from "~/features/fileModel/index.js";
-import type { IFileDetailsPresenter } from "../FileDetails/abstractions.js";
-import type { SelectedFile } from "@webiny/app-admin/presentation/browserFilePicker/index.js";
+import {FileListDataSource} from "./FileListDataSource.js";
+import {FileDetailsPresenter} from "../FileDetails/abstractions.js";
+import {FileManagerPermissions} from "~/features/permissions/abstractions.js";
+import {ListTagsRepository} from "~/features/tags/index.js";
+import {FileUploader} from "~/features/fileUploader/index.js";
+import {ListFilesUseCase} from "~/features/listFiles/index.js";
+import {FilesListCache} from "~/features/shared/index.js";
+import {FileModelProvider} from "~/features/fileModel/index.js";
+import type {IFileDetailsPresenter} from "../FileDetails/abstractions.js";
+import type {SelectedFile} from "@webiny/app-admin/presentation/browserFilePicker/index.js";
 
 const VIEW_MODE_KEY = "fm:viewMode";
 const LAST_FOLDER_KEY = "fm:lastFolder";
@@ -91,6 +91,8 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
                 isUploading: this.fileUploader.vm.isUploading
             },
             tags: this.tagsRepository.tags,
+            loading: this.isLoading(),
+            empty: this.isEmpty(),
             showFolders: this.shouldShowFolders(),
             childFolders: this.getSortedChildFolders(),
             viewMode: this._viewMode,
@@ -134,7 +136,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
                     data: {
                         name: file.name,
                         type: file.type,
-                        location: { folderId }
+                        location: {folderId}
                     }
                 }))
             );
@@ -200,8 +202,8 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
 
         this.listPresenter.init({
             dataSource,
-            initialSort: { field: "createdOn", direction: "DESC" },
-            initialFilters: { folderId: initialFolderId },
+            initialSort: {field: "createdOn", direction: "DESC"},
+            initialFilters: {folderId: initialFolderId},
             limit: 50
         });
 
@@ -242,6 +244,26 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         }
     }
 
+    private isLoading(): boolean {
+        return this.listPresenter.vm.pagination.loading && this.listPresenter.vm.rows.length === 0;
+    }
+
+    private isEmpty(): boolean {
+        if (this.listPresenter.vm.pagination.loading) {
+            return false;
+        }
+
+        if (this.listPresenter.vm.rows.length > 0) {
+            return false;
+        }
+
+        if (this.shouldShowFolders() && this.folderTreePresenter.vm.childFolders.length > 0) {
+            return false;
+        }
+
+        return true;
+    }
+
     private getSortedChildFolders() {
         if (!this.shouldShowFolders()) {
             return [];
@@ -256,7 +278,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
     // Uses `appliedQuery` (not `vm.search`) so folders stay visible while typing
     // and only disappear once the debounced query has actually executed.
     private shouldShowFolders(): boolean {
-        const { appliedQuery } = this.listPresenter.vm;
+        const {appliedQuery} = this.listPresenter.vm;
         if (!appliedQuery) {
             return true;
         }

@@ -34,6 +34,8 @@ export interface IFileManagerViewModel {
         overallProgress: { percentage: number; bytesSent: number; totalBytes: number };
         isUploading: boolean;
     };
+    loading: boolean;
+    empty: boolean;
     showFolders: boolean;
     childFolders: FolderDto[];
     viewMode: "table" | "grid";

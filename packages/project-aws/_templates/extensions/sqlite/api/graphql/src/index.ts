@@ -4,12 +4,11 @@ import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createApiCore } from "@webiny/api-core";
 import { createApiCoreSql, registerSQLCore } from "@webiny/api-core-sql";
-import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAssetDelivery, createFileManagerS3 } from "@webiny/api-file-manager-s3";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { registerSqlStorageOperations } from "@webiny/api-headless-cms-sql";
-import { createHcmsTasks } from "@webiny/api-headless-cms-tasks-sql";
 import { createAco } from "@webiny/api-aco";
 import { registerAcoSqlStorageOperations } from "@webiny/api-aco-sql";
 import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
@@ -19,10 +18,11 @@ import { createAuditLogs } from "@webiny/api-audit-logs";
 import { registerAuditLogsSqlStorageOperations } from "@webiny/api-audit-logs-sql";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-os";
 import { createWebsockets } from "@webiny/api-websockets";
+import { createAwsWebsockets } from "@webiny/api-websockets-aws";
 import { registerWebsocketsSqlStorageOperations } from "@webiny/api-websockets-sql";
 import { createRecordLocking } from "@webiny/api-record-locking";
-import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
-import { createScheduler } from "@webiny/api-scheduler";
+import { registerSchedulerExtension } from "@webiny/api-scheduler";
+import { registerSchedulerServerExtension } from "@webiny/api-scheduler-server";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
 import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
 import { createWorkflows } from "@webiny/api-workflows";
@@ -54,17 +54,18 @@ export const handler = createHandler({
         graphqlPlugins({ debug }),
         securityPlugins(),
         createWebsockets(),
+        createAwsWebsockets(),
         registerWebsocketsSqlStorageOperations({ knex }),
-        registerSqlStorageOperations(),
-        createHeadlessCmsContext(),
-        createHeadlessCmsGraphQL(),
+        registerSqlStorageOperations({
+            knex
+        }),
+        createCmsExtension(),
         createMailerContext(),
         createMailerGraphQL(),
         createWebsiteBuilder(),
         createRecordLocking(),
         createBackgroundTasks(),
         createFileManagerContext(),
-        createFileManagerGraphQL(),
         createFileManagerAco(),
         createAssetDelivery(),
         createFileManagerS3(),
@@ -78,12 +79,8 @@ export const handler = createHandler({
         }),
         createAuditLogs(),
         createAcoHcmsContext(),
-        createHcmsTasks(),
-        createScheduler({
-            getClient: config => {
-                return createSchedulerClient(config);
-            }
-        }),
+        registerSchedulerExtension(),
+        registerSchedulerServerExtension(),
         createHeadlessCmsScheduler(),
         createWebsiteBuilderScheduler(),
         createWebhooks(),

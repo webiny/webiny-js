@@ -1,12 +1,8 @@
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { createTenancyAndSecurity } from "~tests/utils/tenancySecurity";
-import {
-    CmsParametersPlugin,
-    createHeadlessCmsContext,
-    createHeadlessCmsGraphQL
-} from "@webiny/api-headless-cms";
-import { createFileManagerContext, createFileManagerGraphQL } from "~/index";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { CmsParametersPlugin, createCmsExtension } from "@webiny/api-headless-cms";
+import { createFileManagerContext } from "~/index";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { PluginCollection } from "@webiny/plugins/types";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -42,10 +38,8 @@ export const handlerPlugins = (params: HandlerParams) => {
                 type: "manage"
             };
         }),
-        createHeadlessCmsContext(),
-        createHeadlessCmsGraphQL(),
+        createCmsExtension(),
         createFileManagerContext(),
-        createFileManagerGraphQL(),
         /**
          * Make sure we dont have undefined plugins value.
          */

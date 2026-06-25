@@ -94,6 +94,8 @@ function createMockPresenter(
 ): IFileManagerPresenter {
     const defaultVm: IFileManagerViewModel = observable({
         fileModel: null,
+        loading: false,
+        empty: true,
         list: {
             rows: [],
             sort: null,

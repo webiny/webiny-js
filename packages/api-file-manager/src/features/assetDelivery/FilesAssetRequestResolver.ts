@@ -1,10 +1,17 @@
-import type { Request } from "@webiny/handler/types.js";
 import type { AssetRequestOptions } from "~/delivery/AssetDelivery/AssetRequest.js";
-import { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
-import { AssetRequestResolver, type IAssetRequestResolver } from "./abstractions.js";
+import { AssetRequestResolver } from "./abstractions/AssetRequestResolver.js";
+import { AssetRequestFactory } from "./AssetRequest/abstractions.js";
 
-export class FilesAssetRequestResolver implements IAssetRequestResolver {
-    async resolve(request: Request): Promise<AssetRequest | undefined> {
+class FilesAssetRequestResolverImpl implements AssetRequestResolver.Interface {
+    private readonly assetRequestFactory: AssetRequestFactory.Interface;
+
+    constructor(assetRequestFactory: AssetRequestFactory.Interface) {
+        this.assetRequestFactory = assetRequestFactory;
+    }
+
+    async resolve(
+        request: AssetRequestResolver.Request
+    ): Promise<AssetRequestResolver.AssetRequest | undefined> {
         if (!request.url.startsWith("/files/")) {
             return undefined;
         }
@@ -23,7 +30,7 @@ export class FilesAssetRequestResolver implements IAssetRequestResolver {
             options.width = parseInt(query.width);
         }
 
-        return new AssetRequest({
+        return this.assetRequestFactory.create({
             key: decodeURI(path).replace("/files/", ""),
             context: {
                 url: request.url
@@ -33,7 +40,7 @@ export class FilesAssetRequestResolver implements IAssetRequestResolver {
     }
 }
 
-export const FilesAssetRequestResolverImpl = AssetRequestResolver.createImplementation({
-    implementation: FilesAssetRequestResolver,
-    dependencies: []
+export const FilesAssetRequestResolver = AssetRequestResolver.createImplementation({
+    implementation: FilesAssetRequestResolverImpl,
+    dependencies: [AssetRequestFactory]
 });
