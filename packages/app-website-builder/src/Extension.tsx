@@ -40,6 +40,7 @@ import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/i
 import { UpdateSettingsFeature } from "~/features/settings/updateSettings/index.js";
 import { GetSettingsFeature } from "~/features/settings/getSettings/index.js";
 import { GetEcommerceSettingsFeature } from "~/features/ecommerce/settings/getSettings/index.js";
+import { UpdateEcommerceSettingsFeature } from "~/features/ecommerce/settings/updateSettings/index.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -70,6 +71,7 @@ export const Extension = () => {
             <RegisterFeature feature={GetSettingsFeature} />
             <RegisterFeature feature={GetEcommerceSettingsFeature} />
             <RegisterFeature feature={UpdateSettingsFeature} />
+            <RegisterFeature feature={UpdateEcommerceSettingsFeature} />
             <AdminConfig>
                 <Security.Permissions
                     name="website-builder"

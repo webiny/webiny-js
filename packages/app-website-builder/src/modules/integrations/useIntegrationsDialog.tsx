@@ -1,10 +1,11 @@
 import React from "react";
 import { useDialogs } from "@webiny/app-admin";
 import { IntegrationsSettings } from "./IntegrationsSettings.js";
-import { useEcommerceApiProvider, useUpdateEcommerceSettings } from "~/features/index.js";
+import { useEcommerceApiProvider } from "~/features/index.js";
 import { useFeature } from "@webiny/app";
 import { useToast } from "@webiny/admin-ui";
 import { GetEcommerceSettingsFeature } from "~/features/ecommerce/settings/getSettings/index.js";
+import { UpdateEcommerceSettingsFeature } from "~/features/ecommerce/settings/updateSettings/index.js";
 
 export const useIntegrationsDialog = () => {
     const { showSuccessToast } = useToast();
@@ -12,7 +13,7 @@ export const useIntegrationsDialog = () => {
     const provider = useEcommerceApiProvider();
     const manifests = provider.getApiManifests();
     const { useCase: getSettings } = useFeature(GetEcommerceSettingsFeature);
-    const { updateSettings } = useUpdateEcommerceSettings();
+    const { useCase: updateSettings } = useFeature(UpdateEcommerceSettingsFeature);
 
     const noIntegrations = manifests.length === 0;
 
@@ -25,7 +26,7 @@ export const useIntegrationsDialog = () => {
             cancelLabel: noIntegrations ? "Close" : "Cancel",
             content: <IntegrationsSettings manifests={manifests} />,
             onAccept: async data => {
-                await updateSettings(data);
+                await updateSettings.execute(data);
                 showSuccessToast({
                     title: "Success!",
                     description: "Integrations settings were saved successfully.",
