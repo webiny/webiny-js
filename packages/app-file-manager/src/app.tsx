@@ -5,6 +5,7 @@ import { SettingsModule } from "~/modules/Settings/index.js";
 import { FileModelModule } from "~/modules/FileModelModule.js";
 import { DefaultFileManagerConfig } from "~/presentation/config/DefaultFileManagerConfig.js";
 import { EnterpriseModule } from "~/modules/Enterprise/index.js";
+import { AiEnrichmentModule } from "~/modules/AiEnrichment/index.js";
 import { SecurityPermissions } from "./modules/SecurityPermissions.js";
 import { FileUrlFormatterModule } from "./modules/FileUrlFormatter.js";
 import { FmPermissionsFeature } from "~/features/permissions/feature.js";
@@ -66,6 +67,7 @@ export const FileManager = () => {
             <DefaultFileManagerConfig />
             <RegisterFeature feature={FileFieldTypeFeature} />
             <EnterpriseModule />
+            <AiEnrichmentModule />
             <SecurityPermissions />
             <FileUrlFormatterModule />
         </>
