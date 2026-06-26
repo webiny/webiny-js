@@ -1,5 +1,4 @@
-import gql from "graphql-tag";
-import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { RootFolder } from "~/domain/folder/RootFolder.js";
 import { FolderModelProvider } from "~/features/folders/abstractions.js";
@@ -23,46 +22,38 @@ export interface ListFoldersByParentIdsQueryVariables {
     after?: string | null;
 }
 
-export const LIST_FOLDERS_BY_PARENT_IDS = (FOLDER_FIELDS: string) => gql`
-    query ListFoldersByParentIds($type: String!, $parentIds_in: [ID!]!, $limit: Int!) {
-        aco {
-            listFolders(where: { type: $type, parentId_in: $parentIds_in }, limit: $limit) {
-                data ${FOLDER_FIELDS}
-                error {
-                    code
-                    data
-                    message
-                }
-            }
-        }
-    }
-`;
-
 class ListFoldersByParentIdsGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
-        private client: ApolloClient.Interface,
+        private client: MainGraphQLClient.Interface,
         private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(type: string, parentIds: string[]) {
         const fields = await this.folderModelProvider.getGraphQLSelection();
 
-        const { data: response } = await this.client.query<
-            ListFoldersByParentIdsResponse,
-            ListFoldersByParentIdsQueryVariables
-        >({
-            query: LIST_FOLDERS_BY_PARENT_IDS(fields),
+        const query = /* GraphQL */ `
+            query ListFoldersByParentIds($type: String!, $parentIds_in: [ID!]!, $limit: Int!) {
+                aco {
+                    listFolders(where: { type: $type, parentId_in: $parentIds_in }, limit: $limit) {
+                        data ${fields}
+                        error {
+                            code
+                            data
+                            message
+                        }
+                    }
+                }
+            }
+        `;
+
+        const response = await this.client.execute<ListFoldersByParentIdsResponse>({
+            query,
             variables: {
                 type,
                 parentIds_in: parentIds,
                 limit: 10000
-            },
-            fetchPolicy: "network-only"
+            }
         });
-
-        if (!response) {
-            throw new Error("Network error while listing folders.");
-        }
 
         const { data, error } = response.aco.listFolders;
 
@@ -76,5 +67,5 @@ class ListFoldersByParentIdsGqlGatewayImpl implements GatewayAbstraction.Interfa
 
 export const ListFoldersByParentIdsGqlGateway = GatewayAbstraction.createImplementation({
     implementation: ListFoldersByParentIdsGqlGatewayImpl,
-    dependencies: [ApolloClient, FolderModelProvider]
+    dependencies: [MainGraphQLClient, FolderModelProvider]
 });

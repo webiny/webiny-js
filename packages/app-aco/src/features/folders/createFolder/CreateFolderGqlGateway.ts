@@ -1,5 +1,4 @@
-import gql from "graphql-tag";
-import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { FolderModelProvider } from "~/features/folders/abstractions.js";
 import type { FolderGatewayDto } from "./abstractions.js";
@@ -33,45 +32,38 @@ export interface CreateFolderVariables {
     >;
 }
 
-export const CREATE_FOLDER = (FOLDER_FIELDS: string) => gql`
-        mutation CreateFolder($data: FolderCreateInput!) {
-            aco {
-                createFolder(data: $data) {
-                    data ${FOLDER_FIELDS}
-                    error {
-                        code
-                        data
-                        message
-                    }
-                }
-            }
-        }
-    `;
-
 class CreateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
-        private client: ApolloClient.Interface,
+        private client: MainGraphQLClient.Interface,
         private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(folder: FolderGatewayDto) {
         const fields = await this.folderModelProvider.getGraphQLSelection();
 
-        const { data: response } = await this.client.mutate<
-            CreateFolderResponse,
-            CreateFolderVariables
-        >({
-            mutation: CREATE_FOLDER(fields),
+        const query = /* GraphQL */ `
+            mutation CreateFolder($data: FolderCreateInput!) {
+                aco {
+                    createFolder(data: $data) {
+                        data ${fields}
+                        error {
+                            code
+                            data
+                            message
+                        }
+                    }
+                }
+            }
+        `;
+
+        const response = await this.client.execute<CreateFolderResponse>({
+            query,
             variables: {
                 data: {
                     ...folder
                 }
             }
         });
-
-        if (!response) {
-            throw new Error("Network error while creating folder.");
-        }
 
         const { data, error } = response.aco.createFolder;
 
@@ -85,5 +77,5 @@ class CreateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
 
 export const CreateFolderGqlGateway = GatewayAbstraction.createImplementation({
     implementation: CreateFolderGqlGatewayImpl,
-    dependencies: [ApolloClient, FolderModelProvider]
+    dependencies: [MainGraphQLClient, FolderModelProvider]
 });

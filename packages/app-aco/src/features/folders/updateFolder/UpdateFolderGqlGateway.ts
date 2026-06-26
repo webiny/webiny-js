@@ -1,5 +1,4 @@
-import gql from "graphql-tag";
-import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { FolderModelProvider } from "~/features/folders/abstractions.js";
 import type { FolderGatewayDto } from "./abstractions.js";
@@ -26,37 +25,34 @@ export interface UpdateFolderVariables {
     >;
 }
 
-export const UPDATE_FOLDER = (FOLDER_FIELDS: string) => gql`
-    mutation UpdateFolder($id: ID!, $data: FolderUpdateInput!) {
-        aco {
-            updateFolder(id: $id, data: $data) {
-                data ${FOLDER_FIELDS}
-                error {
-                    code
-                    data
-                    message
-                }
-            }
-        }
-    }
-`;
-
 class UpdateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
-        private client: ApolloClient.Interface,
+        private client: MainGraphQLClient.Interface,
         private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(folder: FolderGatewayDto) {
         const fields = await this.folderModelProvider.getGraphQLSelection();
 
+        const query = /* GraphQL */ `
+            mutation UpdateFolder($id: ID!, $data: FolderUpdateInput!) {
+                aco {
+                    updateFolder(id: $id, data: $data) {
+                        data ${fields}
+                        error {
+                            code
+                            data
+                            message
+                        }
+                    }
+                }
+            }
+        `;
+
         const { id, title, slug, permissions, parentId, extensions } = folder;
 
-        const { data: response } = await this.client.mutate<
-            UpdateFolderResponse,
-            UpdateFolderVariables
-        >({
-            mutation: UPDATE_FOLDER(fields),
+        const response = await this.client.execute<UpdateFolderResponse>({
+            query,
             variables: {
                 id,
                 data: {
@@ -68,10 +64,6 @@ class UpdateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
                 }
             }
         });
-
-        if (!response) {
-            throw new Error("Network error while updating folder.");
-        }
 
         const { data, error } = response.aco.updateFolder;
 
@@ -85,5 +77,5 @@ class UpdateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
 
 export const UpdateFolderGqlGateway = GatewayAbstraction.createImplementation({
     implementation: UpdateFolderGqlGatewayImpl,
-    dependencies: [ApolloClient, FolderModelProvider]
+    dependencies: [MainGraphQLClient, FolderModelProvider]
 });

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useQuery } from "@apollo/react-hooks";
+import { useContainer } from "@webiny/app";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 import { Grid } from "@webiny/admin-ui";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import type { GenericFormData } from "@webiny/form";
@@ -39,11 +40,33 @@ interface RemoveUserTeamCallable {
     (params: RemoveUserTeamCallableParams): void;
 }
 
+interface ListTargetsResponse {
+    aco: {
+        listFolderLevelPermissionsTargets: {
+            data: FolderLevelPermissionsTarget[] | null;
+            error: { code: string; message: string; data: any } | null;
+        };
+    };
+}
+
 const FormComponent = ({ folder }: FormComponentProps) => {
-    const [permissions, setPermissions] = useState<FolderPermission[]>(folder.permissions || []); // Moved useState outside showDialog
-    const listTargetsQuery = useQuery(LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS);
-    const targetsList: FolderLevelPermissionsTarget[] =
-        listTargetsQuery.data?.aco.listFolderLevelPermissionsTargets.data || [];
+    const [permissions, setPermissions] = useState<FolderPermission[]>(folder.permissions || []);
+    const [targetsList, setTargetsList] = useState<FolderLevelPermissionsTarget[]>([]);
+    const container = useContainer();
+    const client = container.resolve(MainGraphQLClient);
+
+    useEffect(() => {
+        client
+            .execute<ListTargetsResponse>({
+                query: LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS
+            })
+            .then(response => {
+                const data = response.aco.listFolderLevelPermissionsTargets.data;
+                if (data) {
+                    setTargetsList(data);
+                }
+            });
+    }, []);
 
     const bind = useBind({
         name: "permissions"
@@ -61,8 +84,6 @@ const FormComponent = ({ folder }: FormComponentProps) => {
                 level: "viewer"
             };
 
-            // We want to add the new permission to the 2nd position in the array.
-            // The 1st position is reserved for the "current user" permission.
             setPermissions([permissions[0], newPermission, ...permissions.slice(1)]);
         },
         [permissions]

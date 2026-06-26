@@ -1,5 +1,4 @@
-import gql from "graphql-tag";
-import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 import { GetFolderModelGateway as GatewayAbstraction } from "./abstractions.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import type { AcoError } from "~/types.js";
@@ -13,7 +12,7 @@ export interface GetFolderModelResponse {
     };
 }
 
-export const GET_FOLDER_MODEL = gql`
+const GET_FOLDER_MODEL = /* GraphQL */ `
     query GetFolderModel {
         aco {
             getFolderModel {
@@ -30,22 +29,17 @@ export const GET_FOLDER_MODEL = gql`
 `;
 
 class GetFolderModelGqlGatewayImpl implements GatewayAbstraction.Interface {
-    constructor(private client: ApolloClient.Interface) {}
+    constructor(private client: MainGraphQLClient.Interface) {}
 
     async execute() {
-        const { data: response } = await this.client.query<GetFolderModelResponse>({
-            query: GET_FOLDER_MODEL,
-            fetchPolicy: "network-only"
+        const response = await this.client.execute<GetFolderModelResponse>({
+            query: GET_FOLDER_MODEL
         });
-
-        if (!response) {
-            throw new Error("Network error while fetch folder.");
-        }
 
         const { data, error } = response.aco.getFolderModel;
 
         if (!data) {
-            throw new Error(error?.message || `Could not fetch folder model`);
+            throw new Error(error?.message || "Could not fetch folder model");
         }
 
         return data;
@@ -54,5 +48,5 @@ class GetFolderModelGqlGatewayImpl implements GatewayAbstraction.Interface {
 
 export const GetFolderModelGqlGateway = GatewayAbstraction.createImplementation({
     implementation: GetFolderModelGqlGatewayImpl,
-    dependencies: [ApolloClient]
+    dependencies: [MainGraphQLClient]
 });

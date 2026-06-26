@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { RootFolder } from "~/domain/folder/RootFolder.js";
@@ -22,21 +21,6 @@ export interface ListFoldersQueryVariables {
     after?: string | null;
 }
 
-export const LIST_FOLDERS = (FOLDER_FIELDS: string) => gql`
-    query ListFolders($type: String!, $limit: Int!) {
-        aco {
-            listFolders(where: { type: $type }, limit: $limit) {
-                data ${FOLDER_FIELDS}
-                error {
-                    code
-                    data
-                    message
-                }
-            }
-        }
-    }
-`;
-
 class ListFoldersGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
         private client: MainGraphQLClient.Interface,
@@ -46,8 +30,23 @@ class ListFoldersGqlGatewayImpl implements GatewayAbstraction.Interface {
     async execute(type: string) {
         const fields = await this.folderModelProvider.getGraphQLSelection();
 
+        const query = /* GraphQL */ `
+            query ListFolders($type: String!, $limit: Int!) {
+                aco {
+                    listFolders(where: { type: $type }, limit: $limit) {
+                        data ${fields}
+                        error {
+                            code
+                            data
+                            message
+                        }
+                    }
+                }
+            }
+        `;
+
         const response = await this.client.execute<ListFoldersResponse, ListFoldersQueryVariables>({
-            query: LIST_FOLDERS(fields),
+            query,
             variables: {
                 type,
                 limit: 10000
