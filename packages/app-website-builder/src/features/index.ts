@@ -1,6 +1,6 @@
 export { GetSettingsFeature } from "./settings/getSettings/index.js";
 export { UpdateSettingsFeature } from "./settings/updateSettings/index.js";
-export * from "./ecommerce/settings/getSettings/useGetEcommerceSettings.js";
+export { GetEcommerceSettingsFeature } from "./ecommerce/settings/getSettings/index.js";
 export * from "./ecommerce/settings/updateSettings/useUpdateEcommerceSettings.js";
 export * from "./ecommerce/apis/useEcommerceApi.js";
 export * from "./ecommerce/apis/useEcommerceApiProvider.js";

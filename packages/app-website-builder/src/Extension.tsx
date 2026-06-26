@@ -39,6 +39,7 @@ import { PageSettingsFeature } from "~/presentation/pages/PageEditor/PageSetting
 import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/index.js";
 import { UpdateSettingsFeature } from "~/features/settings/updateSettings/index.js";
 import { GetSettingsFeature } from "~/features/settings/getSettings/index.js";
+import { GetEcommerceSettingsFeature } from "~/features/ecommerce/settings/getSettings/index.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -67,6 +68,7 @@ export const Extension = () => {
             <RegisterFeature feature={CreatePageFeature} />
             <RegisterFeature feature={PageSettingsFeature} />
             <RegisterFeature feature={GetSettingsFeature} />
+            <RegisterFeature feature={GetEcommerceSettingsFeature} />
             <RegisterFeature feature={UpdateSettingsFeature} />
             <AdminConfig>
                 <Security.Permissions

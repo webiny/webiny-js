@@ -1,19 +1,17 @@
 import React from "react";
 import { useDialogs } from "@webiny/app-admin";
 import { IntegrationsSettings } from "./IntegrationsSettings.js";
-import {
-    useEcommerceApiProvider,
-    useGetEcommerceSettings,
-    useUpdateEcommerceSettings
-} from "~/features/index.js";
+import { useEcommerceApiProvider, useUpdateEcommerceSettings } from "~/features/index.js";
+import { useFeature } from "@webiny/app";
 import { useToast } from "@webiny/admin-ui";
+import { GetEcommerceSettingsFeature } from "~/features/ecommerce/settings/getSettings/index.js";
 
 export const useIntegrationsDialog = () => {
     const { showSuccessToast } = useToast();
     const dialogs = useDialogs();
     const provider = useEcommerceApiProvider();
     const manifests = provider.getApiManifests();
-    const { getSettings } = useGetEcommerceSettings();
+    const { useCase: getSettings } = useFeature(GetEcommerceSettingsFeature);
     const { updateSettings } = useUpdateEcommerceSettings();
 
     const noIntegrations = manifests.length === 0;
@@ -21,7 +19,7 @@ export const useIntegrationsDialog = () => {
     const showIntegrationsDialog = () => {
         dialogs.showDialog({
             title: `Website Builder Integrations`,
-            formData: getSettings,
+            formData: () => getSettings.execute(),
             description: "Configure your website builder integrations here.",
             acceptLabel: noIntegrations ? null : "Save Settings",
             cancelLabel: noIntegrations ? "Close" : "Cancel",
