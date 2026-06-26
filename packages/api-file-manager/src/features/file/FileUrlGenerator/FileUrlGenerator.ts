@@ -3,18 +3,30 @@ import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions
 import type { File } from "~/domain/file/types.js";
 
 class FileUrlGeneratorImpl implements Abstraction.Interface {
-    private srcPrefix = "";
+    private srcPrefix: Promise<string> | undefined;
 
     public constructor(private readonly getSettings: GetSettingsUseCase.Interface) {}
 
-    public generateUrl(file: File): string {
-        return this.srcPrefix + file.key;
+    public async generateUrl(file: File): Promise<string> {
+        const prefix = await this.getPrefix();
+        return prefix + file.key;
     }
 
-    public async init(): Promise<void> {
+    private async getPrefix(): Promise<string> {
+        if (this.srcPrefix === undefined) {
+            this.srcPrefix = this.fetchPrefix();
+        }
+        return this.srcPrefix;
+    }
+
+    private async fetchPrefix(): Promise<string> {
         const result = await this.getSettings.execute();
+        if (result.isFail()) {
+            console.error("Failed to fetch settings:", result.error);
+            return "";
+        }
         const settings = result.value;
-        this.srcPrefix = settings?.srcPrefix ?? "";
+        return settings?.srcPrefix || "";
     }
 }
 

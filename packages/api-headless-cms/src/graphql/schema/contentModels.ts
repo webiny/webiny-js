@@ -4,6 +4,7 @@ import type { Resolvers } from "@webiny/handler-graphql/types.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { ValuesSelectionGenerator } from "~/features/contentModel/ValuesSelectionGenerator/abstractions.js";
 
 export interface CreateModelsSchemaParams {
     context: CmsContext;
@@ -63,6 +64,10 @@ export const createModelsSchema = ({
             },
             plugin: (model: CmsModel) => {
                 return model.isPlugin ?? false;
+            },
+            valuesSelection: (model: CmsModel, _: unknown, ctx: CmsContext) => {
+                const generator = ctx.container.resolve(ValuesSelectionGenerator);
+                return generator.generate(model);
             }
         }
     };
@@ -293,6 +298,7 @@ export const createModelsSchema = ({
                 tenant: String!
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!
+                valuesSelection: String
             }
 
             type CmsContentModelResponse {

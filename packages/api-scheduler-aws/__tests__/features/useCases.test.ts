@@ -86,6 +86,7 @@ describe("Combined Use Cases", () => {
             },
             scheduledFor: createResult.value.scheduledFor,
             targetId: "target-id#0001",
+            tenant: "root",
             title: "Fetched title from handler"
         };
         expect(getResult.value).toEqual({

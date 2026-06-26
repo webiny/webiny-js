@@ -7,7 +7,7 @@ export const ToggleEditorMode = observer(() => {
     const { presenter } = useWorkflowState();
     const editor = useDocumentEditor();
 
-    const hasState = !!presenter.vm.state?.state;
+    const hasState = presenter.vm.hasState;
 
     useEffect(() => {
         const options = editor.getEditorOptions();

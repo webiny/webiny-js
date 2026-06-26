@@ -1,14 +1,15 @@
 import { ContextPlugin } from "@webiny/api";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
-import { createS3GraphQLSchema } from "./graphql/schema.js";
 import { DeleteFileFromBucketFeature } from "~/features/DeleteFileFromBucket/feature.js";
-import { WriteFileMetadataFeature } from "~/features/WriteFileMetadata/feature.js";
 import { ApplyThreatScanningFeature } from "~/enterprise/ApplyThreatScanning/feature.js";
 import { FlushCacheFeature } from "~/features/FlushCache/feature.js";
 import { ExtractMetadataFeature } from "~/features/ExtractMetadata/feature.js";
 import { GetFileContentsByIdFeature } from "~/features/GetFileContentsById/feature.js";
 import { GetFileContentsByKeyFeature } from "~/features/GetFileContentsByKey/feature.js";
-export { createFileUploadModifier } from "./utils/FileUploadModifier.js";
+import { GetUploadPayloadFeature } from "~/features/GetUploadPayload/feature.js";
+import { CreateMultiPartUploadFeature } from "~/features/CreateMultiPartUpload/feature.js";
+import { CompleteMultiPartUploadFeature } from "~/features/CompleteMultiPartUpload/feature.js";
+export { createFileUploadModifier } from "@webiny/api-file-manager/features/upload/index.js";
 export { createAssetDelivery } from "./assetDelivery/createAssetDelivery.js";
 
 const contextPlugin = new ContextPlugin(context => {
@@ -17,9 +18,11 @@ const contextPlugin = new ContextPlugin(context => {
     FlushCacheFeature.register(container);
     DeleteFileFromBucketFeature.register(container);
     ExtractMetadataFeature.register(container);
-    WriteFileMetadataFeature.register(container);
     GetFileContentsByIdFeature.register(container);
     GetFileContentsByKeyFeature.register(container);
+    GetUploadPayloadFeature.register(container);
+    CreateMultiPartUploadFeature.register(container);
+    CompleteMultiPartUploadFeature.register(container);
 
     const wcp = container.resolve(WcpContext);
     if (wcp.canUseFileManagerThreatDetection()) {
@@ -29,4 +32,4 @@ const contextPlugin = new ContextPlugin(context => {
 
 contextPlugin.name = `fileManagerS3.context`;
 
-export const createFileManagerS3 = () => [contextPlugin, createS3GraphQLSchema()];
+export const createFileManagerS3 = () => [contextPlugin];

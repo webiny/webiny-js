@@ -1,6 +1,6 @@
 import React from "react";
 import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
-import { useWorkflowState, WorkflowStateValue } from "@webiny/app-workflows";
+import { useWorkflowState } from "@webiny/app-workflows";
 
 const { Actions } = ContentEntryEditorConfig;
 const { MenuItemAction } = Actions;
@@ -16,7 +16,7 @@ const OverrideScheduleMenuItemAction = (props: IOverrideScheduleMenuItemActionPr
      * If there is no workflow state or state is approved, we simply render the original element.
      * This is to ensure that no button will be shown if workflow state is active.
      */
-    if (!presenter.vm.workflow || presenter.vm.state?.state === WorkflowStateValue.approved) {
+    if (!presenter.vm.hasWorkflow || presenter.vm.isApproved) {
         return props.children;
     } else if (props.name === "schedule") {
         return null;

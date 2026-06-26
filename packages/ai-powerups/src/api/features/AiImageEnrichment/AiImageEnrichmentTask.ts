@@ -6,8 +6,8 @@ import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { GetSettingsUseCase as FmGetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
-import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/features/ListConnections/abstractions.js";
-import { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/features/SendToConnections/abstractions.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 
 export const AI_IMAGE_ENRICHMENT_TASK_ID = "fmAiImageEnrichment";
@@ -43,8 +43,8 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
         private ai: Ai.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private encryption: Encryption.Interface,
-        private listConnections: WebsocketsListConnectionsUseCase.Interface,
-        private sendToConnections: WebsocketsSendToConnectionsUseCase.Interface
+        private identityContext: IdentityContext.Interface,
+        private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
     ) {}
 
     async run({
@@ -142,17 +142,18 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
             });
         }
 
-        const connectionsResult = await this.listConnections.execute();
-        if (connectionsResult.isOk() && connectionsResult.value.length > 0) {
-            await this.sendToConnections.execute(connectionsResult.value, {
+        const identity = this.identityContext.getIdentity();
+        await this.sendToIdentity.execute(
+            { id: identity.id },
+            {
                 action: "fm.file.enrichment",
                 data: {
                     id: file.id,
                     tags: mergedTags,
                     description
                 }
-            });
-        }
+            }
+        );
 
         return controller.response.done("AI image enrichment completed successfully.");
     }
@@ -167,7 +168,7 @@ export const AiImageEnrichmentTask = TaskDefinition.createImplementation({
         Ai,
         GetSettingsUseCase,
         Encryption,
-        WebsocketsListConnectionsUseCase,
-        WebsocketsSendToConnectionsUseCase
+        IdentityContext,
+        WebsocketsSendToIdentityUseCase
     ]
 });

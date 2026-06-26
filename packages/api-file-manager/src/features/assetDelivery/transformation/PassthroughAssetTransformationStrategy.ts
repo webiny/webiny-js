@@ -1,15 +1,16 @@
-import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
-import type { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
-import { AssetTransformationStrategy, type IAssetTransformationStrategy } from "../abstractions.js";
+import { AssetTransformationStrategy } from "../abstractions/AssetTransformationStrategy.js";
 
-export class PassthroughAssetTransformationStrategy implements IAssetTransformationStrategy {
-    transform(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
+class PassthroughAssetTransformationStrategyImpl implements AssetTransformationStrategy.Interface {
+    transform(
+        assetRequest: AssetTransformationStrategy.AssetRequest,
+        asset: AssetTransformationStrategy.Asset
+    ): Promise<AssetTransformationStrategy.Asset> {
         return Promise.resolve(asset);
     }
 }
 
-export const PassthroughAssetTransformationStrategyImpl =
+export const PassthroughAssetTransformationStrategy =
     AssetTransformationStrategy.createImplementation({
-        implementation: PassthroughAssetTransformationStrategy,
+        implementation: PassthroughAssetTransformationStrategyImpl,
         dependencies: []
     });

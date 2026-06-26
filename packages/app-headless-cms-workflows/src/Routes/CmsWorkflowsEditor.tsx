@@ -1,15 +1,13 @@
 import React, { Suspense } from "react";
 import { Routes } from "~/routes.js";
 import Helmet from "react-helmet";
-import {
-    CmsWorkflowsEditorView,
-    CmsWorkflowsEditorMenu
-} from "~/Components/CmsWorkflows/CmsWorkflowsEditorView.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { SecureRoute } from "@webiny/app-admin";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { AdminConfig, AdminLayout } from "@webiny/app-admin";
 import { useCanUseWorkflows } from "@webiny/app-workflows";
+import { CmsWorkflowsEditorView } from "~/presentation/CmsWorkflowsEditorView.js";
+import { CmsWorkflowsEditorMenu } from "~/presentation/CmsWorkflowsEditorView.js";
 
 const t = i18n.namespace("HeadlessCms.Workflows.Editor");
 

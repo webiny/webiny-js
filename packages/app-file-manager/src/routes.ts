@@ -6,7 +6,8 @@ export const Routes = {
         path: "/file-manager",
         params: zod => {
             return {
-                folderId: zod.string().optional()
+                folderId: zod.string().optional(),
+                search: zod.string().optional()
             };
         }
     }),

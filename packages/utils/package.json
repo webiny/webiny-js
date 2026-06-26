@@ -23,8 +23,8 @@
     "@webiny/feature": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "bson-objectid": "^2.0.4",
-    "jsonpack": "^1.1.5",
-    "nanoid": "^5.1.11",
+    "jsonpack": "1.1.5",
+    "nanoid": "^5.1.15",
     "nanoid-dictionary": "^5.0.0",
     "p-retry": "^8.0.0",
     "zod": "4.4.3"

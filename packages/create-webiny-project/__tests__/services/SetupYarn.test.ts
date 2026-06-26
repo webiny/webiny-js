@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import path from "path";
 import fs from "fs-extra";
-import yaml from "js-yaml";
+import { load as yamlLoad, dump as yamlDump } from "js-yaml";
 import os from "os";
 import { SetupYarn } from "~/services/SetupYarn.js";
 import type { CliParams } from "~/types.js";
@@ -22,7 +22,7 @@ const createCliParams = (overrides: Partial<CliParams> = {}): CliParams => ({
 
 const readYarnRc = (projectPath: string): Record<string, any> => {
     const raw = fs.readFileSync(path.join(projectPath, ".yarnrc.yml"), "utf-8");
-    return yaml.load(raw) as Record<string, any>;
+    return yamlLoad(raw) as Record<string, any>;
 };
 
 describe("SetupYarn", () => {
@@ -115,7 +115,7 @@ describe("SetupYarn", () => {
     it("should preserve existing .yarnrc.yml keys not in the template", async () => {
         fs.writeFileSync(
             path.join(tmpDir, ".yarnrc.yml"),
-            yaml.dump({ yarnPath: ".yarn/releases/yarn-4.14.1.cjs", myCustomKey: "keep-me" })
+            yamlDump({ yarnPath: ".yarn/releases/yarn-4.14.1.cjs", myCustomKey: "keep-me" })
         );
 
         const cliParams = createCliParams({ projectName: tmpDir });

@@ -1,45 +1,34 @@
 import React, { useMemo } from "react";
 import { Text, IconButton, Button } from "@webiny/admin-ui";
 import { ReactComponent as Close } from "@webiny/icons/close.svg";
-import { Buttons } from "@webiny/app-admin";
+import { Buttons, useListView } from "@webiny/app-admin";
 
 import { useContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
-import { useContentEntriesList } from "~/admin/views/contentEntries/hooks/index.js";
 
 import { i18n } from "@webiny/app/i18n/index.js";
 
 const t = i18n.ns("app-headless-cms/admin/content-entries/bulk-actions");
 
-export const getEntriesLabel = (): string => {
-    const { selected, isSelectedAll } = useContentEntriesList();
-
-    if (isSelectedAll) {
-        return "all entries";
-    }
-
-    return `${selected.length} ${selected.length === 1 ? "entry" : "entries"}`;
-};
-
 export const SelectAll = () => {
-    const list = useContentEntriesList();
+    const { list, actions } = useListView();
 
-    if (!list.showingSelectAll) {
+    if (list.selection.selectedCount === 0) {
         return null;
     }
 
     return (
         <div data-testid={"select-all-container"}>
-            {list.isSelectedAll ? (
+            {list.selection.allSelected ? (
                 <Button
                     text={"Clear selection"}
-                    onClick={list.unselectAll}
+                    onClick={() => actions.selection.deselectAll()}
                     size={"sm"}
                     variant={"ghost"}
                 />
             ) : (
                 <Button
                     text={"Select all remaining entries"}
-                    onClick={list.selectAll}
+                    onClick={() => actions.selection.selectAll()}
                     size={"sm"}
                     variant={"secondary"}
                 />
@@ -50,19 +39,22 @@ export const SelectAll = () => {
 
 export const BulkActions = () => {
     const { browser } = useContentEntryListConfig();
-    const { selected, setSelected, isSelectedAll } = useContentEntriesList();
+    const { list, actions } = useListView();
+
+    const count = list.selection.selectedCount;
+    const isAll = list.selection.allSelected;
 
     const headline = useMemo((): string => {
-        if (isSelectedAll) {
+        if (isAll) {
             return t("All entries selected");
         }
 
         return t`{count|count:1:entry:default:entries} selected`({
-            count: selected.length
+            count
         });
-    }, [selected.length, isSelectedAll]);
+    }, [count, isAll]);
 
-    if (!selected.length) {
+    if (count === 0) {
         return null;
     }
 
@@ -82,7 +74,7 @@ export const BulkActions = () => {
                         variant={"ghost"}
                         size={"sm"}
                         icon={<Close />}
-                        onClick={() => setSelected([])}
+                        onClick={() => actions.selection.deselectAll()}
                     />
                 </div>
             </div>

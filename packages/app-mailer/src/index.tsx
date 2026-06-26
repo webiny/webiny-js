@@ -1,1 +1,1 @@
-export { Module } from "./Module.js";
+export { Extension } from "./Extension.js";

@@ -77,8 +77,10 @@ function createMockPresenter(
             selection: {
                 selectedIds: new Set<string>(),
                 selectedCount: 0,
-                allSelected: false
+                allSelected: false,
+                label: ""
             },
+            showingFilters: false,
             empty: true,
             emptyWithFilters: false,
             error: null
@@ -110,6 +112,7 @@ function createMockPresenter(
         },
         tags: [],
         showFolders: true,
+        childFolders: [],
         viewMode: "grid" as const,
         dragging: false,
         showingFilters: false,
@@ -126,7 +129,13 @@ function createMockPresenter(
         actions: {
             search: { set: vi.fn(), clear: vi.fn() },
             sort: { set: vi.fn(), toggle: vi.fn() },
-            filter: { set: vi.fn(), clear: vi.fn(), clearAll: vi.fn() },
+            filter: {
+                set: vi.fn(),
+                clear: vi.fn(),
+                clearAll: vi.fn(),
+                show: vi.fn(),
+                hide: vi.fn()
+            },
             selection: {
                 toggle: vi.fn(),
                 selectRangeTo: vi.fn(),
@@ -276,8 +285,10 @@ describe("FileGrid — selection action wiring", () => {
                 selection: {
                     selectedIds: new Set<string>(["file-1"]),
                     selectedCount: 1,
-                    allSelected: false
+                    allSelected: false,
+                    label: "1 item"
                 },
+                showingFilters: false,
                 empty: false,
                 emptyWithFilters: false,
                 appliedQuery: null,
@@ -320,8 +331,10 @@ describe("FileGrid — loading state", () => {
                 selection: {
                     selectedIds: new Set<string>(),
                     selectedCount: 0,
-                    allSelected: false
+                    allSelected: false,
+                    label: ""
                 },
+                showingFilters: false,
                 empty: true,
                 emptyWithFilters: false,
                 appliedQuery: null,
@@ -353,8 +366,10 @@ describe("FileGrid — loading state", () => {
                 selection: {
                     selectedIds: new Set<string>(),
                     selectedCount: 0,
-                    allSelected: false
+                    allSelected: false,
+                    label: ""
                 },
+                showingFilters: false,
                 empty: false,
                 emptyWithFilters: false,
                 appliedQuery: null,
