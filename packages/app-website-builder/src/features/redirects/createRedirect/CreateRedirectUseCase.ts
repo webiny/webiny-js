@@ -1,23 +1,19 @@
-import type { CreateRedirectParams, ICreateRedirectUseCase } from "./ICreateRedirectUseCase.js";
-import type { ICreateRedirectRepository } from "./ICreateRedirectRepository.js";
-import { Redirect } from "~/domain/Redirect/index.js";
+import {
+    CreateRedirectUseCase as UseCaseAbstraction,
+    CreateRedirectRepository,
+    type CreateRedirectUseCaseParams
+} from "./abstractions.js";
+import type { Redirect } from "~/domain/Redirect/Redirect.js";
 
-export class CreateRedirectUseCase implements ICreateRedirectUseCase {
-    private repository: ICreateRedirectRepository;
+class CreateRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: CreateRedirectRepository.Interface) {}
 
-    constructor(repository: ICreateRedirectRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: CreateRedirectParams) {
-        return await this.repository.execute(
-            Redirect.create({
-                location: params.location,
-                redirectFrom: params.redirectFrom,
-                redirectTo: params.redirectTo,
-                redirectType: params.redirectType,
-                isEnabled: params.isEnabled
-            })
-        );
+    async execute(params: CreateRedirectUseCaseParams): Promise<Redirect> {
+        return this.repository.execute(params);
     }
 }
+
+export const CreateRedirectUseCase = UseCaseAbstraction.createImplementation({
+    implementation: CreateRedirectUseCaseImpl,
+    dependencies: [CreateRedirectRepository]
+});

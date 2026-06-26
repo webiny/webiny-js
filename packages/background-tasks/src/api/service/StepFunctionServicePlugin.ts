@@ -12,7 +12,7 @@ import {
 } from "@webiny/aws-sdk/client-sfn/index.js";
 import type { ITaskEventInput } from "~/api/handler/types.js";
 import { generateAlphaNumericId } from "@webiny/utils";
-import { ServiceDiscovery } from "@webiny/api";
+import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import type { ITask } from "~/api/types.js";
 
 export type IStepFunctionServiceFetchResult = DescribeExecutionCommandOutput;

@@ -1,11 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { WebsocketsConnectionRegistry } from "~/registry/WebsocketsConnectionRegistry";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { useHandler } from "~tests/helpers/useHandler";
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 
 describe("websockets connection registry", () => {
     it("should register new connections", async () => {
-        const documentClient = getDocumentClient();
-        const registry = new WebsocketsConnectionRegistry(documentClient);
+        const { handle } = useHandler();
+        const context = await handle();
+        const registry = context.container.resolve(ConnectionRegistry);
 
         const result = await registry.register({
             connectionId: "connection-1",
@@ -15,8 +16,7 @@ describe("websockets connection registry", () => {
                 displayName: "John Doe",
                 type: "admin"
             },
-            domainName: "https://webiny.com",
-            stage: "dev",
+            endpoint: "https://webiny.com/dev",
             connectedOn: new Date().toISOString()
         });
 
@@ -28,8 +28,7 @@ describe("websockets connection registry", () => {
                 displayName: "John Doe",
                 type: "admin"
             },
-            domainName: "https://webiny.com",
-            stage: "dev",
+            endpoint: "https://webiny.com/dev",
             connectedOn: expect.any(String)
         });
 
@@ -42,8 +41,7 @@ describe("websockets connection registry", () => {
                     displayName: "John Doe",
                     type: "admin"
                 },
-                domainName: "https://webiny.com",
-                stage: "dev",
+                endpoint: "https://webiny.com/dev",
                 connectedOn: new Date().toISOString()
             });
         }
@@ -86,8 +84,9 @@ describe("websockets connection registry", () => {
     });
 
     it("should unregister connections", async () => {
-        const documentClient = getDocumentClient();
-        const registry = new WebsocketsConnectionRegistry(documentClient);
+        const { handle } = useHandler();
+        const context = await handle();
+        const registry = context.container.resolve(ConnectionRegistry);
 
         const result = await registry.register({
             connectionId: "connection-1",
@@ -97,8 +96,7 @@ describe("websockets connection registry", () => {
                 displayName: "John Doe",
                 type: "admin"
             },
-            domainName: "https://webiny.com",
-            stage: "dev",
+            endpoint: "https://webiny.com/dev",
             connectedOn: new Date().toISOString()
         });
 
@@ -110,8 +108,7 @@ describe("websockets connection registry", () => {
                 displayName: "John Doe",
                 type: "admin"
             },
-            domainName: "https://webiny.com",
-            stage: "dev",
+            endpoint: "https://webiny.com/dev",
             connectedOn: expect.any(String)
         });
 

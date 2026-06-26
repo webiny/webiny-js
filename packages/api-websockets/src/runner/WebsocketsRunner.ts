@@ -1,29 +1,21 @@
 import WebinyError from "@webiny/error";
 import type {
     IWebsocketsEvent,
+    IWebsocketsEventContext,
     IWebsocketsEventData,
-    IWebsocketsEventRequestContext,
-    IWebsocketsIncomingEvent,
-    WebsocketsEventRoute
-} from "~/handler/types.js";
-import { WebsocketsEventRequestContextEventType } from "~/handler/types.js";
-import type { Context } from "~/types.js";
-import type { IWebsocketsEventValidator } from "~/validator/index.js";
-import type {
-    IWebsocketsRunner,
-    IWebsocketsRunnerResponse
-} from "./abstractions/IWebsocketsRunner.js";
+    WebsocketsRoute,
+    WebsocketsEventType,
+    Context
+} from "~/types.js";
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
+import type { IWebsocketsRunner } from "./abstractions/WebsocketsRunner.js";
+import type { IWebsocketsRunnerResponse } from "./abstractions/WebsocketsRunner.js";
 import type { IWebsocketsRoutePluginCallableParams } from "~/plugins/index.js";
 import { WebsocketsRoutePlugin } from "~/plugins/index.js";
 import { middleware } from "~/utils/middleware.js";
-import type { IWebsocketsConnectionRegistry } from "~/registry/index.js";
-import type {
-    IWebsocketsResponse,
-    IWebsocketsResponseErrorResult,
-    IWebsocketsResponseOkResult
-} from "~/response/index.js";
-import type { IWebsocketsTransportSendConnection } from "~/transport/index.js";
-import type { IWebsocketsIdentity } from "~/context/index.js";
+import { WebsocketsResponse } from "~/response/index.js";
+import { WebsocketsTransport } from "~/transport/index.js";
+import { WebsocketsSendToConnectionsUseCase } from "~/features/SendToConnections/abstractions.js";
 
 type MiddlewareParams<C extends Context = Context> = Pick<
     IWebsocketsRoutePluginCallableParams<C>,
@@ -31,79 +23,35 @@ type MiddlewareParams<C extends Context = Context> = Pick<
 >;
 
 interface IWebsocketsRunnerRespondParams extends Pick<
-    IWebsocketsEventRequestContext,
-    "connectionId" | "domainName" | "stage" | "eventType"
+    IWebsocketsEventContext,
+    "connectionId" | "endpoint" | "eventType"
 > {
     messageId?: string;
-    result: IWebsocketsResponseOkResult | IWebsocketsResponseErrorResult;
+    result: WebsocketsResponse.OkResult | WebsocketsResponse.ErrorResult;
 }
 
 export class WebsocketsRunner implements IWebsocketsRunner {
     private readonly context: Context;
-    private readonly registry: IWebsocketsConnectionRegistry;
-    private readonly validator: IWebsocketsEventValidator;
-    private readonly response: IWebsocketsResponse;
+    private readonly registry: ConnectionRegistry.Interface;
+    private readonly response: WebsocketsResponse.Interface;
+    private readonly sendToConnections: WebsocketsSendToConnectionsUseCase.Interface;
 
-    public constructor(
-        context: Context,
-        registry: IWebsocketsConnectionRegistry,
-        validator: IWebsocketsEventValidator,
-        response: IWebsocketsResponse
-    ) {
+    public constructor(context: Context, response: WebsocketsResponse.Interface) {
         this.context = context;
-        this.registry = registry;
-        this.validator = validator;
+        this.registry = context.container.resolve(ConnectionRegistry);
         this.response = response;
+        this.sendToConnections = context.container.resolve(WebsocketsSendToConnectionsUseCase);
     }
 
     public async run<T extends IWebsocketsEventData = IWebsocketsEventData>(
-        input: IWebsocketsIncomingEvent
+        event: IWebsocketsEvent<T>
     ): Promise<IWebsocketsRunnerResponse> {
-        let event: IWebsocketsEvent<T> | undefined;
-        try {
-            event = await this.validator.validate<T>(input);
-        } catch (ex) {
-            const result = this.response.error({
-                message: "Validation failed.",
-                error: {
-                    message: ex.message,
-                    code: ex.code,
-                    data: ex.data,
-                    stack: ex.stack
-                }
-            });
-
-            const { connectionId, domainName, stage, eventType } = input.requestContext || {};
-            let messageId: string | undefined;
-            try {
-                const body =
-                    typeof input.body === "string" ? input.body : JSON.stringify(input.body || {});
-                const json = JSON.parse(body);
-                messageId = json.messageId;
-            } catch {
-                // Do nothing
-            }
-            if (!connectionId || !stage || !domainName || !eventType) {
-                return result;
-            }
-
-            await this.respond({
-                connectionId,
-                domainName,
-                stage,
-                eventType,
-                messageId,
-                result
-            });
-            return result;
-        }
-
-        let result: IWebsocketsResponseOkResult | IWebsocketsResponseErrorResult;
+        let result: WebsocketsResponse.OkResult | WebsocketsResponse.ErrorResult;
         try {
             result = await this.executeRoute(event);
         } catch (ex) {
             result = this.response.error({
-                message: `Route "${event.requestContext.routeKey}" action failed.`,
+                message: `Route "${event.context.route}" action failed.`,
                 error: {
                     message: ex.message,
                     code: ex.code,
@@ -114,7 +62,9 @@ export class WebsocketsRunner implements IWebsocketsRunner {
         }
         try {
             await this.respond({
-                ...event.requestContext,
+                connectionId: event.context.connectionId,
+                endpoint: event.context.endpoint,
+                eventType: event.context.eventType,
                 messageId: event.body?.messageId,
                 result
             });
@@ -135,7 +85,7 @@ export class WebsocketsRunner implements IWebsocketsRunner {
         }
     }
 
-    private getRoutePlugins(route: WebsocketsEventRoute | string): WebsocketsRoutePlugin[] {
+    private getRoutePlugins(route: WebsocketsRoute | string): WebsocketsRoutePlugin[] {
         const plugins = this.context.plugins
             .byType<WebsocketsRoutePlugin>(WebsocketsRoutePlugin.type)
             .filter(plugin => {
@@ -154,17 +104,14 @@ export class WebsocketsRunner implements IWebsocketsRunner {
     }
 
     private async executeRoute(event: IWebsocketsEvent): Promise<IWebsocketsRunnerResponse> {
-        /**
-         * We will always fetch plugins in reverse order, so that users can override our default ones if necessary.
-         */
-        const plugins = this.getRoutePlugins(event.requestContext.routeKey).reverse();
+        const plugins = this.getRoutePlugins(event.context.route).reverse();
 
         const getTenant = () => {
             const tenant = this.context.tenancy.getCurrentTenant();
             return tenant?.id || null;
         };
 
-        const getIdentity = (): IWebsocketsIdentity | null => {
+        const getIdentity = (): ConnectionRegistry.Identity | null => {
             const identity = this.context.security.getIdentity();
             return identity || null;
         };
@@ -205,29 +152,36 @@ export class WebsocketsRunner implements IWebsocketsRunner {
     }
 
     private async respond(params: IWebsocketsRunnerRespondParams): Promise<void> {
-        const { connectionId, domainName, stage, eventType, result, messageId } = params;
-        if (eventType !== WebsocketsEventRequestContextEventType.message) {
+        const { connectionId, endpoint, eventType, result, messageId } = params;
+        if (eventType !== "message") {
             return;
-        } else if (!connectionId || !domainName || !stage) {
-            const message = "No connectionId, domainName or stage.";
+        } else if (!connectionId || !endpoint) {
+            const message = "No connectionId or endpoint.";
             const data = {
                 connectionId,
-                domainName,
-                stage
+                endpoint
             };
             console.error(message, JSON.stringify(data));
             throw new WebinyError(message, "GENERAL_ERROR", data);
         }
-        const connection: IWebsocketsTransportSendConnection = {
+        const connection: WebsocketsTransport.SendConnection = {
             connectionId,
-            domainName,
-            stage
+            endpoint
         };
 
         const dataToSend = {
             ...result,
             messageId
         };
-        await this.context.websockets.sendToConnections([connection], dataToSend);
+        await this.sendToConnections.execute([connection], dataToSend);
     }
+}
+
+export namespace WebsocketsRunner {
+    export type Event<T extends IWebsocketsEventData = IWebsocketsEventData> = IWebsocketsEvent<T>;
+    export type EventData = IWebsocketsEventData;
+    export type EventContext = IWebsocketsEventContext;
+    export type EventType = WebsocketsEventType;
+    export type Route = WebsocketsRoute;
+    export type Response = IWebsocketsRunnerResponse;
 }

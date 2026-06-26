@@ -20,7 +20,6 @@ export const useHandler = (params?: CreateHandlerCoreParams) => {
     return {
         plugins,
         tenant: core.tenant,
-        documentClient: core.documentClient,
         handler: (payload: Record<string, any> = {}) => {
             return handler(
                 {

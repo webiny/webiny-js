@@ -1,8 +1,7 @@
-import { createTable, registerExtension as registerDynamoDbExtension } from "@webiny/db-dynamodb";
+import { createTable, DynamoDBClient } from "@webiny/db-dynamodb";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import type { CmsContext, StorageOperationsFactory as IStorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import {
@@ -22,7 +21,6 @@ import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchInd
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex.js";
-import { createCreateIndexTask } from "~/tasks/createIndexTaskPlugin.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
@@ -41,9 +39,19 @@ import {
     CmsEntryOpenSearchFilterFeature,
     CmsEntryOpenSearchFilterRegistry
 } from "~/features/CmsEntryOpenSearchFilter/index.js";
+import { DbRegistry } from "@webiny/db/exports/api/db.js";
+import {
+    OpenSearchClient,
+    OpenSearchFieldFactory,
+    OpenSearchQueryBuilderOperatorRegistry
+} from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { CreateElasticsearchIndexTask } from "~/tasks/CreateElasticsearchIndexTask.js";
 
 const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
-    const { table, esTable, documentClient, elasticsearch, plugins, container } = params;
+    const { table, esTable, elasticsearch, plugins, container } = params;
+
+    const db = container.resolve(DynamoDBClient);
+    const documentClient = db.client;
 
     const tableInstance = createTable({
         name: table || (process.env.DB_TABLE as string),
@@ -83,6 +91,8 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const fullTextSearches = container.resolveAll(CmsEntryOpenSearchFullTextSearch);
     const valuesModifiers = container.resolveAll(CmsEntryOpenSearchValuesModifier);
     const filterRegistry = container.resolve(CmsEntryOpenSearchFilterRegistry);
+    const operatorRegistry = container.resolve(OpenSearchQueryBuilderOperatorRegistry);
+    const fieldFactory = container.resolve(OpenSearchFieldFactory);
 
     container.registerFactory(ModelAfterCreateEventHandler, () => ({
         async handle(event) {
@@ -120,6 +130,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         entity: entities.entries,
         esEntity: entities.entriesEs,
         plugins,
+        operatorRegistry,
         elasticsearch,
         fieldRegistry,
         fieldIndexRegistry,
@@ -130,25 +141,25 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         valueSearchRegistry,
         fullTextSearches,
         valuesModifiers,
-        filterRegistry
+        filterRegistry,
+        fieldFactory
     });
 
     return {
         name: "dynamodb:opensearch",
         beforeInit: async context => {
-            context.db.registry.register({
+            const dbRegistry = context.container.resolve(DbRegistry);
+
+            dbRegistry.register({
                 item: entities.entries,
                 app: "cms",
                 tags: ["regular", entities.entries.name]
             });
-            context.db.registry.register({
+            dbRegistry.register({
                 item: entities.entriesEs,
                 app: "cms",
                 tags: ["es", entities.entriesEs.name]
             });
-            // TODO we know that context is ok, but types are missing elasticsearch/opensearch
-            // @ts-expect-error
-            createCreateIndexTask(context);
 
             entries.dataLoaders.clearAll();
         },
@@ -170,10 +181,11 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
 class OpenSearchStorageOperationsFactoryImpl
     implements StorageOperationsFactoryAbstraction.Interface
 {
+    public constructor(private readonly openSearchClient: OpenSearchClient.Interface) {}
+
     public async create(context: CmsContext) {
         return createOpenSearchStorageOperations({
-            documentClient: context.db.driver.getClient() as DynamoDBDocument,
-            elasticsearch: context.opensearch,
+            elasticsearch: this.openSearchClient.use(),
             plugins: context.plugins,
             container: context.container
         });
@@ -183,7 +195,7 @@ class OpenSearchStorageOperationsFactoryImpl
 const OpenSearchStorageOperationsFactory = StorageOperationsFactoryAbstraction.createImplementation(
     {
         implementation: OpenSearchStorageOperationsFactoryImpl,
-        dependencies: []
+        dependencies: [OpenSearchClient]
     }
 );
 
@@ -194,15 +206,17 @@ const storageOperationsFeature = createFeature({
         CmsEntryOpenSearchFilterFeature.register(container);
         CmsEntryOpenSearchIndexFeature.register(container);
         CmsEntryOpenSearchValueSearchFeature.register(container);
+        container.register(CreateElasticsearchIndexTask);
         container.register(OpenSearchStorageOperationsFactory).inSingletonScope();
     }
 });
 
 export const registerCmsOpenSearchStorageOperations = () => {
-    return [
-        registerDynamoDbExtension(),
-        createRegisterExtensionPlugin(context => {
-            return storageOperationsFeature.register(context.container);
-        })
-    ];
+    const plugin = createRegisterExtensionPlugin(context => {
+        return storageOperationsFeature.register(context.container);
+    });
+
+    plugin.name = "cms.registerOpenSearchStorageOperations";
+
+    return [plugin];
 };

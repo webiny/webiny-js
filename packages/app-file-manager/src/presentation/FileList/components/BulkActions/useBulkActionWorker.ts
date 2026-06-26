@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import type { CallbackParams } from "@webiny/app-admin";
 import { useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
@@ -10,34 +10,26 @@ const useWorker = () => {
     const { vm, actions } = useFileManagerPresenter();
     const { current: worker } = useRef(new Worker<FmFile>());
 
-    // Derive selected file objects from the presenter's selection IDs and rows.
     const selectedFiles = useMemo(() => {
         const { selectedIds } = vm.list.selection;
         return vm.list.rows.filter(row => selectedIds.has(row.id));
     }, [vm.list.selection.selectedIds, vm.list.rows]);
 
-    useEffect(() => {
-        worker.items = selectedFiles;
-    }, [selectedFiles.length]);
-
-    // Reset selected items in both the presenter and the Worker.
     const resetItems = useCallback(() => {
-        worker.items = [];
         actions.selection.deselectAll();
     }, []);
 
-    // Reset results in Worker.
     const resetResults = useCallback(async () => {
         worker.resetResults();
     }, []);
 
     return {
         items: selectedFiles,
-        process: (callback: (items: FmFile[]) => void) => worker.process(callback),
+        process: (callback: (items: FmFile[]) => void) => worker.process(selectedFiles, callback),
         processInSeries: async (
             callback: ({ item, allItems, report }: CallbackParams<FmFile>) => Promise<void>,
             chunkSize?: number
-        ) => worker.processInSeries(callback, chunkSize),
+        ) => worker.processInSeries(selectedFiles, callback, chunkSize),
         resetItems,
         results: worker.results,
         resetResults

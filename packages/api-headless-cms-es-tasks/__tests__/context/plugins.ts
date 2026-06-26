@@ -1,17 +1,17 @@
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import type { PermissionsArg } from "./helpers";
 import { createPermissions } from "./helpers";
 import type { ContextPlugin } from "@webiny/api";
 import type { Context } from "~/types";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { createBackgroundTaskContext } from "@webiny/background-tasks/api";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createHeadlessCmsEsTasks } from "~/index";
-import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin";
+import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
@@ -66,6 +66,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
                 type: "context",
                 name: "context-security-tenant",
                 async apply(context) {
+                    // @ts-expect-error
                     context.security.getApiKeyByToken = async (
                         token: string
                     ): Promise<ApiKey | null> => {
@@ -92,9 +93,8 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
             } as ContextPlugin<Context>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            createHeadlessCmsContext(),
+            createCmsExtension(),
             createBackgroundTaskContext(),
-            createHeadlessCmsGraphQL(),
             plugins,
             graphQLHandlerPlugins(),
             createHeadlessCmsEsTasks(),

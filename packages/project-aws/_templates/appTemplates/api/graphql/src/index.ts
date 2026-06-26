@@ -4,23 +4,28 @@ import graphqlPlugins from "@webiny/handler-graphql";
 import { createApiCore } from "@webiny/api-core";
 import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createFileManagerS3, createAssetDelivery } from "@webiny/api-file-manager-s3";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { registerDynamoDbStorageOperations } from "@webiny/api-headless-cms-ddb";
 import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
 import { createAco } from "@webiny/api-aco";
+import { registerAcoDdbStorageOperations } from "@webiny/api-aco-ddb";
 import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
 import securityPlugins from "./security";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
 import { createAuditLogs } from "@webiny/api-audit-logs";
+import { registerAuditLogsDdbStorageOperations } from "@webiny/api-audit-logs-ddb";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
 import { createWebsockets } from "@webiny/api-websockets";
+import { createAwsWebsockets } from "@webiny/api-websockets-aws";
+import { registerWebsocketsDdbStorageOperations } from "@webiny/api-websockets-ddb";
 import { createRecordLocking } from "@webiny/api-record-locking";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
-import { createScheduler } from "@webiny/api-scheduler";
+import { registerSchedulerExtension } from "@webiny/api-scheduler";
+import { registerSchedulerAwsExtension } from "@webiny/api-scheduler-aws";
 import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
 import { createWorkflows } from "@webiny/api-workflows";
@@ -37,6 +42,7 @@ const documentClient = getDocumentClient();
 
 export const handler = createHandler({
     plugins: [
+        registerDynamoDBCore({ documentClient }),
         createApiCore({
             storageOperations: createApiCoreDdb({ documentClient })
         }),
@@ -47,9 +53,10 @@ export const handler = createHandler({
         }),
         securityPlugins(),
         createWebsockets(),
+        createAwsWebsockets(),
+        registerWebsocketsDdbStorageOperations({ documentClient }),
         registerDynamoDbStorageOperations(),
-        createHeadlessCmsContext(),
-        createHeadlessCmsGraphQL(),
+        createCmsExtension(),
         createMailerContext(),
         createMailerGraphQL(),
         createWebsiteBuilder(),
@@ -60,14 +67,19 @@ export const handler = createHandler({
         createFileManagerAco(),
         createAssetDelivery(),
         createFileManagerS3(),
-        createAco({ documentClient }),
+        registerAcoDdbStorageOperations({ documentClient }),
+        createAco(),
         createWorkflows(),
         createHeadlessCmsWorkflows(),
         createWebsiteBuilderWorkflows(),
+        registerAuditLogsDdbStorageOperations({
+            documentClient,
+        }),
         createAuditLogs(),
         createAcoHcmsContext(),
         createHcmsTasks(),
-        createScheduler({
+        registerSchedulerExtension(),
+        registerSchedulerAwsExtension({
             getClient: config => {
                 return createSchedulerClient(config);
             }

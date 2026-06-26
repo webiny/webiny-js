@@ -10,6 +10,11 @@ name: 🚀 Full Release
         description: Release version (e.g. 6.3.0)
         required: true
         type: string
+      sourceTag:
+        description: Git tag or branch to branch off from
+        required: false
+        default: next
+        type: string
 jobs:
   createWebinyJsBranch:
     name: Create release branch (webiny-js)
@@ -26,10 +31,10 @@ jobs:
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Checkout next
+      - name: Checkout source tag
         uses: actions/checkout@v5
         with:
-          ref: next
+          ref: ${{ github.event.inputs.sourceTag }}
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
       - name: Create and push release branch
@@ -68,6 +73,8 @@ jobs:
     runs-on: ubuntu-latest
   createDocsBranch:
     name: Trigger release notes generation (docs.webiny.com)
+    needs:
+      - createWebinyJsBranch
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false

@@ -1,4 +1,11 @@
-export * from "./CmsEntryFieldFilterPathPlugin.js";
-export * from "./CmsEntryFieldSortingPlugin.js";
-export * from "./CmsEntryFieldFilterPlugin.js";
-export * from "./CmsFieldFilterValueTransformPlugin.js";
+export {
+    CmsEntryFieldFilterPathPlugin,
+    CmsEntryFieldSortingPlugin,
+    createCmsEntryFieldSortingPlugin,
+    CmsEntryFieldFilterPlugin,
+    CmsFieldFilterValueTransformPlugin
+} from "@webiny/api-headless-cms-storage";
+export type {
+    CreatePathCallable,
+    CmsEntryFieldFilterPluginCreateResponse
+} from "@webiny/api-headless-cms-storage";

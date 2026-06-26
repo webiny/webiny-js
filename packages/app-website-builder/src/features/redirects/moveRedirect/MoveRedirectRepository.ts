@@ -1,19 +1,27 @@
-import type { IMoveRedirectRepository } from "~/features/redirects/moveRedirect/IMoveRedirectRepository.js";
-import type { IMoveRedirectGateway } from "~/features/redirects/moveRedirect/IMoveRedirectGateway.js";
-import type { Redirect } from "~/domain/Redirect/index.js";
-import { type IListCache } from "~/domain/Redirect/index.js";
+import { runInAction } from "mobx";
+import { RedirectsListCache } from "~/features/redirects/shared/abstractions.js";
+import {
+    MoveRedirectRepository as RepositoryAbstraction,
+    MoveRedirectGateway,
+    type MoveRedirectParams
+} from "./abstractions.js";
 
-export class MoveRedirectRepository implements IMoveRedirectRepository {
-    private cache: IListCache<Redirect>;
-    private gateway: IMoveRedirectGateway;
+class MoveRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private gateway: MoveRedirectGateway.Interface,
+        private cache: RedirectsListCache.Interface
+    ) {}
 
-    constructor(cache: IListCache<Redirect>, gateway: IMoveRedirectGateway) {
-        this.cache = cache;
-        this.gateway = gateway;
-    }
+    async execute(params: MoveRedirectParams): Promise<void> {
+        await this.gateway.execute(params);
 
-    async execute(id: string, folderId: string): Promise<void> {
-        await this.gateway.execute(id, folderId);
-        this.cache.removeItems(p => p.id === id);
+        runInAction(() => {
+            this.cache.removeItems(r => r.id === params.id);
+        });
     }
 }
+
+export const MoveRedirectRepository = RepositoryAbstraction.createImplementation({
+    implementation: MoveRedirectRepositoryImpl,
+    dependencies: [MoveRedirectGateway, RedirectsListCache]
+});

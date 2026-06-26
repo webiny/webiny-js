@@ -6,7 +6,9 @@ import glob from "fast-glob";
 const COMPILE_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx"];
 const SKIP_EXTENSIONS = [".d.ts"];
 
-export const rslibCompile = async ({ cwd }) => {
+export const rslibCompile = async ({ cwd, outputDir }) => {
+    const distRoot = outputDir || path.join(cwd, "dist");
+
     // Copy non-compilable files (assets, json, graphql, etc.) as-is.
     const pattern = path.join(cwd, "src/**/*.*").replace(/\\/g, "/");
     const allFiles = glob.sync(pattern, { onlyFiles: true, dot: true });
@@ -16,7 +18,7 @@ export const rslibCompile = async ({ cwd }) => {
         const shouldSkip = SKIP_EXTENSIONS.some(ext => file.endsWith(ext));
 
         if (!shouldCompile || shouldSkip) {
-            const destPath = file.replace(path.join(cwd, "src"), path.join(cwd, "dist"));
+            const destPath = file.replace(path.join(cwd, "src"), distRoot);
             fs.mkdirSync(dirname(destPath), { recursive: true });
             fs.copyFileSync(file, destPath);
         }
@@ -44,7 +46,7 @@ export const rslibCompile = async ({ cwd }) => {
             },
             output: {
                 target: "web",
-                distPath: { root: "./dist" },
+                distPath: { root: path.relative(cwd, distRoot) || "." },
                 cleanDistPath: false,
                 sourceMap: { js: "source-map" },
                 // mixedImport emits each SVG as a static asset for the default URL

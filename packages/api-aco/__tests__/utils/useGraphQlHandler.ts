@@ -1,10 +1,10 @@
 import { createApiCore } from "@webiny/api-core";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createCmsExtension } from "@webiny/api-headless-cms";
 import { createHandler } from "@webiny/handler-aws";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { until } from "@webiny/project-utils/testing/helpers/until";
+import { until } from "@webiny/project-utils/testing/helpers/until.js";
 
 import {
     CREATE_RECORD,
@@ -29,13 +29,12 @@ import {
 import { createAco } from "~/index";
 import { createIdentity } from "./identity";
 import { getIntrospectionQuery } from "graphql";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -60,10 +59,10 @@ interface InvokeParams {
 }
 
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
-    const documentClient = getDocumentClient();
     const { permissions, identity, plugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiAcoStorage = getStorageOps<ApiCoreStorageOperations>("aco");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
@@ -74,18 +73,17 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
             }),
+            ...apiAcoStorage.plugins,
             ...cmsStorage.plugins,
             createGraphQLHandler(),
             ...createTenancyAndSecurity({
                 permissions,
                 identity: identity === undefined ? createIdentity() : identity
             }),
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
+            createCmsExtension(),
             createFileManagerContext(),
             createFileManagerGraphQL(),
-            createHeadlessCmsGraphQL(),
-            createAco({ documentClient }),
+            createAco(),
             plugins
         ],
         debug: false

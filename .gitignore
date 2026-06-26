@@ -57,6 +57,8 @@ packages/*/README.md
 packages/tasks/tpl/*
 ./nextjs
 
+./db/
+
 /.local
 CLAUDE.local.md
 .claude/*.local.*

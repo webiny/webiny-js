@@ -14,10 +14,16 @@ import {
     runNodeScript
 } from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
-import { DdbStorageOps, DdbOsStorageOps, type AbstractStorageOps } from "./storageOps/index.js";
+import {
+    DdbStorageOps,
+    DdbOsStorageOps,
+    SqlStorageOps,
+    type AbstractStorageOps
+} from "./storageOps/index.js";
 
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
+const sqlStorageOps = new SqlStorageOps();
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ needs.baseBranch.outputs.base-branch }}";
@@ -46,6 +52,8 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     const env: Record<string, string> = { AWS_REGION };
 
     if (storageOps) {
+        env["WEBINY_STORAGE"] = storageOps.id;
+
         if (storageOps.id === "ddb-os,ddb") {
             env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
             env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
@@ -97,10 +105,9 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
                 ...installBuildSteps,
-                ...withCommonParams(
-                    [{ name: "Run tests", run: "yarn test ${{ matrix.testCommand.cmd }}" }],
-                    { "working-directory": DIR_WEBINY_JS }
-                )
+                ...withCommonParams([{ name: "Run tests", run: "${{ matrix.testCommand.cmd }}" }], {
+                    "working-directory": DIR_WEBINY_JS
+                })
             ]
         })
     };
@@ -193,6 +200,7 @@ export const pullRequestsCommandVitest = createWorkflow({
         }),
         ...createVitestTestsJobs(),
         ...createVitestTestsJobs(ddbStorageOps),
-        ...createVitestTestsJobs(ddbOsStorageOps)
+        ...createVitestTestsJobs(ddbOsStorageOps),
+        ...createVitestTestsJobs(sqlStorageOps)
     }
 });

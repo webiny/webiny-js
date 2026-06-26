@@ -1,15 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "./mocks/models";
-import { createIndexesTaskDefinition } from "@webiny/api-elasticsearch-tasks/tasks";
+import { createElasticsearchBackgroundTasks } from "@webiny/api-elasticsearch-tasks";
 import type { Context as TasksContext } from "@webiny/background-tasks/api/types";
 import type { CmsContext } from "~/types";
 import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
 import type { IElasticsearchCreateIndexesTaskInput } from "@webiny/api-elasticsearch-tasks/tasks/createIndexes/types";
 import { configurations } from "~/configurations";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
-import type { OpenSearchContext } from "@webiny/api-opensearch/types";
-import { OpensearchTenantIndexFactory } from "@webiny/api-elasticsearch-tasks";
+import { OpenSearchTenantIndexFactory } from "@webiny/api-elasticsearch-tasks";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const createIndexName = (model: Pick<CmsModel, "tenant" | "modelId">): string => {
@@ -19,7 +18,7 @@ const createIndexName = (model: Pick<CmsModel, "tenant" | "modelId">): string =>
     return index;
 };
 
-interface Context extends TasksContext, CmsContext, OpenSearchContext {}
+interface Context extends TasksContext, CmsContext {}
 
 describe("Create index task", () => {
     it("should create an index configuration for each of the models defined", async () => {
@@ -35,7 +34,7 @@ describe("Create index task", () => {
             }
         });
 
-        const indexFactories = context.container.resolveAll(OpensearchTenantIndexFactory);
+        const indexFactories = context.container.resolveAll(OpenSearchTenantIndexFactory);
 
         expect(indexFactories).toHaveLength(1);
 
@@ -113,7 +112,7 @@ describe("Create index task", () => {
 
     it("should create an index for each of the models defined", async () => {
         const { handler, elasticsearch } = useHandler<Context>({
-            plugins: [createIndexesTaskDefinition(), ...createMockModels()]
+            plugins: [createElasticsearchBackgroundTasks(), ...createMockModels()]
         });
 
         const context = await handler({

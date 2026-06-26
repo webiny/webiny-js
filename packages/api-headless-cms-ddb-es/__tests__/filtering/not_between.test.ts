@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types";
-import { createPluginsContainer, createQuery, Query } from "./mocks";
+import { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types";
+import { createQuery, Query } from "./mocks";
 import { createExecFiltering, CreateExecFilteringResponse } from "./mocks/filtering";
 
 describe("not_between filter", () => {
@@ -10,9 +10,7 @@ describe("not_between filter", () => {
 
     beforeEach(() => {
         query = createQuery();
-        execFiltering = createExecFiltering({
-            plugins: createPluginsContainer()
-        });
+        execFiltering = createExecFiltering();
     });
 
     it("should add not_between filter", async () => {
@@ -27,7 +25,7 @@ describe("not_between filter", () => {
             where
         });
 
-        const expected: ElasticsearchBoolQueryConfig = {
+        const expected: OpenSearchBoolQueryConfig = {
             must: [],
             should: [],
             filter: [],
@@ -58,7 +56,7 @@ describe("not_between filter", () => {
             where
         });
 
-        const expected: ElasticsearchBoolQueryConfig = {
+        const expected: OpenSearchBoolQueryConfig = {
             must: [],
             should: [],
             filter: [],

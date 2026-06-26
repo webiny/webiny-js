@@ -14,10 +14,13 @@ export interface ApiCoreConfig {
 }
 
 export const createApiCore = (config: ApiCoreConfig) => {
+    const plugin = createRegisterExtensionPlugin(context => {
+        ApiCoreFeature.register(context.container, config.storageOperations);
+    });
+    plugin.name = "apiCore.extension";
+
     return [
-        createRegisterExtensionPlugin(context => {
-            ApiCoreFeature.register(context.container, config.storageOperations);
-        }),
+        plugin,
         createWcpContext({ testProjectLicense: config.testProjectLicense }),
         createTenancyContext(),
         createSecurityContext(),
