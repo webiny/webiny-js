@@ -920,7 +920,12 @@ export interface IObjectFieldBuilder extends IFieldBuilder<
     template(id: string, configure: (t: ITemplateBuilder) => void): this;
 }
 
+/* Augmented by each field type via `declare module "./abstractions.js"`. */
 export interface IFieldBuilderRegistry {}
+
+/* Side-effect import: pulls in the `declare module` augmentations so that
+   external consumers see the full IFieldBuilderRegistry interface. */
+import "./fieldTypes/index.js";
 
 // ---------------------------------------------------------------------------
 // Field type plugin system
