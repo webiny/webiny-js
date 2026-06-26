@@ -30,10 +30,10 @@ export const WorkflowStatesRequestedWidget = (props: IWorkflowStatesRequestedWid
         >
             <WorkflowStateWidgetCard
                 title={
-                    <>
+                    <span>
                         <span className={"text-accent-primary"}>Content Reviews</span> assigned to
                         me
-                    </>
+                    <span/>
                 }
             />
         </WorkflowStatesProvider>
