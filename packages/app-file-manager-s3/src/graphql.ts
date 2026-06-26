@@ -1,6 +1,4 @@
-import gql from "graphql-tag";
-
-export const GET_PRE_SIGNED_POST_PAYLOAD = gql`
+export const GET_PRE_SIGNED_POST_PAYLOAD = /* GraphQL */ `
     query getPreSignedPostPayload($data: PreSignedPostPayloadInput!) {
         fileManager {
             getPreSignedPostPayload(data: $data) {

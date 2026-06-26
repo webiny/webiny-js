@@ -1,5 +1,4 @@
-import type { UploadOptions } from "@webiny/app/types.js";
-import gql from "graphql-tag";
+import type { UploadGraphQLClient } from "@webiny/app/types.js";
 import type {
     CompleteUploadParams,
     CreateUploadParams,
@@ -8,42 +7,32 @@ import type {
 } from "~/MultiPartUploadAPI.js";
 
 export class MultiPartUploadGraphQLAPI implements MultiPartUploadAPI {
-    private client: UploadOptions["apolloClient"];
+    private client: UploadGraphQLClient;
 
-    constructor(client: UploadOptions["apolloClient"]) {
+    constructor(client: UploadGraphQLClient) {
         this.client = client;
     }
 
     async createUpload(params: CreateUploadParams): Promise<MultiPartUpload> {
-        const { data, errors } = await this.client.mutate<CreateUploadResponse>({
-            mutation: CREATE_UPLOAD,
+        const response = await this.client.execute<CreateUploadResponse>({
+            query: CREATE_UPLOAD,
             variables: params
         });
 
-        if (!data) {
-            console.error(errors);
-            throw new Error(`Failed to initialize a multi-part file upload!`);
-        }
-
-        return data.fileManager.createMultiPartUpload.data;
+        return response.fileManager.createMultiPartUpload.data;
     }
 
     async completeUpload(params: CompleteUploadParams): Promise<boolean> {
-        const { data, errors } = await this.client.mutate<CompleteUploadResponse>({
-            mutation: COMPLETE_UPLOAD,
+        const response = await this.client.execute<CompleteUploadResponse>({
+            query: COMPLETE_UPLOAD,
             variables: params
         });
 
-        if (!data) {
-            console.error(errors);
-            throw new Error(`Failed to complete a multi-part file upload!`);
-        }
-
-        return data.fileManager.completeMultiPartUpload.data;
+        return response.fileManager.completeMultiPartUpload.data;
     }
 }
 
-const CREATE_UPLOAD = gql`
+const CREATE_UPLOAD = /* GraphQL */ `
     mutation CreateMultiPartUpload($data: PreSignedPostPayloadInput!, $numberOfParts: Number!) {
         fileManager {
             createMultiPartUpload(data: $data, numberOfParts: $numberOfParts) {
@@ -84,7 +73,7 @@ interface CreateUploadResponse {
     };
 }
 
-const COMPLETE_UPLOAD = gql`
+const COMPLETE_UPLOAD = /* GraphQL */ `
     mutation CompleteMultiPartUpload($fileKey: String!, $uploadId: String!) {
         fileManager {
             completeMultiPartUpload(fileKey: $fileKey, uploadId: $uploadId) {

@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import type { CmsErrorResponse, CmsGroup, CmsModel } from "~/types.js";
 
 const ERROR_FIELDS = `
@@ -43,7 +42,7 @@ export interface ListMenuCmsGroupsQueryResponse {
     };
 }
 
-export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
+export const LIST_MENU_CONTENT_GROUPS_MODELS = /* GraphQL */ `
     query CmsListMenuContentGroupsModels {
         listContentModelGroups {
             data {
@@ -91,7 +90,7 @@ export interface ListCmsModelsQueryVariables {
 }
 
 const createListContentModelsQuery = (includeBeingDeleted: boolean) => {
-    return gql`
+    return /* GraphQL */ `
         query CmsListContentModels {
             listContentModels(includeBeingDeleted: ${includeBeingDeleted ? "true" : "false"}) {
                 data {
@@ -134,7 +133,7 @@ export interface CreateCmsModelMutationVariables {
     data: Record<string, any>;
 }
 
-export const CREATE_CONTENT_MODEL = gql`
+export const CREATE_CONTENT_MODEL = /* GraphQL */ `
     mutation CmsCreateContentModel($data: CmsContentModelCreateInput!) {
         createContentModel(data: $data) {
             data {
@@ -163,7 +162,7 @@ export interface CreateCmsModelFromMutationVariables {
     data: CmsModel;
 }
 
-export const CREATE_CONTENT_MODEL_FROM = gql`
+export const CREATE_CONTENT_MODEL_FROM = /* GraphQL */ `
     mutation CmsCreateContentModelFrom($modelId: ID!, $data: CmsContentModelCreateFromInput!) {
         createContentModelFrom(modelId: $modelId, data: $data) {
             data {
@@ -191,7 +190,7 @@ export interface DeleteCmsModelMutationVariables {
     modelId: string;
 }
 
-export const DELETE_CONTENT_MODEL = gql`
+export const DELETE_CONTENT_MODEL = /* GraphQL */ `
     mutation CmsDeleteContentModel($modelId: ID!) {
         deleteContentModel(modelId: $modelId) {
             data
@@ -228,7 +227,7 @@ export interface IFullyDeleteCmsModelMutationResponse {
     };
 }
 
-export const FULLY_DELETE_CONTENT_MODEL = gql`
+export const FULLY_DELETE_CONTENT_MODEL = /* GraphQL */ `
     mutation CmsFullyDeleteContentModel($modelId: ID!, $confirmation: String!) {
         fullyDeleteModel(modelId: $modelId, confirmation: $confirmation) {
             data {
@@ -252,7 +251,7 @@ export interface ICancelDeleteCmsModelMutationResponse {
     };
 }
 
-export const CANCEL_DELETE_CONTENT_MODEL = gql`
+export const CANCEL_DELETE_CONTENT_MODEL = /* GraphQL */ `
     mutation CmsCancelDeleteContentModel($modelId: ID!) {
         cancelFullyDeleteModel(modelId: $modelId) {
             data {

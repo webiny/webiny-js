@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsErrorResponse } from "~/types.js";
 import type { ModelGroupDto } from "../listModelGroups/abstractions.js";
@@ -17,7 +16,7 @@ export interface UpdateModelGroupVariables {
     data: Omit<UpdateModelGroupParams, "id">;
 }
 
-const UPDATE_CONTENT_MODEL_GROUP = gql`
+const UPDATE_CONTENT_MODEL_GROUP = /* GraphQL */ `
     mutation CmsUpdateContentModelGroup($id: ID!, $data: CmsContentModelGroupInput!) {
         contentModelGroup: updateContentModelGroup(id: $id, data: $data) {
             data {

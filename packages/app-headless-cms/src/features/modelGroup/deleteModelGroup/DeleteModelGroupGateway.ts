@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsErrorResponse } from "~/types.js";
 import { DeleteModelGroupGateway as GatewayAbstraction } from "./abstractions.js";
@@ -14,7 +13,7 @@ export interface DeleteModelGroupVariables {
     id: string;
 }
 
-const DELETE_CONTENT_MODEL_GROUP = gql`
+const DELETE_CONTENT_MODEL_GROUP = /* GraphQL */ `
     mutation CmsDeleteContentModelGroup($id: ID!) {
         deleteContentModelGroup(id: $id) {
             data

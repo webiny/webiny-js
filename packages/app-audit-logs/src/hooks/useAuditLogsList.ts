@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useQuery } from "@apollo/react-hooks";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useContainer } from "@webiny/app";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 import {
     type IListAuditLogsResponse,
     type IListAuditLogsVariablesPartial,
@@ -28,6 +29,9 @@ export interface UseAuditLogs {
 }
 
 export const useAuditLogsList = (): UseAuditLogs => {
+    const container = useContainer();
+    const client = container.resolve(MainGraphQLClient);
+
     const [variables, setVariables] = useState<IListAuditLogsVariablesPartial>({
         where: {},
         after: undefined,
@@ -36,6 +40,11 @@ export const useAuditLogsList = (): UseAuditLogs => {
     });
 
     const [accumulatedRecords, setAccumulatedRecords] = useState<IAuditLog[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [meta, setMeta] = useState<IAuditLogsMeta>({
+        hasMoreItems: false,
+        cursor: null
+    });
 
     const setWhere = useCallback((where: Partial<IListAuditLogsVariablesWhere>) => {
         setVariables(prev => ({ ...prev, where, after: undefined }));
@@ -66,37 +75,47 @@ export const useAuditLogsList = (): UseAuditLogs => {
         setSort(sort.desc ? "DESC" : "ASC");
     }, [acoSorting]);
 
-    const logs = useQuery<IListAuditLogsResponse, IListAuditLogsVariablesPartial>(LIST_AUDIT_LOGS, {
-        variables,
-        fetchPolicy: "network-only"
-    });
+    const requestIdRef = useRef(0);
 
     useEffect(() => {
-        if (!logs.data?.auditLogs.listAuditLogs.data) {
-            return;
-        }
-        const items = listAuditLogsSchema.safeParse(logs.data.auditLogs.listAuditLogs.data);
-        if (!items.success) {
-            console.error(items.error);
-            return;
-        }
-        const newRecords = items.data.map(auditLog => transformRawAuditLog({ auditLog }));
-        if (variables.after) {
-            setAccumulatedRecords(prev => [...prev, ...newRecords]);
-        } else {
-            setAccumulatedRecords(newRecords);
-        }
-    }, [logs.data?.auditLogs]);
+        setLoading(true);
+        const requestId = ++requestIdRef.current;
 
-    const meta = useMemo(() => {
-        if (!logs.data?.auditLogs.listAuditLogs.meta) {
-            return {
-                hasMoreItems: false,
-                cursor: null
-            };
-        }
-        return logs.data.auditLogs.listAuditLogs.meta;
-    }, [logs.data?.auditLogs]);
+        client
+            .execute<IListAuditLogsResponse>({
+                query: LIST_AUDIT_LOGS,
+                variables
+            })
+            .then(response => {
+                if (requestId !== requestIdRef.current) {
+                    return;
+                }
+
+                const responseData = response.auditLogs.listAuditLogs;
+
+                if (responseData.data) {
+                    const items = listAuditLogsSchema.safeParse(responseData.data);
+                    if (items.success) {
+                        const newRecords = items.data.map(auditLog =>
+                            transformRawAuditLog({ auditLog })
+                        );
+                        if (variables.after) {
+                            setAccumulatedRecords(prev => [...prev, ...newRecords]);
+                        } else {
+                            setAccumulatedRecords(newRecords);
+                        }
+                    } else {
+                        console.error(items.error);
+                    }
+                }
+
+                if (responseData.meta) {
+                    setMeta(responseData.meta);
+                }
+
+                setLoading(false);
+            });
+    }, [variables]);
 
     const sorting = useMemo((): DataTableSorting => {
         return [
@@ -108,7 +127,7 @@ export const useAuditLogsList = (): UseAuditLogs => {
     }, [variables.sort]);
 
     return {
-        isListLoading: logs.loading,
+        isListLoading: loading,
         records: accumulatedRecords,
         meta,
         listMoreRecords: () => {
@@ -118,7 +137,7 @@ export const useAuditLogsList = (): UseAuditLogs => {
         sorting,
         setSorting: setAcoSorting,
         setLimit,
-        isListLoadingMore: logs.loading && !!variables.after,
+        isListLoadingMore: loading && !!variables.after,
         showingFilters,
         showFilters: () => {
             setShowingFilters(true);

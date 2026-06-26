@@ -5,7 +5,7 @@ import { MultiPartUploadGraphQLAPI } from "~/MultiPartUploadGraphQLAPI.js";
 
 export class MultiPartUploadStrategy implements FileUploadStrategy {
     async upload(file: File, options: UploadOptions): Promise<UploadedFile> {
-        const api = new MultiPartUploadGraphQLAPI(options.apolloClient);
+        const api = new MultiPartUploadGraphQLAPI(options.graphQLClient);
 
         const uploader = new MultiPartUploader(api, {
             chunkSize: this.detectChunkSize(),

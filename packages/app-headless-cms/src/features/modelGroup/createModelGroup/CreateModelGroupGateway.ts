@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsErrorResponse } from "~/types.js";
 import type { ModelGroupDto } from "../listModelGroups/abstractions.js";
@@ -16,7 +15,7 @@ export interface CreateModelGroupVariables {
     data: CreateModelGroupParams;
 }
 
-const CREATE_CONTENT_MODEL_GROUP = gql`
+const CREATE_CONTENT_MODEL_GROUP = /* GraphQL */ `
     mutation CmsCreateContentModelGroup($data: CmsContentModelGroupInput!) {
         contentModelGroup: createContentModelGroup(data: $data) {
             data {

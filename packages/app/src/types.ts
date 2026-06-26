@@ -1,7 +1,6 @@
 import type * as React from "react";
 import type { CSSProperties } from "react";
 import { Plugin } from "@webiny/plugins/types.js";
-import type { ApolloClient } from "apollo-client";
 
 export type GenericRecordKey = string | number | symbol;
 
@@ -9,8 +8,15 @@ export type GenericRecord<K extends GenericRecordKey = GenericRecordKey, V = any
 
 export type NonEmptyArray<T> = [T, ...T[]];
 
+export interface UploadGraphQLClient {
+    execute<TResult = any, TVariables = any>(params: {
+        query: string;
+        variables?: TVariables;
+    }): Promise<TResult>;
+}
+
 export type UploadOptions = {
-    apolloClient: ApolloClient<object>;
+    graphQLClient: UploadGraphQLClient;
     onProgress?: (params: { sent: number; total: number; percentage: number }) => void;
 };
 

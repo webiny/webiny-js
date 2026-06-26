@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import type { IAuditLogRaw, IAuditLogsError, IAuditLogsMeta } from "~/types.js";
 
 export interface IListAuditLogsVariablesWhere {
@@ -30,7 +29,7 @@ export interface IListAuditLogsResponse {
     };
 }
 
-export const LIST_AUDIT_LOGS = gql`
+export const LIST_AUDIT_LOGS = /* GraphQL */ `
     query ListAuditLogs(
         $where: ListAuditLogsWhere!
         $sort: AuditLogsSort

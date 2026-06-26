@@ -9,12 +9,27 @@ declare global {
     }
 }
 
+interface GetPreSignedPostPayloadResponse {
+    fileManager: {
+        getPreSignedPostPayload: {
+            data: {
+                data: {
+                    url: string;
+                    fields: Record<string, string>;
+                };
+                file: UploadedFile;
+            };
+            error: {
+                message: string;
+            } | null;
+        };
+    };
+}
+
 export class SimpleUploadStrategy implements FileUploadStrategy {
-    async upload(file: File, { apolloClient, onProgress }: UploadOptions): Promise<UploadedFile> {
-        // 1. GET PreSignedPostPayload
-        const response = await apolloClient.query({
+    async upload(file: File, { graphQLClient, onProgress }: UploadOptions): Promise<UploadedFile> {
+        const response = await graphQLClient.execute<GetPreSignedPostPayloadResponse>({
             query: GET_PRE_SIGNED_POST_PAYLOAD,
-            fetchPolicy: "no-cache",
             variables: {
                 data: {
                     size: file.size,
@@ -26,13 +41,12 @@ export class SimpleUploadStrategy implements FileUploadStrategy {
             }
         });
 
-        const { getPreSignedPostPayload } = response.data.fileManager;
+        const { getPreSignedPostPayload } = response.fileManager;
         if (getPreSignedPostPayload.error) {
             console.error(getPreSignedPostPayload);
-            throw Error(getPreSignedPostPayload.error);
+            throw Error(getPreSignedPostPayload.error.message);
         }
 
-        // 2. upload file to S3
         return new Promise((resolve, reject) => {
             const formData = new window.FormData();
             Object.keys(getPreSignedPostPayload.data.data.fields).forEach(key => {

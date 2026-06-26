@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import type { CmsErrorResponse, CmsModel } from "~/types.js";
 
 const ERROR_FIELDS = `
@@ -88,7 +87,7 @@ export interface GetCmsModelQueryResponse {
 export interface GetCmsModelQueryVariables {
     modelId: string;
 }
-export const GET_CONTENT_MODEL = gql`
+export const GET_CONTENT_MODEL = /* GraphQL */ `
     query CmsGetContentModel($modelId: ID!) {
         getContentModel(modelId: $modelId) {
             data {
@@ -116,7 +115,7 @@ export interface UpdateCmsModelMutationVariables {
     // TODO @ts-refactor write the types.
     data: Partial<CmsModel>;
 }
-export const UPDATE_CONTENT_MODEL = gql`
+export const UPDATE_CONTENT_MODEL = /* GraphQL */ `
     mutation CmsUpdateContentModel($modelId: ID!, $data: CmsContentModelUpdateInput!) {
         updateContentModel(modelId: $modelId, data: $data) {
             data {

@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import type { CmsEditorFieldsLayout, CmsErrorResponse, CmsModelField } from "~/types.js";
 import type { ImportAction, ValidatedCmsGroup, ValidatedCmsModel } from "./types.js";
 
@@ -23,7 +22,7 @@ export interface ValidateImportStructureResponse {
     };
 }
 
-export const VALIDATE_IMPORT_STRUCTURE = gql`
+export const VALIDATE_IMPORT_STRUCTURE = /* GraphQL */ `
     mutation ValidateStructureImport($data: CmsImportStructureInput!) {
         validateImportStructure(data: $data) {
             data {
@@ -120,7 +119,7 @@ export interface ImportStructureResponse {
     };
 }
 
-export const IMPORT_STRUCTURE = gql`
+export const IMPORT_STRUCTURE = /* GraphQL */ `
     mutation StructureImport($data: CmsImportStructureInput!) {
         importStructure(data: $data) {
             data {
