@@ -66,6 +66,7 @@ export interface IFieldConfig {
     computedUntilDirty?: ComputedFieldCallback;
     tags?: string[];
     cloneValue?: CloneValueCallback;
+    context?: FieldContextCallback;
     rules?: IRule[];
 }
 
@@ -81,6 +82,8 @@ export type HiddenWhenCallback = (form: IFormModel) => boolean;
 export type DisabledWhenCallback = (form: IFormModel) => boolean;
 
 export type ComputedFieldCallback = (form: IFormModel) => unknown;
+
+export type FieldContextCallback = (form: IFormModel) => Record<string, unknown>;
 
 // ---------------------------------------------------------------------------
 // Rules system
@@ -147,6 +150,7 @@ export interface IFieldVM {
     removeItem: (index: number) => void;
     focusRequested: boolean;
     clearFocusRequest: () => void;
+    context: Record<string, unknown>;
 }
 
 export interface IObjectFieldVM extends IFieldVM {

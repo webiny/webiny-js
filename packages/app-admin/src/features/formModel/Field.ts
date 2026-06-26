@@ -393,7 +393,8 @@ export class Field implements IField {
             addItem: (value?: unknown) => this._addItem(value),
             removeItem: (index: number) => this._removeItem(index),
             focusRequested: this._focusRequested,
-            clearFocusRequest: () => this.clearFocusRequest()
+            clearFocusRequest: () => this.clearFocusRequest(),
+            context: this._resolveContext()
         };
     }
 
@@ -431,6 +432,13 @@ export class Field implements IField {
             return this.config.options(this._scopedForm());
         }
         return this.config.options;
+    }
+
+    private _resolveContext(): Record<string, unknown> {
+        if (!this.config.context || !this._form) {
+            return {};
+        }
+        return this.config.context(this._scopedForm());
     }
 
     /**

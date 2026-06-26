@@ -747,6 +747,7 @@ export class ObjectField implements IObjectField {
             disabled: baseVm.disabled,
             renderer: baseVm.renderer,
             rendererSettings: baseVm.rendererSettings,
+            context: baseVm.context,
             onChange: (value: unknown) => this.setValue(value),
             onBlur: () => {
                 if (this._form?.submitted) {

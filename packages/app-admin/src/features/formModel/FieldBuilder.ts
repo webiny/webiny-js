@@ -14,7 +14,8 @@ import type {
     HiddenWhenCallback,
     DisabledWhenCallback,
     OnBlurCallback,
-    CloneValueCallback
+    CloneValueCallback,
+    FieldContextCallback
 } from "./abstractions.js";
 
 /**
@@ -178,6 +179,11 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
 
     cloneValue(fn: CloneValueCallback): this {
         this._config.cloneValue = fn;
+        return this;
+    }
+
+    context(fn: FieldContextCallback): this {
+        this._config.context = fn;
         return this;
     }
 

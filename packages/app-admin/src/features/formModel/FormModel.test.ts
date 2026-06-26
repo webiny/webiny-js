@@ -4171,4 +4171,73 @@ describe("FormModel", () => {
             expect(log).toEqual([["a", "b"], ["b"]]);
         });
     });
+
+    describe("field context", () => {
+        it("should expose context derived from sibling fields", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text().defaultValue("My Article"),
+                    description: fields.text().defaultValue("A great article"),
+                    media: fields.file().context(f => ({
+                        title: f.field("title").getValue(),
+                        description: f.field("description").getValue()
+                    }))
+                })
+            });
+
+            expect(form.field("media").vm.context).toEqual({
+                title: "My Article",
+                description: "A great article"
+            });
+        });
+
+        it("should reactively update context when source fields change", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text().defaultValue("Original"),
+                    media: fields.file().context(f => ({
+                        title: f.field("title").getValue()
+                    }))
+                })
+            });
+
+            expect(form.field("media").vm.context).toEqual({ title: "Original" });
+
+            form.field("title").setValue("Updated");
+            expect(form.field("media").vm.context).toEqual({ title: "Updated" });
+        });
+
+        it("should default to empty object when no context callback is set", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text()
+                })
+            });
+
+            expect(form.field("title").vm.context).toEqual({});
+        });
+
+        it("should work with object fields", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text().defaultValue("Page Title"),
+                    settings: fields.object().fields(f => ({
+                        media: f.file().context(form => ({
+                            title: form.field("title").getValue()
+                        }))
+                    }))
+                }),
+                layout: l => [l.row("title"), l.row("settings")]
+            });
+
+            expect(form.field("settings.media").vm.context).toEqual({
+                title: "Page Title"
+            });
+
+            form.field("title").setValue("New Title");
+            expect(form.field("settings.media").vm.context).toEqual({
+                title: "New Title"
+            });
+        });
+    });
 });
