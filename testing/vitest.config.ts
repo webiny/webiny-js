@@ -133,7 +133,7 @@ export default defineConfig(async () => {
             ...project,
             setupFiles: [
                 path.resolve(import.meta.dirname, "./setupFile.js"),
-                ...project.setupFiles
+                ...(project.setupFiles || [])
             ],
             tsconfig: `${project.dir}/tsconfig.json`
         }

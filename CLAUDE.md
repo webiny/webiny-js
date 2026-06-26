@@ -6,6 +6,12 @@ Read `AGENTS.md`.
 
 This file is read by Claude Code on every run. Keep it up to date with your project's conventions.
 
+# Reading code
+
+NEVER call Read or Grep to understand code structure or locate symbols.
+You MUST use codegraph_context, codegraph_search, or codegraph_callers first.
+Only call Read if codegraph explicitly returns no results AND you explain why in your response.
+
 ## Development Commands
 
 Always suppress verbose output to keep token usage low.

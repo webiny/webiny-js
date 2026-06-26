@@ -279,7 +279,7 @@ export const pullRequests = createWorkflow({
                         { name: "Lint", run: "yarn lint" },
                         {
                             name: "Check Package Node Modules",
-                            run: "yarn check-package-dependencies"
+                            run: "yarn check:node-modules:ci"
                         },
                         {
                             name: "Validate webiny package",
@@ -358,7 +358,7 @@ export const pullRequests = createWorkflow({
                     "continue-on-error": true
                 },
                 // Let Claude handle whatever can't be auto-fixed: adio, ts-configs,
-                // remaining lint errors, and check-package-dependencies.
+                // remaining lint errors, and check:node-modules:ci.
                 {
                     name: "Install Claude Code",
                     run: "npm install -g @anthropic-ai/claude-code"
@@ -372,7 +372,7 @@ export const pullRequests = createWorkflow({
                         `1. Run 'yarn adio' — if it reports dependency errors, fix the relevant package.json files.`,
                         `2. Run 'yarn check-ts-configs' — if it reports errors, fix them.`,
                         `3. Run 'yarn lint' — if there are still non-auto-fixable errors, read the affected files and fix them.`,
-                        `4. Run 'yarn check-package-dependencies' — if it reports errors, fix them.`,
+                        `4. Run 'yarn check:node-modules:ci' — if it reports errors, fix them.`,
                         `Work in the current directory."`
                     ].join(" ")
                 },

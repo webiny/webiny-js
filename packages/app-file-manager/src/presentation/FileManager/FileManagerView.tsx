@@ -49,6 +49,7 @@ import { TagsList } from "~/presentation/FileList/components/TagsList/index.js";
 import { UploadProgress } from "~/presentation/FileList/components/Upload/index.js";
 import { GetSettingsRepository } from "~/features/settings/abstractions.js";
 import { OverlayProvider, useOverlay } from "./OverlayContext.js";
+import { RouteParamsSync } from "./RouteParamsSync.js";
 
 import type { FmFile } from "~/features/shared/types.js";
 import type {
@@ -119,15 +120,12 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
         return <OverlayLoader text={t`Preparing File Manager...`} />;
     }
 
-    const isLoading = vm.list.pagination.loading && vm.list.rows.length === 0;
-    const isEmpty = !vm.list.pagination.loading && vm.list.rows.length === 0;
-
     const renderList = (browseFiles: BrowserFilePickerRenderProps["browseFiles"]) => {
-        if (isLoading) {
+        if (vm.loading) {
             return <OverlayLoader text={t`Loading files...`} size={"lg"} />;
         }
 
-        if (isEmpty) {
+        if (vm.empty) {
             return <Empty isSearchResult={!vm.showFolders} browseFiles={browseFiles} />;
         }
 
@@ -312,6 +310,7 @@ const FileManagerViewInner = observer(
                     <FileManagerPresenterProvider presenter={presenter}>
                         <FileManagerViewLayout />
                         {children}
+                        {!overlayConfig && <RouteParamsSync />}
                     </FileManagerPresenterProvider>
                 </FileManagerViewWithConfig>
             </DialogsProvider>

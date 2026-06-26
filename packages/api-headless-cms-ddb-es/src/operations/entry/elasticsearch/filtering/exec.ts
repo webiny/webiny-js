@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import type { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { ModelFields } from "~/operations/entry/elasticsearch/types.js";
-import type { PluginsContainer } from "@webiny/plugins";
 import type {
     OpenSearchBoolQueryConfig,
     QueryDslQueryContainer as Query
 } from "@webiny/api-opensearch/types.js";
+import type { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { createOperatorPluginList } from "~/operations/entry/elasticsearch/plugins/operator.js";
 import { createBaseQuery } from "~/operations/entry/elasticsearch/initialQuery.js";
 import { parseWhereKey } from "@webiny/api-opensearch";
@@ -19,7 +19,7 @@ import type { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSe
 export interface CreateExecParams {
     model: CmsModel;
     fields: ModelFields;
-    plugins: PluginsContainer;
+    operatorRegistry: OpenSearchQueryBuilderOperatorRegistry.Interface;
     valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
     filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
 }
@@ -32,14 +32,14 @@ export interface CreateExecFilteringResponse {
     (params: IExecParams): void;
 }
 export const createExecFiltering = (params: CreateExecParams): CreateExecFilteringResponse => {
-    const { fields, plugins, model, valueSearchRegistry, filterRegistry } = params;
+    const { fields, operatorRegistry, model, valueSearchRegistry, filterRegistry } = params;
 
-    const operatorPlugins = createOperatorPluginList({
-        plugins
+    const operators = createOperatorPluginList({
+        registry: operatorRegistry
     });
 
     const applyFiltering = createApplyFiltering({
-        operatorPlugins,
+        operators,
         valueSearchRegistry
     });
 

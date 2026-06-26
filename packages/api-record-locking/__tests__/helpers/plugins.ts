@@ -8,6 +8,9 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment/index.j
 import type { PermissionsArg } from "./permissions";
 import { createPermissions } from "./permissions";
 import { createRecordLocking } from "~/index";
+import { createWebsockets } from "@webiny/api-websockets";
+import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createApiCore } from "@webiny/api-core";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
@@ -62,6 +65,26 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             apiKeyAuthorization({ identityType: "api-key" }),
             graphQLHandlerPlugins(),
             createCmsExtension(),
+            createWebsockets(),
+            createRegisterExtensionPlugin(context => {
+                const noop: ConnectionRegistry.Interface = {
+                    register: async () => ({
+                        connectionId: "",
+                        identity: { id: "", displayName: "", type: "" },
+                        tenant: "",
+                        connectedOn: "",
+                        endpoint: ""
+                    }),
+                    unregister: async () => {},
+                    listViaConnections: async () => [],
+                    listViaIdentity: async () => [],
+                    listViaTenant: async () => [],
+                    listAll: async () => [],
+                    updateLastSeen: async () => {},
+                    listStale: async () => []
+                };
+                context.container.registerInstance(ConnectionRegistry, noop);
+            }),
             createRecordLocking(),
             plugins,
             graphQLHandlerPlugins(),

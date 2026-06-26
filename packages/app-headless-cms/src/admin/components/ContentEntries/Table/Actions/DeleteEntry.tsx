@@ -1,16 +1,24 @@
 import React from "react";
 import { ReactComponent as Delete } from "@webiny/icons/delete.svg";
+import { useToast } from "@webiny/admin-ui";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
-import { useContentEntry, useEntry, usePermission } from "~/admin/hooks/index.js";
+import { useEntry, usePermission } from "~/admin/hooks/index.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 
 export const DeleteEntry = () => {
     const { entry } = useEntry();
-    const contentEntry = useContentEntry();
+    const toast = useToast();
     const { canDelete } = usePermission();
+    const presenter = useContentEntriesPresenter();
     const { OptionsMenuItem } = ContentEntryListConfig.Browser.Entry.Action;
 
-    const deleteEntry = async () => {
-        await contentEntry.deleteEntry({ id: entry.entryId });
+    const handleDelete = async () => {
+        const success = await presenter.deleteEntry(entry.entryId);
+        if (success) {
+            toast.showSuccessToast({
+                title: `${entry.meta.title} was trashed successfully!`
+            });
+        }
     };
 
     if (!canDelete(entry, "cms.contentEntry")) {
@@ -21,9 +29,9 @@ export const DeleteEntry = () => {
         <OptionsMenuItem
             icon={<Delete />}
             label={"Trash"}
-            onAction={deleteEntry}
+            onAction={handleDelete}
             data-testid={"aco.actions.entry.delete"}
-            className={"text-destructive-primary! [&_svg]:fill-destructive"}
+            variant={"destructive"}
         />
     );
 };

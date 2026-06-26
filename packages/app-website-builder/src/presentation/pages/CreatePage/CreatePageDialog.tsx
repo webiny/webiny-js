@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useDialog, useOpenDialog, FormView } from "@webiny/app-admin";
 import { Dialog, Select, OverlayLoader } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
-import { useEditPageUrl } from "~/modules/pages/PagesList/hooks/useEditPageUrl.js";
+import { useEditPageUrl } from "~/presentation/pages/PageList/hooks/useEditPageUrl.js";
 import { CreatePageFeature } from "./feature.js";
 import { createPageDialogParams } from "./createPageSchema.js";
 

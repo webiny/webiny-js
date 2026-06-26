@@ -39,6 +39,8 @@ import {
     type IOpenSearchEntityAttributes as IElasticsearchEntityAttributes
 } from "@webiny/api-opensearch";
 import type { PluginsContainer } from "@webiny/plugins";
+import type { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import type { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
 import { DataLoadersHandler } from "./dataLoaders.js";
 import {
@@ -84,6 +86,7 @@ export interface CreateEntriesStorageOperationsParams {
     esEntity: IElasticsearchEntity;
     elasticsearch: Client;
     plugins: PluginsContainer;
+    operatorRegistry: OpenSearchQueryBuilderOperatorRegistry.Interface;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
     compressionHandler: CompressionHandler.Interface;
@@ -94,6 +97,7 @@ export interface CreateEntriesStorageOperationsParams {
     fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
     valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
     filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
+    fieldFactory: OpenSearchFieldFactory.Interface;
 }
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
@@ -124,6 +128,7 @@ export const createEntriesStorageOperations = (
         esEntity,
         elasticsearch,
         plugins,
+        operatorRegistry,
         fieldRegistry,
         fieldIndexRegistry,
         compressionHandler,
@@ -133,7 +138,8 @@ export const createEntriesStorageOperations = (
         valueSearchRegistry,
         fullTextSearches,
         valuesModifiers,
-        filterRegistry
+        filterRegistry,
+        fieldFactory
     } = params;
 
     let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
@@ -225,7 +231,7 @@ export const createEntriesStorageOperations = (
         try {
             await entityBatch.execute();
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -346,7 +352,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -564,7 +570,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -646,7 +652,7 @@ export const createEntriesStorageOperations = (
         try {
             await entityBatch.execute();
             dataLoaders.clearAll({
-                model
+                tenant: initialModel.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -805,7 +811,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -975,7 +981,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -1112,7 +1118,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -1238,7 +1244,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -1368,12 +1374,13 @@ export const createEntriesStorageOperations = (
             valueSearchRegistry,
             fullTextSearches,
             filterRegistry,
+            fieldFactory,
             params: {
                 ...params,
                 limit,
                 after: decodeCursor(params.after)
             },
-            plugins
+            operatorRegistry
         });
 
         let response: OpenSearchSearchResponse;
@@ -1724,7 +1731,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -1845,7 +1852,7 @@ export const createEntriesStorageOperations = (
             await entityBatch.execute();
 
             dataLoaders.clearAll({
-                model
+                tenant: entry.tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -2084,11 +2091,12 @@ export const createEntriesStorageOperations = (
             valueSearchRegistry,
             fullTextSearches,
             filterRegistry,
+            fieldFactory,
             params: {
                 limit: 1,
                 where
             },
-            plugins
+            operatorRegistry
         });
 
         const field = model.fields.find(f => f.fieldId === fieldId);

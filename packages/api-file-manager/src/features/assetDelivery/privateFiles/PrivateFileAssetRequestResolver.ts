@@ -1,15 +1,21 @@
-import type { Request } from "@webiny/handler/types.js";
-import { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
-import { AssetRequestResolver, type IAssetRequestResolver } from "../abstractions.js";
+import { AssetRequestResolver } from "../abstractions/AssetRequestResolver.js";
+import { AssetRequestFactory } from "../AssetRequest/abstractions.js";
 
-export class PrivateFileAssetRequestResolver implements IAssetRequestResolver {
-    private readonly resolver: IAssetRequestResolver;
+class PrivateFileAssetRequestResolverImpl implements AssetRequestResolver.Interface {
+    private readonly assetRequestFactory: AssetRequestFactory.Interface;
+    private readonly resolver: AssetRequestResolver.Interface;
 
-    constructor(resolver: IAssetRequestResolver) {
+    constructor(
+        assetRequestFactory: AssetRequestFactory.Interface,
+        resolver: AssetRequestResolver.Interface
+    ) {
+        this.assetRequestFactory = assetRequestFactory;
         this.resolver = resolver;
     }
 
-    async resolve(request: Request): Promise<AssetRequest | undefined> {
+    async resolve(
+        request: AssetRequestResolver.Request
+    ): Promise<AssetRequestResolver.AssetRequest | undefined> {
         if (!request.url.startsWith("/private/")) {
             return this.resolver.resolve(request);
         }
@@ -19,7 +25,7 @@ export class PrivateFileAssetRequestResolver implements IAssetRequestResolver {
 
         const path = params["*"];
 
-        return new AssetRequest({
+        return this.assetRequestFactory.create({
             key: decodeURI(path).replace("/private/", ""),
             context: {
                 url: request.url,
@@ -33,7 +39,7 @@ export class PrivateFileAssetRequestResolver implements IAssetRequestResolver {
     }
 }
 
-export const PrivateFileAssetRequestResolverDecorator = AssetRequestResolver.createDecorator({
-    decorator: PrivateFileAssetRequestResolver,
-    dependencies: []
+export const PrivateFileAssetRequestResolver = AssetRequestResolver.createDecorator({
+    decorator: PrivateFileAssetRequestResolverImpl,
+    dependencies: [AssetRequestFactory]
 });

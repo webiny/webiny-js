@@ -33,6 +33,7 @@ type ExecuteScheduledActionError =
 
 export interface IExecuteScheduledActionUseCaseParams {
     namespace: string;
+    tenant: string;
     id: string;
 }
 

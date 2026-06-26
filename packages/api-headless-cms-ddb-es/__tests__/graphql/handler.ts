@@ -10,12 +10,11 @@ import { createIndexConfigurationPlugin } from "~tests/graphql/createIndexConfig
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { createEntryEntity } from "~/definitions/entry";
 import { LambdaContext } from "@webiny/handler-aws/types";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { OpenSearchContext } from "@webiny/api-opensearch";
 
 interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -26,7 +25,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
     const { plugins = [] } = params;
 
     const documentClient = getDocumentClient();
-    const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
+    const elasticsearchClient = createTestOpenSearchClient();
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
@@ -42,7 +41,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         entityName: "CmsEntries"
     });
 
-    const handler = createRawHandler<any, CmsContext & OpenSearchContext>({
+    const handler = createRawHandler<any, CmsContext>({
         plugins: [
             createApiCore({
                 storageOperations: apiCoreStorage.storageOperations,

@@ -1,7 +1,7 @@
 import { useCallback, useContext, useMemo } from "react";
 import { useIdentity } from "@webiny/app-admin";
 import { makeDecoratable } from "@webiny/react-composition";
-import { ModelContext } from "@webiny/app-headless-cms-common/ModelProvider/ModelContext.js";
+import { ModelContext } from "~/admin/components/ModelProvider/ModelContext.js";
 import type { CmsGroup, CmsIdentity, CmsModel, CmsSecurityPermission } from "~/types.js";
 
 export interface CreatableItem {

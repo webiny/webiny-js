@@ -39,11 +39,7 @@ export const AiPowerUpsSettingsPage = observer(() => {
                         <PresenterErrors errors={vm.errors} />
                     </div>
                 ) : null}
-                {vm.form && vm.form.errors.length > 0 ? (
-                    <div className={"mb-lg"}>
-                        <FormErrors form={vm.form} />
-                    </div>
-                ) : null}
+                {vm.form ? <FormErrors form={vm.form} className={"mb-lg"} /> : null}
                 {vm.loading || vm.saving ? (
                     <OverlayLoader text={vm.saving ? "Saving..." : "Loading..."} />
                 ) : null}

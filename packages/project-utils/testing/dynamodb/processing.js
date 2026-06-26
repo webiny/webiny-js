@@ -8,7 +8,7 @@ import {
 
 const streamTableName = process.env.DB_TABLE_OPENSEARCH;
 
-const isOpensearchStreamTable = table => {
+const isOpenSearchStreamTable = table => {
     return table === streamTableName;
 };
 
@@ -51,7 +51,7 @@ export const createDynamoStreamRecord = (eventName, data = {}) => {
 };
 
 const processDelete = async (documentClient, handler, params) => {
-    if (isOpensearchStreamTable(params.input?.TableName) === false) {
+    if (isOpenSearchStreamTable(params.input?.TableName) === false) {
         return;
     }
     // Get original item from DDB to use as OldImage
@@ -69,7 +69,7 @@ const processDelete = async (documentClient, handler, params) => {
 
 const processPut = async (documentClient, handler, params) => {
     const tableName = params.input?.TableName;
-    if (isOpensearchStreamTable(tableName) === false) {
+    if (isOpenSearchStreamTable(tableName) === false) {
         return;
     }
 

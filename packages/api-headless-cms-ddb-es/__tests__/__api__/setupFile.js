@@ -1,18 +1,23 @@
 import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { ContextPlugin } from "@webiny/api";
 import { registerCmsOpenSearchStorageOperations } from "../../src/index";
 import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { configurations } from "../../src/configurations";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
 import {
-    getOpenSearchIndexPrefix as getOpenSearchIndexPrefix,
-    getOpenSearchOperators
-} from "@webiny/api-opensearch";
+    getTestOpenSearchClient,
+    registerOpenSearchCoreForTests
+} from "@webiny/api-opensearch/testing/index.js";
+import { registerOpenSearchCore, getBaseConfiguration } from "@webiny/api-opensearch";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
+import { createHandler } from "@webiny/handler-aws";
+import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
+import { createMockApiLogContextPlugin } from "@webiny/project-utils/testing/mockApiLog";
 
 if (typeof registerCmsOpenSearchStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -23,14 +28,19 @@ if (!prefix.includes("api-")) {
     process.env.OPENSEARCH_INDEX_PREFIX = `${prefix}api-headless-cms-env-`;
 }
 
+const documentClient = getDocumentClient();
+const opensearchClient = getTestOpenSearchClient();
+
+const dynamoDbToEsHandler = createHandler({
+    plugins: [
+        registerOpenSearchCore(opensearchClient),
+        createMockApiLogContextPlugin(),
+        createDynamoDBToElasticsearchEventHandler()
+    ]
+});
+simulateStream(documentClient, dynamoDbToEsHandler);
+
 setStorageOps("cms", () => {
-    const documentClient = getDocumentClient();
-
-    const { elasticsearchClient, plugins } = getElasticsearchClient({
-        name: "api-headless-cms-ddb-es",
-        prefix: "api-headless-cms-env-"
-    });
-
     const createIndexName = model => {
         const { index } = configurations.es({
             model
@@ -47,19 +57,20 @@ setStorageOps("cms", () => {
     const createOrRefreshIndexSubscription = new ContextPlugin(async context => {
         context.container.registerFactory(EntryBeforeCreateEventHandler, () => ({
             async handle(event) {
+                const client = context.container.resolve(OpenSearchClient);
                 const { model } = event.payload;
                 const index = createIndexName(model);
                 try {
-                    const response = await elasticsearchClient.indices.exists({
+                    const response = await client.indices.exists({
                         index
                     });
                     if (response.body) {
                         return;
                     }
-                    await elasticsearchClient.indices.create({
+                    await client.indices.create({
                         index,
                         body: {
-                            ...baseIndexConfigurationPlugin.body
+                            ...getBaseConfiguration().body
                         }
                     });
                 } catch {}
@@ -110,11 +121,10 @@ setStorageOps("cms", () => {
             registerDynamoDBCore({
                 documentClient
             }),
+            registerOpenSearchCoreForTests(),
             registerCmsOpenSearchStorageOperations(),
-            ...plugins,
             ...initializedDbPlugins,
             createOrRefreshIndexSubscription,
-            getOpenSearchOperators(),
             fruitModifierPlugin
         ]
     };

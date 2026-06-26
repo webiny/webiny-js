@@ -6,7 +6,7 @@ import { Bind, Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { FolderPicker } from "@webiny/app-aco";
 import { useTranslatePage } from "~/presentation/pages/hooks/useTranslatePage.js";
-import { useEditPageUrl } from "~/modules/pages/PagesList/hooks/useEditPageUrl.js";
+import { useEditPageUrl } from "~/presentation/pages/PageList/hooks/useEditPageUrl.js";
 import { translatePageParams } from "./translatePageSchema.js";
 import { LanguageSelector } from "~/presentation/components/LanguageSelector.js";
 

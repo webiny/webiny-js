@@ -8,7 +8,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@webiny/stdlib": "^0.0.7",
+    "@webiny/stdlib": "^0.0.8",
     "ci-info": "^4.4.0",
     "load-json-file": "^7.0.1",
     "write-json-file": "^7.0.0"

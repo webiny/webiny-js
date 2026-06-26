@@ -1,38 +1,39 @@
 import React, { useCallback, useEffect, useMemo, useReducer } from "react";
-import get from "lodash/get.js";
 import pick from "lodash/pick.js";
-import type { ApolloClient } from "apollo-client";
 import { useSnackbar, useRouter } from "@webiny/app-admin";
-import type {
-    GetCmsModelQueryResponse,
-    GetCmsModelQueryVariables,
-    UpdateCmsModelMutationResponse,
-    UpdateCmsModelMutationVariables
-} from "~/admin/graphql/contentModels.js";
-import { GET_CONTENT_MODEL, UPDATE_CONTENT_MODEL } from "~/admin/graphql/contentModels.js";
-import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql.js";
+import { useFeature } from "@webiny/app";
 import type { CmsModel, CmsModelField } from "~/types.js";
-import type { CmsModelLayoutFieldTypePlugin } from "@webiny/app-headless-cms-common/types/index.js";
-import type { FetchResult } from "apollo-link";
+import { useContainer } from "@webiny/app";
 import { ModelProvider } from "~/admin/components/ModelProvider/index.js";
 import { createHashing } from "@webiny/app/utils/index.js";
 import { Routes } from "~/routes.js";
-import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
-import {
-    buildFieldOptions,
-    buildFieldLabelPrefixes
-} from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
-import { plugins } from "@webiny/plugins";
+import type { FieldOption } from "./fieldOptions.js";
+import { buildFieldOptions, buildFieldLabelPrefixes } from "./fieldOptions.js";
+import { CmsLayoutFieldType } from "~/presentation/fieldTypes/abstractions.js";
+import { GetModelFeature } from "~/features/model/getModel/feature.js";
+import { UpdateModelFeature } from "~/features/model/updateModel/feature.js";
+
+type PickedCmsModel = Pick<
+    CmsModel,
+    | "layout"
+    | "fields"
+    | "name"
+    | "settings"
+    | "description"
+    | "titleFieldId"
+    | "descriptionFieldId"
+    | "imageFieldId"
+    | "group"
+    | "tags"
+    | "icon"
+>;
 
 export interface ContentModelEditorProviderContext {
-    apolloClient: ApolloClient<any>;
     data: CmsModel;
     contentModel: CmsModel;
     isPristine: boolean;
-    getContentModel: (modelId: string) => Promise<FetchResult<GetCmsModelQueryResponse>>;
-    saveContentModel: (
-        data?: CmsModel
-    ) => Promise<UpdateCmsModelMutationResponse["updateContentModel"]>;
+    getContentModel: (modelId: string) => Promise<void>;
+    saveContentModel: (data?: CmsModel) => Promise<{ data: CmsModel | null; error: any | null }>;
     setData: (setter: (model: CmsModel) => void, saveContentModel?: boolean) => Promise<any>;
     activeTabIndex: number;
     setActiveTabIndex: (index: number) => void;
@@ -43,10 +44,6 @@ export const contentModelEditorContext = React.createContext<
     ContentModelEditorProviderContext | undefined
 >(undefined);
 
-type PickedCmsModel = Pick<
-    CmsModel,
-    "layout" | "fields" | "name" | "settings" | "description" | "titleFieldId" | "group"
->;
 interface State {
     modelId: string | null;
     isPristine: boolean;
@@ -75,9 +72,6 @@ export const contentModelEditorReducer: Reducer = (prev: State, action: Action):
 
 const hashModel = createHashing("SHA-256");
 
-/**
- * Cleanup is required because backend always expects string value in predefined values entries
- */
 const cleanupModelDataFields = (fields: CmsModelField[]): CmsModelField[] => {
     return fields.map(field => {
         const { predefinedValues } = field;
@@ -106,7 +100,6 @@ const cleanupModelData = (data: PickedCmsModel): PickedCmsModel => {
 };
 
 interface ContentModelEditorProviderProps {
-    apolloClient: ApolloClient<any>;
     modelId?: string;
     children: React.ReactElement;
 }
@@ -122,9 +115,11 @@ const createDefaultState = (modelId?: string): State => {
 
 export const ContentModelEditorProvider = ({
     children,
-    apolloClient,
     modelId
 }: ContentModelEditorProviderProps) => {
+    const { useCase: getModelUseCase } = useFeature(GetModelFeature);
+    const { useCase: updateModelUseCase } = useFeature(UpdateModelFeature);
+
     const [state, dispatch] = useReducer(contentModelEditorReducer, createDefaultState(modelId));
 
     const { goToRoute } = useRouter();
@@ -136,7 +131,7 @@ export const ContentModelEditorProvider = ({
 
     const saveContentModel = async (
         data?: CmsModel
-    ): Promise<UpdateCmsModelMutationResponse["updateContentModel"]> => {
+    ): Promise<{ data: CmsModel | null; error: any | null }> => {
         if (!data) {
             data = state.data;
         }
@@ -153,42 +148,31 @@ export const ContentModelEditorProvider = ({
             "imageFieldId",
             "icon"
         ]);
-        const response = await apolloClient.mutate<
-            UpdateCmsModelMutationResponse,
-            UpdateCmsModelMutationVariables
-        >({
-            mutation: UPDATE_CONTENT_MODEL,
-            variables: {
+
+        try {
+            const result = await updateModelUseCase.execute({
                 modelId: data.modelId,
                 data: cleanupModelData(modelData)
-            },
-            refetchQueries: [
-                {
-                    query: LIST_MENU_CONTENT_GROUPS_MODELS
-                }
-            ]
-        });
+            });
 
-        setPristine(true);
+            setPristine(true);
 
-        if (!response.data || !response.data.updateContentModel) {
             return {
-                data: null,
+                data: result,
                 error: null
             };
+        } catch (ex: any) {
+            return {
+                data: null,
+                error: { message: ex.message }
+            };
         }
-
-        return response.data.updateContentModel;
     };
 
     const setActiveTabIndex = useCallback((activeTabIndex: number) => {
         dispatch({ type: "state", data: { activeTabIndex } });
     }, []);
 
-    /**
-     * Set form data by providing a callback, which receives a fresh copy of data on which you can work on.
-     * Return new data once finished.
-     */
     const setData = async (setter: (value: any) => any, saveModel = false): Promise<void> => {
         const data = setter(state.data);
         const existingHash = await hashModel(state.data);
@@ -204,28 +188,10 @@ export const ContentModelEditorProvider = ({
         await saveContentModel(data);
     };
 
-    const getContentModel = async (
-        modelId: string
-    ): Promise<FetchResult<GetCmsModelQueryResponse>> => {
-        const response = await apolloClient.query<
-            GetCmsModelQueryResponse,
-            GetCmsModelQueryVariables
-        >({
-            query: GET_CONTENT_MODEL,
-            variables: {
-                modelId
-            }
-        });
-
-        const { data, error } = get(response, "data.getContentModel");
-        if (error) {
-            throw new Error(error.message);
-        }
-
+    const getContentModel = async (id: string): Promise<void> => {
+        const data = await getModelUseCase.execute({ modelId: id });
         await setData(() => data, false);
-
         setPristine(true);
-        return response;
     };
 
     useEffect(() => {
@@ -238,9 +204,10 @@ export const ContentModelEditorProvider = ({
         });
     }, [modelId]);
 
-    const layoutFieldPlugins = plugins.byType<CmsModelLayoutFieldTypePlugin>(
-        "cms-editor-layout-field-type"
-    );
+    const container = useContainer();
+    const layoutFieldTypes = useMemo(() => {
+        return container.resolveAll(CmsLayoutFieldType);
+    }, [container]);
 
     const fieldOptions = useMemo(() => {
         const model = state.data;
@@ -248,19 +215,15 @@ export const ContentModelEditorProvider = ({
             return [];
         }
         const prefixes = model.layout
-            ? buildFieldLabelPrefixes(model.layout, layoutFieldPlugins)
+            ? buildFieldLabelPrefixes(model.layout, layoutFieldTypes)
             : undefined;
-        return buildFieldOptions(model.fields ?? [], "", "", prefixes, layoutFieldPlugins);
+        return buildFieldOptions(model.fields ?? [], "", "", prefixes, layoutFieldTypes);
     }, [state.data?.fields, state.data?.layout]);
 
     const value = useMemo<ContentModelEditorProviderContext>(
         () => ({
-            // Keeping `data` for compatibility
             data: state.data,
             contentModel: state.data,
-            modelId,
-            apolloClient,
-            dispatch,
             isPristine: state.isPristine,
             getContentModel,
             saveContentModel,
@@ -269,7 +232,7 @@ export const ContentModelEditorProvider = ({
             setActiveTabIndex,
             fieldOptions
         }),
-        [state, apolloClient, fieldOptions]
+        [state, fieldOptions]
     );
 
     const { Provider } = contentModelEditorContext;

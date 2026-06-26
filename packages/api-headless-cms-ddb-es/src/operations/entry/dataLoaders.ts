@@ -153,6 +153,6 @@ export class DataLoadersHandler implements IDataLoadersHandler {
     }
 
     public clearAll(params?: DataLoadersHandlerInterfaceClearAllParams): void {
-        this.cache.clearAll(params?.model);
+        this.cache.clearAll(params);
     }
 }

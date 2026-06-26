@@ -207,7 +207,7 @@ jobs:
         run: yarn lint
         working-directory: ${{ github.base_ref }}
       - name: Check Package Node Modules
-        run: yarn check-package-dependencies
+        run: yarn check:node-modules:ci
         working-directory: ${{ github.base_ref }}
       - name: Validate webiny package
         run: yarn webiny-scripts validate-webiny-package
@@ -320,7 +320,7 @@ jobs:
           if it reports dependency errors, fix the relevant package.json files.
           2. Run 'yarn check-ts-configs' — if it reports errors, fix them. 3.
           Run 'yarn lint' — if there are still non-auto-fixable errors, read the
-          affected files and fix them. 4. Run 'yarn check-package-dependencies'
+          affected files and fix them. 4. Run 'yarn check:node-modules:ci'
           — if it reports errors, fix them. Work in the current directory."
       - name: Update yarn.lock
         run: yarn

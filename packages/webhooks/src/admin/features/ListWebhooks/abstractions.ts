@@ -3,6 +3,7 @@ import type { Webhook } from "~/admin/shared/types.js";
 
 export interface IListWebhooksInput {
     where?: Record<string, unknown>;
+    sort?: string[];
     limit?: number;
     after?: string;
 }

@@ -4,7 +4,7 @@ import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createApiCore } from "@webiny/api-core";
 import { createApiCoreSql, registerSQLCore } from "@webiny/api-core-sql";
-import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAssetDelivery, createFileManagerS3 } from "@webiny/api-file-manager-s3";
 import { createCmsExtension } from "@webiny/api-headless-cms";
@@ -18,6 +18,7 @@ import { createAuditLogs } from "@webiny/api-audit-logs";
 import { registerAuditLogsSqlStorageOperations } from "@webiny/api-audit-logs-sql";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-os";
 import { createWebsockets } from "@webiny/api-websockets";
+import { createAwsWebsockets } from "@webiny/api-websockets-aws";
 import { registerWebsocketsSqlStorageOperations } from "@webiny/api-websockets-sql";
 import { createRecordLocking } from "@webiny/api-record-locking";
 import { registerSchedulerExtension } from "@webiny/api-scheduler";
@@ -53,6 +54,7 @@ export const handler = createHandler({
         graphqlPlugins({ debug }),
         securityPlugins(),
         createWebsockets(),
+        createAwsWebsockets(),
         registerWebsocketsSqlStorageOperations({ knex }),
         registerSqlStorageOperations({
             knex
@@ -64,7 +66,6 @@ export const handler = createHandler({
         createRecordLocking(),
         createBackgroundTasks(),
         createFileManagerContext(),
-        createFileManagerGraphQL(),
         createFileManagerAco(),
         createAssetDelivery(),
         createFileManagerS3(),

@@ -3,7 +3,7 @@ import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { CmsContext } from "~/types";
 import { defaultIdentity } from "./tenancySecurity";
 import { LambdaContext } from "@webiny/handler-aws/types";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 
 interface CmsHandlerEvent {
     path: string;
@@ -17,7 +17,7 @@ type Params = CreateHandlerCoreParams;
 export const useHandler = <C extends CmsContext = CmsContext>(params: Params) => {
     const core = createHandlerCore(params);
 
-    const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
+    const elasticsearchClient = createTestOpenSearchClient();
 
     const plugins = [...core.plugins].concat([
         createRawEventHandler<CmsHandlerEvent, C, C>(async ({ context }) => {

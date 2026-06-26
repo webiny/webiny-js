@@ -4,7 +4,7 @@ import type {
     IWebsocketsActionPluginCallable,
     IWebsocketsActionPluginCallableParams,
     WebsocketsActionPluginCallableResponse
-} from "./abstrations/IWebsocketsActionPlugin.js";
+} from "./abstrations/WebsocketsActionPlugin.js";
 
 export class WebsocketsActionPlugin<T extends GenericRecord = GenericRecord> extends Plugin {
     public static override readonly type: string = "websockets.route.action";

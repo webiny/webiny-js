@@ -1,11 +1,11 @@
-export * from "./app.js";
 export * from "./components/index.js";
 export * from "./config/index.js";
 export * from "./contexts/index.js";
 export * from "./hooks/index.js";
 export * from "./dialogs/index.js";
-export * from "./sorting.js";
 export type { TableRow, FolderTableRow, RecordTableRow } from "./table.types.js";
+export { sortFolders } from "./components/Table/createTableData.js";
+export type { FolderSortConfig } from "./components/Table/createTableData.js";
 export type { ListMeta, FolderLevelPermissionsTarget } from "./types.js";
 export { LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS } from "./dialogs/DialogSetPermissions/graphql.js";
 export { UsersTeamsMultiAutocomplete } from "./dialogs/DialogSetPermissions/UsersTeamsMultiAutocomplete.js";
@@ -29,3 +29,4 @@ export * from "./features/folders/listFoldersByParentIds/useListFoldersByParentI
 
 // Presentation
 export * from "./presentation/folderTree/index.js";
+export * from "./app.js";

@@ -147,20 +147,10 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         } = params;
         const { id: scheduleId } = parseIdentifier(initialId);
 
-        const scheduledAction: IScheduledAction<T> = {
-            id: scheduleId,
-            title,
-            namespace,
-            actionType,
-            targetId,
-            scheduledBy: {
-                id: identity.id,
-                type: identity.type,
-                displayName: identity.displayName
-            },
-            scheduledFor: scheduleFor,
-            payload,
-            error: undefined
+        const scheduledBy: Identity = {
+            id: identity.id,
+            type: identity.type,
+            displayName: identity.displayName
         };
 
         // Create CMS entry
@@ -170,7 +160,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
                 id: scheduleId,
                 values: {
                     scheduledFor: scheduleFor.toISOString(),
-                    scheduledBy: scheduledAction.scheduledBy,
+                    scheduledBy,
                     namespace,
                     title,
                     actionType,
@@ -187,10 +177,24 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
             );
         }
 
+        const scheduledAction: IScheduledAction<T> = {
+            id: scheduleId,
+            tenant: createResult.value.tenant,
+            title,
+            namespace,
+            actionType,
+            targetId,
+            scheduledBy,
+            scheduledFor: scheduleFor,
+            payload,
+            error: undefined
+        };
+
         // Create EventBridge schedule
         try {
             await this.schedulerService.create({
                 id: scheduleId,
+                tenant: createResult.value.tenant,
                 namespace,
                 scheduleFor: new Date(scheduleFor)
             });
@@ -251,6 +255,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         try {
             await this.schedulerService.update({
                 id: existing.id,
+                tenant: existing.tenant,
                 namespace: existing.namespace,
                 scheduleFor: new Date(scheduleFor)
             });

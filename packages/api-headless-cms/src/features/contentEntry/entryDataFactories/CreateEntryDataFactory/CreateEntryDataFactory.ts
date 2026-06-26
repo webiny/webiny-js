@@ -130,7 +130,7 @@ class CreateEntryDataFactoryImpl implements ICreateEntryDataFactory {
             context: this.cmsContext,
             model,
             values: initialValues,
-            skipValidators: options?.skipValidators
+            skipValidation: options?.skipValidation
         });
 
         const values = await referenceFieldsMapping<TValues>({

@@ -15,7 +15,7 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createFileManagerSdk } from "../../../api-file-manager/__tests__/utils/createFileManagerSdk.js";
 import { createFileManagerAco } from "~/index.js";
 
@@ -69,7 +69,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createCmsExtension(),
             createAco(),
             createFileManagerContext(),
-            createFileManagerGraphQL(),
             createFileManagerAco(),
             plugins
         ],
