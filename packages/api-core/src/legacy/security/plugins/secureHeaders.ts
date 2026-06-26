@@ -1,14 +1,6 @@
 import { createHandlerOnRequest, ResponseHeaders } from "@webiny/handler";
 
-const whitelistedHeaders = [
-    "accept",
-    "authorization",
-    "cache-control",
-    "content-type",
-    "x-tenant",
-    "x-apollo-tracing",
-    "apollo-query-plan-experimental"
-];
+const whitelistedHeaders = ["accept", "authorization", "cache-control", "content-type", "x-tenant"];
 
 export const setupSecureHeaders = () => {
     return createHandlerOnRequest(async (request, reply) => {

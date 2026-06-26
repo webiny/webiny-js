@@ -8,8 +8,6 @@ import { GraphQLPlayground } from "@webiny/app-graphql-playground";
 import { SdkPlayground } from "@webiny/app-sdk-playground";
 import { imagePlugin } from "@webiny/app/plugins/index.js";
 import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
-import { createApolloClient } from "./apolloClientFactory.js";
-import apolloLinks from "./apolloLinks.js";
 import { AuditLogs } from "@webiny/app-audit-logs";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Extension as MailerSettings } from "@webiny/app-mailer";
@@ -23,29 +21,22 @@ import { CmsScheduler } from "@webiny/app-headless-cms-scheduler";
 import { WorkflowsAdminApp } from "@webiny/app-workflows";
 import { CmsWorkflows } from "@webiny/app-headless-cms-workflows";
 import { WebsiteBuilderWorkflows } from "@webiny/app-website-builder-workflows";
-import { Container } from "@webiny/di";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import { WbScheduler } from "@webiny/app-website-builder-scheduler";
 import { Webhooks } from "@webiny/webhooks/admin";
 import { BackgroundTasks } from "@webiny/background-tasks/admin";
 
-export interface AdminProps extends Omit<
-    BaseAdminProps,
-    "createApolloClient" | "createLegacyPlugins"
-> {
+export interface AdminProps extends Omit<BaseAdminProps, "createLegacyPlugins"> {
     children?: React.ReactNode;
 }
 
 const App = (props: AdminProps) => {
-    const createLegacyPlugins = (container: Container): PluginCollection => {
-        return [imagePlugin(), fileStorageS3Plugin(), apolloLinks(container)];
+    const createLegacyPlugins = (): PluginCollection => {
+        return [imagePlugin(), fileStorageS3Plugin()];
     };
 
     return (
-        <BaseAdmin
-            createApolloClient={createApolloClient}
-            createLegacyPlugins={createLegacyPlugins}
-        >
+        <BaseAdmin createLegacyPlugins={createLegacyPlugins}>
             <AdminUI />
             <SystemInstallerProvider />
             <GraphQLPlayground />

@@ -87,62 +87,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/react-common@npm:^3.1.4":
-  version: 3.1.4
-  resolution: "@apollo/react-common@npm:3.1.4"
-  dependencies:
-    ts-invariant: "npm:^0.4.4"
-    tslib: "npm:^1.10.0"
-  peerDependencies:
-    "@types/react": ^16.8.0
-    apollo-client: ^2.6.4
-    apollo-utilities: ^1.3.2
-    graphql: ^14.3.1
-    react: ^16.8.0
-  checksum: 10/d1f9c72291f508689da880bff480a9d30f5713dc01f6694cfc77fd9c91d7d8f25a3eb2ca337d1dbc4ec91724c7915d686da6526136ce483795bbce5f0b9aa54f
-  languageName: node
-  linkType: hard
-
-"@apollo/react-components@npm:^3.1.5":
-  version: 3.1.5
-  resolution: "@apollo/react-components@npm:3.1.5"
-  dependencies:
-    "@apollo/react-common": "npm:^3.1.4"
-    "@apollo/react-hooks": "npm:^3.1.5"
-    prop-types: "npm:^15.7.2"
-    ts-invariant: "npm:^0.4.4"
-    tslib: "npm:^1.10.0"
-  peerDependencies:
-    "@types/react": ^16.8.0
-    apollo-cache: ^1.3.2
-    apollo-client: ^2.6.4
-    apollo-link: ^1.2.12
-    apollo-utilities: ^1.3.2
-    graphql: ^14.3.1
-    react: ^16.8.0
-    react-dom: ^16.8.0
-  checksum: 10/ec319f672fb70e433c0c6429dbf04c75e2695fbdd39ece813e50b219b16a9657c3a7e0802e21126b54ffe38121e693736a69cc50d6dcd824df43f1ce795080bb
-  languageName: node
-  linkType: hard
-
-"@apollo/react-hooks@npm:^3.1.5":
-  version: 3.1.5
-  resolution: "@apollo/react-hooks@npm:3.1.5"
-  dependencies:
-    "@apollo/react-common": "npm:^3.1.4"
-    "@wry/equality": "npm:^0.1.9"
-    ts-invariant: "npm:^0.4.4"
-    tslib: "npm:^1.10.0"
-  peerDependencies:
-    "@types/react": ^16.8.0
-    apollo-client: ^2.6.4
-    graphql: ^14.3.1
-    react: ^16.8.0
-    react-dom: ^16.8.0
-  checksum: 10/d7cb553e94f728f9766e803c8411b9b16690e945414e3e00a2a2d273b5ff0d19161776b88c070ac7f521b0b2ca4293a8136172b62b4b37010d32f4f0ad7581db
-  languageName: node
-  linkType: hard
-
 "@asamuzakjp/css-color@npm:^5.1.11":
   version: 5.1.11
   resolution: "@asamuzakjp/css-color@npm:5.1.11"
@@ -10512,7 +10456,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=10.0.0, @types/node@npm:>=13.7.0, @types/node@npm:>=20.0.0, @types/node@npm:>=6":
+"@types/node@npm:*, @types/node@npm:>=10.0.0, @types/node@npm:>=13.7.0, @types/node@npm:>=20.0.0":
   version: 26.0.0
   resolution: "@types/node@npm:26.0.0"
   dependencies:
@@ -12823,7 +12767,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin@workspace:packages/app-admin"
   dependencies:
-    "@apollo/react-components": "npm:^3.1.5"
     "@emotion/css": "npm:^11.13.5"
     "@emotion/react": "npm:11.14.0"
     "@emotion/styled": "npm:11.14.1"
@@ -12860,11 +12803,6 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    apollo-cache: "npm:^1.3.5"
-    apollo-client: "npm:^2.6.10"
-    apollo-link: "npm:^1.2.14"
-    apollo-link-context: "npm:^1.0.20"
-    apollo-utilities: "npm:^1.3.4"
     bytes: "npm:^3.1.2"
     classnames: "npm:^2.5.1"
     graphql: "npm:^16.14.2"
@@ -13098,10 +13036,6 @@ __metadata:
     "@webiny/react-properties": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
-    apollo-cache: "npm:^1.3.5"
-    apollo-client: "npm:^2.6.10"
-    apollo-link: "npm:^1.2.14"
-    apollo-utilities: "npm:^1.3.4"
     dot-prop-immutable: "npm:^2.1.1"
     graphql: "npm:^16.14.2"
     lodash: "npm:^4.18.1"
@@ -13239,16 +13173,10 @@ __metadata:
     "@webiny/app-workflows": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.2"
     "@webiny/lexical-editor-actions": "npm:0.0.0"
     "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/webhooks": "npm:0.0.0"
-    apollo-cache: "npm:^1.3.5"
-    apollo-client: "npm:^2.6.10"
-    apollo-link: "npm:^1.2.14"
-    apollo-link-batch-http: "npm:^1.2.14"
-    apollo-utilities: "npm:^1.3.4"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
@@ -13423,25 +13351,14 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.8"
-    apollo-cache: "npm:^1.3.5"
-    apollo-cache-inmemory: "npm:^1.6.6"
-    apollo-client: "npm:^2.6.10"
-    apollo-link: "npm:^1.2.14"
-    apollo-link-context: "npm:^1.0.20"
-    apollo-link-error: "npm:^1.1.13"
-    apollo-link-http-common: "npm:^0.2.16"
-    apollo-utilities: "npm:^1.3.4"
     graphql: "npm:^16.14.2"
     history: "npm:^5.3.0"
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.16.1"
-    nanoid: "npm:^5.1.15"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
-    ts-invariant: "npm:^0.10.3"
     type-fest: "npm:^5.7.0"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.9"
@@ -14691,17 +14608,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wry/context@npm:^0.4.0":
-  version: 0.4.4
-  resolution: "@wry/context@npm:0.4.4"
-  dependencies:
-    "@types/node": "npm:>=6"
-    tslib: "npm:^1.9.3"
-  checksum: 10/f1ad4c85f8c818ab6a57716d56e2d740bb71d05e58cd2bfabec9861a99792a1f989ceb1e635c946a05547e745c71a7948012ca511d207810c25e8b65c08ea22e
-  languageName: node
-  linkType: hard
-
-"@wry/equality@npm:^0.1.2, @wry/equality@npm:^0.1.9":
+"@wry/equality@npm:^0.1.2":
   version: 0.1.11
   resolution: "@wry/equality@npm:0.1.11"
   dependencies:
@@ -15119,21 +15026,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apollo-cache-inmemory@npm:^1.6.6":
-  version: 1.6.6
-  resolution: "apollo-cache-inmemory@npm:1.6.6"
-  dependencies:
-    apollo-cache: "npm:^1.3.5"
-    apollo-utilities: "npm:^1.3.4"
-    optimism: "npm:^0.10.0"
-    ts-invariant: "npm:^0.4.0"
-    tslib: "npm:^1.10.0"
-  peerDependencies:
-    graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: 10/236626eb23d204f9827b1c978f628737751c0f6f0b8b75b8f50ff65be9e13ee21f480e75e37ad41b63aa6f05289929be85cc6560298dea44f522e5771c5b2597
-  languageName: node
-  linkType: hard
-
 "apollo-cache@npm:1.3.5, apollo-cache@npm:^1.3.5":
   version: 1.3.5
   resolution: "apollo-cache@npm:1.3.5"
@@ -15174,64 +15066,6 @@ __metadata:
   peerDependencies:
     graphql: ^14.2.1 || ^15.0.0
   checksum: 10/7236488b75f5cb3b9297e59779d54aab0010eece6a5424632a3bf150a88941c3d15be3c2f2aa9110099829df0be689294ef7820529419814a425f05ef5e105d0
-  languageName: node
-  linkType: hard
-
-"apollo-link-batch-http@npm:^1.2.14":
-  version: 1.2.14
-  resolution: "apollo-link-batch-http@npm:1.2.14"
-  dependencies:
-    apollo-link: "npm:^1.2.14"
-    apollo-link-batch: "npm:^1.1.15"
-    apollo-link-http-common: "npm:^0.2.16"
-    tslib: "npm:^1.9.3"
-  peerDependencies:
-    graphql: ^0.11.0 || ^0.12.3 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: 10/ad49db89f9d349c23da72995f9b6b945bd0ec10d054145f14235cc6703777a84b0c22ced0bb218182e063ac9c70816f567f4eaa9ab4590dccdef79abee52d7c9
-  languageName: node
-  linkType: hard
-
-"apollo-link-batch@npm:^1.1.15":
-  version: 1.1.15
-  resolution: "apollo-link-batch@npm:1.1.15"
-  dependencies:
-    apollo-link: "npm:^1.2.14"
-    tslib: "npm:^1.9.3"
-  checksum: 10/1ec9bb3f91efa809a5ff18da2ad7888e223bf4e77d5ed6c7fdb2fa277bf63b2f1e64ba8c072545d87e0dc0173d6c24759bd9629f5889d66a20282f4c240966d5
-  languageName: node
-  linkType: hard
-
-"apollo-link-context@npm:^1.0.20":
-  version: 1.0.20
-  resolution: "apollo-link-context@npm:1.0.20"
-  dependencies:
-    apollo-link: "npm:^1.2.14"
-    tslib: "npm:^1.9.3"
-  checksum: 10/5e905e3dd364dafb8683beb07d60cc84378a96247f21b735194bd2aa70c8f0f8b7b066177a9a7e5549ca08f60901c58243e56fa61a1969436a61fdb9d0cb582b
-  languageName: node
-  linkType: hard
-
-"apollo-link-error@npm:^1.1.13":
-  version: 1.1.13
-  resolution: "apollo-link-error@npm:1.1.13"
-  dependencies:
-    apollo-link: "npm:^1.2.14"
-    apollo-link-http-common: "npm:^0.2.16"
-    tslib: "npm:^1.9.3"
-  checksum: 10/b417b77acbf464d8246eb79312c6d755f9d398c6c9f560c9e2270260519df639c3f0a8b9454ccc55c7f54eb57490706275ede120ecd7f475ec4627012feaf4b2
-  languageName: node
-  linkType: hard
-
-"apollo-link-http-common@npm:^0.2.16":
-  version: 0.2.16
-  resolution: "apollo-link-http-common@npm:0.2.16"
-  dependencies:
-    apollo-link: "npm:^1.2.14"
-    ts-invariant: "npm:^0.4.0"
-    tslib: "npm:^1.9.3"
-  peerDependencies:
-    graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: 10/8cf50fc8a10a0f1c6c6ddf4a3f76c4652e07e9dede52da020d3f430199dccf813fb9b953e8725b8621007405d626c270e67b994c60a974e5598021cd4d84e549
   languageName: node
   linkType: hard
 
@@ -23532,15 +23366,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"optimism@npm:^0.10.0":
-  version: 0.10.3
-  resolution: "optimism@npm:0.10.3"
-  dependencies:
-    "@wry/context": "npm:^0.4.0"
-  checksum: 10/c66d93f0202aa5fb7b89168491d132418fda8c6ba4107f4715fc82c9f8e05d400299f28966370b6df4ae2b836c1ad3dee46ff2ca02a8e28136cbec2110ed3a4a
-  languageName: node
-  linkType: hard
-
 "ora@npm:9.4.1":
   version: 9.4.1
   resolution: "ora@npm:9.4.1"
@@ -28467,16 +28292,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-invariant@npm:^0.10.3":
-  version: 0.10.3
-  resolution: "ts-invariant@npm:0.10.3"
-  dependencies:
-    tslib: "npm:^2.1.0"
-  checksum: 10/bb07d56fe4aae69d8860e0301dfdee2d375281159054bc24bf1e49e513fb0835bf7f70a11351344d213a79199c5e695f37ebbf5a447188a377ce0cd81d91ddb5
-  languageName: node
-  linkType: hard
-
-"ts-invariant@npm:^0.4.0, ts-invariant@npm:^0.4.4":
+"ts-invariant@npm:^0.4.0":
   version: 0.4.4
   resolution: "ts-invariant@npm:0.4.4"
   dependencies:

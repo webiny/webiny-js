@@ -3,18 +3,10 @@ import { GraphiQL } from "graphiql";
 import { createGraphiQLFetcher } from "@graphiql/toolkit";
 import { plugins } from "@webiny/plugins";
 import { useIdentity } from "@webiny/app-admin";
-import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 import { useFeature } from "@webiny/app";
 import { AuthenticationContextFeature } from "@webiny/app-admin/features/security/AuthenticationContext/feature.js";
 import type { GraphQLPlaygroundTabPlugin } from "~/types.js";
 import "graphiql/style.css";
-
-interface ITab {
-    name: string;
-    endpoint: string;
-    headers: Record<string, string>;
-    query: string;
-}
 
 const Playground = () => {
     const { identity } = useIdentity();
@@ -25,10 +17,10 @@ const Playground = () => {
             .byType<GraphQLPlaygroundTabPlugin>("graphql-playground-tab")
             .map(pl =>
                 pl.tab({
-                    identity: identity as Identity
+                    identity: identity
                 })
             )
-            .filter(Boolean) as ITab[];
+            .filter(Boolean);
     }, [identity]);
 
     const firstTab = tabs[0];
