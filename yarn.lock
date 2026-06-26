@@ -2637,50 +2637,51 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/cli@npm:^21.0.2":
-  version: 21.0.2
-  resolution: "@commitlint/cli@npm:21.0.2"
+"@commitlint/cli@npm:^21.1.0":
+  version: 21.1.0
+  resolution: "@commitlint/cli@npm:21.1.0"
   dependencies:
-    "@commitlint/format": "npm:^21.0.1"
-    "@commitlint/lint": "npm:^21.0.2"
-    "@commitlint/load": "npm:^21.0.2"
-    "@commitlint/read": "npm:^21.0.2"
-    "@commitlint/types": "npm:^21.0.1"
+    "@commitlint/config-conventional": "npm:^21.1.0"
+    "@commitlint/format": "npm:^21.1.0"
+    "@commitlint/lint": "npm:^21.1.0"
+    "@commitlint/load": "npm:^21.1.0"
+    "@commitlint/read": "npm:^21.1.0"
+    "@commitlint/types": "npm:^21.1.0"
     tinyexec: "npm:^1.0.0"
     yargs: "npm:^18.0.0"
   bin:
     commitlint: cli.js
-  checksum: 10/70a46f3eb13ab1cb315ed03fc1faad8b452de280c677b1116fb240561ae3a70a982a7a9aee2073ddff39a004f991d5fdcebc71ccd0c8591e6ebf155afa4e8140
+  checksum: 10/dd9091243067a01831cc18d5b821ecde53c2460e9565e7e6a384b7aad6b3063a1b68a14f46680d4048dafda29dab824b540b65cf1214d8752dfe9ab58bc9c062
   languageName: node
   linkType: hard
 
-"@commitlint/config-conventional@npm:^21.0.2":
-  version: 21.0.2
-  resolution: "@commitlint/config-conventional@npm:21.0.2"
+"@commitlint/config-conventional@npm:^21.1.0":
+  version: 21.1.0
+  resolution: "@commitlint/config-conventional@npm:21.1.0"
   dependencies:
-    "@commitlint/types": "npm:^21.0.1"
+    "@commitlint/types": "npm:^21.1.0"
     conventional-changelog-conventionalcommits: "npm:^9.2.0"
-  checksum: 10/7eba44bf097c60a9be5c041b474af466f8060089d0a6fa0056a33bb2b41b2f6193b977a0f677ab8febf16fc1786d3c4465e6d420d8a7520cda509bd6d1b57b51
+  checksum: 10/193e191d5445b995f229aa6b97e3f96702001d20e85253edbd3067d95a6567b3a367382bf7b728950412824f1dfdb958d71295caf14e23f84f336045c1e838d7
   languageName: node
   linkType: hard
 
-"@commitlint/config-validator@npm:^21.0.1":
-  version: 21.0.1
-  resolution: "@commitlint/config-validator@npm:21.0.1"
+"@commitlint/config-validator@npm:^21.1.0":
+  version: 21.1.0
+  resolution: "@commitlint/config-validator@npm:21.1.0"
   dependencies:
-    "@commitlint/types": "npm:^21.0.1"
+    "@commitlint/types": "npm:^21.1.0"
     ajv: "npm:^8.11.0"
-  checksum: 10/28347e5dbe73e1966b7fde96fe7e9aac5b09d2bba78848e00d537f7b5c9a7844536d51381f9fc3fdd0ab080d24d3deaf8a68c6f4cdf34c98cdbf5ecf6ece1505
+  checksum: 10/08f9a19b96e0377edf4ac5e727958425d175a804b504945ab067f0318b65e5c4dad1163b04a4256567b549498439d2859d889d3a8526a09e86c97b3fab019faf
   languageName: node
   linkType: hard
 
-"@commitlint/ensure@npm:^21.0.1":
-  version: 21.0.1
-  resolution: "@commitlint/ensure@npm:21.0.1"
+"@commitlint/ensure@npm:^21.1.0":
+  version: 21.1.0
+  resolution: "@commitlint/ensure@npm:21.1.0"
   dependencies:
-    "@commitlint/types": "npm:^21.0.1"
+    "@commitlint/types": "npm:^21.1.0"
     es-toolkit: "npm:^1.46.0"
-  checksum: 10/93996c5bc2bcd82dda83d9f45476111f15ccd60bb794af65e3fdfa7ef5adcbc60d5383f0b13687c7adb04e68097eedcb9fc3c68e28937f6ae4d8ab4f54c66156
+  checksum: 10/9e2008028b1e9c449116135baf230802d395c15b2af8140eaa08158789dcb98f7831828a04838b41a125910322b04127b4d04a3fa301253f5be7f100cc480bf3
   languageName: node
   linkType: hard
 
@@ -2691,52 +2692,52 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/format@npm:^21.0.1":
-  version: 21.0.1
-  resolution: "@commitlint/format@npm:21.0.1"
+"@commitlint/format@npm:^21.1.0":
+  version: 21.1.0
+  resolution: "@commitlint/format@npm:21.1.0"
   dependencies:
-    "@commitlint/types": "npm:^21.0.1"
+    "@commitlint/types": "npm:^21.1.0"
     picocolors: "npm:^1.1.1"
-  checksum: 10/dafa8a1bc28fba4911ceef7ddd2e6c2291cc8c57cad8e6836f269ff86edc561d2add667fab3eee6855cf194bc31d26d0122f9d04007f7ed66bc5b4c7c913f037
+  checksum: 10/da1ae8fdd23885769c149fc3474aeeea8251ce5c43f86e926f2f07d4ae5496048687cf18582772e2b2796e223c9b7ce57e9ee20a68576e05d68c9376eb8d2c86
   languageName: node
   linkType: hard
 
-"@commitlint/is-ignored@npm:^21.0.2":
-  version: 21.0.2
-  resolution: "@commitlint/is-ignored@npm:21.0.2"
+"@commitlint/is-ignored@npm:^21.1.0":
+  version: 21.1.0
+  resolution: "@commitlint/is-ignored@npm:21.1.0"
   dependencies:
-    "@commitlint/types": "npm:^21.0.1"
+    "@commitlint/types": "npm:^21.1.0"
     semver: "npm:^7.6.0"
-  checksum: 10/9ecfa4fe1d7dd73434f678f2e366d33e8d93213d63e5622d59d2216a25f82c1c89216ff747a02aa9f4edf6005ac15a022d3dbf1fd9553a35a67cb0fcb4b00ea4
+  checksum: 10/d3ad1aad0e1eca502aa3dd8582bdfb55d4301068629323546e4f9369903f9535fc570c7acd003d44aa783ac07340ebbc22ccf8ed769c68133eedf203a957c1d7
   languageName: node
   linkType: hard
 
-"@commitlint/lint@npm:^21.0.2":
-  version: 21.0.2
-  resolution: "@commitlint/lint@npm:21.0.2"
+"@commitlint/lint@npm:^21.1.0":
+  version: 21.1.0
+  resolution: "@commitlint/lint@npm:21.1.0"
   dependencies:
-    "@commitlint/is-ignored": "npm:^21.0.2"
-    "@commitlint/parse": "npm:^21.0.2"
-    "@commitlint/rules": "npm:^21.0.2"
-    "@commitlint/types": "npm:^21.0.1"
-  checksum: 10/4b13a3aaa4110343786d4a4aa99cd999a6c6768023ecde5a33a58c43d79a13f801037ef5a8ea93277f7b0ebd39298fa9c4880b477917f181ca98ba07a2c91aca
+    "@commitlint/is-ignored": "npm:^21.1.0"
+    "@commitlint/parse": "npm:^21.1.0"
+    "@commitlint/rules": "npm:^21.1.0"
+    "@commitlint/types": "npm:^21.1.0"
+  checksum: 10/d05299b6bd638dee652d88d5a22efdfc1716ae248f823d2499915c9aa3bcfd09f2bef2b70fbe82b06101d527b61bb7826e606ad3dd1e6017d62f91a05729556a
   languageName: node
   linkType: hard
 
-"@commitlint/load@npm:^21.0.2":
-  version: 21.0.2
-  resolution: "@commitlint/load@npm:21.0.2"
+"@commitlint/load@npm:^21.1.0":
+  version: 21.1.0
+  resolution: "@commitlint/load@npm:21.1.0"
   dependencies:
-    "@commitlint/config-validator": "npm:^21.0.1"
+    "@commitlint/config-validator": "npm:^21.1.0"
     "@commitlint/execute-rule": "npm:^21.0.1"
-    "@commitlint/resolve-extends": "npm:^21.0.1"
-    "@commitlint/types": "npm:^21.0.1"
+    "@commitlint/resolve-extends": "npm:^21.1.0"
+    "@commitlint/types": "npm:^21.1.0"
     cosmiconfig: "npm:^9.0.1"
     cosmiconfig-typescript-loader: "npm:^6.1.0"
     es-toolkit: "npm:^1.46.0"
     is-plain-obj: "npm:^4.1.0"
     picocolors: "npm:^1.1.1"
-  checksum: 10/926bd4cfbcc520e34afdb6ee2c8f7f3cff6aeb537d3206ad289d965b9d215183d805b54b36798359e658d4630f7087e81edcddff35401c39abc76e77e9a85071
+  checksum: 10/8ea8455fa901ee10838786296a4da05071219a40c81d3309f3bcd7ad21a12cde79b0d7b1f93a1b3cbd9fe509cc4e34d1f5b882968d28679e48305edb058ae5e2
   languageName: node
   linkType: hard
 
@@ -2747,51 +2748,51 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/parse@npm:^21.0.2":
-  version: 21.0.2
-  resolution: "@commitlint/parse@npm:21.0.2"
+"@commitlint/parse@npm:^21.1.0":
+  version: 21.1.0
+  resolution: "@commitlint/parse@npm:21.1.0"
   dependencies:
-    "@commitlint/types": "npm:^21.0.1"
+    "@commitlint/types": "npm:^21.1.0"
     conventional-changelog-angular: "npm:^8.2.0"
     conventional-commits-parser: "npm:^6.3.0"
-  checksum: 10/4394b8da776f11f2bff07435641c71fd8481055d43805430b3f2678cbf4cca2cf52333b4e080e606e791ceff165844da36f48da7346ca5518f96ec18cba93bd2
+  checksum: 10/828d82881397f24fcde20c82d4590f4cea30bccf067d5a4bb9a642a6b95136a8b017151fdcf96b1eeec31a2ee1163b48bdf57b40e8f91dae3a3de7f932f00e30
   languageName: node
   linkType: hard
 
-"@commitlint/read@npm:^21.0.2":
-  version: 21.0.2
-  resolution: "@commitlint/read@npm:21.0.2"
+"@commitlint/read@npm:^21.1.0":
+  version: 21.1.0
+  resolution: "@commitlint/read@npm:21.1.0"
   dependencies:
     "@commitlint/top-level": "npm:^21.0.2"
-    "@commitlint/types": "npm:^21.0.1"
+    "@commitlint/types": "npm:^21.1.0"
     git-raw-commits: "npm:^5.0.0"
     tinyexec: "npm:^1.0.0"
-  checksum: 10/72281a9597cc8bc2d370bf1d53dc0e32e89a9fc288bc2024fb0dec410471b3973b6837c8e5da25a94432b31d45c6dc44f78d73fa9d37b82da940a6de986f6b70
+  checksum: 10/fde3fd91d6c4ddf8ff6aa5ff1f85bd9cd8f89b614f597f4476f63f4fad128e987e7889e3c6914e04b2e01d15adb4477f655495552f7216525ed68634c6b104f7
   languageName: node
   linkType: hard
 
-"@commitlint/resolve-extends@npm:^21.0.1":
-  version: 21.0.1
-  resolution: "@commitlint/resolve-extends@npm:21.0.1"
+"@commitlint/resolve-extends@npm:^21.1.0":
+  version: 21.1.0
+  resolution: "@commitlint/resolve-extends@npm:21.1.0"
   dependencies:
-    "@commitlint/config-validator": "npm:^21.0.1"
-    "@commitlint/types": "npm:^21.0.1"
+    "@commitlint/config-validator": "npm:^21.1.0"
+    "@commitlint/types": "npm:^21.1.0"
     es-toolkit: "npm:^1.46.0"
     global-directory: "npm:^5.0.0"
     resolve-from: "npm:^5.0.0"
-  checksum: 10/55f8e06e7e652dddf89b00420bdde713cec9f900484d37dbe65edbed319ffd3ec644765c9d9aef582e191b4b99d318cdbbb101cf471f474dc5d18ff2f07068f4
+  checksum: 10/11523dcd92099515b416db53ac6e67c40dbf3b18c5497691efd076f9f5edd80dd27c35de248a9ba693ca0d5d2efa9a8e4eece261b82c2ceb0339f0aff4b61fb8
   languageName: node
   linkType: hard
 
-"@commitlint/rules@npm:^21.0.2":
-  version: 21.0.2
-  resolution: "@commitlint/rules@npm:21.0.2"
+"@commitlint/rules@npm:^21.1.0":
+  version: 21.1.0
+  resolution: "@commitlint/rules@npm:21.1.0"
   dependencies:
-    "@commitlint/ensure": "npm:^21.0.1"
+    "@commitlint/ensure": "npm:^21.1.0"
     "@commitlint/message": "npm:^21.0.2"
     "@commitlint/to-lines": "npm:^21.0.1"
-    "@commitlint/types": "npm:^21.0.1"
-  checksum: 10/f3d9d8fbc8bafd64e8d6d3ec8210e6f404a5e19b30983e95348d20fd7b24fc20d7fda231acacdf8a4d9b1e82b8acbb30151095f022046c3518405c96d4a39f9b
+    "@commitlint/types": "npm:^21.1.0"
+  checksum: 10/cb45e110c9a6dd43c574d8ac9f41624b15155fb55e8a491e13fc49b7dfe4474414714d94978e2a2139d2a1eebf5b8238dc3cb14acb5528a591cdebc5ffe31a3b
   languageName: node
   linkType: hard
 
@@ -2811,13 +2812,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/types@npm:^21.0.1":
-  version: 21.0.1
-  resolution: "@commitlint/types@npm:21.0.1"
+"@commitlint/types@npm:^21.1.0":
+  version: 21.1.0
+  resolution: "@commitlint/types@npm:21.1.0"
   dependencies:
     conventional-commits-parser: "npm:^6.3.0"
     picocolors: "npm:^1.1.1"
-  checksum: 10/b82574ce2bf6455f8857e5df412170c9abd9bea4d0980f939ea5b762901fbb888fb51486a897e16f210d39edaa51c5b581dafd179f4519bc95178603bf4401d8
+  checksum: 10/f2ce1870beaaa2de74278ea7a526844623da4c6a7d12dd39a42a2eba451b9c85a397100908eb7f4746efa1e6748fd97fb705ce8dfb99f7ef52a464e70b2b07a9
   languageName: node
   linkType: hard
 
@@ -3728,22 +3729,6 @@ __metadata:
     react: ^18 || ^19
     react-dom: ^18 || ^19
   checksum: 10/e213f661d4be0502a9eafcd3cfb5639b199c442bca169e143d8d784c5685773c7a86f1fb1c89ccc3548254a98bff48bdb04be738f15695177e7d9b14a0aa157c
-  languageName: node
-  linkType: hard
-
-"@graphiql/toolkit@npm:^0.11.3":
-  version: 0.11.3
-  resolution: "@graphiql/toolkit@npm:0.11.3"
-  dependencies:
-    "@n1ru4l/push-pull-async-iterable-iterator": "npm:^3.1.0"
-    meros: "npm:^1.1.4"
-  peerDependencies:
-    graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
-    graphql-ws: ">= 4.5.0"
-  peerDependenciesMeta:
-    graphql-ws:
-      optional: true
-  checksum: 10/a28d5261900bff00ca550963f9b0fba035e63b87dbed5c4c1fd1dd5a8963d2c614a9161af58fd4782027b86874be2403cb3e86514567e25dce171ba9823ddc62
   languageName: node
   linkType: hard
 
@@ -10792,13 +10777,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/zen-observable@npm:^0.8.0":
-  version: 0.8.7
-  resolution: "@types/zen-observable@npm:0.8.7"
-  checksum: 10/6d4cdccded97f8e21b18224a70524e559abe2568863ed21ea000580aa3446c6d583253e83e8ecc0c93b4060ef3fb7f9d14739a57ee18925cc30e0e7d79713a15
-  languageName: node
-  linkType: hard
-
 "@vercel/oidc@npm:3.2.0":
   version: 3.2.0
   resolution: "@vercel/oidc@npm:3.2.0"
@@ -12307,7 +12285,6 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    apollo-graphql: "npm:^0.9.7"
     dot-prop-immutable: "npm:^2.1.1"
     graphql: "npm:^16.14.2"
     graphql-tag: "npm:^2.12.7"
@@ -12728,8 +12705,6 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    apollo-client: "npm:^2.6.10"
-    apollo-link: "npm:^1.2.14"
     graphql: "npm:^16.14.2"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.16.1"
@@ -12896,10 +12871,6 @@ __metadata:
     "@webiny/react-properties": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
-    apollo-cache: "npm:^1.3.5"
-    apollo-client: "npm:^2.6.10"
-    apollo-link: "npm:^1.2.14"
-    apollo-utilities: "npm:^1.3.4"
     bytes: "npm:^3.1.2"
     dayjs: "npm:^1.11.21"
     lodash: "npm:^4.18.1"
@@ -12921,7 +12892,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-graphql-playground@workspace:packages/app-graphql-playground"
   dependencies:
-    "@graphiql/toolkit": "npm:^0.11.3"
+    "@graphiql/toolkit": "npm:^0.12.1"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -13324,7 +13295,6 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
-    apollo-client: "npm:^2.6.10"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.16.1"
     mobx-react-lite: "npm:^4.1.1"
@@ -14609,15 +14579,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wry/equality@npm:^0.1.2":
-  version: 0.1.11
-  resolution: "@wry/equality@npm:0.1.11"
-  dependencies:
-    tslib: "npm:^1.9.3"
-  checksum: 10/b3672e3c1be3b19589eff5135af835dc84ba57c1caddd6d37ec2f1910fb4054ac2693c48d39750bcad21e733d7652169b6842ebb2cbf7a1a835502fec7f86480
-  languageName: node
-  linkType: hard
-
 "@xmldom/xmldom@npm:^0.9.10":
   version: 0.9.10
   resolution: "@xmldom/xmldom@npm:0.9.10"
@@ -15024,91 +14985,6 @@ __metadata:
   version: 1.1.8
   resolution: "apache-md5@npm:1.1.8"
   checksum: 10/3eb1f82fbd6f42a8bdb4d3558c3d86758351cd7fee23a0a65f29141adac306a5c3fc2a74c55ed07b0383fc74250c735801d2fec6d53732762a2660ecfc0567ff
-  languageName: node
-  linkType: hard
-
-"apollo-cache@npm:1.3.5, apollo-cache@npm:^1.3.5":
-  version: 1.3.5
-  resolution: "apollo-cache@npm:1.3.5"
-  dependencies:
-    apollo-utilities: "npm:^1.3.4"
-    tslib: "npm:^1.10.0"
-  peerDependencies:
-    graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: 10/e8caf52f467fcd2cd84c050c0030648ff7873de98e6e8c04ce80ce4b8191c48135a21503247c6fa5b50e68db681dda6614a79bf07acc56b62346acd1958ca3a8
-  languageName: node
-  linkType: hard
-
-"apollo-client@npm:^2.6.10":
-  version: 2.6.10
-  resolution: "apollo-client@npm:2.6.10"
-  dependencies:
-    "@types/zen-observable": "npm:^0.8.0"
-    apollo-cache: "npm:1.3.5"
-    apollo-link: "npm:^1.0.0"
-    apollo-utilities: "npm:1.3.4"
-    symbol-observable: "npm:^1.0.2"
-    ts-invariant: "npm:^0.4.0"
-    tslib: "npm:^1.10.0"
-    zen-observable: "npm:^0.8.0"
-  peerDependencies:
-    graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: 10/ac1fd22fdfe879795e18f693664cf500e9fdedce0f28bc7b47a60b4752a7b4db659f223c133bdddb75dc58f626864cd105ac5537e505d0458b57c8f598fb91ff
-  languageName: node
-  linkType: hard
-
-"apollo-graphql@npm:^0.9.7":
-  version: 0.9.7
-  resolution: "apollo-graphql@npm:0.9.7"
-  dependencies:
-    core-js-pure: "npm:^3.10.2"
-    lodash.sortby: "npm:^4.7.0"
-    sha.js: "npm:^2.4.11"
-  peerDependencies:
-    graphql: ^14.2.1 || ^15.0.0
-  checksum: 10/7236488b75f5cb3b9297e59779d54aab0010eece6a5424632a3bf150a88941c3d15be3c2f2aa9110099829df0be689294ef7820529419814a425f05ef5e105d0
-  languageName: node
-  linkType: hard
-
-"apollo-link@npm:1.2.14":
-  version: 1.2.14
-  resolution: "apollo-link@npm:1.2.14"
-  dependencies:
-    apollo-utilities: "npm:^1.3.0"
-    ts-invariant: "npm:^0.4.0"
-    tslib: "npm:^1.9.3"
-    zen-observable-ts: "npm:^0.8.21"
-  peerDependencies:
-    graphql: ^0.11.3 || ^0.12.3 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: 10/92e6764038761bef8526b87b21b0a820067ad0f462c2a007d686e9a6f35bfc26b5ed232cc58301c660d28f9fdb2765edcd99e8e4bdf0b32226ec28f95ffcd212
-  languageName: node
-  linkType: hard
-
-"apollo-link@patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 1.2.14
-  resolution: "apollo-link@patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch::version=1.2.14&hash=7a5c8e&locator=root-workspace-0b6124%40workspace%3A."
-  dependencies:
-    apollo-utilities: "npm:^1.3.0"
-    ts-invariant: "npm:^0.4.0"
-    tslib: "npm:^1.9.3"
-    zen-observable-ts: "npm:^0.8.21"
-  peerDependencies:
-    graphql: ^0.11.3 || ^0.12.3 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: 10/30b274807303c8a97dc394a2693a3a1abf890c09ac5d63f127cbb126d8cd57cd52771defd0cba05b5504267baf35b9b5028ce78782608ae1a0ef919a7e80b1a9
-  languageName: node
-  linkType: hard
-
-"apollo-utilities@npm:1.3.4, apollo-utilities@npm:^1.3.0, apollo-utilities@npm:^1.3.4":
-  version: 1.3.4
-  resolution: "apollo-utilities@npm:1.3.4"
-  dependencies:
-    "@wry/equality": "npm:^0.1.2"
-    fast-json-stable-stringify: "npm:^2.0.0"
-    ts-invariant: "npm:^0.4.0"
-    tslib: "npm:^1.10.0"
-  peerDependencies:
-    graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: 10/6243ef74167996a7ec4ce2f4bd63c126de531a828ae0a2f07e0b47ca2308f6fed3a521603ed85ee3c08e8eb86ce48e9a3d7a205403112113966653fae4401e8b
   languageName: node
   linkType: hard
 
@@ -16741,13 +16617,6 @@ __metadata:
   dependencies:
     browserslist: "npm:^4.28.1"
   checksum: 10/eb35ad9b31a613092d32e5eb0c9fecb695e680bb29509fe04ae297ef790cea47d06864ef8939c8f5f189cce0bd2807fef8b2d6450f7eeb917ffaaf38a775dece
-  languageName: node
-  linkType: hard
-
-"core-js-pure@npm:^3.10.2":
-  version: 3.49.0
-  resolution: "core-js-pure@npm:3.49.0"
-  checksum: 10/ae769f3df1b8b1dd6a1620090a12d3cafb6ba2f9a835aaf23cb837666dbee1495d308ac28344879898e2229b635e93f15ec0dc9879fa1f0cf4891d2be75d73ea
   languageName: node
   linkType: hard
 
@@ -21844,13 +21713,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.sortby@npm:^4.7.0":
-  version: 4.7.0
-  resolution: "lodash.sortby@npm:4.7.0"
-  checksum: 10/38df19ae28608af2c50ac342fc1f414508309d53e1d58ed9adfb2c3cd17c3af290058c0a0478028d932c5404df3d53349d19fa364ef6bed6145a6bc21320399e
-  languageName: node
-  linkType: hard
-
 "lodash.uniqby@npm:4.5.0":
   version: 4.5.0
   resolution: "lodash.uniqby@npm:4.5.0"
@@ -25892,8 +25754,8 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@babel/code-frame": "npm:^8.0.0"
-    "@commitlint/cli": "npm:^21.0.2"
-    "@commitlint/config-conventional": "npm:^21.0.2"
+    "@commitlint/cli": "npm:^21.1.0"
+    "@commitlint/config-conventional": "npm:^21.1.0"
     "@grpc/grpc-js": "npm:^1.14.4"
     "@lexical/code": "npm:^0.45.0"
     "@lexical/hashtag": "npm:^0.45.0"
@@ -26618,19 +26480,6 @@ __metadata:
   version: 1.2.0
   resolution: "setprototypeof@npm:1.2.0"
   checksum: 10/fde1630422502fbbc19e6844346778f99d449986b2f9cdcceb8326730d2f3d9964dbcb03c02aaadaefffecd0f2c063315ebea8b3ad895914bf1afc1747fc172e
-  languageName: node
-  linkType: hard
-
-"sha.js@npm:^2.4.11":
-  version: 2.4.12
-  resolution: "sha.js@npm:2.4.12"
-  dependencies:
-    inherits: "npm:^2.0.4"
-    safe-buffer: "npm:^5.2.1"
-    to-buffer: "npm:^1.2.0"
-  bin:
-    sha.js: bin.js
-  checksum: 10/39c0993592c2ab34eb2daae2199a2a1d502713765aecb611fd97c0c4ab7cd53e902d628e1962aaf384bafd28f55951fef46dcc78799069ce41d74b03aa13b5a7
   languageName: node
   linkType: hard
 
@@ -27718,13 +27567,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"symbol-observable@npm:^1.0.2":
-  version: 1.2.0
-  resolution: "symbol-observable@npm:1.2.0"
-  checksum: 10/4684327a2fef2453dcd4238b5bd8f69c460a4708fb8c024a824c6a707ca644b2b2a586e36e5197d0d1162ff48e288299a48844a8c46274ffcfd9260e03df7692
-  languageName: node
-  linkType: hard
-
 "symbol-tree@npm:^3.2.4":
   version: 3.2.4
   resolution: "symbol-tree@npm:3.2.4"
@@ -28117,7 +27959,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"to-buffer@npm:^1.1.1, to-buffer@npm:^1.2.0":
+"to-buffer@npm:^1.1.1":
   version: 1.2.2
   resolution: "to-buffer@npm:1.2.2"
   dependencies:
@@ -28293,15 +28135,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-invariant@npm:^0.4.0":
-  version: 0.4.4
-  resolution: "ts-invariant@npm:0.4.4"
-  dependencies:
-    tslib: "npm:^1.9.3"
-  checksum: 10/dd6f268aa358f9d28dec0b8539667cc9829eaac588438a78a422079a1b3b9a98a96306f862a745b0581173528d11a6aeff861c6e3a988d65a113a82e55a5f409
-  languageName: node
-  linkType: hard
-
 "ts-morph@npm:^28.0.0":
   version: 28.0.0
   resolution: "ts-morph@npm:28.0.0"
@@ -28330,7 +28163,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:1.14.1, tslib@npm:^1.10.0, tslib@npm:^1.11.1, tslib@npm:^1.8.1, tslib@npm:^1.9.3":
+"tslib@npm:1.14.1, tslib@npm:^1.11.1, tslib@npm:^1.8.1":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: 10/7dbf34e6f55c6492637adb81b555af5e3b4f9cc6b998fb440dac82d3b42bdc91560a35a5fb75e20e24a076c651438234da6743d139e4feabf0783f3cdfe1dddb
@@ -29804,23 +29637,6 @@ __metadata:
     toposort: "npm:^2.0.2"
     type-fest: "npm:^2.19.0"
   checksum: 10/90cef0ebe3ba37d329e9e3f2a7a20b3d84572aeccffd81681e5eaaf6145cb03c0737603f3f57bc60723592cc0323886e69f4e0f76ccb299ca3f9ce8ead3b6496
-  languageName: node
-  linkType: hard
-
-"zen-observable-ts@npm:^0.8.21":
-  version: 0.8.21
-  resolution: "zen-observable-ts@npm:0.8.21"
-  dependencies:
-    tslib: "npm:^1.9.3"
-    zen-observable: "npm:^0.8.0"
-  checksum: 10/557b614e8c7394ec9fe5658c67a3883c3aa329360659a3f9be5b5288142c8cdcbc3a02c10416414ebdde1607a9e052ace58e3cf19f276391b93b24063c8a649f
-  languageName: node
-  linkType: hard
-
-"zen-observable@npm:^0.8.0":
-  version: 0.8.15
-  resolution: "zen-observable@npm:0.8.15"
-  checksum: 10/30eac3f4055d33f446b4cd075d3543da347c2c8e68fbc35c3f5a19fb43be67c6ed27ee136bc8f8933efa547be7ce04957809ad00ee7f1b00a964f199ae6fb514
   languageName: node
   linkType: hard
 

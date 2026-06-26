@@ -13,7 +13,7 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@graphiql/toolkit": "^0.11.3",
+    "@graphiql/toolkit": "^0.12.1",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
