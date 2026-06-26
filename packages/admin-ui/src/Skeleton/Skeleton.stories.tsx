@@ -16,6 +16,10 @@ const meta: Meta<typeof Skeleton> = {
         size: {
             control: "select",
             options: ["xs", "sm", "md", "lg", "xl", "xxl", "3xl"]
+        },
+        shade: {
+            control: "select",
+            options: ["dark", "light"]
         }
     }
 };
@@ -101,10 +105,23 @@ export const TripleExtraLarge: Story = {
     }
 };
 
+export const Dark: Story = {
+    args: {
+        shade: "dark"
+    }
+};
+
+export const Light: Story = {
+    args: {
+        shade: "light"
+    }
+};
+
 export const Documentation: Story = {
     args: {
         type: "area",
-        size: "lg"
+        size: "lg",
+        shade: "dark"
     },
     argTypes: {
         type: {
@@ -116,6 +133,11 @@ export const Documentation: Story = {
             control: "select",
             description: "The size of the skeleton",
             options: ["xs", "sm", "md", "lg", "xl", "xxl", "3xl"]
+        },
+        shade: {
+            control: "select",
+            description: "The shade of the skeleton",
+            options: ["dark", "light"]
         }
     }
 };

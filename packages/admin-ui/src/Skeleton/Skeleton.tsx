@@ -1,7 +1,7 @@
 import React from "react";
 import { cn, cva, type VariantProps, makeDecoratable } from "~/utils.js";
 
-const skeletonVariants = cva("animate-skeleton-pulse rounded-sm", {
+const skeletonVariants = cva("rounded-sm", {
     variants: {
         type: {
             text: "w-full",
@@ -16,6 +16,10 @@ const skeletonVariants = cva("animate-skeleton-pulse rounded-sm", {
             xl: "h-xl",
             xxl: "h-[40px]",
             "3xl": "h-xxl"
+        },
+        shade: {
+            dark: "animate-skeleton-pulse",
+            light: "animate-skeleton-pulse-light"
         }
     },
     compoundVariants: [
@@ -33,15 +37,16 @@ const skeletonVariants = cva("animate-skeleton-pulse rounded-sm", {
     ],
     defaultVariants: {
         type: "area",
-        size: "lg"
+        size: "lg",
+        shade: "dark"
     }
 });
 
 interface SkeletonProps
     extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof skeletonVariants> {}
 
-const DecoratableSkeleton = ({ size, type, className, ...props }: SkeletonProps) => {
-    return <div className={cn(skeletonVariants({ size, type }), className)} {...props} />;
+const DecoratableSkeleton = ({ size, type, shade, className, ...props }: SkeletonProps) => {
+    return <div className={cn(skeletonVariants({ size, type, shade }), className)} {...props} />;
 };
 
 const Skeleton = makeDecoratable("Skeleton", DecoratableSkeleton);

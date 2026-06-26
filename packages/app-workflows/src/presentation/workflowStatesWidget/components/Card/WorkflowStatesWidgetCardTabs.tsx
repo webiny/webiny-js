@@ -2,9 +2,10 @@ import React, { useMemo } from "react";
 import type {
     IWorkflowStatesWidgetPresenter,
     IWorkflowStatesWidgetPresenterViewModel
-} from "~/presentation/workflowStatesWidget/abstractions.js";
-import { Loader, Tabs } from "@webiny/admin-ui";
+} from "../../abstractions.js";
+import { Tabs } from "@webiny/admin-ui";
 import { WorkflowStateList } from "../List/WorkflowStateList.js";
+import { WorkflowStateListSkeleton } from "../List/WorkflowStateListSkeleton.js";
 import { observer } from "mobx-react-lite";
 import { WorkflowStateValue } from "~/types.js";
 
@@ -69,8 +70,31 @@ export const WorkflowStatesWidgetCardTabs = observer(
 
         const activeTab = getActiveTab(presenter.vm);
 
-        if (presenter.vm.loading) {
-            return <Loader />;
+        // `loading` flips to `false` as soon as the queries resolve, but `vm.values` is
+        // populated a tick later. Until we have a resolved active tab, render the loading state
+        // so the uncontrolled `Tabs` doesn't mount with an `undefined` default (which leaves all
+        // tabs inactive and their content hidden until the user clicks one). While loading we
+        // still render the full `Tabs` (with `loading` triggers and skeleton content) so the
+        // layout doesn't jump once the data resolves and the skeletons turn into real text/rows.
+        if (presenter.vm.loading || !activeTab) {
+            const loadingTabs = presenter.vm.states.map(tab => (
+                <Tabs.Tab
+                    key={tab}
+                    value={tab}
+                    trigger={names[tab] || ""}
+                    content={<WorkflowStateListSkeleton />}
+                />
+            ));
+
+            return (
+                <Tabs
+                    spacing={"lg"}
+                    separator={true}
+                    loading={true}
+                    defaultValue={presenter.vm.states[0]}
+                    tabs={loadingTabs}
+                />
+            );
         }
 
         return (

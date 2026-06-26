@@ -13202,6 +13202,7 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
+    apollo-client: "npm:^2.6.10"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.16.1"
     mobx-react-lite: "npm:^4.1.1"

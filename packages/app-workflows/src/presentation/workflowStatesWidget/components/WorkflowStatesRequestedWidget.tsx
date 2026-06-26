@@ -27,9 +27,9 @@ export const WorkflowStatesRequestedWidget = () => {
     return (
         <WorkflowStateWidgetCard
             title={
-                <>
+                <span>
                     <span className={"text-accent-primary"}>Content Reviews</span> assigned to me
-                </>
+                </span>
             }
         />
     );
