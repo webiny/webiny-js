@@ -33,9 +33,7 @@ interface ListFilesError {
 
 type ListCustomIconsResponse = {
     fileManager: {
-        listFiles:
-            | { data: CustomIconFile[]; error: null }
-            | { data: null; error: ListFilesError };
+        listFiles: { data: CustomIconFile[]; error: null } | { data: null; error: ListFilesError };
     };
 };
 

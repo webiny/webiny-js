@@ -12550,7 +12550,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-aco@workspace:packages/app-aco"
   dependencies:
-    "@apollo/react-hooks": "npm:^3.1.5"
     "@types/react": "npm:18.3.31"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
@@ -12570,7 +12569,6 @@ __metadata:
     apollo-client: "npm:^2.6.10"
     apollo-link: "npm:^1.2.14"
     graphql: "npm:^16.14.2"
-    graphql-tag: "npm:^2.12.7"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.16.1"
     mobx-react-lite: "npm:^4.1.1"
@@ -12608,7 +12606,6 @@ __metadata:
   resolution: "@webiny/app-admin@workspace:packages/app-admin"
   dependencies:
     "@apollo/react-components": "npm:^3.1.5"
-    "@apollo/react-hooks": "npm:^3.1.5"
     "@emotion/css": "npm:^11.13.5"
     "@emotion/react": "npm:11.14.0"
     "@emotion/styled": "npm:11.14.1"
@@ -12653,7 +12650,6 @@ __metadata:
     bytes: "npm:^3.1.2"
     classnames: "npm:^2.5.1"
     graphql: "npm:^16.14.2"
-    graphql-tag: "npm:^2.12.7"
     history: "npm:^5.3.0"
     is-hotkey: "npm:^0.2.0"
     lexical: "npm:^0.45.0"
@@ -13128,7 +13124,6 @@ __metadata:
     "@webiny/app-utils": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
-    "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
@@ -13146,7 +13141,6 @@ __metadata:
     deep-equal: "npm:^2.2.3"
     execa: "npm:^5.1.1"
     graphql: "npm:^16.14.2"
-    graphql-tag: "npm:^2.12.7"
     is-hotkey: "npm:^0.2.0"
     lodash: "npm:^4.18.1"
     markdown-to-jsx: "npm:^9.8.2"
