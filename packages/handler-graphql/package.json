@@ -32,7 +32,6 @@
     "@webiny/utils": "0.0.0",
     "graphql": "^16.14.2",
     "graphql-scalars": "^1.25.0",
-    "graphql-tag": "^2.12.6",
     "zod": "4.4.3"
   },
   "devDependencies": {

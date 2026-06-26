@@ -1,44 +1,38 @@
 import type { Container } from "@webiny/di";
-import type { GraphQLSchema } from "graphql";
-import { makeExecutableSchema } from "@graphql-tools/schema";
-import { GraphQLContextualSchema } from "@webiny/handler-graphql";
-import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLContextInitializer } from "@webiny/handler-graphql";
+import type { IGraphQLContextInitializer } from "@webiny/handler-graphql";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FileModel } from "~/domain/file/abstractions.js";
 import { FILE_MODEL_ID } from "~/domain/file/file.model.js";
 
-class FileModelContextualSchemaImpl implements IGraphQLContextualSchema {
+class FileModelContextualSchemaImpl implements IGraphQLContextInitializer {
     constructor(
         private tenantCtx: TenantContext.Interface,
-        private identityCtx: IdentityContext.Interface,
-        private getModel: GetModelUseCase.Interface
+        private identityCtx: IdentityContext.Interface
     ) {}
 
-    async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
-        const empty = makeExecutableSchema({
-            typeDefs: "type Query\ntype Mutation",
-            assumeValidSDL: true
-        });
-
+    async init(ctx: Record<string, any>): Promise<void> {
         if (!this.tenantCtx.getTenant()) {
-            return empty;
+            return;
         }
 
         const container = ctx.container as Container;
+        // Resolved lazily here (build/request time), not as a constructor dep: GetModelUseCase
+        // depends on AccessControl, which the CMS initializer only registers during its own init().
+        const getModel = container.resolve(GetModelUseCase);
+
         await this.identityCtx.withoutAuthorization(async () => {
-            const result = await this.getModel.execute(FILE_MODEL_ID);
+            const result = await getModel.execute(FILE_MODEL_ID);
             if (result.value) {
                 container.registerInstance(FileModel, result.value);
             }
         });
-
-        return empty;
     }
 }
 
-export const FileModelContextualSchema = GraphQLContextualSchema.createImplementation({
+export const FileModelContextualSchema = GraphQLContextInitializer.createImplementation({
     implementation: FileModelContextualSchemaImpl,
-    dependencies: [TenantContext, IdentityContext, GetModelUseCase]
+    dependencies: [TenantContext, IdentityContext]
 });

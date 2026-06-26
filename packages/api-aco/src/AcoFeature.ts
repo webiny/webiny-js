@@ -1,14 +1,12 @@
 import { createFeature } from "@webiny/feature/api";
-import { makeExecutableSchema } from "@graphql-tools/schema";
-import { GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLContextInitializer } from "@webiny/handler-graphql";
 import {
     GraphQLSchemaFactory,
     CoreGraphQLSchemaFactory
 } from "@webiny/handler-graphql/graphql/abstractions.js";
-import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
+import type { IGraphQLContextInitializer } from "@webiny/handler-graphql";
 import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
-import type { GraphQLSchema } from "graphql";
 import type { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
@@ -31,20 +29,16 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { FolderModel } from "~/domain/folder/folder.model.js";
 import { FilterPrivateModel } from "~/filter/filter.model.js";
 
-class AcoInitializerImpl implements IGraphQLContextualSchema {
+class AcoInitializerImpl implements IGraphQLContextInitializer {
     private initialized = false;
 
     constructor(private container: Container) {}
 
-    async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
+    async init(ctx: Record<string, any>): Promise<void> {
         if (!this.initialized) {
             this.initialized = true;
             await this._initialize(ctx);
         }
-        return makeExecutableSchema({
-            typeDefs: "type Query\ntype Mutation",
-            assumeValidSDL: true
-        });
     }
 
     private async _initialize(ctx: Record<string, any>): Promise<void> {
@@ -128,7 +122,7 @@ class AcoInitializerImpl implements IGraphQLContextualSchema {
     }
 }
 
-const AcoInitializer = GraphQLContextualSchema.createImplementation({
+const AcoInitializer = GraphQLContextInitializer.createImplementation({
     implementation: AcoInitializerImpl,
     dependencies: [RequestContainer]
 });

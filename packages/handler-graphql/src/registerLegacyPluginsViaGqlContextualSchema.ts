@@ -1,17 +1,13 @@
 import type { Container } from "@webiny/di";
 import { PluginsContainer } from "@webiny/plugins";
-import { makeExecutableSchema } from "@graphql-tools/schema";
-import { GraphQLContextualSchema } from "./engine/index.js";
-import type { IGraphQLContextualSchema } from "./engine/index.js";
-import type { GraphQLSchema } from "graphql";
+import { GraphQLContextInitializer } from "./engine/index.js";
+import type { IGraphQLContextInitializer } from "./engine/index.js";
 
 /**
- * Runs legacy ContextPlugins (those with an `apply(ctx)` method) inside the
- * contextual-schema phase so that DI services (TenantContext, IdentityContext, etc.)
- * are fully initialised when they execute.
- *
- * Registration order matters: call this BEFORE any contextual schema that depends
- * on what these plugins set (e.g. ctx.db).
+ * Runs legacy ContextPlugins (those with an `apply(ctx)` method) as a per-request initializer, so
+ * DI services (TenantContext, IdentityContext, the CMS facade, etc.) are fully initialised when
+ * they execute. Initializers run after context enhancers and before contextual schemas, so this
+ * also runs before any contextual schema that depends on what these plugins set (e.g. ctx.db).
  */
 export function registerLegacyPluginsViaGqlContextualSchema(
     container: Container,
@@ -20,13 +16,10 @@ export function registerLegacyPluginsViaGqlContextualSchema(
     const flat = [plugins].flat(Infinity as 1).filter(Boolean);
     let initialized = false;
 
-    const schema: IGraphQLContextualSchema = {
-        async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
+    const initializer: IGraphQLContextInitializer = {
+        async init(ctx: Record<string, any>): Promise<void> {
             if (initialized) {
-                return makeExecutableSchema({
-                    typeDefs: "type Query\ntype Mutation",
-                    assumeValidSDL: true
-                });
+                return;
             }
             initialized = true;
 
@@ -41,13 +34,8 @@ export function registerLegacyPluginsViaGqlContextualSchema(
                     ctx.plugins.register(plugin);
                 }
             }
-
-            return makeExecutableSchema({
-                typeDefs: "type Query\ntype Mutation",
-                assumeValidSDL: true
-            });
         }
     };
 
-    container.registerInstance(GraphQLContextualSchema, schema);
+    container.registerInstance(GraphQLContextInitializer, initializer);
 }

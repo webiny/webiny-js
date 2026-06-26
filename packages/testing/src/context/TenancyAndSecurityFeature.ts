@@ -1,8 +1,6 @@
 import type { Container } from "@webiny/di";
-import { GraphQLContextualSchema } from "@webiny/handler-graphql";
-import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
-import { buildSchema } from "graphql";
-import type { GraphQLSchema } from "graphql";
+import { GraphQLContextInitializer } from "@webiny/handler-graphql";
+import type { IGraphQLContextInitializer } from "@webiny/handler-graphql";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { CreateTenantUseCase } from "@webiny/api-core/features/tenancy/CreateTenant/abstractions.js";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/abstractions.js";
@@ -49,8 +47,6 @@ class FullAccessTeamFactory implements TeamFactory.Interface {
     }
 }
 
-const STUB_SCHEMA: GraphQLSchema = buildSchema("type Query { _empty: String }");
-
 const TEST_TENANTS = [
     { id: "root", name: "Root", parent: "", description: "Root tenant", tags: [] as string[] },
     {
@@ -64,7 +60,7 @@ const TEST_TENANTS = [
     { id: "sales", name: "Sales", parent: "", description: "Sales tenant", tags: [] as string[] }
 ];
 
-class TenancyAndSecurityInitializerImpl implements IGraphQLContextualSchema {
+class TenancyAndSecurityInitializerImpl implements IGraphQLContextInitializer {
     private initialized = false;
 
     constructor(
@@ -72,9 +68,8 @@ class TenancyAndSecurityInitializerImpl implements IGraphQLContextualSchema {
         private config: Config
     ) {}
 
-    async build(_ctx: Record<string, any>): Promise<GraphQLSchema> {
+    async init(_ctx: Record<string, any>): Promise<void> {
         await this._maybeInitialize();
-        return STUB_SCHEMA;
     }
 
     private async _maybeInitialize(): Promise<void> {
@@ -124,6 +119,6 @@ class TenancyAndSecurityInitializerImpl implements IGraphQLContextualSchema {
 export const TenancyAndSecurityFeature = {
     register(container: Container, config: Config): void {
         const initializer = new TenancyAndSecurityInitializerImpl(container, config);
-        container.registerInstance(GraphQLContextualSchema, initializer);
+        container.registerInstance(GraphQLContextInitializer, initializer);
     }
 };

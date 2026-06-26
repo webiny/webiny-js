@@ -1,18 +1,17 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { makeExecutableSchema } from "@graphql-tools/schema";
-import { GraphQLContextualSchema } from "@webiny/handler-graphql";
-import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
-import type { GraphQLSchema } from "graphql";
+import { GraphQLContextInitializer } from "@webiny/handler-graphql";
+import type { IGraphQLContextInitializer } from "@webiny/handler-graphql";
 import { createHcmsTasks } from "./index.js";
 
-// GraphQLContextualSchema is used here not to contribute schema content but for its
-// build(ctx) timing guarantee: it runs after all IGraphQLContextEnhancer.enhance() calls,
-// so ctx.cms is already set when ContextPlugins from createHcmsTasks() call ctx.cms.listModels().
-class HcmsTasksInitializerImpl implements IGraphQLContextualSchema {
+// A request initializer: it contributes no schema content, it just runs the legacy
+// createHcmsTasks() plugins per request. It runs after context enhancers and after the CMS
+// initializer (which registers the CMS facade and ctx.plugins these plugins rely on), and before
+// contextual schemas.
+class HcmsTasksInitializerImpl implements IGraphQLContextInitializer {
     private readonly plugins = createHcmsTasks().flat(Infinity as 1);
     private initialized = false;
 
-    async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
+    async init(ctx: Record<string, any>): Promise<void> {
         if (!this.initialized) {
             this.initialized = true;
 
@@ -24,15 +23,10 @@ class HcmsTasksInitializerImpl implements IGraphQLContextualSchema {
                 }
             }
         }
-
-        return makeExecutableSchema({
-            typeDefs: "type Query\ntype Mutation",
-            assumeValidSDL: true
-        });
     }
 }
 
-const HcmsTasksInitializer = GraphQLContextualSchema.createImplementation({
+const HcmsTasksInitializer = GraphQLContextInitializer.createImplementation({
     implementation: HcmsTasksInitializerImpl,
     dependencies: []
 });
