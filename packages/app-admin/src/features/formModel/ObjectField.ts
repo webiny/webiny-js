@@ -23,7 +23,8 @@ import type {
     AfterChangeCallback,
     AfterSetValueCallback,
     OnBlurCallback,
-    ComputedFieldCallback
+    ComputedFieldCallback,
+    IFieldCallbackParams
 } from "./abstractions.js";
 
 /** Reserved key used as the template discriminator in templated object data. */
@@ -245,7 +246,7 @@ export class ObjectField implements IObjectField {
         this._base.addOnBlur(cb);
     }
 
-    addRequiredWhen(fn: (form: IFormModel) => boolean, message?: string): void {
+    addRequiredWhen(fn: (params: IFieldCallbackParams) => boolean, message?: string): void {
         this._base.addRequiredWhen(fn, message);
     }
 

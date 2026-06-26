@@ -41,8 +41,8 @@ fields.text().options([
 fields.text().options([...]).renderer("radioButtons")
 fields.text().list().options([...]).renderer("checkboxes")
 
-// Dynamic options — callback receives IFormModel, re-evaluated reactively
-fields.text().options(form => {
+// Dynamic options — callback receives { field, form }, re-evaluated reactively
+fields.text().options(({ form }) => {
     const type = form.field("general.type").getValue();
     return getOptionsForType(type);
 })
@@ -428,7 +428,7 @@ fields
 fields
   .text()
   .label("Seats")
-  .requiredWhen(form => form.field("plan").getValue() === "pro", "Pro plan requires a seat count");
+  .requiredWhen(({ form }) => form.field("plan").getValue() === "pro", "Pro plan requires a seat count");
 ```
 
 ### Form-Level Rules
@@ -512,47 +512,62 @@ fields
 | `"isFalsy"`    | Boolean coercion is false                     |
 | `"matches"`    | Exact string match                            |
 
-## Scoped Field Paths (`$.` prefix)
+## Callback Parameters (`{ field, form }`)
 
-Inside callbacks on nested fields (`computed`, `computedUntilDirty`, `hiddenWhen`, `disabledWhen`, `requiredWhen`, `options`, `beforeChange`, `afterChange`, `onBlur`), the `form` parameter supports a `$.` prefix to resolve paths relative to the field's parent object:
+All field callbacks (`computed`, `computedUntilDirty`, `hiddenWhen`, `disabledWhen`, `requiredWhen`, `options`, `context`) receive a single `{ field, form }` object:
+
+- **`form`** — the root `IFormModel` for absolute field access (e.g., `form.field("title")`)
+- **`field`** — a navigator scoped to the current field. Call `.parent()` to get the containing object, then `.field(name)` to access fields at that level. Chain `.parent()` for higher levels.
+
+Value-first callbacks (`beforeChange`, `afterChange`, `afterSetValue`, `onBlur`) receive `(value, { field, form })`.
 
 ```typescript
+// Relative: access a sibling within the same object
 fields
   .object()
   .renderer("passthrough")
   .fields(f => ({
     label: f.text().defaultValue("Hello"),
-    slug: f.text().computedUntilDirty(form =>
-      String(form.field("$.label").getValue() || "")
+    slug: f.text().computedUntilDirty(({ field }) =>
+      String(field.parent().field("label").getValue() || "")
         .toLowerCase()
         .replace(/\s+/g, "-")
     )
   }));
+
+// Absolute: access a root-level field
+fields.text().computedUntilDirty(({ form }) =>
+  String(form.field("title").getValue() ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+);
+
+// Multi-level traversal: parent().parent() goes up two levels
+inner.file().context(({ field }) => ({
+  title: field.parent().parent().field("title").getValue()
+}))
 ```
-
-`$.label` resolves to the `label` sibling within the same parent object. Without `$.`, paths are absolute from the form root. The `$.` prefix can traverse into sibling objects too: `$.settings.preset` resolves to `settings.preset` relative to the parent.
-
-> **Note:** The `.context()` callback does NOT use the `$.` prefix convention. It uses a dedicated `field` navigator with `.parent().field()` for relative traversal and a separate `form` param for absolute access. See [Field Context](#field-context).
 
 ## Conditional Visibility / Disable (callback form)
 
 For dynamic visibility and disabled state that depends on other field values:
 
 ```typescript
-// Hide a field based on a sibling value
+// Hide a field based on a sibling value (inside an object)
 fields
   .text()
   .label("Details")
-  .hiddenWhen(form => form.field("$.mode").getValue() !== "advanced");
+  .hiddenWhen(({ field }) => field.parent().field("mode").getValue() !== "advanced");
 
 // Disable based on a root-level field
 fields
   .text()
   .label("Name")
-  .disabledWhen(form => Boolean(form.field("locked").getValue()));
+  .disabledWhen(({ form }) => Boolean(form.field("locked").getValue()));
 ```
 
-Both `hiddenWhen` and `disabledWhen` accept `(form: IFormModel) => boolean`. Multiple calls chain — any returning true triggers the effect.
+Both `hiddenWhen` and `disabledWhen` accept `(params: IFieldCallbackParams) => boolean`. Multiple calls chain — any returning true triggers the effect.
 
 ## Computed Fields
 
@@ -561,13 +576,13 @@ Both `hiddenWhen` and `disabledWhen` accept `(form: IFormModel) => boolean`. Mul
 fields
   .text()
   .label("Full Name")
-  .computed(form => `${form.field("first").getValue()} ${form.field("last").getValue()}`);
+  .computed(({ form }) => `${form.field("first").getValue()} ${form.field("last").getValue()}`);
 
 // Computed until the user edits the field manually
 fields
   .text()
   .label("Slug")
-  .computedUntilDirty(form => {
+  .computedUntilDirty(({ form }) => {
     const name = String(form.field("title").getValue() ?? "");
     return name.trim().toLowerCase().replace(/\s+/g, "-");
   });
@@ -585,7 +600,7 @@ fields
     { label: "Public", value: "public" },
     { label: "Password Protected", value: "password" }
   ])
-  .afterChange((value, form) => {
+  .afterChange((value, { form }) => {
     const path = form.field("general.path").as("text").getValue() ?? "";
     if (value === "password") {
       form.field("general.path").setValue(path + "/protected");
@@ -599,9 +614,7 @@ fields
 
 Use `.context()` to push data from other fields into a field's VM. The renderer reads it via `field.context` — no hooks, no reaching up to the parent form. The callback is MobX-reactive: only the specific fields accessed inside it trigger re-renders.
 
-The callback receives `{ field, form }`:
-- **`field`** — a navigator scoped to the current field. Call `.parent()` to get the containing object, then `.field(name)` to access fields at that level. Chain `.parent()` to go higher.
-- **`form`** — the root `IFormModel` for absolute field access.
+The callback receives `{ field, form }` — the same `IFieldCallbackParams` used by all other callbacks (see [Callback Parameters](#callback-parameters--field-form-)).
 
 ### Sibling access (fields at the same level)
 

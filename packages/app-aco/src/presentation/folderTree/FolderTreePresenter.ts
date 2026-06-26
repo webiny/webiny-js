@@ -156,8 +156,8 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
                     .text()
                     .label("Slug")
                     .required("Slug is required")
-                    .computedUntilDirty(f => {
-                        const title = f.field("title").getValue();
+                    .computedUntilDirty(({ form }) => {
+                        const title = form.field("title").getValue();
                         return slugify(String(title ?? ""), {
                             replacement: "-",
                             lower: true,
@@ -197,8 +197,8 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
                     .text()
                     .label("Slug")
                     .required("Slug is required")
-                    .computedUntilDirty(f => {
-                        const title = f.field("title").getValue();
+                    .computedUntilDirty(({ form }) => {
+                        const title = form.field("title").getValue();
                         return slugify(String(title ?? ""), {
                             replacement: "-",
                             lower: true,

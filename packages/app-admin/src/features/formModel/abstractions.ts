@@ -53,7 +53,7 @@ export interface IFieldConfig {
     requiredMessage?: string;
     disabled: boolean;
     schema?: z.ZodTypeAny;
-    options?: IValueOption[] | ((form: IFormModel) => IValueOption[]);
+    options?: IValueOption[] | ((params: IFieldCallbackParams) => IValueOption[]);
     normalizeValue?: (value: unknown) => unknown;
     beforeChangeCallbacks?: BeforeChangeCallback[];
     afterChangeCallbacks?: AfterChangeCallback[];
@@ -70,19 +70,6 @@ export interface IFieldConfig {
     rules?: IRule[];
 }
 
-export interface IRequiredWhenCallbackConfig {
-    fn: (form: IFormModel) => boolean;
-    message?: string;
-}
-
-export type RequiredWhenCallback = IRequiredWhenCallbackConfig;
-
-export type HiddenWhenCallback = (form: IFormModel) => boolean;
-
-export type DisabledWhenCallback = (form: IFormModel) => boolean;
-
-export type ComputedFieldCallback = (form: IFormModel) => unknown;
-
 export interface IFieldScope {
     field(name: string): IField;
     parent(): IFieldScope;
@@ -92,12 +79,25 @@ export interface IFieldNavigator {
     parent(): IFieldScope;
 }
 
-export interface IFieldContextParams {
+export interface IFieldCallbackParams {
     field: IFieldNavigator;
     form: IFormModel;
 }
 
-export type FieldContextCallback = (params: IFieldContextParams) => Record<string, unknown>;
+export interface IRequiredWhenCallbackConfig {
+    fn: (params: IFieldCallbackParams) => boolean;
+    message?: string;
+}
+
+export type RequiredWhenCallback = IRequiredWhenCallbackConfig;
+
+export type HiddenWhenCallback = (params: IFieldCallbackParams) => boolean;
+
+export type DisabledWhenCallback = (params: IFieldCallbackParams) => boolean;
+
+export type ComputedFieldCallback = (params: IFieldCallbackParams) => unknown;
+
+export type FieldContextCallback = (params: IFieldCallbackParams) => Record<string, unknown>;
 
 // ---------------------------------------------------------------------------
 // Rules system
@@ -255,7 +255,7 @@ export interface IField {
      * form state. The built-in `.required()` flag (if set) always counts as a
      * truthy check and cannot be overridden.
      */
-    addRequiredWhen(fn: (form: IFormModel) => boolean, message?: string): void;
+    addRequiredWhen(fn: (params: IFieldCallbackParams) => boolean, message?: string): void;
     /**
      * Mark this field as a derived value computed from `fn(form)`. The field
      * stays editable (no auto-disable) and is excluded from `isDirty` while
@@ -398,10 +398,10 @@ export interface IListItemField {
 // Callback types
 // ---------------------------------------------------------------------------
 
-export type BeforeChangeCallback = (value: unknown, form: IFormModel) => unknown;
-export type AfterChangeCallback = (value: unknown, form: IFormModel) => void;
-export type AfterSetValueCallback = (value: unknown, form: IFormModel) => void;
-export type OnBlurCallback = (value: unknown, form: IFormModel) => void;
+export type BeforeChangeCallback = (value: unknown, params: IFieldCallbackParams) => unknown;
+export type AfterChangeCallback = (value: unknown, params: IFieldCallbackParams) => void;
+export type AfterSetValueCallback = (value: unknown, params: IFieldCallbackParams) => void;
+export type OnBlurCallback = (value: unknown, params: IFieldCallbackParams) => void;
 export type CloneValueCallback = (value: unknown) => unknown;
 
 // ---------------------------------------------------------------------------
@@ -812,7 +812,8 @@ export namespace FormModel {
     export type RuleEvaluator = IRuleEvaluator;
     export type FormRuleFunction = FormRuleFn;
     export type FormRuleType = FormRule;
-    export type RequiredWhen = (form: IFormModel) => boolean;
+    export type CallbackParams = IFieldCallbackParams;
+    export type RequiredWhen = (params: IFieldCallbackParams) => boolean;
     export type HiddenWhen = HiddenWhenCallback;
     export type DisabledWhen = DisabledWhenCallback;
     export type Computed = ComputedFieldCallback;
@@ -880,15 +881,15 @@ export interface IFieldBuilder<
               : [settings: FieldRendererSettings<TName>]
     ): this;
     hidden(): this;
-    hiddenWhen(fn: (form: IFormModel) => boolean): this;
-    disabledWhen(fn: (form: IFormModel) => boolean): this;
+    hiddenWhen(fn: HiddenWhenCallback): this;
+    disabledWhen(fn: DisabledWhenCallback): this;
     required(message?: string): this;
     /**
      * Conditional required check. Multiple `requiredWhen()` calls chain — the
      * first one to return `true` for the current form state makes the field
      * required. Built-in `.required()` (if set) is evaluated alongside.
      */
-    requiredWhen(fn: (form: IFormModel) => boolean, message?: string): this;
+    requiredWhen(fn: (params: IFieldCallbackParams) => boolean, message?: string): this;
     list(): this;
     disabled(value?: boolean): this;
     rules(rules: IRule[]): this;
@@ -923,7 +924,7 @@ export interface IOptionsFieldBuilder<TType extends string, TValue = unknown> ex
     options(
         opts:
             | IValueOption<OptionValueType<TType>>[]
-            | ((form: IFormModel) => IValueOption<OptionValueType<TType>>[])
+            | ((params: IFieldCallbackParams) => IValueOption<OptionValueType<TType>>[])
     ): IFieldBuilder<TType, true, TValue>;
 }
 

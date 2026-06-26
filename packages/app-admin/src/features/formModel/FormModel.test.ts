@@ -443,10 +443,10 @@ describe("FormModel", () => {
                     title: fields
                         .text()
                         .label("Title")
-                        .afterChange((value, f) => {
+                        .afterChange((value, { form }) => {
                             // Auto-generate path from title
                             const path = "/" + String(value).toLowerCase().replace(/\s+/g, "-");
-                            f.field("path").setValue(path);
+                            form.field("path").setValue(path);
                         }),
                     path: fields
                         .text()
@@ -499,16 +499,16 @@ describe("FormModel", () => {
                         .text()
                         .label("Title")
                         .required("Title is required")
-                        .afterChange((value, f) => {
+                        .afterChange((value, { form }) => {
                             // Only auto-generate if path is empty
-                            if (f.field("path").getValue()) {
+                            if (form.field("path").getValue()) {
                                 return;
                             }
                             const slug = String(value)
                                 .toLowerCase()
                                 .replace(/[^a-z0-9]+/g, "-")
                                 .replace(/^-|-$/g, "");
-                            f.field("path").setValue("/" + slug);
+                            form.field("path").setValue("/" + slug);
                         }),
                     path: fields
                         .text()
@@ -747,9 +747,9 @@ describe("FormModel", () => {
                 });
 
                 // Modifier appends afterChange
-                form.field("title").addAfterChange((value, f) => {
+                form.field("title").addAfterChange((value, { form }) => {
                     received.push(value);
-                    f.field("path").setValue("/" + String(value).toLowerCase());
+                    form.field("path").setValue("/" + String(value).toLowerCase());
                 });
 
                 form.field("title").setValue("Hello");
@@ -883,13 +883,13 @@ describe("FormModel", () => {
                                     { label: "English", value: "en" },
                                     { label: "German", value: "de" }
                                 ])
-                                .afterChange((value, f) => {
-                                    const current = String(f.field("path").getValue() || "");
+                                .afterChange((value, { form }) => {
+                                    const current = String(form.field("path").getValue() || "");
                                     const stripped = current.replace(/^\/[a-z]{2}\//, "/");
                                     if (value && value !== "en") {
-                                        f.field("path").setValue("/" + value + stripped);
+                                        form.field("path").setValue("/" + value + stripped);
                                     } else {
-                                        f.field("path").setValue(stripped);
+                                        form.field("path").setValue(stripped);
                                     }
                                 })
                         }));
@@ -3072,7 +3072,10 @@ describe("FormModel", () => {
                     plan: fields.text().defaultValue("free"),
                     seats: fields
                         .text()
-                        .requiredWhen(f => f.field("plan").getValue() === "pro", "Seats required")
+                        .requiredWhen(
+                            ({ form }) => form.field("plan").getValue() === "pro",
+                            "Seats required"
+                        )
                 })
             });
 
@@ -3094,8 +3097,14 @@ describe("FormModel", () => {
                     flag: fields.text().defaultValue("off"),
                     seats: fields
                         .text()
-                        .requiredWhen(f => f.field("plan").getValue() === "pro", "Pro requires it")
-                        .requiredWhen(f => f.field("flag").getValue() === "on", "Flag requires it")
+                        .requiredWhen(
+                            ({ form }) => form.field("plan").getValue() === "pro",
+                            "Pro requires it"
+                        )
+                        .requiredWhen(
+                            ({ form }) => form.field("flag").getValue() === "on",
+                            "Flag requires it"
+                        )
                 })
             });
 
@@ -3131,12 +3140,15 @@ describe("FormModel", () => {
                     other: fields.text().defaultValue("off"),
                     seats: fields
                         .text()
-                        .requiredWhen(f => f.field("plan").getValue() === "pro", "Pro required")
+                        .requiredWhen(
+                            ({ form }) => form.field("plan").getValue() === "pro",
+                            "Pro required"
+                        )
                 })
             });
 
             form.field("seats").addRequiredWhen(
-                f => f.field("other").getValue() === "on",
+                ({ form }) => form.field("other").getValue() === "on",
                 "Other required"
             );
 
@@ -3159,7 +3171,8 @@ describe("FormModel", () => {
                     full: fields
                         .text()
                         .computed(
-                            f => `${f.field("first").getValue()} ${f.field("last").getValue()}`
+                            ({ form }) =>
+                                `${form.field("first").getValue()} ${form.field("last").getValue()}`
                         )
                 })
             });
@@ -3173,7 +3186,7 @@ describe("FormModel", () => {
             const form = createForm({
                 fields: fields => ({
                     src: fields.text().defaultValue("A"),
-                    derived: fields.text().computed(f => f.field("src").getValue())
+                    derived: fields.text().computed(({ form }) => form.field("src").getValue())
                 })
             });
 
@@ -3191,7 +3204,7 @@ describe("FormModel", () => {
                     src: fields.text().defaultValue("A"),
                     derived: fields
                         .text()
-                        .computedUntilDirty(f => `derived-${f.field("src").getValue()}`)
+                        .computedUntilDirty(({ form }) => `derived-${form.field("src").getValue()}`)
                 })
             });
 
@@ -3212,7 +3225,7 @@ describe("FormModel", () => {
                     derived: fields
                         .text()
                         .required("Derived must not be empty")
-                        .computed(f => f.field("src").getValue())
+                        .computed(({ form }) => form.field("src").getValue())
                 })
             });
 
@@ -3232,8 +3245,8 @@ describe("FormModel", () => {
                         .renderer("passthrough")
                         .fields(f => ({
                             label: f.text().defaultValue("Hello World"),
-                            fieldId: f.text().computedUntilDirty(f =>
-                                String(f.field("group.label").getValue() || "")
+                            fieldId: f.text().computedUntilDirty(({ form }) =>
+                                String(form.field("group.label").getValue() || "")
                                     .toLowerCase()
                                     .replace(/\s+/g, "-")
                             )
@@ -3263,8 +3276,8 @@ describe("FormModel", () => {
                         .renderer("passthrough")
                         .fields(f => ({
                             label: f.text(),
-                            fieldId: f.text().computedUntilDirty(f =>
-                                String(f.field("general.label").getValue() || "")
+                            fieldId: f.text().computedUntilDirty(({ form }) =>
+                                String(form.field("general.label").getValue() || "")
                                     .toLowerCase()
                                     .replace(/\s+/g, "-")
                             )
@@ -3291,7 +3304,7 @@ describe("FormModel", () => {
             expect(form.field("general.fieldId").getValue()).toBe("custom");
         });
 
-        it("$. prefix resolves field paths relative to the parent object", () => {
+        it("field.parent().field() resolves sibling fields relative to the parent object", () => {
             const form = createForm({
                 fields: fields => ({
                     group: fields
@@ -3299,8 +3312,8 @@ describe("FormModel", () => {
                         .renderer("passthrough")
                         .fields(f => ({
                             label: f.text().defaultValue("Hello"),
-                            slug: f.text().computedUntilDirty(f =>
-                                String(f.field("$.label").getValue() || "")
+                            slug: f.text().computedUntilDirty(({ field }) =>
+                                String(field.parent().field("label").getValue() || "")
                                     .toLowerCase()
                                     .replace(/\s+/g, "-")
                             )
@@ -3314,7 +3327,7 @@ describe("FormModel", () => {
             expect(form.field("group.slug").getValue()).toBe("new-title");
         });
 
-        it("$. can traverse deeper into sibling objects", () => {
+        it("field.parent().field() can traverse into sibling objects", () => {
             const form = createForm({
                 fields: fields => ({
                     wrapper: fields
@@ -3324,8 +3337,11 @@ describe("FormModel", () => {
                             message: f
                                 .text()
                                 .defaultValue("default")
-                                .computedUntilDirty(f => {
-                                    const preset = f.field("$.settings.preset").getValue();
+                                .computedUntilDirty(({ field }) => {
+                                    const preset = field
+                                        .parent()
+                                        .field("settings.preset")
+                                        .getValue();
                                     return preset === "custom"
                                         ? "Custom message"
                                         : `Preset: ${preset}`;
@@ -3354,7 +3370,7 @@ describe("FormModel", () => {
                 })
             });
 
-            form.field("derived").setComputed(f => `from-${f.field("src").getValue()}`);
+            form.field("derived").setComputed(({ form }) => `from-${form.field("src").getValue()}`);
 
             expect(form.field("derived").getValue()).toBe("from-X");
             form.field("src").setValue("Y");
@@ -4158,7 +4174,7 @@ describe("FormModel", () => {
                         .text()
                         .list()
                         .defaultValue(["a"])
-                        .beforeChange((value, _form) => {
+                        .beforeChange((value, _params) => {
                             log.push(value);
                             return value;
                         })

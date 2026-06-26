@@ -28,12 +28,15 @@ export class FormModelPhase11Presenter {
                 fullName: fields
                     .text()
                     .label("Full name (computed)")
-                    .computed(f => `${f.field("first").getValue()} ${f.field("last").getValue()}`),
+                    .computed(
+                        ({ form }) =>
+                            `${form.field("first").getValue()} ${form.field("last").getValue()}`
+                    ),
                 slug: fields
                     .text()
                     .label("Slug (computed until you edit it)")
-                    .computedUntilDirty(f => {
-                        const full = `${f.field("first").getValue()} ${f.field("last").getValue()}`;
+                    .computedUntilDirty(({ form }) => {
+                        const full = `${form.field("first").getValue()} ${form.field("last").getValue()}`;
                         return full.trim().toLowerCase().replace(/\s+/g, "-");
                     }),
                 plan: fields
@@ -50,7 +53,7 @@ export class FormModelPhase11Presenter {
                     .label("Number of seats")
                     .help("Required when plan is pro or enterprise")
                     .requiredWhen(
-                        f => f.field("plan").getValue() === "pro",
+                        ({ form }) => form.field("plan").getValue() === "pro",
                         "Pro plan needs a seat count"
                     ),
                 profile: fields
@@ -78,7 +81,7 @@ export class FormModelPhase11Presenter {
         this.form
             .field("seats")
             .addRequiredWhen(
-                f => f.field("plan").getValue() === "enterprise",
+                ({ form }) => form.field("plan").getValue() === "enterprise",
                 "Enterprise plan needs a seat count too"
             );
 

@@ -20,7 +20,7 @@ class PublishingSettingsGroupImpl implements PageSettingsGroup.Interface {
                     { label: "Password Protected", value: "password" }
                 ])
                 .defaultValue("public")
-                .afterChange((value, form) => {
+                .afterChange((value, { form }) => {
                     const path = form.field("general.path").as("text").getValue() ?? "";
                     if (value === "password") {
                         form.field("general.path").setValue(path + "/password");

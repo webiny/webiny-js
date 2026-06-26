@@ -2,7 +2,7 @@ import type { z } from "zod";
 import type {
     IFieldConfig,
     IValueOption,
-    IFormModel,
+    IFieldCallbackParams,
     IFieldBuilder,
     IFieldBuilderRegistry,
     IFieldTypeFactory,
@@ -112,7 +112,7 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
-    requiredWhen(fn: (form: IFormModel) => boolean, message?: string): this {
+    requiredWhen(fn: (params: IFieldCallbackParams) => boolean, message?: string): this {
         if (!this._config.requiredWhenCallbacks) {
             this._config.requiredWhenCallbacks = [];
         }
@@ -196,7 +196,7 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
-    options(opts: IValueOption[] | ((form: IFormModel) => IValueOption[])): this {
+    options(opts: IValueOption[] | ((params: IFieldCallbackParams) => IValueOption[])): this {
         this._config.options = opts;
         if (this._config.renderer === "textInput" || this._config.renderer === "numberInput") {
             this._config.renderer = "dropdown";

@@ -16,6 +16,7 @@ import type {
     HiddenWhenCallback,
     DisabledWhenCallback,
     ComputedFieldCallback,
+    IFieldCallbackParams,
     IFieldNavigator,
     IFieldScope
 } from "./abstractions.js";
@@ -139,10 +140,10 @@ export class Field implements IField {
 
     getValue<T = unknown>(): T {
         if (this._computed && this._form) {
-            return this._computed(this._scopedForm()) as T;
+            return this._computed(this._callbackParams()) as T;
         }
         if (this._computedUntilDirty && !this._computedOverridden && this._form) {
-            return this._computedUntilDirty(this._scopedForm()) as T;
+            return this._computedUntilDirty(this._callbackParams()) as T;
         }
         return this._value as T;
     }
@@ -157,7 +158,7 @@ export class Field implements IField {
             ? this._applyNormalizeValue(raw, this.config.normalizeValue)
             : raw;
         for (const cb of this._beforeChangeCallbacks) {
-            transformed = cb(transformed, this._scopedForm());
+            transformed = cb(transformed, this._callbackParams());
         }
 
         if (transformed === this._value) {
@@ -166,7 +167,7 @@ export class Field implements IField {
 
         const wasComputed = this._computedUntilDirty && !this._computedOverridden && this._form;
         const computedValue = wasComputed
-            ? this._computedUntilDirty!(this._scopedForm())
+            ? this._computedUntilDirty!(this._callbackParams())
             : undefined;
 
         this._value = transformed;
@@ -177,12 +178,12 @@ export class Field implements IField {
         }
 
         for (const cb of this._afterChangeCallbacks) {
-            cb(transformed, this._scopedForm());
+            cb(transformed, this._callbackParams());
         }
 
         if (!this._isUIChange) {
             for (const cb of this._afterSetValueCallbacks) {
-                cb(transformed, this._scopedForm());
+                cb(transformed, this._callbackParams());
             }
         }
     }
@@ -199,7 +200,7 @@ export class Field implements IField {
             if (parsed === null || parsed === undefined) {
                 this._computedOverridden = false;
             } else if (this._form) {
-                const computedValue = this._computedUntilDirty(this._scopedForm());
+                const computedValue = this._computedUntilDirty(this._callbackParams());
                 this._computedOverridden = parsed !== computedValue;
             } else {
                 this._computedOverridden = true;
@@ -228,7 +229,7 @@ export class Field implements IField {
             return false;
         }
         if (this._form && this._hiddenWhenCallbacks.length > 0) {
-            const scoped = this._scopedForm();
+            const scoped = this._callbackParams();
             for (const cb of this._hiddenWhenCallbacks) {
                 if (cb(scoped)) {
                     return false;
@@ -243,7 +244,7 @@ export class Field implements IField {
             return true;
         }
         if (this._form && this._disabledWhenCallbacks.length > 0) {
-            const scoped = this._scopedForm();
+            const scoped = this._callbackParams();
             for (const cb of this._disabledWhenCallbacks) {
                 if (cb(scoped)) {
                     return true;
@@ -289,7 +290,7 @@ export class Field implements IField {
         this._onBlurCallbacks.push(cb);
     }
 
-    addRequiredWhen(fn: (form: IFormModel) => boolean, message?: string): void {
+    addRequiredWhen(fn: (params: IFieldCallbackParams) => boolean, message?: string): void {
         this._requiredWhenCallbacks.push({ fn, message });
     }
 
@@ -319,7 +320,7 @@ export class Field implements IField {
             return { required: true, message: this.config.requiredMessage };
         }
         if (this._form && this._requiredWhenCallbacks.length > 0) {
-            const scoped = this._scopedForm();
+            const scoped = this._callbackParams();
             for (const cb of this._requiredWhenCallbacks) {
                 if (cb.fn(scoped)) {
                     return { required: true, message: cb.message };
@@ -331,7 +332,7 @@ export class Field implements IField {
 
     blur(): void {
         for (const cb of this._onBlurCallbacks) {
-            cb(this._value, this._scopedForm());
+            cb(this._value, this._callbackParams());
         }
     }
 
@@ -341,25 +342,14 @@ export class Field implements IField {
         this._qualifiedName = parentPath ? `${parentPath}.${this.config.name}` : this.config.name;
     }
 
-    private _scopedForm(): IFormModel {
+    private _callbackParams(): IFieldCallbackParams {
         if (!this._form) {
             throw new Error("Field not attached to a form.");
         }
-        if (!this._parentPath) {
-            return this._form;
-        }
-        const form = this._form;
-        const parentPath = this._parentPath;
-        return Object.create(form, {
-            field: {
-                value(name: string) {
-                    if (name.startsWith("$.")) {
-                        return form.field(`${parentPath}.${name.slice(2)}`);
-                    }
-                    return form.field(name);
-                }
-            }
-        });
+        return {
+            field: new FieldNavigator(this._form, this._qualifiedName),
+            form: this._form
+        };
     }
 
     get qualifiedName(): string {
@@ -465,7 +455,7 @@ export class Field implements IField {
             return undefined;
         }
         if (typeof this.config.options === "function") {
-            return this.config.options(this._scopedForm());
+            return this.config.options(this._callbackParams());
         }
         return this.config.options;
     }
@@ -474,8 +464,7 @@ export class Field implements IField {
         if (!this.config.context || !this._form) {
             return {};
         }
-        const navigator = new FieldNavigator(this._form, this._qualifiedName);
-        return this.config.context({ field: navigator, form: this._form });
+        return this.config.context(this._callbackParams());
     }
 
     /**
