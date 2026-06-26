@@ -22,7 +22,7 @@
     "@rsbuild/plugin-sass": "^2.0.0",
     "@rsbuild/plugin-svgr": "^2.0.4",
     "@rsbuild/plugin-type-check": "^1.4.0",
-    "@rsdoctor/rspack-plugin": "^1.5.15",
+    "@rsdoctor/rspack-plugin": "^1.5.16",
     "@rslib/core": "^0.23.0",
     "@rspack/core": "^2.0.8",
     "@swc/plugin-emotion": "^14.14.0",
