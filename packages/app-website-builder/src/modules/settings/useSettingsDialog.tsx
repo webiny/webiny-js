@@ -1,14 +1,16 @@
 import React from "react";
 import { useDialogs } from "@webiny/app-admin";
 import { useToast } from "@webiny/admin-ui";
+import { useFeature } from "@webiny/app";
 import { WebsiteBuilderSettings } from "./WebsiteBuilderSettings.js";
-import { useGetWebsiteBuilderSettings, useUpdateWebsiteBuilderSettings } from "~/features/index.js";
+import { useGetWebsiteBuilderSettings } from "~/features/index.js";
+import { UpdateSettingsFeature } from "~/features/settings/updateSettings/index.js";
 
 export const useSettingsDialog = () => {
     const { showSuccessToast } = useToast();
     const dialogs = useDialogs();
     const { getSettings } = useGetWebsiteBuilderSettings();
-    const { updateSettings } = useUpdateWebsiteBuilderSettings();
+    const { useCase: updateSettings } = useFeature(UpdateSettingsFeature);
 
     type SettingsType = Awaited<ReturnType<typeof getSettings>>;
 
@@ -21,7 +23,7 @@ export const useSettingsDialog = () => {
             loadingLabel: "Saving...",
             content: <WebsiteBuilderSettings />,
             onAccept: async data => {
-                await updateSettings(data as SettingsType);
+                await updateSettings.execute(data as SettingsType);
                 showSuccessToast({
                     title: "Success!",
                     description: "Settings were saved successfully.",

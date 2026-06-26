@@ -37,6 +37,7 @@ import { TranslatePageConfig } from "./presentation/pages/TranslatePage/Translat
 import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
 import { PageSettingsFeature } from "~/presentation/pages/PageEditor/PageSettings/feature.js";
 import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/index.js";
+import { UpdateSettingsFeature } from "~/features/settings/updateSettings/index.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -64,6 +65,7 @@ export const Extension = () => {
             <RegisterFeature feature={GetPageRevisionsFeature} />
             <RegisterFeature feature={CreatePageFeature} />
             <RegisterFeature feature={PageSettingsFeature} />
+            <RegisterFeature feature={UpdateSettingsFeature} />
             <AdminConfig>
                 <Security.Permissions
                     name="website-builder"

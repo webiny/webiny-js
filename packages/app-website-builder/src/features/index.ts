@@ -1,5 +1,5 @@
 export * from "./settings/getSettings/useGetWebsiteBuilderSettings.js";
-export * from "./settings/updateSettings/useUpdateWebsiteBuilderSettings.js";
+export { UpdateSettingsFeature } from "./settings/updateSettings/index.js";
 export * from "./ecommerce/settings/getSettings/useGetEcommerceSettings.js";
 export * from "./ecommerce/settings/updateSettings/useUpdateEcommerceSettings.js";
 export * from "./ecommerce/apis/useEcommerceApi.js";
