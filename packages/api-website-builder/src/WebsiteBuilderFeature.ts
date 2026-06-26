@@ -44,9 +44,9 @@ export const WebsiteBuilderFeature = createFeature({
         GetActiveRedirectsFeature.register(container);
         container.register(WebsiteBuilderRedirectsRoute);
 
-        // Register CMS features needed by the redirect REST route (before enhance() runs).
-        // When HeadlessCmsContextEnhancer.enhance() runs for GraphQL requests, it will
-        // overwrite StorageOperations/AccessControl with full-context versions (last-wins).
+        // Register CMS features needed by the redirect REST route (before the CMS schema builds).
+        // When the CMS contextual schema (HeadlessCmsInitializer.build()) runs for GraphQL requests,
+        // it will overwrite StorageOperations/AccessControl with full-context versions (last-wins).
         CompressionFeature.register(container);
         StorageFeature.register(container);
         ModelBuilderFeature.register(container);
@@ -68,9 +68,9 @@ export const WebsiteBuilderFeature = createFeature({
  * Must be called in the `request` callback of createLambdaHandler, after
  * WebsiteBuilderFeature.register() and HeadlessCmsFeature.register().
  *
- * For GraphQL requests, HeadlessCmsContextEnhancer.enhance() will later overwrite the minimal
- * StorageOperations/AccessControl with proper full-context versions. For REST routes (e.g.
- * GET /wb/redirects), the minimal bootstrap is sufficient.
+ * For GraphQL requests, the CMS contextual schema (HeadlessCmsInitializer.build()) will later
+ * overwrite the minimal StorageOperations/AccessControl with proper full-context versions. For REST
+ * routes (e.g. GET /wb/redirects), the minimal bootstrap is sufficient.
  */
 export async function setupWebsiteBuilderModels(container: Container): Promise<void> {
     // Create a minimal PluginsContainer with field converters for DDB storage operations.
@@ -83,8 +83,8 @@ export async function setupWebsiteBuilderModels(container: Container): Promise<v
     container.registerInstance(StorageOperations, storageOps);
 
     // Bypass AccessControl — the redirect route enforces auth at the route level.
-    // HeadlessCmsContextEnhancer.enhance() will overwrite this with a proper security-aware
-    // AccessControl for GraphQL requests.
+    // The CMS contextual schema (HeadlessCmsInitializer.build()) will overwrite this with a
+    // proper security-aware AccessControl for GraphQL requests.
     container.registerInstance(AccessControl, {
         canAccessModel: async () => true,
         canAccessGroup: async () => true
