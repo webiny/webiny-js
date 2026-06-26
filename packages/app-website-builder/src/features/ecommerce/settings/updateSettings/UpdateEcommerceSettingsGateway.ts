@@ -35,9 +35,7 @@ class UpdateEcommerceSettingsGatewayImpl implements GatewayAbstraction.Interface
 
         const envelope = response.websiteBuilder.updateIntegrations;
         if (envelope.error) {
-            throw new Error(
-                envelope.error.message || "Could not update integrations settings."
-            );
+            throw new Error(envelope.error.message || "Could not update integrations settings.");
         }
     }
 }
