@@ -13439,7 +13439,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cognito@workspace:packages/cognito"
   dependencies:
-    "@apollo/react-hooks": "npm:^3.1.5"
     "@types/react": "npm:18.3.31"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
@@ -13459,7 +13458,6 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     aws-amplify: "npm:^6.18.0"
     graphql: "npm:^16.14.2"
-    graphql-tag: "npm:^2.12.7"
     jsonwebtoken: "npm:^9.0.3"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.16.1"
