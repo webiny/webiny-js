@@ -4,7 +4,6 @@ export * from "./FieldMapper.js";
 export * from "./Filter.js";
 export * from "./FilterMapper.js";
 export * from "./FilterRepository.js";
-export * from "./FilterRepositoryFactory.js";
 export * from "./Loading.js";
 export * from "./Operation.js";
 export * from "./Sorter.js";
