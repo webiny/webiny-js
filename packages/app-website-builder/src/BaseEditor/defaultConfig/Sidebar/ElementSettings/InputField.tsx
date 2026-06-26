@@ -58,4 +58,25 @@ export function InputField({ element, node, bindings }: InputFieldProps) {
             input={node.input}
         />
     );
+
+    // We'll implement expression bindings at a later stage.
+    /*return value.expression ? (
+        <WithBindingToggle type={"expression"} setBindingType={setBindingType}>
+            <ExpressionRenderer
+                element={activeElement!}
+                value={value.expression}
+                onChange={onChange}
+                input={input}
+            />
+        </WithBindingToggle>
+    ) : (
+        <WithBindingToggle type={"static"} setBindingType={setBindingType}>
+            <Renderer
+                value={value.static}
+                onChange={onChange}
+                onPreviewChange={onPreviewChange}
+                input={node.input}
+            />
+        </WithBindingToggle>
+    );*/
 }
