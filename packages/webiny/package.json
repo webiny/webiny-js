@@ -103,6 +103,7 @@
     "./api/opensearch": "./api/opensearch.js",
     "./api/scheduler": "./api/scheduler.js",
     "./api/website-builder/nextjs": "./api/website-builder/nextjs.js",
+    "./api/website-builder/nuxt": "./api/website-builder/nuxt.js",
     "./api/website-builder/page": "./api/website-builder/page.js",
     "./api/website-builder/redirect": "./api/website-builder/redirect.js",
     "./api/website-builder/scheduler": "./api/website-builder/scheduler.js",
@@ -142,7 +143,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "6d5908bc6d5fda87fdff4442017abbfeb71d5baadafa64e77133c3d0040a010d",
+  "exportGenerationHash": "acce54f797f30fc695158694f0800b14f3b5447c94a4799bfcf9e26a2565ed98",
   "webiny": {
     "publishFrom": "dist"
   }
