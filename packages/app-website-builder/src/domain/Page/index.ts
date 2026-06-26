@@ -1,4 +1,4 @@
 export * from "./PagesCacheFactory.js";
 export * from "./Page.js";
 export * from "./PageDto.js";
-export * from "~/shared/cache/index.js";
+export type { IListCache } from "@webiny/app-admin/features/listCache/index.js";

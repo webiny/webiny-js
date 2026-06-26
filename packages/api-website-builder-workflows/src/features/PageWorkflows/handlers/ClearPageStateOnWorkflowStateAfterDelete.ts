@@ -16,7 +16,7 @@ class ClearPageStateOnWorkflowStateAfterDeleteImpl
 
         await this.updatePage.execute(state.targetRevisionId, {
             system: {
-                workflow: undefined
+                workflow: null
             }
         });
     }

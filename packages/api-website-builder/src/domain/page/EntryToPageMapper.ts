@@ -19,6 +19,8 @@ export class EntryToPageMapper {
             savedBy: entry.savedBy,
             modifiedOn: entry.modifiedOn ?? null,
             modifiedBy: entry.modifiedBy ?? null,
+            deletedOn: entry.deletedOn ?? null,
+            deletedBy: entry.deletedBy ?? null,
             tenant: entry.tenant,
             system: entry.system,
             live: entry.live,

@@ -11,7 +11,7 @@ export interface WbIdentity {
     type: string;
 }
 
-export interface WbSystem extends CmsContentEntrySystem {
+export interface WbPageSystem extends CmsContentEntrySystem {
     //
 }
 

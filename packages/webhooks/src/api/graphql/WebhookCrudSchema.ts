@@ -87,9 +87,19 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
                 enabled: Boolean
             }
 
+            enum ListWebhooksSort {
+                createdOn_ASC
+                createdOn_DESC
+                modifiedOn_ASC
+                modifiedOn_DESC
+                name_ASC
+                name_DESC
+            }
+
             type WebhookQuery {
                 listWebhooks(
                     where: ListWebhooksWhereInput
+                    sort: [ListWebhooksSort!]
                     limit: Int
                     after: String
                 ): WebhookListResponse!

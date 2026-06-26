@@ -50,7 +50,7 @@
     "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",

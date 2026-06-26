@@ -39,7 +39,6 @@ globalConfig.json
 schema.graphql
 .tmp/
 .swc/
-.nx/*
 # yarn2 files
 .yarn/*
 !.yarn/releases
@@ -66,3 +65,5 @@ CLAUDE.local.md
 .claire/**
 .codegraph
 .mcp.json
+docs/.reports
+tsconfig.check-tests.json

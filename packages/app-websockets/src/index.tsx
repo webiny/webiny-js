@@ -28,3 +28,5 @@ export const Websockets = React.memo(WebsocketsExtension);
 
 export * from "./types.js";
 export * from "./hooks/index.js";
+export * from "./events/WebsocketEvent.js";
+export * from "./events/abstractions.js";

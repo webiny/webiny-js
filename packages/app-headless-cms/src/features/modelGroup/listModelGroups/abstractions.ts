@@ -42,7 +42,7 @@ export interface ModelGroupDto {
         displayName: string;
         type: string;
     };
-    contentModels: { modelId: string; name: string }[];
+    contentModels: { modelId: string; name: string; icon: string }[];
 }
 
 export interface IListModelGroupsGateway {

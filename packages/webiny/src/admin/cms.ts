@@ -1,14 +1,4 @@
 export { CmsGraphQLClient } from "@webiny/app-headless-cms/features/graphQLClient/index.js";
-export { CmsContentFormRenderer } from "@webiny/app-headless-cms/legacyPluginAdapters/CmsContentFormRenderer.js";
-export { CmsModelFieldValidator } from "@webiny/app-headless-cms/legacyPluginAdapters/CmsModelFieldValidator.js";
-export { CmsModelFieldType } from "@webiny/app-headless-cms/legacyPluginAdapters/CmsModelFieldType.js";
-export { CmsModelFieldRenderer } from "@webiny/app-headless-cms/legacyPluginAdapters/CmsModelFieldRenderer.js";
-export { CmsModelLayoutFieldType } from "@webiny/app-headless-cms/legacyPluginAdapters/CmsModelLayoutFieldType.js";
-export { CmsModelLayoutFieldRenderer } from "@webiny/app-headless-cms/legacyPluginAdapters/CmsModelLayoutFieldRenderer.js";
-export { useQuery } from "@webiny/app-headless-cms/admin/hooks/useQuery.js";
-export { useCms } from "@webiny/app-headless-cms/admin/hooks/useCms.js";
-export { useLazyQuery } from "@webiny/app-headless-cms/admin/hooks/useLazyQuery.js";
-export { useMutation } from "@webiny/app-headless-cms/admin/hooks/useMutation.js";
 export { useModel } from "@webiny/app-headless-cms/admin/components/ModelProvider/index.js";
 export { usePermission } from "@webiny/app-headless-cms/admin/hooks/usePermission.js";
 export { IsModelPublishable } from "@webiny/app-headless-cms/admin/components/IsModelPublishable.js";

@@ -50,7 +50,7 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
             model,
             values: cleanedValues,
             entry: originalEntry,
-            skipValidators: options?.skipValidators
+            skipValidation: options?.skipValidation
         });
 
         const mergedValues: TValues = {

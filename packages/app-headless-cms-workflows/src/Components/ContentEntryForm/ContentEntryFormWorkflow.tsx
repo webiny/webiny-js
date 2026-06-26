@@ -1,89 +1,44 @@
 import React from "react";
-import { ContentEntryForm, useModel } from "@webiny/app-headless-cms";
-import type { IWorkflowState } from "@webiny/app-workflows";
+import { observer } from "mobx-react-lite";
+import { Alert } from "@webiny/admin-ui";
+import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
+import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
+import { useWorkflowState } from "@webiny/app-workflows";
 import { Components } from "@webiny/app-workflows";
-import { Alert, Grid } from "@webiny/admin-ui";
-import type { PersistEntry } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/ContentEntryFormProvider.js";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
-import type { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 
 const {
-    ContentReview: { WorkflowStateBar, WorkflowStateOverlay }
+    ContentReview: { WorkflowStateBar }
 } = Components;
 
-/**
- * To override storing of the entry when in workflow state.
- */
-// @ts-expect-error
-const emptyFunction: PersistEntry = async () => {
-    return void 0;
-};
+export const ContentEntryFormWorkflow = ContentEntryFormContent.createDecorator(Original => {
+    return observer(function ContentEntryFormWorkflowDecorator(props) {
+        const formPresenter = useContentEntryFormPresenter();
+        const { presenter } = useWorkflowState();
+        const model = formPresenter.vm.model;
 
-interface IStoreAlertProps {
-    state: IWorkflowState | undefined;
-}
+        const isSingleton = model.tags.includes(CMS_MODEL_SINGLETON_TAG);
 
-const StoreAlert = ({ state }: IStoreAlertProps) => {
-    if (!state) {
-        return null;
-    }
-    return (
-        <Alert className={"mb-md"} type="danger">
-            Any changes you do on the entry will not be stored!
-        </Alert>
-    );
-};
-
-interface IShouldShowOriginalParams {
-    entry: Partial<Pick<CmsContentEntry, "id">>;
-    model: Partial<Pick<CmsModel, "tags">>;
-}
-const shouldShowOriginal = (params: IShouldShowOriginalParams): boolean => {
-    const { entry, model } = params;
-    /**
-     * In case of new entry or no model, show original.
-     * Also, for singleton models, show original.
-     */
-    if (!entry?.id || !model?.tags) {
-        return true;
-    }
-    return model.tags.includes(CMS_MODEL_SINGLETON_TAG);
-};
-
-export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Original => {
-    return function ContentEntryFormWorkflow(props) {
-        const { model } = useModel();
-
-        const showOriginal = shouldShowOriginal({
-            entry: props.entry,
-            model
-        });
-
-        if (showOriginal) {
+        if (isSingleton || formPresenter.vm.isNewEntry || !presenter.vm.hasWorkflow) {
             return <Original {...props} />;
         }
 
         return (
-            <Grid>
-                <Grid.Column span={12}>
+            <>
+                <div
+                    className={
+                        "max-w-screen bg-white p-sm border-solid border-b-sm border-neutral-dimmed"
+                    }
+                >
                     <WorkflowStateBar />
-                </Grid.Column>
-                <Grid.Column span={12}>
-                    <WorkflowStateOverlay>
-                        {({ state }) => {
-                            return (
-                                <>
-                                    <StoreAlert state={state} />
-                                    <Original
-                                        {...props}
-                                        persistEntry={state ? emptyFunction : props.persistEntry}
-                                    />
-                                </>
-                            );
-                        }}
-                    </WorkflowStateOverlay>
-                </Grid.Column>
-            </Grid>
+                    {presenter.vm.hasState ? (
+                        <Alert type="danger" className={"mt-sm"}>
+                            Any changes you do on the entry will not be stored!
+                        </Alert>
+                    ) : null}
+                </div>
+                <Original {...props} />
+            </>
         );
-    };
+    });
 });

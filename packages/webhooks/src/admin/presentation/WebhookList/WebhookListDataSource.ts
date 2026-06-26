@@ -1,21 +1,17 @@
-import { makeAutoObservable, runInAction, computed } from "mobx";
-import type {
-    IDataSource,
-    IDataSourceQuery,
-    IDataSourceMeta
-} from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
+import { makeObservable, observable } from "mobx";
+import { SimpleDataSource } from "@webiny/app-admin/presentation/listPresenter/SimpleDataSource.js";
+import type { FetchResult } from "@webiny/app-admin/presentation/listPresenter/FolderAwareDataSource.js";
+import type { IDataSourceQuery } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { Webhook } from "~/admin/shared/types.js";
 import type { IListWebhooksUseCase } from "~/admin/features/ListWebhooks/abstractions.js";
 
-export class WebhookListDataSource implements IDataSource<Webhook> {
+export class WebhookListDataSource extends SimpleDataSource<Webhook> {
     private _rows: Webhook[] = [];
-    private _meta: IDataSourceMeta = { cursor: null, hasMoreItems: false, totalCount: 0 };
-    private _loading = false;
 
     constructor(private readonly listWebhooksUseCase: IListWebhooksUseCase) {
-        makeAutoObservable<WebhookListDataSource, "listWebhooksUseCase">(this, {
-            listWebhooksUseCase: false,
-            rows: computed
+        super();
+        makeObservable<WebhookListDataSource, "_rows">(this, {
+            _rows: observable
         });
     }
 
@@ -23,50 +19,22 @@ export class WebhookListDataSource implements IDataSource<Webhook> {
         return this._rows;
     }
 
-    get meta(): IDataSourceMeta {
-        return this._meta;
-    }
-
-    get loading(): boolean {
-        return this._loading;
-    }
-
-    async query(params: IDataSourceQuery): Promise<void> {
-        this._loading = true;
+    async fetch(params: IDataSourceQuery): Promise<FetchResult<Webhook>> {
+        const sort = params.sort ? [`${params.sort.field}_${params.sort.direction}`] : undefined;
         const result = await this.listWebhooksUseCase.execute({
             where: params.filters as { enabled?: boolean } | undefined,
+            sort,
             limit: params.limit,
             after: params.cursor
         });
-        runInAction(() => {
-            this._rows = result.items;
-            this._meta = {
-                cursor: result.meta.cursor,
-                hasMoreItems: result.meta.hasMoreItems,
-                totalCount: result.meta.totalCount
-            };
-            this._loading = false;
-        });
+        return { data: result.items, meta: result.meta };
     }
 
-    async loadMore(params: IDataSourceQuery): Promise<void> {
-        if (!this._meta.hasMoreItems || this._loading) {
-            return;
-        }
-        this._loading = true;
-        const result = await this.listWebhooksUseCase.execute({
-            where: params.filters as { enabled?: boolean } | undefined,
-            limit: params.limit,
-            after: this._meta.cursor ?? undefined
-        });
-        runInAction(() => {
-            this._rows = [...this._rows, ...result.items];
-            this._meta = {
-                cursor: result.meta.cursor,
-                hasMoreItems: result.meta.hasMoreItems,
-                totalCount: result.meta.totalCount
-            };
-            this._loading = false;
-        });
+    override onQueryResult(data: Webhook[]): void {
+        this._rows = data;
+    }
+
+    override onLoadMoreResult(data: Webhook[]): void {
+        this._rows = [...this._rows, ...data];
     }
 }

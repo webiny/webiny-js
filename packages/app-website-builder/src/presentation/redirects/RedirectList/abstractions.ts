@@ -4,6 +4,7 @@ import type { IListActions } from "@webiny/app-admin/presentation/listPresenter/
 import type { IWorkerActions } from "@webiny/app-admin";
 import type { IFormVM } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { IFolderTreeViewModel } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import type { FolderDto } from "@webiny/app-aco";
 import type { Redirect } from "~/domain/Redirect/Redirect.js";
 import type { RedirectDto } from "~/domain/Redirect/RedirectDto.js";
 
@@ -61,6 +62,7 @@ export interface IRedirectListViewModel {
     createRedirect: ICreateRedirectPresenter | null;
     editRedirect: IEditRedirectPresenter | null;
     showFolders: boolean;
+    childFolders: FolderDto[];
     showingFilters: boolean;
 }
 

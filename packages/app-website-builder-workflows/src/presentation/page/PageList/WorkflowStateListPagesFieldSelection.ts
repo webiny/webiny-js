@@ -1,4 +1,4 @@
-import { ListPagesGraphQLFieldSelection } from "@webiny/app-website-builder/features/pages/loadPages/abstractions.js";
+import { ListPagesGraphQLFieldSelection } from "@webiny/app-website-builder/features/pages/listPages/abstractions.js";
 
 class WorkflowStatesListPagesGraphQLFieldSelection
     implements ListPagesGraphQLFieldSelection.Interface

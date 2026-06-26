@@ -13,3 +13,15 @@ export type {
     IDataSourceQuery,
     IDataSourceResult
 } from "./abstractions.js";
+
+export { QueryMatcher } from "./QueryMatcher.js";
+export type { QueryMatcherConfig } from "./QueryMatcher.js";
+
+export { FolderAwareDataSource } from "./FolderAwareDataSource.js";
+export type {
+    FolderAwareDataSourceConfig,
+    FetchParams,
+    FetchResult
+} from "./FolderAwareDataSource.js";
+
+export { SimpleDataSource } from "./SimpleDataSource.js";

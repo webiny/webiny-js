@@ -39,8 +39,10 @@ export interface IListPresenterConfig<TRow> {
     dataSource: IDataSource<TRow>;
     initialSort?: { field: string; direction: "ASC" | "DESC" };
     initialFilters?: Record<string, unknown>;
+    initialSearch?: string;
     debounceMs?: number;
     limit?: number;
+    itemLabel?: { singular: string; plural: string };
 }
 
 // ---------------------------------------------------------------------------
@@ -74,7 +76,9 @@ export interface IListViewModel<TRow> {
         selectedIds: Set<string>;
         selectedCount: number;
         allSelected: boolean;
+        label: string;
     };
+    showingFilters: boolean;
     empty: boolean;
     emptyWithFilters: boolean;
     error: IListError | null;
@@ -97,6 +101,8 @@ export interface IListActions {
         set(key: string, value: unknown): void;
         clear(key: string): void;
         clearAll(): void;
+        show(): void;
+        hide(): void;
     };
     selection: {
         toggle(id: string): void;

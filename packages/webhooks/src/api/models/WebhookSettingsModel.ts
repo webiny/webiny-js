@@ -7,15 +7,10 @@ import {
 class WebhookSettingsModelFactory implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
         const model = builder
-            .public({
+            .private({
                 modelId: WEBHOOK_SETTINGS_MODEL_ID,
-                name: "Webhook Settings",
-                group: "hidden"
+                name: "Webhook Settings"
             })
-            .description("Global settings for the webhooks system.")
-            .titleFieldId("signingSecret")
-            .singularApiName("WebhookSettings")
-            .pluralApiName("WebhookSettings")
             .tags(["$publishing:false", "$hidden:true"])
             .singleEntry();
 

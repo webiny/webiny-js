@@ -155,6 +155,120 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-file-manager/src/features/file/CreateFile/events.ts`
 - **Usage:** Hook into file creation. Implement `.handle(event)` where `event.payload.file` is the created file. Register via `FileAfterCreateEventHandler.createImplementation({ implementation, dependencies })`.
 
+### FileUrlGenerator (File Manager)
+
+- **Import:** `import { FileUrlGenerator } from "@webiny/api-file-manager/features/file/FileUrlGenerator/abstractions.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/file/FileUrlGenerator/abstractions.ts`
+- **Usage:** Generates full URLs for files by prepending `srcPrefix` from settings. Sync `generateUrl(file)` method; optional `init()` loads settings once. Registered as singleton.
+
+### GetFileByUrlUseCase (File Manager)
+
+- **Import:** `import { GetFileByUrlUseCase } from "@webiny/api-file-manager/features/file/GetFileByUrl/abstractions.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/file/GetFileByUrl/abstractions.ts`
+- **Usage:** Retrieve a file by its public URL. Parses URL pathname, queries files by key. Returns `Result<File | undefined, Error>`. Rejects anonymous users via `IdentityContext`.
+
+### FmGraphQLSchema (File Manager)
+
+- **Import:** `import { FmGraphQLSchema } from "@webiny/api-file-manager/graphql/FmGraphQLSchema.js"`
+- **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/handler-graphql/graphql/abstractions.js`
+- **Usage:** Single `GraphQLSchemaFactory` implementation for the entire FM GraphQL API (base types, settings, file CRUD, getFileByUrl). Registered in `FileManagerFeature`. Uses `builder.addTypeDefs()` and `builder.addResolver({ path, dependencies, resolver })` — no `context.container.resolve()` in resolvers.
+
+### GetUploadPayloadUseCase (File Manager)
+
+- **Import:** `import { GetUploadPayloadUseCase } from "@webiny/api-file-manager/features/upload/GetUploadPayload/index.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/upload/GetUploadPayload/abstractions.ts`
+- **Usage:** DI abstraction for generating upload payloads (presigned URLs or HMAC tokens). `execute(file, settings)` returns `{ data, file }`. S3 implementation uses S3 presigned POST; server implementation uses HMAC tokens + upload URL. Registered by provider packages (`api-file-manager-s3` or `api-file-manager-server`).
+
+### CreateMultiPartUploadUseCase (File Manager)
+
+- **Import:** `import { CreateMultiPartUploadUseCase } from "@webiny/api-file-manager/features/upload/CreateMultiPartUpload/index.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/upload/CreateMultiPartUpload/abstractions.ts`
+- **Usage:** DI abstraction for initiating multipart uploads. `execute({ file, numberOfParts })` returns `{ file, uploadId, parts }`. S3 implementation uses S3 multipart API; server implementation creates local part directories with HMAC-signed URLs.
+
+### CompleteMultiPartUploadUseCase (File Manager)
+
+- **Import:** `import { CompleteMultiPartUploadUseCase } from "@webiny/api-file-manager/features/upload/CompleteMultiPartUpload/index.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/upload/CompleteMultiPartUpload/abstractions.ts`
+- **Usage:** DI abstraction for completing multipart uploads. `execute({ fileKey, uploadId })` returns `void`. S3 implementation uses S3 `CompleteMultipartUploadCommand`; server implementation reassembles parts from local disk.
+
+### FmUploadGraphQLSchema (File Manager)
+
+- **Import:** `import { FmUploadGraphQLSchema } from "@webiny/api-file-manager/graphql/FmUploadGraphQLSchema.js"`
+- **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/handler-graphql/graphql/abstractions.js`
+- **Usage:** Shared `GraphQLSchemaFactory` for FM upload operations (presigned payloads, multipart upload). Resolves `GetUploadPayloadUseCase`, `CreateMultiPartUploadUseCase`, `CompleteMultiPartUploadUseCase` from DI. Registered automatically by `FileManagerFeature`. Provider packages only need to register their implementations of the three abstractions.
+
+### ExtractMetadataHandler (File Manager)
+
+- **Import:** `import { ExtractMetadataHandler } from "@webiny/api-file-manager/features/extractMetadata/ExtractMetadataHandler.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/extractMetadata/ExtractMetadataHandler.ts`
+- **Usage:** Shared event handler that triggers the `fileManagerExtractMetadata` background task after a file is created. Uses `FileAfterCreateEventHandler.createImplementation` with `TaskService` as a dependency. Registered by provider packages (`api-file-manager-s3` or `api-file-manager-server`) alongside their storage-specific `ExtractMetadataTaskDefinition`.
+
+### ExtractMetadataInput (File Manager)
+
+- **Import:** `import type { ExtractMetadataInput } from "@webiny/api-file-manager/features/extractMetadata/ExtractMetadataInput.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/extractMetadata/ExtractMetadataInput.ts`
+- **Usage:** Input interface for the metadata extraction task (`{ fileId: string }`). Used by both `ExtractMetadataHandler` and provider-specific `ExtractMetadataTask` implementations.
+
+### AssetFactory (File Manager — Asset Delivery)
+
+- **Import:** `import { AssetFactory } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/assetDelivery/Asset/abstractions.ts`
+- **Usage:** DI factory for creating `Asset` instances. `AssetFactory.Interface` has a `create(data: AssetData): Asset` method. Registered by `AssetDeliveryFeature`. Used by provider-specific resolvers (`S3AssetResolver`, `LocalAssetResolver`) instead of direct `new Asset()` calls. The `Asset.withProps()` copy pattern remains internal.
+
+### AssetRequestFactory (File Manager — Asset Delivery)
+
+- **Import:** `import { AssetRequestFactory } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/assetDelivery/AssetRequest/abstractions.ts`
+- **Usage:** DI factory for creating `AssetRequest` instances. `AssetRequestFactory.Interface` has a `create(data: AssetRequestData): AssetRequest` method. Registered by `AssetDeliveryFeature`. Used by `FilesAssetRequestResolver` and `PrivateFileAssetRequestResolver` instead of direct `new AssetRequest()` calls.
+
+### StreamAssetReply (File Manager — Asset Delivery)
+
+- **Import:** `import { StreamAssetReply } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/assetDelivery/StreamAssetReply/abstractions.ts`
+- **Usage:** DI factory abstraction for creating streaming asset replies (HTTP 200, cache-control, content-type). Default implementation registered by `AssetDeliveryFeature`. `StreamAssetReply.Interface` has a `create(asset): AssetReply` method. Decoratable by provider packages if they need custom reply behavior.
+
+### ObjectKey (File Manager — Asset Delivery)
+
+- **Import:** `import { ObjectKey } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/assetDelivery/ObjectKey/abstractions.ts`
+- **Usage:** DI factory for parsing bucket keys (`tenants/<tenant>/files/<id>/...`). `ObjectKey.Interface` has `from(key): ObjectKey.Instance` where the instance exposes `id()` and `relativeKey()`. Registered by `AssetDeliveryFeature`. Used by asset resolvers and threat detection in both provider packages.
+
+### Asset (File Manager — Asset Delivery)
+
+- **Import:** `import { Asset } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Type:** See `packages/api-file-manager/src/delivery/AssetDelivery/Asset.ts`
+- **Usage:** Domain class representing an uploaded file for delivery. Created via `Asset.create(data)` (private constructor). Exposes `getId()`, `getTenant()`, `getKey()`, `getSize()`, `getContentType()`, `getExtension()`, `getContents()`, `clone()`, `withProps()`. Accepts `setContentsReader()` and `setOutputStrategy()`.
+
+### AssetRequest (File Manager — Asset Delivery)
+
+- **Import:** `import { AssetRequest } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Type:** See `packages/api-file-manager/src/delivery/AssetDelivery/AssetRequest.ts`
+- **Usage:** Domain class representing an incoming asset request. Created via `AssetRequest.create(data)` (private constructor). Exposes `getKey()`, `getOptions()`, `setOptions()`, `getContext()`, `getExtension()`. `AssetRequestOptions` type is also exported.
+
+### AssetReply (File Manager — Asset Delivery)
+
+- **Import:** `import { AssetReply } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Type:** See `packages/api-file-manager/src/delivery/AssetDelivery/abstractions/AssetReply.ts`
+- **Usage:** Base class for asset delivery responses. Created via `AssetReply.create(params?)`. Exposes `getCode()`, `setCode()`, `getBody()`, `setBody()`, `getHeaders()`, `setHeaders()`. Subclassed by `NullAssetReply`, `S3ErrorAssetReply`, `S3RedirectAssetReply`.
+
+### createAssetDeliveryPluginLoader (File Manager — Asset Delivery)
+
+- **Import:** `import { createAssetDeliveryPluginLoader } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js"`
+- **Type:** See `packages/api-file-manager/src/delivery/AssetDelivery/createAssetDeliveryPluginLoader.ts`
+- **Usage:** Wraps a plugin factory so it only loads when `WEBINY_FUNCTION_TYPE === "asset-delivery"`. Used by S3 and server packages to conditionally load asset delivery config.
+
+### MetadataWriter (File Manager — Upload)
+
+- **Import:** `import { MetadataWriter } from "@webiny/api-file-manager/features/upload/WriteFileMetadata/abstractions.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/upload/WriteFileMetadata/abstractions.ts`
+- **Usage:** DI abstraction for writing file metadata to the key-value store. `MetadataWriter.Interface` has a `write(files: File[]): Promise<void>` method. Registered by `WriteFileMetadataFeature`. Used by `WriteMetadataAfterCreateHandler` and `WriteMetadataAfterBatchCreateHandler` event handlers.
+
+### MetadataReader (File Manager — Upload)
+
+- **Import:** `import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/upload/ReadFileMetadata/abstractions.ts`
+- **Usage:** DI abstraction for reading file metadata from the key-value store. `MetadataReader.Interface` has a `read(fileId: string): Promise<AssetMetadata | undefined>` method. Registered by `ReadFileMetadataFeature`. Used by `ExtractMetadataTask` and `GetFileContentsByIdUseCase` in both provider packages.
+
 ### Encryption
 
 - **Import:** `import { Encryption } from "@webiny/api-core/features/encryption"`
