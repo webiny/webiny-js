@@ -10,8 +10,6 @@ import { UpdateUserFeature } from "~/admin/features/users/updateUser/index.js";
 import { Routes } from "~/admin/routes.js";
 import { useToast } from "@webiny/admin-ui";
 
-export type UseUserForm = ReturnType<typeof useUserForm>;
-
 interface SubmitUserCallableParams {
     id?: string;
     firstName: string;
@@ -40,9 +38,7 @@ export function useUserForm() {
     const id = route.params.id;
     const newUser = route.params.new === true;
 
-    const [user, setUser] = useState<IGetUserGatewayResult & Record<string, any>>(
-        {} as IGetUserGatewayResult & Record<string, any>
-    );
+    const [user, setUser] = useState<IGetUserGatewayResult | undefined>(undefined);
     const [userLoading, setUserLoading] = useState(false);
     const [mutationLoading, setMutationLoading] = useState(false);
 
@@ -108,14 +104,10 @@ export function useUserForm() {
     return {
         id,
         loading,
-        user: {
-            ...user,
-            group: user.group ? user.group.id : undefined,
-            team: user.team ? user.team.id : undefined
-        } as IGetUserGatewayResult & Record<string, any>,
+        user,
         onSubmit,
         isNewUser: newUser,
-        fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+        fullName: `${user?.firstName || ""} ${user?.lastName || ""}`.trim(),
         showEmptyView,
         createUser() {
             goToRoute(Routes.Users.List, { new: true });
