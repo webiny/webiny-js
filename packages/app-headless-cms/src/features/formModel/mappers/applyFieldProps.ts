@@ -24,6 +24,11 @@ export function applyFieldProps(
         builder.placeholder(field.placeholder);
     }
 
+    console.log(field);
+    if (Array.isArray(field.tags)) {
+        builder.tags(field.tags);
+    }
+
     if (field.settings?.defaultValue != null) {
         builder.defaultValue(field.settings.defaultValue);
     }

@@ -428,7 +428,10 @@ fields
 fields
   .text()
   .label("Seats")
-  .requiredWhen(({ form }) => form.field("plan").getValue() === "pro", "Pro plan requires a seat count");
+  .requiredWhen(
+    ({ form }) => form.field("plan").getValue() === "pro",
+    "Pro plan requires a seat count"
+  );
 ```
 
 ### Form-Level Rules
@@ -546,7 +549,7 @@ fields.text().computedUntilDirty(({ form }) =>
 // Multi-level traversal: parent().parent() goes up two levels
 inner.file().context(({ field }) => ({
   title: field.parent().parent().field("title").getValue()
-}))
+}));
 ```
 
 ## Conditional Visibility / Disable (callback form)
@@ -625,7 +628,7 @@ fields
   .context(({ field }) => ({
     title: field.parent().field("title").getValue(),
     description: field.parent().field("description").getValue()
-  }))
+  }));
 ```
 
 ### Nested field accessing root-level fields
@@ -636,12 +639,10 @@ fields
   .object()
   .label("Settings")
   .fields(f => ({
-    media: f
-      .file()
-      .context(({ form }) => ({
-        title: form.field("title").getValue()
-      }))
-  }))
+    media: f.file().context(({ form }) => ({
+      title: form.field("title").getValue()
+    }))
+  }));
 ```
 
 ### Deep nesting — traversing multiple levels up
@@ -654,14 +655,12 @@ fields
   .fields(f => ({
     label: f.text().defaultValue("Settings Label"),
     nested: f.object().fields(inner => ({
-      media: inner
-        .file()
-        .context(({ field }) => ({
-          // parent() = nested, parent().parent() = settings
-          label: field.parent().parent().field("label").getValue()
-        }))
+      media: inner.file().context(({ field }) => ({
+        // parent() = nested, parent().parent() = settings
+        label: field.parent().parent().field("label").getValue()
+      }))
     }))
-  }))
+  }));
 ```
 
 ### Using both field navigator and form
@@ -675,7 +674,7 @@ fields
     label: field.parent().field("label").getValue(),
     // Absolute: root-level field
     slug: form.field("slug").getValue()
-  }))
+  }));
 ```
 
 ### Reading context in a renderer

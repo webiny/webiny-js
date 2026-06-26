@@ -32,9 +32,7 @@ export const MultiValueDynamicZone = observer(
             clipboardItem !== null &&
             clipboardItem.type === "wby.dz" &&
             typeof clipboardItem.data[TEMPLATE_DISCRIMINATOR] === "string" &&
-            field.availableTemplates.some(
-                t => t.id === clipboardItem.data[TEMPLATE_DISCRIMINATOR]
-            );
+            field.availableTemplates.some(t => t.id === clipboardItem.data[TEMPLATE_DISCRIMINATOR]);
 
         const content = (
             <div className={"flex flex-col gap-lg"}>

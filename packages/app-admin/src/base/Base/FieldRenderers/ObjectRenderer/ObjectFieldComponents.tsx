@@ -33,7 +33,15 @@ export interface ListItemRendererProps {
 }
 
 export const ListItemRenderer = observer(
-    ({ item, index, total, label, itemTitle, itemDescription, disabled }: ListItemRendererProps) => {
+    ({
+        item,
+        index,
+        total,
+        label,
+        itemTitle,
+        itemDescription,
+        disabled
+    }: ListItemRendererProps) => {
         const [open, setOpen] = useState(false);
         const hasFocusRequest = item.fields.some(f => f.focusRequested);
 

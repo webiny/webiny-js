@@ -40,7 +40,8 @@ export const Extensions = () => {
             {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}
             {/*    pulumiSrc="/extensions/myLambdaFunction/pulumi.ts"*/}
             {/*/>*/}
-            <Api.Extension src={"@/extensions/models/RendererShowcaseModel.ts"} />
+            <Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />
+            <Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />
             {/*<Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />*/}
             {/*<Api.Extension src={"/extensions/models/ProductModel.ts"} />*/}
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}
@@ -104,7 +105,7 @@ export const Extensions = () => {
                     fileManager: {
                         threatDetection: false
                     },
-                    recordLocking: true
+                    recordLocking: false
                 }}
             />
             {process.env.WEBINY_CLI_AUTO_INSTALL && (

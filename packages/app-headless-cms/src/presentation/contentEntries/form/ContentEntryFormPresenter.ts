@@ -18,7 +18,10 @@ import { DeleteEntryUseCase } from "~/features/contentEntry/deleteEntry/abstract
 import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
 import { CmsFormModelBuilder } from "~/features/formModel/abstractions.js";
 import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
-import { ContentEntryFormPresenter as Abstraction } from "./abstractions.js";
+import {
+    ContentEntryFormPresenter as Abstraction,
+    ContentEntryFormModelModifier
+} from "./abstractions.js";
 import { TRASH_ENTRY_DIALOG } from "~/presentation/contentEntries/list/ContentEntriesPresenter.js";
 
 class ContentEntryFormPresenterImpl implements Abstraction.Interface {
@@ -38,7 +41,8 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         private publishEntryUseCase: PublishEntryUseCase.Interface,
         private unpublishEntryUseCase: UnpublishEntryUseCase.Interface,
         private deleteEntryUseCase: DeleteEntryUseCase.Interface,
-        private updateRevisionDescriptionUseCase: UpdateRevisionDescriptionUseCase.Interface
+        private updateRevisionDescriptionUseCase: UpdateRevisionDescriptionUseCase.Interface,
+        private formModelModifiers: ContentEntryFormModelModifier.Interface[]
     ) {
         makeAutoObservable<
             ContentEntryFormPresenterImpl,
@@ -53,6 +57,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             | "unpublishEntryUseCase"
             | "deleteEntryUseCase"
             | "updateRevisionDescriptionUseCase"
+            | "formModelModifiers"
         >(this, {
             formModelFactory: false,
             cmsFormModelBuilder: false,
@@ -65,6 +70,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             unpublishEntryUseCase: false,
             deleteEntryUseCase: false,
             updateRevisionDescriptionUseCase: false,
+            formModelModifiers: false,
             vm: computed
         });
     }
@@ -284,9 +290,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
 
     newEntry(): void {
         this.entry = null;
-
-        const formConfig = this.cmsFormModelBuilder.build(this.model);
-        this.form = this.formModelFactory.create(formConfig);
+        this.form = this.buildForm();
     }
 
     reset(): void {
@@ -294,9 +298,17 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         this.entry = null;
     }
 
-    private buildAndPopulateForm(entry: CmsContentEntry): void {
+    private buildForm(): FormModel.Interface {
         const formConfig = this.cmsFormModelBuilder.build(this.model);
-        this.form = this.formModelFactory.create(formConfig);
+        const form = this.formModelFactory.create(formConfig);
+        for (const modifier of this.formModelModifiers) {
+            modifier.modifyForm(form, this.model);
+        }
+        return form;
+    }
+
+    private buildAndPopulateForm(entry: CmsContentEntry): void {
+        this.form = this.buildForm();
         this.form.setData(entry.values);
         this.form.reset();
     }
@@ -315,6 +327,7 @@ export const ContentEntryFormPresenter = Abstraction.createImplementation({
         PublishEntryUseCase,
         UnpublishEntryUseCase,
         DeleteEntryUseCase,
-        UpdateRevisionDescriptionUseCase
+        UpdateRevisionDescriptionUseCase,
+        [ContentEntryFormModelModifier, { multiple: true }]
     ]
 });

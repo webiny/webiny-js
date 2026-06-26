@@ -39,6 +39,14 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this._config.type;
     }
 
+    getName(): string {
+        return this._config.name;
+    }
+
+    getType(): string {
+        return this._config.type;
+    }
+
     label(text: string): this {
         this._config.label = text;
         return this;
@@ -214,7 +222,8 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
     }
 
     build(name: string): IFieldConfig {
-        return { ...this._config, name, normalizeValue: (v: unknown) => this.normalizeValue(v) };
+        this._config.name = name;
+        return { ...this._config, normalizeValue: (v: unknown) => this.normalizeValue(v) };
     }
 }
 

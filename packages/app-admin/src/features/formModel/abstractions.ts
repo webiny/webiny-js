@@ -752,6 +752,7 @@ export interface IFormModel<T = Record<string, any>> {
     readonly errors: IFormError[];
     readonly vm: IFormVM;
     getFieldBuilders(predicate?: (builder: IFieldBuilder) => boolean): IFieldBuilder[];
+    traverse(callback: (builder: IFieldBuilder) => void): void;
     resolveChildLayout(layout: LayoutNode[], children: Map<string, IField>): LayoutNodeVM[];
     readonly registry: IFieldBuilderRegistry;
 }
@@ -901,6 +902,8 @@ export interface IFieldBuilder<
     afterSetValue(fn: AfterSetValueCallback): this;
     onBlur(fn: OnBlurCallback): this;
     cloneValue(fn: CloneValueCallback): this;
+    getName(): string;
+    getType(): string;
     getTags(): string[];
     tags(tags: string[]): this;
     /**

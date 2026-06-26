@@ -11,7 +11,9 @@ declare module "../../../../features/formModel/abstractions.js" {
                 open?: boolean;
                 container?: boolean;
                 itemTitle?: string | ((data: Record<string, unknown>, index: number) => string);
-                itemDescription?: string | ((data: Record<string, unknown>, index: number) => string);
+                itemDescription?:
+                    | string
+                    | ((data: Record<string, unknown>, index: number) => string);
                 addItemLabel?: string;
             };
         };
