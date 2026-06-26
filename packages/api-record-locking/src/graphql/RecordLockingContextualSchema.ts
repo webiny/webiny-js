@@ -24,9 +24,6 @@ class RecordLockingContextualSchemaImpl implements IGraphQLContextualSchema {
         private wcp: WcpContext.Interface,
         private tenantCtx: TenantContext.Interface,
         private identityCtx: IdentityContext.Interface,
-        private getModel: GetModelUseCase.Interface,
-        private listModels: ListModelsUseCase.Interface,
-        private fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface,
         private config: IRecordLockingAppConfig
     ) {}
 
@@ -38,16 +35,25 @@ class RecordLockingContextualSchemaImpl implements IGraphQLContextualSchema {
             });
         }
 
+        const container = ctx.container as Container;
+
+        // Resolve the CMS use-cases lazily here (at build/request time) rather than as
+        // constructor dependencies. They depend on AccessControl/CmsContext, which the CMS
+        // initializer only registers during its own build() — so injecting them eagerly would
+        // fail when the engine constructs all contextual schemas before any build() has run.
+        const getModel = container.resolve(GetModelUseCase);
+        const listModels = container.resolve(ListModelsUseCase);
+        const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
+
         const [model, publicModels] = await this.identityCtx.withoutAuthorization(async () => {
             const [modelResult, publicModelsResult] = await Promise.all([
-                this.getModel.execute(RECORD_LOCKING_MODEL_ID),
-                this.listModels.execute({ includePrivate: false })
+                getModel.execute(RECORD_LOCKING_MODEL_ID),
+                listModels.execute({ includePrivate: false })
             ]);
 
             return [modelResult.value, publicModelsResult.value];
         });
 
-        const container = ctx.container as Container;
         RecordLockingFeature.register(container, {
             timeout: this.config.timeout,
             model
@@ -56,7 +62,7 @@ class RecordLockingContextualSchemaImpl implements IGraphQLContextualSchema {
         const plugin = await createGraphQLSchema({
             model,
             models: publicModels,
-            fieldRegistry: this.fieldRegistry
+            fieldRegistry
         });
 
         // The generated record-locking model schema references CMS base scalars (DateTime, JSON,
@@ -78,13 +84,5 @@ class RecordLockingContextualSchemaImpl implements IGraphQLContextualSchema {
 
 export const RecordLockingContextualSchema = GraphQLContextualSchema.createImplementation({
     implementation: RecordLockingContextualSchemaImpl,
-    dependencies: [
-        WcpContext,
-        TenantContext,
-        IdentityContext,
-        GetModelUseCase,
-        ListModelsUseCase,
-        CmsModelFieldToGraphQLRegistry,
-        RecordLockingAppConfig
-    ]
+    dependencies: [WcpContext, TenantContext, IdentityContext, RecordLockingAppConfig]
 });
