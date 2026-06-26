@@ -10,6 +10,7 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import { createBaseContentSchema } from "@webiny/api-headless-cms/graphql/schema/baseContentSchema.js";
 import { RECORD_LOCKING_MODEL_ID } from "~/domain/RecordLockingModel.js";
 import {
     RecordLockingAppConfig,
@@ -58,9 +59,18 @@ class RecordLockingContextualSchemaImpl implements IGraphQLContextualSchema {
             fieldRegistry: this.fieldRegistry
         });
 
+        // The generated record-locking model schema references CMS base scalars (DateTime, JSON,
+        // etc.). Include createBaseContentSchema() — which declares those scalars and their
+        // resolvers — exactly as the normal CMS schema build (buildSchemaPlugins) does, so this
+        // standalone schema is self-contained and valid before it is merged by the engine.
+        const baseContent = createBaseContentSchema();
+
         return makeExecutableSchema({
-            typeDefs: ["type Query\ntype Mutation", plugin.schema.typeDefs as string],
-            resolvers: mergeResolvers([plugin.schema.resolvers as any]),
+            typeDefs: [baseContent.schema.typeDefs as string, plugin.schema.typeDefs as string],
+            resolvers: mergeResolvers([
+                baseContent.schema.resolvers as any,
+                plugin.schema.resolvers as any
+            ]),
             inheritResolversFromInterfaces: true
         });
     }
