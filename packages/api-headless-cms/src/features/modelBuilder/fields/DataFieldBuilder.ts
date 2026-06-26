@@ -85,6 +85,7 @@ export interface IFieldRendererRegistry {
             open?: boolean;
             container?: boolean;
             itemTitle?: string;
+            itemDescription?: string;
         };
     };
     objectAccordionMultiple: {
@@ -93,6 +94,7 @@ export interface IFieldRendererRegistry {
             open?: boolean;
             container?: boolean;
             itemTitle?: string;
+            itemDescription?: string;
             addItemLabel?: string;
         };
     };

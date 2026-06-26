@@ -148,7 +148,7 @@ const RefDetailedMultipleInner = observer(({ field }: InnerFieldProps) => {
     return (
         <div className={"@container"}>
             <div className={"flex items-center justify-between"}>
-                <FormComponentLabel text={field.label} invalid={invalid} disabled={disabled} />
+                <FormComponentLabel text={field.label} hint={field.help} invalid={invalid} disabled={disabled} />
             </div>
             <div className={"webiny_ref-field-container"}>
                 <EntryList entries={orderedEntries} loadMore={() => presenter.loadMore()}>

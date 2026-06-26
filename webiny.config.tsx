@@ -40,6 +40,7 @@ export const Extensions = () => {
             {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}
             {/*    pulumiSrc="/extensions/myLambdaFunction/pulumi.ts"*/}
             {/*/>*/}
+            <Api.Extension src={"@/extensions/models/RendererShowcaseModel.ts"} />
             {/*<Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />*/}
             {/*<Api.Extension src={"/extensions/models/ProductModel.ts"} />*/}
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}

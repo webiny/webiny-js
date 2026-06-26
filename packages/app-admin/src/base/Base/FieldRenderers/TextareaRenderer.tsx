@@ -14,6 +14,7 @@ export const TextareaRenderer = createFieldRenderer<"textarea">(({ field }) => {
         <DelayedOnChange value={field.value} onChange={value => field.onChange(value)}>
             <Textarea
                 label={field.label}
+                hint={field.help}
                 placeholder={field.placeholder}
                 description={field.description}
                 note={field.note}

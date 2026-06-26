@@ -3,7 +3,7 @@ import type { CmsModelField } from "~/types.js";
 
 class LexicalTextInputsRendererImpl implements CmsFieldRenderer.Interface {
     rendererName = "lexical-text-inputs";
-    formRenderer = "lexical";
+    formRenderer = "lexicalEditors";
     name = "Lexical Text Inputs";
     description = "Renders a list of lexical editors.";
 
@@ -13,7 +13,7 @@ class LexicalTextInputsRendererImpl implements CmsFieldRenderer.Interface {
 
     buildSettingsForm(form: CmsFieldRenderer.FormBuilder) {
         form.fields(fields => ({
-            addItemLabel: fields.text().label('"Add Value" button label')
+            addItemLabel: fields.text().label('"Add Item" button label')
         }));
         form.layout(layout => [layout.row("addItemLabel")]);
     }

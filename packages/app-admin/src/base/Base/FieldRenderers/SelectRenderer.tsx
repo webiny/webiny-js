@@ -15,6 +15,7 @@ export const SelectRenderer = createFieldRenderer(({ field }) => {
     return (
         <Select
             label={field.label}
+            hint={field.help}
             placeholder={field.placeholder}
             description={field.description}
             note={field.note}

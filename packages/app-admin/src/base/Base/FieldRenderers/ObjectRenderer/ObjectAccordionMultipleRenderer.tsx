@@ -11,6 +11,7 @@ declare module "../../../../features/formModel/abstractions.js" {
                 open?: boolean;
                 container?: boolean;
                 itemTitle?: string | ((data: Record<string, unknown>, index: number) => string);
+                itemDescription?: string | ((data: Record<string, unknown>, index: number) => string);
                 addItemLabel?: string;
             };
         };
@@ -46,14 +47,14 @@ export const ObjectAccordionMultipleRenderer = createObjectFieldRenderer<"object
         const label = `${field.label || ""} ${field.items.length ? `(${field.items.length})` : ""}`;
 
         return (
-            <div className={"flex flex-col gap-lg"}>
-                <Accordion background={"base"} variant={"container"}>
-                    <Accordion.Item title={label} defaultOpen={true}>
+            <Accordion background={"base"} variant={"container"}>
+                <Accordion.Item title={label} description={field.description} defaultOpen={true}>
+                    <div className={"flex flex-col gap-lg"}>
                         <ListItems field={field} />
-                    </Accordion.Item>
-                </Accordion>
-                {addButton}
-            </div>
+                        {addButton}
+                    </div>
+                </Accordion.Item>
+            </Accordion>
         );
     }
 );
@@ -71,6 +72,7 @@ const ListItems = createObjectFieldRenderer<"objectAccordionMultiple">(({ field 
                     total={field.items.length}
                     label={field.label}
                     itemTitle={settings?.itemTitle}
+                    itemDescription={settings?.itemDescription}
                     disabled={field.disabled}
                 />
             ))}
