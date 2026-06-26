@@ -3,9 +3,7 @@ import { Abstraction } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { PluginsContainer } from "@webiny/plugins";
-import { makeExecutableSchema } from "@graphql-tools/schema";
-import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
-import type { GraphQLSchema } from "graphql";
+import type { IGraphQLContextInitializer } from "@webiny/handler-graphql";
 import { AccessControl } from "~/crud/AccessControl/AccessControl.js";
 import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud.js";
 import { createModelsCrud } from "~/crud/contentModel.crud.js";
@@ -62,7 +60,7 @@ export const HeadlessCmsEnhancerConfig = new Abstraction<IHeadlessCmsEnhancerCon
     "HeadlessCmsEnhancerConfig"
 );
 
-export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
+export class HeadlessCmsInitializerImpl implements IGraphQLContextInitializer {
     private initialized = false;
 
     constructor(
@@ -72,15 +70,11 @@ export class HeadlessCmsInitializerImpl implements IGraphQLContextualSchema {
         private tenantContext: TenantContext.Interface
     ) {}
 
-    async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
+    async init(ctx: Record<string, any>): Promise<void> {
         if (!this.initialized) {
             this.initialized = true;
             await this._initialize(ctx);
         }
-        return makeExecutableSchema({
-            typeDefs: "type Query\ntype Mutation",
-            assumeValidSDL: true
-        });
     }
 
     private async _initialize(ctx: Record<string, any>): Promise<void> {

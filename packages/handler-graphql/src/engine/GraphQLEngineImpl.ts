@@ -5,12 +5,14 @@ import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { GraphQLEngine } from "./abstractions.js";
 import { GraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
+import { GraphQLContextInitializer } from "./GraphQLContextInitializer.js";
 import { GraphQLContextualSchema } from "./GraphQLContextualSchema.js";
 import { GraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 import { ResolverDecoration } from "~/ResolverDecoration.js";
 import { createRequestBody } from "~/createRequestBody.js";
 import type { IGraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 import type { IGraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
+import type { IGraphQLContextInitializer } from "./GraphQLContextInitializer.js";
 import type { IGraphQLContextualSchema } from "./GraphQLContextualSchema.js";
 import type { GraphQLRequestBody } from "~/types.js";
 import type { GraphQLSchema } from "graphql";
@@ -20,12 +22,20 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         private composer: IGraphQLSchemaComposer,
         private container: Container,
         private enhancers: IGraphQLContextEnhancer[],
+        private initializers: IGraphQLContextInitializer[],
         private contextualSchemas: IGraphQLContextualSchema[]
     ) {}
 
     async execute(body: any): Promise<any> {
         // Build context first — enhancers may be async (e.g. CMS storage init)
         const ctx = await this.buildContext();
+
+        // Run request initializers AFTER enhancers (identity/tenant set) and BEFORE contextual
+        // schemas — they register request-scoped services (e.g. the CMS facade, AccessControl)
+        // that contextual schemas and resolvers depend on.
+        for (const initializer of this.initializers) {
+            await initializer.init(ctx);
+        }
 
         // Run contextual schemas BEFORE composer.build() so that any CoreGraphQLSchemaFactory
         // registrations they make (e.g. ACO folder schema plugins) are picked up by GraphQLSchemaComposer.
@@ -120,6 +130,7 @@ export const GraphQLEngineImpl = GraphQLEngine.createImplementation({
         GraphQLSchemaComposer,
         RequestContainer,
         [GraphQLContextEnhancer, { multiple: true }],
+        [GraphQLContextInitializer, { multiple: true }],
         [GraphQLContextualSchema, { multiple: true }]
     ]
 });
