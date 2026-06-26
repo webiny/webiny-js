@@ -10,7 +10,7 @@ import { CreateModelUseCase } from "~/features/contentModel/CreateModel/index.js
 import { CreateModelFromUseCase } from "~/features/contentModel/CreateModelFrom/index.js";
 import { UpdateModelUseCase } from "~/features/contentModel/UpdateModel/index.js";
 import { DeleteModelUseCase } from "~/features/contentModel/DeleteModel/index.js";
-import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsContextEnhancer.js";
+import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
 
 export interface CreateModelsSchemaParams {
     context: CmsContext;

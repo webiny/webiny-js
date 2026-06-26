@@ -3,8 +3,8 @@ import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { getSchema } from "~/graphql/getSchema.js";
-import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsContextEnhancer.js";
-import type { IHeadlessCmsEnhancerConfig } from "~/HeadlessCmsContextEnhancer.js";
+import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
+import type { IHeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
 import type { CmsContext } from "~/types/index.js";
 import type { GraphQLSchema } from "graphql";
 

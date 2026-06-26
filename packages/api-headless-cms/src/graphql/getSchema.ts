@@ -8,7 +8,7 @@ import { generateCacheId } from "./getSchema/generateCacheId.js";
 import { generateCacheKey } from "./getSchema/generateCacheKey.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
-import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsContextEnhancer.js";
+import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
 
 interface SchemaCache {
     key: string;

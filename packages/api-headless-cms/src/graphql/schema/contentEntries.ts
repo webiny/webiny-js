@@ -20,7 +20,7 @@ import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntry/GetLatestEntriesByIds/index.js";
 import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";
 import { GetEntriesByIdsUseCase } from "~/features/contentEntry/GetEntriesByIds/index.js";
-import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsContextEnhancer.js";
+import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
 
 interface EntriesByModel {
     [key: string]: string[];

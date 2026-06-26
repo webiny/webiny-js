@@ -11,7 +11,7 @@ import { UpdateGroupUseCase } from "~/features/contentModelGroup/UpdateGroup/ind
 import { DeleteGroupUseCase } from "~/features/contentModelGroup/DeleteGroup/index.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/index.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
-import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsContextEnhancer.js";
+import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
 
 interface Params {
     context: CmsContext;

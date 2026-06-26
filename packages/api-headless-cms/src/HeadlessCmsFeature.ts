@@ -2,10 +2,7 @@ import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
-import {
-    HeadlessCmsInitializerImpl,
-    HeadlessCmsEnhancerConfig
-} from "./HeadlessCmsContextEnhancer.js";
+import { HeadlessCmsInitializerImpl, HeadlessCmsEnhancerConfig } from "./HeadlessCmsInitializer.js";
 import { GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
