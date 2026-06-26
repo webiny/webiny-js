@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import type {
     IWorkflowStatesWidgetPresenter,
     IWorkflowStatesWidgetPresenterViewModel
-} from "~/Presenters/index.js";
+} from "../../abstractions.js";
 import { Tabs } from "@webiny/admin-ui";
 import { WorkflowStateList } from "../List/WorkflowStateList.js";
 import { WorkflowStateListSkeleton } from "../List/WorkflowStateListSkeleton.js";
