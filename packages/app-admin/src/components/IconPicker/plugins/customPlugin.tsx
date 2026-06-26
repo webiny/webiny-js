@@ -1,6 +1,6 @@
 import React from "react";
-import { useApolloClient } from "@apollo/react-hooks";
 import { observer } from "mobx-react-lite";
+import { useFeature } from "@webiny/app";
 import { Button } from "@webiny/admin-ui";
 import type { FileManagerFileItem } from "~/base/ui/FileManager.js";
 import { FileManager } from "~/base/ui/FileManager.js";
@@ -8,8 +8,7 @@ import { IconPickerTab } from "../IconPickerTab.js";
 import { useIcon } from "../index.js";
 import { useIconPicker } from "../IconPickerPresenterProvider.js";
 import { IconPickerConfig } from "../config/index.js";
-import type { ListCustomIconsQueryResponse } from "./graphql.js";
-import { LIST_CUSTOM_ICONS } from "./graphql.js";
+import { ListCustomIconsFeature } from "~/features/listCustomIcons/index.js";
 import type { Icon } from "../types.js";
 
 /**
@@ -102,36 +101,13 @@ const CustomIconTab = observer(() => {
 });
 
 export const CustomIconPlugin = () => {
-    const client = useApolloClient();
+    const { useCase: listCustomIcons } = useFeature(ListCustomIconsFeature);
 
     return (
         <IconPickerConfig>
             <IconPickerConfig.IconPack
                 name="custom"
-                provider={async () => {
-                    const { data: response } = await client.query<ListCustomIconsQueryResponse>({
-                        query: LIST_CUSTOM_ICONS,
-                        variables: {
-                            limit: 10000
-                        }
-                    });
-
-                    if (!response) {
-                        throw new Error("Network error while listing custom icons.");
-                    }
-
-                    const { data, error } = response.fileManager.listFiles;
-
-                    if (!data) {
-                        throw new Error(error?.message || "Could not fetch custom icons.");
-                    }
-
-                    return data.map(customIcon => ({
-                        type: "custom",
-                        name: customIcon.name,
-                        value: customIcon.src
-                    }));
-                }}
+                provider={() => listCustomIcons.execute()}
             />
             <IconPickerConfig.IconType name={"custom"}>
                 <IconPickerConfig.IconType.Icon element={<CustomIcon />} />

@@ -7,6 +7,8 @@ import { EmojiPlugin } from "../plugins/emojisPlugin.js";
 import { CustomIconPlugin } from "../plugins/customPlugin.js";
 import type { Icon } from "../types.js";
 import { createProvider } from "@webiny/app";
+import { RegisterFeature } from "~/components/RegisterFeature.js";
+import { ListCustomIconsFeature } from "~/features/listCustomIcons/index.js";
 import { Emojis } from "./Emojis.js";
 import { FontAwesomeIcons } from "./FontAwesomeIcons.js";
 
@@ -81,6 +83,7 @@ export function useIconPickerConfig() {
 export const DefaultIcons = () => {
     return (
         <>
+            <RegisterFeature feature={ListCustomIconsFeature} />
             <SimpleIconPlugin />
             <EmojiPlugin />
             <CustomIconPlugin />
