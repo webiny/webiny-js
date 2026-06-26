@@ -5,35 +5,21 @@ import { plugins } from "@webiny/plugins";
 import { useIdentity } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import { AuthenticationContextFeature } from "@webiny/app-admin/features/security/AuthenticationContext/feature.js";
-import type { GraphQLPlaygroundTabPlugin } from "~/types.js";
+import { Tabs } from "@webiny/admin-ui";
+import type { GraphQLPlaygroundTabPlugin, GraphQLPlaygroundTab } from "~/types.js";
 import "graphiql/style.css";
 
-const Playground = () => {
-    const { identity } = useIdentity();
-    const { authenticationContext } = useFeature(AuthenticationContextFeature);
+interface GraphiQLTabProps {
+    tab: GraphQLPlaygroundTab;
+    getIdToken: () => Promise<string | undefined> | string | undefined;
+}
 
-    const tabs = useMemo(() => {
-        return plugins
-            .byType<GraphQLPlaygroundTabPlugin>("graphql-playground-tab")
-            .map(pl =>
-                pl.tab({
-                    identity: identity
-                })
-            )
-            .filter(Boolean);
-    }, [identity]);
-
-    const firstTab = tabs[0];
-
+const GraphiQLTab = ({ tab, getIdToken }: GraphiQLTabProps) => {
     const fetcher = useMemo(() => {
-        if (!firstTab) {
-            return undefined;
-        }
-
         return createGraphiQLFetcher({
-            url: firstTab.endpoint,
+            url: tab.endpoint,
             fetch: async (url, options) => {
-                const idToken = await authenticationContext.getIdToken();
+                const idToken = await getIdToken();
                 const headers = new Headers(options?.headers);
 
                 if (idToken) {
@@ -47,24 +33,58 @@ const Playground = () => {
                 });
             }
         });
-    }, [firstTab?.endpoint]);
-
-    if (!fetcher || !firstTab) {
-        return null;
-    }
+    }, [tab.endpoint]);
 
     return (
-        <div style={{ height: "calc(100vh - 45px)" }}>
+        <div style={{ height: "calc(100vh - 90px)" }}>
             <GraphiQL
                 fetcher={fetcher}
-                defaultQuery={firstTab.query}
-                defaultHeaders={JSON.stringify(firstTab.headers, null, 2)}
+                defaultQuery={tab.query}
+                defaultHeaders={JSON.stringify(tab.headers, null, 2)}
             >
                 <GraphiQL.Logo>
                     <span />
                 </GraphiQL.Logo>
             </GraphiQL>
         </div>
+    );
+};
+
+const Playground = () => {
+    const { identity } = useIdentity();
+    const { authenticationContext } = useFeature(AuthenticationContextFeature);
+
+    const tabs = useMemo(() => {
+        return plugins
+            .byType<GraphQLPlaygroundTabPlugin>("graphql-playground-tab")
+            .map(pl =>
+                pl.tab({
+                    identity: identity!
+                })
+            )
+            .filter(Boolean) as GraphQLPlaygroundTab[];
+    }, [identity]);
+
+    if (tabs.length === 0) {
+        return null;
+    }
+
+    return (
+        <Tabs
+            tabs={tabs.map(tab => (
+                <Tabs.Tab
+                    key={tab.endpoint}
+                    value={tab.endpoint}
+                    trigger={tab.name}
+                    content={
+                        <GraphiQLTab
+                            tab={tab}
+                            getIdToken={() => authenticationContext.getIdToken()}
+                        />
+                    }
+                />
+            ))}
+        />
     );
 };
 
