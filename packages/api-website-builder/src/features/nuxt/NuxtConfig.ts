@@ -1,10 +1,10 @@
-import { NextjsConfig as Abstraction } from "~/features/nextjs/abstractions.js";
+import { NuxtConfig as Abstraction } from "~/features/nuxt/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { MarkdownContentBuilder } from "~/features/nextjs/MarkdownContentBuilder.js";
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { ApiKeysRepository } from "@webiny/api-core/features/security/apiKeys/shared/abstractions.js";
 
-class NextjsConfigImpl implements Abstraction.Interface {
+class NuxtConfigImpl implements Abstraction.Interface {
     constructor(
         private tenantContext: TenantContext.Interface,
         private apiKeyRepo: ApiKeysRepository.Interface
@@ -17,20 +17,20 @@ class NextjsConfigImpl implements Abstraction.Interface {
         const domains = await this.getDomains();
 
         const envVars = [
-            `NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY={API_TOKEN}`,
-            `NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST={API_HOST}`,
-            `NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT={TENANT_ID}`
+            `WEBINY_API_KEY={API_TOKEN}`,
+            `WEBINY_API_HOST={API_HOST}`,
+            `WEBINY_API_TENANT={TENANT_ID}`
         ];
 
         if (domains.adminHost) {
-            envVars.push(`NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST={ADMIN_HOST}`);
+            envVars.push(`WEBINY_ADMIN_HOST={ADMIN_HOST}`);
         }
 
         const builder = new MarkdownContentBuilder();
         builder
             .setVariables({
-                DESCRIPTION: `This is a configuration for <a href="{STARTER_KIT_LINK}" target="_blank">Webiny Next.js starter kit:</a>`,
-                STARTER_KIT_LINK: `https://github.com/webiny/website-builder-nextjs`,
+                DESCRIPTION: `This is a configuration for <a href="{STARTER_KIT_LINK}" target="_blank">Webiny Nuxt starter kit:</a>`,
+                STARTER_KIT_LINK: `https://github.com/webiny/website-builder-nuxt`,
                 API_TOKEN: apiKey ? apiKey.token : "{API_KEY_TOKEN}",
                 API_HOST: domains.apiHost ?? "{API_HOST_URL}",
                 ADMIN_HOST: domains.adminHost ?? "{ADMIN_HOST_URL}",
@@ -70,7 +70,7 @@ class NextjsConfigImpl implements Abstraction.Interface {
     }
 }
 
-export const NextjsConfig = Abstraction.createImplementation({
-    implementation: NextjsConfigImpl,
+export const NuxtConfig = Abstraction.createImplementation({
+    implementation: NuxtConfigImpl,
     dependencies: [TenantContext, ApiKeysRepository]
 });

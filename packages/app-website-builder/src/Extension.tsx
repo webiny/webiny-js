@@ -15,6 +15,7 @@ import { Routes } from "~/routes.js";
 import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
 import { Extension as NavigationExtension } from "./presentation/navigation/Extension.js";
 import { NextjsConfigFeature } from "~/presentation/navigation/NextjsConfig/feature.js";
+import { NuxtConfigFeature } from "~/presentation/navigation/NuxtConfig/feature.js";
 import { WB_PERMISSIONS_SCHEMA } from "~/constants.js";
 import { WbPermissionsFeature } from "~/features/permissions/feature.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
@@ -46,6 +47,7 @@ export const Extension = () => {
         <>
             <RegisterFeature feature={SharedPageInfrastructureFeature} />
             <RegisterFeature feature={NextjsConfigFeature} />
+            <RegisterFeature feature={NuxtConfigFeature} />
             <RegisterFeature feature={WbPermissionsFeature} />
             <RegisterFeature feature={TranslatePageFeature} />
             <RegisterFeature feature={DeletePageFeature} />
