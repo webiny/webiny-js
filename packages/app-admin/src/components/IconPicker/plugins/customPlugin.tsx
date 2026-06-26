@@ -105,10 +105,7 @@ export const CustomIconPlugin = () => {
 
     return (
         <IconPickerConfig>
-            <IconPickerConfig.IconPack
-                name="custom"
-                provider={() => listCustomIcons.execute()}
-            />
+            <IconPickerConfig.IconPack name="custom" provider={() => listCustomIcons.execute()} />
             <IconPickerConfig.IconType name={"custom"}>
                 <IconPickerConfig.IconType.Icon element={<CustomIcon />} />
                 <IconPickerConfig.IconType.Tab element={<CustomIconTab />} />

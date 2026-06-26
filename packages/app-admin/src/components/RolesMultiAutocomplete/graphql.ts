@@ -1,6 +1,4 @@
-import gql from "graphql-tag";
-
-export const LIST_ROLES = gql`
+export const LIST_ROLES = /* GraphQL */ `
     query ListRoles {
         security {
             roles: listRoles {

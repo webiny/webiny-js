@@ -20,11 +20,22 @@ const LIST_CUSTOM_ICONS = /* GraphQL */ `
     }
 `;
 
+interface CustomIconFile {
+    name: string;
+    src: string;
+}
+
+interface ListFilesError {
+    code: string;
+    message: string;
+    data: any;
+}
+
 type ListCustomIconsResponse = {
     fileManager: {
         listFiles:
-            | { data: Array<{ name: string; src: string }>; error: null }
-            | { data: null; error: { code: string; message: string; data: any } };
+            | { data: CustomIconFile[]; error: null }
+            | { data: null; error: ListFilesError };
     };
 };
 

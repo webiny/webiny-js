@@ -1,7 +1,21 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useEffect, useState } from "react";
+import { useContainer } from "@webiny/app";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 import { MultiAutoComplete } from "@webiny/admin-ui";
 import { LIST_ROLES } from "./graphql.js";
-import { useQuery } from "@apollo/react-hooks";
+
+interface RoleDto {
+    id: string;
+    name: string;
+}
+
+interface ListRolesResponse {
+    security: {
+        roles: {
+            data: RoleDto[];
+        };
+    };
+}
 
 type RolesMultiAutocompleteProps = Omit<
     React.ComponentProps<typeof MultiAutoComplete>,
@@ -15,8 +29,17 @@ export const RolesMultiAutocomplete = ({
     values,
     ...props
 }: RolesMultiAutocompleteProps) => {
-    const { data, loading } = useQuery(LIST_ROLES);
-    const rawOptions = loading || !data ? [] : data.security.roles.data;
+    const container = useContainer();
+    const client = container.resolve(MainGraphQLClient);
+    const [rawOptions, setRawOptions] = useState<RoleDto[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        client.execute<ListRolesResponse>({ query: LIST_ROLES }).then(response => {
+            setRawOptions(response.security?.roles?.data || []);
+            setLoading(false);
+        });
+    }, []);
 
     const options = useMemo(
         () => rawOptions.map((role: any) => ({ label: role.name, value: role.id })),

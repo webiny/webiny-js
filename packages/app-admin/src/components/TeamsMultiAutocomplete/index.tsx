@@ -1,7 +1,21 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useEffect, useState } from "react";
+import { useContainer } from "@webiny/app";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 import { MultiAutoComplete } from "@webiny/admin-ui";
 import { LIST_TEAMS } from "./graphql.js";
-import { useQuery } from "@apollo/react-hooks";
+
+interface TeamDto {
+    id: string;
+    name: string;
+}
+
+interface ListTeamsResponse {
+    security: {
+        teams: {
+            data: TeamDto[];
+        };
+    };
+}
 
 type TeamsMultiAutocompleteProps = Omit<
     React.ComponentProps<typeof MultiAutoComplete>,
@@ -15,8 +29,17 @@ export const TeamsMultiAutocomplete = ({
     values,
     ...props
 }: TeamsMultiAutocompleteProps) => {
-    const { data, loading } = useQuery(LIST_TEAMS);
-    const rawOptions = loading || !data?.security?.teams?.data ? [] : data.security.teams.data;
+    const container = useContainer();
+    const client = container.resolve(MainGraphQLClient);
+    const [rawOptions, setRawOptions] = useState<TeamDto[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        client.execute<ListTeamsResponse>({ query: LIST_TEAMS }).then(response => {
+            setRawOptions(response.security?.teams?.data || []);
+            setLoading(false);
+        });
+    }, []);
 
     const options = useMemo(
         () => rawOptions.map((team: any) => ({ label: team.name, value: team.id })),
