@@ -83,7 +83,21 @@ export type DisabledWhenCallback = (form: IFormModel) => boolean;
 
 export type ComputedFieldCallback = (form: IFormModel) => unknown;
 
-export type FieldContextCallback = (form: IFormModel) => Record<string, unknown>;
+export interface IFieldScope {
+    field(name: string): IField;
+    parent(): IFieldScope;
+}
+
+export interface IFieldNavigator {
+    parent(): IFieldScope;
+}
+
+export interface IFieldContextParams {
+    field: IFieldNavigator;
+    form: IFormModel;
+}
+
+export type FieldContextCallback = (params: IFieldContextParams) => Record<string, unknown>;
 
 // ---------------------------------------------------------------------------
 // Rules system

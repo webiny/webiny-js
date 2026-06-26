@@ -13,7 +13,7 @@ description: >
 
 ## TL;DR
 
-The Form Model is Webiny's declarative form system. Define fields with a fluent builder API (`fields.text()`, `fields.datetime()`, etc.), arrange them with a layout builder (`layout.row()`, `layout.tabs()`, etc.), and validate with Zod schemas or imperative rules. Fields support conditional visibility, computed values, and deeply nested object/list structures with templates (dynamic zones).
+The Form Model is Webiny's declarative form system. Define fields with a fluent builder API (`fields.text()`, `fields.datetime()`, etc.), arrange them with a layout builder (`layout.row()`, `layout.tabs()`, etc.), and validate with Zod schemas or imperative rules. Fields support conditional visibility, computed values, reactive context from other fields (`.context()`), and deeply nested object/list structures with templates (dynamic zones).
 
 ## Field Types
 
@@ -275,6 +275,7 @@ These are available on **all** field types:
 | `.afterSetValue(fn)`          | Side effects after programmatic value set                 |
 | `.onBlur(fn)`                 | Blur event callback                                       |
 | `.cloneValue(fn)`             | Custom clone logic for list item duplication              |
+| `.context(fn)`                | Inject reactive context from other fields into the VM     |
 | `.tags([...])`                | Tag the field for programmatic lookup                     |
 
 ## Renderers
@@ -531,6 +532,8 @@ fields
 
 `$.label` resolves to the `label` sibling within the same parent object. Without `$.`, paths are absolute from the form root. The `$.` prefix can traverse into sibling objects too: `$.settings.preset` resolves to `settings.preset` relative to the parent.
 
+> **Note:** The `.context()` callback does NOT use the `$.` prefix convention. It uses a dedicated `field` navigator with `.parent().field()` for relative traversal and a separate `form` param for absolute access. See [Field Context](#field-context).
+
 ## Conditional Visibility / Disable (callback form)
 
 For dynamic visibility and disabled state that depends on other field values:
@@ -591,6 +594,87 @@ fields
     }
   });
 ```
+
+## Field Context
+
+Use `.context()` to push data from other fields into a field's VM. The renderer reads it via `field.context` — no hooks, no reaching up to the parent form. The callback is MobX-reactive: only the specific fields accessed inside it trigger re-renders.
+
+The callback receives `{ field, form }`:
+- **`field`** — a navigator scoped to the current field. Call `.parent()` to get the containing object, then `.field(name)` to access fields at that level. Chain `.parent()` to go higher.
+- **`form`** — the root `IFormModel` for absolute field access.
+
+### Sibling access (fields at the same level)
+
+```typescript
+fields
+  .file()
+  .label("Media")
+  .context(({ field }) => ({
+    title: field.parent().field("title").getValue(),
+    description: field.parent().field("description").getValue()
+  }))
+```
+
+### Nested field accessing root-level fields
+
+```typescript
+// Inside an object: settings > media needs root-level "title"
+fields
+  .object()
+  .label("Settings")
+  .fields(f => ({
+    media: f
+      .file()
+      .context(({ form }) => ({
+        title: form.field("title").getValue()
+      }))
+  }))
+```
+
+### Deep nesting — traversing multiple levels up
+
+```typescript
+// settings > nested > media needs settings-level "label"
+fields
+  .object()
+  .label("Settings")
+  .fields(f => ({
+    label: f.text().defaultValue("Settings Label"),
+    nested: f.object().fields(inner => ({
+      media: inner
+        .file()
+        .context(({ field }) => ({
+          // parent() = nested, parent().parent() = settings
+          label: field.parent().parent().field("label").getValue()
+        }))
+    }))
+  }))
+```
+
+### Using both field navigator and form
+
+```typescript
+fields
+  .file()
+  .label("Media")
+  .context(({ field, form }) => ({
+    // Relative: sibling via parent
+    label: field.parent().field("label").getValue(),
+    // Absolute: root-level field
+    slug: form.field("slug").getValue()
+  }))
+```
+
+### Reading context in a renderer
+
+```typescript
+const MediaPickerRenderer = createFieldRenderer<"mediaPicker">(({ field }) => {
+    const { title, description } = field.context as { title: string; description: string };
+    return <MediaPicker field={field} title={title} description={description} />;
+});
+```
+
+Fields without `.context()` have `field.context` defaulting to `{}`.
 
 ## Extending Object Fields After Creation
 

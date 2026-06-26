@@ -15,12 +15,48 @@ import type {
     RequiredWhenCallback,
     HiddenWhenCallback,
     DisabledWhenCallback,
-    ComputedFieldCallback
+    ComputedFieldCallback,
+    IFieldNavigator,
+    IFieldScope
 } from "./abstractions.js";
 
 /**
  * Runtime observable field. Holds value, validation state, and exposes a VM for renderers.
  */
+class FieldScope implements IFieldScope {
+    constructor(
+        private _form: IFormModel,
+        private _path: string
+    ) {}
+
+    field(name: string): IField {
+        const path = this._path ? `${this._path}.${name}` : name;
+        return this._form.field(path);
+    }
+
+    parent(): IFieldScope {
+        if (!this._path) {
+            throw new Error("Cannot navigate above root level.");
+        }
+        const segments = this._path.split(".");
+        segments.pop();
+        return new FieldScope(this._form, segments.join("."));
+    }
+}
+
+class FieldNavigator implements IFieldNavigator {
+    constructor(
+        private _form: IFormModel,
+        private _qualifiedName: string
+    ) {}
+
+    parent(): IFieldScope {
+        const segments = this._qualifiedName.split(".");
+        segments.pop();
+        return new FieldScope(this._form, segments.join("."));
+    }
+}
+
 export class Field implements IField {
     private _value: unknown;
     private _validation: IFieldValidation = { isValid: null };
@@ -438,7 +474,8 @@ export class Field implements IField {
         if (!this.config.context || !this._form) {
             return {};
         }
-        return this.config.context(this._scopedForm());
+        const navigator = new FieldNavigator(this._form, this._qualifiedName);
+        return this.config.context({ field: navigator, form: this._form });
     }
 
     /**

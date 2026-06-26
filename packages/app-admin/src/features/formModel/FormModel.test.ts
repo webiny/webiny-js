@@ -4173,14 +4173,14 @@ describe("FormModel", () => {
     });
 
     describe("field context", () => {
-        it("should expose context derived from sibling fields", () => {
+        it("should expose context derived from sibling fields via form param", () => {
             const form = createForm({
                 fields: fields => ({
                     title: fields.text().defaultValue("My Article"),
                     description: fields.text().defaultValue("A great article"),
-                    media: fields.file().context(f => ({
-                        title: f.field("title").getValue(),
-                        description: f.field("description").getValue()
+                    media: fields.file().context(({ form }) => ({
+                        title: form.field("title").getValue(),
+                        description: form.field("description").getValue()
                     }))
                 })
             });
@@ -4191,12 +4191,27 @@ describe("FormModel", () => {
             });
         });
 
+        it("should access root-level siblings via field.parent().field()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text().defaultValue("Root Sibling"),
+                    media: fields.file().context(({ field }) => ({
+                        title: field.parent().field("title").getValue()
+                    }))
+                })
+            });
+
+            expect(form.field("media").vm.context).toEqual({
+                title: "Root Sibling"
+            });
+        });
+
         it("should reactively update context when source fields change", () => {
             const form = createForm({
                 fields: fields => ({
                     title: fields.text().defaultValue("Original"),
-                    media: fields.file().context(f => ({
-                        title: f.field("title").getValue()
+                    media: fields.file().context(({ form }) => ({
+                        title: form.field("title").getValue()
                     }))
                 })
             });
@@ -4217,12 +4232,12 @@ describe("FormModel", () => {
             expect(form.field("title").vm.context).toEqual({});
         });
 
-        it("should work with object fields", () => {
+        it("should access root fields via form param from nested object", () => {
             const form = createForm({
                 fields: fields => ({
                     title: fields.text().defaultValue("Page Title"),
                     settings: fields.object().fields(f => ({
-                        media: f.file().context(form => ({
+                        media: f.file().context(({ form }) => ({
                             title: form.field("title").getValue()
                         }))
                     }))
@@ -4237,6 +4252,104 @@ describe("FormModel", () => {
             form.field("title").setValue("New Title");
             expect(form.field("settings.media").vm.context).toEqual({
                 title: "New Title"
+            });
+        });
+
+        it("should navigate to siblings via field.parent().field()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    wrapper: fields.object().fields(f => ({
+                        title: f.text().defaultValue("Nested Title"),
+                        media: f.file().context(({ field }) => ({
+                            title: field.parent().field("title").getValue()
+                        }))
+                    }))
+                }),
+                layout: l => [l.row("wrapper")]
+            });
+
+            expect(form.field("wrapper.media").vm.context).toEqual({
+                title: "Nested Title"
+            });
+        });
+
+        it("should navigate multiple levels up via chained parent()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text().defaultValue("Root Title"),
+                    settings: fields.object().fields(f => ({
+                        nested: f.object().fields(inner => ({
+                            media: inner.file().context(({ field }) => ({
+                                title: field.parent().parent().parent().field("title").getValue()
+                            }))
+                        }))
+                    }))
+                }),
+                layout: l => [l.row("title"), l.row("settings")]
+            });
+
+            expect(form.field("settings.nested.media").vm.context).toEqual({
+                title: "Root Title"
+            });
+
+            form.field("title").setValue("Updated Root");
+            expect(form.field("settings.nested.media").vm.context).toEqual({
+                title: "Updated Root"
+            });
+        });
+
+        it("should navigate past parent to grandparent scope", () => {
+            const form = createForm({
+                fields: fields => ({
+                    settings: fields.object().fields(f => ({
+                        label: f.text().defaultValue("Settings Label"),
+                        nested: f.object().fields(inner => ({
+                            media: inner.file().context(({ field }) => ({
+                                label: field.parent().parent().field("label").getValue()
+                            }))
+                        }))
+                    }))
+                }),
+                layout: l => [l.row("settings")]
+            });
+
+            expect(form.field("settings.nested.media").vm.context).toEqual({
+                label: "Settings Label"
+            });
+        });
+
+        it("should throw when navigating above root level", () => {
+            const form = createForm({
+                fields: fields => ({
+                    media: fields.file().context(({ field }) => ({
+                        bad: field.parent().parent().field("x").getValue()
+                    }))
+                })
+            });
+
+            expect(() => form.field("media").vm.context).toThrow(
+                "Cannot navigate above root level."
+            );
+        });
+
+        it("should use both field navigator and form in the same callback", () => {
+            const form = createForm({
+                fields: fields => ({
+                    slug: fields.text().defaultValue("my-slug"),
+                    settings: fields.object().fields(f => ({
+                        label: f.text().defaultValue("Settings Label"),
+                        media: f.file().context(({ field, form }) => ({
+                            label: field.parent().field("label").getValue(),
+                            slug: form.field("slug").getValue()
+                        }))
+                    }))
+                }),
+                layout: l => [l.row("slug"), l.row("settings")]
+            });
+
+            expect(form.field("settings.media").vm.context).toEqual({
+                label: "Settings Label",
+                slug: "my-slug"
             });
         });
     });
