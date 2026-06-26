@@ -12689,6 +12689,7 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/common-audit-logs": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"

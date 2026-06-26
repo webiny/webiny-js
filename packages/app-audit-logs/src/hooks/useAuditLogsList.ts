@@ -1,16 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useContainer } from "@webiny/app";
-import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
-import {
-    type IListAuditLogsResponse,
-    type IListAuditLogsVariablesPartial,
-    type IListAuditLogsVariablesWhere,
-    LIST_AUDIT_LOGS
-} from "~/hooks/graphql.js";
+import { useFeature } from "@webiny/app";
+import { ListAuditLogsFeature } from "~/features/listAuditLogs/index.js";
+import type { IListAuditLogsVariablesWhere } from "~/hooks/graphql.js";
 import type { IAuditLog, IAuditLogsMeta } from "~/types.js";
 import type { OnDataTableSortingChange, DataTableSorting } from "@webiny/admin-ui";
-import { transformRawAuditLog } from "~/utils/transformRawAuditLog.js";
-import { listAuditLogsSchema } from "~/hooks/schema.js";
 
 export interface UseAuditLogs {
     isListLoading: boolean;
@@ -28,11 +21,17 @@ export interface UseAuditLogs {
     hideFilters: () => void;
 }
 
-export const useAuditLogsList = (): UseAuditLogs => {
-    const container = useContainer();
-    const client = container.resolve(MainGraphQLClient);
+interface ListVariables {
+    where: Record<string, unknown>;
+    after: string | undefined;
+    sort: "ASC" | "DESC";
+    limit: number;
+}
 
-    const [variables, setVariables] = useState<IListAuditLogsVariablesPartial>({
+export const useAuditLogsList = (): UseAuditLogs => {
+    const { useCase } = useFeature(ListAuditLogsFeature);
+
+    const [variables, setVariables] = useState<ListVariables>({
         where: {},
         after: undefined,
         sort: "DESC",
@@ -81,40 +80,20 @@ export const useAuditLogsList = (): UseAuditLogs => {
         setLoading(true);
         const requestId = ++requestIdRef.current;
 
-        client
-            .execute<IListAuditLogsResponse>({
-                query: LIST_AUDIT_LOGS,
-                variables
-            })
-            .then(response => {
-                if (requestId !== requestIdRef.current) {
-                    return;
-                }
+        useCase.execute(variables).then(result => {
+            if (requestId !== requestIdRef.current) {
+                return;
+            }
 
-                const responseData = response.auditLogs.listAuditLogs;
+            if (variables.after) {
+                setAccumulatedRecords(prev => [...prev, ...result.records]);
+            } else {
+                setAccumulatedRecords(result.records);
+            }
 
-                if (responseData.data) {
-                    const items = listAuditLogsSchema.safeParse(responseData.data);
-                    if (items.success) {
-                        const newRecords = items.data.map(auditLog =>
-                            transformRawAuditLog({ auditLog })
-                        );
-                        if (variables.after) {
-                            setAccumulatedRecords(prev => [...prev, ...newRecords]);
-                        } else {
-                            setAccumulatedRecords(newRecords);
-                        }
-                    } else {
-                        console.error(items.error);
-                    }
-                }
-
-                if (responseData.meta) {
-                    setMeta(responseData.meta);
-                }
-
-                setLoading(false);
-            });
+            setMeta(result.meta);
+            setLoading(false);
+        });
     }, [variables]);
 
     const sorting = useMemo((): DataTableSorting => {
