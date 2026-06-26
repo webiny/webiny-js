@@ -2,7 +2,10 @@ import { until } from "@webiny/project-utils/testing/helpers/until";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { GraphQLEngineFeature } from "@webiny/handler-graphql";
+import {
+    GraphQLEngineFeature,
+    registerLegacyPluginsViaGqlContextualSchema
+} from "@webiny/handler-graphql";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
@@ -31,7 +34,7 @@ export const defaultIdentity: IdentityData = {
 };
 
 export default (params: HandlerParams = {}) => {
-    const { identity, permissions } = params;
+    const { identity, permissions, plugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
@@ -55,6 +58,9 @@ export default (params: HandlerParams = {}) => {
             HeadlessCmsFeature.register(container, { type: "manage" });
 
             FileManagerAppFeature.register(container);
+            // Bridge test-supplied legacy ContextPlugins (e.g. file lifecycle event subscribers)
+            // so their apply(ctx) runs per request and registers their DI instances before resolvers.
+            registerLegacyPluginsViaGqlContextualSchema(container, plugins);
             GraphQLEngineFeature.register(container);
         }
     });
