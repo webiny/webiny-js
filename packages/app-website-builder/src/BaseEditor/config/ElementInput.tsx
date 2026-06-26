@@ -1,6 +1,11 @@
 import React from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import type { ComponentInput } from "@webiny/website-builder-sdk";
+import type {
+    ComponentInput,
+    DocumentElement,
+    DocumentElementBindings,
+    InputAstNode
+} from "@webiny/website-builder-sdk";
 import type { InputBindingOnChange } from "../defaultConfig/Sidebar/ElementSettings/useInputValue.js";
 import type { IMetadata } from "~/BaseEditor/metadata/index.js";
 
@@ -11,6 +16,12 @@ export interface ElementInputRendererProps {
     onChange: InputBindingOnChange;
     onPreviewChange: InputBindingOnChange;
     input: ComponentInput;
+    // The full AST node, owning element and element bindings - provided by `InputField` and used by
+    // renderers that recurse into child inputs (e.g. the object field renderer). Optional so other
+    // call sites that synthesize renderer props (e.g. the Lexical expanded-editor dialog) needn't.
+    node?: InputAstNode;
+    element?: DocumentElement;
+    bindings?: DocumentElementBindings["inputs"];
 }
 
 export interface RendererProps {

@@ -4,8 +4,6 @@ import { useInputRenderer } from "./useInputRenderer.js";
 import { useInputValue } from "./useInputValue.js";
 import type { DocumentElement, DocumentElementBindings } from "@webiny/website-builder-sdk";
 import { InheritanceLabel } from "../InheritanceLabel.js";
-import { ObjectField } from "./ObjectField.js";
-import { ObjectListField } from "./ObjectListField.js";
 
 interface InputFieldProps {
     node: InputAstNode;
@@ -20,22 +18,6 @@ export function InputField({ element, node, bindings }: InputFieldProps) {
         node
     );
     const input = node.input;
-
-    if (input.type === "object") {
-        if (node.list) {
-            return (
-                <ObjectListField
-                    element={element}
-                    node={node}
-                    bindings={bindings}
-                    value={value}
-                    onChange={onChange}
-                />
-            );
-        }
-
-        return <ObjectField element={element} node={node} bindings={bindings} />;
-    }
 
     const label = node.input.responsive ? (
         <InheritanceLabel
@@ -56,6 +38,9 @@ export function InputField({ element, node, bindings }: InputFieldProps) {
             onChange={onChange}
             onPreviewChange={onPreviewChange}
             input={node.input}
+            node={node}
+            element={element}
+            bindings={bindings}
         />
     );
 

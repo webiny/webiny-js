@@ -5,7 +5,7 @@ import type {
     InputAstNode
 } from "@webiny/website-builder-sdk";
 import { InputField } from "./InputField.js";
-import type { InputBindingOnChange } from "./useInputValue.js";
+import { useInputValue } from "./useInputValue.js";
 import { buildDefaultObject } from "./buildDefaultObject.js";
 import {
     ObjectAddButton,
@@ -21,8 +21,6 @@ interface ObjectListFieldProps {
     node: InputAstNode;
     element: DocumentElement;
     bindings: DocumentElementBindings["inputs"];
-    value: any;
-    onChange: InputBindingOnChange;
 }
 
 /**
@@ -31,13 +29,8 @@ interface ObjectListFieldProps {
  * and commit it through the container's `onChange`. Each item's fields are rendered as nested
  * `InputField`s with index-qualified paths (e.g. `items/0/label`).
  */
-export function ObjectListField({
-    element,
-    node,
-    bindings,
-    value,
-    onChange
-}: ObjectListFieldProps) {
+export function ObjectListField({ element, node, bindings }: ObjectListFieldProps) {
+    const { value, onChange } = useInputValue(element.id, node);
     const items: any[] = Array.isArray(value) ? value : [];
     const [openIndex, setOpenIndex] = useState<number | null>(null);
     // The index whose panel is shown. Retained while closing so the content stays put during the
