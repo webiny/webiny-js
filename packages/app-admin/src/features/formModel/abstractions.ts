@@ -194,6 +194,8 @@ export interface IObjectFieldVM extends IFieldVM {
     activeTemplateId: string | null;
     /** Switch to a different template. Discards values not present in the new template. */
     setTemplate: (templateId: string) => void;
+    /** Returns a cloned copy of the current single-value data with cloneValue transforms applied. */
+    getClonedData: () => Record<string, unknown>;
 }
 
 export interface IObjectFieldItemVM {
@@ -209,6 +211,7 @@ export interface IObjectFieldItemVM {
     moveUp: () => void;
     moveDown: () => void;
     duplicate: () => void;
+    getClonedData: () => Record<string, unknown>;
     /** The template id of this item, if the parent list is templated. */
     templateId?: string;
 }
