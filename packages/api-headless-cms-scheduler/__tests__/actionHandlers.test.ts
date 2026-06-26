@@ -50,6 +50,7 @@ describe("Action Handlers", () => {
         const publishActionResult = await schedulePublish.execute({
             id: entryResult.value.id,
             model: modelResult.value,
+            tenant: "root",
             scheduleFor: new Date(Date.now() + 100000)
         });
 
@@ -67,6 +68,7 @@ describe("Action Handlers", () => {
         const scheduledAction = publishActionResult.value;
         await executeScheduledAction.execute({
             id: scheduledAction.scheduledAction.id,
+            tenant: "root",
             namespace: scheduledAction.scheduledAction.namespace
         });
 
@@ -82,12 +84,14 @@ describe("Action Handlers", () => {
         const unpublishActionResult = await scheduleUnpublish.execute({
             id: entryResult.value.id,
             model: modelResult.value,
+            tenant: "root",
             scheduleFor: new Date(Date.now() + 1000000)
         });
 
         // Execute action handler
         await executeScheduledAction.execute({
             id: unpublishActionResult.value.scheduledAction.id,
+            tenant: "root",
             namespace: unpublishActionResult.value.scheduledAction.namespace
         });
 

@@ -11,7 +11,10 @@ import {
     FileFieldType,
     FileUrlFieldType,
     ObjectFieldType,
-    LexicalFieldType
+    LexicalFieldType,
+    PasswordFieldType,
+    PermissionsFieldType,
+    RolesMultiSelectFieldType
 } from "./fieldTypes/index.js";
 
 export const FormModelFeature = createFeature({
@@ -25,6 +28,9 @@ export const FormModelFeature = createFeature({
         container.register(FileUrlFieldType);
         container.register(ObjectFieldType);
         container.register(LexicalFieldType);
+        container.register(PasswordFieldType);
+        container.register(PermissionsFieldType);
+        container.register(RolesMultiSelectFieldType);
 
         container.register(FieldBuilderRegistry).inSingletonScope();
         container.register(ConditionRuleEvaluator).inSingletonScope();

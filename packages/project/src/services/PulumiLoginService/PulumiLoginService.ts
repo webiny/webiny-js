@@ -15,8 +15,9 @@ export class DefaultPulumiLoginService implements PulumiLoginService.Interface {
 
         const projectAppRelativePath = path.join("apps", app.name);
 
-        // A couple of variations here, just to preserve backwards compatibility.
-        let loginUrl = process.env.WEBINY_PULUMI_BACKEND;
+        // `WEBINY_CLI_PULUMI_BACKEND` is the canonical variable. We still read the legacy
+        // `WEBINY_PULUMI_BACKEND` as a fallback, to preserve backwards compatibility.
+        let loginUrl = process.env.WEBINY_CLI_PULUMI_BACKEND || process.env.WEBINY_PULUMI_BACKEND;
 
         if (loginUrl) {
             // If the user passed `s3://my-bucket`, we want to store files in `s3://my-bucket/{project-application-path}`

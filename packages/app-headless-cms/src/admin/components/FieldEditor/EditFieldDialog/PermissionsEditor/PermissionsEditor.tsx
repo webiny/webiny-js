@@ -1,27 +1,28 @@
-import React from "react";
-import { useQuery } from "@apollo/react-hooks";
+import React, { useEffect, useState } from "react";
+import { useFeature } from "@webiny/app";
 import { Grid } from "@webiny/admin-ui";
 import { useBind } from "@webiny/form";
 import { useWcp } from "@webiny/app-admin";
-import {
-    LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS,
-    UsersTeamsMultiAutocomplete
-} from "@webiny/app-aco";
+import { UsersTeamsMultiAutocomplete } from "@webiny/app-aco";
 import type { FolderLevelPermissionsTarget } from "@webiny/app-aco";
+import { ListFolderPermissionsTargetsFeature } from "~/features/listFolderPermissionsTargets/feature.js";
 import type { FieldRule } from "~/types.js";
 import { FieldPermissionsSelection } from "./FieldPermissionsSelection.js";
 import { CannotUsePermissions } from "./CannotUsePermissions.js";
 
 export const PermissionsEditor = () => {
     const wcp = useWcp();
+    const { useCase } = useFeature(ListFolderPermissionsTargetsFeature);
     const bind = useBind({ name: "rules" });
     const allRules: FieldRule[] = bind.value || [];
     const accessRules = allRules.filter(r => r.type === "accessControl");
     const otherRules = allRules.filter(r => r.type !== "accessControl");
 
-    const listTargetsQuery = useQuery(LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS);
-    const targetsList: FolderLevelPermissionsTarget[] =
-        listTargetsQuery.data?.aco.listFolderLevelPermissionsTargets.data || [];
+    const [targetsList, setTargetsList] = useState<FolderLevelPermissionsTarget[]>([]);
+
+    useEffect(() => {
+        useCase.execute().then(setTargetsList).catch(console.error);
+    }, []);
 
     const addPermission = (value: string[]) => {
         const selectedUserOrTeam = value[value.length - 1];

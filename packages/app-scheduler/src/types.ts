@@ -34,12 +34,4 @@ export interface SchedulerEntry {
     title: string;
 }
 
-export enum LoadingActions {
-    get = "GET",
-    list = "LIST",
-    listMore = "LIST_MORE",
-    delete = "DELETE",
-    create = "CREATE"
-}
-
 export type SchedulerEntryTableRow = TableRow<SchedulerEntry>;

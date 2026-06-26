@@ -85,7 +85,7 @@ describe("On Before Entry Publish", () => {
         }
         expect(publishResult.value).toMatchObject({
             system: {
-                workflow: undefined
+                workflow: null
             }
         });
     });

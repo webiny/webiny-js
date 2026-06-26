@@ -18,6 +18,7 @@ export * from "./Dialog/index.js";
 export * from "./Drawer/index.js";
 export * from "./DropdownMenu/index.js";
 export * from "./DynamicFieldset/index.js";
+export * from "./EditableTitle/index.js";
 export * from "./FilePicker/index.js";
 export * from "./FillViewport/index.js";
 export * from "./FormComponent/index.js";

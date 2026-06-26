@@ -1,29 +1,12 @@
 import React from "react";
-import { Provider } from "@webiny/app";
 import { RegisterFeature } from "@webiny/app-admin";
-import { RecordLockingProvider as RecordLockingProviderComponent } from "~/components/RecordLockingProvider.js";
-import { HeadlessCmsActionsAcoCell } from "~/components/HeadlessCmsActionsAcoCell.js";
-import { HeadlessCmsContentEntry } from "~/components/HeadlessCmsContentEntry/index.js";
 import { useWcp } from "@webiny/app-admin";
-import { SecurityPermissions } from "~/components/SecurityPermissions.js";
+import { RecordLockingFeature } from "~/features/feature.js";
 import { RecordLockingPermissionsFeature } from "~/features/permissions/feature.js";
-
-export * from "~/components/RecordLockingProvider.js";
-export * from "~/hooks/index.js";
-
-export interface RecordLockingProviderProps {
-    children: React.ReactNode;
-}
-
-const RecordLockingHoc = (Component: React.ComponentType<RecordLockingProviderProps>) => {
-    return function RecordLockingProvider({ children }: RecordLockingProviderProps) {
-        return (
-            <Component>
-                <RecordLockingProviderComponent>{children}</RecordLockingProviderComponent>
-            </Component>
-        );
-    };
-};
+import { RecordLockingPresenterFeature } from "~/presentation/entryLocking/feature.js";
+import { ListLockRecordsPresenterFeature } from "~/presentation/listLocking/feature.js";
+import { SecurityPermissions } from "~/SecurityPermissions.js";
+import { RecordLockingModule } from "~/RecordLockingModule.js";
 
 export const RecordLocking = () => {
     const wcp = useWcp();
@@ -35,10 +18,11 @@ export const RecordLocking = () => {
     return (
         <>
             <RegisterFeature feature={RecordLockingPermissionsFeature} />
+            <RegisterFeature feature={RecordLockingFeature} />
+            <RegisterFeature feature={RecordLockingPresenterFeature} />
+            <RegisterFeature feature={ListLockRecordsPresenterFeature} />
             <SecurityPermissions />
-            <Provider hoc={RecordLockingHoc} />
-            <HeadlessCmsActionsAcoCell />
-            <HeadlessCmsContentEntry />
+            <RecordLockingModule />
         </>
     );
 };

@@ -5,6 +5,7 @@ export interface IScheduledActionEventPayload {
     namespace: string;
     id: string;
     scheduleFor: string;
+    tenant: string;
 }
 
 export interface IScheduledActionEvent {

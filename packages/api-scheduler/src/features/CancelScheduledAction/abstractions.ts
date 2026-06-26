@@ -25,6 +25,7 @@ type CancelScheduledActionError = ICancelScheduledActionErrors[keyof ICancelSche
 export interface ICancelScheduledActionUseCaseParams {
     namespace: string;
     id: string;
+    tenant: string;
 }
 export interface ICancelScheduledActionUseCase {
     execute(

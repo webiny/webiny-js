@@ -4,12 +4,12 @@ import { useBind } from "@webiny/form";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import type { FieldRule, FieldRuleAction } from "~/types.js";
-import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
+import type { FieldOption } from "~/admin/components/ContentModelEditor/fieldOptions.js";
 import {
     getOperatorOptions,
     VALUE_HIDDEN_OPERATORS
-} from "@webiny/app-headless-cms-common/Fields/operatorOptions.js";
-import type { Operator } from "@webiny/app-headless-cms-common/Fields/evaluateExpression.js";
+} from "~/admin/components/ContentModelEditor/operatorOptions.js";
+import type { Operator } from "~/admin/components/ContentModelEditor/evaluateExpression.js";
 
 const DEFAULT_ACTION_OPTIONS = [
     { value: "hide", label: "Hide" },

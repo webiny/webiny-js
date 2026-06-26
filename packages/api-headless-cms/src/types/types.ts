@@ -737,7 +737,7 @@ export interface CreateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
 }
 
 export interface CreateCmsEntryOptionsInput {
-    skipValidators?: string[];
+    skipValidation?: boolean;
 }
 
 /**
@@ -779,7 +779,7 @@ export interface CreateFromCmsEntryInput<TValues extends CmsEntryValues = CmsEnt
 }
 
 export interface CreateRevisionCmsEntryOptionsInput {
-    skipValidators?: string[];
+    skipValidation?: boolean;
 }
 
 /**
@@ -839,7 +839,7 @@ export interface UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
 }
 
 export interface UpdateCmsEntryOptionsInput {
-    skipValidators?: string[];
+    skipValidation?: boolean;
 }
 
 /**

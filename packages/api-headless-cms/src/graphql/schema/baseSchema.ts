@@ -1,34 +1,8 @@
 import type { CmsContext } from "~/types/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
-import camelCase from "lodash/camelCase.js";
-import { CmsModelFieldValidatorRegistry } from "~/features/validation/index.js";
-import type { Container } from "@webiny/di";
 
-const createSkipValidatorEnum = (container: Container) => {
-    const registry = container.resolve(CmsModelFieldValidatorRegistry);
-    const names = registry.getAll().reduce<string[]>((collection, validator) => {
-        const name = camelCase(validator.name);
-        if (collection.includes(name)) {
-            return collection;
-        }
-        collection.push(name);
-        return collection;
-    }, []);
-
-    if (names.length === 0) {
-        names.push("_empty");
-    }
-    return /* GraphQL */ `
-        enum SkipValidatorEnum {
-           ${names.join("\n")}
-        }
-    `;
-};
-
-export const createBaseSchemaPlugins = (context: CmsContext): ICmsGraphQLSchemaPlugin[] => {
-    const skipValidatorEnum = createSkipValidatorEnum(context.container);
-
+export const createBaseSchemaPlugins = (_context: CmsContext): ICmsGraphQLSchemaPlugin[] => {
     const cmsPlugin = createCmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsIdentity {
@@ -98,18 +72,16 @@ export const createBaseSchemaPlugins = (context: CmsContext): ICmsGraphQLSchemaP
                 folderId_not_in: [ID!]
             }
 
-            ${skipValidatorEnum}
-
             input CreateCmsEntryOptionsInput {
-                skipValidators: [SkipValidatorEnum!]
+                skipValidation: Boolean
             }
 
             input CreateRevisionCmsEntryOptionsInput {
-                skipValidators: [SkipValidatorEnum!]
+                skipValidation: Boolean
             }
 
             input UpdateCmsEntryOptionsInput {
-                skipValidators: [SkipValidatorEnum!]
+                skipValidation: Boolean
             }
 
             input CmsIdentityInput {

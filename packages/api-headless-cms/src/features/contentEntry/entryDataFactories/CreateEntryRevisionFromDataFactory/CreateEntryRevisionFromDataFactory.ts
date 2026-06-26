@@ -72,7 +72,7 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
             model,
             values: initialValues,
             entry: originalEntry,
-            skipValidators: options?.skipValidators
+            skipValidation: options?.skipValidation
         });
 
         const values = await referenceFieldsMapping<TValues>({

@@ -9,7 +9,10 @@ import type {
     LayoutNodeVM,
     IRowNode,
     IRowNodeVM,
+    ISeparatorNode,
     ISeparatorNodeVM,
+    IAlertNode,
+    IAlertNodeVM,
     ITabsNode,
     ITabsNodeVM,
     ITabDefinitionVM,
@@ -46,7 +49,9 @@ export class LayoutResolver {
             case "row":
                 return this.resolveRowNode(node);
             case "separator":
-                return this.resolveSeparatorNode();
+                return this.resolveSeparatorNode(node);
+            case "alert":
+                return this.resolveAlertNode(node);
             case "tabs":
                 return this.resolveTabsNode(node);
             case "element":
@@ -71,8 +76,24 @@ export class LayoutResolver {
         return { type: "row", fields };
     }
 
-    private resolveSeparatorNode(): ISeparatorNodeVM {
-        return { type: "separator" };
+    private resolveSeparatorNode(node: ISeparatorNode): ISeparatorNodeVM | null {
+        if (node.rules) {
+            const state = this._evaluateRules(node.rules);
+            if (!state.visible) {
+                return null;
+            }
+        }
+        return { type: "separator", title: node.title, description: node.description };
+    }
+
+    private resolveAlertNode(node: IAlertNode): IAlertNodeVM | null {
+        if (node.rules) {
+            const state = this._evaluateRules(node.rules);
+            if (!state.visible) {
+                return null;
+            }
+        }
+        return { type: "alert", message: node.message, alertType: node.alertType ?? "info" };
     }
 
     private resolveTabsNode(node: ITabsNode): ITabsNodeVM | null {
@@ -117,6 +138,7 @@ export class LayoutResolver {
             type: "tabs",
             id: node.id,
             renderer: node.renderer,
+            rendererSettings: node.rendererSettings,
             tabs,
             disabled: containerState.disabled,
             activeTabId: validActive,
@@ -157,7 +179,9 @@ export class LayoutResolver {
                 return { type: "row", fields };
             }
             case "separator":
-                return { type: "separator" };
+                return this.resolveSeparatorNode(node);
+            case "alert":
+                return this.resolveAlertNode(node);
             case "element":
                 return this.resolveElementNode(node);
             case "object": {
@@ -213,6 +237,7 @@ export class LayoutResolver {
             type: "tabs",
             id: node.id,
             renderer: node.renderer,
+            rendererSettings: node.rendererSettings,
             tabs,
             disabled: containerState.disabled,
             activeTabId: validActive,

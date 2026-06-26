@@ -27,7 +27,7 @@ class TenantContextImpl implements Abstraction.Interface {
             return rootTenant.error as T;
         }
 
-        const tenant = rootTenant.value as Tenant;
+        const tenant = rootTenant.value;
 
         this.setTenant(tenant);
         try {

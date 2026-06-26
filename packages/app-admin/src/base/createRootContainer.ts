@@ -9,6 +9,7 @@ import { GraphQLClientFeature } from "@webiny/app/features/graphqlClient/feature
 import { MainGraphQLClientFeature } from "@webiny/app/features/mainGraphQLClient/feature.js";
 import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
+import { NotificationsFeature } from "~/features/notifications/feature.js";
 import { WcpFeature } from "~/features/wcp/feature.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
 import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/feature.js";
@@ -16,6 +17,7 @@ import { TelemetryFeature } from "~/features/telemetry/feature.js";
 import { ErrorOverlayNetworkErrorHandler } from "~/errors/ErrorOverlayNetworkErrorHandler.js";
 import { ToolsFeature } from "~/features/tools/feature.js";
 import { TextToLexicalToolFeature } from "~/presentation/textToLexicalTool/feature.js";
+import { ConfirmationFeature } from "~/features/confirmation/feature.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 
@@ -48,6 +50,8 @@ export function createRootContainer() {
 
     EventPublisherFeature.register(container);
 
+    NotificationsFeature.register(container);
+
     GraphQLClientFeature.register(container, { batching: true, retry: true });
 
     MainGraphQLClientFeature.register(container);
@@ -67,6 +71,8 @@ export function createRootContainer() {
     ToolsFeature.register(container);
 
     TextToLexicalToolFeature.register(container);
+
+    ConfirmationFeature.register(container);
 
     return container;
 }

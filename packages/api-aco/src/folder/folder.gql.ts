@@ -15,6 +15,7 @@ import { DeleteFolderUseCase } from "~/features/folder/DeleteFolder/abstractions
 import { GetFolderHierarchyUseCase } from "~/features/folder/GetFolderHierarchy/abstractions.js";
 import { ListFolderLevelPermissionsTargetsUseCase } from "~/features/folder/ListFolderLevelPermissionsTargets/abstractions.js";
 import { FolderModel } from "~/domain/folder/abstractions.js";
+import { ValuesSelectionGenerator } from "@webiny/api-headless-cms/features/contentModel/ValuesSelectionGenerator/abstractions.js";
 
 export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
     const folderGraphQL = new GraphQLSchemaPlugin<AcoContext>({
@@ -42,7 +43,12 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                 getFolderModel(_, __, context) {
                     return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.container.resolve(FolderModel);
+                        const model = context.container.resolve(FolderModel);
+                        const generator = context.container.resolve(ValuesSelectionGenerator);
+                        return {
+                            ...model,
+                            valuesSelection: generator.generate(model)
+                        };
                     });
                 },
                 getFolder: async (_, { id }, context) => {

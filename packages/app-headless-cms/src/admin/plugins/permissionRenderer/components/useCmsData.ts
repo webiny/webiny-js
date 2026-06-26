@@ -1,6 +1,7 @@
-import gql from "graphql-tag";
-import { useQuery } from "../../../hooks/index.js";
-import type { CmsErrorResponse } from "~/types.js";
+import { useEffect, useState } from "react";
+import { useFeature } from "@webiny/app";
+import { ListModelsFeature } from "~/features/model/listModels/feature.js";
+import { ListModelGroupsFeature } from "~/features/modelGroup/listModelGroups/feature.js";
 
 export interface CmsDataCmsGroup {
     id: string;
@@ -13,59 +14,6 @@ export interface CmsDataCmsModel<TGroup = string> {
     label: string;
     group: TGroup;
 }
-/**
- * ########################
- * List CMS Models And Groups for Permissions
- */
-interface ListCmsPermissionsResponse {
-    listContentModels: {
-        data: CmsDataCmsModel[];
-        error?: CmsErrorResponse;
-    };
-    listContentModelGroups: {
-        data: CmsDataCmsGroup[];
-        error?: CmsErrorResponse;
-    };
-}
-const LIST_DATA = gql`
-    query CmsLoadPermissionsData {
-        listContentModels {
-            data {
-                modelId
-                id: modelId
-                label: name
-                group
-            }
-            meta {
-                totalCount
-                cursor
-                hasMoreItems
-            }
-            error {
-                code
-                message
-                data
-            }
-        }
-        listContentModelGroups {
-            data {
-                id
-                slug
-                label: name
-            }
-            meta {
-                totalCount
-                cursor
-                hasMoreItems
-            }
-            error {
-                code
-                message
-                data
-            }
-        }
-    }
-`;
 
 export interface UseCmsDataResponseRecords {
     models: CmsDataCmsModel<CmsDataCmsGroup>[];
@@ -73,17 +21,36 @@ export interface UseCmsDataResponseRecords {
 }
 
 export const useCmsData = (): UseCmsDataResponseRecords => {
-    const { data } = useQuery<ListCmsPermissionsResponse>(LIST_DATA);
+    const { useCase: listModelsUseCase } = useFeature(ListModelsFeature);
+    const { useCase: listModelGroupsUseCase } = useFeature(ListModelGroupsFeature);
 
-    const groups = data?.listContentModelGroups.data ?? [];
+    const [result, setResult] = useState<UseCmsDataResponseRecords>({ models: [], groups: [] });
 
-    return {
-        models: (data?.listContentModels.data ?? [])
-            .filter(model => model.group !== "hidden")
-            .map(model => {
-                // `model.group` is a slug. we need to remap it to actual group object.
-                return { ...model, group: groups.find(item => item.slug === model.group)! };
-            }),
-        groups
-    };
+    useEffect(() => {
+        (async () => {
+            const [rawModels, rawGroups] = await Promise.all([
+                listModelsUseCase.execute(),
+                listModelGroupsUseCase.execute()
+            ]);
+
+            const groups: CmsDataCmsGroup[] = rawGroups.map(g => ({
+                id: g.id,
+                slug: g.slug,
+                label: g.name
+            }));
+
+            const models: CmsDataCmsModel<CmsDataCmsGroup>[] = rawModels
+                .filter(model => model.group !== "hidden")
+                .map(model => ({
+                    id: model.modelId,
+                    modelId: model.modelId,
+                    label: model.name,
+                    group: groups.find(g => g.slug === model.group)!
+                }));
+
+            setResult({ models, groups });
+        })();
+    }, []);
+
+    return result;
 };

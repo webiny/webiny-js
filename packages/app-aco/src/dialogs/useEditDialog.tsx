@@ -4,7 +4,7 @@ import { useSnackbar, useDialogs } from "@webiny/app-admin";
 import type { GenericFormData } from "@webiny/form";
 import { Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { Extensions, FolderTree } from "~/components/index.js";
+import { FolderTree } from "~/components/index.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { useUpdateFolder } from "~/features/folders/updateFolder/index.js";
@@ -64,7 +64,6 @@ const FormComponent = ({ folder }: FormComponentProps) => {
                     </ParentFolderField>
                 </Grid.Column>
             </Grid>
-            <Extensions />
         </>
     );
 };

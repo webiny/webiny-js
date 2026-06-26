@@ -17,14 +17,14 @@
     "access": "public"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.33.0",
-    "@pulumi/pulumi": "^3.246.0",
+    "@pulumi/aws": "^7.34.0",
+    "@pulumi/pulumi": "^3.247.0",
     "@pulumi/random": "^4.21.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-layers": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/cli-core": "0.0.0",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/project": "0.0.0",
     "@webiny/pulumi": "0.0.0",
     "@webiny/utils": "0.0.0",

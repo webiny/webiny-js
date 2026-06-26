@@ -80,7 +80,7 @@ export interface SingleImageUploadProps extends FormComponentProps {
     variant?: FilePickerProps["variant"];
 }
 
-const SingleImageUpload = (props: SingleImageUploadProps) => {
+export const SingleImageUpload = (props: SingleImageUploadProps) => {
     const {
         accept,
         className,
@@ -145,5 +145,3 @@ const SingleImageUpload = (props: SingleImageUploadProps) => {
         />
     );
 };
-
-export default SingleImageUpload;

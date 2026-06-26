@@ -16,17 +16,22 @@ export interface IListCache<T> {
     getItems(): T[];
     getItem(predicate: IListCachePredicate<T>): T | undefined;
     addItems(items: T[]): void;
+    setItems(items: T[]): void;
     updateItems(updater: IListCacheItemUpdater<T>): void;
     removeItems(predicate: IListCachePredicate<T>): void;
 }
 
 export class ListCache<T> implements IListCache<T> {
     private state: T[];
+    private keyField: string;
 
-    constructor() {
+    constructor(keyField = "id") {
         this.state = [];
+        this.keyField = keyField;
 
-        makeAutoObservable(this);
+        makeAutoObservable<ListCache<T>, "keyField">(this, {
+            keyField: false
+        });
     }
 
     count() {
@@ -55,7 +60,13 @@ export class ListCache<T> implements IListCache<T> {
 
     addItems(items: T[]) {
         runInAction(() => {
-            this.state = unionBy(this.state, items, "id");
+            this.state = unionBy(items, this.state, this.keyField);
+        });
+    }
+
+    setItems(items: T[]) {
+        runInAction(() => {
+            this.state = [...items];
         });
     }
 

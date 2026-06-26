@@ -30,7 +30,7 @@ class ValidateWorkflowStateOnEntryBeforePublishImpl
         if (state?.done) {
             entry.system = {
                 ...entry.system,
-                workflow: undefined
+                workflow: null
             };
             return;
         }

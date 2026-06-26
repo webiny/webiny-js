@@ -1,5 +1,5 @@
-import { useModel } from "@webiny/app-headless-cms-common";
 import { useMemo } from "react";
+import { useModel } from "~/admin/components/ModelProvider/index.js";
 
 export const useIsModelPublishable = () => {
     const { model } = useModel();

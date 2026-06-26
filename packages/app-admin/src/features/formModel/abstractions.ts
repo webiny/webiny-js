@@ -61,6 +61,7 @@ export interface IFieldConfig {
     onBlurCallbacks?: OnBlurCallback[];
     requiredWhenCallbacks?: RequiredWhenCallback[];
     hiddenWhenCallbacks?: HiddenWhenCallback[];
+    disabledWhenCallbacks?: DisabledWhenCallback[];
     computed?: ComputedFieldCallback;
     computedUntilDirty?: ComputedFieldCallback;
     tags?: string[];
@@ -76,6 +77,8 @@ export interface IRequiredWhenCallbackConfig {
 export type RequiredWhenCallback = IRequiredWhenCallbackConfig;
 
 export type HiddenWhenCallback = (form: IFormModel) => boolean;
+
+export type DisabledWhenCallback = (form: IFormModel) => boolean;
 
 export type ComputedFieldCallback = (form: IFormModel) => unknown;
 
@@ -387,7 +390,13 @@ export type CloneValueCallback = (value: unknown) => unknown;
 // Layout types
 // ---------------------------------------------------------------------------
 
-export type LayoutNode = IRowNode | ISeparatorNode | ITabsNode | IElementNode | IObjectNode;
+export type LayoutNode =
+    | IRowNode
+    | ISeparatorNode
+    | IAlertNode
+    | ITabsNode
+    | IElementNode
+    | IObjectNode;
 
 export interface IRowNode {
     type: "row";
@@ -400,6 +409,9 @@ export type IRowNodeHandle = IRowBuilder;
 
 export interface ISeparatorNode {
     type: "separator";
+    title?: string;
+    description?: string;
+    rules?: IRule[];
 }
 
 export interface ITabDefinition {
@@ -429,7 +441,15 @@ export interface ITabsNode {
     type: "tabs";
     id?: string;
     renderer?: string;
+    rendererSettings?: Record<string, unknown>;
     tabs: ITabDefinition[];
+    rules?: IRule[];
+}
+
+export interface IAlertNode {
+    type: "alert";
+    message?: string;
+    alertType?: "info" | "success" | "warning" | "danger";
     rules?: IRule[];
 }
 
@@ -473,7 +493,17 @@ export interface IRowBuilder extends ILayoutNodeBuilder {
 }
 
 export interface ISeparatorBuilder extends ILayoutNodeBuilder {
+    title(text: string): this;
+    description(text: string): this;
+    rules(rules: IRule[]): this;
     build(): ISeparatorNode;
+}
+
+export interface IAlertBuilder extends ILayoutNodeBuilder {
+    message(text: string): this;
+    alertType(type: "info" | "success" | "warning" | "danger"): this;
+    rules(rules: IRule[]): this;
+    build(): IAlertNode;
 }
 
 export interface ITabBuilder {
@@ -485,7 +515,7 @@ export interface ITabBuilder {
 }
 
 export interface ITabsBuilder extends ILayoutNodeBuilder {
-    renderer(name: string): this;
+    renderer(name: string, settings?: Record<string, unknown>): this;
     tab(id: string, configure: (tab: ITabBuilder) => void): this;
     before(target: string): this;
     after(target: string): this;
@@ -505,7 +535,12 @@ export interface IObjectBuilder extends ILayoutNodeBuilder {
 // Layout VM types
 // ---------------------------------------------------------------------------
 
-export type LayoutNodeVM = IRowNodeVM | ISeparatorNodeVM | ITabsNodeVM | IElementNodeVM;
+export type LayoutNodeVM =
+    | IRowNodeVM
+    | ISeparatorNodeVM
+    | IAlertNodeVM
+    | ITabsNodeVM
+    | IElementNodeVM;
 
 export interface IRowNodeVM {
     type: "row";
@@ -514,6 +549,14 @@ export interface IRowNodeVM {
 
 export interface ISeparatorNodeVM {
     type: "separator";
+    title?: string;
+    description?: string;
+}
+
+export interface IAlertNodeVM {
+    type: "alert";
+    message?: string;
+    alertType: "info" | "success" | "warning" | "danger";
 }
 
 export interface ITabDefinitionVM {
@@ -530,6 +573,7 @@ export interface ITabsNodeVM {
     type: "tabs";
     id?: string;
     renderer?: string;
+    rendererSettings?: Record<string, unknown>;
     tabs: ITabDefinitionVM[];
     disabled: boolean;
     activeTabId: string;
@@ -597,6 +641,7 @@ export interface IFormModifier {
 export interface ILayoutModifier {
     row(...fieldIds: string[]): ILayoutNodeHandle;
     separator(): ILayoutNodeHandle;
+    alert(): ILayoutNodeHandle;
     tabs(config: {
         id?: string;
         renderer?: string;
@@ -629,6 +674,7 @@ export interface IFormError {
 export interface IFormVM {
     layout: LayoutNodeVM[];
     errors: IFormError[];
+    hasErrors: boolean;
     isDirty: boolean;
     isValid: boolean | null;
     submitCount: number;
@@ -675,7 +721,7 @@ export interface IFormModel<T = Record<string, any>> {
     setData(data: T): void;
     reset(): void;
     validate(): Promise<boolean>;
-    submit<T = Record<string, unknown>>(): Promise<T | false>;
+    submit<T = Record<string, unknown>>(options?: { skipValidation?: boolean }): Promise<T | false>;
     evaluateRules(rules: IRule[] | undefined): { visible: boolean; disabled: boolean };
     focusField(name: string): void;
     readonly isDirty: boolean;
@@ -709,6 +755,9 @@ export namespace FormModel {
     export type LayoutNodeBuilder = ILayoutNodeBuilder;
     export type RowBuilder = IRowBuilder;
     export type SeparatorBuilder = ISeparatorBuilder;
+    export type AlertBuilder = IAlertBuilder;
+    export type AlertNode = IAlertNode;
+    export type AlertNodeVM = IAlertNodeVM;
     export type TabBuilder = ITabBuilder;
     export type TabsBuilder = ITabsBuilder;
     export type ElementBuilder = IElementBuilder;
@@ -747,6 +796,7 @@ export namespace FormModel {
     export type FormRuleType = FormRule;
     export type RequiredWhen = (form: IFormModel) => boolean;
     export type HiddenWhen = HiddenWhenCallback;
+    export type DisabledWhen = DisabledWhenCallback;
     export type Computed = ComputedFieldCallback;
 }
 
@@ -768,6 +818,7 @@ export interface IFormModelConfig {
 export interface ILayoutBuilder {
     row(...fieldIds: string[]): IRowBuilder;
     separator(): ISeparatorBuilder;
+    alert(): IAlertBuilder;
     tabs(id?: string): ITabsBuilder;
     element(renderer: string, props?: Record<string, unknown>): IElementBuilder;
     /**
@@ -812,6 +863,7 @@ export interface IFieldBuilder<
     ): this;
     hidden(): this;
     hiddenWhen(fn: (form: IFormModel) => boolean): this;
+    disabledWhen(fn: (form: IFormModel) => boolean): this;
     required(message?: string): this;
     /**
      * Conditional required check. Multiple `requiredWhen()` calls chain — the

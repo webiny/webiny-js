@@ -7,6 +7,7 @@ import { LexicalPreset } from "./Base/LexicalPreset.js";
 import { DefaultFieldRenderers } from "./Base/DefaultFieldRenderers.js";
 import { DefaultLayoutRenderers } from "./Base/DefaultLayoutRenderers.js";
 import { DefaultLexicalEditorConfig } from "~/components/LexicalEditor/DefaultLexicalEditorConfig.js";
+import { AccessManagementExtension } from "~/modules/AccessManagementExtension.js";
 
 const BaseExtension = () => {
     return (
@@ -19,6 +20,7 @@ const BaseExtension = () => {
             <DefaultFieldRenderers />
             <DefaultLayoutRenderers />
             <DefaultLexicalEditorConfig />
+            <AccessManagementExtension />
         </>
     );
 };

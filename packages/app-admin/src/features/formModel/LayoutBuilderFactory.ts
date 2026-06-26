@@ -14,10 +14,12 @@ import type {
     ITabsNode,
     IRowBuilder,
     ISeparatorBuilder,
+    IAlertBuilder,
     IElementBuilder,
     IObjectBuilder,
     IRowNode,
     ISeparatorNode,
+    IAlertNode,
     IElementNode,
     IObjectNode,
     LayoutNode,
@@ -113,6 +115,7 @@ export class TabBuilder implements TabBuilderInternal {
 export class TabsBuilder implements ITabsBuilder {
     private _id: string | undefined;
     private _renderer: string | undefined;
+    private _rendererSettings: Record<string, unknown> | undefined;
     private _rules: IRule[] | undefined;
     private _pendingTabs: { tabId: string; tabBuilder: TabBuilderInternal }[] = [];
     private _lastAddedIdx = -1;
@@ -121,8 +124,9 @@ export class TabsBuilder implements ITabsBuilder {
         this._id = id;
     }
 
-    renderer(name: string): this {
+    renderer(name: string, settings?: Record<string, unknown>): this {
         this._renderer = name;
+        this._rendererSettings = settings;
         return this;
     }
 
@@ -152,6 +156,7 @@ export class TabsBuilder implements ITabsBuilder {
             type: "tabs",
             id: this._id,
             renderer: this._renderer,
+            rendererSettings: this._rendererSettings,
             tabs: this._pendingTabs.map(p => p.tabBuilder._build(p.tabId)),
             rules: this._rules
         };
@@ -163,8 +168,9 @@ export class TabsAccessBuilder implements ITabsBuilder {
 
     constructor(private _node: ITabsNode) {}
 
-    renderer(name: string): this {
+    renderer(name: string, settings?: Record<string, unknown>): this {
         this._node.renderer = name;
+        this._node.rendererSettings = settings;
         return this;
     }
 
@@ -238,11 +244,60 @@ export class LayoutBuilderFactory {
                 return builder;
             },
             separator(): ISeparatorBuilder {
-                return {
+                let _title: string | undefined;
+                let _description: string | undefined;
+                let _rules: IRule[] | undefined;
+                const builder: ISeparatorBuilder = {
+                    title(text: string) {
+                        _title = text;
+                        return builder;
+                    },
+                    description(text: string) {
+                        _description = text;
+                        return builder;
+                    },
+                    rules(r: IRule[]) {
+                        _rules = r;
+                        return builder;
+                    },
                     build(): ISeparatorNode {
-                        return { type: "separator" };
+                        return {
+                            type: "separator",
+                            title: _title,
+                            description: _description,
+                            rules: _rules
+                        };
                     }
                 };
+                return builder;
+            },
+            alert(): IAlertBuilder {
+                let _message: string | undefined;
+                let _alertType: "info" | "success" | "warning" | "danger" = "info";
+                let _rules: IRule[] | undefined;
+                const builder: IAlertBuilder = {
+                    message(text: string) {
+                        _message = text;
+                        return builder;
+                    },
+                    alertType(type: "info" | "success" | "warning" | "danger") {
+                        _alertType = type;
+                        return builder;
+                    },
+                    rules(r: IRule[]) {
+                        _rules = r;
+                        return builder;
+                    },
+                    build(): IAlertNode {
+                        return {
+                            type: "alert",
+                            message: _message,
+                            alertType: _alertType,
+                            rules: _rules
+                        };
+                    }
+                };
+                return builder;
             },
             tabs(id?: string): ITabsBuilder {
                 return new TabsBuilder(id);

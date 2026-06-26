@@ -5,7 +5,6 @@ import { FileManagerViewConfig as FileManagerConfig } from "~/presentation/confi
 import { FilterByType } from "~/presentation/FileList/components/Filters/FilterByType.js";
 import {
     BulkActionDelete,
-    BulkActionEdit,
     BulkActionMove
 } from "~/presentation/FileList/components/BulkActions/index.js";
 import { Tags, AccessControl } from "~/presentation/config/fields/index.js";
@@ -39,7 +38,6 @@ export const DefaultFileManagerConfig = () => {
             <Browser.FilterByTags />
             <Browser.Filter name={"type"} element={<FilterByType />} />
             {/* Bulk Actions */}
-            <Browser.BulkAction name={"edit"} element={<BulkActionEdit />} />
             <Browser.BulkAction name={"move"} element={<BulkActionMove />} />
             <Browser.BulkAction name={"delete"} element={<BulkActionDelete />} />
             {/* Folder Actions */}

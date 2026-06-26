@@ -6,22 +6,21 @@ import { AdminUI } from "@webiny/app-admin-ui";
 import { FileManager } from "@webiny/app-file-manager/app.js";
 import { GraphQLPlayground } from "@webiny/app-graphql-playground";
 import { SdkPlayground } from "@webiny/app-sdk-playground";
-import { AccessManagement } from "@webiny/app-security-access-management";
 import { imagePlugin } from "@webiny/app/plugins/index.js";
 import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
 import { createApolloClient } from "./apolloClientFactory.js";
 import apolloLinks from "./apolloLinks.js";
 import { AuditLogs } from "@webiny/app-audit-logs";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
-import { Module as MailerSettings } from "@webiny/app-mailer";
+import { Extension as MailerSettings } from "@webiny/app-mailer";
 import { Websockets } from "@webiny/app-websockets";
 import { RecordLocking } from "@webiny/app-record-locking";
-import { TrashBinConfigs } from "@webiny/app-trash-bin";
+import { TrashBinConfigs } from "@webiny/app-admin/presentation/trashBin/index.js";
 import { AdvancedContentOrganisation } from "@webiny/app-aco";
 import { Extension as WebsiteBuilder } from "@webiny/app-website-builder/Extension.js";
-import { SchedulerConfigs } from "@webiny/app-scheduler";
+import { SchedulerModule } from "@webiny/app-scheduler";
 import { CmsScheduler } from "@webiny/app-headless-cms-scheduler";
-import { Components as WorkflowComponents } from "@webiny/app-workflows";
+import { WorkflowsAdminApp } from "@webiny/app-workflows";
 import { CmsWorkflows } from "@webiny/app-headless-cms-workflows";
 import { WebsiteBuilderWorkflows } from "@webiny/app-website-builder-workflows";
 import { Container } from "@webiny/di";
@@ -48,23 +47,22 @@ const App = (props: AdminProps) => {
             createLegacyPlugins={createLegacyPlugins}
         >
             <AdminUI />
-            <AccessManagement />
             <SystemInstallerProvider />
-            <FileManager />
             <GraphQLPlayground createApolloClient={createApolloClient} />
             <SdkPlayground />
             <Websockets />
             <RecordLocking />
             <LexicalEditorActions />
-            <HeadlessCMS createApolloClient={createApolloClient} />
+            <HeadlessCMS />
+            <FileManager />
             <AuditLogs />
             <MailerSettings />
-            <SchedulerConfigs />
+            <SchedulerModule />
             <CmsScheduler />
             <TrashBinConfigs />
             <AdvancedContentOrganisation />
             <WebsiteBuilder />
-            <WorkflowComponents.App.WorkflowsAdminApp />
+            <WorkflowsAdminApp />
             <CmsWorkflows />
             <WebsiteBuilderWorkflows />
             <WbScheduler />

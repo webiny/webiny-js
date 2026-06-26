@@ -24,6 +24,11 @@ import { FileUrlPickerRenderer } from "~/base/Base/FieldRenderers/FileUrlPickerR
 import { MultiFilePickerRenderer } from "~/base/Base/FieldRenderers/MultiFilePickerRenderer.js";
 import { CodeEditorRenderer } from "~/base/Base/FieldRenderers/CodeEditorRenderer.js";
 import { LexicalRenderer } from "~/base/Base/FieldRenderers/LexicalRenderer.js";
+import { PasswordInputRenderer } from "~/base/Base/FieldRenderers/PasswordInputRenderer.js";
+import { PermissionsRenderer } from "~/base/Base/FieldRenderers/PermissionsRenderer.js";
+import { RolesMultiSelectRenderer } from "~/base/Base/FieldRenderers/RolesMultiSelectRenderer.js";
+import { ApiKeyTokenRenderer } from "~/base/Base/FieldRenderers/ApiKeyTokenRenderer.js";
+import { MultiAutoCompleteRenderer } from "~/base/Base/FieldRenderers/MultiAutoCompleteRenderer.js";
 
 export const DefaultFieldRenderers = () => {
     return (
@@ -76,6 +81,20 @@ export const DefaultFieldRenderers = () => {
             />
             <AdminConfig.Form.FieldRenderer name={"codeEditor"} component={CodeEditorRenderer} />
             <AdminConfig.Form.FieldRenderer name={"lexical"} component={LexicalRenderer} />
+            <AdminConfig.Form.FieldRenderer
+                name={"passwordInput"}
+                component={PasswordInputRenderer}
+            />
+            <AdminConfig.Form.FieldRenderer name={"permissions"} component={PermissionsRenderer} />
+            <AdminConfig.Form.FieldRenderer
+                name={"rolesMultiSelect"}
+                component={RolesMultiSelectRenderer}
+            />
+            <AdminConfig.Form.FieldRenderer name={"apiKeyToken"} component={ApiKeyTokenRenderer} />
+            <AdminConfig.Form.FieldRenderer
+                name={"multiAutoComplete"}
+                component={MultiAutoCompleteRenderer}
+            />
         </AdminConfig>
     );
 };

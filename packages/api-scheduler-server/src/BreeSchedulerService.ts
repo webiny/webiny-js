@@ -63,7 +63,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
     }
 
     public async create(params: ISchedulerServiceCreateParams): Promise<void> {
-        const { id, namespace, scheduleFor } = params;
+        const { id, namespace, scheduleFor, tenant } = params;
 
         if (scheduleFor <= new Date()) {
             throw new WebinyError(
@@ -73,7 +73,11 @@ export class BreeSchedulerService implements SchedulerService.Interface {
             );
         }
 
-        const exists = await this.exists(id);
+        const exists = await this.exists({
+            id,
+            namespace,
+            tenant
+        });
         if (exists) {
             return this.update(params);
         }
@@ -104,8 +108,9 @@ export class BreeSchedulerService implements SchedulerService.Interface {
         await this.create(params);
     }
 
-    public async delete(id: string): Promise<void> {
-        const exists = await this.exists(id);
+    public async delete(params: SchedulerService.DeleteParams): Promise<void> {
+        const { id } = params;
+        const exists = await this.exists(params);
         if (!exists) {
             throw new WebinyError(`Cannot delete schedule "${id}" because it does not exist.`);
         }
@@ -113,7 +118,8 @@ export class BreeSchedulerService implements SchedulerService.Interface {
         await this.safeRemove(id);
     }
 
-    public async exists(id: string): Promise<boolean> {
+    public async exists(params: SchedulerService.ExistsParams): Promise<boolean> {
+        const { id } = params;
         return this.namespaces.has(id);
     }
 

@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs-extra";
-import yaml from "js-yaml";
+import { load as yamlLoad, dump as yamlDump } from "js-yaml";
 import { GetProjectRootPath } from "./GetProjectRootPath.js";
 import { GetTemplatesFolderPath } from "./GetTemplatesFolderPath.js";
 import { CliParams } from "../types.js";
@@ -42,7 +42,7 @@ export class SetupYarn {
             rawYarnRc = fs.readFileSync(yarnRcPath, "utf-8");
         }
 
-        const parsedYarnRc = yaml.load(rawYarnRc) as Record<string, any>;
+        const parsedYarnRc = yamlLoad(rawYarnRc) as Record<string, any>;
 
         // Default settings are applied here. Currently, we only apply the `nodeLinker` param.
         parsedYarnRc.nodeLinker = "node-modules";
@@ -67,7 +67,7 @@ export class SetupYarn {
             }
         }
 
-        fs.writeFileSync(yarnRcPath, yaml.dump(parsedYarnRc));
+        fs.writeFileSync(yarnRcPath, yamlDump(parsedYarnRc));
     }
 
     private loadExampleYarnRc(): Record<string, any> | null {
@@ -92,7 +92,7 @@ export class SetupYarn {
         try {
             const raw = fs.readFileSync(exampleYarnRcPath, "utf-8");
             console.log(`Loaded example .yarnrc.yml from: ${exampleYarnRcPath}`);
-            const parsed = yaml.load(raw) as Record<string, any>;
+            const parsed = yamlLoad(raw) as Record<string, any>;
             if (!parsed || typeof parsed !== "object") {
                 console.log(yellow("Warning: example .yarnrc.yml parsed to a non-object value."));
                 console.log(yellow(`  raw content: ${raw}`));

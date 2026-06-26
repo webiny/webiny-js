@@ -13,7 +13,7 @@ const WrappedAutoSave = observer((props: IWrappedAutoSave) => {
     /**
      * Autosave should work only when the page does not have a workflow state assigned.
      */
-    if (!presenter.vm.state?.state) {
+    if (!presenter.vm.hasState) {
         return props.element;
     }
 

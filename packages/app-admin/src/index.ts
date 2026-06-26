@@ -24,6 +24,10 @@ export * from "./base/ui/NotFound.js";
 // Base admin app
 export { Admin } from "./base/Admin.js";
 export * from "./config/AdminConfig.js";
+export type { ColumnConfig as TableColumnConfig } from "./config/table/Column.js";
+export type { SortingConfig as TableSortingConfig } from "./config/table/Sorting.js";
+export { Column as TableColumn } from "./config/table/Column.js";
+export { Sorting as TableSorting } from "./config/table/Sorting.js";
 
 export type { AdminProps } from "./base/Admin.js";
 
@@ -131,6 +135,37 @@ export { PresenterErrors } from "./features/formModel/PresenterErrors.js";
 
 export { useFieldRenderers } from "./features/formModel/useFieldRenderers.js";
 export { useLayoutRenderers } from "./features/formModel/useLayoutRenderers.js";
+
+// Import all field renderers to ensure their module augmentations are applied.
+import "./base/Base/FieldRenderers/InputRenderer.js";
+import "./base/Base/FieldRenderers/SelectRenderer.js";
+import "./base/Base/FieldRenderers/TextareaRenderer.js";
+import "./base/Base/FieldRenderers/SwitchRenderer.js";
+import "./base/Base/FieldRenderers/NumberInputRenderer.js";
+import "./base/Base/FieldRenderers/NumberInputsRenderer.js";
+import "./base/Base/FieldRenderers/TextInputsRenderer.js";
+import "./base/Base/FieldRenderers/TextareasRenderer.js";
+import "./base/Base/FieldRenderers/TagsRenderer.js";
+import "./base/Base/FieldRenderers/RadioButtonsRenderer.js";
+import "./base/Base/FieldRenderers/CheckboxesRenderer.js";
+import "./base/Base/FieldRenderers/DateTimeRenderer.js";
+import "./base/Base/FieldRenderers/DateTimeInputsRenderer.js";
+import "./base/Base/FieldRenderers/HiddenRenderer.js";
+import "./base/Base/FieldRenderers/PassthroughRenderer.js";
+import "./base/Base/FieldRenderers/FilePickerRenderer.js";
+import "./base/Base/FieldRenderers/FileUrlPickerRenderer.js";
+import "./base/Base/FieldRenderers/MultiFilePickerRenderer.js";
+import "./base/Base/FieldRenderers/CodeEditorRenderer.js";
+import "./base/Base/FieldRenderers/LexicalRenderer.js";
+import "./base/Base/FieldRenderers/PasswordInputRenderer.js";
+import "./base/Base/FieldRenderers/PermissionsRenderer.js";
+import "./base/Base/FieldRenderers/RolesMultiSelectRenderer.js";
+import "./base/Base/FieldRenderers/ApiKeyTokenRenderer.js";
+import "./base/Base/FieldRenderers/MultiAutoCompleteRenderer.js";
+import "./base/Base/FieldRenderers/ObjectRenderer/ObjectRenderer.js";
+import "./base/Base/FieldRenderers/ObjectRenderer/ObjectAccordionMultipleRenderer.js";
+import "./base/Base/FieldRenderers/ObjectRenderer/DynamicZoneRenderer.js";
+import "./base/Base/FieldRenderers/ObjectRenderer/KeyValueTagsRenderer.js";
 export type {
     FieldRenderers,
     FieldRendererComponent,

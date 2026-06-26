@@ -55,6 +55,8 @@ export type {
     IRowNodeVM,
     ISeparatorNode,
     ISeparatorNodeVM,
+    IAlertNode,
+    IAlertNodeVM,
     ITabsNode,
     ITabDefinition,
     ITabsNodeVM,

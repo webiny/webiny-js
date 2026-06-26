@@ -7,9 +7,14 @@ import {
 import type { Webhook } from "~/admin/shared/types.js";
 
 const LIST_WEBHOOKS = /* GraphQL */ `
-    query ListWebhooks($where: ListWebhooksWhereInput, $limit: Int, $after: String) {
+    query ListWebhooks(
+        $where: ListWebhooksWhereInput
+        $sort: [ListWebhooksSort!]
+        $limit: Int
+        $after: String
+    ) {
         webhooks {
-            listWebhooks(where: $where, limit: $limit, after: $after) {
+            listWebhooks(where: $where, sort: $sort, limit: $limit, after: $after) {
                 data {
                     id
                     name
@@ -61,6 +66,7 @@ class ListWebhooksGraphQLGateway implements GatewayAbstraction.Interface {
             query: LIST_WEBHOOKS,
             variables: {
                 where: input.where,
+                sort: input.sort,
                 limit: input.limit,
                 after: input.after
             }

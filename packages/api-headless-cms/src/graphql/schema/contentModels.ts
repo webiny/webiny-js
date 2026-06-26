@@ -11,6 +11,7 @@ import { CreateModelFromUseCase } from "~/features/contentModel/CreateModelFrom/
 import { UpdateModelUseCase } from "~/features/contentModel/UpdateModel/index.js";
 import { DeleteModelUseCase } from "~/features/contentModel/DeleteModel/index.js";
 import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
+import { ValuesSelectionGenerator } from "~/features/contentModel/ValuesSelectionGenerator/abstractions.js";
 
 export interface CreateModelsSchemaParams {
     context: CmsContext;
@@ -78,6 +79,10 @@ export const createModelsSchema = ({
             },
             plugin: (model: CmsModel) => {
                 return model.isPlugin ?? false;
+            },
+            valuesSelection: (model: CmsModel, _: unknown, ctx: CmsContext) => {
+                const generator = ctx.container.resolve(ValuesSelectionGenerator);
+                return generator.generate(model);
             }
         }
     };
@@ -328,6 +333,7 @@ export const createModelsSchema = ({
                 tenant: String!
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!
+                valuesSelection: String
             }
 
             type CmsContentModelResponse {

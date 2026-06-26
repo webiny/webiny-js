@@ -6,6 +6,7 @@ import {
     Button,
     DelayedOnChange,
     FormComponentDescription,
+    FormComponentErrorMessage,
     Icon,
     Input,
     Separator
@@ -59,6 +60,11 @@ export const NumberInputsRenderer = createFieldRenderer<"numberInputs">(({ field
                 icon={<AddIcon />}
                 text={field.rendererSettings?.addItemLabel ?? "Add Value"}
                 onClick={() => field.addItem("")}
+            />
+            <FormComponentErrorMessage
+                text={field.validation.message}
+                invalid={field.validation.isValid === false}
+                disabled={field.disabled}
             />
         </div>
     );

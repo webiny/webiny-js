@@ -1,10 +1,1 @@
-export * from "./Fields/index.js";
-export * from "./ModelFieldProvider/index.js";
-export * from "./ModelProvider/index.js";
-export * from "./entries.graphql.js";
-export * from "./getModelTitleFieldId.js";
-export * from "./createFieldsList.js";
-export * from "./createValidationContainer.js";
-export * from "./createValidators.js";
-export * from "./prepareFormData.js";
-export * from "./constants.js";
+export { CMS_MODEL_SINGLETON_TAG } from "./constants.js";

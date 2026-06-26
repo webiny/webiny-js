@@ -3224,6 +3224,128 @@ describe("FormModel", () => {
             expect(await form.validate()).toBe(true);
         });
 
+        it("computedUntilDirty can access nested fields inside object via dot notation", () => {
+            const form = createForm({
+                fields: fields => ({
+                    group: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            label: f.text().defaultValue("Hello World"),
+                            fieldId: f.text().computedUntilDirty(f =>
+                                String(f.field("group.label").getValue() || "")
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "-")
+                            )
+                        }))
+                })
+            });
+
+            expect(form.field("group.fieldId").getValue()).toBe("hello-world");
+
+            form.field("group.label").setValue("New Title");
+            expect(form.field("group.fieldId").getValue()).toBe("new-title");
+
+            // Manual edit overrides
+            form.field("group.fieldId").vm.onChange("custom-id");
+            expect(form.field("group.fieldId").getValue()).toBe("custom-id");
+
+            // Source changes no longer overwrite
+            form.field("group.label").setValue("Another");
+            expect(form.field("group.fieldId").getValue()).toBe("custom-id");
+        });
+
+        it("computedUntilDirty works after setData for nested object fields", () => {
+            const form = createForm({
+                fields: fields => ({
+                    general: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            label: f.text(),
+                            fieldId: f.text().computedUntilDirty(f =>
+                                String(f.field("general.label").getValue() || "")
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "-")
+                            )
+                        }))
+                })
+            });
+
+            // Before setData, label is null, fieldId computes to ""
+            expect(form.field("general.fieldId").getValue()).toBe("");
+
+            // After setData, fieldId should compute from the new label
+            form.setData({ general: { label: "My Field" } });
+            expect(form.field("general.fieldId").getValue()).toBe("my-field");
+
+            // Changing label updates fieldId
+            form.field("general.label").setValue("Updated Label");
+            expect(form.field("general.fieldId").getValue()).toBe("updated-label");
+
+            // UI edit overrides
+            form.field("general.fieldId").vm.onChange("custom");
+            expect(form.field("general.fieldId").getValue()).toBe("custom");
+
+            form.field("general.label").setValue("Ignored");
+            expect(form.field("general.fieldId").getValue()).toBe("custom");
+        });
+
+        it("$. prefix resolves field paths relative to the parent object", () => {
+            const form = createForm({
+                fields: fields => ({
+                    group: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            label: f.text().defaultValue("Hello"),
+                            slug: f.text().computedUntilDirty(f =>
+                                String(f.field("$.label").getValue() || "")
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "-")
+                            )
+                        }))
+                })
+            });
+
+            expect(form.field("group.slug").getValue()).toBe("hello");
+
+            form.field("group.label").setValue("New Title");
+            expect(form.field("group.slug").getValue()).toBe("new-title");
+        });
+
+        it("$. can traverse deeper into sibling objects", () => {
+            const form = createForm({
+                fields: fields => ({
+                    wrapper: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            message: f
+                                .text()
+                                .defaultValue("default")
+                                .computedUntilDirty(f => {
+                                    const preset = f.field("$.settings.preset").getValue();
+                                    return preset === "custom"
+                                        ? "Custom message"
+                                        : `Preset: ${preset}`;
+                                }),
+                            settings: f
+                                .object()
+                                .renderer("passthrough")
+                                .fields(inner => ({
+                                    preset: inner.text().defaultValue("custom")
+                                }))
+                        }))
+                })
+            });
+
+            expect(form.field("wrapper.message").getValue()).toBe("Custom message");
+
+            form.field("wrapper.settings.preset").setValue("email");
+            expect(form.field("wrapper.message").getValue()).toBe("Preset: email");
+        });
+
         it("modifier setComputed converts a regular field into a computed one", () => {
             const form = createForm({
                 fields: fields => ({

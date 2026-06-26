@@ -164,7 +164,7 @@ export const FileGrid = observer(function FileGrid() {
     const { vm, actions } = presenter;
 
     const overlay = useOverlay();
-    const childFolders = vm.folders.childFolders;
+    const childFolders = vm.childFolders;
 
     // Handle folder navigation.
     const handleFolderNavigate = useCallback(

@@ -11,9 +11,9 @@ interface IWrappedElementProps {
 
 const WrappedElement = (props: IWrappedElementProps) => {
     const { page } = usePage();
-    const state = page.workflows?.state;
+    const workflowState = page.workflow?.state;
 
-    if (!state?.state || state.state === WorkflowStateValue.approved) {
+    if (!workflowState || workflowState === WorkflowStateValue.approved) {
         return props.element;
     }
     return null;

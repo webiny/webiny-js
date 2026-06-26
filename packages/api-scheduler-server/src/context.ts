@@ -11,7 +11,8 @@ export const registerSchedulerServerExtension = () => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
 
-        if (!tenantContext.getTenant()) {
+        const tenant = tenantContext.getTenant();
+        if (!tenant) {
             return;
         }
 
@@ -21,7 +22,11 @@ export const registerSchedulerServerExtension = () => {
         const service = new BreeSchedulerService({
             logger,
             onTrigger: async (id, namespace) => {
-                const result = await executeScheduledAction.execute({ id, namespace });
+                const result = await executeScheduledAction.execute({
+                    id,
+                    namespace,
+                    tenant: tenant.id
+                });
 
                 if (result.isFail()) {
                     logger.error(
