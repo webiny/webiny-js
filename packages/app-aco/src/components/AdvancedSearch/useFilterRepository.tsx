@@ -1,8 +1,8 @@
-import { useApolloClient } from "@apollo/react-hooks";
-import { filterRepositoryFactory } from "~/components/AdvancedSearch/domain/index.js";
+import { useFeature } from "@webiny/app";
+import { FilterRepositoryFeature } from "~/features/filterRepository/index.js";
 
 export const useFilterRepository = (namespace: string) => {
-    const client = useApolloClient();
+    const { factory } = useFeature(FilterRepositoryFeature);
 
-    return filterRepositoryFactory.getRepository(client, namespace);
+    return factory.getRepository(namespace);
 };
