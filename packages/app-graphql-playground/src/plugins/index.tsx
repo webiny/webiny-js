@@ -1,7 +1,25 @@
 import type { GraphQLPlaygroundTabPlugin } from "~/types.js";
-// @ts-expect-error
-import placeholder from "!!raw-loader!./placeholder.graphql";
 import { config as appConfig } from "@webiny/app/config.js";
+
+const placeholder = `#  Webiny Main API
+#
+#  This is the core API that has access to all the features of your Webiny instance.
+#
+#  Note: to use the API outside of the playground, you will need to provide an API key via the Authorization header.
+#
+#  Example query - list all users:
+{
+  adminUsers {
+    listUsers {
+      data {
+        email
+        firstName
+        createdOn
+      }
+    }
+  }
+}
+`;
 
 const plugin: GraphQLPlaygroundTabPlugin = {
     type: "graphql-playground-tab",
@@ -15,4 +33,5 @@ const plugin: GraphQLPlaygroundTabPlugin = {
         };
     }
 };
+
 export default [plugin];

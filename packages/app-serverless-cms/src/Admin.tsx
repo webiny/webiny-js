@@ -48,7 +48,7 @@ const App = (props: AdminProps) => {
         >
             <AdminUI />
             <SystemInstallerProvider />
-            <GraphQLPlayground createApolloClient={createApolloClient} />
+            <GraphQLPlayground />
             <SdkPlayground />
             <Websockets />
             <RecordLocking />

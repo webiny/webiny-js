@@ -1,129 +1,79 @@
-import React, { Fragment, useEffect, useRef, useCallback, useState } from "react";
-import { ApolloLink } from "apollo-link";
-import { setContext } from "apollo-link-context";
-import loadScript from "load-script";
-import { Global } from "@emotion/react";
+import React, { useMemo } from "react";
+import { GraphiQL } from "graphiql";
+import { createGraphiQLFetcher } from "@graphiql/toolkit";
 import { plugins } from "@webiny/plugins";
 import { useIdentity } from "@webiny/app-admin";
 import type { Identity } from "@webiny/app-admin/domain/Identity.js";
-import { OverlayLoader } from "@webiny/admin-ui";
-import { playgroundDialog, PlaygroundContainer } from "./Playground.styles.js";
-import { settings } from "./settings.js";
-import { config as appConfig } from "@webiny/app/config.js";
-import type ApolloClient from "apollo-client";
+import { useFeature } from "@webiny/app";
+import { AuthenticationContextFeature } from "@webiny/app-admin/features/security/AuthenticationContext/feature.js";
 import type { GraphQLPlaygroundTabPlugin } from "~/types.js";
-import { ORIGINAL_GQL_PLAYGROUND_URL, PATCHED_GQL_PLAYGROUND_URL } from "./constants.js";
+import "graphiql/style.css";
 
-const withHeaders = (link: ApolloLink, headers: Record<string, string>): ApolloLink => {
-    return ApolloLink.from([
-        setContext(async (_, req) => {
-            return {
-                headers: {
-                    ...req.headers,
-                    ...headers
-                }
-            };
-        }),
-        link
-    ]);
-};
-
-const initScripts = () => {
-    return new Promise((resolve: any) => {
-        // @ts-expect-error
-        if (window.GraphQLPlayground) {
-            return resolve();
-        }
-
-        loadScript(PATCHED_GQL_PLAYGROUND_URL, err => {
-            if (err) {
-                return loadScript(ORIGINAL_GQL_PLAYGROUND_URL, resolve);
-            }
-
-            resolve();
-        });
-    });
-};
-
-interface CreateApolloClientParams {
-    uri: string;
-}
-
-interface PlaygroundProps {
-    createApolloClient: (params: CreateApolloClientParams) => ApolloClient<any>;
-}
-
-interface CreateApolloLinkCallableParams {
+interface ITab {
+    name: string;
     endpoint: string;
     headers: Record<string, string>;
+    query: string;
 }
 
-interface CreateApolloLinkCallableResult {
-    link: ApolloLink;
-}
-
-interface CreateApolloLinkCallable {
-    (params: CreateApolloLinkCallableParams): CreateApolloLinkCallableResult;
-}
-
-const Playground = ({ createApolloClient }: PlaygroundProps) => {
-    const [loading, setLoading] = useState(true);
+const Playground = () => {
     const { identity } = useIdentity();
-    const links = useRef<Record<string, ApolloLink>>({});
+    const { authenticationContext } = useFeature(AuthenticationContextFeature);
 
-    const tabs = plugins
-        .byType<GraphQLPlaygroundTabPlugin>("graphql-playground-tab")
-        .map(pl =>
-            pl.tab({
-                identity: identity as Identity
-            })
-        )
-        .filter(Boolean);
+    const tabs = useMemo(() => {
+        return plugins
+            .byType<GraphQLPlaygroundTabPlugin>("graphql-playground-tab")
+            .map(pl =>
+                pl.tab({
+                    identity: identity as Identity
+                })
+            )
+            .filter(Boolean) as ITab[];
+    }, [identity]);
 
-    const createApolloLink = useCallback<CreateApolloLinkCallable>(({ endpoint, headers }) => {
-        const current = links.current;
-        // If the request endpoint is not know to us, return the first available
-        const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL) as string;
-        if (!endpoint.includes(apiUrl)) {
-            return { link: withHeaders(Object.values(current)[0], headers) };
+    const firstTab = tabs[0];
+
+    const fetcher = useMemo(() => {
+        if (!firstTab) {
+            return undefined;
         }
 
-        if (!current[endpoint]) {
-            current[endpoint] = createApolloClient({ uri: endpoint }).link;
-        }
+        return createGraphiQLFetcher({
+            url: firstTab.endpoint,
+            fetch: async (url, options) => {
+                const idToken = await authenticationContext.getIdToken();
+                const headers = new Headers(options?.headers);
 
-        return {
-            link: withHeaders(current[endpoint], headers)
-        };
-    }, []);
+                if (idToken) {
+                    headers.set("Authorization", `Bearer ${idToken}`);
+                }
 
-    useEffect(() => {
-        initScripts().then(() => {
-            setLoading(false);
+                return fetch(url, {
+                    ...options,
+                    headers,
+                    credentials: "include"
+                });
+            }
         });
-    }, []);
+    }, [firstTab?.endpoint]);
 
-    useEffect(() => {
-        if (!loading) {
-            // @ts-expect-error
-            window.GraphQLPlayground.init(document.getElementById("graphql-playground"), {
-                tabs,
-                createApolloLink,
-                settings
-            });
-        }
-    }, [loading]);
+    if (!fetcher || !firstTab) {
+        return null;
+    }
 
     return (
-        <Fragment>
-            {loading ? (
-                <OverlayLoader text={"Loading playground..."} />
-            ) : (
-                <PlaygroundContainer id={"graphql-playground"} />
-            )}
-            <Global styles={playgroundDialog} />
-        </Fragment>
+        <div style={{ height: "calc(100vh - 45px)" }}>
+            <GraphiQL
+                fetcher={fetcher}
+                defaultQuery={firstTab.query}
+                defaultHeaders={JSON.stringify(firstTab.headers, null, 2)}
+            >
+                <GraphiQL.Logo>
+                    <span />
+                </GraphiQL.Logo>
+            </GraphiQL>
+        </div>
     );
 };
 
-export default Playground;
+export { Playground };
