@@ -1,6 +1,6 @@
 import React from "react";
 import { AdminConfig, useToggler } from "@webiny/app-admin";
-import { NexjsConfigDialog } from "./NextjsConfig/NextjsConfigDialog.js";
+import { StarterKitConfigDialog } from "./StarterKitConfigDialog.js";
 
 const { Menu } = AdminConfig;
 
@@ -9,12 +9,12 @@ export const Extension = React.memo(() => {
 
     return (
         <>
-            <NexjsConfigDialog open={on} onClose={toggleOff} />
+            <StarterKitConfigDialog open={on} onClose={toggleOff} />
             <Menu
-                name={"wb.nextjs"}
+                name={"wb.starterKit"}
                 parent={"wb"}
                 pin={"end"}
-                element={<Menu.Item text={"Configure Next.js"} onClick={toggleOn} />}
+                element={<Menu.Item text={"Configure Starter Kit"} onClick={toggleOn} />}
             />
         </>
     );

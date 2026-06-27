@@ -188,6 +188,7 @@ export const WithTabs: Story = {
         children: (
             <>
                 <Tabs
+                    separator={true}
                     spacing={"lg"}
                     tabs={[
                         <Tabs.Tab

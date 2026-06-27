@@ -32,9 +32,9 @@ export const WorkflowStatesOwnWidget = () => {
     return (
         <WorkflowStateWidgetCard
             title={
-                <>
+                <span>
                     <span className={"text-accent-primary"}>Content Reviews</span> assigned by me
-                </>
+                </span>
             }
         />
     );
