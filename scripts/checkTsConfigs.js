@@ -26,6 +26,14 @@ const TSCONFIG = {
     BUILD: "tsconfig.build.json"
 };
 
+// `tsconfig.build.json` compiles only `src`, never `__tests__`. Test-only packages (e.g.
+// `@webiny/testing`) are never imported from `src`, and because they depend back on the very
+// packages that consume them, including them as build references creates a circular project
+// reference that breaks the `composite` build with TS6305. They are therefore intentionally
+// excluded from the build config (see `scripts/generateTsConfigsInPackages.js`), so the check
+// must not require them in `tsconfig.build.json` "references".
+const BUILD_EXCLUDED_PACKAGES = ["@webiny/testing"];
+
 /**
  * This is a small tool that checks if all TS configs in all packages in order. In other words,
  * if a "@webiny/*" dependency exists
@@ -83,6 +91,15 @@ const TSCONFIG = {
                 ).replace(/\\/g, "/");
 
                 const checkReferences = (config, configType) => {
+                    // Test-only packages are excluded from the build config on purpose, so don't
+                    // require them in `tsconfig.build.json` "references".
+                    if (
+                        configType === TSCONFIG.BUILD &&
+                        BUILD_EXCLUDED_PACKAGES.includes(wpWbyDepObject.packageJson.name)
+                    ) {
+                        return;
+                    }
+
                     const checkPath =
                         configType === TSCONFIG.DEV
                             ? depPackageRelativePath
