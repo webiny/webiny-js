@@ -10,6 +10,7 @@
     { "path": "../error" },
     { "path": "../feature" },
     { "path": "../shared-aco" },
+    { "path": "../handler" },
     { "path": "../plugins" },
     { "path": "../testing" },
     { "path": "../wcp" }
@@ -39,6 +40,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/shared-aco/*": ["../shared-aco/src/*"],
       "@webiny/shared-aco": ["../shared-aco/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/testing/*": ["../testing/src/*"],
