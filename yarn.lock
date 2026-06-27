@@ -12105,6 +12105,7 @@ __metadata:
   resolution: "@webiny/api-headless-cms-workflows@workspace:packages/api-headless-cms-workflows"
   dependencies:
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
@@ -12113,6 +12114,7 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/shared-aco": "npm:0.0.0"
     "@webiny/testing": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     typescript: "npm:6.0.3"
