@@ -3,7 +3,7 @@ import { plugins } from "@webiny/plugins";
 import { useRouter, AdminConfig, AdminLayout, HasPermission } from "@webiny/app-admin";
 import { ReactComponent as ApiPlaygroundIcon } from "@webiny/icons/graphql_playground.svg";
 import { ReactComponent as DevToolsIcon } from "@webiny/icons/developer_mode.svg";
-// import { Playground } from "./plugins/Playground.js";
+import { Playground } from "./plugins/Playground.js";
 import playgroundPlugins from "./plugins/index.js";
 import { SecurityPermission } from "./SecurityPermission.js";
 import { Routes } from "~/routes.js";
@@ -51,7 +51,7 @@ const GraphQLPlaygroundExtension = () => {
                 <Route
                     route={Routes.ApiPlayground}
                     element={
-                        <AdminLayout title={"GraphQL Playground"}>{/*<Playground />*/}</AdminLayout>
+                        <AdminLayout title={"GraphQL Playground"}>{<Playground />}</AdminLayout>
                     }
                 />
             </AdminConfig>
