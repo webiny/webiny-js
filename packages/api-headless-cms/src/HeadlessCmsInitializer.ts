@@ -1,54 +1,11 @@
 import type { Container } from "@webiny/di";
 import { Abstraction } from "@webiny/di";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
-import { PluginsContainer } from "@webiny/plugins";
 import type { IGraphQLContextInitializer } from "@webiny/handler-graphql";
-import { AccessControl } from "~/crud/AccessControl/AccessControl.js";
-import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud.js";
-import { createModelsCrud } from "~/crud/contentModel.crud.js";
-import { createContentEntryCrud } from "~/crud/contentEntry.crud.js";
-import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import {
-    CmsGraphQLSchemaPlugin,
-    CmsGroupPlugin,
-    CmsModelPlugin,
-    StorageOperationsCmsModelPlugin
-} from "~/plugins/index.js";
-import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter.js";
-import { registerFieldConverters } from "~/fieldConverters/abstractions.js";
-import { CmsModelPluginInstance } from "~/features/contentModel/shared/abstractions.js";
-import { CmsGroupPluginInstance } from "~/features/contentModelGroup/shared/abstractions.js";
-import { createExportCrud } from "~/export/index.js";
-import { createImportCrud } from "~/export/crud/importing.js";
-import { getSchema } from "~/graphql/getSchema.js";
-import { createRequestBody, processRequestBody } from "@webiny/handler-graphql";
-import { Benchmark } from "@webiny/api/Benchmark.js";
-import { BenchmarkAbstraction } from "@webiny/api";
-import { createBaseSchemaPlugins } from "~/graphql/schema/baseSchema.js";
-import { exportPlugin } from "~/export/graphql/index.js";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import { CmsGraphQLSchemaFactory } from "~/graphql/CmsGraphQLSchemaFactory.js";
-import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
-import { CmsExport, CmsImport } from "~/export/abstractions.js";
-import { ListGroupsUseCase } from "~/features/contentModelGroup/ListGroups/index.js";
-import { RevisionIdScalar } from "~/graphql/scalars/RevisionId.js";
-import {
-    AccessControl as AccessControlAbstraction,
     CmsContext as CmsContextAbstraction,
-    CmsStorageModelProvider,
-    HeadlessCms,
     StorageOperations,
     StorageOperationsFactory
 } from "~/features/shared/abstractions.js";
-import {
-    EntryFromStorageTransform,
-    EntryToStorageTransform,
-    PluginsContainer as PluginsContainerAbstraction,
-    SearchableFieldsProvider
-} from "~/legacy/abstractions.js";
-import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage.js";
-import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
 import type { ApiEndpoint, CmsContext } from "~/types/index.js";
 
 export interface IHeadlessCmsEnhancerConfig {
@@ -60,177 +17,51 @@ export const HeadlessCmsEnhancerConfig = new Abstraction<IHeadlessCmsEnhancerCon
     "HeadlessCmsEnhancerConfig"
 );
 
+/**
+ * Per-request setup that cannot be expressed as a synchronous DI factory.
+ *
+ * The HeadlessCms facade itself (and AccessControl, export/import) are now LAZY DI factories built
+ * on first resolve — see HeadlessCmsFeature.register. The only things that must still run eagerly,
+ * per request, before resolvers are:
+ *
+ * 1. Building the storage operations — `StorageOperationsFactory.create()` / `beforeInit()` are
+ *    async, and DI factories resolve synchronously, so the facade can't build them on demand.
+ * 2. Applying any ContextPlugin instances supplied via `extraPlugins` (their `apply()` is async).
+ * 3. Seeding `ctx.plugins` / `ctx.benchmark` on the shared request context for the other (still
+ *    ordered) GraphQLContextInitializers and contextual schemas that read them off `ctx`.
+ *
+ * Everything else moved to register() (pure, synchronous wiring).
+ */
 export class HeadlessCmsInitializerImpl implements IGraphQLContextInitializer {
     private initialized = false;
 
-    constructor(
-        private container: Container,
-        private config: IHeadlessCmsEnhancerConfig,
-        private identityContext: IdentityContext.Interface,
-        private tenantContext: TenantContext.Interface
-    ) {}
+    constructor(private container: Container) {}
 
     async init(ctx: Record<string, any>): Promise<void> {
-        if (!this.initialized) {
-            this.initialized = true;
-            await this._initialize(ctx);
+        const cmsContext = this.container.resolve(CmsContextAbstraction) as CmsContext;
+
+        // Share the plugins container + benchmark with downstream initializers / contextual schemas
+        // that still read them off the request context object.
+        ctx.plugins = cmsContext.plugins;
+        ctx.benchmark = cmsContext.benchmark;
+
+        if (this.initialized) {
+            return;
         }
-    }
+        this.initialized = true;
 
-    private async _initialize(ctx: Record<string, any>): Promise<void> {
-        const { type } = this.config;
-
-        // Field value converters are resolved from the DI container.
-        registerFieldConverters(this.container);
-
-        // PluginsContainer still carries legacy extension plugins (e.g. CmsGraphQLSchemaPlugin)
-        // until those remaining consumers are migrated to DI.
-        const pluginsContainer = new PluginsContainer([...(this.config.extraPlugins ?? [])]);
-        ctx.plugins = pluginsContainer;
-
-        // Code-defined model/group plugins are exposed via DI tokens so the
-        // Plugin{Models,Groups}Provider can resolve them without the plugins container.
-        for (const plugin of pluginsContainer.byType<CmsModelPlugin>(CmsModelPlugin.type)) {
-            this.container.registerInstance(CmsModelPluginInstance, plugin);
-        }
-        for (const plugin of pluginsContainer.byType<CmsGroupPlugin>(CmsGroupPlugin.type)) {
-            this.container.registerInstance(CmsGroupPluginInstance, plugin);
-        }
-
-        // User-provided GraphQL schema extension plugins (added via extraPlugins) are bridged
-        // to the CmsGraphQLSchemaFactory DI token so generateSchema includes them.
-        const userSchemaPlugins = pluginsContainer.byType<ICmsGraphQLSchemaPlugin>(
-            CmsGraphQLSchemaPlugin.type
-        );
-        if (userSchemaPlugins.length > 0) {
-            this.container.registerInstance(CmsGraphQLSchemaFactory, {
-                execute: () => userSchemaPlugins
-            });
-        }
-
-        // Use the real Benchmark implementation if not already set
-        if (!ctx.benchmark) {
-            ctx.benchmark = new Benchmark();
-        }
-        this.container.registerInstance(BenchmarkAbstraction, ctx.benchmark);
-
-        this.container.registerInstance(CoreGraphQLSchemaFactory, {
-            execute: async builder => {
-                builder.addTypeDefs("scalar RevisionId");
-                builder.addLegacyResolvers({ RevisionId: RevisionIdScalar });
-                return builder;
-            }
-        });
-
-        this.container.registerInstance(
-            CmsStorageModelProvider,
-            new StorageOperationsCmsModelPlugin(
-                createCmsModelFieldConvertersAttachFactory(ctx as CmsContext)
-            )
-        );
-
-        const accessControl = new AccessControl({
-            getIdentity: async () => this.identityContext.getIdentity(),
-            getGroupsPermissions: () =>
-                this.identityContext.getPermissions("cms.contentModelGroup"),
-            getModelsPermissions: () => this.identityContext.getPermissions("cms.contentModel"),
-            getEntriesPermissions: () => this.identityContext.getPermissions("cms.contentEntry"),
-            listAllGroups: async () => {
-                const result = await this.identityContext.withoutAuthorization(() =>
-                    this.container.resolve(ListGroupsUseCase).execute()
-                );
-                if (result.isFail()) {
-                    throw result.error;
-                }
-                return result.value;
-            }
-        });
-
-        const storageOperationsFactory = this.container.resolve(StorageOperationsFactory);
-        const storageOperations = await storageOperationsFactory.create(ctx);
-        await storageOperations.beforeInit(ctx as CmsContext);
-
-        const getTenant = () => this.tenantContext.getTenant();
-
-        const cms = {
-            type,
-            READ: type === "read",
-            PREVIEW: type === "preview",
-            MANAGE: type === "manage",
-            storageOperations,
-            accessControl,
-            ...createModelGroupsCrud({ context: ctx as CmsContext }),
-            ...createModelsCrud({ context: ctx as CmsContext }),
-            ...createContentEntryCrud({ context: ctx as CmsContext }),
-            export: { ...createExportCrud(ctx as CmsContext) },
-            importing: { ...createImportCrud(ctx as CmsContext) }
-        };
-
-        this.container.registerInstance(HeadlessCms, cms);
-        this.container.registerInstance(CmsExport, cms.export);
-        this.container.registerInstance(CmsImport, cms.importing);
-
-        // Register CmsSchemaExecutor so proxy resolvers can build and execute the CMS sub-schema
-        // without accessing ctx.cms directly. Uses a forked context so type flags are correct
-        // for the requested schema type; the DI container is shared so all registered factories
-        // are accessible from the fork.
-        this.container.registerInstance(CmsSchemaExecutor, {
-            execute: async (schemaType: ApiEndpoint, body: any) => {
-                // The schema endpoint type is passed explicitly to getSchema and field
-                // converters resolve from the DI container, so no per-build context fork
-                // is needed — the request context is used directly.
-                const bm = this.container.resolve(BenchmarkAbstraction);
-                const schema = await bm.measure("headlessCms.graphql.getSchema", () =>
-                    this.identityContext.withoutAuthorization(() =>
-                        getSchema({ context: ctx as CmsContext, getTenant, type: schemaType })
-                    )
-                );
-                const requestBody = await bm.measure(
-                    "headlessCms.graphql.createRequestBody",
-                    async () => createRequestBody(body)
-                );
-                return bm.measure("headlessCms.graphql.processRequestBody", () =>
-                    processRequestBody(requestBody, schema, ctx as CmsContext)
-                );
-            }
-        });
-
-        // Register CMS sub-schema factories: base types (CmsError, CmsIdentity, etc.)
-        // and, for manage endpoints, the import/export operations.
-        this.container.registerInstance(CmsGraphQLSchemaFactory, {
-            execute: () => createBaseSchemaPlugins(ctx as CmsContext)
-        });
-        if (type === "manage") {
-            this.container.registerInstance(CmsGraphQLSchemaFactory, {
-                execute: () => [exportPlugin]
-            });
-        }
-
-        // Register legacy DI abstractions for use-cases that resolve them
+        const storageOperations = await this.container
+            .resolve(StorageOperationsFactory)
+            .create(cmsContext);
+        await storageOperations.beforeInit(cmsContext);
         this.container.registerInstance(StorageOperations, storageOperations);
-        this.container.registerInstance(AccessControlAbstraction, accessControl);
-        this.container.registerInstance(CmsContextAbstraction, ctx as CmsContext);
-        this.container.registerInstance(PluginsContainerAbstraction, ctx.plugins);
-        this.container.registerInstance(EntryToStorageTransform, (model, entry) => {
-            return entryToStorageTransform(ctx as CmsContext, model, entry);
-        });
-        this.container.registerInstance(EntryFromStorageTransform, (model, entry) => {
-            return entryFromStorageTransform(ctx as CmsContext, model, entry);
-        });
-        this.container.registerInstance(SearchableFieldsProvider, params => {
-            return getSearchableFields({
-                context: ctx as CmsContext,
-                fields: params.fields,
-                input: []
-            });
-        });
-
         if (storageOperations.init) {
-            await storageOperations.init(ctx as CmsContext);
+            await storageOperations.init(cmsContext);
         }
 
         // Apply ContextPlugin instances from extraPlugins (they may register event handlers etc.)
-        for (const plugin of this.config.extraPlugins ?? []) {
+        const config = this.container.resolve(HeadlessCmsEnhancerConfig);
+        for (const plugin of config.extraPlugins ?? []) {
             if (plugin && typeof plugin.apply === "function") {
                 await plugin.apply(ctx);
             }
