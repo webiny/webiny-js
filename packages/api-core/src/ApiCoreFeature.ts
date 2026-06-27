@@ -17,6 +17,7 @@ import { AiFeature } from "~/features/ai/feature.js";
 import { WcpFeature } from "~/features/wcp/WcpFeature.js";
 import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/NullWebhookDispatcher.js";
 import { WebhookProviderFeature } from "~/features/webhooks/index.js";
+import { RequestContextFeature } from "~/features/requestContext/index.js";
 import { ApiCoreSchemaFactory } from "~/graphql/ApiCoreSchemaFactory.js";
 
 export const ApiCoreFeature = createFeature({
@@ -37,6 +38,7 @@ export const ApiCoreFeature = createFeature({
         KeyValueStoreFeature.register(container, config.keyValueStorageOperations);
         SystemFeature.register(container);
         IdpAuthenticatorFeature.register(container);
+        RequestContextFeature.register(container);
         container.register(NullWebhookDispatcher).inSingletonScope();
         WebhookProviderFeature.register(container);
         container.register(ApiCoreSchemaFactory);

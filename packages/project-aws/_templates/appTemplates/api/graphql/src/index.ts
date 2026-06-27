@@ -40,9 +40,9 @@ import { FileManagerAppFeature } from "@webiny/api-file-manager";
 import { FileManagerAcoFeature } from "@webiny/api-file-manager-aco";
 import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
 import { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "@webiny/api-website-builder";
-// CognitoIdpFeature must be in the root container so the ApiGatewayAuthDecorator
-// (a root singleton) sees CognitoIdentityProvider when it is first instantiated.
-// Extensions register in the child/request container — too late for the auth decorator.
+// CognitoIdpFeature must be in the root container so the request auth step
+// (ApiGatewaySecurityDecorator → RequestPrincipalEstablisher) sees CognitoIdentityProvider when
+// it is first instantiated. Extensions register in the child/request container — too late.
 import { CognitoIdpFeature } from "@webiny/cognito/api/features/CognitoIdp/feature.js";
 
 import { extensions } from "./extensions";
@@ -72,8 +72,8 @@ export const handler = createLambdaHandler({
         });
 
         // ── Identity providers ─────────────────────────────────────
-        // Must be in root so the ApiGatewayAuthDecorator singleton can
-        // authenticate requests before the GraphQL engine runs.
+        // Must be in root so the request auth step can authenticate
+        // requests before the GraphQL engine runs.
         CognitoIdpFeature.register(container);
 
         // ── DDB storage registries ─────────────────────────────────

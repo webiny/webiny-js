@@ -1,25 +1,26 @@
 import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
-import { ApiGatewayHttpHeadersAuthDecorator } from "~/handlers/ApiGatewayHttpHeadersAuthDecorator.js";
-import { ApiGatewayCookieAuthDecorator } from "~/handlers/ApiGatewayCookieAuthDecorator.js";
-import { ApiGatewayTenantDecorator } from "~/handlers/ApiGatewayTenantDecorator.js";
+import { ApiGatewaySecurityDecorator } from "~/handlers/ApiGatewaySecurityDecorator.js";
+import { ApiGatewayBearerAuthTokenExtractor } from "~/extractors/ApiGatewayBearerAuthTokenExtractor.js";
+import { ApiGatewayCookieAuthTokenExtractor } from "~/extractors/ApiGatewayCookieAuthTokenExtractor.js";
+import { ApiGatewayTenantIdExtractor } from "~/extractors/ApiGatewayTenantIdExtractor.js";
 
 /**
- * Registers auth and tenant decorators for the API Gateway event handler chain.
+ * Registers auth + tenant handling for the API Gateway event handler chain.
  * Must be registered AFTER ApiGatewayFeature (which registers the base terminal handler).
  *
- * Decorator execution order (last registered = outermost = first to execute):
- *   ApiGatewayHttpHeadersAuthDecorator → ApiGatewayCookieAuthDecorator → ApiGatewayTenantDecorator → ApiGatewayHttpRouterHandler
+ * The transport-specific part is just the extractors (where the tenant id / auth token live in the
+ * event). The shared RequestPrincipalEstablisher (api-core) does the actual authentication and
+ * tenant resolution. A single thin decorator drives it before the router handler runs.
  *
- * Usage:
- *   ApiGatewayFeature.register(container);          // base handler
- *   ApiGatewaySecurityFeature.register(container);  // auth + tenant decorators
+ * Auth token sources are tried in registration order: bearer header first, then the auth cookie.
  */
 export const ApiGatewaySecurityFeature = createFeature({
     name: "ApiGatewaySecurity",
     register(container: Container) {
-        container.registerDecorator(ApiGatewayTenantDecorator);
-        container.registerDecorator(ApiGatewayCookieAuthDecorator);
-        container.registerDecorator(ApiGatewayHttpHeadersAuthDecorator);
+        container.register(ApiGatewayBearerAuthTokenExtractor);
+        container.register(ApiGatewayCookieAuthTokenExtractor);
+        container.register(ApiGatewayTenantIdExtractor);
+        container.registerDecorator(ApiGatewaySecurityDecorator);
     }
 });
