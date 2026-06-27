@@ -8,6 +8,7 @@ import { ClearEntryStateOnWorkflowStateAfterDelete } from "./handlers/ClearEntry
 import { ClearEntryStateOnWorkflowStateCancel } from "./handlers/ClearEntryStateOnWorkflowStateCancel.js";
 import { BlockMoveOnActiveWorkflowState } from "./handlers/BlockMoveOnActiveWorkflowState.js";
 import { CmsWorkflowStateContextProvider } from "./decorators/CmsWorkflowStateContextProvider.js";
+import { CmsWorkflowStateFilter } from "./decorators/CmsWorkflowStateFilter.js";
 
 export const EntryWorkflowsFeature = createFeature({
     name: "EntryWorkflows",
@@ -21,5 +22,6 @@ export const EntryWorkflowsFeature = createFeature({
         container.register(ClearEntryStateOnWorkflowStateCancel);
         container.register(BlockMoveOnActiveWorkflowState);
         container.registerDecorator(CmsWorkflowStateContextProvider);
+        container.registerDecorator(CmsWorkflowStateFilter);
     }
 });
