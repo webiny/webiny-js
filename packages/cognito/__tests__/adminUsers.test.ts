@@ -3,7 +3,6 @@ import { Container } from "@webiny/feature/api";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { License } from "@webiny/wcp";
-import { WcpContextFeature } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { ApiCoreFeature } from "@webiny/api-core/ApiCoreFeature.js";
 import { RootTenantValue } from "@webiny/api-core/domain/tenancy/RootTenantValue.js";
 import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/index.js";
@@ -34,9 +33,12 @@ describe("Admin Users (Cognito)", () => {
         const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
         const testLicense = License.fromLicenseDto(createTestWcpLicense());
 
-        // Register api-core features
-        ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
-        WcpContextFeature.register(container, testLicense);
+        // Register api-core features. The test WCP license is supplied via config (it becomes the
+        // WcpLicenseProvider's initial license); WcpFeature wires WcpContext to that provider.
+        ApiCoreFeature.register(container, {
+            ...apiCoreStorage.storageOperations,
+            wcpLicense: testLicense
+        });
         container.registerInstance(Authorizer, new MockAuthorizer());
 
         // Set tenant context
