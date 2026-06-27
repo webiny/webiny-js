@@ -204,7 +204,7 @@ class TeamsPresenterImpl implements ITeamsPresenter {
                     .label("Name")
                     .required("Name is required.")
                     .disabled(!canModify)
-                    .onBlur((value, form) => {
+                    .onBlur((value, { form }) => {
                         const slugValue = form.field("slug").getValue();
                         if (slugValue || !value) {
                             return;

@@ -33,10 +33,10 @@ class AppearanceGroupImpl implements CmsFieldEditorGroup.Interface {
 
         form.fields(fields => {
             const rendererChildren: Record<string, FormModelFactory.FieldBuilder> = {
-                name: fields.text().options(f => {
-                    const list = Boolean(f.field("general.list").getValue());
+                name: fields.text().options(({ form }) => {
+                    const list = Boolean(form.field("general.list").getValue());
                     const predefined = Boolean(
-                        f.field("general.predefinedValuesEnabled").getValue()
+                        form.field("general.predefinedValuesEnabled").getValue()
                     );
                     const liveField = {
                         ...context.field,
@@ -54,8 +54,8 @@ class AppearanceGroupImpl implements CmsFieldEditorGroup.Interface {
             };
 
             for (const build of settingsBuilds) {
-                const notSelected = (f: FormModel.Interface) =>
-                    f.field("$.name").getValue() !== build.rendererName;
+                const notSelected = ({ field }: FormModel.CallbackParams) =>
+                    field.parent().field("name").getValue() !== build.rendererName;
 
                 rendererChildren[`settings__${build.rendererName}`] = fields
                     .object()

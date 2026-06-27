@@ -24,6 +24,7 @@ export const FilePickerRenderer = createFieldRenderer<"filePicker">(({ field }) 
             render={({ showFileManager }) => (
                 <FilePicker
                     label={field.label}
+                    hint={field.help}
                     description={field.description}
                     type="area"
                     value={toFilePickerValue(field.value)}

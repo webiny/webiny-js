@@ -27,17 +27,17 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
                 .label("Language")
                 .hidden()
                 .options(() => this.getLanguageOptions())
-                .afterChange((value, form) => this.afterChange(value, form))
+                .afterChange((value, { form }) => this.afterChange(value, form))
         }));
 
         // When path is set programmatically (e.g., product selection, title change), apply the language prefix.
         // afterSetValue only fires on programmatic setValue calls, not on UI typing.
-        form.field("path").addAfterSetValue((value, f) => {
+        form.field("path").addAfterSetValue((value, { form }) => {
             const path = String(value || "");
             if (!path) {
                 return;
             }
-            const langCode = f.field("language").as("text").getValue() ?? "";
+            const langCode = form.field("language").as("text").getValue() ?? "";
             if (!langCode || !this.shouldPrefixPath()) {
                 return;
             }
@@ -45,7 +45,7 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
                 .setLanguageCode(langCode, this.getSupportedCodes())
                 .toString();
             if (prefixed !== path) {
-                f.field("path").setValue(prefixed);
+                form.field("path").setValue(prefixed);
             }
         });
 

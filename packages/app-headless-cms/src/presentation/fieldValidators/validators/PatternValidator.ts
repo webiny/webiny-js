@@ -24,8 +24,8 @@ class PatternValidatorImpl implements CmsFieldValidator.Interface {
             ...patterns.map(p => ({ value: p.name, label: p.label }))
         ];
 
-        form.message.computedUntilDirty(f => {
-            const preset = f.field("$.settings.preset").getValue() as string;
+        form.message.computedUntilDirty(({ field }) => {
+            const preset = field.parent().field("settings.preset").getValue() as string;
             if (preset === "custom") {
                 return "Invalid value.";
             }
@@ -41,10 +41,10 @@ class PatternValidatorImpl implements CmsFieldValidator.Interface {
                 .options(presetOptions)
                 .required()
                 .defaultValue("custom")
-                .afterChange((value, f) => {
+                .afterChange((value, { field }) => {
                     if (value !== "custom") {
-                        f.field("$.regex").setValue(null);
-                        f.field("$.flags").setValue(null);
+                        field.parent().field("regex").setValue(null);
+                        field.parent().field("flags").setValue(null);
                     }
                 }),
             regex: fields
@@ -52,13 +52,15 @@ class PatternValidatorImpl implements CmsFieldValidator.Interface {
                 .label("Regex")
                 .description("Regex pattern to test.")
                 .required()
-                .disabledWhen(f => f.field("$.preset").getValue() !== "custom"),
+                .disabledWhen(
+                    ({ field }) => field.parent().field("preset").getValue() !== "custom"
+                ),
             flags: fields
                 .text()
                 .label("Flags")
                 .description("Add regex flags.")
                 .required()
-                .disabledWhen(f => f.field("$.preset").getValue() !== "custom")
+                .disabledWhen(({ field }) => field.parent().field("preset").getValue() !== "custom")
         }));
         form.layout(layout => [layout.row("preset", "regex", "flags")]);
     }

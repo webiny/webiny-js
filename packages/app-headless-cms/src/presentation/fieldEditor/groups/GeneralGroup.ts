@@ -27,8 +27,8 @@ class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
                 .beforeChange(value => String(value).trim());
 
             if (isNewField) {
-                fieldIdBuilder.computedUntilDirty(f => {
-                    return camelCase(String(f.field("general.label").getValue() || ""));
+                fieldIdBuilder.computedUntilDirty(({ form }) => {
+                    return camelCase(String(form.field("general.label").getValue() || ""));
                 });
             }
 

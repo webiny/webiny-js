@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Accordion, Button, IconButton } from "@webiny/admin-ui";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
 import type { IObjectFieldItemVM, LayoutNodeVM } from "~/features/formModel/index.js";
 import { LayoutNodeRenderer } from "~/features/formModel/FormView.js";
-import { resolveItemTitle } from "./resolveItemTitle.js";
+import { resolveItemTitle, resolveItemDescription } from "./resolveItemTitle.js";
 /**
  * Walks a resolved layout sub-tree. Used by dynamic-zone renderers to render
  * a templated object's children via per-template layouts (Phase 8c).
@@ -27,11 +28,20 @@ export interface ListItemRendererProps {
     total: number;
     label?: string;
     itemTitle?: string | ((data: Record<string, unknown>, index: number) => string);
+    itemDescription?: string | ((data: Record<string, unknown>, index: number) => string);
     disabled: boolean;
 }
 
 export const ListItemRenderer = observer(
-    ({ item, index, total, label, itemTitle, disabled }: ListItemRendererProps) => {
+    ({
+        item,
+        index,
+        total,
+        label,
+        itemTitle,
+        itemDescription,
+        disabled
+    }: ListItemRendererProps) => {
         const [open, setOpen] = useState(false);
         const hasFocusRequest = item.fields.some(f => f.focusRequested);
 
@@ -81,6 +91,7 @@ export const ListItemRenderer = observer(
             >
                 <Accordion.Item
                     title={resolveItemTitle(item, index, label, itemTitle)}
+                    description={resolveItemDescription(item, index, itemDescription)}
                     actions={disabled ? null : actions}
                     open={open}
                     onOpenChange={setOpen}
@@ -102,9 +113,9 @@ export const AddItemButton = ({ label, disabled, onAdd }: AddItemButtonProps) =>
     return (
         <div>
             <Button
+                icon={<AddIcon />}
                 text={label || "Add Item"}
-                variant={"secondary"}
-                size={"sm"}
+                variant={"tertiary"}
                 onClick={onAdd}
                 disabled={disabled}
             />
