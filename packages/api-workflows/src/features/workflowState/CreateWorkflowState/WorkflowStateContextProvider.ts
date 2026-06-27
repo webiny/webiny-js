@@ -18,14 +18,3 @@ export namespace WorkflowStateContextProvider {
     export type Interface = IWorkflowStateContextProvider;
     export type Params = IWorkflowStateContextProviderParams;
 }
-
-class DefaultWorkflowStateContextProvider implements IWorkflowStateContextProvider {
-    async provide(): Promise<GenericRecord> {
-        return {};
-    }
-}
-
-export const DefaultContextProvider = WorkflowStateContextProvider.createImplementation({
-    implementation: DefaultWorkflowStateContextProvider,
-    dependencies: []
-});
