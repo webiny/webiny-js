@@ -12,6 +12,7 @@ import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { WebsocketsFeature } from "@webiny/api-websockets/features/feature.js";
 import { WebsocketsGraphQLFactoryFeature } from "@webiny/api-websockets/graphql/feature.js";
 import { WebsocketsRouteHandler } from "@webiny/api-websockets/features/Routes/abstractions.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
 import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
 import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
@@ -64,7 +65,10 @@ export const useHandler = (params?: UseHandlerParams) => {
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });
 
-            processLegacyPlugins(container, websocketsStorage.plugins);
+            container.registerInstance(
+                ConnectionRegistry,
+                websocketsStorage.createConnectionRegistry()
+            );
             WebsocketsFeature.register(container);
             WebsocketsGraphQLFactoryFeature.register(container);
 

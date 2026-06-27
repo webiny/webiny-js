@@ -10,6 +10,7 @@ import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { WebsocketsFeature } from "~/features/feature.js";
 import { WebsocketsGraphQLFactoryFeature } from "~/graphql/feature.js";
+import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 import { WebsocketsTransport } from "~/transport/index.js";
 import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport.js";
 import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
@@ -90,7 +91,10 @@ export const useGraphQLHandler = (params?: UseGraphQLHandlerParams) => {
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });
 
-            processLegacyPlugins(container, websocketsStorage.plugins);
+            container.registerInstance(
+                ConnectionRegistry,
+                websocketsStorage.createConnectionRegistry()
+            );
             WebsocketsFeature.register(container);
             WebsocketsGraphQLFactoryFeature.register(container);
             container.registerInstance(WebsocketsTransport, new MockWebsocketsTransport());

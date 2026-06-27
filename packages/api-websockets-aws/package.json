@@ -21,7 +21,6 @@
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/handler-aws": "0.0.0",
     "@webiny/utils": "0.0.0",
     "type-fest": "^5.7.0",
     "zod": "4.4.3"
