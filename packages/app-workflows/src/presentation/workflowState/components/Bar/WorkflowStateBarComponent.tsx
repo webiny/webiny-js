@@ -7,7 +7,7 @@ export interface IWorkflowStateBarComponentProps {
     presenter: IWorkflowStatePresenter;
 }
 
-const debug = process.env.DEBUG === "true";
+const isDebug = () => process.env.DEBUG === "true";
 /**
  * Code should never reach this point, as all possible states should be handled by decorators.
  * This is just a fallback to help debugging.
@@ -19,7 +19,7 @@ export const WorkflowStateBarComponent = makeDecoratable(
 
         if (presenter.vm.loading) {
             return <Alert>Loading...</Alert>;
-        } else if (!debug) {
+        } else if (!isDebug()) {
             return <Alert>Something went wrong, please contact the administrator.</Alert>;
         }
 
