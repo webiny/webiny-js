@@ -1,17 +1,12 @@
 import { getMachineId } from "@webiny/telemetry/react.js";
 import type { ISystemInstallerPresenter } from "~/presentation/installation/presenters/SystemInstaller/abstractions.js";
 
-const INSTALL_FINISH_URL =
-    process.env.REACT_APP_WEBINY_INSTALL_FINISH_URL || "https://www.webiny.com/install/finish";
+const DEFAULT_INSTALL_FINISH_URL = "https://www.webiny.com/install/finish";
 
-/**
- * If telemetry is enabled AND the admin is hosted on CloudFront (production
- * deployment), route the "Start using Webiny" CTA through the marketing
- * site's /install/finish page so the website's anonymous wts_did cookie can
- * be aliased to the deployer's machine_id. Falls through to the local
- * `finishInstallation` flow otherwise.
- */
 const buildInstallFinishHref = (): string | null => {
+    const installFinishUrl =
+        process.env.REACT_APP_WEBINY_INSTALL_FINISH_URL || DEFAULT_INSTALL_FINISH_URL;
+
     if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") {
         return null;
     }
@@ -35,7 +30,7 @@ const buildInstallFinishHref = (): string | null => {
         machine_id: machineId,
         return_to: currentUrl
     });
-    return `${INSTALL_FINISH_URL}?${params.toString()}`;
+    return `${installFinishUrl}?${params.toString()}`;
 };
 
 export const handleStartUsing = (
