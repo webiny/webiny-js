@@ -46,12 +46,6 @@ class AcoInitializerImpl implements IGraphQLContextInitializer {
             return;
         }
 
-        // Register background task definitions into the container
-        this.container.register(CreateFlpTask);
-        this.container.register(UpdateFlpTask);
-        this.container.register(DeleteFlpTask);
-        this.container.register(SyncFlpTask);
-
         // createAcoContext() returns [acoContextPlugin, modelsPlugin].
         // modelsPlugin registers FolderModel and FilterPrivateModel, so it must run first.
         const [acoContextPlugin, modelsPlugin] = createAcoContext();
@@ -161,6 +155,15 @@ export const AcoFeature = createFeature({
     register(container: Container) {
         container.register(FolderModel);
         container.register(FilterPrivateModel);
+
+        // Background task definitions — pure wiring, no tenant/identity needed, so they belong in
+        // register() (runs for every event) rather than the GraphQL initializer. This also makes
+        // them available to non-GraphQL task-runner events, not only GraphQL requests.
+        container.register(CreateFlpTask);
+        container.register(UpdateFlpTask);
+        container.register(DeleteFlpTask);
+        container.register(SyncFlpTask);
+
         container.register(AcoInitializer);
         container.register(AcoSchemaFactory);
     }
