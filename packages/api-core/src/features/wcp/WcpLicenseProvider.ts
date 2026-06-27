@@ -1,9 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { NullLicense } from "@webiny/wcp";
 import type { ILicense } from "@webiny/wcp/types.js";
+import { loadWcpLicense } from "~/features/wcp/loadWcpLicense.js";
 
 export interface IWcpLicenseProvider {
     get(): ILicense;
+    refresh(): Promise<void>;
 }
 
 export const WcpLicenseProvider = createAbstraction<IWcpLicenseProvider>("WcpLicenseProvider");
@@ -13,48 +15,31 @@ export namespace WcpLicenseProvider {
 }
 
 /**
- * Holds either a concrete license (tests) or a Promise<ILicense> (production).
- * When given a Promise, starts with NullLicense and swaps in the real license once resolved.
+ * Holds the current WCP license. `get()` is synchronous so the canUse* consumers (IdentityContext,
+ * GroupsTeamsAuthorizer, the WCP GraphQL query) stay sync. `refresh()` is driven once per request
+ * by WcpLicenseInitializer (a RequestInitializer), BEFORE resolvers run:
  *
- * TODO: two related problems, both stemming from loading the license once at construction time.
+ * - It re-reads `loadWcpLicense()`, whose process-global cache rotates ~every 5 minutes, so a
+ *   license change (upgrade/downgrade/expiry) takes effect mid-Lambda-lifetime instead of only on
+ *   the next cold start.
+ * - Awaiting it per request before resolvers closes the NullLicense race (no window where a
+ *   resolver sees the placeholder).
  *
- * 1. NullLicense race. `get()` returns the NullLicense placeholder until the load promise
- *    resolves. In production `loadWcpLicense()` performs a network fetch to the WCP API, so
- *    there is a window where a resolver calling `get()` receives NullLicense and feature checks
- *    (canUseTeams, canUseAacl, ...) fail closed.
- *
- * 2. The license never refreshes. WcpFeature.register runs in the handler's `root` scope, which
- *    executes ONCE per cold start (not per request). So `loadWcpLicense()` is called exactly
- *    once per warm Lambda instance and this provider holds that license for the instance's whole
- *    lifetime. `loadWcpLicense()` has a 5-minute cache-key rotation (getWcpProjectLicenseCacheKey)
- *    designed to refetch the license every 5 minutes — but since we never call it again, that
- *    refresh never happens. A license change (upgrade/downgrade/expiry) won't take effect until
- *    the next cold start.
- *
- * Fix (both at once): add an async `refresh()` that calls `loadWcpLicense()` and updates the
- * current license, and invoke it once per request BEFORE resolvers run (a request-scoped step /
- * before-handler hook), awaiting it. Keep `get()` synchronous so the canUse* consumers
- * (IdentityContext, GroupsTeamsAuthorizer, the WCP GraphQL query) stay sync. The process-global
- * cache in loadWcpLicense throttles the actual network calls (cheap within a 5-min block,
- * refetch once when it rolls over). The per-request await also closes the race in (1).
- *
- * Do NOT "load once at init" — that cements problem (2).
+ * An optional initial license can be supplied (tests pass the pre-resolved license); otherwise it
+ * starts as NullLicense and the first refresh() (before resolvers) installs the real one.
  */
 export class WcpLicenseProviderImpl implements IWcpLicenseProvider {
     private current: ILicense;
 
-    constructor(licenseOrPromise: ILicense | Promise<ILicense>) {
-        if (licenseOrPromise instanceof Promise) {
-            this.current = new NullLicense();
-            licenseOrPromise.then(l => {
-                this.current = l;
-            });
-        } else {
-            this.current = licenseOrPromise;
-        }
+    constructor(initialLicense?: ILicense) {
+        this.current = initialLicense ?? new NullLicense();
     }
 
     get(): ILicense {
         return this.current;
+    }
+
+    async refresh(): Promise<void> {
+        this.current = await loadWcpLicense();
     }
 }
