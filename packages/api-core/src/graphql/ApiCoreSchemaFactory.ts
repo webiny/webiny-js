@@ -12,9 +12,9 @@ import {
     TimeScalar
 } from "@webiny/handler-graphql/builtInTypes/index.js";
 import { addSecuritySchema } from "~/graphql/security/index.js";
-import { addSystemSchema } from "~/graphql/system/createSystemGraphQL.js";
-import { addUsersSchema } from "~/graphql/users/user.gql.js";
-import { addWcpSchema } from "~/graphql/wcp/graphql.js";
+import { addSystemSchema } from "~/graphql/system/addSystemSchema.js";
+import { addUsersSchema } from "~/graphql/users/addUsersSchema.js";
+import { addWcpSchema } from "~/graphql/wcp/addWcpSchema.js";
 
 const BASE_TYPES = `
     type Query
