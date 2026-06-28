@@ -3,7 +3,7 @@ import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { HeadlessCmsInitializerImpl, HeadlessCmsEnhancerConfig } from "./HeadlessCmsInitializer.js";
-import { GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { createCmsRoute } from "./createCmsRoute.js";
 import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { createRequestBody, processRequestBody } from "@webiny/handler-graphql";
 import { BenchmarkAbstraction } from "@webiny/api";
@@ -21,10 +21,7 @@ import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
 import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
 import { CmsWebhooksFeature } from "~/features/webhooks/feature.js";
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
-import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
-import type { IRequestContextInitializer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/event-handler-core";
 import type { ApiEndpoint, CmsContext } from "~/types/index.js";
 import { CmsBaseErrorTypeFactory } from "~/graphql/schema/cms/CmsBaseErrorTypeFactory.js";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
@@ -87,56 +84,6 @@ import {
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage.js";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
 import type { IHeadlessCmsStorageOperationsFactory } from "~/features/shared/abstractions.js";
-
-const CMS_PATHS: Record<ApiEndpoint, string> = {
-    manage: "/cms/manage",
-    read: "/cms/read",
-    preview: "/cms/preview"
-};
-
-function createCmsRoute(type: ApiEndpoint) {
-    class CmsGraphQLRoute implements HttpRoute.Interface {
-        readonly method = "POST";
-        readonly path = CMS_PATHS[type];
-
-        constructor(
-            private container: Container,
-            private initializers: IRequestContextInitializer[],
-            private contextualSchemas: IGraphQLContextualSchema[]
-        ) {}
-
-        async handle(request: IHttpRequest): Promise<IHttpResponse> {
-            const ctx: Record<string, any> = { container: this.container };
-            // Request initializers (e.g. the CMS storage setup) run first, before any contextual
-            // schema that depends on them.
-            for (const initializer of this.initializers) {
-                await initializer.init(ctx);
-            }
-            for (const schema of this.contextualSchemas) {
-                await schema.build(ctx);
-            }
-            const result = await this.container
-                .resolve(CmsSchemaExecutor)
-                .execute(type, request.body);
-            // Flush benchmark measurements (no-op unless benchmarking was enabled for the request).
-            await this.container.resolve(BenchmarkAbstraction).output();
-            return {
-                statusCode: 200,
-                headers: { "Content-Type": "application/json" },
-                body: result
-            };
-        }
-    }
-
-    return HttpRoute.createImplementation({
-        implementation: CmsGraphQLRoute,
-        dependencies: [
-            RequestContainer,
-            [RequestContextInitializer, { multiple: true }],
-            [GraphQLContextualSchema, { multiple: true }]
-        ]
-    });
-}
 
 export interface HeadlessCmsConfig {
     /**
