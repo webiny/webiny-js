@@ -21,6 +21,7 @@
     "@webiny/admin-ui": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
