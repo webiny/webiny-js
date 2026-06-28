@@ -1,7 +1,8 @@
 import type { Container } from "@webiny/di";
-import { GraphQLContextInitializer, GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import type { IGraphQLContextInitializer } from "@webiny/handler-graphql";
+import type { IRequestContextInitializer } from "@webiny/event-handler-core";
 import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
 import { RequestContainer } from "@webiny/event-handler-core";
@@ -31,7 +32,7 @@ import type { AcoContext } from "~/types.js";
  *    before any CMS-entry resolver runs, and the WCP license is only known post-RequestInitializer.
  * 3. Building the dynamic folder GraphQL schema (needs the resolved folder model).
  */
-class AcoInitializerImpl implements IGraphQLContextInitializer {
+class AcoInitializerImpl implements IRequestContextInitializer {
     private initialized = false;
 
     constructor(private container: Container) {}
@@ -121,7 +122,7 @@ class AcoInitializerImpl implements IGraphQLContextInitializer {
     }
 }
 
-export const AcoInitializer = GraphQLContextInitializer.createImplementation({
+export const AcoInitializer = RequestContextInitializer.createImplementation({
     implementation: AcoInitializerImpl,
     dependencies: [RequestContainer]
 });

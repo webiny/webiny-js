@@ -1,13 +1,13 @@
 import type { Container } from "@webiny/di";
-import { GraphQLContextInitializer } from "@webiny/handler-graphql";
-import type { IGraphQLContextInitializer } from "@webiny/handler-graphql";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
+import type { IRequestContextInitializer } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FileModel } from "~/domain/file/abstractions.js";
 import { FILE_MODEL_ID } from "~/domain/file/file.model.js";
 
-class FileModelContextualSchemaImpl implements IGraphQLContextInitializer {
+class FileModelContextualSchemaImpl implements IRequestContextInitializer {
     constructor(
         private tenantCtx: TenantContext.Interface,
         private identityCtx: IdentityContext.Interface
@@ -32,7 +32,7 @@ class FileModelContextualSchemaImpl implements IGraphQLContextInitializer {
     }
 }
 
-export const FileModelContextualSchema = GraphQLContextInitializer.createImplementation({
+export const FileModelContextualSchema = RequestContextInitializer.createImplementation({
     implementation: FileModelContextualSchemaImpl,
     dependencies: [TenantContext, IdentityContext]
 });

@@ -5,14 +5,14 @@ import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { GraphQLEngine } from "./abstractions.js";
 import { GraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
-import { GraphQLContextInitializer } from "./GraphQLContextInitializer.js";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { GraphQLContextualSchema } from "./GraphQLContextualSchema.js";
 import { GraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 import { ResolverDecoration } from "~/ResolverDecoration.js";
 import { createRequestBody } from "~/createRequestBody.js";
 import type { IGraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 import type { IGraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
-import type { IGraphQLContextInitializer } from "./GraphQLContextInitializer.js";
+import type { IRequestContextInitializer } from "@webiny/event-handler-core";
 import type { IGraphQLContextualSchema } from "./GraphQLContextualSchema.js";
 import type { GraphQLRequestBody } from "~/types.js";
 import type { GraphQLSchema } from "graphql";
@@ -22,7 +22,7 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         private composer: IGraphQLSchemaComposer,
         private container: Container,
         private enhancers: IGraphQLContextEnhancer[],
-        private initializers: IGraphQLContextInitializer[],
+        private initializers: IRequestContextInitializer[],
         private contextualSchemas: IGraphQLContextualSchema[]
     ) {}
 
@@ -130,7 +130,7 @@ export const GraphQLEngineImpl = GraphQLEngine.createImplementation({
         GraphQLSchemaComposer,
         RequestContainer,
         [GraphQLContextEnhancer, { multiple: true }],
-        [GraphQLContextInitializer, { multiple: true }],
+        [RequestContextInitializer, { multiple: true }],
         [GraphQLContextualSchema, { multiple: true }]
     ]
 });

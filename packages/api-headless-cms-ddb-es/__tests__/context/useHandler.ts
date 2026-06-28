@@ -1,8 +1,7 @@
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { RequestContainer, RequestContextInitializer } from "@webiny/event-handler-core";
 import {
     GraphQLContextEnhancer,
-    GraphQLContextInitializer,
     GraphQLContextualSchema,
     registerLegacyPluginsViaGqlContextualSchema
 } from "@webiny/handler-graphql";
@@ -137,7 +136,7 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
         for (const enhancer of enhancers) {
             await enhancer.enhance(ctx);
         }
-        const initializers = container.resolveAll(GraphQLContextInitializer);
+        const initializers = container.resolveAll(RequestContextInitializer);
         for (const initializer of initializers) {
             await initializer.init(ctx);
         }

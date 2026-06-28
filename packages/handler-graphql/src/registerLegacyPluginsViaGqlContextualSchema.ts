@@ -1,7 +1,7 @@
 import type { Container } from "@webiny/di";
 import { PluginsContainer } from "@webiny/plugins";
-import { GraphQLContextInitializer } from "./engine/index.js";
-import type { IGraphQLContextInitializer } from "./engine/index.js";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
+import type { IRequestContextInitializer } from "@webiny/event-handler-core";
 
 /**
  * Runs legacy ContextPlugins (those with an `apply(ctx)` method) as a per-request initializer, so
@@ -16,7 +16,7 @@ export function registerLegacyPluginsViaGqlContextualSchema(
     const flat = [plugins].flat(Infinity as 1).filter(Boolean);
     let initialized = false;
 
-    const initializer: IGraphQLContextInitializer = {
+    const initializer: IRequestContextInitializer = {
         async init(ctx: Record<string, any>): Promise<void> {
             if (initialized) {
                 return;
@@ -37,5 +37,5 @@ export function registerLegacyPluginsViaGqlContextualSchema(
         }
     };
 
-    container.registerInstance(GraphQLContextInitializer, initializer);
+    container.registerInstance(RequestContextInitializer, initializer);
 }

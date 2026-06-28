@@ -1,6 +1,6 @@
 import type { Container } from "@webiny/di";
 import { Abstraction } from "@webiny/di";
-import type { IGraphQLContextInitializer } from "@webiny/handler-graphql";
+import type { IRequestContextInitializer } from "@webiny/event-handler-core";
 import {
     CmsContext as CmsContextAbstraction,
     StorageOperations,
@@ -28,11 +28,11 @@ export const HeadlessCmsEnhancerConfig = new Abstraction<IHeadlessCmsEnhancerCon
  *    async, and DI factories resolve synchronously, so the facade can't build them on demand.
  * 2. Applying any ContextPlugin instances supplied via `extraPlugins` (their `apply()` is async).
  * 3. Seeding `ctx.plugins` / `ctx.benchmark` on the shared request context for the other (still
- *    ordered) GraphQLContextInitializers and contextual schemas that read them off `ctx`.
+ *    ordered) RequestContextInitializers and contextual schemas that read them off `ctx`.
  *
  * Everything else moved to register() (pure, synchronous wiring).
  */
-export class HeadlessCmsInitializerImpl implements IGraphQLContextInitializer {
+export class HeadlessCmsInitializerImpl implements IRequestContextInitializer {
     private initialized = false;
 
     constructor(private container: Container) {}

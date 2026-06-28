@@ -1,6 +1,6 @@
 import type { Container } from "@webiny/di";
-import { GraphQLContextInitializer } from "@webiny/handler-graphql";
-import type { IGraphQLContextInitializer } from "@webiny/handler-graphql";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
+import type { IRequestContextInitializer } from "@webiny/event-handler-core";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -39,7 +39,7 @@ import { NotificationTransportFeature } from "./features/notifications/Notificat
 // A request initializer — it contributes no schema content (the static schema is registered via
 // WorkflowsSchemaFactory). It runs after context enhancers and before resolvers, making it the
 // right hook for the async CMS model fetch and lazy feature registrations resolvers depend on.
-class WorkflowsInitializerImpl implements IGraphQLContextInitializer {
+class WorkflowsInitializerImpl implements IRequestContextInitializer {
     private initialized = false;
 
     constructor(
@@ -110,7 +110,7 @@ class WorkflowsInitializerImpl implements IGraphQLContextInitializer {
     }
 }
 
-export const WorkflowsInitializer = GraphQLContextInitializer.createImplementation({
+export const WorkflowsInitializer = RequestContextInitializer.createImplementation({
     implementation: WorkflowsInitializerImpl,
     dependencies: [RequestContainer, TenantContext, IdentityContext, WcpContext]
 });

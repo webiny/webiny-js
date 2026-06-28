@@ -1,10 +1,6 @@
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
-import {
-    GraphQLContextEnhancer,
-    GraphQLContextInitializer,
-    GraphQLContextualSchema
-} from "@webiny/handler-graphql";
+import { RequestContainer, RequestContextInitializer } from "@webiny/event-handler-core";
+import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
@@ -113,7 +109,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         for (const enhancer of enhancers) {
             await enhancer.enhance(ctx);
         }
-        const initializers = container.resolveAll(GraphQLContextInitializer);
+        const initializers = container.resolveAll(RequestContextInitializer);
         for (const initializer of initializers) {
             await initializer.init(ctx);
         }

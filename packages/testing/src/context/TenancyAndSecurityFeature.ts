@@ -1,6 +1,6 @@
 import type { Container } from "@webiny/di";
-import { GraphQLContextInitializer } from "@webiny/handler-graphql";
-import type { IGraphQLContextInitializer } from "@webiny/handler-graphql";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
+import type { IRequestContextInitializer } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { CreateTenantUseCase } from "@webiny/api-core/features/tenancy/CreateTenant/abstractions.js";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/abstractions.js";
@@ -60,7 +60,7 @@ const TEST_TENANTS = [
     { id: "sales", name: "Sales", parent: "", description: "Sales tenant", tags: [] as string[] }
 ];
 
-class TenancyAndSecurityInitializerImpl implements IGraphQLContextInitializer {
+class TenancyAndSecurityInitializerImpl implements IRequestContextInitializer {
     private initialized = false;
 
     constructor(
@@ -119,6 +119,6 @@ class TenancyAndSecurityInitializerImpl implements IGraphQLContextInitializer {
 export const TenancyAndSecurityFeature = {
     register(container: Container, config: Config): void {
         const initializer = new TenancyAndSecurityInitializerImpl(container, config);
-        container.registerInstance(GraphQLContextInitializer, initializer);
+        container.registerInstance(RequestContextInitializer, initializer);
     }
 };

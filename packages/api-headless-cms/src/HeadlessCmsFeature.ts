@@ -3,7 +3,8 @@ import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { HeadlessCmsInitializerImpl, HeadlessCmsEnhancerConfig } from "./HeadlessCmsInitializer.js";
-import { GraphQLContextInitializer, GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { createRequestBody, processRequestBody } from "@webiny/handler-graphql";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { Benchmark } from "@webiny/api/Benchmark.js";
@@ -22,7 +23,8 @@ import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
 import { CmsWebhooksFeature } from "~/features/webhooks/feature.js";
 import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
-import type { IGraphQLContextInitializer, IGraphQLContextualSchema } from "@webiny/handler-graphql";
+import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
+import type { IRequestContextInitializer } from "@webiny/event-handler-core";
 import type { ApiEndpoint, CmsContext } from "~/types/index.js";
 import { CmsBaseErrorTypeFactory } from "~/graphql/schema/cms/CmsBaseErrorTypeFactory.js";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
@@ -99,7 +101,7 @@ function createCmsRoute(type: ApiEndpoint) {
 
         constructor(
             private container: Container,
-            private initializers: IGraphQLContextInitializer[],
+            private initializers: IRequestContextInitializer[],
             private contextualSchemas: IGraphQLContextualSchema[]
         ) {}
 
@@ -130,7 +132,7 @@ function createCmsRoute(type: ApiEndpoint) {
         implementation: CmsGraphQLRoute,
         dependencies: [
             RequestContainer,
-            [GraphQLContextInitializer, { multiple: true }],
+            [RequestContextInitializer, { multiple: true }],
             [GraphQLContextualSchema, { multiple: true }]
         ]
     });
@@ -359,7 +361,7 @@ export const HeadlessCmsFeature = createFeature({
             implementation: HeadlessCmsInitializerImpl,
             dependencies: [RequestContainer]
         });
-        container.registerInstance(GraphQLContextInitializer, initializer);
+        container.registerInstance(RequestContextInitializer, initializer);
         container.register(createCmsRoute(config.type));
     }
 });

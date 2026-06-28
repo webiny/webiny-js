@@ -1,13 +1,13 @@
 import type { Container } from "@webiny/di";
-import { GraphQLContextInitializer } from "@webiny/handler-graphql";
-import type { IGraphQLContextInitializer } from "@webiny/handler-graphql";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
+import type { IRequestContextInitializer } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { ScheduledActionModel } from "~/shared/abstractions.js";
 import { SCHEDULE_MODEL_ID } from "~/constants.js";
 
-class SchedulerModelContextualSchemaImpl implements IGraphQLContextInitializer {
+class SchedulerModelContextualSchemaImpl implements IRequestContextInitializer {
     constructor(
         private tenantCtx: TenantContext.Interface,
         private identityCtx: IdentityContext.Interface
@@ -33,7 +33,7 @@ class SchedulerModelContextualSchemaImpl implements IGraphQLContextInitializer {
     }
 }
 
-export const SchedulerModelContextualSchema = GraphQLContextInitializer.createImplementation({
+export const SchedulerModelContextualSchema = RequestContextInitializer.createImplementation({
     implementation: SchedulerModelContextualSchemaImpl,
     dependencies: [TenantContext, IdentityContext]
 });
