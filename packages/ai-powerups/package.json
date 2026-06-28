@@ -25,6 +25,7 @@
     "@webiny/api-websockets": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
+    "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-website-builder": "0.0.0",
     "@webiny/app-websockets": "0.0.0",
     "@webiny/background-tasks": "0.0.0",

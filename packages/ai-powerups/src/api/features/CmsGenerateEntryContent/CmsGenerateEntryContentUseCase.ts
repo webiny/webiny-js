@@ -117,8 +117,8 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
                 aiResult.text ||
                 (aiResult.steps.filter(step => step.text.length > 0).pop()?.text ?? "");
 
-            const parsed = LlmJsonResponse.fromRawText(text);
-            const output = parsed.toString();
+            const entry = LlmJsonResponse.fromRawText(text).toArray().pop();
+            const output = JSON.stringify(entry);
 
             const filesRead = new Set<string>();
             let toolCallsMade = 0;
