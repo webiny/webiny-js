@@ -15,7 +15,7 @@ import {
 import { createSecurityGraphQL } from "~/graphql/security/index.js";
 import { addSystemSchema } from "~/graphql/system/createSystemGraphQL.js";
 import { createUsersGraphQL } from "~/graphql/users/user.gql.js";
-import { createWcpGraphQL } from "~/graphql/wcp/graphql.js";
+import { addWcpSchema } from "~/graphql/wcp/graphql.js";
 
 const BASE_TYPES = `
     type Query
@@ -65,11 +65,11 @@ class ApiCoreSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
 
         // DI-native contributors (migrated off the legacy GraphQLSchemaDefinition loop).
         addSystemSchema(builder);
+        addWcpSchema(builder);
 
         const schemas: GraphQLSchemaDefinition[] = [
             ...createSecurityGraphQL(),
-            ...createUsersGraphQL(),
-            createWcpGraphQL()
+            ...createUsersGraphQL()
         ];
 
         for (const schema of schemas) {
