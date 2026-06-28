@@ -27,8 +27,8 @@ export const HeadlessCmsEnhancerConfig = new Abstraction<IHeadlessCmsEnhancerCon
  * 1. Building the storage operations — `StorageOperationsFactory.create()` / `beforeInit()` are
  *    async, and DI factories resolve synchronously, so the facade can't build them on demand.
  * 2. Applying any ContextPlugin instances supplied via `extraPlugins` (their `apply()` is async).
- * 3. Seeding `ctx.plugins` / `ctx.benchmark` on the shared request context for the other (still
- *    ordered) RequestContextInitializers and contextual schemas that read them off `ctx`.
+ * 3. Seeding `ctx.plugins` on the shared request context for the other (still ordered)
+ *    RequestContextInitializers that read it off `ctx` (e.g. hcms-tasks).
  *
  * Everything else moved to register() (pure, synchronous wiring).
  */
@@ -40,10 +40,10 @@ export class HeadlessCmsInitializerImpl implements IRequestContextInitializer {
     async init(ctx: Record<string, any>): Promise<void> {
         const cmsContext = this.container.resolve(CmsContextAbstraction) as CmsContext;
 
-        // Share the plugins container + benchmark with downstream initializers / contextual schemas
-        // that still read them off the request context object.
+        // Share the plugins container with downstream initializers / contextual schemas that still
+        // read it off the request context object (e.g. hcms-tasks registers its schema plugins into
+        // ctx.plugins). Benchmark is resolved from the container (BenchmarkAbstraction), not the bag.
         ctx.plugins = cmsContext.plugins;
-        ctx.benchmark = cmsContext.benchmark;
 
         if (this.initialized) {
             return;

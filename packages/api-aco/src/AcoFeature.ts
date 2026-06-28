@@ -52,11 +52,9 @@ import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpt
 
 class AcoSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
-        // createAcoGraphQL() returns [baseSchema, folderSchema, filterSchema].
-        // baseSchema and filterSchema are static GraphQLSchemaPlugins — register them here.
-        // folderSchema is a ContextPlugin that needs the folder model; it is applied by AcoInitializer.
-        const [baseSchema, , filterSchema] =
-            createAcoGraphQL() as unknown as IGraphQLSchemaPlugin[];
+        // createAcoGraphQL() returns the static [baseSchema, filterSchema] GraphQLSchemaPlugins.
+        // The dynamic folder schema (needs the per-tenant folder model) is built by AcoInitializer.
+        const [baseSchema, filterSchema] = createAcoGraphQL() as unknown as IGraphQLSchemaPlugin[];
 
         for (const plugin of [baseSchema, filterSchema]) {
             const schema = (plugin as IGraphQLSchemaPlugin).schema;
