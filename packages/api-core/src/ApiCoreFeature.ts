@@ -6,7 +6,7 @@ import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { SystemFeature } from "~/features/system/SystemFeature.js";
 import { TenancyFeature } from "./features/tenancy/TenancyFeature.js";
 import { AdminUsersFeature } from "~/features/users/AdminUsersFeature.js";
-import type { ApiCoreStorageOperations } from "~/types/core.js";
+import type { ApiCoreConfig } from "~/types/core.js";
 import { IdpAuthenticatorFeature } from "~/idp/feature.js";
 import { KeyValueStoreFeature } from "~/features/keyValueStore/feature.js";
 import { BuildParamsFeature } from "~/features/buildParams/feature.js";
@@ -22,7 +22,7 @@ import { ApiCoreSchemaFactory } from "~/graphql/ApiCoreSchemaFactory.js";
 
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
-    register(container: Container, config: ApiCoreStorageOperations) {
+    register(container: Container, config: ApiCoreConfig) {
         // Register features
         WcpFeature.register(container, config.wcpLicense);
         MaskerFeature.register(container);

@@ -16,5 +16,12 @@ export type ApiCoreStorageOperations = {
     tenancyStorageOperations: TenancyStorageOperations;
     securityStorageOperations: SecurityStorageOperations;
     keyValueStorageOperations: KeyValueStorageOperations.Interface;
+};
+
+/**
+ * Config for `ApiCoreFeature.register` — the storage operations plus runtime options (e.g. the WCP
+ * license). Not a storage-operations type; that's `ApiCoreStorageOperations`.
+ */
+export type ApiCoreConfig = ApiCoreStorageOperations & {
     wcpLicense?: ILicense;
 };
