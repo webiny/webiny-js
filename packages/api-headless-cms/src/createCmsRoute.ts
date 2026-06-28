@@ -27,10 +27,13 @@ export function createCmsRoute(type: ApiEndpoint) {
         readonly method = "POST";
         readonly path = CMS_PATHS[type];
 
+        // public (not private): this class is returned from an exported factory, so its members
+        // must be declarable in the emitted .d.ts — private parameter-properties on an exported
+        // anonymous class type are a TS4094 error.
         constructor(
-            private container: Container,
-            private initializers: IRequestContextInitializer[],
-            private contextualSchemas: IGraphQLContextualSchema[]
+            public container: Container,
+            public initializers: IRequestContextInitializer[],
+            public contextualSchemas: IGraphQLContextualSchema[]
         ) {}
 
         async handle(request: IHttpRequest): Promise<IHttpResponse> {
