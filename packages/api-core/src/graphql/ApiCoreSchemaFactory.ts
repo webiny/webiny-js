@@ -1,6 +1,5 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
-import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
 import {
     JsonScalar,
     LongScalar,
@@ -14,7 +13,7 @@ import {
 } from "@webiny/handler-graphql/builtInTypes/index.js";
 import { addSecuritySchema } from "~/graphql/security/index.js";
 import { addSystemSchema } from "~/graphql/system/createSystemGraphQL.js";
-import { createUsersGraphQL } from "~/graphql/users/user.gql.js";
+import { addUsersSchema } from "~/graphql/users/user.gql.js";
 import { addWcpSchema } from "~/graphql/wcp/graphql.js";
 
 const BASE_TYPES = `
@@ -63,28 +62,11 @@ class ApiCoreSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
         // Scalar implementations
         builder.addLegacyResolvers(SCALAR_RESOLVERS);
 
-        // DI-native contributors (migrated off the legacy GraphQLSchemaDefinition loop).
+        // DI-native schema contributors.
         addSecuritySchema(builder);
+        addUsersSchema(builder);
         addSystemSchema(builder);
         addWcpSchema(builder);
-
-        const schemas: GraphQLSchemaDefinition[] = [...createUsersGraphQL()];
-
-        for (const schema of schemas) {
-            builder.addTypeDefs(schema.typeDefs as string);
-
-            if (schema.resolvers) {
-                builder.addLegacyResolvers(schema.resolvers as Record<string, any>);
-            }
-
-            if (schema.resolverDecorators) {
-                for (const [path, decorators] of Object.entries(schema.resolverDecorators)) {
-                    for (const decorator of decorators) {
-                        builder.addResolverDecorator(path, decorator);
-                    }
-                }
-            }
-        }
 
         return builder;
     }
