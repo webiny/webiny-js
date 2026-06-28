@@ -1,13 +1,15 @@
 import React, { useEffect } from "react";
+import { useFeature } from "@webiny/app";
 import { useCanUseWorkflows } from "~/hooks/canUseWorkflows.js";
 import { Alert } from "@webiny/admin-ui";
 import { WorkflowStateWidgetCard } from "./Card/WorkflowStatesWidgetCard.js";
 import { WorkflowStateValue } from "~/types.js";
-import { useWorkflowStatesWidgetPresenter } from "~/presentation/workflowStatesWidget/useWorkflowStatesWidgetPresenter.js";
+import { WorkflowStatesWidgetPresenterProvider } from "~/presentation/workflowStatesWidget/useWorkflowStatesWidgetPresenter.js";
+import { WorkflowStatesWidgetPresenterFeature } from "~/presentation/workflowStatesWidget/feature.js";
 
 export const WorkflowStatesOwnWidget = () => {
     const canUseWorkflows = useCanUseWorkflows();
-    const presenter = useWorkflowStatesWidgetPresenter();
+    const { presenter } = useFeature(WorkflowStatesWidgetPresenterFeature);
 
     useEffect(() => {
         presenter.init({
@@ -30,12 +32,15 @@ export const WorkflowStatesOwnWidget = () => {
     }
 
     return (
-        <WorkflowStateWidgetCard
-            title={
-                <span>
-                    <span className={"text-accent-primary"}>Content Reviews</span> assigned by me
-                </span>
-            }
-        />
+        <WorkflowStatesWidgetPresenterProvider presenter={presenter}>
+            <WorkflowStateWidgetCard
+                title={
+                    <span>
+                        <span className={"text-accent-primary"}>Content Reviews</span> assigned by
+                        me
+                    </span>
+                }
+            />
+        </WorkflowStatesWidgetPresenterProvider>
     );
 };

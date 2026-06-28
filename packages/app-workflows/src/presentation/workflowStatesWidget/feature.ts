@@ -5,7 +5,7 @@ import { WorkflowStatesWidgetPresenter } from "./WorkflowStatesWidgetPresenter.j
 export const WorkflowStatesWidgetPresenterFeature = createFeature({
     name: "Workflows/WorkflowStatesWidgetPresenter",
     register(container) {
-        container.register(WorkflowStatesWidgetPresenter).inSingletonScope();
+        container.register(WorkflowStatesWidgetPresenter);
     },
     resolve(container) {
         return {
