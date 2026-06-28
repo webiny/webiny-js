@@ -1,14 +1,13 @@
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses.js";
-import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
-import type { ApiCoreContext } from "~/types/core.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { CreateApiKeyUseCase } from "~/features/security/apiKeys/CreateApiKey/index.js";
 import { UpdateApiKeyUseCase } from "~/features/security/apiKeys/UpdateApiKey/index.js";
 import { DeleteApiKeyUseCase } from "~/features/security/apiKeys/DeleteApiKey/index.js";
 import { ListApiKeysUseCase } from "~/features/security/apiKeys/ListApiKeys/index.js";
 import { GetApiKeyUseCase } from "~/features/security/apiKeys/GetApiKey/index.js";
 
-const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
-    typeDefs: /* GraphQL */ `
+export const addApiKeySchema = (builder: IGraphQLSchemaBuilder): void => {
+    builder.addTypeDefs(/* GraphQL */ `
         type SecurityApiKey {
             id: ID
             name: String
@@ -49,20 +48,27 @@ const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
             updateApiKey(id: ID!, data: SecurityApiKeyInput!): SecurityApiKeyResponse
             deleteApiKey(id: ID!): SecurityBooleanResponse
         }
-    `,
-    resolvers: {
-        SecurityQuery: {
-            async listApiKeys(_, __, context) {
-                const list = context.container.resolve(ListApiKeysUseCase);
-                const result = await list.execute();
+    `);
 
-                if (result.isOk()) {
-                    return new Response(result.value);
-                }
-                return new ErrorResponse(result.error);
-            },
-            async getApiKey(_, args: any, context) {
-                const getById = context.container.resolve(GetApiKeyUseCase);
+    builder.addResolver({
+        path: "SecurityQuery.listApiKeys",
+        dependencies: [ListApiKeysUseCase],
+        resolver: (list: ListApiKeysUseCase.Interface) => async () => {
+            const result = await list.execute();
+
+            if (result.isOk()) {
+                return new Response(result.value);
+            }
+            return new ErrorResponse(result.error);
+        }
+    });
+
+    builder.addResolver<{ id: string }>({
+        path: "SecurityQuery.getApiKey",
+        dependencies: [GetApiKeyUseCase],
+        resolver:
+            (getById: GetApiKeyUseCase.Interface) =>
+            async ({ args }) => {
                 const result = await getById.execute(args.id);
 
                 if (result.isOk()) {
@@ -70,28 +76,44 @@ const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
                 }
                 return new ErrorResponse(result.error);
             }
-        },
-        SecurityMutation: {
-            async createApiKey(_, args: any, context) {
-                const createApiKey = context.container.resolve(CreateApiKeyUseCase);
+    });
+
+    builder.addResolver<{ data: any }>({
+        path: "SecurityMutation.createApiKey",
+        dependencies: [CreateApiKeyUseCase],
+        resolver:
+            (createApiKey: CreateApiKeyUseCase.Interface) =>
+            async ({ args }) => {
                 const result = await createApiKey.execute(args.data);
 
                 if (result.isOk()) {
                     return new Response(result.value);
                 }
                 return new ErrorResponse(result.error);
-            },
-            async updateApiKey(_, args: any, context) {
-                const updateApiKey = context.container.resolve(UpdateApiKeyUseCase);
+            }
+    });
+
+    builder.addResolver<{ id: string; data: any }>({
+        path: "SecurityMutation.updateApiKey",
+        dependencies: [UpdateApiKeyUseCase],
+        resolver:
+            (updateApiKey: UpdateApiKeyUseCase.Interface) =>
+            async ({ args }) => {
                 const result = await updateApiKey.execute(args.id, args.data);
 
                 if (result.isOk()) {
                     return new Response(result.value);
                 }
                 return new ErrorResponse(result.error);
-            },
-            async deleteApiKey(_, args: any, context) {
-                const deleteApiKey = context.container.resolve(DeleteApiKeyUseCase);
+            }
+    });
+
+    builder.addResolver<{ id: string }>({
+        path: "SecurityMutation.deleteApiKey",
+        dependencies: [DeleteApiKeyUseCase],
+        resolver:
+            (deleteApiKey: DeleteApiKeyUseCase.Interface) =>
+            async ({ args }) => {
                 const result = await deleteApiKey.execute(args.id);
 
                 if (result.isOk()) {
@@ -99,8 +121,5 @@ const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
                 }
                 return new ErrorResponse(result.error);
             }
-        }
-    }
+    });
 };
-
-export default schema;

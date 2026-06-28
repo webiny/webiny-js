@@ -12,7 +12,7 @@ import {
     DateScalar,
     TimeScalar
 } from "@webiny/handler-graphql/builtInTypes/index.js";
-import { createSecurityGraphQL } from "~/graphql/security/index.js";
+import { addSecuritySchema } from "~/graphql/security/index.js";
 import { addSystemSchema } from "~/graphql/system/createSystemGraphQL.js";
 import { createUsersGraphQL } from "~/graphql/users/user.gql.js";
 import { addWcpSchema } from "~/graphql/wcp/graphql.js";
@@ -64,13 +64,11 @@ class ApiCoreSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
         builder.addLegacyResolvers(SCALAR_RESOLVERS);
 
         // DI-native contributors (migrated off the legacy GraphQLSchemaDefinition loop).
+        addSecuritySchema(builder);
         addSystemSchema(builder);
         addWcpSchema(builder);
 
-        const schemas: GraphQLSchemaDefinition[] = [
-            ...createSecurityGraphQL(),
-            ...createUsersGraphQL()
-        ];
+        const schemas: GraphQLSchemaDefinition[] = [...createUsersGraphQL()];
 
         for (const schema of schemas) {
             builder.addTypeDefs(schema.typeDefs as string);

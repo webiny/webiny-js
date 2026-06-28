@@ -4,8 +4,7 @@ import {
     ListResponse,
     Response
 } from "@webiny/handler-graphql/responses.js";
-import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
-import type { ApiCoreContext } from "~/types/core.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import type { Team } from "~/types/security.js";
 import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
 import { GetTeamUseCase } from "~/features/security/teams/GetTeam/index.js";
@@ -14,8 +13,8 @@ import { CreateTeam } from "~/features/security/teams/CreateTeam/index.js";
 import { UpdateTeam } from "~/features/security/teams/UpdateTeam/index.js";
 import { DeleteTeam } from "~/features/security/teams/DeleteTeam/index.js";
 
-const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
-    typeDefs: /* GraphQL */ `
+export const addTeamSchema = (builder: IGraphQLSchemaBuilder): void => {
+    builder.addTypeDefs(/* GraphQL */ `
         type SecurityTeam {
             id: ID
             name: String
@@ -65,13 +64,16 @@ const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
             updateTeam(id: ID!, data: SecurityTeamUpdateInput!): SecurityTeamResponse
             deleteTeam(id: ID!): SecurityBooleanResponse
         }
-    `,
-    resolvers: {
-        SecurityTeam: {
-            roles: async (team: Team, __, context) => {
+    `);
+
+    builder.addResolver({
+        path: "SecurityTeam.roles",
+        dependencies: [ListRolesUseCase],
+        resolver:
+            (useCase: ListRolesUseCase.Interface) =>
+            async ({ parent }: { parent: Team }) => {
                 try {
-                    const useCase = context.container.resolve(ListRolesUseCase);
-                    const result = await useCase.execute({ where: { id_in: team.roles } });
+                    const result = await useCase.execute({ where: { id_in: parent.roles } });
                     if (result.isFail()) {
                         throw result.error;
                     }
@@ -80,38 +82,50 @@ const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
                     return new ErrorResponse(e);
                 }
             }
-        },
-        SecurityQuery: {
-            getTeam: async (_, { where }, context) => {
+    });
+
+    builder.addResolver<{ where: any }>({
+        path: "SecurityQuery.getTeam",
+        dependencies: [GetTeamUseCase],
+        resolver:
+            (useCase: GetTeamUseCase.Interface) =>
+            async ({ args }) => {
                 try {
-                    const useCase = context.container.resolve(GetTeamUseCase);
-                    const result = await useCase.execute(where);
+                    const result = await useCase.execute(args.where);
                     if (result.isFail()) {
                         throw result.error;
                     }
                     return new Response(result.value);
                 } catch (e) {
                     return new ErrorResponse(e);
-                }
-            },
-            listTeams: async (_, __, context) => {
-                try {
-                    const useCase = context.container.resolve(ListTeamsUseCase);
-                    const result = await useCase.execute();
-                    if (result.isFail()) {
-                        throw result.error;
-                    }
-                    return new ListResponse(result.value);
-                } catch (e) {
-                    return new ListErrorResponse(e);
                 }
             }
-        },
-        SecurityMutation: {
-            createTeam: async (_, { data }, context) => {
+    });
+
+    builder.addResolver({
+        path: "SecurityQuery.listTeams",
+        dependencies: [ListTeamsUseCase],
+        resolver: (useCase: ListTeamsUseCase.Interface) => async () => {
+            try {
+                const result = await useCase.execute();
+                if (result.isFail()) {
+                    throw result.error;
+                }
+                return new ListResponse(result.value);
+            } catch (e) {
+                return new ListErrorResponse(e);
+            }
+        }
+    });
+
+    builder.addResolver<{ data: any }>({
+        path: "SecurityMutation.createTeam",
+        dependencies: [CreateTeam],
+        resolver:
+            (useCase: CreateTeam.Interface) =>
+            async ({ args }) => {
                 try {
-                    const useCase = context.container.resolve(CreateTeam);
-                    const result = await useCase.execute(data);
+                    const result = await useCase.execute(args.data);
                     if (result.isFail()) {
                         throw result.error;
                     }
@@ -119,11 +133,17 @@ const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
-            },
-            updateTeam: async (_, { id, data }, context) => {
+            }
+    });
+
+    builder.addResolver<{ id: string; data: any }>({
+        path: "SecurityMutation.updateTeam",
+        dependencies: [UpdateTeam],
+        resolver:
+            (useCase: UpdateTeam.Interface) =>
+            async ({ args }) => {
                 try {
-                    const useCase = context.container.resolve(UpdateTeam);
-                    const result = await useCase.execute(id, data);
+                    const result = await useCase.execute(args.id, args.data);
                     if (result.isFail()) {
                         throw result.error;
                     }
@@ -131,11 +151,17 @@ const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
-            },
-            deleteTeam: async (_, { id }, context) => {
+            }
+    });
+
+    builder.addResolver<{ id: string }>({
+        path: "SecurityMutation.deleteTeam",
+        dependencies: [DeleteTeam],
+        resolver:
+            (useCase: DeleteTeam.Interface) =>
+            async ({ args }) => {
                 try {
-                    const useCase = context.container.resolve(DeleteTeam);
-                    const result = await useCase.execute(id);
+                    const result = await useCase.execute(args.id);
                     if (result.isFail()) {
                         throw result.error;
                     }
@@ -144,8 +170,5 @@ const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
                     return new ErrorResponse(e);
                 }
             }
-        }
-    }
+    });
 };
-
-export default schema;

@@ -1,10 +1,7 @@
-import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
-import type { ApiCoreContext } from "~/types/core.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 
-const emptyResolver = () => ({});
-
-const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
-    typeDefs: /* GraphQL */ `
+export const addSecurityBaseSchema = (builder: IGraphQLSchemaBuilder): void => {
+    builder.addTypeDefs(/* GraphQL */ `
         type SecurityMutation {
             _empty: String
         }
@@ -37,15 +34,15 @@ const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
             data: Boolean
             error: SecurityError
         }
-    `,
-    resolvers: {
-        Query: {
-            security: emptyResolver
-        },
-        Mutation: {
-            security: emptyResolver
-        }
-    }
-};
+    `);
 
-export default schema;
+    builder.addResolver({
+        path: "Query.security",
+        resolver: () => async () => ({})
+    });
+
+    builder.addResolver({
+        path: "Mutation.security",
+        resolver: () => async () => ({})
+    });
+};

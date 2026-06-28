@@ -1,7 +1,6 @@
-import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
-import type { ApiCoreContext } from "~/types/core.js";
 import { AfterLoginEvent } from "~/features/security/login/index.js";
 import { GetIdentityProfileUseCase } from "~/features/users/GetIdentityProfile/index.js";
 import type { AdminUser } from "~/types/users.js";
@@ -13,17 +12,19 @@ import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js"
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";
 import { ProfileMapper } from "./ProfileMapper.js";
 
-const getDefaultTenant = async (context: ApiCoreContext) => {
-    const identity = context.container.resolve(IdentityContext).getIdentity();
+const getDefaultTenant = async (
+    identityContext: IdentityContext.Interface,
+    getTenantById: GetTenantByIdUseCase.Interface,
+    getRootTenant: GetRootTenantUseCase.Interface
+) => {
+    const identity = identityContext.getIdentity();
     const defaultTenantId = identity.context.defaultTenantId ?? "root";
 
-    const getTenantById = context.container.resolve(GetTenantByIdUseCase);
     const tenantResult = await getTenantById.execute(defaultTenantId);
     if (tenantResult.isOk()) {
         return tenantResult.value;
     }
 
-    const getRootTenant = context.container.resolve(GetRootTenantUseCase);
     const rootResult = await getRootTenant.execute();
     if (rootResult.isFail()) {
         throw rootResult.error;
@@ -31,8 +32,8 @@ const getDefaultTenant = async (context: ApiCoreContext) => {
     return rootResult.value;
 };
 
-const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
-    typeDefs: /* GraphQL */ `
+export const addIdentitySchema = (builder: IGraphQLSchemaBuilder): void => {
+    builder.addTypeDefs(/* GraphQL */ `
         type SecurityIdentityTenant {
             id: ID!
             name: String!
@@ -79,11 +80,26 @@ const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
             "Login using idToken obtained from a 3rd party identity provider"
             login: SecurityIdentityLoginResponse
         }
-    `,
-    resolvers: {
-        SecurityMutation: {
-            login: async (_, __, context) => {
-                const identityContext = context.container.resolve(IdentityContext);
+    `);
+
+    builder.addResolver({
+        path: "SecurityMutation.login",
+        dependencies: [
+            IdentityContext,
+            EventPublisher,
+            RolesRepository,
+            TeamsRepository,
+            GetIdentityProfileUseCase
+        ],
+        resolver:
+            (
+                identityContext: IdentityContext.Interface,
+                eventPublisher: EventPublisher.Interface,
+                rolesRepo: RolesRepository.Interface,
+                teamsRepo: TeamsRepository.Interface,
+                getProfile: GetIdentityProfileUseCase.Interface
+            ) =>
+            async () => {
                 const identity = identityContext.getIdentity();
                 if (identity.isAnonymous()) {
                     return new ErrorResponse({
@@ -93,16 +109,10 @@ const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
                 }
 
                 try {
-                    const eventPublisher = context.container.resolve(EventPublisher);
                     await eventPublisher.publish(new AfterLoginEvent({ identity }));
                 } catch (err) {
                     return new ErrorResponse(err);
                 }
-
-                // Roles and teams are stored in the user record.
-                const rolesRepo = context.container.resolve(RolesRepository);
-                const teamsRepo = context.container.resolve(TeamsRepository);
-                const getProfile = context.container.resolve(GetIdentityProfileUseCase);
 
                 const result = await identityContext.withoutAuthorization(async () => {
                     return getProfile.execute(identity.id);
@@ -132,22 +142,34 @@ const schema: GraphQLSchemaDefinition<ApiCoreContext> = {
                     teams
                 });
             }
-        },
-        SecurityIdentity: {
-            defaultTenant(_, __, context) {
-                return getDefaultTenant(context);
-            },
-            currentTenant(_, __, context) {
-                return context.container.resolve(TenantContext).getTenant();
-            },
-            permissions(_, __, context) {
-                return context.container.resolve(IdentityContext).listPermissions();
-            }
-        }
-    }
-};
+    });
 
-export default schema;
+    builder.addResolver({
+        path: "SecurityIdentity.defaultTenant",
+        dependencies: [IdentityContext, GetTenantByIdUseCase, GetRootTenantUseCase],
+        resolver:
+            (
+                identityContext: IdentityContext.Interface,
+                getTenantById: GetTenantByIdUseCase.Interface,
+                getRootTenant: GetRootTenantUseCase.Interface
+            ) =>
+            () =>
+                getDefaultTenant(identityContext, getTenantById, getRootTenant)
+    });
+
+    builder.addResolver({
+        path: "SecurityIdentity.currentTenant",
+        dependencies: [TenantContext],
+        resolver: (tenantContext: TenantContext.Interface) => () => tenantContext.getTenant()
+    });
+
+    builder.addResolver({
+        path: "SecurityIdentity.permissions",
+        dependencies: [IdentityContext],
+        resolver: (identityContext: IdentityContext.Interface) => () =>
+            identityContext.listPermissions()
+    });
+};
 
 const getRoles = async (user: AdminUser, rolesRepo: RolesRepository.Interface) => {
     const roleIds = user.roles ?? [];

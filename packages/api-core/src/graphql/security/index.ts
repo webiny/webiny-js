@@ -1,9 +1,14 @@
-import base from "./base.gql.js";
-import apiKey from "./apiKey.gql.js";
-import role from "./role.gql.js";
-import team from "./team.gql.js";
-import identity from "./identity.gql.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import { addSecurityBaseSchema } from "./base.gql.js";
+import { addApiKeySchema } from "./apiKey.gql.js";
+import { addRoleSchema } from "./role.gql.js";
+import { addTeamSchema } from "./team.gql.js";
+import { addIdentitySchema } from "./identity.gql.js";
 
-export const createSecurityGraphQL = () => {
-    return [base, team, apiKey, role, identity];
+export const addSecuritySchema = (builder: IGraphQLSchemaBuilder): void => {
+    addSecurityBaseSchema(builder);
+    addTeamSchema(builder);
+    addApiKeySchema(builder);
+    addRoleSchema(builder);
+    addIdentitySchema(builder);
 };
