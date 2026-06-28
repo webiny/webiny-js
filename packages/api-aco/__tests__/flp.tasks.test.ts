@@ -5,6 +5,7 @@ import { ROOT_FOLDER } from "~/constants";
 import { DeleteFlpUseCase } from "~/features/flp/DeleteFlp/index.js";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
+import { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
 
 describe("FLP Tasks", () => {
     describe("Folder Level Permissions -  CREATE FLP", () => {
@@ -26,7 +27,7 @@ describe("FLP Tasks", () => {
             });
 
             const folder = result.value;
-            const flp = await context.aco.flp.get(folder.id);
+            const flp = await context.container.resolve(AcoFlpCrud).get(folder.id);
 
             expect(flp).toMatchObject({
                 id: folder.id,
@@ -68,7 +69,7 @@ describe("FLP Tasks", () => {
             });
 
             const folder2 = result2.value;
-            const flp = await context.aco.flp.get(folder2.id);
+            const flp = await context.container.resolve(AcoFlpCrud).get(folder2.id);
 
             expect(flp).toMatchObject({
                 id: folder2.id,
@@ -116,7 +117,7 @@ describe("FLP Tasks", () => {
 
             const folder = result.value;
 
-            const flp = await context.aco.flp.get(folder.id);
+            const flp = await context.container.resolve(AcoFlpCrud).get(folder.id);
 
             expect(flp).toMatchObject({
                 id: folder.id,
@@ -127,9 +128,9 @@ describe("FLP Tasks", () => {
                 permissions: []
             });
 
-            await context.aco.flp.delete(folder.id);
+            await context.container.resolve(AcoFlpCrud).delete(folder.id);
 
-            const deletedFlp = await context.aco.flp.get(folder.id);
+            const deletedFlp = await context.container.resolve(AcoFlpCrud).get(folder.id);
 
             await expect(deletedFlp).toBeNull();
         });
@@ -166,7 +167,7 @@ describe("FLP Tasks", () => {
                 ]
             });
 
-            const flp = await context.aco.flp.get(folder.id);
+            const flp = await context.container.resolve(AcoFlpCrud).get(folder.id);
             expect(flp).toMatchObject({
                 id: folder.id,
                 type,
@@ -202,7 +203,7 @@ describe("FLP Tasks", () => {
 
             const updatedFolder = updatedFolderResult.value;
 
-            const flp = await context.aco.flp.get(folder.id);
+            const flp = await context.container.resolve(AcoFlpCrud).get(folder.id);
             expect(flp).toMatchObject({
                 id: folder.id,
                 type,
@@ -243,7 +244,7 @@ describe("FLP Tasks", () => {
                 parentId: parentFolder.id
             });
 
-            const flp = await context.aco.flp.get(childFolder.id);
+            const flp = await context.container.resolve(AcoFlpCrud).get(childFolder.id);
             expect(flp).toMatchObject({
                 id: childFolder.id,
                 type,
@@ -290,7 +291,7 @@ describe("FLP Tasks", () => {
             });
 
             // Check parent folder
-            const parentFlp = await context.aco.flp.get(parentFolder.id);
+            const parentFlp = await context.container.resolve(AcoFlpCrud).get(parentFolder.id);
             expect(parentFlp).toMatchObject({
                 id: parentFolder.id,
                 type,
@@ -306,7 +307,7 @@ describe("FLP Tasks", () => {
             });
 
             // Check child folder
-            const childFlp = await context.aco.flp.get(childFolder.id);
+            const childFlp = await context.container.resolve(AcoFlpCrud).get(childFolder.id);
             expect(childFlp).toMatchObject({
                 id: childFolder.id,
                 type,
@@ -334,7 +335,9 @@ describe("FLP Tasks", () => {
 
             {
                 // Check child folder
-                const updatedChildFlp = await context.aco.flp.get(childFolder.id);
+                const updatedChildFlp = await context.container
+                    .resolve(AcoFlpCrud)
+                    .get(childFolder.id);
                 expect(updatedChildFlp).toMatchObject({
                     id: childFolder.id,
                     type,
@@ -360,7 +363,9 @@ describe("FLP Tasks", () => {
             });
 
             // Check parent folder
-            const updatedParentFlp = await context.aco.flp.get(parentFolder.id);
+            const updatedParentFlp = await context.container
+                .resolve(AcoFlpCrud)
+                .get(parentFolder.id);
             expect(updatedParentFlp).toMatchObject({
                 id: parentFolder.id,
                 type,
@@ -371,7 +376,9 @@ describe("FLP Tasks", () => {
 
             {
                 // Check child folder
-                const updatedChildFlp = await context.aco.flp.get(childFolder.id);
+                const updatedChildFlp = await context.container
+                    .resolve(AcoFlpCrud)
+                    .get(childFolder.id);
                 expect(updatedChildFlp).toMatchObject({
                     id: childFolder.id,
                     type,
@@ -488,7 +495,7 @@ describe("FLP Tasks", () => {
 
             // Verify all folders have inherited main permissions
             // Verify main folder has its own permissions
-            const mainFlp = await context.aco.flp.get(mainFolder.id);
+            const mainFlp = await context.container.resolve(AcoFlpCrud).get(mainFolder.id);
             expect(mainFlp).toMatchObject({
                 permissions: [
                     {
@@ -499,7 +506,7 @@ describe("FLP Tasks", () => {
             });
 
             // Verify branch1 inherited permissions from main
-            const branch1Flp1 = await context.aco.flp.get(branch1.id);
+            const branch1Flp1 = await context.container.resolve(AcoFlpCrud).get(branch1.id);
             expect(branch1Flp1).toMatchObject({
                 permissions: [
                     {
@@ -511,7 +518,7 @@ describe("FLP Tasks", () => {
             });
 
             // Verify branch2 inherited permissions from main
-            const branch2Flp1 = await context.aco.flp.get(branch2.id);
+            const branch2Flp1 = await context.container.resolve(AcoFlpCrud).get(branch2.id);
             expect(branch2Flp1).toMatchObject({
                 permissions: [
                     {
@@ -523,7 +530,9 @@ describe("FLP Tasks", () => {
             });
 
             // Verify branch1 subfolder inherited permissions from branch1
-            const branch1SubFlp1 = await context.aco.flp.get(branch1Subfolder.id);
+            const branch1SubFlp1 = await context.container
+                .resolve(AcoFlpCrud)
+                .get(branch1Subfolder.id);
             expect(branch1SubFlp1).toMatchObject({
                 permissions: [
                     {
@@ -535,7 +544,9 @@ describe("FLP Tasks", () => {
             });
 
             // Verify branch2 subfolder inherited permissions from branch2
-            const branch2SubFlp1 = await context.aco.flp.get(branch2Subfolder.id);
+            const branch2SubFlp1 = await context.container
+                .resolve(AcoFlpCrud)
+                .get(branch2Subfolder.id);
             expect(branch2SubFlp1).toMatchObject({
                 permissions: [
                     {
@@ -557,7 +568,7 @@ describe("FLP Tasks", () => {
             });
 
             // Verify branch1 and its subfolder have both permissions
-            const branch1Flp2 = await context.aco.flp.get(branch1.id);
+            const branch1Flp2 = await context.container.resolve(AcoFlpCrud).get(branch1.id);
             expect(branch1Flp2).toMatchObject({
                 id: branch1.id,
                 type,
@@ -577,7 +588,9 @@ describe("FLP Tasks", () => {
                 ]
             });
 
-            const branch1SubFlp2 = await context.aco.flp.get(branch1Subfolder.id);
+            const branch1SubFlp2 = await context.container
+                .resolve(AcoFlpCrud)
+                .get(branch1Subfolder.id);
             expect(branch1SubFlp2).toMatchObject({
                 id: branch1Subfolder.id,
                 type,
@@ -599,7 +612,7 @@ describe("FLP Tasks", () => {
             });
 
             // Verify branch2 and its subfolder still only have main permissions
-            const branch2Flp2 = await context.aco.flp.get(branch2.id);
+            const branch2Flp2 = await context.container.resolve(AcoFlpCrud).get(branch2.id);
             expect(branch2Flp2).toMatchObject({
                 id: branch2.id,
                 type,
@@ -615,7 +628,9 @@ describe("FLP Tasks", () => {
                 ]
             });
 
-            const branch2SubFlp2 = await context.aco.flp.get(branch2Subfolder.id);
+            const branch2SubFlp2 = await context.container
+                .resolve(AcoFlpCrud)
+                .get(branch2Subfolder.id);
             expect(branch2SubFlp2).toMatchObject({
                 id: branch2Subfolder.id,
                 type,
@@ -689,7 +704,7 @@ describe("FLP Tasks", () => {
             // Verify all levels have inherited permissions
             for (let i = 0; i < folders.length; i++) {
                 const folder = folders[i];
-                const flp = await context.aco.flp.get(folder.id);
+                const flp = await context.container.resolve(AcoFlpCrud).get(folder.id);
 
                 const expectedPath = folders
                     .slice(0, i + 1)
@@ -736,7 +751,7 @@ describe("FLP Tasks", () => {
             // Verify level2 has no permissions
             for (let i = 0; i < folders.length; i++) {
                 const folder = folders[i];
-                const flp = await context.aco.flp.get(folder.id);
+                const flp = await context.container.resolve(AcoFlpCrud).get(folder.id);
 
                 const expectedPath = folders
                     .slice(0, i + 1)
@@ -786,7 +801,7 @@ describe("FLP Tasks", () => {
             });
 
             // Verify level3 and level4 have both permissions
-            const level3Flp = await context.aco.flp.get(level3.id);
+            const level3Flp = await context.container.resolve(AcoFlpCrud).get(level3.id);
 
             expect(level3Flp).toMatchObject({
                 id: level3.id,
@@ -807,7 +822,7 @@ describe("FLP Tasks", () => {
                 ]
             });
 
-            const level4Flp = await context.aco.flp.get(level4.id);
+            const level4Flp = await context.container.resolve(AcoFlpCrud).get(level4.id);
             expect(level4Flp).toMatchObject({
                 id: level4.id,
                 type,
@@ -897,7 +912,7 @@ describe("FLP Tasks", () => {
             });
 
             // Verify branch and subfolder have correct paths and permissions
-            const branchFlp = await context.aco.flp.get(branch.id);
+            const branchFlp = await context.container.resolve(AcoFlpCrud).get(branch.id);
             expect(branchFlp).toMatchObject({
                 id: branch.id,
                 type,
@@ -913,7 +928,7 @@ describe("FLP Tasks", () => {
                 ]
             });
 
-            const subfolderFlp = await context.aco.flp.get(subfolder.id);
+            const subfolderFlp = await context.container.resolve(AcoFlpCrud).get(subfolder.id);
             expect(subfolderFlp).toMatchObject({
                 id: subfolder.id,
                 type,
