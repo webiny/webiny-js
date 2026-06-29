@@ -1,6 +1,11 @@
-import { useContextHandler } from "@webiny/testing";
-import type { UseContextHandlerParams } from "@webiny/testing";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
+import {
+    createBackgroundTaskContext,
+    createBackgroundTaskGraphQL
+} from "@webiny/background-tasks/api";
+import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
+import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { createContextPlugin } from "@webiny/api";
 import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
@@ -9,59 +14,45 @@ import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension
 import { PageModelPlugin } from "~/domain/page/page.model.js";
 import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { GraphQLContextualSchema } from "@webiny/handler-graphql";
-import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
-import { buildSchema } from "graphql";
 
-type Params = Omit<UseContextHandlerParams, "features"> & {
-    identity?: IdentityData | null;
+const DEFAULT_IDENTITY: IdentityData = {
+    id: "id-12345678",
+    type: "admin",
+    displayName: "John Doe"
 };
 
-export const useHandler = (params: Params = {}) => {
-    const { identity, ...rest } = params;
+type Params = Omit<CmsTestHandlerParams, "features">;
 
-    const inner = useContextHandler<ApiCoreContext>({
-        ...rest,
-        // Do not pass null identity to useContextHandler — TenancyAndSecurityFeature
-        // does not support null (treats it same as undefined → defaultIdentity).
-        // We handle anonymous identity below via a contextual schema that runs after
-        // TenancyAndSecurityFeature's build() sets the identity.
-        identity: identity === null ? undefined : identity,
+export const useHandler = (params: Params = {}) => {
+    const { getContext } = createCmsTestHandler({
+        ...params,
+        // identity === null → anonymous; the shared harness authenticates the null identity natively
+        // (TestAuthenticator returns it), so no post-auth override is needed.
+        //
+        // Background-task plugins must come BEFORE the Website Builder plugins: createBackgroundTaskContext
+        // registers the "wbyTask" CMS model, and it has to be present before WB/Languages init lists +
+        // caches the per-request model set (otherwise createBackgroundTaskGraphQL can't find it).
         plugins: [
+            createBackgroundTaskContext(),
+            ...createBackgroundTaskGraphQL(),
+            createMockTaskServicePlugin(),
             createContextPlugin(ctx => {
                 ctx.container.register(InvalidateCloudfrontCacheTaskDefinition);
             }),
             createWebsiteBuilder(),
-            ...[rest.plugins].flat(Infinity as 1).filter(Boolean)
+            ...[params.plugins].flat(Infinity as 1).filter(Boolean)
         ],
         features: container => {
             container.register(PageModelPlugin);
             container.register(RedirectModelPlugin);
             LanguagesExtension.register(container);
-
-            // When identity is explicitly null the test wants an anonymous (unauthenticated)
-            // request. TenancyAndSecurityFeature always seats a non-null identity during its
-            // enhance() phase; we override it back to anonymous in a second enhancer that
-            // runs after TenancyAndSecurityFeature's enhancer.
-            if (identity === null) {
-                const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
-                const anonymousOverride: IGraphQLContextualSchema = {
-                    async build(_ctx: Record<string, any>) {
-                        const identityCtx = container.resolve(IdentityContext);
-                        identityCtx.setIdentity(undefined);
-                        return STUB_SCHEMA;
-                    }
-                };
-                container.registerInstance(GraphQLContextualSchema, anonymousOverride);
-            }
         }
     });
 
     return {
-        identity: inner.identity,
-        tenant: inner.tenant,
+        identity: params.identity === undefined ? DEFAULT_IDENTITY : params.identity,
+        tenant: { id: "root" },
         elasticsearch: createTestOpenSearchClient(),
-        handler: inner.context
+        handler: () => getContext<ApiCoreContext>()
     };
 };
