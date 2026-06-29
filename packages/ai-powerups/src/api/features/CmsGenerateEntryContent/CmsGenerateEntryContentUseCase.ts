@@ -2,6 +2,7 @@ import { stepCountIs } from "ai";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
+import { AiToolPipelineRunner } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { ListTagsUseCase } from "@webiny/api-file-manager/features/file/ListTags/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
@@ -18,6 +19,7 @@ import type {
 } from "./abstractions.js";
 import { buildEntryPrompt } from "./buildPrompt.js";
 import { LlmJsonResponse } from "../WbGeneratePageContent/LlmJsonResponse.js";
+import { injectDynamicZoneTypenames } from "./injectDynamicZoneTypenames.js";
 
 class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCase.Interface {
     constructor(
@@ -28,7 +30,8 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
         private encryption: Encryption.Interface,
         private listTags: ListTagsUseCase.Interface,
         private getModel: GetModelUseCase.Interface,
-        private modelToAst: ModelToAstConverter.Interface
+        private modelToAst: ModelToAstConverter.Interface,
+        private toolPipelineRunner: AiToolPipelineRunner.Interface
     ) {}
 
     async execute(
@@ -118,7 +121,15 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
                 (aiResult.steps.filter(step => step.text.length > 0).pop()?.text ?? "");
 
             const entry = LlmJsonResponse.fromRawText(text).toArray().pop();
-            const output = JSON.stringify(entry);
+
+            let resolved: Record<string, any> | undefined;
+
+            if (entry) {
+                resolved = (await this.toolPipelineRunner.resolve(entry)) as Record<string, any>;
+                await injectDynamicZoneTypenames(resolved, modelAst, model.singularApiName);
+            }
+
+            const output = JSON.stringify(resolved);
 
             const filesRead = new Set<string>();
             let toolCallsMade = 0;
@@ -165,6 +176,7 @@ export const CmsGenerateEntryContentUseCaseImplementation =
             Encryption,
             ListTagsUseCase,
             GetModelUseCase,
-            ModelToAstConverter
+            ModelToAstConverter,
+            AiToolPipelineRunner
         ]
     });

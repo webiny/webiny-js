@@ -217,10 +217,23 @@ export class CmsModelToJsonSchemaConverter {
     private convertFileField(field: CmsModelField): JsonSchema {
         const imagesOnly = field.settings?.imagesOnly === true;
         return {
-            type: "string",
-            description: imagesOnly
-                ? "Image file identifier (URL or file ID)."
-                : "File identifier (URL or file ID)."
+            type: "object",
+            properties: {
+                tool: { const: "cmsResolveImage" },
+                params: {
+                    type: "object",
+                    properties: {
+                        id: {
+                            type: "string",
+                            description: imagesOnly
+                                ? "Image file ID obtained from listImagesByTag."
+                                : "File ID obtained from listImagesByTag."
+                        }
+                    },
+                    required: ["id"]
+                }
+            },
+            required: ["tool", "params"]
         };
     }
 

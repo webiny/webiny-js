@@ -201,6 +201,9 @@ class CmsGenerateContentPresenterImpl implements Abstraction.Interface {
                     .description("Describe the content you want to generate for this entry.")
                     .required("Prompt is required")
                     .renderer("textarea", { rows: 6 })
+                    .defaultValue(
+                        "Write an evaluation guide for enterprise, self-hosted CMS platform. Use at least 3 content blocks."
+                    )
             }),
             layout: layout => [
                 layout.row("project"),
