@@ -3,7 +3,8 @@ import { useRoute } from "@webiny/app-admin";
 import { DocumentEditor } from "~/DocumentEditor/DocumentEditor.js";
 import { useGetPage } from "~/features/pages/index.js";
 import { OverlayLoader } from "@webiny/admin-ui";
-import { useGetWebsiteBuilderSettings } from "~/features/index.js";
+import { useFeature } from "@webiny/app";
+import { GetSettingsFeature } from "~/features/settings/getSettings/index.js";
 import { DefaultPageEditorConfig } from "./DefaultPageEditorConfig.js";
 import { DefaultEditorConfig } from "~/BaseEditor/index.js";
 import { EDITOR_NAME } from "~/presentation/pages/PageEditor/constants.js";
@@ -30,7 +31,7 @@ const getPageDataFromPage = (page: Page): EditorPage => {
 };
 
 export const PageEditor = () => {
-    const { getSettings } = useGetWebsiteBuilderSettings();
+    const { useCase: getSettings } = useFeature(GetSettingsFeature);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState<EditorPage | null>(null);
 
@@ -43,7 +44,7 @@ export const PageEditor = () => {
     useEffect(() => {
         setLoading(true);
         Promise.all([
-            getSettings(),
+            getSettings.execute(),
             getPage({ id: route.params.id }).then(page => {
                 setPage(getPageDataFromPage(page));
             })

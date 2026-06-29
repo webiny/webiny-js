@@ -27,7 +27,9 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
                 .label("Language")
                 .hidden()
                 .options(() => this.getLanguageOptions())
-                .afterChange((value, { form }) => this.afterChange(value, form))
+                .afterChange((value, { form }) => {
+                    this.afterChange(value, form);
+                })
         }));
 
         // When path is set programmatically (e.g., product selection, title change), apply the language prefix.
