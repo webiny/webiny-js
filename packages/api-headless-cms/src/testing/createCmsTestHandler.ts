@@ -1,7 +1,11 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import type { Container } from "@webiny/di";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import { GraphQLEngineFeature, GraphQLContextualSchema } from "@webiny/handler-graphql";
+import {
+    GraphQLEngineFeature,
+    GraphQLContextualSchema,
+    registerLegacyPluginsViaGqlContextualSchema
+} from "@webiny/handler-graphql";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
@@ -36,6 +40,14 @@ export interface CmsTestHandlerParams {
     cmsType?: "manage" | "read" | "preview";
     /** Plugins forwarded to `HeadlessCmsFeature.register` as `extraPlugins` (e.g. CMS model plugins). */
     extraCmsPlugins?: any[];
+    /**
+     * Legacy plugins, dispatched exactly like the legacy `useContextHandler`:
+     * - RegisterExtensionPlugins are applied at register() time (DI registration);
+     * - static plugins (CmsModelPlugin, GraphQLSchemaPlugin, …) are forwarded to HeadlessCmsFeature
+     *   as extraPlugins so their models reach the container before any initializer caches them;
+     * - ContextPlugins (`.apply(ctx)`) run post-auth via a per-request initializer.
+     */
+    plugins?: any;
     /**
      * Register the consuming package's own features here (e.g. AcoFeature, FileModel, plus its own
      * getStorageOps presets via processLegacyPlugins). Runs in the request phase AFTER ApiCore + CMS
@@ -86,13 +98,25 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
         ApiCoreFeature.register(container, { wcpLicense });
 
-        // CMS storage preset must be registered before HeadlessCmsFeature builds storage.
+        // CMS storage preset. RegisterExtensionPlugins must be applied before HeadlessCmsFeature
+        // builds storage; the preset's ContextPlugins (e.g. the ddb-es OpenSearchClient registration
+        // and dbPlugins → ctx.db) run as a per-request initializer, mirroring the real app's storage
+        // features and what the legacy useContextHandler does.
         processLegacyPlugins(container, cmsStorage.plugins);
+        registerLegacyPluginsViaGqlContextualSchema(container, cmsStorage.plugins);
 
+        // User-supplied legacy plugins (dual-dispatched, mirroring useContextHandler).
+        const userPlugins = [params.plugins].flat(Infinity as 1).filter(Boolean);
+        processLegacyPlugins(container, userPlugins);
+        const staticUserPlugins = userPlugins.filter(
+            p => typeof (p as any).apply !== "function" && typeof p !== "function"
+        );
         HeadlessCmsFeature.register(container, {
             type: cmsType,
-            extraPlugins: params.extraCmsPlugins ?? []
+            extraPlugins: [...(params.extraCmsPlugins ?? []), ...staticUserPlugins]
         });
+
+        registerLegacyPluginsViaGqlContextualSchema(container, userPlugins);
 
         await params.features?.(container);
     };

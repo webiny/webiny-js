@@ -1,15 +1,15 @@
-import { useContextHandler } from "@webiny/testing";
-import type { UseContextHandlerParams } from "@webiny/testing";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { CmsSchedulerFeature } from "~/CmsSchedulerFeature.js";
 import { SchedulerFeature, SchedulerService } from "@webiny/api-scheduler";
 import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
 
-type Params = Omit<UseContextHandlerParams, "features">;
+type Params = Omit<CmsTestHandlerParams, "features">;
 
 export const useHandler = <C extends CmsContext = CmsContext>(params: Params = {}) => {
-    const inner = useContextHandler<C>({
+    const { getContext } = createCmsTestHandler({
         ...params,
         features: container => {
             SchedulerFeature.register(container);
@@ -19,9 +19,9 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: Params = {
     });
 
     return {
-        identity: inner.identity,
-        tenant: inner.tenant,
+        identity: { id: "id-12345678", type: "admin", displayName: "John Doe" },
+        tenant: { id: "root" },
         elasticsearch: createTestOpenSearchClient(),
-        handler: inner.context
+        handler: () => getContext<C>()
     };
 };
