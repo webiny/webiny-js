@@ -1,5 +1,10 @@
 import { Container } from "@webiny/di";
-import { EventType, executeChain, RequestContainer } from "@webiny/event-handler-core";
+import {
+    EventType,
+    executeChain,
+    RequestContainer,
+    RequestInitializer
+} from "@webiny/event-handler-core";
 import type { HandlerSetup } from "@webiny/event-handler-core";
 import { AwsLambdaEvent } from "./abstractions/AwsLambdaEvent.js";
 import { AwsLambdaContext } from "./abstractions/AwsLambdaContext.js";
@@ -29,6 +34,13 @@ export function createLambdaHandler(options: CreateLambdaHandlerOptions) {
 
         if (options.request) {
             await options.request(child);
+        }
+
+        // Per-request async initialization (tenant-agnostic), before the event is dispatched and
+        // before auth/tenant are established (e.g. the WCP license refresh). Mirrors createHandler
+        // in @webiny/event-handler-core. For tenant-dependent setup use lazy DI factories.
+        for (const initializer of child.resolveAll(RequestInitializer)) {
+            await initializer.init();
         }
 
         const eventTypes = child.resolveAll(EventType);
