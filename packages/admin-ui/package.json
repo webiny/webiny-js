@@ -13,7 +13,7 @@
   "description": "The UI component library for Webiny's Admin app.",
   "license": "MIT",
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^7.2.0",
+    "@fortawesome/fontawesome-svg-core": "^7.3.0",
     "@fortawesome/react-fontawesome": "^3.3.1",
     "@minoru/react-dnd-treeview": "^3.5.4",
     "@monaco-editor/react": "^4.7.0",
@@ -45,8 +45,8 @@
     "type-fest": "^5.7.0"
   },
   "devDependencies": {
-    "@fortawesome/free-solid-svg-icons": "^7.2.0",
-    "@rsbuild/core": "^2.0.15",
+    "@fortawesome/free-solid-svg-icons": "^7.3.0",
+    "@rsbuild/core": "^2.1.0",
     "@rsbuild/plugin-svgr": "^2.0.4",
     "@storybook/addon-a11y": "^10.4.6",
     "@storybook/addon-docs": "^10.4.6",
