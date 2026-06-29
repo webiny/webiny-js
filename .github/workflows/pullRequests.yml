@@ -119,7 +119,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build
+        run: yarn build --rebuild-dependents
         working-directory: ${{ github.base_ref }}
       - uses: actions/cache@v5
         with:
@@ -156,7 +156,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build
+        run: yarn build --rebuild-dependents
         working-directory: ${{ github.base_ref }}
       - name: Build core
         run: yarn webiny build core
@@ -240,7 +240,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build
+        run: yarn build --rebuild-dependents
         working-directory: ${{ github.base_ref }}
       - name: Sync Dependencies Verification
         run: yarn verify-dependencies
@@ -320,8 +320,8 @@ jobs:
           if it reports dependency errors, fix the relevant package.json files.
           2. Run 'yarn check-ts-configs' — if it reports errors, fix them. 3.
           Run 'yarn lint' — if there are still non-auto-fixable errors, read the
-          affected files and fix them. 4. Run 'yarn check:node-modules:ci'
-          — if it reports errors, fix them. Work in the current directory."
+          affected files and fix them. 4. Run 'yarn check:node-modules:ci' — if
+          it reports errors, fix them. Work in the current directory."
       - name: Update yarn.lock
         run: yarn
         working-directory: ${{ github.base_ref }}
@@ -401,7 +401,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build
+        run: yarn build --rebuild-dependents
         working-directory: ${{ github.base_ref }}
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
@@ -484,7 +484,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build
+        run: yarn build --rebuild-dependents
         working-directory: ${{ github.base_ref }}
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
@@ -577,7 +577,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build
+        run: yarn build --rebuild-dependents
         working-directory: ${{ github.base_ref }}
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
@@ -662,7 +662,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build
+        run: yarn build --rebuild-dependents
         working-directory: ${{ github.base_ref }}
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
