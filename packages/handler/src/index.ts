@@ -1,6 +1,7 @@
 export {
     RegisterExtensionPlugin,
-    createRegisterExtensionPlugin
+    createRegisterExtensionPlugin,
+    registerExtensions
 } from "~/plugins/RegisterExtensionPlugin.js";
 export { stringifyError } from "./stringifyError.js";
 export { Request } from "./abstractions/Request.js";

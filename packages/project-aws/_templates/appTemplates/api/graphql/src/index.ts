@@ -11,6 +11,7 @@ import {
 } from "@webiny/event-handler-aws";
 import { BackgroundTaskLambdaHandler } from "@webiny/background-tasks/api";
 import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
+import { registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { DbFeature } from "@webiny/handler-db";
 import { ApiCoreFeature } from "@webiny/api-core";
@@ -120,8 +121,11 @@ export const handler = createLambdaHandler({
         ]);
         CmsSchedulerFeature.register(container);
 
-        // ── Extensions (legacy escape hatch) ──────────────────────
-        registerLegacyPluginsViaGqlContextualSchema(container, extensions());
+        // ── Extensions ─────────────────────────────────────────────
+        // Apply at register() time (not via a post-auth initializer) so extension features —
+        // including code-defined CMS models (ModelFactory), e.g. Languages — are registered before
+        // any initializer (e.g. ACO) lists + caches the per-request model set.
+        await registerExtensions(container, extensions());
 
         // ── GraphQL engine (always last) ───────────────────────────
         GraphQLEngineFeature.register(container);
