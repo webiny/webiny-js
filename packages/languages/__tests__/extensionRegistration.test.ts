@@ -15,7 +15,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
-import { ApiCoreFeature } from "@webiny/api-core";
+import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import {
     GraphQLContextualSchema,
     GraphQLEngineFeature,
@@ -64,10 +64,8 @@ describe("Languages api extension — registered via the app indirection", () =>
             request: async container => {
                 const wcpLicense = await loadWcpLicense(createTestWcpLicense());
 
-                ApiCoreFeature.register(container, {
-                    ...apiCoreStorage.storageOperations,
-                    wcpLicense
-                });
+                registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+                ApiCoreFeature.register(container, { wcpLicense });
 
                 processLegacyPlugins(container, cmsStorage.plugins);
 
@@ -128,10 +126,8 @@ describe("Languages api extension — registered via the app indirection", () =>
             request: async container => {
                 const wcpLicense = await loadWcpLicense(createTestWcpLicense());
 
-                ApiCoreFeature.register(container, {
-                    ...apiCoreStorage.storageOperations,
-                    wcpLicense
-                });
+                registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+                ApiCoreFeature.register(container, { wcpLicense });
 
                 processLegacyPlugins(container, cmsStorage.plugins);
 

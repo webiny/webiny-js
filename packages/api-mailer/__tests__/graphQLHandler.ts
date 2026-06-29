@@ -2,6 +2,7 @@ import { getIntrospectionQuery } from "graphql";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { ApiCoreFeature } from "@webiny/api-core/ApiCoreFeature.js";
+import { registerApiCoreStorageOperations } from "@webiny/api-core";
 import { MailerFeature } from "~/MailerFeature.js";
 import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/abstractions.js";
 import {
@@ -56,7 +57,8 @@ export const createGraphQLHandler = (params?: CreateHandlerParams) => {
             container.register(createTestAuthorizer(permissions));
         },
         request: async container => {
-            ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
+            registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            ApiCoreFeature.register(container, {});
             GraphQLEngineFeature.register(container);
             MailerFeature.register(container);
 

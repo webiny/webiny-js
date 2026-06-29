@@ -1,5 +1,5 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
-import { ApiCoreFeature } from "@webiny/api-core";
+import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
@@ -56,10 +56,8 @@ export const useHandler = (params: UseHandlerParams) => {
         },
         request: async container => {
             const wcpLicense = await loadWcpLicense(createTestWcpLicense());
-            ApiCoreFeature.register(container, {
-                ...apiCoreStorage.storageOperations,
-                wcpLicense
-            });
+            registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });
 

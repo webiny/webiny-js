@@ -1,7 +1,7 @@
 import { Container } from "@webiny/di";
 import { RequestContainer, RequestContextInitializer } from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
-import { ApiCoreFeature } from "@webiny/api-core";
+import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
@@ -70,7 +70,8 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         container.registerInstance(RequestContainer, container);
 
         const wcpLicense = await loadWcpLicense(createTestWcpLicense());
-        ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense });
+        registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+        ApiCoreFeature.register(container, { wcpLicense });
         processLegacyPlugins(container, cmsStorage.plugins);
         processLegacyPlugins(container, legacyPlugins);
         processLegacyPlugins(container, [createIndexConfigurationPlugin()]);

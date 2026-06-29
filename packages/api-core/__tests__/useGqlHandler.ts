@@ -1,6 +1,7 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
+import { registerApiCoreStorageOperations } from "~/features/storageOperations/abstractions.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { loadWcpLicense } from "~/features/wcp/loadWcpLicense.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
@@ -58,10 +59,8 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             // ApiCoreFeature in child container — TenantContext, IdentityContext etc.
             // registered here become per-request singletons automatically
             const wcpLicense = await loadWcpLicense(opts.wcpLicense);
-            ApiCoreFeature.register(container, {
-                ...apiCoreStorage.storageOperations,
-                wcpLicense
-            });
+            registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            ApiCoreFeature.register(container, { wcpLicense });
             GraphQLEngineFeature.register(container);
 
             for (const registration of opts.registrations ?? []) {

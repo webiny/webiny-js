@@ -14,7 +14,7 @@ import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-gra
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { DbFeature } from "@webiny/handler-db";
 import { ApiCoreFeature } from "@webiny/api-core";
-import { createApiCoreDdb } from "@webiny/api-core-ddb";
+import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { HeadlessCmsDdbFeature } from "@webiny/api-headless-cms-ddb";
 import { MailerFeature } from "@webiny/api-mailer";
@@ -66,10 +66,8 @@ export const handler = createLambdaHandler({
         });
 
         // ── Core API ───────────────────────────────────────────────
-        ApiCoreFeature.register(container, {
-            ...createApiCoreDdb({ documentClient }),
-            wcpLicense: undefined
-        });
+        ApiCoreDdbFeature.register(container, { documentClient });
+        ApiCoreFeature.register(container, { wcpLicense: undefined });
 
         // ── Identity providers ─────────────────────────────────────
         // Must be in root so the request auth step can authenticate

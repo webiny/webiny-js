@@ -1,6 +1,6 @@
 import { getIntrospectionQuery } from "graphql";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
-import { ApiCoreFeature } from "@webiny/api-core";
+import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
@@ -68,7 +68,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 params.testProjectLicense ?? createTestWcpLicense()
             );
 
-            ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense });
+            registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, apiAcoStorage.plugins);
             processLegacyPlugins(container, cmsStorage.plugins);
 

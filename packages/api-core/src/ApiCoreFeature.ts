@@ -7,6 +7,7 @@ import { SystemFeature } from "~/features/system/SystemFeature.js";
 import { TenancyFeature } from "./features/tenancy/TenancyFeature.js";
 import { AdminUsersFeature } from "~/features/users/AdminUsersFeature.js";
 import type { ApiCoreConfig } from "~/types/core.js";
+import { ApiCoreStorageOperationsFactory } from "~/features/storageOperations/abstractions.js";
 import { IdpAuthenticatorFeature } from "~/idp/feature.js";
 import { KeyValueStoreFeature } from "~/features/keyValueStore/feature.js";
 import { BuildParamsFeature } from "~/features/buildParams/feature.js";
@@ -26,7 +27,11 @@ import { WcpSchemaFactory } from "~/graphql/wcp/WcpSchemaFactory.js";
 
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
-    register(container: Container, config: ApiCoreConfig) {
+    register(container: Container, config: ApiCoreConfig = {}) {
+        // Storage operations are built synchronously, here, from the adapter-provided factory —
+        // the same way for every event (no out-of-feature construction, no async initializer).
+        const storageOperations = container.resolve(ApiCoreStorageOperationsFactory).create();
+
         // Register features
         WcpFeature.register(container, config.wcpLicense);
         MaskerFeature.register(container);
@@ -36,10 +41,10 @@ export const ApiCoreFeature = createFeature({
         BuildParamsFeature.register(container);
         EncryptionFeature.register(container);
         FeatureFlagsFeature.register(container);
-        TenancyFeature.register(container, config.tenancyStorageOperations);
-        SecurityFeature.register(container, config.securityStorageOperations);
-        AdminUsersFeature.register(container, config.usersStorageOperations);
-        KeyValueStoreFeature.register(container, config.keyValueStorageOperations);
+        TenancyFeature.register(container, storageOperations.tenancyStorageOperations);
+        SecurityFeature.register(container, storageOperations.securityStorageOperations);
+        AdminUsersFeature.register(container, storageOperations.usersStorageOperations);
+        KeyValueStoreFeature.register(container, storageOperations.keyValueStorageOperations);
         SystemFeature.register(container);
         IdpAuthenticatorFeature.register(container);
         RequestContextFeature.register(container);

@@ -11,7 +11,7 @@ import { WebSocketLambdaHandler, WebsocketsFeature } from "@webiny/api-websocket
 import { WebsocketsDdbFeature } from "@webiny/api-websockets-ddb";
 import { DbFeature } from "@webiny/handler-db";
 import { ApiCoreFeature } from "@webiny/api-core";
-import { createApiCoreDdb } from "@webiny/api-core-ddb";
+import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
 
 const documentClient = getDocumentClient();
 
@@ -28,10 +28,8 @@ export const handler = createLambdaHandler({
         });
 
         // ── Core API + DDB storage ────────────────────────────────
-        ApiCoreFeature.register(container, {
-            ...createApiCoreDdb({ documentClient }),
-            wcpLicense: undefined
-        });
+        ApiCoreDdbFeature.register(container, { documentClient });
+        ApiCoreFeature.register(container, { wcpLicense: undefined });
 
         WebsocketsDdbFeature.register(container);
     },

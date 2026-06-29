@@ -12,7 +12,7 @@ import type { IdentityData } from "@webiny/api-core/features/security/IdentityCo
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { PermissionsArg } from "./helpers.js";
 import { createPermissions } from "./helpers.js";
-import { ApiCoreFeature } from "@webiny/api-core";
+import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins.js";
@@ -48,7 +48,8 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
 
     const setup = async (container: Container, extraPlugins: any[] = []): Promise<void> => {
         const wcpLicense = await loadWcpLicense(testProjectLicense);
-        ApiCoreFeature.register(container, { ...apiCoreStorage.storageOperations, wcpLicense });
+        registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+        ApiCoreFeature.register(container, { wcpLicense });
 
         // Registration order determines contextual-schema execution order:
         // 1. ApiCore.build() — registers WcpFeature

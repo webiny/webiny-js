@@ -19,9 +19,10 @@ export type ApiCoreStorageOperations = {
 };
 
 /**
- * Config for `ApiCoreFeature.register` — the storage operations plus runtime options (e.g. the WCP
- * license). Not a storage-operations type; that's `ApiCoreStorageOperations`.
+ * Config for `ApiCoreFeature.register` — runtime options only (e.g. the WCP license). Storage
+ * operations are no longer passed here; they are resolved from `ApiCoreStorageOperationsFactory`
+ * inside the feature (registered by a storage adapter or `registerApiCoreStorageOperations`).
  */
-export type ApiCoreConfig = ApiCoreStorageOperations & {
+export type ApiCoreConfig = {
     wcpLicense?: ILicense;
 };

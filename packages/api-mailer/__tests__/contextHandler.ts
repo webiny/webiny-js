@@ -5,6 +5,7 @@
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { ApiCoreFeature } from "@webiny/api-core/ApiCoreFeature.js";
+import { registerApiCoreStorageOperations } from "@webiny/api-core";
 import { MailerFeature } from "~/MailerFeature.js";
 import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/abstractions.js";
 import {
@@ -52,7 +53,8 @@ export const createContextHandler = (params?: CreateHandlerParams) => {
             const child = root.createChildContainer();
             child.registerInstance(RequestContainer, child);
 
-            ApiCoreFeature.register(child, apiCoreStorage.storageOperations);
+            registerApiCoreStorageOperations(child, apiCoreStorage.storageOperations);
+            ApiCoreFeature.register(child, {});
             MailerFeature.register(child);
 
             const permissions = createPermissions(params?.permissions);
