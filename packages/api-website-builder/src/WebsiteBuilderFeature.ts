@@ -9,21 +9,8 @@ import { ContentModelFeature } from "@webiny/api-headless-cms/features/contentMo
 import { ContentEntriesFeature } from "@webiny/api-headless-cms/features/contentEntry/ContentEntriesFeature.js";
 import { CmsWhereMapperFeature } from "@webiny/api-headless-cms/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "@webiny/api-headless-cms/features/sortMapper/feature.js";
-import {
-    StorageOperationsFactory,
-    StorageOperations,
-    AccessControl
-} from "@webiny/api-headless-cms/features/shared/abstractions.js";
-import {
-    EntryFromStorageTransform,
-    EntryToStorageTransform,
-    SearchableFieldsProvider
-} from "@webiny/api-headless-cms/legacy/abstractions.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { PluginsContainer } from "@webiny/plugins";
-import { createFieldConverters } from "@webiny/api-headless-cms/fieldConverters/index.js";
-import { entryFromStorageTransform } from "@webiny/api-headless-cms/utils/entryStorage.js";
 import { createWebsiteBuilder } from "./index.js";
 import { WebsiteBuilderRedirectsRoute } from "./rest/WebsiteBuilderRedirectsRoute.js";
 import { GetActiveRedirectsFeature } from "./features/redirects/GetActiveRedirects/feature.js";
@@ -64,51 +51,21 @@ export const WebsiteBuilderFeature = createFeature({
 });
 
 /**
- * Bootstraps the WB CMS infrastructure and registers PageModel/RedirectModel in the container.
- * Must be called in the `request` callback of createLambdaHandler, after
- * WebsiteBuilderFeature.register() and HeadlessCmsFeature.register().
+ * Resolves the WB CmsModel instances (Page/Redirect) from the registered ModelFactory plugins and
+ * exposes them by token for the redirect REST route + page features. Must run in the `request`
+ * callback after WebsiteBuilderFeature.register() and HeadlessCmsFeature.register().
  *
- * For GraphQL requests, the CMS contextual schema (HeadlessCmsInitializer.build()) will later
- * overwrite the minimal StorageOperations/AccessControl with proper full-context versions. For REST
- * routes (e.g. GET /wb/redirects), the minimal bootstrap is sufficient.
+ * Storage operations, AccessControl, the entry transforms and SearchableFieldsProvider are now
+ * provided by HeadlessCmsFeature.register() for every event, so WB no longer builds its own
+ * (which previously meant a permissive AccessControl stub that shadowed the real one).
  */
 export async function setupWebsiteBuilderModels(container: Container): Promise<void> {
-    // Create a minimal PluginsContainer with field converters for DDB storage operations.
-    const plugins = new PluginsContainer([...createFieldConverters()]);
-
-    // Bootstrap StorageOperations using the DDB factory. The table name comes from
-    // process.env.DB_TABLE_HEADLESS_CMS || process.env.DB_TABLE (resolved inside createTable).
-    const storageOpsFactory = container.resolve(StorageOperationsFactory);
-    const storageOps = await storageOpsFactory.create({ plugins, container } as any);
-    container.registerInstance(StorageOperations, storageOps);
-
-    // Bypass AccessControl — the redirect route enforces auth at the route level.
-    // The CMS contextual schema (HeadlessCmsInitializer.build()) will overwrite this with a
-    // proper security-aware AccessControl for GraphQL requests.
-    container.registerInstance(AccessControl, {
-        canAccessModel: async () => true,
-        canAccessGroup: async () => true
-    } as any);
-
-    // Provide the entry storage transform using the DI container directly (no legacy ctx needed).
-    container.registerInstance(EntryFromStorageTransform, ((model: any, entry: any) =>
-        entryFromStorageTransform({ container }, model, entry)) as any);
-    // Identity transform for writes — this feature is read-only for redirects.
-    container.registerInstance(EntryToStorageTransform, ((_model: any, entry: any) =>
-        Promise.resolve(entry)) as any);
-
-    // Return all fields as searchable (sufficient for simple text/boolean redirect fields).
-    container.registerInstance(SearchableFieldsProvider, ({ fields }: { fields: any[] }) =>
-        fields.map((f: any) => f.fieldId)
-    );
-
-    // Build and register WB CmsModel instances from the ModelFactory plugins.
+    // Build the WB CmsModel instances from the registered ModelFactory plugins.
     const modelsProvider = container.resolve(ModelsProvider);
     const tenantCtx = container.resolve(TenantContext);
-    // At request-callback time the tenant may not be set yet (it's populated during routing
-    // by ApiGatewaySecurityDecorators). Fall back to "root" for plugin-model building — the
-    // actual per-request tenant will be correct when DynamoDB queries run later.
-    // getTenant() is typed non-null but returns null before the tenant is set during routing.
+    // getTenant() is typed non-null but returns null before the tenant is set during routing;
+    // fall back to "root" for code-defined model building (the per-request tenant is applied later
+    // when DynamoDB queries run).
     const tenantId = (tenantCtx.getTenant() as any)?.id ?? "root";
     const models = await modelsProvider.list(tenantId);
 

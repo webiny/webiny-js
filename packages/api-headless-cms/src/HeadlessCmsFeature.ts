@@ -242,18 +242,6 @@ export const HeadlessCmsFeature = createFeature({
         };
         container.registerFactory(AccessControlAbstraction, () => getAccessControl());
 
-        // Per-request overwrite (post-auth): register the real, security-aware AccessControl as an
-        // INSTANCE so it wins over any permissive stub another feature registers pre-auth — e.g.
-        // WebsiteBuilderFeature's redirect-route bootstrap registers a bypass AccessControl via
-        // registerInstance. In @webiny/di a registerInstance beats a registerFactory, and this
-        // initializer runs after those request-callback stubs (and after auth), so GraphQL
-        // resolvers always get the proper AccessControl rather than the bypass.
-        container.registerInstance(RequestContextInitializer, {
-            init: () => {
-                container.registerInstance(AccessControlAbstraction, getAccessControl());
-            }
-        });
-
         // The HeadlessCms facade — a LAZY factory built on first resolve (post-auth), memoised per
         // request container. StorageOperations is resolved here; it is built eagerly (async) by the
         // initializer below before resolvers run.
