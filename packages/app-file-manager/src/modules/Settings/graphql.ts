@@ -1,5 +1,3 @@
-import gql from "graphql-tag";
-
 const fields = /* GraphQL */ `
     {
         data {
@@ -24,21 +22,18 @@ export interface GetSettingsResponse {
     };
 }
 
-const graphql = {
-    GET_SETTINGS: gql`
-            query GetFileManagerSettings {
-                fileManager {
-                    getSettings${fields}
-                }
-            }
-        `,
-    UPDATE_SETTINGS: gql`
-        mutation UpdateFileManagerSettings($data: FmSettingsInput) {
-            fileManager {
-                updateSettings(data: $data) ${fields}
-            }
+export const GET_SETTINGS = /* GraphQL */ `
+    query GetFileManagerSettings {
+        fileManager {
+            getSettings${fields}
         }
-    `
-};
+    }
+`;
 
-export default graphql;
+export const UPDATE_SETTINGS = /* GraphQL */ `
+    mutation UpdateFileManagerSettings($data: FmSettingsInput) {
+        fileManager {
+            updateSettings(data: $data) ${fields}
+        }
+    }
+`;
