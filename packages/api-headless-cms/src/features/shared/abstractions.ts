@@ -49,7 +49,7 @@ export namespace StorageOperations {
 }
 
 export interface IHeadlessCmsStorageOperationsFactory<T> {
-    create(context: T): Promise<StorageOps>;
+    create(context: T): StorageOps;
 }
 
 export const StorageOperationsFactory = createAbstraction<

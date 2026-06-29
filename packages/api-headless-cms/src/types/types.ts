@@ -1419,8 +1419,9 @@ export interface HeadlessCmsStorageOperations<C extends CmsContext = CmsContext>
     models: CmsModelStorageOperations;
     entries: CmsEntryStorageOperations;
     /**
-     * Either attach something from the storage operations or run something in it.
+     * Either attach something from the storage operations or run something in it. Synchronous so
+     * the storage stack can be built inside HeadlessCmsFeature.register() (for every event), not in
+     * a per-request async initializer. All adapters (ddb/ddb-es/sql) have sync bodies.
      */
-    beforeInit: (context: C) => Promise<void>;
-    init?: (context: C) => Promise<void>;
+    beforeInit: (context: C) => void;
 }

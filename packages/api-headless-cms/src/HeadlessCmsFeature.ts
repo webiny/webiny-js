@@ -204,6 +204,15 @@ export const HeadlessCmsFeature = createFeature({
             )
         );
 
+        // Build the CMS storage stack synchronously, here in register(), so it is available for
+        // EVERY event (GraphQL, background tasks, etc.) — not only inside GraphQL routes via the
+        // request initializer. create()/beforeInit() are sync across all adapters; beforeInit also
+        // registers entities into the global DbRegistry (consumed by api-elasticsearch-tasks), so
+        // running it for every event closes the previous GraphQL-only gap.
+        const storageOperations = container.resolve(StorageOperationsFactory).create(cmsContext);
+        storageOperations.beforeInit(cmsContext);
+        container.registerInstance(StorageOperations, storageOperations);
+
         const identityContext = container.resolve(IdentityContext);
         const tenantContext = container.resolve(TenantContext);
         const getTenant = () => tenantContext.getTenant();

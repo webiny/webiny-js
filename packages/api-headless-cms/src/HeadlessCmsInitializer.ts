@@ -1,11 +1,7 @@
 import type { Container } from "@webiny/di";
 import { Abstraction } from "@webiny/di";
 import type { IRequestContextInitializer } from "@webiny/event-handler-core";
-import {
-    CmsContext as CmsContextAbstraction,
-    StorageOperations,
-    StorageOperationsFactory
-} from "~/features/shared/abstractions.js";
+import { CmsContext as CmsContextAbstraction } from "~/features/shared/abstractions.js";
 import type { ApiEndpoint, CmsContext } from "~/types/index.js";
 
 export interface IHeadlessCmsEnhancerConfig {
@@ -18,19 +14,18 @@ export const HeadlessCmsEnhancerConfig = new Abstraction<IHeadlessCmsEnhancerCon
 );
 
 /**
- * Per-request setup that cannot be expressed as a synchronous DI factory.
+ * Per-request, post-auth setup that isn't expressible as a synchronous DI factory.
  *
- * The HeadlessCms facade itself (and AccessControl, export/import) are now LAZY DI factories built
- * on first resolve — see HeadlessCmsFeature.register. The only things that must still run eagerly,
- * per request, before resolvers are:
+ * Storage operations now build synchronously in HeadlessCmsFeature.register() (for every event),
+ * and the HeadlessCms facade / AccessControl / export / import are lazy DI factories. What remains
+ * here is legacy bridging that still depends on the shared request `ctx`:
  *
- * 1. Building the storage operations — `StorageOperationsFactory.create()` / `beforeInit()` are
- *    async, and DI factories resolve synchronously, so the facade can't build them on demand.
- * 2. Applying any ContextPlugin instances supplied via `extraPlugins` (their `apply()` is async).
- * 3. Seeding `ctx.plugins` on the shared request context for the other (still ordered)
- *    RequestContextInitializers that read it off `ctx` (e.g. hcms-tasks).
+ * 1. Seeding `ctx.plugins` for the other (still ordered) RequestContextInitializers / contextual
+ *    schemas that read it off `ctx` (e.g. hcms-tasks registers its schema plugins into ctx.plugins).
+ * 2. Applying any ContextPlugin instances supplied via `extraPlugins` (test infra; their `apply()`
+ *    is async).
  *
- * Everything else moved to register() (pure, synchronous wiring).
+ * Both are slated for removal once those consumers move to DI (Phase 3).
  */
 export class HeadlessCmsInitializerImpl implements IRequestContextInitializer {
     private initialized = false;
@@ -49,15 +44,6 @@ export class HeadlessCmsInitializerImpl implements IRequestContextInitializer {
             return;
         }
         this.initialized = true;
-
-        const storageOperations = await this.container
-            .resolve(StorageOperationsFactory)
-            .create(cmsContext);
-        await storageOperations.beforeInit(cmsContext);
-        this.container.registerInstance(StorageOperations, storageOperations);
-        if (storageOperations.init) {
-            await storageOperations.init(cmsContext);
-        }
 
         // Apply ContextPlugin instances from extraPlugins (they may register event handlers etc.)
         const config = this.container.resolve(HeadlessCmsEnhancerConfig);

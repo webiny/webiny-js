@@ -61,7 +61,7 @@ const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
 
     return {
         name: "dynamodb",
-        beforeInit: async () => {
+        beforeInit: () => {
             entries.dataLoaders.clearAll();
         },
         getEntities: () => entities,
@@ -80,7 +80,7 @@ const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
 class DynamoDbStorageOperationsFactoryImpl
     implements StorageOperationsFactoryAbstraction.Interface
 {
-    public async create(context: CmsContext) {
+    public create(context: CmsContext) {
         return createDynamoDbStorageOperations({
             plugins: context.plugins,
             container: context.container

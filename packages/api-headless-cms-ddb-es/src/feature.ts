@@ -147,7 +147,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
 
     return {
         name: "dynamodb:opensearch",
-        beforeInit: async context => {
+        beforeInit: context => {
             const dbRegistry = context.container.resolve(DbRegistry);
 
             dbRegistry.register({
@@ -183,7 +183,7 @@ class OpenSearchStorageOperationsFactoryImpl
 {
     public constructor(private readonly openSearchClient: OpenSearchClient.Interface) {}
 
-    public async create(context: CmsContext) {
+    public create(context: CmsContext) {
         return createOpenSearchStorageOperations({
             elasticsearch: this.openSearchClient.use(),
             plugins: context.plugins,

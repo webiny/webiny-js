@@ -54,7 +54,7 @@ const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
 
     return {
         name: "sql",
-        beforeInit: async () => {
+        beforeInit: () => {
             /* Schema managers handle table creation lazily on first access. */
         },
         groups,
@@ -70,7 +70,7 @@ interface ISqlStorageOperationsConfig {
 }
 
 class SqlStorageOperationsFactoryImpl implements StorageOperationsFactoryAbstraction.Interface {
-    public async create(context: CmsContext) {
+    public create(context: CmsContext) {
         return createSqlStorageOperations({
             plugins: context.plugins,
             container: context.container
