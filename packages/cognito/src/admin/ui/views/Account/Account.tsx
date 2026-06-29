@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import omit from "lodash/omit.js";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useFeature } from "@webiny/app";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { AvatarImage } from "../../components/AvatarImage/index.js";
-import { GET_CURRENT_USER, UPDATE_CURRENT_USER } from "./graphql.js";
 import { config as appConfig } from "@webiny/app/config.js";
+import { GetCurrentUserFeature } from "~/admin/features/account/getCurrentUser/index.js";
+import { UpdateCurrentUserFeature } from "~/admin/features/account/updateCurrentUser/index.js";
 
 import {
     SimpleForm,
@@ -35,15 +36,22 @@ interface UserAccountFormData {
 
 export const UserAccountForm = () => {
     const [isSaving, setSaving] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [user, setUser] = useState<Record<string, any>>({});
     const toast = useToast();
     const { identity } = useIdentity();
     const passwordValidator = usePasswordValidator();
-    const currentUser = useQuery(GET_CURRENT_USER);
-    const [updateUser] = useMutation(UPDATE_CURRENT_USER);
+    const { useCase: getCurrentUser } = useFeature(GetCurrentUserFeature);
+    const { useCase: updateCurrentUser } = useFeature(UpdateCurrentUserFeature);
 
-    const user = currentUser.loading ? {} : currentUser.data.adminUsers.user.data;
+    useEffect(() => {
+        getCurrentUser.execute().then(data => {
+            setUser(data);
+            setIsLoading(false);
+        });
+    }, []);
 
-    const isFormLoading = isSaving || currentUser.loading;
+    const isFormLoading = isSaving || isLoading;
     const loaderMessage = isSaving ? "Saving account..." : "Loading account...";
 
     const emailIsDisabled = appConfig.getKey(
@@ -55,35 +63,31 @@ export const UserAccountForm = () => {
 
     const onSubmit = async (formData: UserAccountFormData) => {
         setSaving(true);
-        const { data: response } = await updateUser({
-            variables: { data: omit(formData, ["id", "external"]) }
-        });
 
-        const { error } = response.adminUsers.updateCurrentUser;
-        setSaving(false);
+        try {
+            await updateCurrentUser.execute(omit(formData, ["id", "external"]));
 
-        if (error) {
+            identity.update({
+                displayName: `${formData.firstName} ${formData.lastName}`,
+                profile: {
+                    ...(identity.profile || {}),
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    avatar: formData.avatar
+                }
+            });
+
+            toast.showSuccessToast({ title: "Account updated successfully!" });
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Unknown error";
             toast.showWarningToast({
                 title: "Error updating user account",
-                description: error.message,
+                description: message,
                 duration: Infinity
             });
-            return;
+        } finally {
+            setSaving(false);
         }
-
-        // TODO: set new roles/teams into the identity context
-
-        identity.update({
-            displayName: `${formData.firstName} ${formData.lastName}`,
-            profile: {
-                ...(identity.profile || {}),
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                avatar: formData.avatar
-            }
-        });
-
-        toast.showSuccessToast({ title: "Account updated successfully!" });
     };
 
     return (
