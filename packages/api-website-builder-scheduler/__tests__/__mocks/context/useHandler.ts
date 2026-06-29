@@ -1,6 +1,6 @@
-import { useContextHandler } from "@webiny/testing";
-import type { UseContextHandlerParams } from "@webiny/testing";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { WebsiteBuilderSchedulerFeature } from "~/WebsiteBuilderSchedulerFeature.js";
 import { SchedulerFeature, SchedulerService } from "@webiny/api-scheduler";
@@ -10,10 +10,10 @@ import { RedirectModelPlugin } from "@webiny/api-website-builder/domain/redirect
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
 import { createMockBackgroundTasks } from "../mockBackgroundTasks.js";
 
-type Params = Omit<UseContextHandlerParams, "features">;
+type Params = Omit<CmsTestHandlerParams, "features">;
 
 export const useHandler = <C extends ApiCoreContext = ApiCoreContext>(params: Params = {}) => {
-    const inner = useContextHandler<C>({
+    const { getContext } = createCmsTestHandler({
         ...params,
         plugins: [
             createWebsiteBuilder(),
@@ -30,9 +30,9 @@ export const useHandler = <C extends ApiCoreContext = ApiCoreContext>(params: Pa
     });
 
     return {
-        identity: inner.identity,
-        tenant: inner.tenant,
+        identity: { id: "id-12345678", type: "admin", displayName: "John Doe" },
+        tenant: { id: "root" },
         elasticsearch: createTestOpenSearchClient(),
-        handler: inner.context
+        handler: () => getContext<C>()
     };
 };

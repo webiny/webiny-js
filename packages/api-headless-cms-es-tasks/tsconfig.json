@@ -10,6 +10,8 @@
     { "path": "../background-tasks" },
     { "path": "../error" },
     { "path": "../utils" },
+    { "path": "../handler-db" },
+    { "path": "../handler-graphql" },
     { "path": "../testing" }
   ],
   "compilerOptions": {
@@ -35,6 +37,10 @@
       "@webiny/error": ["../error/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-db": ["../handler-db/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/testing/*": ["../testing/src/*"],
       "@webiny/testing": ["../testing/src"]
     }

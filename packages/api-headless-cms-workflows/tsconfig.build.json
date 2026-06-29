@@ -10,6 +10,7 @@
     { "path": "../error/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../shared-aco/tsconfig.build.json" },
+    { "path": "../api-opensearch/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
@@ -37,6 +38,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/shared-aco/*": ["../shared-aco/src/*"],
       "@webiny/shared-aco": ["../shared-aco/src"],
+      "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
+      "@webiny/api-opensearch": ["../api-opensearch/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
