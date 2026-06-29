@@ -13,6 +13,7 @@ describe("Lexical State Transformer", () => {
         expect(output).toEqual([
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-heading",
                     __parent: "root",
                     __prev: null,
@@ -21,6 +22,8 @@ describe("Lexical State Transformer", () => {
                     __first: "2",
                     __last: "2",
                     __size: 1,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
@@ -34,6 +37,7 @@ describe("Lexical State Transformer", () => {
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-paragraph",
                     __parent: "root",
                     __prev: "1",
@@ -42,6 +46,8 @@ describe("Lexical State Transformer", () => {
                     __first: null,
                     __last: null,
                     __size: 0,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
@@ -54,6 +60,7 @@ describe("Lexical State Transformer", () => {
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-paragraph",
                     __parent: "root",
                     __prev: "3",
@@ -62,6 +69,8 @@ describe("Lexical State Transformer", () => {
                     __first: "5",
                     __last: "8",
                     __size: 3,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
@@ -74,6 +83,7 @@ describe("Lexical State Transformer", () => {
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-paragraph",
                     __parent: "root",
                     __prev: "4",
@@ -82,6 +92,8 @@ describe("Lexical State Transformer", () => {
                     __first: "10",
                     __last: "10",
                     __size: 1,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
@@ -94,6 +106,7 @@ describe("Lexical State Transformer", () => {
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-paragraph",
                     __parent: "root",
                     __prev: "9",
@@ -102,6 +115,8 @@ describe("Lexical State Transformer", () => {
                     __first: null,
                     __last: null,
                     __size: 0,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
@@ -114,6 +129,7 @@ describe("Lexical State Transformer", () => {
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-quote",
                     __parent: "root",
                     __prev: "11",
@@ -122,6 +138,8 @@ describe("Lexical State Transformer", () => {
                     __first: "13",
                     __last: "14",
                     __size: 2,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
@@ -134,6 +152,7 @@ describe("Lexical State Transformer", () => {
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-paragraph",
                     __parent: "root",
                     __prev: "12",
@@ -142,6 +161,8 @@ describe("Lexical State Transformer", () => {
                     __first: null,
                     __last: null,
                     __size: 0,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
@@ -154,6 +175,7 @@ describe("Lexical State Transformer", () => {
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-list",
                     __parent: "root",
                     __prev: "15",
@@ -162,6 +184,8 @@ describe("Lexical State Transformer", () => {
                     __first: "17",
                     __last: "21",
                     __size: 3,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
@@ -177,6 +201,7 @@ describe("Lexical State Transformer", () => {
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-paragraph",
                     __parent: "root",
                     __prev: "16",
@@ -185,6 +210,8 @@ describe("Lexical State Transformer", () => {
                     __first: null,
                     __last: null,
                     __size: 0,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
