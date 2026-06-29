@@ -19,20 +19,6 @@ export type UiStatePlugin = Plugin & {
     render(): React.ReactElement;
 };
 
-export interface UploadedFile {
-    id: string;
-    name: string;
-    type: string;
-    size: number;
-    key: string;
-}
-
-export type FileUploaderPlugin = Plugin & {
-    type: "file-uploader";
-    name: "file-uploader";
-    upload(file: File, options: UploadOptions): Promise<UploadedFile>;
-};
-
 export type { Plugin };
 
 export interface ImageProps {

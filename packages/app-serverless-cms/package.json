@@ -20,7 +20,6 @@
     "@webiny/app-admin-ui": "0.0.0",
     "@webiny/app-audit-logs": "0.0.0",
     "@webiny/app-file-manager": "0.0.0",
-    "@webiny/app-file-manager-s3": "0.0.0",
     "@webiny/app-graphql-playground": "0.0.0",
     "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-headless-cms-scheduler": "0.0.0",
