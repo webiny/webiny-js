@@ -19,6 +19,10 @@ import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/Nul
 import { WebhookProviderFeature } from "~/features/webhooks/index.js";
 import { RequestContextFeature } from "~/features/requestContext/index.js";
 import { ApiCoreSchemaFactory } from "~/graphql/ApiCoreSchemaFactory.js";
+import { SecuritySchemaFactory } from "~/graphql/security/SecuritySchemaFactory.js";
+import { UsersSchemaFactory } from "~/graphql/users/UsersSchemaFactory.js";
+import { SystemSchemaFactory } from "~/graphql/system/SystemSchemaFactory.js";
+import { WcpSchemaFactory } from "~/graphql/wcp/WcpSchemaFactory.js";
 
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
@@ -41,6 +45,13 @@ export const ApiCoreFeature = createFeature({
         RequestContextFeature.register(container);
         container.register(NullWebhookDispatcher).inSingletonScope();
         WebhookProviderFeature.register(container);
+
+        // Core API GraphQL schema: a base factory (root types + scalars) plus one
+        // CoreGraphQLSchemaFactory per domain.
         container.register(ApiCoreSchemaFactory);
+        container.register(SecuritySchemaFactory);
+        container.register(UsersSchemaFactory);
+        container.register(SystemSchemaFactory);
+        container.register(WcpSchemaFactory);
     }
 });

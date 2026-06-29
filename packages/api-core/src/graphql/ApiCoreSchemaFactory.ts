@@ -11,10 +11,6 @@ import {
     DateScalar,
     TimeScalar
 } from "@webiny/handler-graphql/builtInTypes/index.js";
-import { addSecuritySchema } from "~/graphql/security/index.js";
-import { addSystemSchema } from "~/graphql/system/addSystemSchema.js";
-import { addUsersSchema } from "~/graphql/users/addUsersSchema.js";
-import { addWcpSchema } from "~/graphql/wcp/addWcpSchema.js";
 
 const BASE_TYPES = `
     type Query
@@ -54,19 +50,18 @@ const SCALAR_RESOLVERS: Record<string, any> = {
     Time: TimeScalar
 };
 
+/**
+ * The base of the core API schema: the root Query/Mutation, shared scalars and their
+ * implementations, and the shared Error/BooleanResponse types. The actual domains (security,
+ * users, system, wcp) are their own CoreGraphQLSchemaFactory implementations — order between
+ * core factories does not matter, the engine merges all typeDefs in a single pass.
+ */
 class ApiCoreSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
-        // Base types + scalars must come before any extend type directives
         builder.addTypeDefs(BASE_TYPES);
 
-        // Scalar implementations
+        // Scalar implementations (scalar type objects, not container-resolving resolvers).
         builder.addLegacyResolvers(SCALAR_RESOLVERS);
-
-        // DI-native schema contributors.
-        addSecuritySchema(builder);
-        addUsersSchema(builder);
-        addSystemSchema(builder);
-        addWcpSchema(builder);
 
         return builder;
     }
