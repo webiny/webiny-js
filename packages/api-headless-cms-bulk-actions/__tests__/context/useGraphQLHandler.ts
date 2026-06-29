@@ -1,18 +1,8 @@
 import { getIntrospectionQuery } from "graphql";
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
-import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import {
-    GraphQLEngineFeature,
-    registerLegacyPluginsViaGqlContextualSchema
-} from "@webiny/handler-graphql";
-import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
+import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { HeadlessCmsContextualSchema } from "@webiny/api-headless-cms/HeadlessCmsContextualSchema.js";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
-import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
 import { until } from "@webiny/project-utils/testing/helpers/until.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
@@ -23,11 +13,6 @@ import {
 } from "@webiny/background-tasks/api";
 import { createHcmsBulkActions } from "~/index";
 import { createIdentity, createPermissions } from "~tests/context/helpers";
-import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
-import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
-import { RootTenantInitializer } from "./handlers/RootTenantInitializer";
-import { AuthTriggerHandler } from "./handlers/AuthTriggerHandler";
-import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 
 export interface UseGQLHandlerParams {
     identity?: IdentityData;
@@ -49,17 +34,10 @@ interface InvokeParams {
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { plugins = [] } = params;
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-
-    const resolvedIdentity = params.identity ?? createIdentity();
-    const resolvedPermissions = params.permissions ?? (createPermissions() as SecurityPermission[]);
-
     const extraCmsPlugins = ([plugins] as any[]).flat(Infinity as 1).filter(Boolean);
 
-    // createBackgroundTaskContext/GraphQL and createHcmsBulkActions call ctx.tenancy/ctx.security
-    // during enhance. Factory registrations run after class registrations in resolveAll, so they
-    // run after ApiCoreContextEnhancerImpl which sets those properties.
+    // createBackgroundTaskContext/GraphQL and createHcmsBulkActions are legacy gql plugins applied
+    // via the contextual-schema path on /graphql (after the CMS contextual schema).
     const latePlugins = [
         createBackgroundTaskContext(),
         createBackgroundTaskGraphQL(),
@@ -68,47 +46,16 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         .flat(Infinity as 1)
         .filter(Boolean);
 
-    const handler = createTestHttpHandler({
-        root: container => {
-            container.registerInstance(TestIdentity, resolvedIdentity);
-            container.registerInstance(TestPermissions, resolvedPermissions);
-            container.register(TestAuthenticator);
-            container.register(TestAuthorizer);
-            container.registerDecorator(AuthTriggerHandler);
-            container.registerDecorator(RootTenantInitializer);
-        },
-        request: async container => {
-            const wcpLicense = await loadWcpLicense(
-                params.testProjectLicense ?? createTestWcpLicense()
-            );
-            registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            ApiCoreFeature.register(container, { wcpLicense });
-            processLegacyPlugins(container, cmsStorage.plugins);
-            HeadlessCmsFeature.register(container, {
-                type: "manage",
-                extraPlugins: extraCmsPlugins
-            });
+    const { handler, invoke } = createCmsTestHandler({
+        identity: params.identity ?? createIdentity(),
+        permissions: params.permissions ?? (createPermissions() as SecurityPermission[]),
+        testProjectLicense: params.testProjectLicense,
+        extraCmsPlugins,
+        features: container => {
             container.register(HeadlessCmsContextualSchema);
-
             registerLegacyPluginsViaGqlContextualSchema(container, latePlugins);
-
-            GraphQLEngineFeature.register(container);
         }
     });
-
-    const invoke = async ({ httpMethod = "POST", body, headers = {} }: InvokeParams) => {
-        const response = await handler({
-            method: httpMethod,
-            path: "/graphql",
-            headers: {
-                ["x-tenant"]: "root",
-                ["content-type"]: "application/json",
-                ...headers
-            },
-            body
-        });
-        return [response.body, response];
-    };
 
     const introspect = async () => {
         return invoke({
@@ -122,7 +69,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         params,
         until,
         handler,
-        invoke,
+        invoke: (p: InvokeParams) => invoke(p),
         introspect
     };
 };
