@@ -31,7 +31,7 @@ const KeyValueTagsList = createObjectFieldRenderer<"keyValueTags">(({ field }) =
 
     return (
         <>
-            {field.label && <FormComponentLabel text={field.label} />}
+            {field.label && <FormComponentLabel text={field.label} hint={field.help} />}
             {field.description && <FormComponentDescription text={field.description} />}
             {hasItems ? (
                 <div className={"flex flex-col gap-md"}>

@@ -65,7 +65,7 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                     .text()
                     .label("Slug")
                     .required("Slug is required")
-                    .computedUntilDirty(form => {
+                    .computedUntilDirty(({ form }) => {
                         const name = String(form.field("name").getValue() ?? "");
                         return name
                             .trim()

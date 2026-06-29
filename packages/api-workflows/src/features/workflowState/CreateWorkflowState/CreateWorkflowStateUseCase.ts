@@ -10,6 +10,7 @@ import {
     CreateWorkflowStateUseCase as UseCase
 } from "./abstractions.js";
 import { WorkflowStateAfterCreateEvent } from "./events.js";
+import { WorkflowStateContextProvider } from "./WorkflowStateContextProvider.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 import { WorkflowStateRecordState } from "~/domain/workflowState/abstractions.js";
 import {
@@ -27,7 +28,8 @@ class CreateWorkflowStateUseCaseImpl implements UseCase.Interface {
         private eventPublisher: EventPublisher.Interface,
         private listWorkflows: ListWorkflowsUseCase.Interface,
         private getTargetState: GetTargetWorkflowStateUseCase.Interface,
-        private repository: CreateWorkflowStateRepository.Interface
+        private repository: CreateWorkflowStateRepository.Interface,
+        private targetContextProvider: WorkflowStateContextProvider.Interface
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
@@ -98,6 +100,11 @@ class CreateWorkflowStateUseCaseImpl implements UseCase.Interface {
 
         const identity = this.identityContext.getIdentity();
 
+        const targetContext = await this.targetContextProvider.provide({
+            app: input.app,
+            targetRevisionId: input.targetRevisionId
+        });
+
         const record: CreateWorkflowStateRepository.Input = {
             workflowId: workflow.id,
             comment: undefined,
@@ -107,6 +114,7 @@ class CreateWorkflowStateUseCaseImpl implements UseCase.Interface {
             targetId,
             isActive: true,
             targetRevisionId: input.targetRevisionId,
+            targetContext,
             steps: workflow.steps.map(step => ({
                 ...step,
                 state: WorkflowStateRecordState.pending,
@@ -144,6 +152,7 @@ export const CreateWorkflowStateUseCase = UseCase.createImplementation({
         EventPublisher,
         ListWorkflowsUseCase,
         GetTargetWorkflowStateUseCase,
-        CreateWorkflowStateRepository
+        CreateWorkflowStateRepository,
+        WorkflowStateContextProvider
     ]
 });

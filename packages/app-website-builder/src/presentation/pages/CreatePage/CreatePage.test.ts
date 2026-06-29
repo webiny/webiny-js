@@ -30,12 +30,12 @@ function createBaseForm(config?: Partial<IFormModelConfig>) {
                 .text()
                 .label("Title")
                 .required("Title is required")
-                .onBlur((value, f) => {
-                    const currentPath = f.field("path").getValue();
+                .onBlur((value, { form }) => {
+                    const currentPath = form.field("path").getValue();
                     if (currentPath) {
                         return;
                     }
-                    f.field("path").setValue(PagePath.fromTitle(String(value)).toString());
+                    form.field("path").setValue(PagePath.fromTitle(String(value)).toString());
                 }),
             path: fields
                 .text()

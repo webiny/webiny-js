@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import type { IWorkflowStep } from "../workflow/abstractions.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 export enum WorkflowStateRecordState {
     pending = "pending",
@@ -38,6 +39,7 @@ export interface IWorkflowStateRecord<
     savedOn: Date;
     createdBy: IWorkflowStateIdentity;
     savedBy: IWorkflowStateIdentity;
+    targetContext: GenericRecord;
 }
 
 export interface IEnrichedWorkflowStateRecordStep extends IWorkflowStateRecordStep {
@@ -61,6 +63,7 @@ export interface IWorkflowState {
     readonly savedOn: Date;
     readonly createdBy: IWorkflowStateIdentity;
     readonly savedBy: IWorkflowStateIdentity;
+    readonly targetContext: GenericRecord;
     readonly done: boolean;
     readonly currentStep: IEnrichedWorkflowStateRecordStep;
     readonly nextStep: IEnrichedWorkflowStateRecordStep | null;

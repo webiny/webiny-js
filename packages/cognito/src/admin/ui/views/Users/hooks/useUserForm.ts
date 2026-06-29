@@ -1,13 +1,14 @@
-import { useCallback } from "react";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useCallback, useEffect, useState } from "react";
 import isEmpty from "lodash/isEmpty.js";
-import { useRoute, useRouter, useWcp } from "@webiny/app-admin";
-import { CREATE_USER, LIST_USERS, READ_USER, UPDATE_USER } from "~/admin/ui/views/Users/graphql.js";
 import omit from "lodash/omit.js";
+import { useFeature } from "@webiny/app";
+import { useRoute, useRouter } from "@webiny/app-admin";
+import { GetUserFeature } from "~/admin/features/users/getUser/index.js";
+import type { IGetUserGatewayResult } from "~/admin/features/users/getUser/abstractions/GetUserGateway.js";
+import { CreateUserFeature } from "~/admin/features/users/createUser/index.js";
+import { UpdateUserFeature } from "~/admin/features/users/updateUser/index.js";
 import { Routes } from "~/admin/routes.js";
 import { useToast } from "@webiny/admin-ui";
-
-export type UseUserForm = ReturnType<typeof useUserForm>;
 
 interface SubmitUserCallableParams {
     id?: string;
@@ -30,87 +31,83 @@ export function useUserForm() {
     const { route } = useRoute(Routes.Users.List);
     const toast = useToast();
 
-    const wcp = useWcp();
-    const teams = wcp.canUseTeams();
+    const { useCase: getUser } = useFeature(GetUserFeature);
+    const { useCase: createUser } = useFeature(CreateUserFeature);
+    const { useCase: updateUser } = useFeature(UpdateUserFeature);
 
     const id = route.params.id;
     const newUser = route.params.new === true;
 
-    const { data, loading: userLoading } = useQuery(READ_USER({ teams }), {
-        variables: { id },
-        skip: !id,
-        onCompleted: data => {
-            if (!data) {
-                return;
-            }
+    const [user, setUser] = useState<IGetUserGatewayResult | undefined>(undefined);
+    const [userLoading, setUserLoading] = useState(false);
+    const [mutationLoading, setMutationLoading] = useState(false);
 
-            const { error } = data.adminUsers.user;
-            if (error) {
+    useEffect(() => {
+        if (!id) {
+            return;
+        }
+        setUserLoading(true);
+        getUser
+            .execute({ id })
+            .then(data => {
+                setUser(data);
+                setUserLoading(false);
+            })
+            .catch(error => {
                 goToRoute(Routes.Users.List);
                 toast.showWarningToast({
                     title: "Error loading user profile",
                     description: error.message,
                     duration: Infinity
                 });
-            }
-        }
-    });
+                setUserLoading(false);
+            });
+    }, [id]);
 
-    const [create, { loading: createLoading }] = useMutation(CREATE_USER, {
-        refetchQueries: [{ query: LIST_USERS }]
-    });
-
-    const [update, { loading: updateLoading }] = useMutation(UPDATE_USER({ teams }), {
-        refetchQueries: [{ query: LIST_USERS }]
-    });
-
-    const loading = userLoading || createLoading || updateLoading;
+    const loading = userLoading || mutationLoading;
 
     const onSubmit = useCallback<SubmitUserCallable>(
         async data => {
-            const { id, ...rest } = data;
-            const [operation, args] = !newUser
-                ? [update, { variables: { id, data: omit(rest, ["external"]) } }]
-                : [create, { variables: { data } }];
+            setMutationLoading(true);
 
-            const result = await operation(args);
+            try {
+                if (newUser) {
+                    const resultUser = await createUser.execute({ data });
+                    goToRoute(Routes.Users.List, { id: resultUser.id });
+                } else {
+                    const { id: userId, ...rest } = data;
+                    await updateUser.execute({
+                        id: userId as string,
+                        data: omit(rest, ["external"])
+                    });
+                }
 
-            const { data: user, error } = result.data.adminUsers.user;
-
-            if (error) {
+                toast.showSuccessToast({
+                    title: "User saved successfully."
+                });
+            } catch (error) {
+                const message = error instanceof Error ? error.message : "Unknown error";
                 toast.showWarningToast({
                     title: "Error updating user profile",
-                    description: error.message,
+                    description: message,
                     duration: Infinity
                 });
-                return;
+            } finally {
+                setMutationLoading(false);
             }
-
-            if (newUser) {
-                goToRoute(Routes.Users.List, { id: user.id });
-            }
-            toast.showSuccessToast({
-                title: "User saved successfully."
-            });
         },
         [id, newUser]
     );
-
-    const user = userLoading ? {} : data ? data.adminUsers.user.data : {};
 
     const showEmptyView = !newUser && !userLoading && isEmpty(user);
 
     return {
         id,
         loading,
-        user: {
-            ...user,
-            group: user.group ? user.group.id : undefined,
-            team: user.team ? user.team.id : undefined
-        },
+        user,
         onSubmit,
         isNewUser: newUser,
-        fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+        fullName: `${user?.firstName || ""} ${user?.lastName || ""}`.trim(),
         showEmptyView,
         createUser() {
             goToRoute(Routes.Users.List, { new: true });

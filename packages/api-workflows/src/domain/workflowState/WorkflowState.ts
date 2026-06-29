@@ -95,6 +95,10 @@ export class WorkflowState implements IWorkflowState {
         return this.record.savedBy;
     }
 
+    get targetContext() {
+        return this.record.targetContext;
+    }
+
     get done(): boolean {
         /**
          * A just-in-case check.

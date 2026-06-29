@@ -69,7 +69,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
         );
     }
 
-    const isSelf = userForm.user.id === identity.id;
+    const isSelf = userForm.user?.id === identity.id;
     const isDisabled = isExternal || isSelf;
 
     return (

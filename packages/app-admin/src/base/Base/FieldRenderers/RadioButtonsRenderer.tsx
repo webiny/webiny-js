@@ -15,6 +15,7 @@ export const RadioButtonsRenderer = createFieldRenderer(({ field }) => {
     return (
         <RadioGroup
             label={field.label}
+            hint={field.help}
             description={field.description}
             note={field.note}
             required={field.required}

@@ -40,6 +40,7 @@ export const WORKFLOW_STATE_FIELDS = /* GraphQL */ `
     title
     targetId
     targetRevisionId
+    targetContext
     comment
     state
     createdOn
