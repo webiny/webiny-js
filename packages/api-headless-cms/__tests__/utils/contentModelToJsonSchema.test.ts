@@ -110,8 +110,14 @@ describe("CmsModelToJsonSchemaConverter", () => {
 
             const schema = converter.convert(ast, { name: "Test", description: null });
 
-            expect(schema.properties!["image"].type).toBe("string");
-            expect(schema.properties!["image"].description).toContain("File identifier");
+            expect(schema.properties!["image"].type).toBe("object");
+            expect(schema.properties!["image"].properties!["tool"].const).toBe("cmsResolveImage");
+            expect(schema.properties!["image"].properties!["params"].properties!["id"].type).toBe(
+                "string"
+            );
+            expect(
+                schema.properties!["image"].properties!["params"].properties!["id"].description
+            ).toContain("File ID");
         });
 
         it("should convert file fields with imagesOnly", () => {
@@ -129,7 +135,10 @@ describe("CmsModelToJsonSchemaConverter", () => {
 
             const schema = converter.convert(ast, { name: "Test", description: null });
 
-            expect(schema.properties!["photo"].description).toContain("Image file");
+            expect(schema.properties!["photo"].type).toBe("object");
+            expect(
+                schema.properties!["photo"].properties!["params"].properties!["id"].description
+            ).toContain("Image file");
         });
     });
 
@@ -560,7 +569,10 @@ describe("CmsModelToJsonSchemaConverter", () => {
             expect(variant.properties!["name"].type).toBe("string");
             expect(variant.properties!["price"].type).toBe("number");
             expect(variant.properties!["images"].type).toBe("array");
-            expect(variant.properties!["images"].items!.type).toBe("string");
+            expect(variant.properties!["images"].items!.type).toBe("object");
+            expect(variant.properties!["images"].items!.properties!["tool"].const).toBe(
+                "cmsResolveImage"
+            );
 
             const options = variant.properties!["options"];
             expect(options.type).toBe("array");
