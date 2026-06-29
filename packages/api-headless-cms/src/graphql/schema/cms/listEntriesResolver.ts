@@ -5,6 +5,7 @@ import {
     getModel,
     getErrorMessage,
     buildFieldsSelection,
+    expandFieldWildcards,
     transformSortToArray,
     transformWhereToNested
 } from "./helpers.js";
@@ -32,7 +33,8 @@ export const createListEntriesResolver = () => {
             const apiType: ApiEndpoint = preview ? "preview" : "read";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
-            const fieldsSelection = buildFieldsSelection(fields);
+            const expandedFields = expandFieldWildcards(fields, model, context);
+            const fieldsSelection = buildFieldsSelection(expandedFields);
 
             // Transform sort to array format expected by the underlying GraphQL schema.
             // Handles both object format {createdOn: "desc"} and array format ["createdOn_DESC"].
