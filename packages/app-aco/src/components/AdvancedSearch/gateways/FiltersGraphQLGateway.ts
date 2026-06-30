@@ -5,7 +5,12 @@ import type {
     CreateFilterResponse,
     DeleteFilterResponse,
     GetFilterResponse,
+    GetFilterQueryVariables,
+    CreateFilterVariables,
+    UpdateFilterVariables,
+    DeleteFilterVariables,
     ListFiltersResponse,
+    ListFiltersQueryVariables,
     UpdateFilterPayload,
     UpdateFilterResponse
 } from "./filters.types.js";
@@ -26,7 +31,7 @@ export class FiltersGraphQLGateway implements FiltersGatewayInterface {
     }
 
     async list(namespace: string) {
-        const response = await this.client.execute<ListFiltersResponse>({
+        const response = await this.client.execute<ListFiltersResponse, ListFiltersQueryVariables>({
             query: LIST_FILTERS,
             variables: {
                 namespace,
@@ -48,7 +53,7 @@ export class FiltersGraphQLGateway implements FiltersGatewayInterface {
     }
 
     async get(id: string) {
-        const response = await this.client.execute<GetFilterResponse>({
+        const response = await this.client.execute<GetFilterResponse, GetFilterQueryVariables>({
             query: GET_FILTER,
             variables: { id }
         });
@@ -67,7 +72,7 @@ export class FiltersGraphQLGateway implements FiltersGatewayInterface {
     }
 
     async create(filter: CreateFilterPayload) {
-        const response = await this.client.execute<CreateFilterResponse>({
+        const response = await this.client.execute<CreateFilterResponse, CreateFilterVariables>({
             query: CREATE_FILTER,
             variables: {
                 data: filter
@@ -94,7 +99,7 @@ export class FiltersGraphQLGateway implements FiltersGatewayInterface {
             throw new Error("Error while updating filter, missing id.");
         }
 
-        const response = await this.client.execute<UpdateFilterResponse>({
+        const response = await this.client.execute<UpdateFilterResponse, UpdateFilterVariables>({
             query: UPDATE_FILTER,
             variables: {
                 id,
@@ -121,7 +126,7 @@ export class FiltersGraphQLGateway implements FiltersGatewayInterface {
     }
 
     async delete(id: string) {
-        const response = await this.client.execute<DeleteFilterResponse>({
+        const response = await this.client.execute<DeleteFilterResponse, DeleteFilterVariables>({
             query: DELETE_FILTER,
             variables: {
                 id

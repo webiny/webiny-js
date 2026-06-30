@@ -56,7 +56,7 @@ class CreateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
     async execute(folder: FolderGatewayDto) {
         const fields = await this.folderModelProvider.getGraphQLSelection();
 
-        const response = await this.client.execute<CreateFolderResponse>({
+        const response = await this.client.execute<CreateFolderResponse, CreateFolderVariables>({
             query: CREATE_FOLDER(fields),
             variables: {
                 data: {

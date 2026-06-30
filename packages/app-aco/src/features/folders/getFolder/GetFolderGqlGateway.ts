@@ -46,7 +46,7 @@ class GetFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
     async execute(id: string) {
         const fields = await this.folderModelProvider.getGraphQLSelection();
 
-        const response = await this.client.execute<GetFolderResponse>({
+        const response = await this.client.execute<GetFolderResponse, GetFolderQueryVariables>({
             query: GET_FOLDER(fields),
             variables: { id }
         });

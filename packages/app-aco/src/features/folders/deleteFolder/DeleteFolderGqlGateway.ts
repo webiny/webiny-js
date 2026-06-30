@@ -34,7 +34,7 @@ class DeleteFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
 
     async execute(id: string) {
-        const response = await this.client.execute<DeleteFolderResponse>({
+        const response = await this.client.execute<DeleteFolderResponse, DeleteFolderVariables>({
             query: DELETE_FOLDER,
             variables: {
                 id

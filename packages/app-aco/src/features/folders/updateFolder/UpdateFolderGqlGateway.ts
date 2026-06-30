@@ -51,7 +51,7 @@ class UpdateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
 
         const { id, title, slug, permissions, parentId, extensions } = folder;
 
-        const response = await this.client.execute<UpdateFolderResponse>({
+        const response = await this.client.execute<UpdateFolderResponse, UpdateFolderVariables>({
             query: UPDATE_FOLDER(fields),
             variables: {
                 id,
