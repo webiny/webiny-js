@@ -158,8 +158,7 @@ export const pullRequests = createWorkflow({
                 "is-fork-pr": "${{ steps.is-fork-pr.outputs.is-fork-pr }}",
                 "changed-packages": "${{ steps.detect-changed-packages.outputs.changed-packages }}",
                 "latest-webiny-version":
-                    "${{ steps.latest-webiny-version.outputs.latest-webiny-version }}",
-                "skip-ai-fix": "${{ steps.skip-ai-fix-check.outputs.skip-ai-fix }}"
+                    "${{ steps.latest-webiny-version.outputs.latest-webiny-version }}"
             },
             steps: [
                 {
@@ -208,14 +207,6 @@ export const pullRequests = createWorkflow({
                     name: "Get latest Webiny version on NPM",
                     id: "latest-webiny-version",
                     run: addToOutputs("latest-webiny-version", "$(npm view @webiny/cli version)")
-                },
-                {
-                    name: "Check if AI fix should be skipped",
-                    id: "skip-ai-fix-check",
-                    run: addToOutputs(
-                        "skip-ai-fix",
-                        "$(if git log -1 --format=%B ${{ github.event.pull_request.head.sha }} | grep -q '\\[skip-ai\\]'; then echo 'true'; else echo 'false'; fi)"
-                    )
                 }
             ]
         }),
@@ -330,69 +321,6 @@ export const pullRequests = createWorkflow({
                     ],
                     { "working-directory": DIR_WEBINY_JS }
                 )
-            ]
-        }),
-        aiFixStaticAnalysis: createJob({
-            name: "AI Fix Static Analysis",
-            needs: ["constants", "staticCodeAnalysis"],
-            if: "failure() && github.event.pull_request.user.login == 'adrians5j' && needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true' && needs.constants.outputs.skip-ai-fix != 'true'",
-            permissions: { contents: "write" },
-            checkout: { path: DIR_WEBINY_JS },
-            env: { ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}" },
-            steps: [
-                ...yarnCacheSteps,
-                {
-                    name: "Install dependencies",
-                    run: "yarn --immutable",
-                    "working-directory": DIR_WEBINY_JS
-                },
-                // Run deterministic fixes as real shell commands so changes definitely land on disk.
-                // Lint runs first because auto-fixes can produce code that needs re-formatting.
-                {
-                    name: "Fix lint issues (auto-fixable)",
-                    run: "yarn lint:fix",
-                    "working-directory": DIR_WEBINY_JS,
-                    "continue-on-error": true
-                },
-                {
-                    name: "Fix code formatting",
-                    run: "yarn format:fix",
-                    "working-directory": DIR_WEBINY_JS,
-                    "continue-on-error": true
-                },
-                // Let Claude handle whatever can't be auto-fixed: adio, ts-configs,
-                // remaining lint errors, and check:node-modules:ci.
-                {
-                    name: "Install Claude Code",
-                    run: "npm install -g @anthropic-ai/claude-code"
-                },
-                {
-                    name: "AI Fix Remaining Issues",
-                    "working-directory": DIR_WEBINY_JS,
-                    run: [
-                        `claude --dangerously-skip-permissions -p`,
-                        `"Some static analysis checks may still be failing. Fix any remaining issues:`,
-                        `1. Run 'yarn adio' — if it reports dependency errors, fix the relevant package.json files.`,
-                        `2. Run 'yarn check-ts-configs' — if it reports errors, fix them.`,
-                        `3. Run 'yarn lint' — if there are still non-auto-fixable errors, read the affected files and fix them.`,
-                        `4. Run 'yarn check:node-modules:ci' — if it reports errors, fix them.`,
-                        `Work in the current directory."`
-                    ].join(" ")
-                },
-                // Re-run yarn so yarn.lock is updated if package.json files were modified (e.g. by adio fixes).
-                {
-                    name: "Update yarn.lock",
-                    run: "yarn",
-                    "working-directory": DIR_WEBINY_JS
-                },
-                {
-                    name: "Commit fixes",
-                    uses: "stefanzweifel/git-auto-commit-action@v5",
-                    with: {
-                        commit_message: "chore: ai fix static analysis [skip-ai]",
-                        repository: DIR_WEBINY_JS
-                    }
-                }
             ]
         }),
         ...createVitestTestsJobs(),
