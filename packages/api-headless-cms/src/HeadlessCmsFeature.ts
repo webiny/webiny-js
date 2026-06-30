@@ -5,7 +5,11 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/a
 import { HeadlessCmsInitializerImpl, HeadlessCmsEnhancerConfig } from "./HeadlessCmsInitializer.js";
 import { createCmsRoute } from "./createCmsRoute.js";
 import { RequestContextInitializer } from "@webiny/event-handler-core";
-import { createRequestBody, processRequestBody } from "@webiny/handler-graphql";
+import {
+    createRequestBody,
+    processRequestBody,
+    registerLegacyPluginsViaGqlContextualSchema
+} from "@webiny/handler-graphql";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { Benchmark } from "@webiny/api/Benchmark.js";
 import { PluginsContainer } from "@webiny/plugins";
@@ -21,7 +25,6 @@ import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
 import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
 import { CmsWebhooksFeature } from "~/features/webhooks/feature.js";
-import { RequestContainer } from "@webiny/event-handler-core";
 import type { ApiEndpoint, CmsContext } from "~/types/index.js";
 import { CmsBaseErrorTypeFactory } from "~/graphql/schema/cms/CmsBaseErrorTypeFactory.js";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
@@ -123,8 +126,7 @@ export const HeadlessCmsFeature = createFeature({
         container.register(UnpublishEntryRevisionResolverImpl);
 
         container.registerInstance(HeadlessCmsEnhancerConfig, {
-            type: config.type,
-            extraPlugins: config.extraPlugins
+            type: config.type
         });
 
         // Register CMS DI features statically so they are available before any enhancers run.
@@ -174,6 +176,16 @@ export const HeadlessCmsFeature = createFeature({
             container.registerInstance(CmsGraphQLSchemaFactory, {
                 execute: () => userSchemaPlugins
             });
+        }
+
+        // ContextPlugin instances supplied via extraPlugins (test infra) run their async apply()
+        // before resolvers. Route them through the standard post-auth writer rather than the CMS
+        // initializer, so the initializer carries no request-time responsibility.
+        const extraContextPlugins = (config.extraPlugins ?? []).filter(
+            (plugin: any) => plugin && typeof plugin.apply === "function"
+        );
+        if (extraContextPlugins.length > 0) {
+            registerLegacyPluginsViaGqlContextualSchema(container, extraContextPlugins);
         }
 
         const benchmark = new Benchmark();
@@ -311,11 +323,11 @@ export const HeadlessCmsFeature = createFeature({
             });
         });
 
-        // The remaining async, per-request setup (storage operations + extraPlugins ContextPlugins)
-        // is driven by the initializer, which runs before resolvers.
+        // No-op initializer (kept until Phase 3c removes it). All its former responsibilities now
+        // live in register() / lazy factories; extraPlugins ContextPlugins are routed above.
         const initializer = container.resolveWithDependencies({
             implementation: HeadlessCmsInitializerImpl,
-            dependencies: [RequestContainer]
+            dependencies: []
         });
         container.registerInstance(RequestContextInitializer, initializer);
         container.register(createCmsRoute(config.type));
