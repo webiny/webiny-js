@@ -74,6 +74,9 @@ export { DropdownMenu } from "~/DropdownMenu/index.js";
 // DynamicFieldset
 export { DynamicFieldset } from "~/DynamicFieldset/index.js";
 
+// EmptyState
+export { EmptyState } from "~/EmptyState/index.js";
+
 // FilePicker
 export { FilePicker } from "~/FilePicker/index.js";
 
