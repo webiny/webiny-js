@@ -1,6 +1,7 @@
 import { useHandler } from "~tests/testHelpers/useHandler";
 import models, { createModelPlugins } from "~tests/contentAPI/mocks/contentModels";
 import { CmsModelToJsonSchemaConverter } from "~/utils";
+import { HeadlessCms } from "~/features/shared/abstractions.js";
 import type { CmsContext, CmsModelField } from "~/types";
 import { pageModel } from "~tests/contentAPI/mocks/pageWithDynamicZonesModel";
 import type { CmsModelToAstConverter } from "~/utils/contentModelAst";
@@ -27,7 +28,7 @@ describe("CmsModelToJsonSchemaConverter", () => {
                 "x-tenant": "root"
             }
         });
-        astConverter = context.cms.getModelToAstConverter();
+        astConverter = context.container.resolve(HeadlessCms).getModelToAstConverter();
     });
 
     describe("simple field types", () => {
@@ -555,7 +556,7 @@ describe("CmsModelToJsonSchemaConverter", () => {
 
     describe("object fields (via real model)", () => {
         it("should convert nested object fields from product model", async () => {
-            const model = await context.cms.getModel("product");
+            const model = await context.container.resolve(HeadlessCms).getModel("product");
             const ast = astConverter.toAst(model);
             const converter = new CmsModelToJsonSchemaConverter();
 
@@ -584,7 +585,7 @@ describe("CmsModelToJsonSchemaConverter", () => {
 
     describe("dynamic zone fields (via real model)", () => {
         it("should convert dynamic zone from page model", async () => {
-            const model = await context.cms.getModel(pageModel.modelId);
+            const model = await context.container.resolve(HeadlessCms).getModel(pageModel.modelId);
             const ast = astConverter.toAst(model);
             const converter = new CmsModelToJsonSchemaConverter();
 
@@ -607,7 +608,7 @@ describe("CmsModelToJsonSchemaConverter", () => {
         });
 
         it("should convert list dynamic zone fields as arrays", async () => {
-            const model = await context.cms.getModel(pageModel.modelId);
+            const model = await context.container.resolve(HeadlessCms).getModel(pageModel.modelId);
             const ast = astConverter.toAst(model);
             const converter = new CmsModelToJsonSchemaConverter();
 
@@ -624,7 +625,7 @@ describe("CmsModelToJsonSchemaConverter", () => {
 
     describe("full model conversion", () => {
         it("should produce valid JSON Schema for the product model", async () => {
-            const model = await context.cms.getModel("product");
+            const model = await context.container.resolve(HeadlessCms).getModel("product");
             const ast = astConverter.toAst(model);
             const converter = new CmsModelToJsonSchemaConverter();
 
@@ -647,7 +648,7 @@ describe("CmsModelToJsonSchemaConverter", () => {
         });
 
         it("should produce valid JSON Schema for page model with dynamic zones", async () => {
-            const model = await context.cms.getModel(pageModel.modelId);
+            const model = await context.container.resolve(HeadlessCms).getModel(pageModel.modelId);
             const ast = astConverter.toAst(model);
             const converter = new CmsModelToJsonSchemaConverter();
 
