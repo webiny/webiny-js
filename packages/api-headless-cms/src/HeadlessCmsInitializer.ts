@@ -1,8 +1,7 @@
 import type { Container } from "@webiny/di";
 import { Abstraction } from "@webiny/di";
 import type { IRequestContextInitializer } from "@webiny/event-handler-core";
-import { CmsContext as CmsContextAbstraction } from "~/features/shared/abstractions.js";
-import type { ApiEndpoint, CmsContext } from "~/types/index.js";
+import type { ApiEndpoint } from "~/types/index.js";
 
 export interface IHeadlessCmsEnhancerConfig {
     type: ApiEndpoint;
@@ -17,15 +16,14 @@ export const HeadlessCmsEnhancerConfig = new Abstraction<IHeadlessCmsEnhancerCon
  * Per-request, post-auth setup that isn't expressible as a synchronous DI factory.
  *
  * Storage operations now build synchronously in HeadlessCmsFeature.register() (for every event),
- * and the HeadlessCms facade / AccessControl / export / import are lazy DI factories. What remains
- * here is legacy bridging that still depends on the shared request `ctx`:
+ * and the HeadlessCms facade / AccessControl / export / import are lazy DI factories. The
+ * `ctx.plugins` seeding has been removed (Phase 3a): every reader of the request plugins container
+ * (background-tasks createService, file-manager-s3 createFileNormalizer) gets it from the writer
+ * that registers those plugins — registerLegacyPluginsViaGqlContextualSchema, which lazily creates
+ * `ctx.plugins` — so the CMS no longer needs to pre-seed it.
  *
- * 1. Seeding `ctx.plugins` for the other (still ordered) RequestContextInitializers / contextual
- *    schemas that read it off `ctx` (e.g. hcms-tasks registers its schema plugins into ctx.plugins).
- * 2. Applying any ContextPlugin instances supplied via `extraPlugins` (test infra; their `apply()`
- *    is async).
- *
- * Both are slated for removal once those consumers move to DI (Phase 3).
+ * What remains here is applying any ContextPlugin instances supplied via `extraPlugins` (test infra;
+ * their `apply()` is async) — slated for removal in Phase 3b.
  */
 export class HeadlessCmsInitializerImpl implements IRequestContextInitializer {
     private initialized = false;
@@ -33,13 +31,6 @@ export class HeadlessCmsInitializerImpl implements IRequestContextInitializer {
     constructor(private container: Container) {}
 
     async init(ctx: Record<string, any>): Promise<void> {
-        const cmsContext = this.container.resolve(CmsContextAbstraction) as CmsContext;
-
-        // Share the plugins container with downstream initializers / contextual schemas that still
-        // read it off the request context object (e.g. hcms-tasks registers its schema plugins into
-        // ctx.plugins). Benchmark is resolved from the container (BenchmarkAbstraction), not the bag.
-        ctx.plugins = cmsContext.plugins;
-
         if (this.initialized) {
             return;
         }
