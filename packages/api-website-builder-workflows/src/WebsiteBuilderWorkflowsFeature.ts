@@ -1,27 +1,14 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
-import { createContextPlugin } from "@webiny/api";
 import { PageWorkflowsFeature } from "./features/PageWorkflows/feature.js";
-import { createWebsiteBuilderPageGraphQLExtension } from "./graphql/page.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
+import { WebsiteBuilderPageSchemaFactory } from "./WebsiteBuilderPageSchemaFactory.js";
 
 export const WebsiteBuilderWorkflowsFeature = createFeature({
     name: "WebsiteBuilderWorkflows",
     register(container: Container) {
-        const contextPlugin = createContextPlugin(async context => {
-            const wcpContext = context.container.resolve(WcpContext);
-
-            if (!wcpContext.canUseWorkflows()) {
-                return;
-            }
-
-            PageWorkflowsFeature.register(context.container);
-        });
-        contextPlugin.name = "website-builder-workflows.context";
-
-        registerLegacyPluginsViaGqlContextualSchema(container, [
-            contextPlugin,
-            createWebsiteBuilderPageGraphQLExtension()
-        ]);
+        // Page workflow handlers/decorators are register-time-safe and inert without workflow state
+        // (no license → no workflow states), so register unconditionally — matching CmsWorkflowsFeature.
+        // The WbPage.system schema extension is WCP-gated inside WebsiteBuilderPageSchemaFactory.
+        PageWorkflowsFeature.register(container);
+        container.register(WebsiteBuilderPageSchemaFactory);
     }
 });
