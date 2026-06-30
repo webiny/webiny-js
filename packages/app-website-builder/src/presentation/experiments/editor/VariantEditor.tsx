@@ -17,10 +17,17 @@ const toEditorPage = (variant: VariantDto): EditorPage => {
         version: 1,
         status: WbPageStatus.Draft,
         location: { folderId: ROOT_FOLDER },
-        properties: (variant.properties ?? {}) as EditorPage["properties"],
+        // The editor canvas keys its document store by `properties.id`, while the preview iframe
+        // URL uses `id` (wb.id). They must match for live editing to sync, so pin both to the
+        // variant id (a variant's copied properties carry the baseline page's id otherwise).
+        properties: {
+            ...((variant.properties ?? {}) as Record<string, any>),
+            id: variant.id
+        } as unknown as EditorPage["properties"],
         bindings: variant.bindings ?? {},
         elements: variant.elements ?? {},
-        metadata: variant.metadata ?? {},
+        // Keep documentType "page" so the in-editor SDK streams the live document to the canvas.
+        metadata: { ...(variant.metadata ?? {}), documentType: "page" },
         extensions: variant.extensions ?? {},
         state: {}
     };
