@@ -13,6 +13,7 @@ import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { BackgroundTasksFeature } from "~/api/BackgroundTasksFeature.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
+import { TaskServiceTransport } from "~/api/plugins";
 import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
 import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
 import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
@@ -110,10 +111,8 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
                 }
             }));
 
-            registerLegacyPluginsViaGqlContextualSchema(container, [
-                createMockTaskServicePlugin(),
-                ...(params?.plugins ?? [])
-            ]);
+            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin());
+            registerLegacyPluginsViaGqlContextualSchema(container, [...(params?.plugins ?? [])]);
 
             GraphQLEngineFeature.register(container);
         }

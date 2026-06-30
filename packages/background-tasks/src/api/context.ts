@@ -10,7 +10,6 @@ import { TaskLogPrivateModel } from "./crud/TaskLogPrivateModel.js";
 import { createDefinitionCrud } from "./crud/definition.tasks.js";
 import { createServiceCrud } from "~/api/crud/service.tasks.js";
 import { createTaskCrud } from "./crud/crud.tasks.js";
-import { createServicePlugins } from "~/api/service/index.js";
 import { TaskExecutionContextFeature } from "~/api/features/TaskExecutionContext/feature.js";
 import { GetTaskDefinitionFeature } from "~/api/features/GetTaskDefinition/feature.js";
 import { ListTaskDefinitionsFeature } from "~/api/features/ListTaskDefinitions/feature.js";
@@ -73,7 +72,7 @@ const createTasksContext = (): Plugin[] => {
         context.container.register(BackgroundTaskSettingsModel);
     });
 
-    return [...createServicePlugins(), createTasksCrud(), modelsPlugin];
+    return [createTasksCrud(), modelsPlugin];
 };
 
 export const createBackgroundTaskContext = (): Plugin[] => {

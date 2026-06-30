@@ -15,6 +15,7 @@ import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { BackgroundTasksFeature } from "~/api/BackgroundTasksFeature.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
+import { TaskServiceTransport } from "~/api/plugins";
 import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
 import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
 import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
@@ -61,10 +62,8 @@ export const useRawHandler = <C = any>(params?: UseRawHandlerParams) => {
 
             BackgroundTasksFeature.register(container);
 
-            registerLegacyPluginsViaGqlContextualSchema(container, [
-                createMockTaskServicePlugin(),
-                ...(params?.plugins ?? [])
-            ]);
+            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin());
+            registerLegacyPluginsViaGqlContextualSchema(container, [...(params?.plugins ?? [])]);
             const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
             container.registerInstance(GraphQLContextualSchema, {
                 async build(ctx: Record<string, any>) {
