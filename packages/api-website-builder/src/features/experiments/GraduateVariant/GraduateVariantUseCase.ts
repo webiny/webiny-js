@@ -44,7 +44,7 @@ class GraduateVariantUseCaseImpl implements UseCaseAbstraction.Interface {
         }
         const variant = variantResult.value;
 
-        if (variant.experimentId !== experiment.entryId) {
+        if (variant.experimentId !== experiment.id) {
             return Result.fail(
                 new ExperimentValidationError(
                     "The variant does not belong to the given experiment."

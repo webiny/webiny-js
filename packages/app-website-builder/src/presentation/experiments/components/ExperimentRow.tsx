@@ -1,4 +1,5 @@
 import React from "react";
+import { observer } from "mobx-react-lite";
 import { Button, Heading, Text } from "@webiny/admin-ui";
 import { VariantRow } from "./VariantRow.js";
 import { AddVariantForm } from "./AddVariantForm.js";
@@ -12,7 +13,7 @@ interface Props {
     experiment: ExperimentVm;
 }
 
-const StartControls = ({ presenter, experiment }: Props) => {
+const StartControls = observer(({ presenter, experiment }: Props) => {
     const { vm } = presenter;
     const readyCount = experiment.variants.filter(variant => variant.status === "ready").length;
     return (
@@ -22,13 +23,13 @@ const StartControls = ({ presenter, experiment }: Props) => {
                 variant="primary"
                 text="Start experiment"
                 disabled={vm.busy || readyCount === 0}
-                onClick={() => presenter.startExperiment(experiment.entryId)}
+                onClick={() => presenter.startExperiment(experiment.id)}
             />
         </>
     );
-};
+});
 
-export const ExperimentRow = ({ presenter, experiment }: Props) => {
+export const ExperimentRow = observer(({ presenter, experiment }: Props) => {
     const { vm } = presenter;
 
     return (
@@ -53,9 +54,9 @@ export const ExperimentRow = ({ presenter, experiment }: Props) => {
                     variant="secondary"
                     text="Stop experiment"
                     disabled={vm.busy}
-                    onClick={() => presenter.stopExperiment(experiment.entryId)}
+                    onClick={() => presenter.stopExperiment(experiment.id)}
                 />
             ) : null}
         </div>
     );
-};
+});

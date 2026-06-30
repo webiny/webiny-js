@@ -1,4 +1,5 @@
 import React from "react";
+import { observer } from "mobx-react-lite";
 import { Button, Grid, Text } from "@webiny/admin-ui";
 import type { ExperimentsPresenter } from "~/presentation/experiments/abstractions.js";
 import type { ExperimentVm, VariantVm } from "~/presentation/experiments/abstractions.js";
@@ -9,10 +10,10 @@ interface Props {
     variant: VariantVm;
 }
 
-export const VariantRow = ({ presenter, experiment, variant }: Props) => {
+export const VariantRow = observer(({ presenter, experiment, variant }: Props) => {
     const { vm } = presenter;
-    const weight = experiment.trafficSplit.variants[variant.entryId];
-    const isWinner = experiment.winningVariantId === variant.entryId;
+    const weight = experiment.trafficSplit.variants[variant.id];
+    const isWinner = experiment.winningVariantId === variant.id;
 
     return (
         <Grid>
@@ -29,7 +30,7 @@ export const VariantRow = ({ presenter, experiment, variant }: Props) => {
                         size="sm"
                         text="Remove"
                         disabled={vm.busy}
-                        onClick={() => presenter.deleteVariant(experiment.entryId, variant.id)}
+                        onClick={() => presenter.deleteVariant(experiment.id, variant.id)}
                     />
                 ) : null}
                 {experiment.status === "running" || experiment.status === "stopped" ? (
@@ -38,12 +39,10 @@ export const VariantRow = ({ presenter, experiment, variant }: Props) => {
                         size="sm"
                         text={isWinner ? "Winner" : "Graduate"}
                         disabled={vm.busy || experiment.status === "running"}
-                        onClick={() =>
-                            presenter.graduateVariant(experiment.entryId, variant.entryId)
-                        }
+                        onClick={() => presenter.graduateVariant(experiment.id, variant.id)}
                     />
                 ) : null}
             </Grid.Column>
         </Grid>
     );
-};
+});

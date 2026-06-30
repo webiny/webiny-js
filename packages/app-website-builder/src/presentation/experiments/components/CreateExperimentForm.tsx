@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { observer } from "mobx-react-lite";
 import { Button, Grid, Input, Text } from "@webiny/admin-ui";
 import type { ExperimentsPresenter } from "~/presentation/experiments/abstractions.js";
 
@@ -6,7 +7,7 @@ interface Props {
     presenter: ExperimentsPresenter.Interface;
 }
 
-export const CreateExperimentForm = ({ presenter }: Props) => {
+export const CreateExperimentForm = observer(({ presenter }: Props) => {
     const { vm } = presenter;
     const [name, setName] = useState("");
 
@@ -48,4 +49,4 @@ export const CreateExperimentForm = ({ presenter }: Props) => {
             </Grid.Column>
         </Grid>
     );
-};
+});

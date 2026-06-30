@@ -132,7 +132,7 @@ export const createExperimentsSchema = () => {
                             return null;
                         }
                         return {
-                            experimentId: active.experiment.entryId,
+                            experimentId: active.experiment.id,
                             revisionId: active.revisionId,
                             pageEntryId: active.pageEntryId,
                             path: active.path,
@@ -143,7 +143,7 @@ export const createExperimentsSchema = () => {
                             targeting: active.experiment.targeting,
                             analytics: active.experiment.analytics,
                             variants: active.variants.map(variant => ({
-                                variantId: variant.entryId,
+                                variantId: variant.id,
                                 name: variant.name
                             }))
                         };

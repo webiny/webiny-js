@@ -45,7 +45,8 @@ class ExperimentsPresenterImpl implements PresenterAbstraction.Interface {
             const experiments = await this.gateway.listExperiments(this.vm.pageEntryId);
             const withVariants = await Promise.all(
                 experiments.map(async experiment => {
-                    const variants = await this.gateway.listVariants(experiment.entryId);
+                    // Variants are linked to the experiment by its revision id (see createVariant).
+                    const variants = await this.gateway.listVariants(experiment.id);
                     return this.toExperimentVm(experiment, variants);
                 })
             );
@@ -98,58 +99,60 @@ class ExperimentsPresenterImpl implements PresenterAbstraction.Interface {
         });
     }
 
-    async addVariant(experimentEntryId: string, name: string) {
+    async addVariant(experimentId: string, name: string) {
         await this.run(async () => {
             const variant = await this.gateway.createVariant({
-                experimentId: experimentEntryId,
+                experimentId,
                 name
             });
             // Mark the variant ready so it participates in bucketing.
             await this.gateway.updateVariant(variant.id, { status: "ready" });
-            await this.rebalance(experimentEntryId);
+            await this.rebalance(experimentId);
         });
     }
 
-    async deleteVariant(experimentEntryId: string, variantId: string) {
+    async deleteVariant(experimentId: string, variantId: string) {
         await this.run(async () => {
             await this.gateway.deleteVariant(variantId);
-            await this.rebalance(experimentEntryId);
+            await this.rebalance(experimentId);
         });
     }
 
-    async startExperiment(experimentEntryId: string) {
+    async startExperiment(experimentId: string) {
         await this.run(async () => {
-            await this.gateway.startExperiment(experimentEntryId);
+            await this.gateway.startExperiment(experimentId);
         });
     }
 
-    async stopExperiment(experimentEntryId: string) {
+    async stopExperiment(experimentId: string) {
         await this.run(async () => {
-            await this.gateway.stopExperiment(experimentEntryId);
+            await this.gateway.stopExperiment(experimentId);
         });
     }
 
-    async graduateVariant(experimentEntryId: string, variantId: string) {
+    async graduateVariant(experimentId: string, variantId: string) {
         await this.run(async () => {
-            await this.gateway.graduateVariant(experimentEntryId, variantId);
+            await this.gateway.graduateVariant(experimentId, variantId);
         });
     }
 
     /**
      * Even out the traffic split across the control and all ready variants, then persist it.
      * A finer-grained split editor can replace this later without touching the API.
+     * Variants are keyed by their revision id — the same id the SDK buckets on and uses to
+     * fetch variant content.
      */
-    private async rebalance(experimentEntryId: string) {
-        const variants = await this.gateway.listVariants(experimentEntryId);
+    private async rebalance(experimentId: string) {
+        const variants = await this.gateway.listVariants(experimentId);
         const readyVariants = variants.filter(variant => variant.status === "ready");
         const buckets = readyVariants.length + 1;
         const share = Math.floor(100 / buckets);
         const variantSplit: Record<string, number> = {};
         for (const variant of readyVariants) {
-            variantSplit[variant.entryId] = share;
+            variantSplit[variant.id] = share;
         }
         const control = 100 - share * readyVariants.length;
-        await this.gateway.updateExperiment(experimentEntryId, {
+        await this.gateway.updateExperiment(experimentId, {
             trafficSplit: { control, variants: variantSplit }
         });
     }

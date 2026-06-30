@@ -29,9 +29,10 @@ class GetActiveExperimentForPathUseCaseImpl implements UseCaseAbstraction.Interf
         }
         const experiment = experimentResult.value;
 
-        // Only "ready" variants participate.
+        // Only "ready" variants participate. Variants are linked to the experiment by its
+        // revision id (the same id the admin stores and the SDK buckets / fetches content by).
         const variantsResult = await this.listVariants.execute({
-            experimentId: experiment.entryId
+            experimentId: experiment.id
         });
         if (variantsResult.isFail()) {
             return Result.fail(variantsResult.error);

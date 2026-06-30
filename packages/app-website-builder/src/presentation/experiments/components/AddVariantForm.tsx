@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { observer } from "mobx-react-lite";
 import { Button, Grid, Input } from "@webiny/admin-ui";
 import type {
     ExperimentsPresenter,
@@ -10,7 +11,7 @@ interface Props {
     experiment: ExperimentVm;
 }
 
-export const AddVariantForm = ({ presenter, experiment }: Props) => {
+export const AddVariantForm = observer(({ presenter, experiment }: Props) => {
     const { vm } = presenter;
     const [name, setName] = useState("");
 
@@ -19,7 +20,7 @@ export const AddVariantForm = ({ presenter, experiment }: Props) => {
         if (!trimmed) {
             return;
         }
-        await presenter.addVariant(experiment.entryId, trimmed);
+        await presenter.addVariant(experiment.id, trimmed);
         setName("");
     };
 
@@ -38,4 +39,4 @@ export const AddVariantForm = ({ presenter, experiment }: Props) => {
             </Grid.Column>
         </Grid>
     );
-};
+});
