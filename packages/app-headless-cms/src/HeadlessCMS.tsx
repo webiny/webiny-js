@@ -41,6 +41,8 @@ import {
     EDIT_DZ_TEMPLATE_DIALOG
 } from "~/presentation/fieldTypes/types/dynamicZone/EditTemplateDialog.js";
 import { ContentEntriesModule } from "~/ContentEntriesModule.js";
+import { PreviewDecorator } from "~/presentation/contentEntries/preview/PreviewDecorator.js";
+import { ModelEditorComponentDiscovery } from "~/presentation/contentEntries/preview/ModelEditorComponentDiscovery.js";
 
 const HeadlessCMSExtension = () => {
     plugins.register(apiInformation);
@@ -70,6 +72,8 @@ const HeadlessCMSExtension = () => {
             <LexicalEditorCmsPlugin />
             <CmsSecurityPermission />
             <ContentEntriesModule />
+            <PreviewDecorator />
+            <ModelEditorComponentDiscovery />
             <AdminConfig>
                 <AdminConfig.Dialog
                     name={EDIT_DZ_TEMPLATE_DIALOG}

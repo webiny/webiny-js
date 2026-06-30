@@ -8,13 +8,24 @@ import type {
     IContentSdk
 } from "./types.js";
 import { LiveSdk } from "./LiveSdk.js";
+import { EditingSdk } from "./EditingSdk.js";
 import { environment } from "./Environment.js";
+import { componentRegistry } from "./component/ComponentRegistry.js";
+import type { Component } from "./component/types.js";
 
 class ContentSdkImpl {
     private sdk: IContentSdk | null = null;
 
     init(config: CmsSdkConfig): void {
-        this.sdk = new LiveSdk(config);
+        if (environment.isEditing()) {
+            this.sdk = new EditingSdk();
+        } else {
+            this.sdk = new LiveSdk(config);
+        }
+    }
+
+    registerComponent(component: Component): void {
+        componentRegistry.register(component);
     }
 
     async getEntry<T extends CmsEntryValues = CmsEntryValues>(
