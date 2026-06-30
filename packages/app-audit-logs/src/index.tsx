@@ -9,6 +9,7 @@ import { LogsView } from "~/views/Logs/LogsView.js";
 import { AuditLogsListWithConfig } from "~/config/list/index.js";
 import { Routes } from "~/routes.js";
 import { AlPermissionsFeature } from "~/features/permissions/feature.js";
+import { ListAuditLogsFeature } from "~/features/listAuditLogs/index.js";
 
 const { Menu, Route } = AdminConfig;
 
@@ -23,6 +24,7 @@ export const AuditLogs = () => {
     return (
         <>
             <RegisterFeature feature={AlPermissionsFeature} />
+            <RegisterFeature feature={ListAuditLogsFeature} />
             <LogsModule />
             <SecurityPermission />
             <AdminConfig>
