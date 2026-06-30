@@ -68,15 +68,15 @@ export const useHandler = (params?: UseHandlerParams) => {
             container.registerDecorator(RootTenantInitializer);
         },
         request: async container => {
+            if (params?.encryptionPassphrase) {
+                container.register(createEncryptionBuildParam(params.encryptionPassphrase));
+            }
+
             const wcpLicense = await loadWcpLicense(createTestWcpLicense());
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });
-
-            if (params?.encryptionPassphrase) {
-                container.register(createEncryptionBuildParam(params.encryptionPassphrase));
-            }
 
             NoopTaskServiceFeature.register(container);
             TestWebhookProviderFeature.register(container);
