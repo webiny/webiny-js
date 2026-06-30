@@ -1,14 +1,14 @@
 import { TestHttpEventHandler } from "@webiny/event-handler-core/features/testing";
-import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
+import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
+import type { IHeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { IIdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
-import type { IHeadlessCmsEnhancerConfig } from "@webiny/api-headless-cms";
 
 class CmsEndpointAccessDecoratorImpl implements TestHttpEventHandler.Interface {
     constructor(
         private identityCtx: IIdentityContext,
-        private cmsConfig: IHeadlessCmsEnhancerConfig,
+        private cmsConfig: IHeadlessCmsEndpointConfig,
         private inner: TestHttpEventHandler.Interface
     ) {}
 
@@ -35,5 +35,5 @@ class CmsEndpointAccessDecoratorImpl implements TestHttpEventHandler.Interface {
 
 export const CmsEndpointAccessDecorator = TestHttpEventHandler.createDecorator({
     decorator: CmsEndpointAccessDecoratorImpl,
-    dependencies: [IdentityContext, HeadlessCmsEnhancerConfig]
+    dependencies: [IdentityContext, HeadlessCmsEndpointConfig]
 });

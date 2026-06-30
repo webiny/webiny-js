@@ -10,7 +10,7 @@ import { CreateModelUseCase } from "~/features/contentModel/CreateModel/index.js
 import { CreateModelFromUseCase } from "~/features/contentModel/CreateModelFrom/index.js";
 import { UpdateModelUseCase } from "~/features/contentModel/UpdateModel/index.js";
 import { DeleteModelUseCase } from "~/features/contentModel/DeleteModel/index.js";
-import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
+import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
 import { ValuesSelectionGenerator } from "~/features/contentModel/ValuesSelectionGenerator/abstractions.js";
 
 export interface CreateModelsSchemaParams {
@@ -20,7 +20,7 @@ export interface CreateModelsSchemaParams {
 export const createModelsSchema = ({
     context
 }: CreateModelsSchemaParams): ICmsGraphQLSchemaPlugin => {
-    const isManage = context.container.resolve(HeadlessCmsEnhancerConfig).type === "manage";
+    const isManage = context.container.resolve(HeadlessCmsEndpointConfig).type === "manage";
 
     const resolvers: Resolvers<CmsContext> = {
         Query: {
@@ -358,7 +358,7 @@ export const createModelsSchema = ({
         resolvers
     });
 
-    const endpointType = context.container.resolve(HeadlessCmsEnhancerConfig).type;
+    const endpointType = context.container.resolve(HeadlessCmsEndpointConfig).type;
     plugin.name = `headless-cms.graphql.schema.${endpointType}.content-models`;
     return plugin;
 };

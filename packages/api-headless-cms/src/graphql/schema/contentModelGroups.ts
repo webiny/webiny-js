@@ -11,13 +11,13 @@ import { UpdateGroupUseCase } from "~/features/contentModelGroup/UpdateGroup/ind
 import { DeleteGroupUseCase } from "~/features/contentModelGroup/DeleteGroup/index.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/index.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
-import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
+import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
 
 interface Params {
     context: CmsContext;
 }
 export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin => {
-    const isManage = context.container.resolve(HeadlessCmsEnhancerConfig).type === "manage";
+    const isManage = context.container.resolve(HeadlessCmsEndpointConfig).type === "manage";
 
     let manageSchema = "";
     if (isManage) {
@@ -200,7 +200,7 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
         resolvers
     });
 
-    const endpointType = context.container.resolve(HeadlessCmsEnhancerConfig).type;
+    const endpointType = context.container.resolve(HeadlessCmsEndpointConfig).type;
     plugin.name = `headless-cms.graphql.schema.${endpointType}.content-model-groups`;
 
     return plugin;

@@ -8,7 +8,7 @@ import { generateCacheId } from "./getSchema/generateCacheId.js";
 import { generateCacheKey } from "./getSchema/generateCacheKey.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
-import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
+import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
 
 interface SchemaCache {
     key: string;
@@ -72,7 +72,7 @@ export const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema>
                 code: err.code || "INVALID_GRAPHQL_SCHEMA_LOCATIONS",
                 data: {
                     ...(err.data || {}),
-                    endpoint: context.container.resolve(HeadlessCmsEnhancerConfig).type
+                    endpoint: context.container.resolve(HeadlessCmsEndpointConfig).type
                 }
             });
         }

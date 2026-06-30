@@ -2,9 +2,8 @@ import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
-import { HeadlessCmsInitializerImpl, HeadlessCmsEnhancerConfig } from "./HeadlessCmsInitializer.js";
+import { HeadlessCmsEndpointConfig } from "./HeadlessCmsEndpointConfig.js";
 import { createCmsRoute } from "./createCmsRoute.js";
-import { RequestContextInitializer } from "@webiny/event-handler-core";
 import {
     createRequestBody,
     processRequestBody,
@@ -125,7 +124,7 @@ export const HeadlessCmsFeature = createFeature({
         container.register(PublishEntryRevisionResolverImpl);
         container.register(UnpublishEntryRevisionResolverImpl);
 
-        container.registerInstance(HeadlessCmsEnhancerConfig, {
+        container.registerInstance(HeadlessCmsEndpointConfig, {
             type: config.type
         });
 
@@ -323,13 +322,6 @@ export const HeadlessCmsFeature = createFeature({
             });
         });
 
-        // No-op initializer (kept until Phase 3c removes it). All its former responsibilities now
-        // live in register() / lazy factories; extraPlugins ContextPlugins are routed above.
-        const initializer = container.resolveWithDependencies({
-            implementation: HeadlessCmsInitializerImpl,
-            dependencies: []
-        });
-        container.registerInstance(RequestContextInitializer, initializer);
         container.register(createCmsRoute(config.type));
     }
 });

@@ -3,8 +3,8 @@ import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { getSchema } from "~/graphql/getSchema.js";
-import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
-import type { IHeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
+import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
+import type { IHeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
 import type { CmsContext } from "~/types/index.js";
 import type { GraphQLSchema } from "graphql";
 
@@ -12,7 +12,7 @@ class HeadlessCmsContextualSchemaImpl implements IGraphQLContextualSchema {
     constructor(
         private tenantContext: TenantContext.Interface,
         private identityContext: IdentityContext.Interface,
-        private config: IHeadlessCmsEnhancerConfig
+        private config: IHeadlessCmsEndpointConfig
     ) {}
 
     async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
@@ -27,5 +27,5 @@ class HeadlessCmsContextualSchemaImpl implements IGraphQLContextualSchema {
 
 export const HeadlessCmsContextualSchema = GraphQLContextualSchema.createImplementation({
     implementation: HeadlessCmsContextualSchemaImpl,
-    dependencies: [TenantContext, IdentityContext, HeadlessCmsEnhancerConfig]
+    dependencies: [TenantContext, IdentityContext, HeadlessCmsEndpointConfig]
 });

@@ -20,7 +20,7 @@ import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntry/GetLatestEntriesByIds/index.js";
 import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";
 import { GetEntriesByIdsUseCase } from "~/features/contentEntry/GetEntriesByIds/index.js";
-import { HeadlessCmsEnhancerConfig } from "~/HeadlessCmsInitializer.js";
+import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -324,7 +324,7 @@ interface Params {
 export const createContentEntriesSchema = ({
     context
 }: Params): ICmsGraphQLSchemaPlugin<CmsContext> => {
-    const enhancerConfig = context.container.resolve(HeadlessCmsEnhancerConfig);
+    const enhancerConfig = context.container.resolve(HeadlessCmsEndpointConfig);
     if (enhancerConfig.type !== "manage") {
         const plugin = createCmsGraphQLSchemaPlugin({
             typeDefs: "",
@@ -539,7 +539,7 @@ export const createContentEntriesSchema = ({
         }
     });
 
-    plugin.name = `headless-cms.graphql.schema.${context.container.resolve(HeadlessCmsEnhancerConfig).type}.content-entries`;
+    plugin.name = `headless-cms.graphql.schema.${context.container.resolve(HeadlessCmsEndpointConfig).type}.content-entries`;
 
     return plugin;
 };
