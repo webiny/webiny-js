@@ -38,6 +38,8 @@ import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
 import { PageSettingsFeature } from "~/presentation/pages/PageEditor/PageSettings/feature.js";
 import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/index.js";
 import { ExperimentsFeature } from "~/features/experiments/index.js";
+import { ExperimentsPresentationFeature } from "~/presentation/experiments/feature.js";
+import { ExperimentsConfig } from "~/presentation/experiments/ExperimentsConfig.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -56,6 +58,7 @@ export const Extension = () => {
             <RegisterFeature feature={MovePageFeature} />
             <RegisterFeature feature={PublishPageFeature} />
             <RegisterFeature feature={ExperimentsFeature} />
+            <RegisterFeature feature={ExperimentsPresentationFeature} />
             <RegisterFeature feature={UnpublishPageFeature} />
             <RegisterFeature feature={DuplicatePageFeature} />
             <RegisterFeature feature={CreatePageRevisionFromFeature} />
@@ -134,6 +137,7 @@ export const Extension = () => {
             <RedirectsListConfig />
             <CreatePageConfig />
             <TranslatePageConfig />
+            <ExperimentsConfig />
         </>
     );
 };
