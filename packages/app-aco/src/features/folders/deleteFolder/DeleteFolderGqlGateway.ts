@@ -1,5 +1,4 @@
-import gql from "graphql-tag";
-import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import { DeleteFolderGateway as GatewayAbstraction } from "./abstractions.js";
 import type { AcoError } from "~/types.js";
 
@@ -16,7 +15,7 @@ export interface DeleteFolderResponse {
     };
 }
 
-export const DELETE_FOLDER = gql`
+export const DELETE_FOLDER = /* GraphQL */ `
     mutation DeleteFolder($id: ID!) {
         aco {
             deleteFolder(id: $id) {
@@ -32,14 +31,11 @@ export const DELETE_FOLDER = gql`
 `;
 
 class DeleteFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
-    constructor(private client: ApolloClient.Interface) {}
+    constructor(private client: MainGraphQLClient.Interface) {}
 
     async execute(id: string) {
-        const { data: response } = await this.client.mutate<
-            DeleteFolderResponse,
-            DeleteFolderVariables
-        >({
-            mutation: DELETE_FOLDER,
+        const response = await this.client.execute<DeleteFolderResponse>({
+            query: DELETE_FOLDER,
             variables: {
                 id
             }
@@ -61,5 +57,5 @@ class DeleteFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
 
 export const DeleteFolderGqlGateway = GatewayAbstraction.createImplementation({
     implementation: DeleteFolderGqlGatewayImpl,
-    dependencies: [ApolloClient]
+    dependencies: [MainGraphQLClient]
 });

@@ -1,5 +1,4 @@
-import gql from "graphql-tag";
-import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { FolderModelProvider } from "~/features/folders/abstractions.js";
 import { GetFolderGateway as GatewayAbstraction } from "./abstractions.js";
@@ -23,7 +22,7 @@ export interface GetFolderQueryVariables {
     id: string;
 }
 
-export const GET_FOLDER = (FOLDER_FIELDS: string) => gql`
+export const GET_FOLDER = (FOLDER_FIELDS: string) => /* GraphQL */ `
     query GetFolder($id: ID!) {
         aco {
             getFolder(id: $id) {
@@ -40,20 +39,16 @@ export const GET_FOLDER = (FOLDER_FIELDS: string) => gql`
 
 class GetFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
-        private client: ApolloClient.Interface,
+        private client: MainGraphQLClient.Interface,
         private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(id: string) {
         const fields = await this.folderModelProvider.getGraphQLSelection();
 
-        const { data: response } = await this.client.query<
-            GetFolderResponse,
-            GetFolderQueryVariables
-        >({
+        const response = await this.client.execute<GetFolderResponse>({
             query: GET_FOLDER(fields),
-            variables: { id },
-            fetchPolicy: "network-only"
+            variables: { id }
         });
 
         if (!response) {
@@ -72,5 +67,5 @@ class GetFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
 
 export const GetFolderGqlGateway = GatewayAbstraction.createImplementation({
     implementation: GetFolderGqlGatewayImpl,
-    dependencies: [ApolloClient, FolderModelProvider]
+    dependencies: [MainGraphQLClient, FolderModelProvider]
 });

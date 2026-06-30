@@ -1,18 +1,13 @@
-import type { ApolloClient } from "apollo-client";
+import type { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 
 import type {
     CreateFilterPayload,
     CreateFilterResponse,
-    CreateFilterVariables,
     DeleteFilterResponse,
-    DeleteFilterVariables,
-    GetFilterQueryVariables,
     GetFilterResponse,
-    ListFiltersQueryVariables,
     ListFiltersResponse,
     UpdateFilterPayload,
-    UpdateFilterResponse,
-    UpdateFilterVariables
+    UpdateFilterResponse
 } from "./filters.types.js";
 import type { FiltersGatewayInterface } from "./FiltersGatewayInterface.js";
 import {
@@ -24,23 +19,19 @@ import {
 } from "./filters.gql.js";
 
 export class FiltersGraphQLGateway implements FiltersGatewayInterface {
-    private client: ApolloClient<any>;
+    private client: MainGraphQLClient.Interface;
 
-    constructor(client: ApolloClient<any>) {
+    constructor(client: MainGraphQLClient.Interface) {
         this.client = client;
     }
 
     async list(namespace: string) {
-        const { data: response } = await this.client.query<
-            ListFiltersResponse,
-            ListFiltersQueryVariables
-        >({
+        const response = await this.client.execute<ListFiltersResponse>({
             query: LIST_FILTERS,
             variables: {
                 namespace,
                 limit: 10000
-            },
-            fetchPolicy: "network-only"
+            }
         });
 
         if (!response) {
@@ -57,10 +48,7 @@ export class FiltersGraphQLGateway implements FiltersGatewayInterface {
     }
 
     async get(id: string) {
-        const { data: response } = await this.client.query<
-            GetFilterResponse,
-            GetFilterQueryVariables
-        >({
+        const response = await this.client.execute<GetFilterResponse>({
             query: GET_FILTER,
             variables: { id }
         });
@@ -79,11 +67,8 @@ export class FiltersGraphQLGateway implements FiltersGatewayInterface {
     }
 
     async create(filter: CreateFilterPayload) {
-        const { data: response } = await this.client.mutate<
-            CreateFilterResponse,
-            CreateFilterVariables
-        >({
-            mutation: CREATE_FILTER,
+        const response = await this.client.execute<CreateFilterResponse>({
+            query: CREATE_FILTER,
             variables: {
                 data: filter
             }
@@ -109,11 +94,8 @@ export class FiltersGraphQLGateway implements FiltersGatewayInterface {
             throw new Error("Error while updating filter, missing id.");
         }
 
-        const { data: response } = await this.client.mutate<
-            UpdateFilterResponse,
-            UpdateFilterVariables
-        >({
-            mutation: UPDATE_FILTER,
+        const response = await this.client.execute<UpdateFilterResponse>({
+            query: UPDATE_FILTER,
             variables: {
                 id,
                 data: {
@@ -139,11 +121,8 @@ export class FiltersGraphQLGateway implements FiltersGatewayInterface {
     }
 
     async delete(id: string) {
-        const { data: response } = await this.client.mutate<
-            DeleteFilterResponse,
-            DeleteFilterVariables
-        >({
-            mutation: DELETE_FILTER,
+        const response = await this.client.execute<DeleteFilterResponse>({
+            query: DELETE_FILTER,
             variables: {
                 id
             }

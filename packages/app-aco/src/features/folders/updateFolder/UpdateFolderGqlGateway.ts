@@ -1,5 +1,4 @@
-import gql from "graphql-tag";
-import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { FolderModelProvider } from "~/features/folders/abstractions.js";
 import type { FolderGatewayDto } from "./abstractions.js";
@@ -26,7 +25,7 @@ export interface UpdateFolderVariables {
     >;
 }
 
-export const UPDATE_FOLDER = (FOLDER_FIELDS: string) => gql`
+export const UPDATE_FOLDER = (FOLDER_FIELDS: string) => /* GraphQL */ `
     mutation UpdateFolder($id: ID!, $data: FolderUpdateInput!) {
         aco {
             updateFolder(id: $id, data: $data) {
@@ -43,7 +42,7 @@ export const UPDATE_FOLDER = (FOLDER_FIELDS: string) => gql`
 
 class UpdateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
-        private client: ApolloClient.Interface,
+        private client: MainGraphQLClient.Interface,
         private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
@@ -52,11 +51,8 @@ class UpdateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
 
         const { id, title, slug, permissions, parentId, extensions } = folder;
 
-        const { data: response } = await this.client.mutate<
-            UpdateFolderResponse,
-            UpdateFolderVariables
-        >({
-            mutation: UPDATE_FOLDER(fields),
+        const response = await this.client.execute<UpdateFolderResponse>({
+            query: UPDATE_FOLDER(fields),
             variables: {
                 id,
                 data: {
@@ -85,5 +81,5 @@ class UpdateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
 
 export const UpdateFolderGqlGateway = GatewayAbstraction.createImplementation({
     implementation: UpdateFolderGqlGatewayImpl,
-    dependencies: [ApolloClient, FolderModelProvider]
+    dependencies: [MainGraphQLClient, FolderModelProvider]
 });
