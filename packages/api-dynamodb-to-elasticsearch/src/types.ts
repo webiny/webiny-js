@@ -24,7 +24,10 @@ export interface IDeleteOperationParams {
 
 export interface IOperations {
     items: GenericRecord[];
+    /* Number of Elasticsearch bulk-array entries (an insert/modify contributes 2: action + doc). */
     total: number;
+    /* Number of records that produced an operation (insert/modify/delete each count once). */
+    count: number;
     clear(): void;
     insert(params: IInsertOperationParams): void;
     modify(params: IModifyOperationParams): void;

@@ -44,7 +44,7 @@ class DdbToEsLambdaHandlerImpl implements DynamoDBEventHandler.Interface {
             operations
         });
 
-        return { success: true, processedRecords: operations.total };
+        return { success: true, processedRecords: operations.count };
     }
 }
 
