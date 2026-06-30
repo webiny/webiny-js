@@ -13760,6 +13760,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/cms-nextjs@workspace:packages/cms-nextjs":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cms-nextjs@workspace:packages/cms-nextjs"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cms-sdk": "npm:0.0.0"
+    typescript: "npm:6.0.3"
+    vitest: "npm:^4.1.9"
+  peerDependencies:
+    next: ">=15"
+    react: ">=19"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/cms-sdk@npm:0.0.0, @webiny/cms-sdk@workspace:packages/cms-sdk":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cms-sdk@workspace:packages/cms-sdk"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/sdk": "npm:0.0.0"
+    typescript: "npm:6.0.3"
+    vitest: "npm:^4.1.9"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/cognito@workspace:packages/cognito":
   version: 0.0.0-use.local
   resolution: "@webiny/cognito@workspace:packages/cognito"

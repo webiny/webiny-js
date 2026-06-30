@@ -56,6 +56,16 @@ const GeneralSettings = ({ Bind }: GeneralSettingsProps) => {
                         <Tags label={"Tags"} protectedValues={["type:model"]} />
                     </Bind>
                 </Grid.Column>
+                <Grid.Column span={12}>
+                    <Bind name={"settings.previewUrl"}>
+                        <Input
+                            label={"Preview URL"}
+                            description={
+                                "URL of the frontend application for live preview and component discovery."
+                            }
+                        />
+                    </Bind>
+                </Grid.Column>
             </Grid>
         </React.Fragment>
     );

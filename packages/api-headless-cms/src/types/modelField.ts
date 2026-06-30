@@ -260,6 +260,7 @@ export interface CmsModelUpdateInput {
     titleFieldId?: string | null;
     descriptionFieldId?: string | null;
     imageFieldId?: string | null;
+    settings?: Record<string, any>;
 }
 
 /**

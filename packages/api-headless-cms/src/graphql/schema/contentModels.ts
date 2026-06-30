@@ -179,6 +179,7 @@ export const createModelsSchema = ({
                 imageFieldId: String
                 tags: [String!]
                 defaultFields: Boolean
+                settings: JSON
             }
 
             input CmsContentModelCreateFromInput {
@@ -204,6 +205,7 @@ export const createModelsSchema = ({
                 descriptionFieldId: String
                 imageFieldId: String
                 tags: [String!]
+                settings: JSON
             }
 
             extend type Mutation {
@@ -299,6 +301,7 @@ export const createModelsSchema = ({
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!
                 valuesSelection: String
+                settings: JSON
             }
 
             type CmsContentModelResponse {

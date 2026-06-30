@@ -1,0 +1,26 @@
+{
+  "name": "@webiny/cms-sdk",
+  "version": "0.0.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "description": "CMS Preview SDK for Webiny Headless CMS.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/sdk": "0.0.0"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.9"
+  }
+}

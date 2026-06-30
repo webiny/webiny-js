@@ -153,6 +153,8 @@ export interface CmsModel {
      * Is this model created via plugin?
      */
     isPlugin?: boolean;
+
+    settings?: Record<string, any>;
 }
 
 export interface StorageCmsModelFields {
