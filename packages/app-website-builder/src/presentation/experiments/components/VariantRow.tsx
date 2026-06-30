@@ -1,6 +1,8 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
+import { useRouter } from "@webiny/app-admin";
 import { Button, Grid, Text } from "@webiny/admin-ui";
+import { Routes } from "~/routes.js";
 import type { ExperimentsPresenter } from "~/presentation/experiments/abstractions.js";
 import type { ExperimentVm, VariantVm } from "~/presentation/experiments/abstractions.js";
 
@@ -12,18 +14,29 @@ interface Props {
 
 export const VariantRow = observer(({ presenter, experiment, variant }: Props) => {
     const { vm } = presenter;
+    const { goToRoute } = useRouter();
     const weight = experiment.trafficSplit.variants[variant.id];
     const isWinner = experiment.winningVariantId === variant.id;
 
     return (
         <Grid>
-            <Grid.Column span={5}>
+            <Grid.Column span={4}>
                 <Text>{variant.name}</Text>
             </Grid.Column>
-            <Grid.Column span={3}>
+            <Grid.Column span={2}>
                 <Text size="sm">{typeof weight === "number" ? `${weight}%` : "—"}</Text>
             </Grid.Column>
-            <Grid.Column span={4}>
+            <Grid.Column span={6}>
+                {experiment.status !== "graduated" ? (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        text="Edit"
+                        onClick={() =>
+                            goToRoute(Routes.Experiments.VariantEditor, { id: variant.id })
+                        }
+                    />
+                ) : null}
                 {experiment.status === "draft" ? (
                     <Button
                         variant="ghost"

@@ -24,6 +24,17 @@ export const Routes = {
             }
         })
     },
+    Experiments: {
+        VariantEditor: new Route({
+            name: "WebsiteBuilder/Experiments/VariantEditor",
+            path: "/website-builder/experiments/variant/:id/editor",
+            params: zod => {
+                return {
+                    id: zod.string()
+                };
+            }
+        })
+    },
     Redirects: {
         List: new Route({
             name: "WebsiteBuilder/Redirects/List",

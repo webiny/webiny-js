@@ -40,6 +40,7 @@ import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/i
 import { ExperimentsFeature } from "~/features/experiments/index.js";
 import { ExperimentsPresentationFeature } from "~/presentation/experiments/feature.js";
 import { ExperimentsConfig } from "~/presentation/experiments/ExperimentsConfig.js";
+import { VariantEditor } from "~/presentation/experiments/editor/VariantEditor.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -97,6 +98,7 @@ export const Extension = () => {
                 <HasPermission entity={"page"}>
                     <Route route={Routes.Pages.List} element={<PagesList />} />
                     <Route route={Routes.Pages.Editor} element={<PageEditor />} />
+                    <Route route={Routes.Experiments.VariantEditor} element={<VariantEditor />} />
                     <Menu
                         name="wb.pages"
                         parent={"wb"}
