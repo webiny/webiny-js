@@ -17,6 +17,18 @@ export const WB_PERMISSIONS_SCHEMA = createPermissionSchema({
             actions: [{ name: "rwd" }]
         },
         {
+            id: "experiment",
+            permission: "wb.experiment",
+            scopes: ["full", "own"],
+            actions: [{ name: "rwd" }, { name: "pw" }]
+        },
+        {
+            id: "variant",
+            permission: "wb.variant",
+            scopes: ["full", "own"],
+            actions: [{ name: "rwd" }]
+        },
+        {
             id: "settings",
             permission: "wb.settings",
             scopes: ["full"]

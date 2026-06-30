@@ -1,8 +1,11 @@
 import type { IDataProvider, ListPagesOptions, ListPagesResult, PublicPage } from "~/types.js";
+import type { ActiveExperiment, VariantContent } from "~/experiments/types.js";
 import type { ApiClient } from "~/dataProviders/ApiClient.js";
 import { GET_PAGE_BY_PATH } from "./GET_PAGE_BY_PATH.js";
 import { GET_PAGE_BY_ID } from "./GET_PAGE_BY_ID.js";
 import { LIST_PUBLISHED_PAGES } from "./LIST_PUBLISHED_PAGES.js";
+import { GET_PAGE_EXPERIMENT } from "./GET_PAGE_EXPERIMENT.js";
+import { GET_VARIANT_CONTENT } from "./GET_VARIANT_CONTENT.js";
 
 interface DefaultDataProviderConfig {
     apiClient: ApiClient;
@@ -67,6 +70,35 @@ export class DefaultDataProvider implements IDataProvider {
                 cursor: null
             }
         };
+    }
+
+    public async getPageExperiment(path: string): Promise<ActiveExperiment | null> {
+        const result = await this.config.apiClient.query({
+            query: GET_PAGE_EXPERIMENT,
+            variables: {
+                path
+            }
+        });
+
+        this.checkForErrors(`getPageExperiment:${path}`, result.websiteBuilder.getPageExperiment);
+
+        return result.websiteBuilder.getPageExperiment.data ?? null;
+    }
+
+    public async getVariantContent(variantId: string): Promise<VariantContent | null> {
+        const result = await this.config.apiClient.query({
+            query: GET_VARIANT_CONTENT,
+            variables: {
+                id: variantId
+            }
+        });
+
+        this.checkForErrors(
+            `getVariantContent:${variantId}`,
+            result.websiteBuilder.getVariantContent
+        );
+
+        return result.websiteBuilder.getVariantContent.data ?? null;
     }
 
     private checkForErrors(action: string, data: any) {

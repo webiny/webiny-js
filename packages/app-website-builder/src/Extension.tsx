@@ -37,6 +37,7 @@ import { TranslatePageConfig } from "./presentation/pages/TranslatePage/Translat
 import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
 import { PageSettingsFeature } from "~/presentation/pages/PageEditor/PageSettings/feature.js";
 import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/index.js";
+import { ExperimentsFeature } from "~/features/experiments/index.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -54,6 +55,7 @@ export const Extension = () => {
             <RegisterFeature feature={DeletePageRevisionFeature} />
             <RegisterFeature feature={MovePageFeature} />
             <RegisterFeature feature={PublishPageFeature} />
+            <RegisterFeature feature={ExperimentsFeature} />
             <RegisterFeature feature={UnpublishPageFeature} />
             <RegisterFeature feature={DuplicatePageFeature} />
             <RegisterFeature feature={CreatePageRevisionFromFeature} />

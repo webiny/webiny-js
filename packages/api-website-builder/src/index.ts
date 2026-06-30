@@ -26,9 +26,16 @@ import { TranslatePageFeature } from "./features/pages/TranslatePage/feature.js"
 import { MovePageFeature } from "./features/pages/MovePage/feature.js";
 import { PageModelPlugin, PAGE_MODEL_ID } from "~/domain/page/page.model.js";
 import { RedirectModelPlugin, REDIRECT_MODEL_ID } from "~/domain/redirect/redirect.model.js";
+import {
+    ExperimentModelPlugin,
+    EXPERIMENT_MODEL_ID
+} from "~/domain/experiment/experiment.model.js";
+import { VariantModelPlugin, VARIANT_MODEL_ID } from "~/domain/variant/variant.model.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { PageModel } from "~/domain/page/abstractions.js";
 import { RedirectModel } from "~/domain/redirect/abstractions.js";
+import { ExperimentModel } from "~/domain/experiment/abstractions.js";
+import { VariantModel } from "~/domain/variant/abstractions.js";
 import { WbPermissionsFeature } from "~/features/permissions/feature.js";
 import { ApiKeyInstallerFeature } from "~/features/installer/feature.js";
 import { NextjsGraphQLSchema } from "~/graphql/nextjs/NextjsGraphQLSchema.js";
@@ -42,12 +49,29 @@ import { GetDeletedPageByIdFeature } from "~/features/pages/GetDeletedPageById/f
 import { GetPageLanguagePathsFeature } from "~/features/pages/GetPageLanguagePaths/feature.js";
 import { UpdatePageRevisionDescriptionFeature } from "./features/pages/UpdatePageRevisionDescription/feature.js";
 import { WbWebhooksFeature } from "./features/webhooks/feature.js";
+import { CreateExperimentFeature } from "~/features/experiments/CreateExperiment/feature.js";
+import { UpdateExperimentFeature } from "~/features/experiments/UpdateExperiment/feature.js";
+import { GetExperimentByIdFeature } from "~/features/experiments/GetExperimentById/feature.js";
+import { ListExperimentsFeature } from "~/features/experiments/ListExperiments/feature.js";
+import { GetActiveExperimentForRevisionFeature } from "~/features/experiments/GetActiveExperimentForRevision/feature.js";
+import { StartExperimentFeature } from "~/features/experiments/StartExperiment/feature.js";
+import { StopExperimentFeature } from "~/features/experiments/StopExperiment/feature.js";
+import { GraduateVariantFeature } from "~/features/experiments/GraduateVariant/feature.js";
+import { GetActiveExperimentForPathFeature } from "~/features/experiments/GetActiveExperimentForPath/feature.js";
+import { EndExperimentOnPublishFeature } from "~/features/experiments/EndExperimentOnPublish/feature.js";
+import { CreateVariantFeature } from "~/features/variants/CreateVariant/feature.js";
+import { UpdateVariantFeature } from "~/features/variants/UpdateVariant/feature.js";
+import { DeleteVariantFeature } from "~/features/variants/DeleteVariant/feature.js";
+import { GetVariantByIdFeature } from "~/features/variants/GetVariantById/feature.js";
+import { ListVariantsFeature } from "~/features/variants/ListVariants/feature.js";
 // import { TenantModelExtensionFeature } from "~/features/tenantManager/feature.js";
 
 const createContext = () => {
     const modelsPlugin = createRegisterExtensionPlugin(context => {
         context.container.register(PageModelPlugin);
         context.container.register(RedirectModelPlugin);
+        context.container.register(ExperimentModelPlugin);
+        context.container.register(VariantModelPlugin);
     });
 
     const contextPlugin = createContextPlugin(
@@ -58,13 +82,19 @@ const createContext = () => {
             const getModel = container.resolve(GetModelUseCase);
 
             await identityContext.withoutAuthorization(async () => {
-                const [pageModel, redirectModel] = await Promise.all([
-                    getModel.execute(PAGE_MODEL_ID),
-                    getModel.execute(REDIRECT_MODEL_ID)
-                ]);
+                const [pageModel, redirectModel, experimentModel, variantModel] = await Promise.all(
+                    [
+                        getModel.execute(PAGE_MODEL_ID),
+                        getModel.execute(REDIRECT_MODEL_ID),
+                        getModel.execute(EXPERIMENT_MODEL_ID),
+                        getModel.execute(VARIANT_MODEL_ID)
+                    ]
+                );
 
                 container.registerInstance(PageModel, pageModel.value);
                 container.registerInstance(RedirectModel, redirectModel.value);
+                container.registerInstance(ExperimentModel, experimentModel.value);
+                container.registerInstance(VariantModel, variantModel.value);
             });
 
             // Register permissions
@@ -102,6 +132,23 @@ const createContext = () => {
             NextjsFeature.register(container);
             NuxtFeature.register(container);
             WbWebhooksFeature.register(container);
+
+            // A/B testing — experiments and variants.
+            CreateExperimentFeature.register(container);
+            UpdateExperimentFeature.register(container);
+            GetExperimentByIdFeature.register(container);
+            ListExperimentsFeature.register(container);
+            GetActiveExperimentForRevisionFeature.register(container);
+            StartExperimentFeature.register(container);
+            StopExperimentFeature.register(container);
+            GraduateVariantFeature.register(container);
+            GetActiveExperimentForPathFeature.register(container);
+            EndExperimentOnPublishFeature.register(container);
+            CreateVariantFeature.register(container);
+            UpdateVariantFeature.register(container);
+            DeleteVariantFeature.register(container);
+            GetVariantByIdFeature.register(container);
+            ListVariantsFeature.register(container);
             // TenantModelExtensionFeature.register(container);
 
             // Register GraphQL
