@@ -5,12 +5,6 @@ export const DEV_TOOLS_PERMISSIONS_SCHEMA = createPermissionSchema({
     fullAccess: true,
     entities: [
         {
-            id: "graphql-playground",
-            title: "GraphQL Playground",
-            permission: "dev-tools.graphql-playground.*",
-            scopes: ["full"]
-        },
-        {
             id: "sdk-playground",
             title: "SDK Playground",
             permission: "dev-tools.sdk-playground.*",
