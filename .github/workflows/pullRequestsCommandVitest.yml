@@ -11,6 +11,8 @@ jobs:
   checkComment:
     name: Check comment for /vitest
     if: ${{ github.event.issue.pull_request }}
+    outputs:
+      comment-id: ${{ steps.create-comment.outputs.comment-id }}
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -26,6 +28,7 @@ jobs:
           allow-edits: 'false'
           permission-level: write
       - name: Create comment
+        id: create-comment
         uses: peter-evans/create-or-update-comment@v2
         with:
           issue-number: ${{ github.event.issue.number }}
@@ -33,6 +36,19 @@ jobs:
             Vitest tests have been initiated (for more information, click
             [here](https://github.com/webiny/webiny-js/actions/runs/${{
             github.run_id }})). :sparkles:
+
+
+            | Group | Status |
+
+            | --- | --- |
+
+            | No storage | ⏳ Queued |
+
+            | DDB | ⏳ Queued |
+
+            | DDB+OS | ⏳ Queued |
+
+            | SQL | ⏳ Queued |
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -125,6 +141,7 @@ jobs:
   vitest-constants:
     needs:
       - build
+      - checkComment
     name: Vitest (No storage) - Constants
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
@@ -135,6 +152,22 @@ jobs:
       - uses: actions/checkout@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Mark "No storage" as running
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          STATUS="🔄 Running"
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/vitest-comment.txt
+
+          sed -i "s@^| No storage |.*@| No storage | $STATUS |@"
+          /tmp/vitest-comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/vitest-comment.txt
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -142,6 +175,42 @@ jobs:
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
           '[""]')" >> "$GITHUB_OUTPUT"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  vitest-result:
+    needs:
+      - vitest-run
+      - checkComment
+    name: Vitest (No storage) - Report status
+    if: always() && needs.checkComment.result == 'success'
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Report "No storage" result
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          RESULT: ${{ needs.vitest-run.result }}
+        run: >-
+          case "$RESULT" in
+            success) STATUS="✅ Passed" ;;
+            cancelled) STATUS="⚪ Cancelled" ;;
+            skipped) STATUS="⏭️ Skipped" ;;
+            *) STATUS="❌ Failed" ;;
+          esac
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/vitest-comment.txt
+
+          sed -i "s@^| No storage |.*@| No storage | $STATUS |@"
+          /tmp/vitest-comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/vitest-comment.txt
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -196,6 +265,7 @@ jobs:
   vitest-ddb-constants:
     needs:
       - build
+      - checkComment
     name: Vitest (DDB) - Constants
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
@@ -206,6 +276,21 @@ jobs:
       - uses: actions/checkout@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Mark "DDB" as running
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          STATUS="🔄 Running"
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/vitest-comment.txt
+
+          sed -i "s@^| DDB |.*@| DDB | $STATUS |@" /tmp/vitest-comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/vitest-comment.txt
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -213,6 +298,41 @@ jobs:
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
           '["ddb"]')" >> "$GITHUB_OUTPUT"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  vitest-ddb-result:
+    needs:
+      - vitest-ddb-run
+      - checkComment
+    name: Vitest (DDB) - Report status
+    if: always() && needs.checkComment.result == 'success'
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Report "DDB" result
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          RESULT: ${{ needs.vitest-ddb-run.result }}
+        run: >-
+          case "$RESULT" in
+            success) STATUS="✅ Passed" ;;
+            cancelled) STATUS="⚪ Cancelled" ;;
+            skipped) STATUS="⏭️ Skipped" ;;
+            *) STATUS="❌ Failed" ;;
+          esac
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/vitest-comment.txt
+
+          sed -i "s@^| DDB |.*@| DDB | $STATUS |@" /tmp/vitest-comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/vitest-comment.txt
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -270,6 +390,7 @@ jobs:
   vitest-ddb-os-constants:
     needs:
       - build
+      - checkComment
     name: Vitest (DDB+OS) - Constants
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
@@ -280,6 +401,21 @@ jobs:
       - uses: actions/checkout@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Mark "DDB+OS" as running
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          STATUS="🔄 Running"
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/vitest-comment.txt
+
+          sed -i "s@^| DDB+OS |.*@| DDB+OS | $STATUS |@" /tmp/vitest-comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/vitest-comment.txt
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -287,6 +423,41 @@ jobs:
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
           '["ddb-os,ddb"]')" >> "$GITHUB_OUTPUT"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  vitest-ddb-os-result:
+    needs:
+      - vitest-ddb-os-run
+      - checkComment
+    name: Vitest (DDB+OS) - Report status
+    if: always() && needs.checkComment.result == 'success'
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Report "DDB+OS" result
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          RESULT: ${{ needs.vitest-ddb-os-run.result }}
+        run: >-
+          case "$RESULT" in
+            success) STATUS="✅ Passed" ;;
+            cancelled) STATUS="⚪ Cancelled" ;;
+            skipped) STATUS="⏭️ Skipped" ;;
+            *) STATUS="❌ Failed" ;;
+          esac
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/vitest-comment.txt
+
+          sed -i "s@^| DDB+OS |.*@| DDB+OS | $STATUS |@" /tmp/vitest-comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/vitest-comment.txt
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -357,6 +528,7 @@ jobs:
   vitest-sql-constants:
     needs:
       - build
+      - checkComment
     name: Vitest (SQL) - Constants
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
@@ -367,6 +539,21 @@ jobs:
       - uses: actions/checkout@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Mark "SQL" as running
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          STATUS="🔄 Running"
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/vitest-comment.txt
+
+          sed -i "s@^| SQL |.*@| SQL | $STATUS |@" /tmp/vitest-comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/vitest-comment.txt
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -374,6 +561,41 @@ jobs:
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
           '["sql,ddb"]')" >> "$GITHUB_OUTPUT"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  vitest-sql-result:
+    needs:
+      - vitest-sql-run
+      - checkComment
+    name: Vitest (SQL) - Report status
+    if: always() && needs.checkComment.result == 'success'
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Report "SQL" result
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          RESULT: ${{ needs.vitest-sql-run.result }}
+        run: >-
+          case "$RESULT" in
+            success) STATUS="✅ Passed" ;;
+            cancelled) STATUS="⚪ Cancelled" ;;
+            skipped) STATUS="⏭️ Skipped" ;;
+            *) STATUS="❌ Failed" ;;
+          esac
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/vitest-comment.txt
+
+          sed -i "s@^| SQL |.*@| SQL | $STATUS |@" /tmp/vitest-comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/vitest-comment.txt
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -428,3 +650,99 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+  vitestStatusSummary:
+    name: Vitest status summary
+    needs:
+      - checkComment
+      - vitest-run
+      - vitest-ddb-run
+      - vitest-ddb-os-run
+      - vitest-sql-run
+    if: always() && needs.checkComment.result == 'success'
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+      COMMENT_INTRO: >-
+        Vitest tests have been initiated (for more information, click
+        [here](https://github.com/webiny/webiny-js/actions/runs/${{
+        github.run_id }})). :sparkles:
+      PR_NUMBER: ${{ github.event.issue.number }}
+      R_NONE: ${{ needs.vitest-run.result }}
+      R_DDB: ${{ needs.vitest-ddb-run.result }}
+      R_DDB_OS: ${{ needs.vitest-ddb-os-run.result }}
+      R_SQL: ${{ needs.vitest-sql-run.result }}
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Heal PR comment and update PR description
+        continue-on-error: true
+        run: >-
+          icon() {
+            case "$1" in
+              success) echo "✅ Passed" ;;
+              failure) echo "❌ Failed" ;;
+              cancelled) echo "⚪ Cancelled" ;;
+              skipped) echo "⏭️ Skipped" ;;
+              *) echo "❔ $1" ;;
+            esac
+          }
+
+          S_NONE=$(icon "$R_NONE")
+
+          S_DDB=$(icon "$R_DDB")
+
+          S_DDB_OS=$(icon "$R_DDB_OS")
+
+          S_SQL=$(icon "$R_SQL")
+
+
+          table() {
+            echo "| Group | Status |"
+            echo "| --- | --- |"
+            echo "| No storage | $S_NONE |"
+            echo "| DDB | $S_DDB |"
+            echo "| DDB+OS | $S_DDB_OS |"
+            echo "| SQL | $S_SQL |"
+          }
+
+
+          # Heal the PR comment with the authoritative final table.
+
+          { echo "$COMMENT_INTRO"; echo ""; table; } > /tmp/vitest-comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/vitest-comment.txt
+
+
+          # Build the PR description status block (idempotent via markers).
+
+          {
+            echo "<!-- vitest-status:start -->"
+            echo "### 🧪 Vitest results"
+            echo ""
+            table
+            echo "<!-- vitest-status:end -->"
+          } > /tmp/vitest-status.md
+
+
+          gh pr view "$PR_NUMBER" -R ${{ github.repository }} --json body -q
+          .body > /tmp/pr-body-raw.txt
+
+          # Drop any existing status block, then trailing blank lines, so
+          re-runs don't stack separators.
+
+          sed '/<!-- vitest-status:start -->/,/<!-- vitest-status:end -->/d'
+          /tmp/pr-body-raw.txt > /tmp/pr-body-noblock.txt
+
+          awk 'NF{p=NR} {a[NR]=$0} END{for(i=1;i<=p;i++) print a[i]}'
+          /tmp/pr-body-noblock.txt > /tmp/pr-body-trimmed.txt
+
+          { cat /tmp/pr-body-trimmed.txt; echo ""; cat /tmp/vitest-status.md; }
+          > /tmp/pr-body.txt
+
+          gh pr edit "$PR_NUMBER" -R ${{ github.repository }} --body-file
+          /tmp/pr-body.txt
+    runs-on: ubuntu-latest
