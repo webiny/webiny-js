@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
-import { ContextPlugin } from "@webiny/api";
+import { BenchmarkAbstraction, ContextPlugin } from "@webiny/api";
 import { createIcon } from "~tests/__helpers/icon.js";
 
 describe("benchmark points", () => {
@@ -10,9 +10,12 @@ describe("benchmark points", () => {
         path: "manage",
         topPlugins: [
             new ContextPlugin(async context => {
-                context.benchmark.enable();
+                // Benchmark moved from `context.benchmark` to the DI container during the
+                // DI migration; resolve the same instance createCmsRoute flushes per request.
+                const benchmark = context.container.resolve(BenchmarkAbstraction);
+                benchmark.enable();
 
-                context.benchmark.onOutput(async ({ benchmark }) => {
+                benchmark.onOutput(async ({ benchmark }) => {
                     elapsed = benchmark.elapsed;
                 });
             })
