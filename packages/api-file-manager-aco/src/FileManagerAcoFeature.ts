@@ -1,10 +1,10 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
-import { createFileManagerAco } from "./index.js";
+import { EnsureFolderIsEmptyBeforeDeleteFeature } from "./features/EnsureFolderIsEmptyBeforeDelete/feature.js";
 
 export const FileManagerAcoFeature = createFeature({
     name: "FileManagerAco",
     register(container: Container) {
-        registerLegacyPluginsViaGqlContextualSchema(container, [createFileManagerAco()]);
+        // Pure DI registration — no legacy ContextPlugin bridge needed.
+        EnsureFolderIsEmptyBeforeDeleteFeature.register(container);
     }
 });

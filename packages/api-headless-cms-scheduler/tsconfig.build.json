@@ -6,7 +6,6 @@
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../api-scheduler/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
-    { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-opensearch/tsconfig.build.json" }
   ],
@@ -25,8 +24,6 @@
       "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
