@@ -4,7 +4,8 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.
 import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import {
     createBackgroundTaskContext,
-    createBackgroundTaskGraphQL
+    createBackgroundTaskGraphQL,
+    TaskServiceTransport
 } from "@webiny/background-tasks/api";
 import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
@@ -25,15 +26,15 @@ export const useHandler = <C extends Context = Context>(params: Params = {}) => 
                 table: process.env.DB_TABLE
             });
 
-            // Background tasks (context.tasks, TriggerTaskUseCase) + a mock transport, then the
+            // Background tasks (context.tasks, TriggerTaskUseCase) + a mock transport (DI), then the
             // es-tasks task definitions and any test-supplied plugins.
             registerLegacyPluginsViaGqlContextualSchema(container, [
                 createBackgroundTaskContext(),
                 ...createBackgroundTaskGraphQL(),
-                createMockTaskServicePlugin(),
                 createHeadlessCmsEsTasks(),
                 ...[plugins].flat(Infinity as 1).filter(Boolean)
             ]);
+            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin()[0]);
         }
     });
 

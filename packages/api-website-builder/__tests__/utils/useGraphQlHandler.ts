@@ -2,7 +2,8 @@ import { getIntrospectionQuery } from "graphql";
 import { until } from "@webiny/project-utils/testing/helpers/until.js";
 import {
     createBackgroundTaskContext,
-    createBackgroundTaskGraphQL
+    createBackgroundTaskGraphQL,
+    TaskServiceTransport
 } from "@webiny/background-tasks/api";
 import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
@@ -31,7 +32,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         plugins: [
             createBackgroundTaskContext(),
             ...createBackgroundTaskGraphQL(),
-            createMockTaskServicePlugin(),
             createContextPlugin(ctx => {
                 ctx.container.register(InvalidateCloudfrontCacheTaskDefinition);
             }),
@@ -42,6 +42,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             container.register(PageModelPlugin);
             container.register(RedirectModelPlugin);
             LanguagesExtension.register(container);
+            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin()[0]);
         }
     });
 

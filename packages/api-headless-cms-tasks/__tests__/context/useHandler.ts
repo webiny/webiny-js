@@ -4,7 +4,8 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.
 import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import {
     createBackgroundTaskContext,
-    createBackgroundTaskGraphQL
+    createBackgroundTaskGraphQL,
+    TaskServiceTransport
 } from "@webiny/background-tasks/api";
 import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
@@ -35,13 +36,13 @@ export const useHandler = <C extends HcmsTasksContext = HcmsTasksContext>(params
             });
             HcmsTasksFeature.register(container);
 
-            // Background tasks (TriggerTaskUseCase etc.) + a mock trigger transport so the task
+            // Background tasks (TriggerTaskUseCase etc.) + a mock trigger transport (DI) so the task
             // isn't actually dispatched to AWS during tests.
             registerLegacyPluginsViaGqlContextualSchema(container, [
                 createBackgroundTaskContext(),
-                ...createBackgroundTaskGraphQL(),
-                createMockTaskServicePlugin()
+                ...createBackgroundTaskGraphQL()
             ]);
+            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin()[0]);
         }
     });
 

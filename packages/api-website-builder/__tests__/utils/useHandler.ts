@@ -1,7 +1,8 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import {
     createBackgroundTaskContext,
-    createBackgroundTaskGraphQL
+    createBackgroundTaskGraphQL,
+    TaskServiceTransport
 } from "@webiny/background-tasks/api";
 import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
@@ -35,7 +36,6 @@ export const useHandler = (params: Params = {}) => {
         plugins: [
             createBackgroundTaskContext(),
             ...createBackgroundTaskGraphQL(),
-            createMockTaskServicePlugin(),
             createContextPlugin(ctx => {
                 ctx.container.register(InvalidateCloudfrontCacheTaskDefinition);
             }),
@@ -46,6 +46,7 @@ export const useHandler = (params: Params = {}) => {
             container.register(PageModelPlugin);
             container.register(RedirectModelPlugin);
             LanguagesExtension.register(container);
+            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin()[0]);
         }
     });
 

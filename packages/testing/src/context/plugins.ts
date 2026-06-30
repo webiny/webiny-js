@@ -2,7 +2,8 @@ import type { Plugin, PluginCollection } from "@webiny/plugins/types.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import {
     createBackgroundTaskContext,
-    createBackgroundTaskGraphQL
+    createBackgroundTaskGraphQL,
+    TaskServiceTransport
 } from "@webiny/background-tasks/api";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types/index.js";
 import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
@@ -85,6 +86,9 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
         }
 
         HeadlessCmsFeature.register(container, { type: "manage", extraPlugins: extraCmsPlugins });
+
+        // Task-service transport (mock) as DI instead of via the ctx.plugins plugin array.
+        container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin()[0]);
     };
 
     const legacyPlugins = [
@@ -92,7 +96,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
         createBackgroundTaskContext(),
         ...createBackgroundTaskGraphQL(),
         plugins,
-        createMockTaskServicePlugin(),
         bottomPlugins
     ];
 
