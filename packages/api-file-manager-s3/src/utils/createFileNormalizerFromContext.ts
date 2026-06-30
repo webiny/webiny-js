@@ -1,11 +1,11 @@
 import type { Context } from "@webiny/api/types.js";
 import { FileNormalizer } from "~/utils/FileNormalizer.js";
-import { createModifierFromPlugins, FileUploadModifierPlugin } from "~/utils/FileUploadModifier.js";
+import { createModifierFromPlugins, FileUploadModifier } from "~/utils/FileUploadModifier.js";
 
 export const createFileNormalizerFromContext = (context: Context) => {
-    const modifierPlugins = context.plugins.byType<FileUploadModifierPlugin>(
-        FileUploadModifierPlugin.type
-    );
+    // Modifiers are registered as DI instances (FileUploadModifier) — was
+    // context.plugins.byType(FileUploadModifierPlugin.type).
+    const modifierPlugins = context.container.resolveAll(FileUploadModifier);
 
     return new FileNormalizer(createModifierFromPlugins(modifierPlugins));
 };

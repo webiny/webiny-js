@@ -1,12 +1,13 @@
 import pReduce from "p-reduce";
 import { Plugin } from "@webiny/plugins";
+import { createAbstraction } from "@webiny/feature/api";
 import type { FileToSign } from "~/utils/FileNormalizer.js";
 
 interface Setter<T> {
     (param: T): T;
 }
 
-class FileUploadModifier {
+class FileUploadModifierBuilder {
     private fileSetters: Setter<FileToSign>[] = [];
 
     setFile(setter: Setter<FileToSign>): void {
@@ -27,7 +28,7 @@ class FileUploadModifier {
 
 interface FileUploadModifierCallbackParams {
     modifier: {
-        setFile: FileUploadModifier["setFile"];
+        setFile: FileUploadModifierBuilder["setFile"];
     };
 }
 
@@ -53,6 +54,13 @@ export const createFileUploadModifier = (cb: FileUploadModifierCallable) => {
     return new FileUploadModifierPlugin(cb);
 };
 
+/**
+ * DI multiple-abstraction for file-upload modifiers. Replaces the old
+ * `context.plugins.byType(FileUploadModifierPlugin.type)` lookup in createFileNormalizerFromContext.
+ * Extensions register modifiers via `container.registerInstance(FileUploadModifier, createFileUploadModifier(cb))`.
+ */
+export const FileUploadModifier = createAbstraction<FileUploadModifierPlugin>("FileUploadModifier");
+
 export interface FileModifier {
     (file: FileToSign): Promise<Partial<FileToSign>> | Partial<FileToSign>;
 }
@@ -60,7 +68,7 @@ export interface FileModifier {
 export const createModifierFromPlugins = (
     plugins: FileUploadModifierPlugin[] = []
 ): FileModifier => {
-    const modifier = new FileUploadModifier();
+    const modifier = new FileUploadModifierBuilder();
     plugins.forEach(pl => pl.execute({ modifier }));
 
     return (file: FileToSign) => modifier.execute(file);
