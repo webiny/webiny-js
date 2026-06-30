@@ -56,6 +56,7 @@ export const CmsGenerateContentDialog = observer(() => {
                 const responseText = await decompressGzipBase64(message.data.value);
                 try {
                     const entryValues = await presenter.processAiResponse(responseText);
+                    console.log("entryValues", entryValues);
                     const form = formPresenter.vm.form;
                     if (form) {
                         form.setData(entryValues);

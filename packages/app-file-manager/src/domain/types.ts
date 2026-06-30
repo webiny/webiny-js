@@ -21,15 +21,6 @@ export interface Settings {
     uploadMaxFileSize: string;
     srcPrefix: string;
 }
-export interface QueryGetSettingsResult {
-    fileManager: {
-        getSettings: {
-            data: Settings;
-            error: Error | null;
-        };
-    };
-}
-
 export interface FileTag {
     tag: string;
     count: number;

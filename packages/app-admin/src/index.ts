@@ -21,6 +21,8 @@ export * from "./base/ui/CenteredView.js";
 export * from "./base/ui/Dashboard.js";
 export * from "./base/ui/NotFound.js";
 
+export { observer as createReactiveComponent } from "mobx-react-lite";
+
 // Base admin app
 export { Admin } from "./base/Admin.js";
 export * from "./config/AdminConfig.js";

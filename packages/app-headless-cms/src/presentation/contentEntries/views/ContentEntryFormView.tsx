@@ -3,18 +3,16 @@ import { Helmet } from "react-helmet";
 import { observer } from "mobx-react-lite";
 import { useFeature, useRouter } from "@webiny/app";
 import { Buttons, useDialogs, useRoute } from "@webiny/app-admin";
-import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { HeaderBar, Heading, Icon, IconButton, OverlayLoader, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as BackIcon } from "@webiny/icons/arrow_back.svg";
 import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
-import { FormErrors } from "@webiny/app-admin";
 import { useContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
 import { Routes } from "~/routes.js";
 import {
     Container,
     ScrollArea,
     ContentEntryFormContent,
-    ContentFormInner
+    ContentEntryForm
 } from "./layout/index.js";
 import { RevisionsListFeature } from "../revisionsList/feature.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
@@ -92,16 +90,9 @@ export const ContentEntryFormView = observer(() => {
             <ScrollArea>
                 {vm.loading ? <OverlayLoader text={vm.loading} /> : null}
                 <ContentEntryFormContent>
-                    <ContentFormInner width={width}>
-                        <div className={"bg-neutral-base rounded-lg p-lg"}>
-                            {vm.form ? (
-                                <>
-                                    <FormErrors form={vm.form} className={"mb-md"} />
-                                    <FormView name="ContentEntryForm" form={vm.form} />
-                                </>
-                            ) : null}
-                        </div>
-                    </ContentFormInner>
+                    <div className={"bg-neutral-base rounded-lg p-lg"} style={{ width }}>
+                        <ContentEntryForm />
+                    </div>
                 </ContentEntryFormContent>
             </ScrollArea>
             <RevisionDrawer />
