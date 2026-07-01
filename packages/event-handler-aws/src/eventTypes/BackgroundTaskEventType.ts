@@ -14,7 +14,12 @@ export interface IBackgroundTaskEvent {
 
 class BackgroundTaskEventTypeImpl implements IEventType<IBackgroundTaskEvent> {
     canHandle(event: any): event is IBackgroundTaskEvent {
-        return !!(event?.webinyTaskId && event?.webinyTaskDefinitionId && event?.tenant);
+        // The Step Functions / EventBridge transport delivers the task wrapped as
+        // `{ name: "background-task", payload: { webinyTaskId, ... } }` (see the bg-task SFN ASL
+        // definition in project-aws). Unwrap `payload` if present; also accept an already-flat event
+        // defensively so direct invokes still work.
+        const e = event?.payload ?? event;
+        return !!(e?.webinyTaskId && e?.webinyTaskDefinitionId && e?.tenant);
     }
 
     getHandlerAbstraction() {

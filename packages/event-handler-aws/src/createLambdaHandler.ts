@@ -47,7 +47,22 @@ export function createLambdaHandler(options: CreateLambdaHandlerOptions) {
         const matched = eventTypes.find(et => et.canHandle(event));
 
         if (!matched) {
-            throw new Error("No event type matched the incoming event");
+            // Include a non-sensitive shape summary so this is debuggable: which event types were
+            // registered vs. what the event actually looks like (keys + EventBridge discriminators).
+            const shape =
+                event && typeof event === "object"
+                    ? {
+                          keys: Object.keys(event),
+                          source: (event as any).source,
+                          detailType: (event as any)["detail-type"]
+                      }
+                    : { type: typeof event };
+            const registered = eventTypes.map(et => (et as any)?.constructor?.name);
+            throw new Error(
+                `No event type matched the incoming event. Event shape: ${JSON.stringify(
+                    shape
+                )}; registered event types: ${JSON.stringify(registered)}`
+            );
         }
 
         const abstraction = matched.getHandlerAbstraction();
