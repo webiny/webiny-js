@@ -60,7 +60,7 @@ export const ExperimentsListView = ({
                         flexShrink: 0
                     }}
                 >
-                    <AddIcon style={{ width: 18, height: 18 }} />
+                    <AddIcon style={{ width: 18, height: 18, fill: "currentColor" }} />
                     New
                 </button>
             </div>

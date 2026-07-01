@@ -186,7 +186,7 @@ export const ExperimentCard = ({
                             whiteSpace: "nowrap"
                         }}
                     >
-                        <PlayIcon style={{ width: 18, height: 18 }} />
+                        <PlayIcon style={{ width: 18, height: 18, fill: "currentColor" }} />
                         Activate
                     </button>
                 )}
@@ -316,7 +316,7 @@ export const ExperimentCard = ({
                         cursor: "pointer"
                     }}
                 >
-                    <DeleteIcon style={{ width: 18, height: 18 }} />
+                    <DeleteIcon style={{ width: 18, height: 18, fill: "currentColor" }} />
                     Delete
                 </button>
             </div>
