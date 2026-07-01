@@ -5,26 +5,45 @@ import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { VariantSplitRow } from "./VariantSplitRow.js";
 
-export interface NewExperimentPayload {
-    name: string;
-    key: string;
-    control: { key: string; description: string; weight: number };
-    variants: Array<{ name: string; key: string; description: string; weight: number }>;
-}
-
-interface Bucket {
+export interface FormBucket {
     id: string;
     isControl: boolean;
-    weight: number;
     name: string;
     key: string;
     keyEdited: boolean;
     description: string;
+    weight: number;
+    // CMS revision id of an existing variant (edit mode); absent for control and new variants.
+    revisionId?: string;
+}
+
+export interface ExperimentFormInitial {
+    name: string;
+    key: string;
+    buckets: FormBucket[];
+}
+
+export interface NewExperimentPayload {
+    name: string;
+    key: string;
+    control: { key: string; description: string; weight: number };
+    variants: Array<{
+        id: string;
+        revisionId?: string;
+        name: string;
+        key: string;
+        description: string;
+        weight: number;
+    }>;
 }
 
 interface Props {
     onCancel: () => void;
     onSubmit: (payload: NewExperimentPayload) => void;
+    initial?: ExperimentFormInitial;
+    submitLabel?: string;
+    /** When false, variants can't be added/removed (used when editing an existing experiment). */
+    allowStructureChange?: boolean;
 }
 
 const slugify = (value: string): string =>
@@ -34,8 +53,29 @@ const slugify = (value: string): string =>
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "");
 
+const defaultBuckets = (): FormBucket[] => [
+    {
+        id: "control",
+        isControl: true,
+        name: "Control",
+        key: "control",
+        keyEdited: false,
+        description: "",
+        weight: 50
+    },
+    {
+        id: crypto.randomUUID(),
+        isControl: false,
+        name: "Variant B",
+        key: "variant-b",
+        keyEdited: false,
+        description: "",
+        weight: 50
+    }
+];
+
 /** Even split summing to 100, with any remainder distributed from the first bucket. */
-const evenSplit = (buckets: Bucket[]): Bucket[] => {
+const evenSplit = (buckets: FormBucket[]): FormBucket[] => {
     const n = buckets.length;
     const each = Math.floor(100 / n);
     const next = buckets.map(b => ({ ...b, weight: each }));
@@ -50,7 +90,7 @@ const evenSplit = (buckets: Bucket[]): Bucket[] => {
 };
 
 /** Set one bucket's weight and auto-balance the rest (proportionally) so the total stays 100. */
-const rebalance = (buckets: Bucket[], index: number, rawValue: number): Bucket[] => {
+const rebalance = (buckets: FormBucket[], index: number, rawValue: number): FormBucket[] => {
     const value = Math.max(0, Math.min(100, Math.round(rawValue)));
     const next = buckets.map(b => ({ ...b }));
     next[index].weight = value;
@@ -91,30 +131,17 @@ const rebalance = (buckets: Bucket[], index: number, rawValue: number): Bucket[]
     return next;
 };
 
-export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
-    const [name, setName] = useState("");
-    const [key, setKey] = useState("");
-    const [keyEdited, setKeyEdited] = useState(false);
-    const [buckets, setBuckets] = useState<Bucket[]>([
-        {
-            id: "control",
-            isControl: true,
-            weight: 50,
-            name: "Control",
-            key: "control",
-            keyEdited: false,
-            description: ""
-        },
-        {
-            id: crypto.randomUUID(),
-            isControl: false,
-            weight: 50,
-            name: "Variant B",
-            key: "variant-b",
-            keyEdited: false,
-            description: ""
-        }
-    ]);
+export const NewExperimentForm = ({
+    onCancel,
+    onSubmit,
+    initial,
+    submitLabel = "Create experiment",
+    allowStructureChange = true
+}: Props) => {
+    const [name, setName] = useState(initial?.name ?? "");
+    const [key, setKey] = useState(initial?.key ?? "");
+    const [keyEdited, setKeyEdited] = useState(Boolean(initial?.key));
+    const [buckets, setBuckets] = useState<FormBucket[]>(initial?.buckets ?? defaultBuckets());
 
     const total = useMemo(() => buckets.reduce((sum, b) => sum + b.weight, 0), [buckets]);
     const variantCount = buckets.filter(b => !b.isControl).length;
@@ -133,16 +160,16 @@ export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
 
     const addVariant = () => {
         setBuckets(prev => {
-            const variantCount = prev.filter(b => !b.isControl).length;
-            const name = `Variant ${String.fromCharCode(66 + variantCount)}`;
+            const count = prev.filter(b => !b.isControl).length;
+            const variantName = `Variant ${String.fromCharCode(66 + count)}`;
             return evenSplit([
                 ...prev,
                 {
                     id: crypto.randomUUID(),
                     isControl: false,
                     weight: 0,
-                    name,
-                    key: slugify(name),
+                    name: variantName,
+                    key: slugify(variantName),
                     keyEdited: false,
                     description: ""
                 }
@@ -186,6 +213,8 @@ export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
         const variants = buckets
             .filter(b => !b.isControl)
             .map(b => ({
+                id: b.id,
+                revisionId: b.revisionId,
                 name: b.name,
                 key: b.key,
                 description: b.description,
@@ -278,7 +307,7 @@ export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
                         onDescriptionChange={value => changeDescription(index, value)}
                         onChange={value => changeWeight(index, value)}
                         onRemove={
-                            bucket.isControl || variantCount <= 1
+                            bucket.isControl || !allowStructureChange || variantCount <= 1
                                 ? undefined
                                 : () => removeVariant(index)
                         }
@@ -286,29 +315,24 @@ export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
                     />
                 ))}
 
-                <div style={{ marginTop: 8 }}>
-                    <Button
-                        variant="tertiary"
-                        icon={<AddIcon />}
-                        text="Add variant"
-                        onClick={addVariant}
-                    />
-                </div>
+                {allowStructureChange ? (
+                    <div style={{ marginTop: 8 }}>
+                        <Button
+                            variant="tertiary"
+                            icon={<AddIcon />}
+                            text="Add variant"
+                            onClick={addVariant}
+                        />
+                    </div>
+                ) : null}
             </div>
 
-            <div
-                style={{
-                    display: "flex",
-                    gap: 12,
-                    padding: 16,
-                    borderTop: "1px solid #eee"
-                }}
-            >
+            <div style={{ display: "flex", gap: 12, padding: 16, borderTop: "1px solid #eee" }}>
                 <Button variant="secondary" text="Cancel" onClick={onCancel} />
                 <div style={{ flex: 1 }}>
                     <Button
                         variant="primary"
-                        text="Create experiment"
+                        text={submitLabel}
                         disabled={!canSubmit}
                         onClick={submit}
                     />

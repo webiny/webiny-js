@@ -1,33 +1,42 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "@webiny/admin-ui";
 import { ReactComponent as ScienceIcon } from "@webiny/icons/science.svg";
 import { ReactComponent as ChevronDownIcon } from "@webiny/icons/expand_more.svg";
+import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { ExperimentsDrawer } from "./ExperimentsDrawer.js";
 import { ExperimentsSwitcher, type ExperimentItem } from "./ExperimentsSwitcher.js";
-import type { NewExperimentPayload } from "./NewExperimentForm.js";
+import { useExperiments } from "./useExperiments.js";
+import type { ExperimentDto } from "~/features/experiments/index.js";
 
 /**
  * Top-bar entry point for A/B experiments.
  *
- * With no experiments on the page it's a simple "Experiments" button that opens the empty-state
- * drawer. Once experiments exist it becomes a switcher (which experiment/variant you're viewing).
- * Experiments are held in local state for now — persistence is a later step.
+ * With no experiments on the page it's a plain "Experiments" button opening the drawer; once
+ * experiments exist it becomes a switcher. Experiments are loaded from and persisted to the API.
  */
 export const ExperimentsButton = () => {
-    const [experiments, setExperiments] = useState<ExperimentItem[]>([]);
+    const pageRevisionId = useSelectFromDocument(document => document.id);
+    const pageEntryId = pageRevisionId.split("#")[0];
+
+    const { listExperiments } = useExperiments();
+    const [experiments, setExperiments] = useState<ExperimentDto[]>([]);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
 
-    const handleCreate = (payload: NewExperimentPayload) => {
-        const item: ExperimentItem = {
-            id: crypto.randomUUID(),
-            name: payload.name,
-            status: "inactive"
-        };
-        setExperiments(prev => [...prev, item]);
-        setSelectedId(item.id);
-        setDrawerOpen(false);
-    };
+    const reload = useCallback(async () => {
+        const list = await listExperiments(pageEntryId).catch(() => [] as ExperimentDto[]);
+        setExperiments(list);
+    }, [pageEntryId, listExperiments]);
+
+    useEffect(() => {
+        reload();
+    }, [reload]);
+
+    const items: ExperimentItem[] = experiments.map(experiment => ({
+        id: experiment.id,
+        name: experiment.name,
+        status: experiment.status === "running" ? "active" : "inactive"
+    }));
 
     return (
         <div style={{ display: "flex" }}>
@@ -45,7 +54,7 @@ export const ExperimentsButton = () => {
                 />
             ) : (
                 <ExperimentsSwitcher
-                    experiments={experiments}
+                    experiments={items}
                     selectedId={selectedId}
                     onSelect={setSelectedId}
                     onManage={() => setDrawerOpen(true)}
@@ -54,7 +63,10 @@ export const ExperimentsButton = () => {
             <ExperimentsDrawer
                 open={drawerOpen}
                 onClose={() => setDrawerOpen(false)}
-                onCreate={handleCreate}
+                experiments={experiments}
+                pageEntryId={pageEntryId}
+                baselineRevisionId={pageRevisionId}
+                onChanged={reload}
             />
         </div>
     );
