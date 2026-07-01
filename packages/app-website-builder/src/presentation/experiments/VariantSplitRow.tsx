@@ -1,7 +1,6 @@
 import React from "react";
 import { IconButton, Input } from "@webiny/admin-ui";
-
-const VARIANT_COLORS = ["#e2572a", "#4285f4", "#0f9d58", "#a142f4", "#f4b400"];
+import { bucketColor } from "./variantColors.js";
 
 interface FieldProps {
     label: string;
@@ -57,7 +56,7 @@ export const VariantSplitRow = ({
     onRemove,
     removeIcon
 }: Props) => {
-    const color = isControl ? "#9ca3af" : VARIANT_COLORS[variantIndex % VARIANT_COLORS.length];
+    const color = bucketColor(isControl, variantIndex);
 
     return (
         <div

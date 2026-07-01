@@ -4,9 +4,8 @@ import { ReactComponent as ScienceIcon } from "@webiny/icons/science.svg";
 import { ReactComponent as SwapIcon } from "@webiny/icons/swap_horiz.svg";
 import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
-import { useExperimentsEditor, type VariantOption } from "./ExperimentsEditorContext.js";
-
-const dotColor = (option: VariantOption) => (option.isControl ? "#9ca3af" : "#e2572a");
+import { useExperimentsEditor } from "./ExperimentsEditorContext.js";
+import { bucketColor } from "./variantColors.js";
 
 const Dot = ({ color }: { color: string }) => (
     <span style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
@@ -27,8 +26,13 @@ export const ExperimentPreviewToolbar = () => {
     }
 
     const active = selectedExperiment.status === "running";
-    const current =
-        variantOptions.find(option => option.id === selectedVariantId) ?? variantOptions[0];
+    // Assign each bucket its palette colour by index (control is first), matching the experiment
+    // form and the list cards.
+    const options = variantOptions.map((option, index) => ({
+        ...option,
+        color: bucketColor(option.isControl, index - 1)
+    }));
+    const current = options.find(option => option.id === selectedVariantId) ?? options[0];
 
     const trigger = (
         <button
@@ -110,7 +114,7 @@ export const ExperimentPreviewToolbar = () => {
                         whiteSpace: "nowrap"
                     }}
                 >
-                    <Dot color={dotColor(current)} />
+                    <Dot color={current.color} />
                     {current.name}
                     <span style={{ opacity: 0.7, fontWeight: 500 }}>{current.weight}%</span>
                 </span>
@@ -123,10 +127,10 @@ export const ExperimentPreviewToolbar = () => {
                 style={{ minWidth: 260 }}
             >
                 <DropdownMenu.Label text="Switch variant" />
-                {variantOptions.map(option => (
+                {options.map(option => (
                     <DropdownMenu.Item
                         key={option.id ?? "control"}
-                        icon={<Dot color={dotColor(option)} />}
+                        icon={<Dot color={option.color} />}
                         text={
                             <span
                                 style={{
@@ -144,7 +148,7 @@ export const ExperimentPreviewToolbar = () => {
                                     </span>
                                     {option.id === current.id ? (
                                         <CheckIcon
-                                            style={{ width: 16, height: 16, color: "#e2572a" }}
+                                            style={{ width: 16, height: 16, color: option.color }}
                                         />
                                     ) : null}
                                 </span>

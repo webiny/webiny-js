@@ -327,16 +327,22 @@ export const NewExperimentForm = ({
                 ) : null}
             </div>
 
-            <div style={{ display: "flex", gap: 12, padding: 16, borderTop: "1px solid #eee" }}>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: 12,
+                    padding: 16,
+                    borderTop: "1px solid #eee"
+                }}
+            >
                 <Button variant="secondary" text="Cancel" onClick={onCancel} />
-                <div style={{ flex: 1 }}>
-                    <Button
-                        variant="primary"
-                        text={submitLabel}
-                        disabled={!canSubmit}
-                        onClick={submit}
-                    />
-                </div>
+                <Button
+                    variant="primary"
+                    text={submitLabel}
+                    disabled={!canSubmit}
+                    onClick={submit}
+                />
             </div>
         </div>
     );

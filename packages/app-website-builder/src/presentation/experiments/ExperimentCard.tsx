@@ -5,12 +5,10 @@ import { ReactComponent as PauseIcon } from "@webiny/icons/pause.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { useExperiments } from "./useExperiments.js";
+import { bucketColor } from "./variantColors.js";
 import type { ExperimentDto, VariantDto } from "~/features/experiments/index.js";
 
-// Dot / traffic-bar colours: control is always neutral, variants cycle a fixed palette.
-const CONTROL_DOT = "#9ca3af";
-const VARIANT_DOTS = ["#e2572a", "#10b981", "#6366f1", "#f59e0b", "#ec4899"];
-// Decorative "hero band" colours for the mini page previews.
+// Decorative "hero band" colours for the mini page previews (unrelated to bucket dot colours).
 const BAND_COLORS = ["#4f46e5", "#0f9d58", "#c2410c", "#1f2937", "#0891b2"];
 
 interface Bucket {
@@ -90,7 +88,7 @@ export const ExperimentCard = ({
             key: "control",
             name: "Control",
             weight: split.control ?? 0,
-            dot: CONTROL_DOT,
+            dot: bucketColor(true, 0),
             band: BAND_COLORS[0],
             isControl: true
         },
@@ -98,7 +96,7 @@ export const ExperimentCard = ({
             key: variant.entryId,
             name: variant.name,
             weight: split.variants?.[variant.entryId] ?? 0,
-            dot: VARIANT_DOTS[index % VARIANT_DOTS.length],
+            dot: bucketColor(false, index),
             band: BAND_COLORS[(index + 1) % BAND_COLORS.length],
             isControl: false
         }))

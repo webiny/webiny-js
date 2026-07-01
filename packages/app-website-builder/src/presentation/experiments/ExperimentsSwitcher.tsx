@@ -91,9 +91,9 @@ export const ExperimentsSwitcher = ({ experiments, selectedId, onSelect, onManag
                 cursor: "pointer"
             }}
         >
-            <ScienceIcon style={{ width: 18, height: 18 }} />
+            <ScienceIcon style={{ width: 18, height: 18, fill: "currentColor" }} />
             {label}
-            <ChevronDownIcon style={{ width: 16, height: 16 }} />
+            <ChevronDownIcon style={{ width: 16, height: 16, fill: "currentColor" }} />
         </button>
     );
 
