@@ -10,9 +10,10 @@ type View = "empty" | "create";
 interface Props {
     open: boolean;
     onClose: () => void;
+    onCreate: (payload: NewExperimentPayload) => void;
 }
 
-export const ExperimentsDrawer = ({ open, onClose }: Props) => {
+export const ExperimentsDrawer = ({ open, onClose, onCreate }: Props) => {
     const [view, setView] = useState<View>("empty");
 
     // Always start on the overview when the drawer is (re)opened.
@@ -41,11 +42,6 @@ export const ExperimentsDrawer = ({ open, onClose }: Props) => {
             </span>
         );
 
-    const handleCreate = (_payload: NewExperimentPayload) => {
-        // Persisting the experiment is the next step; for now just close the drawer.
-        onClose();
-    };
-
     return (
         <Drawer
             open={open}
@@ -58,7 +54,7 @@ export const ExperimentsDrawer = ({ open, onClose }: Props) => {
             className={"flex flex-col"}
         >
             {view === "create" ? (
-                <NewExperimentForm onCancel={() => setView("empty")} onSubmit={handleCreate} />
+                <NewExperimentForm onCancel={() => setView("empty")} onSubmit={onCreate} />
             ) : (
                 <ExperimentsEmptyState onCreateExperiment={() => setView("create")} />
             )}
