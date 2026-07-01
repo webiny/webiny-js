@@ -1,47 +1,44 @@
 import { Result } from "@webiny/feature/api";
-import { GetActiveExperimentForPathUseCase as UseCaseAbstraction } from "./abstractions.js";
+import {
+    GetActiveExperimentForPathUseCase as UseCaseAbstraction,
+    GetActiveExperimentForPathRepository
+} from "./abstractions.js";
 import { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/index.js";
-import { GetActiveExperimentForRevisionUseCase } from "~/features/experiments/GetActiveExperimentForRevision/index.js";
-import { ListVariantsUseCase } from "~/features/variants/ListVariants/index.js";
+import { IsExperimentPausedUseCase } from "~/features/experiments/ExperimentPause/index.js";
 
 class GetActiveExperimentForPathUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private getPageByPath: GetPageByPathUseCase.Interface,
-        private getActiveExperiment: GetActiveExperimentForRevisionUseCase.Interface,
-        private listVariants: ListVariantsUseCase.Interface
+        private repository: GetActiveExperimentForPathRepository.Interface,
+        private isPaused: IsExperimentPausedUseCase.Interface
     ) {}
 
     async execute(path: string): UseCaseAbstraction.Return {
-        // Resolve the live (published) revision for the requested path.
+        // Resolve the live (published) page — this is the control.
         const pageResult = await this.getPageByPath.execute(path);
         if (pageResult.isFail()) {
             return Result.fail(pageResult.error);
         }
         const page = pageResult.value;
 
-        // Is there an active experiment pinned to that revision?
-        const experimentResult = await this.getActiveExperiment.execute(page.id);
+        // The published, running experiment for this page (draft experiments never serve).
+        const experimentResult = await this.repository.getPublishedRunningExperiment(page.entryId);
         if (experimentResult.isFail()) {
             return Result.fail(experimentResult.error);
         }
-        if (!experimentResult.value) {
+        const experiment = experimentResult.value;
+        if (!experiment) {
             return Result.ok(null);
         }
-        const experiment = experimentResult.value;
 
-        // Only "ready" variants participate. Variants are linked to the experiment by its
-        // revision id (the same id the admin stores and the SDK buckets / fetches content by).
-        const variantsResult = await this.listVariants.execute({
-            experimentId: experiment.id
-        });
-        if (variantsResult.isFail()) {
-            return Result.fail(variantsResult.error);
+        // Honour the instant kill-switch: a paused experiment serves the control.
+        const pausedResult = await this.isPaused.execute(experiment.entryId);
+        if (pausedResult.isOk() && pausedResult.value) {
+            return Result.ok(null);
         }
-        const variants = variantsResult.value.filter(variant => variant.status === "ready");
 
         return Result.ok({
             experiment,
-            variants,
             revisionId: page.id,
             pageEntryId: page.entryId,
             path
@@ -51,5 +48,9 @@ class GetActiveExperimentForPathUseCaseImpl implements UseCaseAbstraction.Interf
 
 export const GetActiveExperimentForPathUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetActiveExperimentForPathUseCaseImpl,
-    dependencies: [GetPageByPathUseCase, GetActiveExperimentForRevisionUseCase, ListVariantsUseCase]
+    dependencies: [
+        GetPageByPathUseCase,
+        GetActiveExperimentForPathRepository,
+        IsExperimentPausedUseCase
+    ]
 });

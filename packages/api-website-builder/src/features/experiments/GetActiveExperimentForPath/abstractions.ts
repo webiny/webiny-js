@@ -1,6 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { WbExperiment } from "~/domain/experiment/abstractions.js";
-import type { WbVariant } from "~/domain/variant/abstractions.js";
 import type {
     ExperimentNotAuthorizedError,
     ExperimentPersistenceError
@@ -10,24 +9,38 @@ import type {
     PageNotFoundError,
     PagePersistenceError
 } from "~/domain/page/errors.js";
-import type {
-    VariantNotAuthorizedError,
-    VariantPersistenceError
-} from "~/domain/variant/errors.js";
 
 /**
- * The active experiment for a requested path, resolved against the live (published) revision,
- * together with the experiment's "ready" variants. This is the shape the Next.js SDK uses to
- * bucket a visitor server-side. Variant content is fetched separately, per variant, so each
- * variant is its own cacheable object.
+ * The active experiment for a requested path. Resolved against the live (published) page and
+ * the PUBLISHED experiment for it — draft experiments/variants never serve. The set of
+ * participating variants is derived from the experiment's traffic split (keyed by variant
+ * entryId), and each variant's published content is fetched separately by the SDK.
  */
 export interface ActiveExperimentForPath {
     experiment: WbExperiment;
-    variants: WbVariant[];
     revisionId: string;
     pageEntryId: string;
     path: string;
 }
+
+// Repository: reads the published, running experiment for a page.
+
+export interface IGetActiveExperimentForPathRepository {
+    getPublishedRunningExperiment(
+        pageEntryId: string
+    ): Promise<Result<WbExperiment | null, ExperimentPersistenceError>>;
+}
+
+export const GetActiveExperimentForPathRepository =
+    createAbstraction<IGetActiveExperimentForPathRepository>(
+        "Wb/GetActiveExperimentForPathRepository"
+    );
+
+export namespace GetActiveExperimentForPathRepository {
+    export type Interface = IGetActiveExperimentForPathRepository;
+}
+
+// Use case.
 
 export interface IGetActiveExperimentForPathUseCase {
     execute(path: string): Promise<Result<ActiveExperimentForPath | null, UseCaseError>>;
@@ -39,14 +52,12 @@ export interface IGetActiveExperimentForPathUseCaseErrors {
     persistence: ExperimentPersistenceError;
     pageNotAuthorized: PageNotAuthorizedError;
     pagePersistence: PagePersistenceError;
-    variantNotAuthorized: VariantNotAuthorizedError;
-    variantPersistence: VariantPersistenceError;
 }
 
 type UseCaseError =
     IGetActiveExperimentForPathUseCaseErrors[keyof IGetActiveExperimentForPathUseCaseErrors];
 
-/** Resolve the active experiment (if any) for the live revision at a given path. */
+/** Resolve the active, published, non-paused experiment (if any) for the live page at a path. */
 export const GetActiveExperimentForPathUseCase =
     createAbstraction<IGetActiveExperimentForPathUseCase>("Wb/GetActiveExperimentForPathUseCase");
 

@@ -20,6 +20,9 @@ export interface IExperimentsGateway {
     updateExperiment(id: string, input: ExperimentUpdateInput): Promise<ExperimentDto>;
     startExperiment(id: string): Promise<ExperimentDto>;
     stopExperiment(id: string): Promise<ExperimentDto>;
+    pauseExperiment(experimentEntryId: string): Promise<boolean>;
+    resumeExperiment(experimentEntryId: string): Promise<boolean>;
+    isExperimentPaused(experimentEntryId: string): Promise<boolean>;
     graduateVariant(experimentId: string, variantId: string): Promise<{ id: string }>;
 
     listVariants(experimentId: string): Promise<VariantDto[]>;

@@ -15,7 +15,7 @@ interface Props {
 export const VariantRow = observer(({ presenter, experiment, variant }: Props) => {
     const { vm } = presenter;
     const { goToRoute } = useRouter();
-    const weight = experiment.trafficSplit.variants[variant.id];
+    const weight = experiment.trafficSplit.variants[variant.entryId];
     const isWinner = experiment.winningVariantId === variant.id;
 
     return (

@@ -59,6 +59,7 @@ import { StopExperimentFeature } from "~/features/experiments/StopExperiment/fea
 import { GraduateVariantFeature } from "~/features/experiments/GraduateVariant/feature.js";
 import { GetActiveExperimentForPathFeature } from "~/features/experiments/GetActiveExperimentForPath/feature.js";
 import { EndExperimentOnPublishFeature } from "~/features/experiments/EndExperimentOnPublish/feature.js";
+import { ExperimentPauseFeature } from "~/features/experiments/ExperimentPause/feature.js";
 import { CreateVariantFeature } from "~/features/variants/CreateVariant/feature.js";
 import { UpdateVariantFeature } from "~/features/variants/UpdateVariant/feature.js";
 import { DeleteVariantFeature } from "~/features/variants/DeleteVariant/feature.js";
@@ -144,6 +145,7 @@ const createContext = () => {
             GraduateVariantFeature.register(container);
             GetActiveExperimentForPathFeature.register(container);
             EndExperimentOnPublishFeature.register(container);
+            ExperimentPauseFeature.register(container);
             CreateVariantFeature.register(container);
             UpdateVariantFeature.register(container);
             DeleteVariantFeature.register(container);

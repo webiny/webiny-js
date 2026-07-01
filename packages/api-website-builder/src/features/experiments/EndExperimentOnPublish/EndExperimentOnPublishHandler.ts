@@ -1,30 +1,37 @@
 import { PageAfterPublishEventHandler } from "~/features/pages/PublishPage/abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry";
+import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
+import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry";
 import { ExperimentModel } from "~/domain/experiment/abstractions.js";
 import type { CmsEntryWbExperimentValues } from "~/domain/experiment/abstractions.js";
 import { EntryToExperimentMapper } from "~/domain/experiment/EntryToExperimentMapper.js";
-import { StopExperimentRepository } from "~/features/experiments/StopExperiment/abstractions.js";
-import { ExperimentAfterStopEvent } from "~/features/experiments/StopExperiment/events.js";
+import { VariantModel } from "~/domain/variant/abstractions.js";
+import type { CmsEntryWbVariantValues } from "~/domain/variant/abstractions.js";
+import { EntryToVariantMapper } from "~/domain/variant/EntryToVariantMapper.js";
 
 /**
- * Structurally enforces the "publishing a new revision ends the active experiment" rule.
- * The experiment is pinned to a specific baseline revision; publishing a different revision of
- * the same page ends the running experiment. This is a system cascade, so it works directly
- * with repositories (which are permission-free) rather than the permission-gated use cases.
+ * Governance: experiments and variants only serve once they are PUBLISHED, and the only place
+ * a publish happens is here — as a cascade of the page publish, which is itself gated by the
+ * approval workflow (ValidateWorkflowStateOnPageBeforePublish). So approving + publishing the
+ * page is what takes its running experiment and ready variants live. Draft edits never serve.
+ *
+ * This is a system cascade authorised by the (already approved) page publish, so it works
+ * directly with the CMS use cases rather than the permission-gated Website Builder use cases.
  */
 class EndExperimentOnPublishHandlerImpl implements PageAfterPublishEventHandler.Interface {
     constructor(
-        private eventPublisher: EventPublisher.Interface,
         private getEntry: GetEntryUseCase.Interface,
+        private listLatestEntries: ListLatestEntriesUseCase.Interface,
+        private publishEntry: PublishEntryUseCase.Interface,
         private experimentModel: ExperimentModel.Interface,
-        private stopExperimentRepository: StopExperimentRepository.Interface
+        private variantModel: VariantModel.Interface
     ) {}
 
     async handle(event: PageAfterPublishEventHandler.Event): Promise<void> {
         const page = event.payload.page;
 
-        const result = await this.getEntry.execute<CmsEntryWbExperimentValues>(
+        // Find the page's running experiment (latest draft state) and publish it.
+        const experimentResult = await this.getEntry.execute<CmsEntryWbExperimentValues>(
             this.experimentModel,
             {
                 where: {
@@ -37,32 +44,45 @@ class EndExperimentOnPublishHandlerImpl implements PageAfterPublishEventHandler.
             }
         );
 
-        if (result.isFail() || !result.value) {
+        if (experimentResult.isFail() || !experimentResult.value) {
             return;
         }
 
-        const experiment = EntryToExperimentMapper.toExperiment(result.value);
+        const experiment = EntryToExperimentMapper.toExperiment(experimentResult.value);
+        await this.publishEntry.execute(this.experimentModel, experiment.id);
 
-        // Republishing the same baseline revision does not end the experiment.
-        if (experiment.baselineRevisionId === page.id) {
-            return;
-        }
-
-        const stopResult = await this.stopExperimentRepository.execute(experiment.id);
-        if (stopResult.isFail()) {
-            return;
-        }
-
-        await this.eventPublisher.publish(
-            new ExperimentAfterStopEvent({
-                experiment: stopResult.value,
-                reason: "revisionPublished"
-            })
+        // Publish its ready variants so their content goes live alongside the experiment.
+        const variantsResult = await this.listLatestEntries.execute<CmsEntryWbVariantValues>(
+            this.variantModel,
+            {
+                where: {
+                    values: {
+                        experimentId: experiment.id,
+                        status: "ready"
+                    }
+                },
+                limit: 1000
+            }
         );
+
+        if (variantsResult.isFail()) {
+            return;
+        }
+
+        for (const entry of variantsResult.value.entries) {
+            const variant = EntryToVariantMapper.toVariant(entry);
+            await this.publishEntry.execute(this.variantModel, variant.id);
+        }
     }
 }
 
 export const EndExperimentOnPublishHandler = PageAfterPublishEventHandler.createImplementation({
     implementation: EndExperimentOnPublishHandlerImpl,
-    dependencies: [EventPublisher, GetEntryUseCase, ExperimentModel, StopExperimentRepository]
+    dependencies: [
+        GetEntryUseCase,
+        ListLatestEntriesUseCase,
+        PublishEntryUseCase,
+        ExperimentModel,
+        VariantModel
+    ]
 });

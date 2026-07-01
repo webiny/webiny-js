@@ -33,11 +33,11 @@ export const ExperimentsDialog = observer(() => {
             actions={<Dialog.CancelAction onClick={closeDialog} text="Close" />}
         >
             {vm.error ? <Text size="sm">{vm.error}</Text> : null}
-            {vm.hasRunningExperiment ? (
-                <Text size="sm">
-                    Publishing a new revision of this page will end the running experiment.
-                </Text>
-            ) : null}
+            <Text size="sm">
+                Experiments and variants only go live when you publish the page, which runs the
+                approval workflow. Use Pause to halt a running experiment instantly (it serves the
+                control and needs no approval).
+            </Text>
             <CreateExperimentForm presenter={presenter} />
             {vm.loading ? (
                 <Text>Loading experiments…</Text>

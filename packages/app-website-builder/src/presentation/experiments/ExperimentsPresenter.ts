@@ -47,7 +47,12 @@ class ExperimentsPresenterImpl implements PresenterAbstraction.Interface {
                 experiments.map(async experiment => {
                     // Variants are linked to the experiment by its revision id (see createVariant).
                     const variants = await this.gateway.listVariants(experiment.id);
-                    return this.toExperimentVm(experiment, variants);
+                    // Reflect the instant kill-switch for running experiments.
+                    const paused =
+                        experiment.status === "running"
+                            ? await this.gateway.isExperimentPaused(experiment.entryId)
+                            : false;
+                    return this.toExperimentVm(experiment, variants, paused);
                 })
             );
             runInAction(() => {
@@ -63,13 +68,18 @@ class ExperimentsPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
-    private toExperimentVm(experiment: ExperimentDto, variants: VariantDto[]): ExperimentVm {
+    private toExperimentVm(
+        experiment: ExperimentDto,
+        variants: VariantDto[],
+        paused: boolean
+    ): ExperimentVm {
         const split = experiment.trafficSplit ?? { control: 100, variants: {} };
         return {
             id: experiment.id,
             entryId: experiment.entryId,
             name: experiment.name,
             status: experiment.status,
+            paused,
             startedOn: experiment.startedOn,
             stoppedOn: experiment.stoppedOn,
             winningVariantId: experiment.winningVariantId,
@@ -130,6 +140,18 @@ class ExperimentsPresenterImpl implements PresenterAbstraction.Interface {
         });
     }
 
+    async pauseExperiment(experimentEntryId: string) {
+        await this.run(async () => {
+            await this.gateway.pauseExperiment(experimentEntryId);
+        });
+    }
+
+    async resumeExperiment(experimentEntryId: string) {
+        await this.run(async () => {
+            await this.gateway.resumeExperiment(experimentEntryId);
+        });
+    }
+
     async graduateVariant(experimentId: string, variantId: string) {
         await this.run(async () => {
             await this.gateway.graduateVariant(experimentId, variantId);
@@ -149,7 +171,8 @@ class ExperimentsPresenterImpl implements PresenterAbstraction.Interface {
         const share = Math.floor(100 / buckets);
         const variantSplit: Record<string, number> = {};
         for (const variant of readyVariants) {
-            variantSplit[variant.id] = share;
+            // Key by entryId — the stable id the SDK buckets on and fetches published content by.
+            variantSplit[variant.entryId] = share;
         }
         const control = 100 - share * readyVariants.length;
         await this.gateway.updateExperiment(experimentId, {

@@ -15,6 +15,14 @@ import { StartExperimentUseCase } from "~/features/experiments/StartExperiment/i
 import { StopExperimentUseCase } from "~/features/experiments/StopExperiment/index.js";
 import { GraduateVariantUseCase } from "~/features/experiments/GraduateVariant/index.js";
 import { GetActiveExperimentForPathUseCase } from "~/features/experiments/GetActiveExperimentForPath/index.js";
+import {
+    PauseExperimentUseCase,
+    ResumeExperimentUseCase,
+    IsExperimentPausedUseCase
+} from "~/features/experiments/ExperimentPause/index.js";
+import { GetPublishedRevisionByEntryIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetPublishedRevisionByEntryId/index.js";
+import { VariantModel } from "~/domain/variant/abstractions.js";
+import type { CmsEntryWbVariantValues } from "~/domain/variant/abstractions.js";
 import { CreateVariantUseCase } from "~/features/variants/CreateVariant/index.js";
 import { UpdateVariantUseCase } from "~/features/variants/UpdateVariant/index.js";
 import { DeleteVariantUseCase } from "~/features/variants/DeleteVariant/index.js";
@@ -131,20 +139,26 @@ export const createExperimentsSchema = () => {
                         if (!active) {
                             return null;
                         }
+                        const trafficSplit = active.experiment.trafficSplit ?? {
+                            control: 100,
+                            variants: {}
+                        };
                         return {
-                            experimentId: active.experiment.id,
+                            experimentId: active.experiment.entryId,
                             revisionId: active.revisionId,
                             pageEntryId: active.pageEntryId,
                             path: active.path,
                             status: active.experiment.status,
                             tenantId: active.experiment.tenant,
                             controlVariantId: CONTROL_VARIANT_ID,
-                            trafficSplit: active.experiment.trafficSplit,
+                            trafficSplit,
                             targeting: active.experiment.targeting,
                             analytics: active.experiment.analytics,
-                            variants: active.variants.map(variant => ({
-                                variantId: variant.id,
-                                name: variant.name
+                            // Participating variants are the (published) variant entryIds carried
+                            // in the traffic split. Their content is fetched via getVariantContent.
+                            variants: Object.keys(trafficSplit.variants ?? {}).map(variantId => ({
+                                variantId,
+                                name: ""
                             }))
                         };
                     });
@@ -152,20 +166,38 @@ export const createExperimentsSchema = () => {
                 getVariantContent: async (_, { id }, context) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
-                        const useCase = context.container.resolve(GetVariantByIdUseCase);
-                        const result = await useCase.execute(id);
-                        if (result.isFail()) {
-                            throw new NotFoundError(`Variant "${id}" was not found!`);
+                        // Serve only PUBLISHED variant content, by entryId.
+                        const getPublished = context.container.resolve(
+                            GetPublishedRevisionByEntryIdUseCase
+                        );
+                        const variantModel = context.container.resolve(VariantModel);
+                        const result = await getPublished.execute<CmsEntryWbVariantValues>(
+                            variantModel,
+                            id
+                        );
+                        if (result.isFail() || !result.value) {
+                            throw new NotFoundError(`Published variant "${id}" was not found!`);
                         }
-                        const variant = result.value;
+                        const values = result.value.values;
                         return {
-                            id: variant.entryId,
-                            properties: variant.properties,
-                            bindings: variant.bindings,
-                            elements: variant.elements,
-                            extensions: variant.extensions,
-                            metadata: variant.metadata
+                            id: result.value.entryId,
+                            properties: values.properties,
+                            bindings: values.bindings,
+                            elements: values.elements,
+                            extensions: values.extensions,
+                            metadata: values.metadata
                         };
+                    });
+                },
+                getExperimentPaused: async (_, { experimentId }, context) => {
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        const useCase = context.container.resolve(IsExperimentPausedUseCase);
+                        const result = await useCase.execute(experimentId);
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+                        return result.value;
                     });
                 }
             },
@@ -212,6 +244,28 @@ export const createExperimentsSchema = () => {
                             throw new Error(result.error.message);
                         }
                         return mapExperiment(result.value);
+                    });
+                },
+                pauseExperiment: async (_, { experimentId }, context) => {
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        const useCase = context.container.resolve(PauseExperimentUseCase);
+                        const result = await useCase.execute(experimentId);
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+                        return result.value;
+                    });
+                },
+                resumeExperiment: async (_, { experimentId }, context) => {
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        const useCase = context.container.resolve(ResumeExperimentUseCase);
+                        const result = await useCase.execute(experimentId);
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+                        return result.value;
                     });
                 },
                 graduateVariant: async (_, { experimentId, variantId }, context) => {

@@ -135,6 +135,7 @@ export const experimentsTypeDefs = /* GraphQL */ `
         # SDK-facing public reads.
         getPageExperiment(path: String!): WbActiveExperimentResponse
         getVariantContent(id: ID!): WbVariantContentResponse
+        getExperimentPaused(experimentId: String!): WbBooleanResponse
     }
 
     extend type WbMutation {
@@ -142,6 +143,8 @@ export const experimentsTypeDefs = /* GraphQL */ `
         updateExperiment(id: ID!, data: WbExperimentUpdateInput!): WbExperimentResponse
         startExperiment(id: ID!): WbExperimentResponse
         stopExperiment(id: ID!): WbExperimentResponse
+        pauseExperiment(experimentId: String!): WbBooleanResponse
+        resumeExperiment(experimentId: String!): WbBooleanResponse
         graduateVariant(experimentId: ID!, variantId: ID!): WbPageResponse
 
         createVariant(data: WbVariantCreateInput!): WbVariantResponse

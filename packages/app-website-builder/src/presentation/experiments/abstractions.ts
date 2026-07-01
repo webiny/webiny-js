@@ -12,6 +12,7 @@ export interface ExperimentVm {
     entryId: string;
     name: string;
     status: string;
+    paused: boolean;
     startedOn: string | null;
     stoppedOn: string | null;
     winningVariantId: string | null;
@@ -42,6 +43,8 @@ export interface IExperimentsPresenter {
     deleteVariant(experimentEntryId: string, variantId: string): Promise<void>;
     startExperiment(experimentEntryId: string): Promise<void>;
     stopExperiment(experimentEntryId: string): Promise<void>;
+    pauseExperiment(experimentEntryId: string): Promise<void>;
+    resumeExperiment(experimentEntryId: string): Promise<void>;
     graduateVariant(experimentEntryId: string, variantId: string): Promise<void>;
 }
 

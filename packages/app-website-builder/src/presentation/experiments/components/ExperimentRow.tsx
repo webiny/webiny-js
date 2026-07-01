@@ -36,7 +36,9 @@ export const ExperimentRow = observer(({ presenter, experiment }: Props) => {
         <div className="wby-mb-4 wby-border wby-border-neutral-dimmed wby-rounded wby-p-4">
             <Heading level={6}>{experiment.name}</Heading>
             <Text size="sm">
-                Status: {experiment.status} · Control: {experiment.trafficSplit.control}%
+                Status: {experiment.status}
+                {experiment.paused ? " (paused — serving control)" : ""} · Control:{" "}
+                {experiment.trafficSplit.control}%
             </Text>
             {experiment.variants.map(variant => (
                 <VariantRow
@@ -50,12 +52,29 @@ export const ExperimentRow = observer(({ presenter, experiment }: Props) => {
                 <StartControls presenter={presenter} experiment={experiment} />
             ) : null}
             {experiment.status === "running" ? (
-                <Button
-                    variant="secondary"
-                    text="Stop experiment"
-                    disabled={vm.busy}
-                    onClick={() => presenter.stopExperiment(experiment.id)}
-                />
+                <>
+                    {experiment.paused ? (
+                        <Button
+                            variant="primary"
+                            text="Resume"
+                            disabled={vm.busy}
+                            onClick={() => presenter.resumeExperiment(experiment.entryId)}
+                        />
+                    ) : (
+                        <Button
+                            variant="secondary"
+                            text="Pause (serve control)"
+                            disabled={vm.busy}
+                            onClick={() => presenter.pauseExperiment(experiment.entryId)}
+                        />
+                    )}
+                    <Button
+                        variant="ghost"
+                        text="Stop experiment"
+                        disabled={vm.busy}
+                        onClick={() => presenter.stopExperiment(experiment.id)}
+                    />
+                </>
             ) : null}
         </div>
     );
