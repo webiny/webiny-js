@@ -1,3 +1,7 @@
+export {
+    useParentField,
+    ParentFieldProvider
+} from "@webiny/app-headless-cms/admin/components/ContentEntryForm/ParentValue.js";
 export { ContentEntryForm } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/ContentEntryForm.js";
 export { Header as ContentEntryFormHeader } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/Header/index.js";
 export { ContentEntryFormPreview } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/ContentEntryFormPreview.js";
