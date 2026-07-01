@@ -27,7 +27,10 @@ export const variantToEditorDocument = (
     metadata: {
         ...page.metadata,
         ...(variant.metadata ?? {}),
-        documentType: (page.metadata as Record<string, any>).documentType ?? "page"
+        documentType: (page.metadata as Record<string, any>).documentType ?? "page",
+        // Marker so the address-bar "preview in new tab" opens this variant's draft (see
+        // usePreviewLink). Stripped before persisting — see editorDocumentToVariantUpdate.
+        wbVariantPreviewId: variant.id
     } as EditorPage["metadata"],
     bindings: (variant.bindings ?? page.bindings) as EditorPage["bindings"],
     elements: (variant.elements ?? page.elements) as EditorPage["elements"],
@@ -35,10 +38,15 @@ export const variantToEditorDocument = (
 });
 
 /** Extract the persistable content fields from an edited variant document. */
-export const editorDocumentToVariantUpdate = (document: EditorPage): UpdateVariantInput => ({
-    properties: document.properties,
-    metadata: document.metadata,
-    bindings: document.bindings,
-    elements: document.elements,
-    extensions: document.extensions
-});
+export const editorDocumentToVariantUpdate = (document: EditorPage): UpdateVariantInput => {
+    // Drop the editor-only preview marker so it's not persisted onto the variant.
+    const { wbVariantPreviewId, ...metadata } = document.metadata as Record<string, any>;
+    void wbVariantPreviewId;
+    return {
+        properties: document.properties,
+        metadata,
+        bindings: document.bindings,
+        elements: document.elements,
+        extensions: document.extensions
+    };
+};
