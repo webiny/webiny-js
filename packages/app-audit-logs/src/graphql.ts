@@ -1,12 +1,10 @@
-import gql from "graphql-tag";
-
 const ERROR_FIELDS = /* GraphQL */ `
     code
     message
     data
 `;
 
-export const LIST_USERS: any = gql`
+export const LIST_USERS = /* GraphQL */ `
     query ListUsers {
         adminUsers {
             users: listUsers {

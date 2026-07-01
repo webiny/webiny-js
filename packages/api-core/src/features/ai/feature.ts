@@ -3,6 +3,8 @@ import { OpenAiSdkFactory } from "./OpenAiSdkFactory.js";
 import { AnthropicSdkFactory } from "./AnthropicSdkFactory.js";
 import { Ai } from "./Ai.js";
 import { AiSdkTools } from "./AiSdkTools.js";
+import { AiOutputToolRegistry } from "./toolPipeline/AiOutputToolRegistry.js";
+import { AiToolPipelineRunner } from "./toolPipeline/AiToolPipelineRunner.js";
 
 export const AiFeature = createFeature({
     name: "AiFeature",
@@ -11,5 +13,7 @@ export const AiFeature = createFeature({
         container.register(AnthropicSdkFactory);
         container.register(Ai);
         container.register(AiSdkTools);
+        container.register(AiOutputToolRegistry);
+        container.register(AiToolPipelineRunner);
     }
 });

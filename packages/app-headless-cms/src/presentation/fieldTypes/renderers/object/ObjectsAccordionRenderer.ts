@@ -13,10 +13,10 @@ class ObjectsAccordionRendererImpl implements CmsFieldRenderer.Interface {
 
     buildSettingsForm(form: CmsFieldRenderer.FormBuilder) {
         form.fields(fields => ({
-            addValueButtonLabel: fields.text().label('"Add Value" button label'),
+            addItemLabel: fields.text().label('"Add Item" button label'),
             open: fields.boolean().label("Expand Accordion").defaultValue(false)
         }));
-        form.layout(layout => [layout.row("addValueButtonLabel"), layout.row("open")]);
+        form.layout(layout => [layout.row("addItemLabel"), layout.row("open")]);
     }
 }
 

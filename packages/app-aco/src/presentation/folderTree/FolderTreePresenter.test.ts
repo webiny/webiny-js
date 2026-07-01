@@ -123,7 +123,8 @@ function createMockFormModel(): IFormModel {
         },
         getFieldBuilders: vi.fn(() => []),
         resolveChildLayout: vi.fn(() => []),
-        registry: {} as IFormModel["registry"]
+        registry: {} as IFormModel["registry"],
+        traverse: vi.fn()
     };
 
     return form;

@@ -8,7 +8,7 @@ export const ApiKeyTokenRenderer = createFieldRenderer(({ field }) => {
 
     return (
         <div>
-            <Label text={field.label || "Token"} />
+            <Label text={field.label || "Token"} hint={field.help} />
             {token ? (
                 <div
                     className={

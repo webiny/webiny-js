@@ -39,6 +39,7 @@ class WorkflowStateModelImpl implements ModelFactory.Interface {
                     isActive: fields.boolean().label("Is Active"),
                     comment: fields.text().label("Comment"),
                     state: fields.text().label("State").predefinedValues(states),
+                    targetContext: fields.json().label("Target Context"),
                     steps: fields
                         .object()
                         .label("Steps")

@@ -23,7 +23,8 @@ import type {
     AfterChangeCallback,
     AfterSetValueCallback,
     OnBlurCallback,
-    ComputedFieldCallback
+    ComputedFieldCallback,
+    IFieldCallbackParams
 } from "./abstractions.js";
 
 /** Reserved key used as the template discriminator in templated object data. */
@@ -245,7 +246,7 @@ export class ObjectField implements IObjectField {
         this._base.addOnBlur(cb);
     }
 
-    addRequiredWhen(fn: (form: IFormModel) => boolean, message?: string): void {
+    addRequiredWhen(fn: (params: IFieldCallbackParams) => boolean, message?: string): void {
         this._base.addRequiredWhen(fn, message);
     }
 
@@ -487,6 +488,36 @@ export class ObjectField implements IObjectField {
             return { [TEMPLATE_DISCRIMINATOR]: item.templateId, ...data };
         }
         return data;
+    }
+
+    private _getClonedItemData(item: ListItem): Record<string, unknown> {
+        const data = getChildrenData(item.children);
+        const children = createChildFields(
+            this._templateChildBuilders(item.templateId),
+            this._form,
+            this.qualifiedName
+        );
+        hydrateChildren(children, data, { clone: true });
+        const clonedData = getChildrenData(children);
+        if (item.templateId !== undefined) {
+            return { [TEMPLATE_DISCRIMINATOR]: item.templateId, ...clonedData };
+        }
+        return clonedData;
+    }
+
+    private _getClonedData(): Record<string, unknown> {
+        const data = getChildrenData(this._children);
+        const builders =
+            this.isTemplated && this._activeTemplateId
+                ? this._templateChildBuilders(this._activeTemplateId)
+                : this.config.childBuilders;
+        const children = createChildFields(builders, this._form, this.qualifiedName);
+        hydrateChildren(children, data, { clone: true });
+        const clonedData = getChildrenData(children);
+        if (this.isTemplated && this._activeTemplateId) {
+            return { [TEMPLATE_DISCRIMINATOR]: this._activeTemplateId, ...clonedData };
+        }
+        return clonedData;
     }
 
     getChild(name: string): IField | undefined {
@@ -747,6 +778,7 @@ export class ObjectField implements IObjectField {
             disabled: baseVm.disabled,
             renderer: baseVm.renderer,
             rendererSettings: baseVm.rendererSettings,
+            context: baseVm.context,
             onChange: (value: unknown) => this.setValue(value),
             onBlur: () => {
                 if (this._form?.submitted) {
@@ -779,11 +811,24 @@ export class ObjectField implements IObjectField {
                       remove: () => this.removeItem(index),
                       moveUp: () => this.moveItem(index, index - 1),
                       moveDown: () => this.moveItem(index, index + 1),
-                      duplicate: () => this.duplicateItem(index)
+                      duplicate: () => this.duplicateItem(index),
+                      getClonedData: () => this._getClonedItemData(item)
                   }))
                 : [],
             addItem: (value?: unknown) => {
-                return value !== undefined ? this.addItem(value as string) : this.addItem();
+                if (value === undefined) {
+                    return this.addItem();
+                }
+                if (typeof value === "string") {
+                    return this.addItem(value);
+                }
+                const data = value as Record<string, unknown>;
+                const templateId = data[TEMPLATE_DISCRIMINATOR];
+                if (typeof templateId === "string") {
+                    const { [TEMPLATE_DISCRIMINATOR]: _, ...rest } = data;
+                    return this.addItem(templateId, rest);
+                }
+                return this.addItem(value as Record<string, unknown>);
             },
             removeItem: (index: number) => this.removeItem(index),
             moveItem: (from: number, to: number) => this.moveItem(from, to),
@@ -791,7 +836,8 @@ export class ObjectField implements IObjectField {
             isTemplated: this.isTemplated,
             availableTemplates: this.availableTemplates,
             activeTemplateId: this._activeTemplateId,
-            setTemplate: (templateId: string) => this.setTemplate(templateId)
+            setTemplate: (templateId: string) => this.setTemplate(templateId),
+            getClonedData: () => this._getClonedData()
         };
     }
 

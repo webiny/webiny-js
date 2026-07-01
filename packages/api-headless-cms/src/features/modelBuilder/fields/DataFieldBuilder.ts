@@ -36,9 +36,7 @@ export interface IFieldRendererRegistry {
     dateTimeInputs: {
         fieldType: "datetime";
         settings?: {
-            multiValue?: {
-                addValueButtonLabel?: string;
-            };
+            addItemLabel?: string;
         };
     };
     dynamicZone: {
@@ -58,9 +56,7 @@ export interface IFieldRendererRegistry {
     lexicalEditors: {
         fieldType: "rich-text";
         settings?: {
-            multiValue?: {
-                addValueButtonLabel?: string;
-            };
+            addItemLabel?: string;
         };
     };
     textarea: {
@@ -70,9 +66,7 @@ export interface IFieldRendererRegistry {
     textareas: {
         fieldType: "long-text";
         settings: {
-            multiValue?: {
-                addValueButtonLabel?: string;
-            };
+            addItemLabel?: string;
         };
     };
     numberInput: {
@@ -82,24 +76,26 @@ export interface IFieldRendererRegistry {
     numberInputs: {
         fieldType: "number";
         settings?: {
-            multiValue?: {
-                addValueButtonLabel?: string;
-            };
+            addItemLabel?: string;
         };
     };
     objectAccordionSingle: {
         fieldType: "object";
         settings?: {
             open?: boolean;
+            container?: boolean;
+            itemTitle?: string;
+            itemDescription?: string;
         };
     };
     objectAccordionMultiple: {
         fieldType: "object";
         settings?: {
             open?: boolean;
-            multiValue?: {
-                addValueButtonLabel?: string;
-            };
+            container?: boolean;
+            itemTitle?: string;
+            itemDescription?: string;
+            addItemLabel?: string;
         };
     };
     passthrough: {
@@ -151,9 +147,7 @@ export interface IFieldRendererRegistry {
     textInputs: {
         fieldType: "text";
         settings?: {
-            multiValue?: {
-                addValueButtonLabel?: string;
-            };
+            addItemLabel?: string;
         };
     };
     file: {

@@ -25,7 +25,8 @@ class WorkflowStateMapperImpl implements IWorkflowStateMapper {
             savedBy: input.savedBy,
             createdBy: input.createdBy,
             savedOn: new Date(input.savedOn),
-            createdOn: new Date(input.createdOn)
+            createdOn: new Date(input.createdOn),
+            targetContext: input.values.targetContext || {}
         };
     }
 
@@ -41,7 +42,8 @@ class WorkflowStateMapperImpl implements IWorkflowStateMapper {
             steps: input.steps,
             app: input.app,
             state: input.state,
-            comment: input.comment
+            comment: input.comment,
+            targetContext: input.targetContext || {}
         };
     }
 }

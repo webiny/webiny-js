@@ -79,7 +79,10 @@ class ValidationsGroupImpl implements CmsFieldEditorGroup.Interface {
                 result.listValidation = fields
                     .object()
                     .renderer("passthrough")
-                    .hiddenWhen((f: FormModel.Interface) => !f.field("general.list").getValue())
+                    .hiddenWhen(
+                        ({ form }: FormModel.CallbackParams) =>
+                            !form.field("general.list").getValue()
+                    )
                     .fields(() => listResult!.fields);
             }
 
@@ -189,7 +192,8 @@ class ValidationsGroupImpl implements CmsFieldEditorGroup.Interface {
                 messageDescription += ` Available variables: ${vars}.`;
             }
 
-            const notEnabled = (f: FormModel.Interface) => !f.field("$.enabled").getValue();
+            const notEnabled = ({ field }: FormModel.CallbackParams) =>
+                !field.parent().field("enabled").getValue();
 
             const childFields: Record<string, FormModelFactory.FieldBuilder> = {
                 enabled: fields.boolean().label("Enabled").defaultValue(false).hidden(),

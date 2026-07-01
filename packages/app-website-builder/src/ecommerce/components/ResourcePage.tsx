@@ -78,11 +78,11 @@ export class EcommerceResourcePageType implements IPageType {
                 .label(toTitleCaseLabel(this.config.resourceType))
                 .required()
                 .renderer(`resource-picker:${this.config.apiName}`)
-                .afterChange((value, f) => {
+                .afterChange((value, { form }) => {
                     if (!value) {
                         return;
                     }
-                    void this.onResourceSelected(String(value), f);
+                    void this.onResourceSelected(String(value), form);
                 })
         }));
 

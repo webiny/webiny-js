@@ -102,7 +102,12 @@ const RefDetailedSingleInner = observer(({ field }: InnerFieldProps) => {
 
     return (
         <div className={"@container"}>
-            <FormComponentLabel text={field.label} invalid={invalid} disabled={disabled} />
+            <FormComponentLabel
+                text={field.label}
+                hint={field.help}
+                invalid={invalid}
+                disabled={disabled}
+            />
             <div className={"webiny_ref-field-container"}>
                 {presenter.vm.loading && <OverlayLoader size={"md"} />}
                 {entry && (

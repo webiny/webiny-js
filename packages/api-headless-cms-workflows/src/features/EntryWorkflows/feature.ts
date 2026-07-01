@@ -6,6 +6,9 @@ import { UpdateEntryOnWorkflowStateAfterCreate } from "./handlers/UpdateEntryOnW
 import { UpdateEntryOnWorkflowStateAfterUpdate } from "./handlers/UpdateEntryOnWorkflowStateAfterUpdate.js";
 import { ClearEntryStateOnWorkflowStateAfterDelete } from "./handlers/ClearEntryStateOnWorkflowStateAfterDelete.js";
 import { ClearEntryStateOnWorkflowStateCancel } from "./handlers/ClearEntryStateOnWorkflowStateCancel.js";
+import { BlockMoveOnActiveWorkflowState } from "./handlers/BlockMoveOnActiveWorkflowState.js";
+import { CmsWorkflowStateContextProvider } from "./decorators/CmsWorkflowStateContextProvider.js";
+import { CmsWorkflowStateFilter } from "./decorators/CmsWorkflowStateFilter.js";
 
 export const EntryWorkflowsFeature = createFeature({
     name: "EntryWorkflows",
@@ -17,5 +20,8 @@ export const EntryWorkflowsFeature = createFeature({
         container.register(UpdateEntryOnWorkflowStateAfterUpdate);
         container.register(ClearEntryStateOnWorkflowStateAfterDelete);
         container.register(ClearEntryStateOnWorkflowStateCancel);
+        container.register(BlockMoveOnActiveWorkflowState);
+        container.registerDecorator(CmsWorkflowStateContextProvider);
+        container.registerDecorator(CmsWorkflowStateFilter);
     }
 });

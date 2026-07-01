@@ -14,6 +14,7 @@ export const TagsRenderer = createFieldRenderer(({ field }) => {
     return (
         <Tags
             label={field.label}
+            hint={field.help}
             placeholder={field.placeholder || "Add values"}
             description={field.description}
             note={field.note}

@@ -81,6 +81,7 @@ export class FormModel implements IFormModel {
             this,
             {
                 vm: computed,
+                _builders: false,
                 _layoutMutator: false,
                 _layoutResolver: false,
                 _focusManager: false
@@ -458,6 +459,39 @@ export class FormModel implements IFormModel {
         const result: IFieldBuilder[] = [];
         LayoutBuilderFactory.collectBuilders(this._fields, this._builders, pred, result);
         return result;
+    }
+
+    traverse(callback: (builder: IFieldBuilder) => void): void {
+        this._traverseBuilders(this._fields, this._builders, callback);
+    }
+
+    private _traverseBuilders(
+        fields: { get(name: string): IField | undefined },
+        builders: Map<string, IFieldBuilder> | Record<string, IFieldBuilder>,
+        callback: (builder: IFieldBuilder) => void
+    ): void {
+        const entries = builders instanceof Map ? builders.entries() : Object.entries(builders);
+        for (const [name, builder] of entries) {
+            if (!builder || typeof builder !== "object") {
+                continue;
+            }
+            callback(builder);
+            const field = fields.get(name);
+            if (field && isObjectField(field)) {
+                this._traverseBuilders(field.children, field.config.childBuilders, callback);
+                const templates = (field.config as IObjectFieldConfig).templates;
+                if (templates) {
+                    for (const tpl of templates) {
+                        for (const tplBuilder of Object.values(tpl.childBuilders)) {
+                            if (!tplBuilder || typeof tplBuilder !== "object") {
+                                continue;
+                            }
+                            callback(tplBuilder);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private async _runFormRule(rule: FormRule): Promise<IFormError[]> {
