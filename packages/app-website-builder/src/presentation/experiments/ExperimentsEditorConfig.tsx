@@ -14,11 +14,22 @@ const { Ui } = PageEditorConfig;
 export const ExperimentsEditorConfig = () => {
     return (
         <PageEditorConfig>
-            <Ui.TopBar.Action
-                name={"experiments"}
-                before={"buttonPublish"}
-                element={<ExperimentsButton />}
-            />
+            {/* Draft page: the switcher, before the Publish button. */}
+            <Ui.IsNotReadOnly>
+                <Ui.TopBar.Action
+                    name={"experiments"}
+                    before={"buttonPublish"}
+                    element={<ExperimentsButton />}
+                />
+            </Ui.IsNotReadOnly>
+            {/* Published page: the running-experiment indicator + kill-switch, before the version menu. */}
+            <Ui.IsReadOnly>
+                <Ui.TopBar.Action
+                    name={"experimentsStatus"}
+                    before={"revisionsMenu"}
+                    element={<ExperimentsButton />}
+                />
+            </Ui.IsReadOnly>
             <Ui.Content.Element
                 name={"experimentToolbar"}
                 after={"addressBar"}

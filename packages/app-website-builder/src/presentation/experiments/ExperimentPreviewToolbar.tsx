@@ -5,6 +5,7 @@ import { ReactComponent as SwapIcon } from "@webiny/icons/swap_horiz.svg";
 import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { useExperimentsEditor } from "./ExperimentsEditorContext.js";
+import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 import { bucketColor } from "./variantColors.js";
 
 const Dot = ({ color }: { color: string }) => (
@@ -19,6 +20,7 @@ const Dot = ({ color }: { color: string }) => (
 export const ExperimentPreviewToolbar = () => {
     const { selectedExperiment, selectedVariantId, selectVariant, variantOptions, editExperiment } =
         useExperimentsEditor();
+    const isReadOnly = useSelectFromEditor(state => state.isReadOnly);
     const [open, setOpen] = useState(false);
 
     if (!selectedExperiment) {
@@ -69,36 +71,45 @@ export const ExperimentPreviewToolbar = () => {
             }}
         >
             <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-                <ScienceIcon style={{ width: 18, height: 18, color: "#e2572a", flexShrink: 0 }} />
-                <span
-                    style={{
-                        fontWeight: 600,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis"
-                    }}
-                >
-                    {selectedExperiment.name}
-                </span>
-                <span
-                    style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 5,
-                        fontSize: 12,
-                        fontWeight: 500,
-                        color: active ? "#0f9d58" : "#6b7280",
-                        whiteSpace: "nowrap"
-                    }}
-                >
-                    <Dot color={active ? "#10b981" : "#9ca3af"} />
-                    {active ? "Active" : "Inactive"}
-                </span>
-
-                <span style={{ width: 1, height: 20, background: "#e5e7eb", flexShrink: 0 }} />
+                {/* On a published (read-only) page the experiment name/status live in the top-bar
+                    indicator, so the toolbar just shows what's being previewed. */}
+                {!isReadOnly ? (
+                    <>
+                        <ScienceIcon
+                            style={{ width: 18, height: 18, color: "#e2572a", flexShrink: 0 }}
+                        />
+                        <span
+                            style={{
+                                fontWeight: 600,
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis"
+                            }}
+                        >
+                            {selectedExperiment.name}
+                        </span>
+                        <span
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 5,
+                                fontSize: 12,
+                                fontWeight: 500,
+                                color: active ? "#0f9d58" : "#6b7280",
+                                whiteSpace: "nowrap"
+                            }}
+                        >
+                            <Dot color={active ? "#10b981" : "#9ca3af"} />
+                            {active ? "Active" : "Inactive"}
+                        </span>
+                        <span
+                            style={{ width: 1, height: 20, background: "#e5e7eb", flexShrink: 0 }}
+                        />
+                    </>
+                ) : null}
 
                 <span style={{ fontSize: 13, color: "#6b7280", whiteSpace: "nowrap" }}>
-                    You&apos;re editing
+                    {isReadOnly ? "Previewing" : "You're editing"}
                 </span>
                 <span
                     style={{
@@ -157,12 +168,16 @@ export const ExperimentPreviewToolbar = () => {
                         onClick={() => selectVariant(option.id)}
                     />
                 ))}
-                <DropdownMenu.Separator />
-                <DropdownMenu.Item
-                    icon={<EditIcon style={{ width: 18, height: 18 }} />}
-                    text="Edit experiment"
-                    onClick={() => editExperiment(selectedExperiment)}
-                />
+                {!isReadOnly ? (
+                    <>
+                        <DropdownMenu.Separator />
+                        <DropdownMenu.Item
+                            icon={<EditIcon style={{ width: 18, height: 18 }} />}
+                            text="Edit experiment"
+                            onClick={() => editExperiment(selectedExperiment)}
+                        />
+                    </>
+                ) : null}
             </DropdownMenu>
         </div>
     );

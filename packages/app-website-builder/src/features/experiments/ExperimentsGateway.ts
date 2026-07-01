@@ -242,6 +242,74 @@ class ExperimentsGatewayImpl implements GatewayAbstraction.Interface {
         );
     }
 
+    async pauseExperiment(experimentEntryId: string): Promise<boolean> {
+        const response = await this.client.execute<{
+            websiteBuilder: { pauseExperiment: Envelope<boolean> };
+        }>({
+            query: /* GraphQL */ `
+                mutation PauseExperiment($experimentId: String!) {
+                    websiteBuilder {
+                        pauseExperiment(experimentId: $experimentId) {
+                            data
+                            error { ${ERROR_FIELDS} }
+                        }
+                    }
+                }
+            `,
+            variables: { experimentId: experimentEntryId }
+        });
+        return (
+            this.unwrap(response.websiteBuilder.pauseExperiment, "Could not pause experiment.") ??
+            false
+        );
+    }
+
+    async resumeExperiment(experimentEntryId: string): Promise<boolean> {
+        const response = await this.client.execute<{
+            websiteBuilder: { resumeExperiment: Envelope<boolean> };
+        }>({
+            query: /* GraphQL */ `
+                mutation ResumeExperiment($experimentId: String!) {
+                    websiteBuilder {
+                        resumeExperiment(experimentId: $experimentId) {
+                            data
+                            error { ${ERROR_FIELDS} }
+                        }
+                    }
+                }
+            `,
+            variables: { experimentId: experimentEntryId }
+        });
+        return (
+            this.unwrap(response.websiteBuilder.resumeExperiment, "Could not resume experiment.") ??
+            false
+        );
+    }
+
+    async getExperimentPaused(experimentEntryId: string): Promise<boolean> {
+        const response = await this.client.execute<{
+            websiteBuilder: { getExperimentPaused: Envelope<boolean> };
+        }>({
+            query: /* GraphQL */ `
+                query GetExperimentPaused($experimentId: String!) {
+                    websiteBuilder {
+                        getExperimentPaused(experimentId: $experimentId) {
+                            data
+                            error { ${ERROR_FIELDS} }
+                        }
+                    }
+                }
+            `,
+            variables: { experimentId: experimentEntryId }
+        });
+        return (
+            this.unwrap(
+                response.websiteBuilder.getExperimentPaused,
+                "Could not read the experiment status."
+            ) ?? false
+        );
+    }
+
     async createVariant(input: { experimentId: string; name: string }): Promise<VariantDto> {
         const response = await this.client.execute<{
             websiteBuilder: { createVariant: Envelope<VariantDto> };

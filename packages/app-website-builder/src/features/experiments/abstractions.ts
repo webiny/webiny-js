@@ -18,6 +18,10 @@ export interface IExperimentsGateway {
     startExperiment(id: string): Promise<ExperimentDto>;
     stopExperiment(id: string): Promise<ExperimentDto>;
     deleteExperiment(id: string): Promise<boolean>;
+    // Runtime kill-switch, keyed on the experiment entryId (matches the serving/getPageExperiment id).
+    pauseExperiment(experimentEntryId: string): Promise<boolean>;
+    resumeExperiment(experimentEntryId: string): Promise<boolean>;
+    getExperimentPaused(experimentEntryId: string): Promise<boolean>;
     createVariant(input: { experimentId: string; name: string }): Promise<VariantDto>;
     updateVariant(id: string, input: UpdateVariantInput): Promise<VariantDto>;
     deleteVariant(id: string): Promise<boolean>;

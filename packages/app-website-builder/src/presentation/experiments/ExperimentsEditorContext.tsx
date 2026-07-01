@@ -28,6 +28,10 @@ interface ExperimentsEditorContextValue {
     variantOptions: VariantOption[];
     openManage: () => void;
     editExperiment: (experiment: ExperimentDto) => void;
+    // Kill-switch state of the selected experiment, and toggles for it.
+    paused: boolean;
+    pauseSelected: () => Promise<void>;
+    resumeSelected: () => Promise<void>;
 }
 
 const ExperimentsEditorContext = createContext<ExperimentsEditorContextValue | null>(null);
@@ -57,6 +61,7 @@ export const ExperimentsEditorProvider = ({ pageRevisionId, children }: Provider
     const [variants, setVariants] = useState<VariantDto[]>([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [editTarget, setEditTarget] = useState<ExperimentDto | null>(null);
+    const [paused, setPaused] = useState(false);
 
     const reload = useCallback(async () => {
         const list = await listExperiments(pageEntryId).catch(() => [] as ExperimentDto[]);
@@ -106,6 +111,48 @@ export const ExperimentsEditorProvider = ({ pageRevisionId, children }: Provider
         [variants, selectedVariantId]
     );
 
+    // Load the kill-switch state for the selected running experiment (keyed on its entryId).
+    const selectedEntryId = selectedExperiment?.entryId;
+    const selectedIsRunning = selectedExperiment?.status === "running";
+    useEffect(() => {
+        let cancelled = false;
+        if (!selectedEntryId || !selectedIsRunning) {
+            setPaused(false);
+            return;
+        }
+        gateway
+            .getExperimentPaused(selectedEntryId)
+            .then(value => {
+                if (!cancelled) {
+                    setPaused(value);
+                }
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    setPaused(false);
+                }
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [selectedEntryId, selectedIsRunning, gateway]);
+
+    const pauseSelected = useCallback(async () => {
+        if (!selectedExperiment) {
+            return;
+        }
+        await gateway.pauseExperiment(selectedExperiment.entryId);
+        setPaused(true);
+    }, [selectedExperiment, gateway]);
+
+    const resumeSelected = useCallback(async () => {
+        if (!selectedExperiment) {
+            return;
+        }
+        await gateway.resumeExperiment(selectedExperiment.entryId);
+        setPaused(false);
+    }, [selectedExperiment, gateway]);
+
     const variantOptions = useMemo<VariantOption[]>(() => {
         const split = selectedExperiment?.trafficSplit ?? { control: 0, variants: {} };
         return [
@@ -143,7 +190,10 @@ export const ExperimentsEditorProvider = ({ pageRevisionId, children }: Provider
             selectedVariant,
             variantOptions,
             openManage,
-            editExperiment
+            editExperiment,
+            paused,
+            pauseSelected,
+            resumeSelected
         }),
         [
             pageEntryId,
@@ -156,7 +206,10 @@ export const ExperimentsEditorProvider = ({ pageRevisionId, children }: Provider
             selectedVariant,
             variantOptions,
             openManage,
-            editExperiment
+            editExperiment,
+            paused,
+            pauseSelected,
+            resumeSelected
         ]
     );
 
