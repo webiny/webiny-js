@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Drawer, IconButton } from "@webiny/admin-ui";
+import { Drawer, IconButton, Text } from "@webiny/admin-ui";
+import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { ReactComponent as ScienceIcon } from "@webiny/icons/science.svg";
 import { ReactComponent as BackIcon } from "@webiny/icons/arrow_back.svg";
 import {
@@ -40,7 +41,14 @@ export const ExperimentsDrawer = ({
     initialEdit,
     onChanged
 }: Props) => {
-    const { gateway, createExperiment } = useExperiments();
+    const {
+        gateway,
+        createExperiment,
+        activateExperiment,
+        deactivateExperiment,
+        deleteExperiment
+    } = useExperiments();
+    const { showSnackbar } = useSnackbar();
     const [view, setView] = useState<View>("list");
     const [editId, setEditId] = useState<string | null>(null);
     const [editInitial, setEditInitial] = useState<ExperimentFormInitial | null>(null);
@@ -123,6 +131,48 @@ export const ExperimentsDrawer = ({
         setView("list");
     };
 
+    const { showConfirmation } = useConfirmationDialog({
+        title: "Delete experiment",
+        loading: "Deleting experiment...",
+        message: (
+            <Text>
+                You are about to permanently delete this experiment and all of its variants. This
+                cannot be undone.
+            </Text>
+        )
+    });
+
+    const handleActivate = async (experiment: ExperimentDto) => {
+        try {
+            await activateExperiment(experiment.id, experiments);
+            showSnackbar(`"${experiment.name}" is now active.`);
+            await onChanged();
+        } catch (ex: any) {
+            showSnackbar(ex.message || "Could not activate the experiment.");
+        }
+    };
+
+    const handleDeactivate = async (experiment: ExperimentDto) => {
+        try {
+            await deactivateExperiment(experiment.id);
+            showSnackbar(`"${experiment.name}" was deactivated.`);
+            await onChanged();
+        } catch (ex: any) {
+            showSnackbar(ex.message || "Could not deactivate the experiment.");
+        }
+    };
+
+    const handleDelete = (experiment: ExperimentDto) =>
+        showConfirmation(async () => {
+            try {
+                await deleteExperiment(experiment.id);
+                showSnackbar(`"${experiment.name}" was deleted.`);
+                await onChanged();
+            } catch (ex: any) {
+                showSnackbar(ex.message || "Could not delete the experiment.");
+            }
+        });
+
     const flask = <ScienceIcon style={{ width: 20, height: 20 }} />;
     const back = (
         <IconButton
@@ -175,6 +225,9 @@ export const ExperimentsDrawer = ({
                     experiments={experiments}
                     onCreate={() => setView("create")}
                     onEdit={startEdit}
+                    onActivate={handleActivate}
+                    onDeactivate={handleDeactivate}
+                    onDelete={handleDelete}
                 />
             ) : null}
             {view === "create" ? (

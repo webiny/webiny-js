@@ -143,6 +143,7 @@ export const experimentsTypeDefs = /* GraphQL */ `
         updateExperiment(id: ID!, data: WbExperimentUpdateInput!): WbExperimentResponse
         startExperiment(id: ID!): WbExperimentResponse
         stopExperiment(id: ID!): WbExperimentResponse
+        deleteExperiment(id: ID!): WbBooleanResponse
         pauseExperiment(experimentId: String!): WbBooleanResponse
         resumeExperiment(experimentId: String!): WbBooleanResponse
         graduateVariant(experimentId: ID!, variantId: ID!): WbPageResponse

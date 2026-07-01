@@ -44,5 +44,41 @@ export const useExperiments = () => {
         });
     };
 
-    return { gateway, listExperiments, createExperiment };
+    /**
+     * Activate an experiment. Only one experiment can run on a page at a time, so any other running
+     * experiment (from the same page) is stopped first.
+     */
+    const activateExperiment = async (
+        experimentId: string,
+        experiments: ExperimentDto[]
+    ): Promise<ExperimentDto> => {
+        const active = experiments.find(
+            experiment => experiment.status === "running" && experiment.id !== experimentId
+        );
+        if (active) {
+            await gateway.stopExperiment(active.id);
+        }
+        return gateway.startExperiment(experimentId);
+    };
+
+    const deactivateExperiment = (experimentId: string): Promise<ExperimentDto> =>
+        gateway.stopExperiment(experimentId);
+
+    /** Delete an experiment along with its variants. */
+    const deleteExperiment = async (experimentId: string): Promise<boolean> => {
+        const variants = await gateway.listVariants(experimentId).catch(() => []);
+        for (const variant of variants) {
+            await gateway.deleteVariant(variant.id).catch(() => undefined);
+        }
+        return gateway.deleteExperiment(experimentId);
+    };
+
+    return {
+        gateway,
+        listExperiments,
+        createExperiment,
+        activateExperiment,
+        deactivateExperiment,
+        deleteExperiment
+    };
 };

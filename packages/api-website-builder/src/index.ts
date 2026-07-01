@@ -56,6 +56,7 @@ import { ListExperimentsFeature } from "~/features/experiments/ListExperiments/f
 import { GetActiveExperimentForRevisionFeature } from "~/features/experiments/GetActiveExperimentForRevision/feature.js";
 import { StartExperimentFeature } from "~/features/experiments/StartExperiment/feature.js";
 import { StopExperimentFeature } from "~/features/experiments/StopExperiment/feature.js";
+import { DeleteExperimentFeature } from "~/features/experiments/DeleteExperiment/feature.js";
 import { GraduateVariantFeature } from "~/features/experiments/GraduateVariant/feature.js";
 import { GetActiveExperimentForPathFeature } from "~/features/experiments/GetActiveExperimentForPath/feature.js";
 import { EndExperimentOnPublishFeature } from "~/features/experiments/EndExperimentOnPublish/feature.js";
@@ -142,6 +143,7 @@ const createContext = () => {
             GetActiveExperimentForRevisionFeature.register(container);
             StartExperimentFeature.register(container);
             StopExperimentFeature.register(container);
+            DeleteExperimentFeature.register(container);
             GraduateVariantFeature.register(container);
             GetActiveExperimentForPathFeature.register(container);
             EndExperimentOnPublishFeature.register(container);

@@ -152,6 +152,66 @@ class ExperimentsGatewayImpl implements GatewayAbstraction.Interface {
         );
     }
 
+    async startExperiment(id: string): Promise<ExperimentDto> {
+        const response = await this.client.execute<{
+            websiteBuilder: { startExperiment: Envelope<ExperimentDto> };
+        }>({
+            query: /* GraphQL */ `
+                mutation StartExperiment($id: ID!) {
+                    websiteBuilder {
+                        startExperiment(id: $id) {
+                            data { ${EXPERIMENT_FIELDS} }
+                            error { ${ERROR_FIELDS} }
+                        }
+                    }
+                }
+            `,
+            variables: { id }
+        });
+        return this.unwrap(response.websiteBuilder.startExperiment, "Could not start experiment.");
+    }
+
+    async stopExperiment(id: string): Promise<ExperimentDto> {
+        const response = await this.client.execute<{
+            websiteBuilder: { stopExperiment: Envelope<ExperimentDto> };
+        }>({
+            query: /* GraphQL */ `
+                mutation StopExperiment($id: ID!) {
+                    websiteBuilder {
+                        stopExperiment(id: $id) {
+                            data { ${EXPERIMENT_FIELDS} }
+                            error { ${ERROR_FIELDS} }
+                        }
+                    }
+                }
+            `,
+            variables: { id }
+        });
+        return this.unwrap(response.websiteBuilder.stopExperiment, "Could not stop experiment.");
+    }
+
+    async deleteExperiment(id: string): Promise<boolean> {
+        const response = await this.client.execute<{
+            websiteBuilder: { deleteExperiment: Envelope<boolean> };
+        }>({
+            query: /* GraphQL */ `
+                mutation DeleteExperiment($id: ID!) {
+                    websiteBuilder {
+                        deleteExperiment(id: $id) {
+                            data
+                            error { ${ERROR_FIELDS} }
+                        }
+                    }
+                }
+            `,
+            variables: { id }
+        });
+        return (
+            this.unwrap(response.websiteBuilder.deleteExperiment, "Could not delete experiment.") ??
+            false
+        );
+    }
+
     async createVariant(input: { experimentId: string; name: string }): Promise<VariantDto> {
         const response = await this.client.execute<{
             websiteBuilder: { createVariant: Envelope<VariantDto> };

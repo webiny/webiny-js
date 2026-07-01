@@ -36,10 +36,11 @@ class StartExperimentUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const experiment = experimentResult.value;
 
-        if (experiment.status !== "draft") {
+        // A draft experiment can be started; a stopped one can be re-activated.
+        if (experiment.status !== "draft" && experiment.status !== "stopped") {
             return Result.fail(
                 new ExperimentValidationError(
-                    `Only a draft experiment can be started (current status: "${experiment.status}").`
+                    `Only a draft or stopped experiment can be started (current status: "${experiment.status}").`
                 )
             );
         }

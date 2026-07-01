@@ -13,6 +13,7 @@ import { ListExperimentsUseCase } from "~/features/experiments/ListExperiments/i
 import { GetActiveExperimentForRevisionUseCase } from "~/features/experiments/GetActiveExperimentForRevision/index.js";
 import { StartExperimentUseCase } from "~/features/experiments/StartExperiment/index.js";
 import { StopExperimentUseCase } from "~/features/experiments/StopExperiment/index.js";
+import { DeleteExperimentUseCase } from "~/features/experiments/DeleteExperiment/index.js";
 import { GraduateVariantUseCase } from "~/features/experiments/GraduateVariant/index.js";
 import { GetActiveExperimentForPathUseCase } from "~/features/experiments/GetActiveExperimentForPath/index.js";
 import {
@@ -266,6 +267,17 @@ export const createExperimentsSchema = () => {
                             throw new Error(result.error.message);
                         }
                         return result.value;
+                    });
+                },
+                deleteExperiment: async (_, { id }, context) => {
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        const useCase = context.container.resolve(DeleteExperimentUseCase);
+                        const result = await useCase.execute({ id });
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+                        return true;
                     });
                 },
                 graduateVariant: async (_, { experimentId, variantId }, context) => {
