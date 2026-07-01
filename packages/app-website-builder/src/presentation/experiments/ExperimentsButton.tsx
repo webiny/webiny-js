@@ -21,13 +21,7 @@ export const ExperimentsButton = () => {
                 }
                 onClick={() => setOpen(true)}
             />
-            <ExperimentsDrawer
-                open={open}
-                onClose={() => setOpen(false)}
-                onCreateExperiment={() => {
-                    // The create-experiment flow is the next screen; no-op for now.
-                }}
-            />
+            <ExperimentsDrawer open={open} onClose={() => setOpen(false)} />
         </div>
     );
 };
