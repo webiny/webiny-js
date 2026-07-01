@@ -34,13 +34,10 @@ import { GetPageRevisionsFeature } from "~/features/pages/getPageRevisions/index
 import { SharedPageInfrastructureFeature } from "~/features/pages/shared/feature.js";
 import { CreatePageConfig } from "./presentation/pages/CreatePage/CreatePageConfig.js";
 import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
+import { ExperimentsEditorConfig } from "./presentation/experiments/ExperimentsEditorConfig.js";
 import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
 import { PageSettingsFeature } from "~/presentation/pages/PageEditor/PageSettings/feature.js";
 import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/index.js";
-import { ExperimentsFeature } from "~/features/experiments/index.js";
-import { ExperimentsPresentationFeature } from "~/presentation/experiments/feature.js";
-import { ExperimentsConfig } from "~/presentation/experiments/ExperimentsConfig.js";
-import { VariantEditor } from "~/presentation/experiments/editor/VariantEditor.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -58,8 +55,6 @@ export const Extension = () => {
             <RegisterFeature feature={DeletePageRevisionFeature} />
             <RegisterFeature feature={MovePageFeature} />
             <RegisterFeature feature={PublishPageFeature} />
-            <RegisterFeature feature={ExperimentsFeature} />
-            <RegisterFeature feature={ExperimentsPresentationFeature} />
             <RegisterFeature feature={UnpublishPageFeature} />
             <RegisterFeature feature={DuplicatePageFeature} />
             <RegisterFeature feature={CreatePageRevisionFromFeature} />
@@ -98,7 +93,6 @@ export const Extension = () => {
                 <HasPermission entity={"page"}>
                     <Route route={Routes.Pages.List} element={<PagesList />} />
                     <Route route={Routes.Pages.Editor} element={<PageEditor />} />
-                    <Route route={Routes.Experiments.VariantEditor} element={<VariantEditor />} />
                     <Menu
                         name="wb.pages"
                         parent={"wb"}
@@ -139,7 +133,7 @@ export const Extension = () => {
             <RedirectsListConfig />
             <CreatePageConfig />
             <TranslatePageConfig />
-            <ExperimentsConfig />
+            <ExperimentsEditorConfig />
         </>
     );
 };
