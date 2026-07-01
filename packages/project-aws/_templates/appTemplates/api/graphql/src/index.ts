@@ -65,9 +65,9 @@ export const handler = createLambdaHandler({
             table: process.env.DB_TABLE
         });
 
-        // ── Core API ───────────────────────────────────────────────
+        // ── Core API storage (root: DDB storage-ops factory; ApiCoreFeature itself is
+        // registered per-request below) ─────────────────────────────
         ApiCoreDdbFeature.register(container, { documentClient });
-        ApiCoreFeature.register(container, { wcpLicense: undefined });
 
         // ── Identity providers ─────────────────────────────────────
         // Must be in root so the request auth step can authenticate
@@ -82,6 +82,10 @@ export const handler = createLambdaHandler({
     },
 
     request: async container => {
+        // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind
+        // to the request child container so per-request event handlers are resolvable) ─────────
+        ApiCoreFeature.register(container, { wcpLicense: undefined });
+
         // ── CMS ────────────────────────────────────────────────────
         HeadlessCmsFeature.register(container, { type: "manage" });
         AcoFeature.register(container);

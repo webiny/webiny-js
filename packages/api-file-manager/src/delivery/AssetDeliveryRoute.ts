@@ -69,19 +69,14 @@ class AssetDeliveryRouteImpl {
                 headers[k] = String(v);
             }
         }
-        headers["x-webiny-base64-encoded"] = "true";
 
         const body = await assetReply.getBody();
         const statusCode = assetReply.getCode();
 
-        if (Buffer.isBuffer(body) || body instanceof Uint8Array) {
-            return {
-                statusCode,
-                headers,
-                body: Buffer.from(body).toString("base64")
-            };
-        }
-
+        // Return the raw body (a Buffer for binary assets). The transport translator
+        // (e.g. httpResponseToApiGatewayResult) base64-encodes Buffers and sets isBase64Encoded so
+        // API Gateway returns proper binary. Pre-encoding to a base64 STRING here defeated that —
+        // the string passed through undecoded and browsers received base64 text, not an image.
         return {
             statusCode,
             headers,
