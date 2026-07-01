@@ -8,8 +8,8 @@ import { VariantSplitRow } from "./VariantSplitRow.js";
 export interface NewExperimentPayload {
     name: string;
     key: string;
-    control: { weight: number; description: string };
-    variants: Array<{ name: string; description: string; weight: number }>;
+    control: { key: string; description: string; weight: number };
+    variants: Array<{ name: string; key: string; description: string; weight: number }>;
 }
 
 interface Bucket {
@@ -17,6 +17,8 @@ interface Bucket {
     isControl: boolean;
     weight: number;
     name: string;
+    key: string;
+    keyEdited: boolean;
     description: string;
 }
 
@@ -94,12 +96,22 @@ export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
     const [key, setKey] = useState("");
     const [keyEdited, setKeyEdited] = useState(false);
     const [buckets, setBuckets] = useState<Bucket[]>([
-        { id: "control", isControl: true, weight: 50, name: "Control", description: "" },
+        {
+            id: "control",
+            isControl: true,
+            weight: 50,
+            name: "Control",
+            key: "control",
+            keyEdited: false,
+            description: ""
+        },
         {
             id: crypto.randomUUID(),
             isControl: false,
             weight: 50,
             name: "Variant B",
+            key: "variant-b",
+            keyEdited: false,
             description: ""
         }
     ]);
@@ -125,7 +137,15 @@ export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
             const name = `Variant ${String.fromCharCode(66 + variantCount)}`;
             return evenSplit([
                 ...prev,
-                { id: crypto.randomUUID(), isControl: false, weight: 0, name, description: "" }
+                {
+                    id: crypto.randomUUID(),
+                    isControl: false,
+                    weight: 0,
+                    name,
+                    key: slugify(name),
+                    keyEdited: false,
+                    description: ""
+                }
             ]);
         });
     };
@@ -139,7 +159,17 @@ export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
     };
 
     const changeName = (index: number, value: string) => {
-        setBuckets(prev => prev.map((b, i) => (i === index ? { ...b, name: value } : b)));
+        setBuckets(prev =>
+            prev.map((b, i) =>
+                i === index ? { ...b, name: value, key: b.keyEdited ? b.key : slugify(value) } : b
+            )
+        );
+    };
+
+    const changeKey = (index: number, value: string) => {
+        setBuckets(prev =>
+            prev.map((b, i) => (i === index ? { ...b, key: value, keyEdited: true } : b))
+        );
     };
 
     const changeDescription = (index: number, value: string) => {
@@ -155,12 +185,17 @@ export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
         const control = buckets.find(b => b.isControl)!;
         const variants = buckets
             .filter(b => !b.isControl)
-            .map(b => ({ name: b.name, description: b.description, weight: b.weight }));
+            .map(b => ({
+                name: b.name,
+                key: b.key,
+                description: b.description,
+                weight: b.weight
+            }));
 
         onSubmit({
             name: name.trim(),
             key: key.trim(),
-            control: { weight: control.weight, description: control.description },
+            control: { key: control.key, description: control.description, weight: control.weight },
             variants
         });
     };
@@ -233,11 +268,13 @@ export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
                     <VariantSplitRow
                         key={bucket.id}
                         name={bucket.name}
+                        variantKey={bucket.key}
                         description={bucket.description}
                         isControl={bucket.isControl}
                         weight={bucket.weight}
                         variantIndex={buckets.slice(0, index).filter(b => !b.isControl).length}
                         onNameChange={value => changeName(index, value)}
+                        onKeyChange={value => changeKey(index, value)}
                         onDescriptionChange={value => changeDescription(index, value)}
                         onChange={value => changeWeight(index, value)}
                         onRemove={

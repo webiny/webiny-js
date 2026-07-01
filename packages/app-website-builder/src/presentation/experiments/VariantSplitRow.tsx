@@ -1,15 +1,42 @@
 import React from "react";
-import { IconButton, Input, Text } from "@webiny/admin-ui";
+import { IconButton, Input } from "@webiny/admin-ui";
 
 const VARIANT_COLORS = ["#e2572a", "#4285f4", "#0f9d58", "#a142f4", "#f4b400"];
 
+interface FieldProps {
+    label: string;
+    children: React.ReactNode;
+}
+
+const Field = ({ label, children }: FieldProps) => {
+    return (
+        <div style={{ marginTop: 12 }}>
+            <div
+                style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    letterSpacing: 0.5,
+                    textTransform: "uppercase",
+                    color: "#6b7280",
+                    marginBottom: 6
+                }}
+            >
+                {label}
+            </div>
+            {children}
+        </div>
+    );
+};
+
 interface Props {
     name: string;
+    variantKey: string;
     description: string;
     isControl: boolean;
     weight: number;
     variantIndex: number;
     onNameChange: (value: string) => void;
+    onKeyChange: (value: string) => void;
     onDescriptionChange: (value: string) => void;
     onChange: (value: number) => void;
     onRemove?: () => void;
@@ -18,11 +45,13 @@ interface Props {
 
 export const VariantSplitRow = ({
     name,
+    variantKey,
     description,
     isControl,
     weight,
     variantIndex,
     onNameChange,
+    onKeyChange,
     onDescriptionChange,
     onChange,
     onRemove,
@@ -47,7 +76,7 @@ export const VariantSplitRow = ({
                     gap: 8
                 }}
             >
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span
                         style={{
                             width: 10,
@@ -57,17 +86,9 @@ export const VariantSplitRow = ({
                             flexShrink: 0
                         }}
                     />
-                    {isControl ? (
-                        <Text>Control</Text>
-                    ) : (
-                        <div style={{ flex: 1 }}>
-                            <Input
-                                value={name}
-                                onChange={onNameChange}
-                                placeholder="Variant name"
-                            />
-                        </div>
-                    )}
+                    <span style={{ fontWeight: 600 }}>
+                        {isControl ? "Control" : name || "Variant"}
+                    </span>
                 </div>
                 {isControl ? (
                     <span
@@ -80,22 +101,42 @@ export const VariantSplitRow = ({
                             whiteSpace: "nowrap"
                         }}
                     >
-                        Control · current page
+                        Current page
                     </span>
                 ) : onRemove ? (
                     <IconButton variant="ghost" size="sm" icon={removeIcon} onClick={onRemove} />
                 ) : null}
             </div>
 
-            <div style={{ marginTop: 8 }}>
+            <Field label="Name">
                 <Input
-                    value={description}
-                    onChange={onDescriptionChange}
-                    placeholder="Add a description (optional)"
+                    value={name}
+                    onChange={onNameChange}
+                    disabled={isControl}
+                    placeholder="Variant name"
                 />
-            </div>
+            </Field>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 12 }}>
+            <Field label="Key">
+                <Input value={variantKey} onChange={onKeyChange} placeholder="variant-key" />
+            </Field>
+
+            <Field label="Description">
+                <Input value={description} onChange={onDescriptionChange} placeholder="Optional" />
+            </Field>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 16 }}>
+                <span
+                    style={{
+                        fontSize: 11,
+                        fontWeight: 600,
+                        letterSpacing: 0.5,
+                        textTransform: "uppercase",
+                        color: "#6b7280"
+                    }}
+                >
+                    Traffic
+                </span>
                 <input
                     type="range"
                     min={0}
