@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { ReactComponent as ScienceIcon } from "@webiny/icons/science.svg";
-import { ReactComponent as ChevronDownIcon } from "@webiny/icons/expand_more.svg";
 import { ExperimentsSwitcher, type ExperimentItem } from "./ExperimentsSwitcher.js";
 import { useExperimentsEditor } from "./ExperimentsEditorContext.js";
 
@@ -28,12 +27,7 @@ export const ExperimentsButton = () => {
                 <Button
                     variant="secondary"
                     icon={<ScienceIcon />}
-                    text={
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                            Experiments
-                            <ChevronDownIcon style={{ width: 16, height: 16 }} />
-                        </span>
-                    }
+                    text="Experiments"
                     onClick={openManage}
                 />
             ) : (
