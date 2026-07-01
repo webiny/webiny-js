@@ -8,14 +8,16 @@ import { VariantSplitRow } from "./VariantSplitRow.js";
 export interface NewExperimentPayload {
     name: string;
     key: string;
-    control: { weight: number };
-    variants: Array<{ label: string; weight: number }>;
+    control: { weight: number; description: string };
+    variants: Array<{ name: string; description: string; weight: number }>;
 }
 
 interface Bucket {
     id: string;
     isControl: boolean;
     weight: number;
+    name: string;
+    description: string;
 }
 
 interface Props {
@@ -87,22 +89,23 @@ const rebalance = (buckets: Bucket[], index: number, rawValue: number): Bucket[]
     return next;
 };
 
-const variantLabel = (buckets: Bucket[], index: number): string => {
-    // Non-control buckets are labelled Variant B, C, D… by their order.
-    const variantIndex = buckets.slice(0, index).filter(b => !b.isControl).length;
-    return `Variant ${String.fromCharCode(66 + variantIndex)}`;
-};
-
 export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
     const [name, setName] = useState("");
     const [key, setKey] = useState("");
     const [keyEdited, setKeyEdited] = useState(false);
     const [buckets, setBuckets] = useState<Bucket[]>([
-        { id: "control", isControl: true, weight: 50 },
-        { id: crypto.randomUUID(), isControl: false, weight: 50 }
+        { id: "control", isControl: true, weight: 50, name: "Control", description: "" },
+        {
+            id: crypto.randomUUID(),
+            isControl: false,
+            weight: 50,
+            name: "Variant B",
+            description: ""
+        }
     ]);
 
     const total = useMemo(() => buckets.reduce((sum, b) => sum + b.weight, 0), [buckets]);
+    const variantCount = buckets.filter(b => !b.isControl).length;
 
     const onNameChange = (value: string) => {
         setName(value);
@@ -117,9 +120,14 @@ export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
     };
 
     const addVariant = () => {
-        setBuckets(prev =>
-            evenSplit([...prev, { id: crypto.randomUUID(), isControl: false, weight: 0 }])
-        );
+        setBuckets(prev => {
+            const variantCount = prev.filter(b => !b.isControl).length;
+            const name = `Variant ${String.fromCharCode(66 + variantCount)}`;
+            return evenSplit([
+                ...prev,
+                { id: crypto.randomUUID(), isControl: false, weight: 0, name, description: "" }
+            ]);
+        });
     };
 
     const removeVariant = (index: number) => {
@@ -130,6 +138,14 @@ export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
         setBuckets(prev => rebalance(prev, index, value));
     };
 
+    const changeName = (index: number, value: string) => {
+        setBuckets(prev => prev.map((b, i) => (i === index ? { ...b, name: value } : b)));
+    };
+
+    const changeDescription = (index: number, value: string) => {
+        setBuckets(prev => prev.map((b, i) => (i === index ? { ...b, description: value } : b)));
+    };
+
     const canSubmit = name.trim().length > 0 && key.trim().length > 0;
 
     const submit = () => {
@@ -138,14 +154,13 @@ export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
         }
         const control = buckets.find(b => b.isControl)!;
         const variants = buckets
-            .map((b, i) => ({ b, i }))
-            .filter(x => !x.b.isControl)
-            .map(x => ({ label: variantLabel(buckets, x.i), weight: x.b.weight }));
+            .filter(b => !b.isControl)
+            .map(b => ({ name: b.name, description: b.description, weight: b.weight }));
 
         onSubmit({
             name: name.trim(),
             key: key.trim(),
-            control: { weight: control.weight },
+            control: { weight: control.weight, description: control.description },
             variants
         });
     };
@@ -217,12 +232,19 @@ export const NewExperimentForm = ({ onCancel, onSubmit }: Props) => {
                 {buckets.map((bucket, index) => (
                     <VariantSplitRow
                         key={bucket.id}
-                        label={bucket.isControl ? "Control" : variantLabel(buckets, index)}
+                        name={bucket.name}
+                        description={bucket.description}
                         isControl={bucket.isControl}
                         weight={bucket.weight}
                         variantIndex={buckets.slice(0, index).filter(b => !b.isControl).length}
+                        onNameChange={value => changeName(index, value)}
+                        onDescriptionChange={value => changeDescription(index, value)}
                         onChange={value => changeWeight(index, value)}
-                        onRemove={bucket.isControl ? undefined : () => removeVariant(index)}
+                        onRemove={
+                            bucket.isControl || variantCount <= 1
+                                ? undefined
+                                : () => removeVariant(index)
+                        }
                         removeIcon={<CloseIcon style={{ width: 14, height: 14 }} />}
                     />
                 ))}
