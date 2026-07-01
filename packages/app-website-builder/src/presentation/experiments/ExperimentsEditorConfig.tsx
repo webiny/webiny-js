@@ -8,7 +8,11 @@ const { Ui } = PageEditorConfig;
 export const ExperimentsEditorConfig = () => {
     return (
         <PageEditorConfig>
-            <Ui.TopBar.Action name={"experiments"} element={<ExperimentsButton />} />
+            <Ui.TopBar.Action
+                name={"experiments"}
+                before={"buttonPublish"}
+                element={<ExperimentsButton />}
+            />
         </PageEditorConfig>
     );
 };
