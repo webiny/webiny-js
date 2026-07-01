@@ -2,36 +2,36 @@ import type { EditorPage } from "@webiny/website-builder-sdk";
 import type { UpdateVariantInput, VariantContentDto } from "~/features/experiments/index.js";
 
 /**
- * Map a variant's stored content onto an editor document that mirrors the page.
+ * Map a variant's stored content onto an editor document that keeps the *page's* identity.
  *
- * The canvas keys its document store by `properties.id` and the preview iframe is addressed by the
- * document `id`, so both are set to the variant's revision id and the document is presented as a
- * "page" on the page's own path — that's how the site's editing SDK streams and renders it live.
+ * The preview iframe is addressed by the document `id` and the canvas keys its store by `wb.id`
+ * (and renders by `properties.id`). The site resolves the server-side base by that id via
+ * `getPageById`, which only works for a real page — a variant id is not a page. So the document
+ * keeps the page's id/path/`properties.id` (a valid, resolvable base — the page draft), while its
+ * content (elements, bindings, properties, …) is the variant's. The editor streams this content
+ * over the base, and autosave targets the actual variant separately (see VariantAutoSave). This is
+ * why control and variant share the same `wb.id`; the switch is handled by re-mounting the editor.
  */
 export const variantToEditorDocument = (
     variant: VariantContentDto,
     page: EditorPage
 ): EditorPage => ({
-    id: variant.id,
-    version: page.version ?? 1,
-    state: {},
-    // Base on the page so required properties/metadata are always present; variant values win.
+    ...page,
+    // Variant content, but the page's identity (id/path) so the preview base resolves.
     properties: {
         ...page.properties,
         ...(variant.properties ?? {}),
-        id: variant.id,
+        id: (page.properties as Record<string, any>).id ?? page.id,
         path: page.properties.path
-    },
-    extensions: variant.extensions ?? {},
+    } as EditorPage["properties"],
     metadata: {
         ...page.metadata,
         ...(variant.metadata ?? {}),
-        documentType: "page"
-    },
-    bindings: (variant.bindings ?? {}) as EditorPage["bindings"],
-    elements: (variant.elements ?? {}) as EditorPage["elements"],
-    status: page.status,
-    location: page.location
+        documentType: (page.metadata as Record<string, any>).documentType ?? "page"
+    } as EditorPage["metadata"],
+    bindings: (variant.bindings ?? page.bindings) as EditorPage["bindings"],
+    elements: (variant.elements ?? page.elements) as EditorPage["elements"],
+    extensions: variant.extensions ?? page.extensions ?? {}
 });
 
 /** Extract the persistable content fields from an edited variant document. */

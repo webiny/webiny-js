@@ -73,7 +73,7 @@ export const PageEditorSurface = ({ page }: Props) => {
 
     return (
         <DocumentEditor<EditorPage>
-            key={activeDocument.id}
+            key={selectedVariant ? selectedVariant.id : page.id}
             document={activeDocument}
             name={EDITOR_NAME}
             readOnly={readOnly}
