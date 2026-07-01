@@ -1,33 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useRoute } from "@webiny/app-admin";
-import { DocumentEditor } from "~/DocumentEditor/DocumentEditor.js";
-import { useGetPage } from "~/features/pages/index.js";
 import { OverlayLoader } from "@webiny/admin-ui";
-import { useGetWebsiteBuilderSettings } from "~/features/index.js";
-import { DefaultPageEditorConfig } from "./DefaultPageEditorConfig.js";
-import { DefaultEditorConfig } from "~/BaseEditor/index.js";
-import { EDITOR_NAME } from "~/presentation/pages/PageEditor/constants.js";
 import type { EditorPage } from "@webiny/website-builder-sdk";
-import type { Page } from "~/domain/Page/index.js";
+import { useGetPage } from "~/features/pages/index.js";
+import { useGetWebsiteBuilderSettings } from "~/features/index.js";
 import { Routes } from "~/routes.js";
-import { WbPageStatus } from "~/constants.js";
-import { RevisionListDrawer } from "./Revisions/RevisionListDrawer.js";
 import { PageEditorDrawerProvider } from "./Revisions/usePageEditorDrawer.js";
-
-const getPageDataFromPage = (page: Page): EditorPage => {
-    return {
-        ...page,
-        id: page.id,
-        version: page.version,
-        status: page.status,
-        location: page.location,
-        properties: page.properties as EditorPage["properties"],
-        bindings: page.bindings,
-        elements: page.elements,
-        metadata: page.metadata,
-        state: {}
-    };
-};
+import { PageEditorSurface } from "./PageEditorSurface.js";
+import { pageToEditorDocument } from "./pageDocument.js";
+import { ExperimentsEditorProvider } from "~/presentation/experiments/ExperimentsEditorContext.js";
 
 export const PageEditor = () => {
     const { getSettings } = useGetWebsiteBuilderSettings();
@@ -45,7 +26,7 @@ export const PageEditor = () => {
         Promise.all([
             getSettings(),
             getPage({ id: route.params.id }).then(page => {
-                setPage(getPageDataFromPage(page));
+                setPage(pageToEditorDocument(page));
             })
         ]).then(() => {
             setLoading(false);
@@ -61,17 +42,9 @@ export const PageEditor = () => {
             openRevisionList={openRevisionList}
             isRevisionListOpen={isRevisionListOpen}
         >
-            <DocumentEditor<EditorPage>
-                key={page.id}
-                document={page}
-                name={EDITOR_NAME}
-                readOnly={page.status !== WbPageStatus.Draft}
-            >
-                <DefaultEditorConfig />
-                <DefaultPageEditorConfig />
-
-                <RevisionListDrawer page={page} />
-            </DocumentEditor>
+            <ExperimentsEditorProvider pageRevisionId={page.id}>
+                <PageEditorSurface page={page} />
+            </ExperimentsEditorProvider>
         </PageEditorDrawerProvider>
     );
 };

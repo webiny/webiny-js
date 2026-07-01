@@ -3,6 +3,8 @@ import type {
     CreateExperimentInput,
     ExperimentDto,
     UpdateExperimentInput,
+    UpdateVariantInput,
+    VariantContentDto,
     VariantDto
 } from "./types.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
@@ -28,6 +30,15 @@ const VARIANT_FIELDS = /* GraphQL */ `
     experimentId
     name
     status
+`;
+
+const VARIANT_CONTENT_FIELDS = /* GraphQL */ `
+    ${VARIANT_FIELDS}
+    properties
+    metadata
+    bindings
+    elements
+    extensions
 `;
 
 const ERROR_FIELDS = /* GraphQL */ `
@@ -106,6 +117,25 @@ class ExperimentsGatewayImpl implements GatewayAbstraction.Interface {
             variables: { experimentId }
         });
         return this.unwrap(response.websiteBuilder.listVariants, "Could not list variants.") ?? [];
+    }
+
+    async getVariant(id: string): Promise<VariantContentDto | null> {
+        const response = await this.client.execute<{
+            websiteBuilder: { getVariant: Envelope<VariantContentDto | null> };
+        }>({
+            query: /* GraphQL */ `
+                query GetVariant($id: ID!) {
+                    websiteBuilder {
+                        getVariant(id: $id) {
+                            data { ${VARIANT_CONTENT_FIELDS} }
+                            error { ${ERROR_FIELDS} }
+                        }
+                    }
+                }
+            `,
+            variables: { id }
+        });
+        return this.unwrap(response.websiteBuilder.getVariant, "Could not load variant.");
     }
 
     async createExperiment(input: CreateExperimentInput): Promise<ExperimentDto> {
@@ -231,10 +261,7 @@ class ExperimentsGatewayImpl implements GatewayAbstraction.Interface {
         return this.unwrap(response.websiteBuilder.createVariant, "Could not create variant.");
     }
 
-    async updateVariant(
-        id: string,
-        input: { name?: string; status?: string }
-    ): Promise<VariantDto> {
+    async updateVariant(id: string, input: UpdateVariantInput): Promise<VariantDto> {
         const response = await this.client.execute<{
             websiteBuilder: { updateVariant: Envelope<VariantDto> };
         }>({

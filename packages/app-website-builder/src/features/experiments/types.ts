@@ -21,6 +21,25 @@ export interface VariantDto {
     status: string;
 }
 
+/** A variant with its full, editable page content. */
+export interface VariantContentDto extends VariantDto {
+    properties: Record<string, any> | null;
+    metadata: Record<string, any> | null;
+    bindings: Record<string, any> | null;
+    elements: Record<string, any> | null;
+    extensions: Record<string, any> | null;
+}
+
+export interface UpdateVariantInput {
+    name?: string;
+    status?: string;
+    properties?: Record<string, any>;
+    metadata?: Record<string, any>;
+    bindings?: Record<string, any>;
+    elements?: Record<string, any>;
+    extensions?: Record<string, any>;
+}
+
 export interface CreateExperimentInput {
     pageEntryId: string;
     baselineRevisionId: string;

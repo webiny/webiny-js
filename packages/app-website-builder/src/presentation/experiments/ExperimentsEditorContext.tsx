@@ -1,5 +1,4 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { useExperiments } from "./useExperiments.js";
 import { ExperimentsDrawer } from "./ExperimentsDrawer.js";
 import type { ExperimentDto, VariantDto } from "~/features/experiments/index.js";
@@ -24,6 +23,8 @@ interface ExperimentsEditorContextValue {
     // Currently edited bucket: `null` = control, otherwise a variant entry id.
     selectedVariantId: string | null;
     selectVariant: (variantId: string | null) => void;
+    // The variant DTO matching `selectedVariantId` (null when editing the control).
+    selectedVariant: VariantDto | null;
     variantOptions: VariantOption[];
     openManage: () => void;
     editExperiment: (experiment: ExperimentDto) => void;
@@ -39,8 +40,13 @@ export const useExperimentsEditor = (): ExperimentsEditorContextValue => {
     return context;
 };
 
-export const ExperimentsEditorProvider = ({ children }: { children: React.ReactNode }) => {
-    const pageRevisionId = useSelectFromDocument(document => document.id);
+interface ProviderProps {
+    // Revision id of the page being edited (e.g. "<entryId>#0001"); the baseline for its experiments.
+    pageRevisionId: string;
+    children: React.ReactNode;
+}
+
+export const ExperimentsEditorProvider = ({ pageRevisionId, children }: ProviderProps) => {
     const pageEntryId = pageRevisionId.split("#")[0];
 
     const { gateway, listExperiments } = useExperiments();
@@ -95,6 +101,11 @@ export const ExperimentsEditorProvider = ({ children }: { children: React.ReactN
         };
     }, [selectedExperimentId, gateway]);
 
+    const selectedVariant = useMemo<VariantDto | null>(
+        () => variants.find(variant => variant.entryId === selectedVariantId) ?? null,
+        [variants, selectedVariantId]
+    );
+
     const variantOptions = useMemo<VariantOption[]>(() => {
         const split = selectedExperiment?.trafficSplit ?? { control: 0, variants: {} };
         return [
@@ -129,6 +140,7 @@ export const ExperimentsEditorProvider = ({ children }: { children: React.ReactN
             selectExperiment: setSelectedExperimentId,
             selectedVariantId,
             selectVariant: setSelectedVariantId,
+            selectedVariant,
             variantOptions,
             openManage,
             editExperiment
@@ -141,6 +153,7 @@ export const ExperimentsEditorProvider = ({ children }: { children: React.ReactN
             selectedExperimentId,
             selectedExperiment,
             selectedVariantId,
+            selectedVariant,
             variantOptions,
             openManage,
             editExperiment

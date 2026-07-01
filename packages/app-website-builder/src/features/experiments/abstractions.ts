@@ -3,6 +3,8 @@ import type {
     CreateExperimentInput,
     ExperimentDto,
     UpdateExperimentInput,
+    UpdateVariantInput,
+    VariantContentDto,
     VariantDto
 } from "./types.js";
 
@@ -10,13 +12,14 @@ export interface IExperimentsGateway {
     listExperiments(pageEntryId: string): Promise<ExperimentDto[]>;
     getExperiment(id: string): Promise<ExperimentDto | null>;
     listVariants(experimentId: string): Promise<VariantDto[]>;
+    getVariant(id: string): Promise<VariantContentDto | null>;
     createExperiment(input: CreateExperimentInput): Promise<ExperimentDto>;
     updateExperiment(id: string, input: UpdateExperimentInput): Promise<ExperimentDto>;
     startExperiment(id: string): Promise<ExperimentDto>;
     stopExperiment(id: string): Promise<ExperimentDto>;
     deleteExperiment(id: string): Promise<boolean>;
     createVariant(input: { experimentId: string; name: string }): Promise<VariantDto>;
-    updateVariant(id: string, input: { name?: string; status?: string }): Promise<VariantDto>;
+    updateVariant(id: string, input: UpdateVariantInput): Promise<VariantDto>;
     deleteVariant(id: string): Promise<boolean>;
 }
 
