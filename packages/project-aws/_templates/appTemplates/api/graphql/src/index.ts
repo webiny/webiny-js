@@ -6,7 +6,6 @@ import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js
 import {
     createLambdaHandler,
     ApiGatewayFeature,
-    ApiGatewaySecurityFeature,
     BackgroundTaskEventType
 } from "@webiny/event-handler-aws";
 import { BackgroundTaskLambdaHandler } from "@webiny/background-tasks/api";
@@ -42,8 +41,8 @@ import { FileManagerAcoFeature } from "@webiny/api-file-manager-aco";
 import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
 import { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "@webiny/api-website-builder";
 // CognitoIdpFeature must be in the root container so the request auth step
-// (ApiGatewaySecurityDecorator → RequestPrincipalEstablisher) sees CognitoIdentityProvider when
-// it is first instantiated. Extensions register in the child/request container — too late.
+// (ApiGatewayIdentityEstablisherDecorator → RequestIdentityEstablisher) sees CognitoIdentityProvider
+// when it is first instantiated. Extensions register in the child/request container — too late.
 import { CognitoIdpFeature } from "@webiny/cognito/api/features/CognitoIdp/feature.js";
 
 import { extensions } from "./extensions";
@@ -53,8 +52,8 @@ const documentClient = getDocumentClient();
 export const handler = createLambdaHandler({
     root: async container => {
         // ── Transport ──────────────────────────────────────────────
+        // ApiGatewayFeature registers the HTTP transport + auth/tenant establishment.
         ApiGatewayFeature.register(container);
-        ApiGatewaySecurityFeature.register(container);
 
         // Background task invocations (Step Functions → Lambda directly)
         container.register(BackgroundTaskEventType);

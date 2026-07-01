@@ -18,6 +18,7 @@ import {
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TasksCrud } from "~/api/TasksCrud.js";
 import { GetTaskDefinitionUseCase } from "~/api/features/GetTaskDefinition/abstractions.js";
+import { runRequestContextInitializers } from "@webiny/event-handler-core";
 
 interface IGetTaskLogParams {
     task: ITask;
@@ -56,6 +57,10 @@ export class TaskControl implements ITaskControl {
                     }
                 })
             );
+            // Identity/tenant are now established for this task — run the post-auth per-request
+            // initializers (e.g. FileModel registration) so task code can resolve them, just like
+            // the HTTP layer does for every route.
+            await runRequestContextInitializers(this.context.container);
         } catch (error) {
             /**
              * TODO Refactor error handling.

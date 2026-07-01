@@ -1,28 +1,22 @@
-import { Abstraction } from "@webiny/di";
 import type { S3Event } from "@webiny/aws-sdk/types/index.js";
+import { TenantIdExtractor } from "@webiny/api-core/features/requestContext/index.js";
 
-export interface IS3TenantIdExtractor {
-    extract(event: S3Event): string | undefined;
-}
-
-export const S3TenantIdExtractor = new Abstraction<IS3TenantIdExtractor>("S3TenantIdExtractor");
-
-export namespace S3TenantIdExtractor {
-    export type Interface = IS3TenantIdExtractor;
-}
-
-class DefaultS3TenantIdExtractor implements IS3TenantIdExtractor {
-    extract(event: S3Event): string | undefined {
-        // Extracts from bucket name pattern: "tenant-uploads" → "tenant"
-        const bucket = event.Records[0]?.s3.bucket.name;
+/**
+ * Reads the tenant id from an S3 event's bucket name, using the convention
+ * "<tenant>-uploads" → "<tenant>". Returns null for non-S3 events so it safely no-ops when
+ * registered alongside other transports' extractors under the shared TenantIdExtractor token.
+ */
+class S3TenantIdExtractorImpl implements TenantIdExtractor.Interface {
+    extract(event: unknown): string | null {
+        const bucket = (event as S3Event)?.Records?.[0]?.s3?.bucket?.name;
         if (!bucket) {
-            return undefined;
+            return null;
         }
-        return bucket.split("-")[0];
+        return bucket.split("-")[0] ?? null;
     }
 }
 
-export const S3TenantIdExtractorImpl = S3TenantIdExtractor.createImplementation({
-    implementation: DefaultS3TenantIdExtractor,
+export const S3TenantIdExtractor = TenantIdExtractor.createImplementation({
+    implementation: S3TenantIdExtractorImpl,
     dependencies: []
 });

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
+import { TenantIdExtractor } from "@webiny/api-core/features/requestContext/index.js";
 import { S3TenantIdExtractor } from "~/extractors/S3TenantIdExtractor.js";
 
 function makeEvent(bucketName: string) {
@@ -15,21 +16,10 @@ function makeEvent(bucketName: string) {
 
 function resolveExtractor() {
     const container = new Container();
-    container.register(
-        S3TenantIdExtractor.createImplementation({
-            implementation: class {
-                extract(event: any) {
-                    const bucket = event.Records[0]?.s3.bucket.name;
-                    if (!bucket) {
-                        return undefined;
-                    }
-                    return bucket.split("-")[0];
-                }
-            },
-            dependencies: []
-        })
-    );
-    return container.resolve(S3TenantIdExtractor);
+    // S3TenantIdExtractor is now a real implementation registered under the SHARED TenantIdExtractor
+    // token (same seam every transport uses), not its own abstraction.
+    container.register(S3TenantIdExtractor);
+    return container.resolve(TenantIdExtractor);
 }
 
 describe("S3TenantIdExtractor", () => {
@@ -44,8 +34,16 @@ describe("S3TenantIdExtractor", () => {
         expect(extractor.extract(makeEvent("acme-us-east-1-uploads"))).toBe("acme");
     });
 
-    it("should return undefined when no records", () => {
+    it("should return null when no records", () => {
         const extractor = resolveExtractor();
-        expect(extractor.extract({ Records: [] } as any)).toBeUndefined();
+        expect(extractor.extract({ Records: [] } as any)).toBeNull();
+    });
+
+    it("should return null for a non-S3 event (safe no-op under the shared token)", () => {
+        const extractor = resolveExtractor();
+        // An API Gateway-shaped event has no S3 Records — the extractor must not throw and must
+        // return null so it's simply skipped by RequestTenantEstablisher.
+        expect(extractor.extract({ headers: { "x-tenant": "acme" } } as any)).toBeNull();
+        expect(extractor.extract(undefined as any)).toBeNull();
     });
 });

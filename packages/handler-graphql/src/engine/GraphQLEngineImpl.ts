@@ -5,14 +5,12 @@ import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { GraphQLEngine } from "./abstractions.js";
 import { GraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
-import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { GraphQLContextualSchema } from "./GraphQLContextualSchema.js";
 import { GraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 import { ResolverDecoration } from "~/ResolverDecoration.js";
 import { createRequestBody } from "~/createRequestBody.js";
 import type { IGraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 import type { IGraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
-import type { IRequestContextInitializer } from "@webiny/event-handler-core";
 import type { IGraphQLContextualSchema } from "./GraphQLContextualSchema.js";
 import type { GraphQLRequestBody } from "~/types.js";
 import type { GraphQLSchema } from "graphql";
@@ -22,7 +20,6 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         private composer: IGraphQLSchemaComposer,
         private container: Container,
         private enhancers: IGraphQLContextEnhancer[],
-        private initializers: IRequestContextInitializer[],
         private contextualSchemas: IGraphQLContextualSchema[]
     ) {}
 
@@ -30,12 +27,10 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
         // Build context first — enhancers may be async (e.g. CMS storage init)
         const ctx = await this.buildContext();
 
-        // Run request initializers AFTER enhancers (identity/tenant set) and BEFORE contextual
-        // schemas — they register request-scoped services (e.g. the CMS facade, AccessControl)
-        // that contextual schemas and resolvers depend on.
-        for (const initializer of this.initializers) {
-            await initializer.init(ctx);
-        }
+        // NOTE: the post-auth RequestContextInitializers (CMS facade, FileModel, ...) are run once
+        // per request by the HTTP layer (RequestContextInitializerDecorator in event-handler-core),
+        // before the router dispatches — so they cover every route, not just GraphQL. Their side-
+        // effects are container registrations, which persist and are resolvable here.
 
         // Run contextual schemas BEFORE composer.build() so that any CoreGraphQLSchemaFactory
         // registrations they make (e.g. ACO folder schema plugins) are picked up by GraphQLSchemaComposer.
@@ -130,7 +125,6 @@ export const GraphQLEngineImpl = GraphQLEngine.createImplementation({
         GraphQLSchemaComposer,
         RequestContainer,
         [GraphQLContextEnhancer, { multiple: true }],
-        [RequestContextInitializer, { multiple: true }],
         [GraphQLContextualSchema, { multiple: true }]
     ]
 });
