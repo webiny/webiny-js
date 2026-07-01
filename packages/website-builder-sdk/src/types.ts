@@ -452,6 +452,7 @@ export interface IDataProvider {
     listPages(options?: ListPagesOptions): Promise<ListPagesResult>;
     getPageExperiment(path: string): Promise<ActiveExperiment | null>;
     getVariantContent(variantId: string): Promise<VariantContent | null>;
+    getExperimentPaused(experimentId: string): Promise<boolean>;
 }
 
 export interface IEnvironment {

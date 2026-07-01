@@ -6,6 +6,7 @@ import { GET_PAGE_BY_ID } from "./GET_PAGE_BY_ID.js";
 import { LIST_PUBLISHED_PAGES } from "./LIST_PUBLISHED_PAGES.js";
 import { GET_PAGE_EXPERIMENT } from "./GET_PAGE_EXPERIMENT.js";
 import { GET_VARIANT_CONTENT } from "./GET_VARIANT_CONTENT.js";
+import { GET_EXPERIMENT_PAUSED } from "./GET_EXPERIMENT_PAUSED.js";
 
 interface DefaultDataProviderConfig {
     apiClient: ApiClient;
@@ -99,6 +100,25 @@ export class DefaultDataProvider implements IDataProvider {
         );
 
         return result.websiteBuilder.getVariantContent.data ?? null;
+    }
+
+    public async getExperimentPaused(experimentId: string): Promise<boolean> {
+        // Uncached: the kill-switch must take effect immediately, even while page/variant content
+        // stays cached.
+        const result = await this.config.apiClient.query(
+            {
+                query: GET_EXPERIMENT_PAUSED,
+                variables: { experimentId }
+            },
+            { noStore: true }
+        );
+
+        this.checkForErrors(
+            `getExperimentPaused:${experimentId}`,
+            result.websiteBuilder.getExperimentPaused
+        );
+
+        return result.websiteBuilder.getExperimentPaused.data === true;
     }
 
     private checkForErrors(action: string, data: any) {

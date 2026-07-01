@@ -142,6 +142,10 @@ export class ContentSdk implements IContentSdk, IRedirects {
         return this.requireDataProvider().getVariantContent(variantId);
     }
 
+    public getExperimentPaused(experimentId: string): Promise<boolean> {
+        return this.requireDataProvider().getExperimentPaused(experimentId);
+    }
+
     /**
      * Resolve and render the right page for the current visitor (control or a variant),
      * server-side. Bucketing, targeting, exposure emission, and cache-key handling are all
@@ -157,7 +161,8 @@ export class ContentSdk implements IContentSdk, IRedirects {
             {
                 getPage: p => this.getPage(p),
                 getPageExperiment: p => this.getPageExperiment(p),
-                getVariantContent: id => this.getVariantContent(id)
+                getVariantContent: id => this.getVariantContent(id),
+                getExperimentPaused: id => this.getExperimentPaused(id)
             },
             path,
             options

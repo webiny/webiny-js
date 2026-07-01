@@ -19,6 +19,10 @@ export class NullDataProvider implements IDataProvider {
         return Promise.resolve(null);
     }
 
+    getExperimentPaused(): Promise<boolean> {
+        return Promise.resolve(false);
+    }
+
     public async listPages() {
         return { data: [], meta: { hasMoreItems: false, totalCount: 0, cursor: null } };
     }

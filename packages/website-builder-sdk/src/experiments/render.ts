@@ -29,6 +29,8 @@ export interface ExperimentSdk {
     getPage(path: string): Promise<PublicPage | null>;
     getPageExperiment(path: string): Promise<ActiveExperiment | null>;
     getVariantContent(variantId: string): Promise<VariantContent | null>;
+    /** Runtime kill-switch check. When omitted, the pause state is not consulted. */
+    getExperimentPaused?(experimentId: string): Promise<boolean>;
 }
 
 export interface ExperimentCookie {
@@ -40,6 +42,12 @@ export interface ExperimentCookie {
 export interface GetPageWithExperimentOptions {
     /** Forced variant id (from the `?wb-variant=` query parameter). Overrides bucketing, never counted. */
     forcedVariantId?: string;
+    /**
+     * Request query parameters. When provided, the forced variant is read from
+     * `searchParams[FORCED_VARIANT_PARAM]` unless `forcedVariantId` is set explicitly. Convenient
+     * for framework handlers that already have the parsed query (e.g. Next.js `searchParams`).
+     */
+    searchParams?: Record<string, string | string[] | undefined>;
     /** Explicit visitor id. When omitted, it is read from the cookie or generated. */
     visitorId?: string;
     /** Explicit ISO country code. When omitted, it is read from common CDN geo headers. */
@@ -148,6 +156,15 @@ export const resolveVisitorContext = async (
     return { context: { visitorId, country, device }, generatedVisitorId };
 };
 
+/** Forced variant id from an explicit option, falling back to the query parameter. */
+const resolveForcedVariantId = (options: GetPageWithExperimentOptions): string | undefined => {
+    if (options.forcedVariantId) {
+        return options.forcedVariantId;
+    }
+    const raw = options.searchParams?.[FORCED_VARIANT_PARAM];
+    return Array.isArray(raw) ? raw[0] : raw;
+};
+
 const overlayVariant = (baseline: PublicPage, variant: VariantContent): PublicPage => {
     return {
         ...baseline,
@@ -186,11 +203,28 @@ export const getPageWithExperiment = async (
         return { page: controlPage, experiment: experiment ?? null, assignment: null };
     }
 
+    // Only a running experiment serves variants. `getPageExperiment` already returns the active
+    // one, but guard defensively.
+    if (experiment.status !== "running") {
+        return { page: controlPage, experiment, assignment: null };
+    }
+
+    // Kill-switch: a paused experiment instantly reverts to the control. Consulted uncached by the
+    // data provider so it takes effect immediately while page/variant content stays cached.
+    if (sdk.getExperimentPaused) {
+        const paused = await sdk.getExperimentPaused(experiment.experimentId).catch(() => false);
+        if (paused) {
+            return { page: controlPage, experiment, assignment: null };
+        }
+    }
+
+    const forcedVariantId = resolveForcedVariantId(options);
+
     const { context, generatedVisitorId } = await resolveVisitorContext(options);
 
     let assignment: VariantAssignment | null = null;
-    if (options.forcedVariantId) {
-        assignment = forcedAssignment(experiment, options.forcedVariantId);
+    if (forcedVariantId) {
+        assignment = forcedAssignment(experiment, forcedVariantId);
     }
     if (!assignment) {
         assignment = assignVariant(experiment, context);
