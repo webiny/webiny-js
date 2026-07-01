@@ -1,3 +1,8 @@
+export {
+    useParentField,
+    ParentFieldProvider
+} from "~/admin/components/ContentEntryForm/ParentValue.js";
+
 export { ContentEntryForm } from "~/admin/components/ContentEntryForm/ContentEntryForm.js";
 export { Header as ContentEntryFormHeader } from "~/admin/components/ContentEntryForm/Header/index.js";
 export { ContentEntryFormPreview } from "~/admin/components/ContentEntryForm/ContentEntryFormPreview.js";
