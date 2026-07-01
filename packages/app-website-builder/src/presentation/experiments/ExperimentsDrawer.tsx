@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Drawer, IconButton } from "@webiny/admin-ui";
 import { ReactComponent as ScienceIcon } from "@webiny/icons/science.svg";
 import { ReactComponent as BackIcon } from "@webiny/icons/arrow_back.svg";
@@ -19,6 +19,8 @@ interface Props {
     experiments: ExperimentDto[];
     pageEntryId: string;
     baselineRevisionId: string;
+    // When set, the drawer opens straight into the edit view for this experiment.
+    initialEdit?: ExperimentDto | null;
     onChanged: () => void | Promise<void>;
 }
 
@@ -35,6 +37,7 @@ export const ExperimentsDrawer = ({
     experiments,
     pageEntryId,
     baselineRevisionId,
+    initialEdit,
     onChanged
 }: Props) => {
     const { gateway, createExperiment } = useExperiments();
@@ -42,52 +45,61 @@ export const ExperimentsDrawer = ({
     const [editId, setEditId] = useState<string | null>(null);
     const [editInitial, setEditInitial] = useState<ExperimentFormInitial | null>(null);
 
-    useEffect(() => {
-        if (open) {
-            setView("list");
-            setEditId(null);
-            setEditInitial(null);
-        }
-    }, [open]);
-
     const handleCreate = async (payload: NewExperimentPayload) => {
         await createExperiment({ pageEntryId, baselineRevisionId, payload });
         await onChanged();
         setView("list");
     };
 
-    const startEdit = async (experiment: ExperimentDto) => {
-        const variants = await gateway.listVariants(experiment.id);
-        const split = experiment.trafficSplit ?? { control: 100, variants: {} };
-        const buckets = [
-            {
-                id: "control",
-                isControl: true,
-                name: "Control",
-                key: "control",
-                keyEdited: true,
-                description: "",
-                weight: split.control ?? 0
-            },
-            ...variants.map(variant => ({
-                id: variant.entryId,
-                isControl: false,
-                name: variant.name,
-                key: slugify(variant.name),
-                keyEdited: true,
-                description: "",
-                weight: split.variants?.[variant.entryId] ?? 0,
-                revisionId: variant.id
-            }))
-        ];
-        setEditInitial({
-            name: experiment.name,
-            key: (experiment.analytics?.experimentKey as string | undefined) ?? "",
-            buckets
-        });
-        setEditId(experiment.id);
-        setView("edit");
-    };
+    const startEdit = useCallback(
+        async (experiment: ExperimentDto) => {
+            const variants = await gateway.listVariants(experiment.id);
+            const split = experiment.trafficSplit ?? { control: 100, variants: {} };
+            const buckets = [
+                {
+                    id: "control",
+                    isControl: true,
+                    name: "Control",
+                    key: "control",
+                    keyEdited: true,
+                    description: "",
+                    weight: split.control ?? 0
+                },
+                ...variants.map(variant => ({
+                    id: variant.entryId,
+                    isControl: false,
+                    name: variant.name,
+                    key: slugify(variant.name),
+                    keyEdited: true,
+                    description: "",
+                    weight: split.variants?.[variant.entryId] ?? 0,
+                    revisionId: variant.id
+                }))
+            ];
+            setEditInitial({
+                name: experiment.name,
+                key: (experiment.analytics?.experimentKey as string | undefined) ?? "",
+                buckets
+            });
+            setEditId(experiment.id);
+            setView("edit");
+        },
+        [gateway]
+    );
+
+    // Reset the drawer whenever it opens: jump straight to editing when asked, otherwise the list.
+    useEffect(() => {
+        if (!open) {
+            return;
+        }
+        setEditId(null);
+        setEditInitial(null);
+        if (initialEdit) {
+            startEdit(initialEdit);
+        } else {
+            setView("list");
+        }
+    }, [open, initialEdit, startEdit]);
 
     const handleUpdate = async (payload: NewExperimentPayload) => {
         if (!editId) {
