@@ -64,16 +64,14 @@ export const RevisionSelector = observer(() => {
                     }
                 />
             ))}
-            {revisions.length > 5 ? (
-                <>
-                    <DropdownMenu.Separator />
-                    <DropdownMenu.Item
-                        key={"revisions-all"}
-                        onClick={() => revisionsPresenter.show()}
-                        text={<Text size={"sm"}>Show All Revisions</Text>}
-                    />
-                </>
-            ) : null}
+            <>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item
+                    key={"revisions-all"}
+                    onClick={() => revisionsPresenter.show()}
+                    text={<Text size={"sm"}>Show All Revisions</Text>}
+                />
+            </>
         </DropdownMenu>
     );
 });

@@ -1,14 +1,7 @@
-import { computed, makeAutoObservable, runInAction } from "mobx";
-import { FormModelFactory, FormModel } from "@webiny/app-admin/features/formModel/abstractions.js";
+import { computed, makeAutoObservable, runInAction, toJS } from "mobx";
+import { FormModel, FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { CmsContentEntry } from "~/types.js";
-
-interface PublishEntryDialogData {
-    revisionDescription: string;
-}
-
-export const PUBLISH_ENTRY_DIALOG = "publish-entry";
-
 import { GetEntryUseCase } from "~/features/contentEntry/getEntry/abstractions.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/createEntry/abstractions.js";
 import { UpdateEntryUseCase } from "~/features/contentEntry/updateEntry/abstractions.js";
@@ -19,10 +12,23 @@ import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/update
 import { CmsFormModelBuilder } from "~/features/formModel/abstractions.js";
 import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import {
-    ContentEntryFormPresenter as Abstraction,
-    ContentEntryFormModelModifier
+    ContentEntryFormModelModifier,
+    ContentEntryFormPresenter as Abstraction
 } from "./abstractions.js";
 import { TRASH_ENTRY_DIALOG } from "~/presentation/contentEntries/list/ContentEntriesPresenter.js";
+import { CreateRevisionFromUseCase } from "~/features/contentEntry/createRevisionFrom/abstractions.js";
+
+interface PublishEntryDialogData {
+    revisionDescription: string;
+}
+
+interface SaveEntryParams {
+    entry: CmsContentEntry;
+    data: Record<string, unknown>;
+    skipValidation?: boolean;
+}
+
+export const PUBLISH_ENTRY_DIALOG = "publish-entry";
 
 class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     private entry: CmsContentEntry | null = null;
@@ -31,18 +37,19 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     private folderId: string | null = null;
 
     constructor(
-        private formModelFactory: FormModelFactory.Interface,
-        private cmsFormModelBuilder: CmsFormModelBuilder.Interface,
-        private confirmation: Confirmation.Interface,
-        private modelAccessor: CmsModelContext.Interface,
-        private getEntryUseCase: GetEntryUseCase.Interface,
-        private createEntryUseCase: CreateEntryUseCase.Interface,
-        private updateEntryUseCase: UpdateEntryUseCase.Interface,
-        private publishEntryUseCase: PublishEntryUseCase.Interface,
-        private unpublishEntryUseCase: UnpublishEntryUseCase.Interface,
-        private deleteEntryUseCase: DeleteEntryUseCase.Interface,
-        private updateRevisionDescriptionUseCase: UpdateRevisionDescriptionUseCase.Interface,
-        private formModelModifiers: ContentEntryFormModelModifier.Interface[]
+        private readonly formModelFactory: FormModelFactory.Interface,
+        private readonly cmsFormModelBuilder: CmsFormModelBuilder.Interface,
+        private readonly confirmation: Confirmation.Interface,
+        private readonly modelAccessor: CmsModelContext.Interface,
+        private readonly getEntryUseCase: GetEntryUseCase.Interface,
+        private readonly createEntryUseCase: CreateEntryUseCase.Interface,
+        private readonly createRevisionFromUseCase: CreateRevisionFromUseCase.Interface,
+        private readonly updateEntryUseCase: UpdateEntryUseCase.Interface,
+        private readonly publishEntryUseCase: PublishEntryUseCase.Interface,
+        private readonly unpublishEntryUseCase: UnpublishEntryUseCase.Interface,
+        private readonly deleteEntryUseCase: DeleteEntryUseCase.Interface,
+        private readonly updateRevisionDescriptionUseCase: UpdateRevisionDescriptionUseCase.Interface,
+        private readonly formModelModifiers: ContentEntryFormModelModifier.Interface[]
     ) {
         makeAutoObservable<
             ContentEntryFormPresenterImpl,
@@ -84,13 +91,20 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         const meta = entry?.meta;
         const isLocked = meta?.locked ?? false;
         const status = meta?.status;
+        /**
+         * Can save if the entry is locked and published/unpublished - it will trigger create new revision.
+         * Or if the entry is not locked and the form is not null (meaning we are creating a new entry or editing an existing one).
+         */
+        const canSave =
+            (isLocked && (status === "published" || status === "unpublished")) ||
+            (!isLocked && this.form !== null);
 
         return {
             loading: this.loading,
             model: this.model,
-            entry: this.entry,
+            entry: toJS(this.entry),
             form: this.form?.vm ?? null,
-            canSave: !isLocked && this.form !== null,
+            canSave,
             canPublish: this.entry !== null && status !== "published",
             canUnpublish: this.entry !== null && status === "published",
             canDelete: this.entry !== null,
@@ -117,13 +131,14 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
 
         try {
             if (this.entry) {
-                const entry = await this.updateEntryUseCase.execute({
-                    model: this.model,
-                    revisionId: this.entry.id,
-                    data: {
-                        values: data
-                    },
-                    options: { skipValidation }
+                /**
+                 * In case the entry already exists, and it is NOT locked, we will update the existing revision.
+                 * If it is locked, we will create a new revision from the existing one, and then update that new revision.
+                 */
+                const entry = await this.saveEntry({
+                    entry: this.entry,
+                    data,
+                    skipValidation
                 });
 
                 runInAction(() => {
@@ -312,6 +327,31 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         this.form.setData(entry.values);
         this.form.reset();
     }
+    /**
+     * Depending on whether the entry is locked or not, this method will either create a new revision from the existing one and update it, or simply update the existing revision.
+     */
+    private async saveEntry(params: SaveEntryParams): Promise<any> {
+        const { entry, data, skipValidation } = params;
+
+        if (entry.meta.locked) {
+            return await this.createRevisionFromUseCase.execute({
+                model: this.model,
+                revisionId: entry.id,
+                data: {
+                    values: data
+                },
+                options: { skipValidation }
+            });
+        }
+        return await this.updateEntryUseCase.execute({
+            model: this.model,
+            revisionId: entry.id,
+            data: {
+                values: data
+            },
+            options: { skipValidation }
+        });
+    }
 }
 
 export const ContentEntryFormPresenter = Abstraction.createImplementation({
@@ -323,6 +363,7 @@ export const ContentEntryFormPresenter = Abstraction.createImplementation({
         CmsModelContext,
         GetEntryUseCase,
         CreateEntryUseCase,
+        CreateRevisionFromUseCase,
         UpdateEntryUseCase,
         PublishEntryUseCase,
         UnpublishEntryUseCase,
