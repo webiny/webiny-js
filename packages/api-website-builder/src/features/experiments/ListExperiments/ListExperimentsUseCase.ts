@@ -13,7 +13,7 @@ class ListExperimentsUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
-        const hasPermission = await this.permissions.canRead("experiment");
+        const hasPermission = await this.permissions.canRead("page");
         if (!hasPermission) {
             return Result.fail(new ExperimentNotAuthorizedError());
         }

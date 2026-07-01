@@ -13,7 +13,7 @@ class GetActiveExperimentForRevisionUseCaseImpl implements UseCaseAbstraction.In
     ) {}
 
     async execute(revisionId: string): UseCaseAbstraction.Return {
-        const hasPermission = await this.permissions.canRead("experiment");
+        const hasPermission = await this.permissions.canRead("page");
         if (!hasPermission) {
             return Result.fail(new ExperimentNotAuthorizedError());
         }

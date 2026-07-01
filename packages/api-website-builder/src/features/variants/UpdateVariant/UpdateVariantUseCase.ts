@@ -13,7 +13,7 @@ class UpdateVariantUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
-        const hasPermission = await this.permissions.canEdit("variant");
+        const hasPermission = await this.permissions.canEdit("page");
         if (!hasPermission) {
             return Result.fail(new VariantNotAuthorizedError());
         }

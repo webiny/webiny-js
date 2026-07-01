@@ -21,7 +21,7 @@ class PauseExperimentUseCaseImpl implements PauseAbstraction.Interface {
     ) {}
 
     async execute(experimentEntryId: string): PauseAbstraction.Return {
-        if (!(await this.permissions.canPublish("experiment"))) {
+        if (!(await this.permissions.canPublish("page"))) {
             return Result.fail(new ExperimentNotAuthorizedError());
         }
         await this.keyValueStore.set(experimentPauseKey(experimentEntryId), true);
@@ -36,7 +36,7 @@ class ResumeExperimentUseCaseImpl implements ResumeAbstraction.Interface {
     ) {}
 
     async execute(experimentEntryId: string): ResumeAbstraction.Return {
-        if (!(await this.permissions.canPublish("experiment"))) {
+        if (!(await this.permissions.canPublish("page"))) {
             return Result.fail(new ExperimentNotAuthorizedError());
         }
         await this.keyValueStore.delete(experimentPauseKey(experimentEntryId));

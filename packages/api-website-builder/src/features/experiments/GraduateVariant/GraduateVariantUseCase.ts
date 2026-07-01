@@ -20,7 +20,7 @@ class GraduateVariantUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
-        const canPublishExperiment = await this.permissions.canPublish("experiment");
+        const canPublishExperiment = await this.permissions.canPublish("page");
         const canCreatePage = await this.permissions.canCreate("page");
         if (!canPublishExperiment || !canCreatePage) {
             return Result.fail(new ExperimentNotAuthorizedError());

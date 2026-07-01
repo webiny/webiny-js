@@ -51,20 +51,6 @@ export const WB_PERMISSIONS_SCHEMA = createPermissionSchema({
             permission: "wb.redirect"
         },
         {
-            id: "experiment",
-            title: "Experiment",
-            scopes: ["full", "own"],
-            actions: [{ name: "rwd" }, { name: "pw" }],
-            permission: "wb.experiment"
-        },
-        {
-            id: "variant",
-            title: "Variant",
-            scopes: ["full", "own"],
-            actions: [{ name: "rwd" }],
-            permission: "wb.variant"
-        },
-        {
             id: "settings",
             title: "Settings",
             scopes: ["full"],

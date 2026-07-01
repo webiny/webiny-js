@@ -17,7 +17,7 @@ class CreateVariantUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
-        const hasPermission = await this.permissions.canCreate("variant");
+        const hasPermission = await this.permissions.canCreate("page");
         if (!hasPermission) {
             return Result.fail(new VariantNotAuthorizedError());
         }

@@ -24,7 +24,7 @@ class StartExperimentUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
-        const hasPermission = await this.permissions.canPublish("experiment");
+        const hasPermission = await this.permissions.canPublish("page");
         if (!hasPermission) {
             return Result.fail(new ExperimentNotAuthorizedError());
         }

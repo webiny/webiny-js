@@ -13,7 +13,7 @@ class GetVariantByIdUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(id: string): UseCaseAbstraction.Return {
-        const hasPermission = await this.permissions.canRead("variant");
+        const hasPermission = await this.permissions.canRead("page");
         if (!hasPermission) {
             return Result.fail(new VariantNotAuthorizedError());
         }

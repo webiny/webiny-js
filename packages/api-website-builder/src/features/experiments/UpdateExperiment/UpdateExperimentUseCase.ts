@@ -13,7 +13,7 @@ class UpdateExperimentUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
-        const hasPermission = await this.permissions.canEdit("experiment");
+        const hasPermission = await this.permissions.canEdit("page");
         if (!hasPermission) {
             return Result.fail(new ExperimentNotAuthorizedError());
         }

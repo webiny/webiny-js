@@ -13,7 +13,7 @@ class DeleteExperimentUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
-        const hasPermission = await this.permissions.canDelete("experiment");
+        const hasPermission = await this.permissions.canDelete("page");
         if (!hasPermission) {
             return Result.fail(new ExperimentNotAuthorizedError());
         }

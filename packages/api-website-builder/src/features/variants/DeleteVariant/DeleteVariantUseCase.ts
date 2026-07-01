@@ -13,7 +13,7 @@ class DeleteVariantUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
-        const hasPermission = await this.permissions.canDelete("variant");
+        const hasPermission = await this.permissions.canDelete("page");
         if (!hasPermission) {
             return Result.fail(new VariantNotAuthorizedError());
         }
