@@ -16,8 +16,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@graphql-tools/merge": "^9.1.9",
-    "@graphql-tools/schema": "^10.0.33",
+    "@graphql-tools/merge": "^9.1.10",
+    "@graphql-tools/schema": "^10.0.34",
     "@webiny/api": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
