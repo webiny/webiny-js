@@ -1,4 +1,6 @@
 // New Form Model
+export { FormView, FormErrors } from "~/features/formModel/index.js";
+export type { FormModel } from "~/features/formModel/index.js";
 export type {
     IFieldRendererRegistry,
     IFieldBuilderRegistry,
