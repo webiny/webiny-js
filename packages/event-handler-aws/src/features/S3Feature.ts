@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { S3EventType } from "../eventTypes/S3EventType.js";
-import { S3TenantEstablisherDecorator } from "../handlers/S3TenantEstablisherDecorator.js";
+import { S3TenantLoaderDecorator } from "../handlers/S3TenantLoaderDecorator.js";
 
 /**
  * Registers S3 event handling: the event type + tenant establishment. Tenant is established the same
@@ -13,6 +13,6 @@ export const S3Feature = createFeature({
     name: "S3",
     register(container) {
         container.register(S3EventType);
-        container.registerDecorator(S3TenantEstablisherDecorator);
+        container.registerDecorator(S3TenantLoaderDecorator);
     }
 });

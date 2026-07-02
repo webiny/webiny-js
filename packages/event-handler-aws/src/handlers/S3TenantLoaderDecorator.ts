@@ -13,22 +13,22 @@ import type { EventContext, NextFunction } from "@webiny/event-handler-core";
  * (RequestTenantLoader). Mirrors the API Gateway tenant decorator — same shared load, different
  * extract. S3 events carry no user identity, so no auth token is extracted.
  */
-class S3TenantEstablisherDecoratorImpl implements S3EventHandler.Interface {
+class S3TenantLoaderDecoratorImpl implements S3EventHandler.Interface {
     constructor(
         private rawTenantId: RawTenantId.Interface,
-        private tenantEstablisher: IRequestTenantLoader,
+        private tenantLoader: IRequestTenantLoader,
         private decoratee: S3EventHandler.Interface
     ) {}
 
     async execute(ctx: EventContext<S3Event>, next: NextFunction): Promise<any> {
         const bucket = ctx.event?.Records?.[0]?.s3?.bucket?.name;
         this.rawTenantId.set(bucket ? (bucket.split("-")[0] ?? null) : null);
-        await this.tenantEstablisher.establish();
+        await this.tenantLoader.establish();
         return this.decoratee.execute(ctx, next);
     }
 }
 
-export const S3TenantEstablisherDecorator = S3EventHandler.createDecorator({
-    decorator: S3TenantEstablisherDecoratorImpl,
+export const S3TenantLoaderDecorator = S3EventHandler.createDecorator({
+    decorator: S3TenantLoaderDecoratorImpl,
     dependencies: [RawTenantId, RequestTenantLoader]
 });

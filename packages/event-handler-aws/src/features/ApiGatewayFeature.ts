@@ -3,8 +3,8 @@ import type { Container } from "@webiny/di";
 import { HttpFeature } from "@webiny/event-handler-core";
 import { ApiGatewayEventType } from "~/eventTypes/ApiGatewayEventType.js";
 import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHandler.js";
-import { ApiGatewayIdentityEstablisherDecorator } from "~/handlers/ApiGatewayIdentityEstablisherDecorator.js";
-import { ApiGatewayTenantEstablisherDecorator } from "~/handlers/ApiGatewayTenantEstablisherDecorator.js";
+import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
+import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
 
 /**
  * Registers the full API Gateway infrastructure for a Lambda handler:
@@ -27,7 +27,7 @@ export const ApiGatewayFeature = createFeature({
         container.register(ApiGatewayHttpRouterHandler);
 
         // ── Auth + tenant (extract → shared load) ──────────────────
-        container.registerDecorator(ApiGatewayTenantEstablisherDecorator);
-        container.registerDecorator(ApiGatewayIdentityEstablisherDecorator);
+        container.registerDecorator(ApiGatewayTenantLoaderDecorator);
+        container.registerDecorator(ApiGatewayIdentityLoaderDecorator);
     }
 });

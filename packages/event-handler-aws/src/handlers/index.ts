@@ -1,4 +1,4 @@
-export * from "./S3TenantEstablisherDecorator.js";
+export * from "./S3TenantLoaderDecorator.js";
 export * from "./ApiGatewayHttpRouterHandler.js";
-export * from "./ApiGatewayIdentityEstablisherDecorator.js";
-export * from "./ApiGatewayTenantEstablisherDecorator.js";
+export * from "./ApiGatewayIdentityLoaderDecorator.js";
+export * from "./ApiGatewayTenantLoaderDecorator.js";

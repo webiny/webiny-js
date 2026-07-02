@@ -22,20 +22,20 @@ function parseCookieHeader(cookieHeader: string): Record<string, string> {
  * `Authorization` header preferred, then the `wby-id-token` cookie — into RawAuthToken, then invokes
  * the shared LOAD step (RequestIdentityLoader) which authenticates it and sets IdentityContext.
  *
- * A missing token leaves RawAuthToken null → the establisher authenticates as anonymous.
- * Registered BEFORE ApiGatewayTenantEstablisherDecorator so identity is established before tenant
+ * A missing token leaves RawAuthToken null → the loader authenticates as anonymous.
+ * Registered BEFORE ApiGatewayTenantLoaderDecorator so identity is established before tenant
  * (see ApiGatewayFeature).
  */
-class ApiGatewayIdentityEstablisherDecoratorImpl implements ApiGatewayEventHandler.Interface {
+class ApiGatewayIdentityLoaderDecoratorImpl implements ApiGatewayEventHandler.Interface {
     constructor(
         private rawAuthToken: RawAuthToken.Interface,
-        private identityEstablisher: IRequestIdentityLoader,
+        private identityLoader: IRequestIdentityLoader,
         private decoratee: ApiGatewayEventHandler.Interface
     ) {}
 
     async execute(ctx: EventContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
         this.rawAuthToken.set(this.extractToken(ctx.event));
-        await this.identityEstablisher.establish();
+        await this.identityLoader.establish();
         return this.decoratee.execute(ctx, next);
     }
 
@@ -56,7 +56,7 @@ class ApiGatewayIdentityEstablisherDecoratorImpl implements ApiGatewayEventHandl
     }
 }
 
-export const ApiGatewayIdentityEstablisherDecorator = ApiGatewayEventHandler.createDecorator({
-    decorator: ApiGatewayIdentityEstablisherDecoratorImpl,
+export const ApiGatewayIdentityLoaderDecorator = ApiGatewayEventHandler.createDecorator({
+    decorator: ApiGatewayIdentityLoaderDecoratorImpl,
     dependencies: [RawAuthToken, RequestIdentityLoader]
 });

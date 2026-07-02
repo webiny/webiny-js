@@ -41,7 +41,7 @@ import { FileManagerAcoFeature } from "@webiny/api-file-manager-aco";
 import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
 import { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "@webiny/api-website-builder";
 // CognitoIdpFeature must be in the root container so the request auth step
-// (ApiGatewayIdentityEstablisherDecorator → RequestIdentityEstablisher) sees CognitoIdentityProvider
+// (ApiGatewayIdentityLoaderDecorator → RequestIdentityLoader) sees CognitoIdentityProvider
 // when it is first instantiated. Extensions register in the child/request container — too late.
 import { CognitoIdpFeature } from "@webiny/cognito/api/features/CognitoIdp/feature.js";
 

@@ -6,7 +6,7 @@ import {
     RequestTenantLoader
 } from "@webiny/api-core/features/requestContext/index.js";
 import { S3EventHandler } from "~/abstractions/handlers/S3EventHandler.js";
-import { S3TenantEstablisherDecorator } from "~/handlers/S3TenantEstablisherDecorator.js";
+import { S3TenantLoaderDecorator } from "~/handlers/S3TenantLoaderDecorator.js";
 
 function s3Event(bucketName: string): any {
     return {
@@ -37,7 +37,7 @@ function setup() {
             return "inner-ok";
         }
     });
-    container.registerDecorator(S3TenantEstablisherDecorator);
+    container.registerDecorator(S3TenantLoaderDecorator);
 
     return {
         handler: container.resolve(S3EventHandler),
@@ -47,7 +47,7 @@ function setup() {
     };
 }
 
-describe("S3TenantEstablisherDecorator", () => {
+describe("S3TenantLoaderDecorator", () => {
     it("extracts tenant from the bucket name into RawTenantId, runs the load, then the inner handler", async () => {
         const t = setup();
         const result = await t.handler.execute(
@@ -70,7 +70,7 @@ describe("S3TenantEstablisherDecorator", () => {
         expect(t.rawTenantId()).toBe("acme");
     });
 
-    it("sets null when there is no bucket (establisher then defaults to root)", async () => {
+    it("sets null when there is no bucket (loader then defaults to root)", async () => {
         const t = setup();
         await t.handler.execute(
             { event: { Records: [] }, metadata: {} } as any,

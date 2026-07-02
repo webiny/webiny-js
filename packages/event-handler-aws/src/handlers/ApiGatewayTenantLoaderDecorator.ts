@@ -11,26 +11,26 @@ import type { EventContext, NextFunction } from "@webiny/event-handler-core";
  * EXTRACT (transport-specific): reads the tenant id from the `x-tenant` header of an API Gateway
  * event into RawTenantId, then invokes the shared LOAD step (RequestTenantLoader) which
  * resolves the Tenant and sets TenantContext. A missing header leaves RawTenantId null → the
- * establisher defaults to the "root" tenant.
+ * loader defaults to the "root" tenant.
  *
- * Registered AFTER ApiGatewayIdentityEstablisherDecorator (see ApiGatewayFeature).
+ * Registered AFTER ApiGatewayIdentityLoaderDecorator (see ApiGatewayFeature).
  */
-class ApiGatewayTenantEstablisherDecoratorImpl implements ApiGatewayEventHandler.Interface {
+class ApiGatewayTenantLoaderDecoratorImpl implements ApiGatewayEventHandler.Interface {
     constructor(
         private rawTenantId: RawTenantId.Interface,
-        private tenantEstablisher: IRequestTenantLoader,
+        private tenantLoader: IRequestTenantLoader,
         private decoratee: ApiGatewayEventHandler.Interface
     ) {}
 
     async execute(ctx: EventContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
         const headers = ctx.event?.headers;
         this.rawTenantId.set(headers ? (headers["x-tenant"] ?? headers["X-Tenant"] ?? null) : null);
-        await this.tenantEstablisher.establish();
+        await this.tenantLoader.establish();
         return this.decoratee.execute(ctx, next);
     }
 }
 
-export const ApiGatewayTenantEstablisherDecorator = ApiGatewayEventHandler.createDecorator({
-    decorator: ApiGatewayTenantEstablisherDecoratorImpl,
+export const ApiGatewayTenantLoaderDecorator = ApiGatewayEventHandler.createDecorator({
+    decorator: ApiGatewayTenantLoaderDecoratorImpl,
     dependencies: [RawTenantId, RequestTenantLoader]
 });

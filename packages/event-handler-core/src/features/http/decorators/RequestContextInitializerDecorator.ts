@@ -8,7 +8,7 @@ import { runRequestContextInitializers } from "~/features/events/runRequestConte
  * Runs the post-auth {@link RequestContextInitializer}s once per request, for EVERY HTTP route
  * (graphql, cms, /files/* asset delivery, ...) — not just the GraphQL engine. It's transport-
  * agnostic: it lives in event-handler-core and depends only on DI abstractions. The transport's
- * auth decorators (e.g. ApiGatewayIdentityEstablisherDecorator / ApiGatewayTenantEstablisherDecorator)
+ * auth decorators (e.g. ApiGatewayIdentityLoaderDecorator / ApiGatewayTenantLoaderDecorator)
  * establish identity/tenant BEFORE control reaches HttpRouter, so by the time this runs, the request
  * context is established.
  */
