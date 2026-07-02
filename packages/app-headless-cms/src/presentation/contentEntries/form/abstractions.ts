@@ -7,6 +7,7 @@ import type { CmsModel } from "~/types.js";
 export interface IContentEntryFormViewModel {
     loading: string | null;
     entry: CmsContentEntry | null;
+    canCreateNewRevision: boolean;
     model: CmsModel;
     form: FormModel.FormVM | null;
     canSave: boolean;
