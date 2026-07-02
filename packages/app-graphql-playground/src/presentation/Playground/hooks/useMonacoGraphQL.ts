@@ -108,9 +108,6 @@ export function useMonacoGraphQL(params: UseMonacoGraphQLParams) {
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const monacoRef = useRef<typeof import("monaco-editor") | null>(null);
     const disposableRef = useRef<{ dispose(): void } | null>(null);
-    const schemaRef = useRef<IPlaygroundSchema | null>(null);
-
-    schemaRef.current = params.schema;
 
     const handleBeforeMount: BeforeMount = useCallback(monaco => {
         monacoRef.current = monaco;

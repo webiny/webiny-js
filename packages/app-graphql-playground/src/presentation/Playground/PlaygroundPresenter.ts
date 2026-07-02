@@ -36,6 +36,7 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
     private activeTabId = "";
     private endpoints: PlaygroundPresenter.EndpointVm[] = [];
     private schemas = new Map<string, PlaygroundPresenter.Schema>();
+    private disposeReaction: (() => void) | null = null;
 
     constructor(
         tabRegistry: PlaygroundTabRegistry.Interface,
@@ -54,7 +55,8 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
                 definitions: false,
                 pendingIntrospections: false,
                 initialized: false,
-                nextUserTabId: false
+                nextUserTabId: false,
+                disposeReaction: false
             } as any,
             { autoBind: true }
         );
@@ -235,6 +237,7 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
         }
 
         tab.endpoint = endpoint;
+        this.loadSchema(tab);
     }
 
     public executeQuery(): void {
@@ -296,7 +299,11 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
             return;
         }
 
-        await navigator.clipboard.writeText(tab.query);
+        try {
+            await navigator.clipboard.writeText(tab.query);
+        } catch {
+            /* Clipboard unavailable. */
+        }
     }
 
     public async copyResponse(): Promise<void> {
@@ -305,7 +312,11 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
             return;
         }
 
-        await navigator.clipboard.writeText(tab.response);
+        try {
+            await navigator.clipboard.writeText(tab.response);
+        } catch {
+            /* Clipboard unavailable. */
+        }
     }
 
     public selectBottomPanel(panel: PlaygroundPresenter.BottomPanel): void {
@@ -405,7 +416,7 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
     }
 
     private setupPersistence(): void {
-        reaction(
+        this.disposeReaction = reaction(
             () => this.buildPersistedState(),
             state => {
                 this.repository.save(state);
