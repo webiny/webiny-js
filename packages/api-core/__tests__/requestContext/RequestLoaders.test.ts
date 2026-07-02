@@ -53,10 +53,22 @@ describe("RequestTenantLoader (LOAD)", () => {
         expect(getSet()).toEqual({ id: "root", name: "root" });
     });
 
-    it("does not set the tenant when the id can't be resolved", async () => {
+    it("does not set the tenant when a non-root id can't be resolved", async () => {
         const { loader, getSet } = setup("ghost", ["root"]);
         await loader.establish();
         expect(getSet()).toBeUndefined();
+    });
+
+    it("establishes a bootstrap root tenant when the root tenant isn't installed yet", async () => {
+        // Fresh, not-yet-installed environment: no raw id → "root", and "root" isn't in storage.
+        // The loader must still establish a (bootstrap) root tenant so the request pipeline and the
+        // GraphQL schema build function and the install mutation can create the real root tenant.
+        const { loader, getSet } = setup(null, []);
+        await loader.establish();
+        const tenant = getSet();
+        expect(tenant).toBeTruthy();
+        expect(tenant.id).toBe("root");
+        expect(tenant.isInstalled).toBe(false);
     });
 });
 
