@@ -1,13 +1,11 @@
 import React, { memo } from "react";
 import type { ApolloClient } from "apollo-client";
-import { plugins } from "@webiny/plugins";
 import { useRouter, AdminConfig, AdminLayout, HasPermission } from "@webiny/app-admin";
 import { ReactComponent as ApiPlaygroundIcon } from "@webiny/icons/graphql_playground.svg";
 import { ReactComponent as DevToolsIcon } from "@webiny/icons/developer_mode.svg";
-import Playground from "./plugins/Playground.js";
-import playgroundPlugins from "./plugins/index.js";
 import { SecurityPermission } from "./SecurityPermission.js";
 import { Routes } from "~/routes.js";
+import { PlaygroundPage } from "./presentation/Playground/components/PlaygroundPage.js";
 
 const { Route, Menu } = AdminConfig;
 
@@ -19,9 +17,10 @@ interface GraphQLPlaygroundProps {
     createApolloClient(params: CreateApolloClientParams): ApolloClient<any>;
 }
 
-const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundProps) => {
+const GraphQLPlaygroundExtension = ({
+    createApolloClient: _createApolloClient
+}: GraphQLPlaygroundProps) => {
     const router = useRouter();
-    plugins.register(playgroundPlugins);
 
     return (
         <>
@@ -61,7 +60,7 @@ const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundPro
                     route={Routes.ApiPlayground}
                     element={
                         <AdminLayout title={"GraphQL Playground"}>
-                            <Playground createApolloClient={createApolloClient} />
+                            <PlaygroundPage />
                         </AdminLayout>
                     }
                 />
