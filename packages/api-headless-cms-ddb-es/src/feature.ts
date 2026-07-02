@@ -58,7 +58,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         documentClient
     });
     const tableElasticsearchInstance = createOpenSearchTable({
-        name: esTable,
+        name: esTable || (process.env.DB_TABLE_OPENSEARCH as string),
         documentClient
     });
 
@@ -199,7 +199,12 @@ const OpenSearchStorageOperationsFactory = StorageOperationsFactoryAbstraction.c
     }
 );
 
-const storageOperationsFeature = createFeature({
+/**
+ * DI-native feature — registers the DynamoDB+OpenSearch CMS storage operations factory (parallel to
+ * HeadlessCmsDdbFeature). Requires DynamoDBClient (DbFeature) and OpenSearchClient
+ * (OpenSearchClientFeature) to be registered in the container first.
+ */
+export const HeadlessCmsDdbEsFeature = createFeature({
     name: "cms.storageOperations.openSearch",
     register: container => {
         CmsEntryOpenSearchFieldIndexFeature.register(container);
@@ -213,7 +218,7 @@ const storageOperationsFeature = createFeature({
 
 export const registerCmsOpenSearchStorageOperations = () => {
     const plugin = createRegisterExtensionPlugin(context => {
-        return storageOperationsFeature.register(context.container);
+        return HeadlessCmsDdbEsFeature.register(context.container);
     });
 
     plugin.name = "cms.registerOpenSearchStorageOperations";
