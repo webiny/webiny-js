@@ -105,6 +105,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             entry: toJS(this.entry),
             form: this.form?.vm ?? null,
             canSave,
+            status,
             canCreateNewRevision:
                 !!status && canSave && ["published", "unpublished"].includes(status),
             canPublish: this.entry !== null && status !== "published",
@@ -305,9 +306,12 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         this.folderId = folderId;
     }
 
-    newEntry(): void {
+    newEntry(initialValues?: Record<string, unknown>): void {
         this.entry = null;
         this.form = this.buildForm();
+        if (initialValues) {
+            this.form.setData(initialValues, { dirty: true });
+        }
     }
 
     reset(): void {

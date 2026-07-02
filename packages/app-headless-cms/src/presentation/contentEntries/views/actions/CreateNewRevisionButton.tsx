@@ -33,7 +33,7 @@ export const CreateNewRevisionButton = observer(() => {
 
     return (
         <Button
-            variant="primary"
+            variant={"secondary"}
             text={"New Revision"}
             onClick={handleSave}
             icon={<NewRevisionIcon />}

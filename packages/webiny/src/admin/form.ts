@@ -1,3 +1,5 @@
+export { FormView, FormErrors } from "@webiny/app-admin/features/formModel/index.js";
+export type { FormModel } from "@webiny/app-admin/features/formModel/index.js";
 export type {
     IFieldRendererRegistry,
     IFieldBuilderRegistry,
