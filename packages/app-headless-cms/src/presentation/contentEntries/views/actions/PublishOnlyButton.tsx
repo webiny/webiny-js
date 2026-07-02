@@ -4,35 +4,31 @@ import { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js
 import { usePermission } from "~/admin/hooks/usePermission.js";
 import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 
-export const SaveAndPublishButton = observer(() => {
+export const PublishOnlyButton = observer(() => {
     const presenter = useContentEntryFormPresenter();
     const { ButtonPrimary } = ContentEntryEditorConfig.Actions.ButtonAction.useButtons();
-    const { canEdit, canPublish } = usePermission();
+    const { canPublish } = usePermission();
 
     if (
         !presenter.vm.canPublish ||
-        (presenter.vm.status === "unpublished" && !presenter.vm.isDirty) ||
-        (presenter.vm.entry && !canEdit(presenter.vm.entry, "cms.contentEntry")) ||
+        presenter.vm.isDirty ||
+        presenter.vm.status !== "unpublished" ||
         !canPublish("cms.contentEntry")
     ) {
         return null;
     }
 
-    const saveAndPublish = async () => {
-        const saved = await presenter.saveRevision({ skipValidation: false });
-        if (!saved) {
-            return;
-        }
+    const publish = async () => {
         await presenter.publishRevision();
     };
 
     return (
         <ButtonPrimary
-            onAction={saveAndPublish}
+            onAction={publish}
             disabled={presenter.vm.loading !== null}
-            data-testid="cms-content-save-publish-content-button"
+            data-testid="cms-content-publish-content-button"
         >
-            {"Save & Publish"}
+            {"Publish"}
         </ButtonPrimary>
     );
 });

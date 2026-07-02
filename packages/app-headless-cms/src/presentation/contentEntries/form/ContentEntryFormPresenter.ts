@@ -105,6 +105,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             entry: toJS(this.entry),
             form: this.form?.vm ?? null,
             canSave,
+            status,
             canCreateNewRevision:
                 !!status && canSave && ["published", "unpublished"].includes(status),
             canPublish: this.entry !== null && status !== "published",
