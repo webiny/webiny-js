@@ -1,5 +1,6 @@
 export { createLambdaHandler } from "./createLambdaHandler.js";
 export type { CreateLambdaHandlerOptions } from "./createLambdaHandler.js";
+export { awsLambdaTransport } from "./AwsLambdaTransport.js";
 
 export * from "./abstractions/index.js";
 export * from "./eventTypes/index.js";
