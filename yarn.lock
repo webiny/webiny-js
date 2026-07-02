@@ -12511,9 +12511,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/event-handler-node@workspace:packages/event-handler-node":
+"@webiny/event-handler-server@workspace:packages/event-handler-server":
   version: 0.0.0-use.local
-  resolution: "@webiny/event-handler-node@workspace:packages/event-handler-node"
+  resolution: "@webiny/event-handler-server@workspace:packages/event-handler-server"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
