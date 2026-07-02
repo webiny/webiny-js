@@ -16,6 +16,7 @@ description: >
 A New Entry Wizard intercepts the "create new entry" flow in the Headless CMS and shows a custom form before the full entry editor. The wizard collects initial values (title, slug, category, etc.), then calls `formPresenter.newEntry(initialValues)` to pre-fill the entry form and transition to the editor. The form is automatically marked as dirty so the user sees unsaved changes.
 
 A wizard extension has five files:
+
 1. **`abstractions.ts`** -- DI token and presenter interface (ALWAYS a standalone file)
 2. **`feature.ts`** -- `createFeature` wiring (ALWAYS a standalone file)
 3. **Presenter** -- owns the wizard form (fields, layout, validation) via `FormModelFactory`
@@ -33,17 +34,17 @@ import { MyWizardFeature } from "./feature.js";
 import { MyWizardForm } from "./MyWizardForm.js";
 
 const MyWizardExtension = () => {
-    return (
-        <>
-            <RegisterFeature feature={MyWizardFeature} />
-            <ContentEntryEditorConfig>
-                <ContentEntryEditorConfig.NewEntryWizard
-                    element={<MyWizardForm />}
-                    modelIds={["article", "blogPost"]}
-                />
-            </ContentEntryEditorConfig>
-        </>
-    );
+  return (
+    <>
+      <RegisterFeature feature={MyWizardFeature} />
+      <ContentEntryEditorConfig>
+        <ContentEntryEditorConfig.NewEntryWizard
+          element={<MyWizardForm />}
+          modelIds={["article", "blogPost"]}
+        />
+      </ContentEntryEditorConfig>
+    </>
+  );
 };
 
 export default MyWizardExtension;
@@ -51,10 +52,10 @@ export default MyWizardExtension;
 
 ### Props
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `element` | `React.ReactElement` | The wizard component to render |
-| `modelIds` | `string[]` | Content model IDs this wizard applies to. Omit or pass `[]` to apply to all models. |
+| Prop       | Type                 | Description                                                                         |
+| ---------- | -------------------- | ----------------------------------------------------------------------------------- |
+| `element`  | `React.ReactElement` | The wizard component to render                                                      |
+| `modelIds` | `string[]`           | Content model IDs this wizard applies to. Omit or pass `[]` to apply to all models. |
 
 ### Enabling the extension
 
@@ -73,18 +74,17 @@ import { createAbstraction } from "webiny/admin";
 import type { FormModel } from "webiny/admin/form";
 
 export interface MyWizardVM {
-    form: FormModel.FormVM;
-    data: Record<string, unknown>;
+  form: FormModel.FormVM;
+  data: Record<string, unknown>;
 }
 
 export interface IMyWizardPresenter {
-    vm: MyWizardVM;
-    submit(): Promise<Record<string, unknown> | false>;
-    reset(): void;
+  vm: MyWizardVM;
+  submit(): Promise<Record<string, unknown> | false>;
+  reset(): void;
 }
 
-export const MyWizardPresenter =
-    createAbstraction<IMyWizardPresenter>("MyWizardPresenter");
+export const MyWizardPresenter = createAbstraction<IMyWizardPresenter>("MyWizardPresenter");
 ```
 
 ## Feature
@@ -98,18 +98,18 @@ import { MyWizardPresenter } from "./abstractions.js";
 import { MyWizardPresenterImpl } from "./MyWizardPresenter.js";
 
 export const MyWizardFeature = createFeature({
-    name: "MyWizard",
-    register(container) {
-        container.register(
-            MyWizardPresenter.createImplementation({
-                implementation: MyWizardPresenterImpl,
-                dependencies: [FormModelFactory]
-            })
-        );
-    },
-    resolve(container) {
-        return { presenter: container.resolve(MyWizardPresenter) };
-    }
+  name: "MyWizard",
+  register(container) {
+    container.register(
+      MyWizardPresenter.createImplementation({
+        implementation: MyWizardPresenterImpl,
+        dependencies: [FormModelFactory]
+      })
+    );
+  },
+  resolve(container) {
+    return { presenter: container.resolve(MyWizardPresenter) };
+  }
 });
 ```
 
@@ -125,42 +125,41 @@ import { FormModelFactory } from "webiny/admin";
 import type { IMyWizardPresenter, MyWizardVM } from "./abstractions.js";
 
 export class MyWizardPresenterImpl implements IMyWizardPresenter {
-    private form: FormModel.Interface;
+  private form: FormModel.Interface;
 
-    constructor(formFactory: FormModelFactory.Interface) {
-        this.form = formFactory.create({
-            fields: fields => ({
-                title: fields.text().label("Title").required("Title is required"),
-                slug: fields.text().label("Slug").required("Slug is required"),
-                category: fields.text().label("Category").options([
-                    { label: "News", value: "news" },
-                    { label: "Tutorial", value: "tutorial" }
-                ])
-            }),
-            layout: layout => [
-                layout.row("title"),
-                layout.row("slug"),
-                layout.row("category")
-            ]
-        });
+  constructor(formFactory: FormModelFactory.Interface) {
+    this.form = formFactory.create({
+      fields: fields => ({
+        title: fields.text().label("Title").required("Title is required"),
+        slug: fields.text().label("Slug").required("Slug is required"),
+        category: fields
+          .text()
+          .label("Category")
+          .options([
+            { label: "News", value: "news" },
+            { label: "Tutorial", value: "tutorial" }
+          ])
+      }),
+      layout: layout => [layout.row("title"), layout.row("slug"), layout.row("category")]
+    });
 
-        makeAutoObservable(this);
-    }
+    makeAutoObservable(this);
+  }
 
-    get vm(): MyWizardVM {
-        return {
-            form: this.form.vm,
-            data: toJS(this.form.getData())
-        };
-    }
+  get vm(): MyWizardVM {
+    return {
+      form: this.form.vm,
+      data: toJS(this.form.getData())
+    };
+  }
 
-    async submit(): Promise<Record<string, unknown> | false> {
-        return this.form.submit();
-    }
+  async submit(): Promise<Record<string, unknown> | false> {
+    return this.form.submit();
+  }
 
-    reset(): void {
-        this.form.reset();
-    }
+  reset(): void {
+    this.form.reset();
+  }
 }
 ```
 
@@ -180,42 +179,39 @@ import { Button } from "webiny/admin/ui";
 import { MyWizardFeature } from "./feature.js";
 
 export const MyWizardForm = createReactiveComponent(() => {
-    const { presenter } = useFeature(MyWizardFeature);
-    const formPresenter = useContentEntryFormPresenter();
+  const { presenter } = useFeature(MyWizardFeature);
+  const formPresenter = useContentEntryFormPresenter();
 
-    const handleSubmit = useCallback(async () => {
-        const data = await presenter.submit();
-        if (data !== false) {
-            formPresenter.newEntry({
-                title: data.title,
-                settings: {
-                    general: {
-                        slug: data.slug
-                    }
-                }
-            });
+  const handleSubmit = useCallback(async () => {
+    const data = await presenter.submit();
+    if (data !== false) {
+      formPresenter.newEntry({
+        title: data.title,
+        settings: {
+          general: {
+            slug: data.slug
+          }
         }
-    }, [presenter, formPresenter]);
+      });
+    }
+  }, [presenter, formPresenter]);
 
-    const { form } = presenter.vm;
+  const { form } = presenter.vm;
 
-    return (
-        <div className="flex justify-center pt-xl">
-            <div
-                className="bg-neutral-base rounded-lg p-lg flex flex-col gap-md"
-                style={{ width: 600 }}
-            >
-                <h3 className="text-lg font-semibold">Create New Article</h3>
-                <FormErrors form={form} />
-                <FormView name="MyWizard" form={form} />
-                <div className="flex justify-end gap-sm">
-                    <Button variant="primary" onClick={handleSubmit}>
-                        Create
-                    </Button>
-                </div>
-            </div>
+  return (
+    <div className="flex justify-center pt-xl">
+      <div className="bg-neutral-base rounded-lg p-lg flex flex-col gap-md" style={{ width: 600 }}>
+        <h3 className="text-lg font-semibold">Create New Article</h3>
+        <FormErrors form={form} />
+        <FormView name="MyWizard" form={form} />
+        <div className="flex justify-end gap-sm">
+          <Button variant="primary" onClick={handleSubmit}>
+            Create
+          </Button>
         </div>
-    );
+      </div>
+    </div>
+  );
 });
 ```
 
@@ -227,13 +223,13 @@ Called from the wizard view to transition to the entry editor. When `initialValu
 
 ```typescript
 formPresenter.newEntry({
-    title: "My Article",
-    description: "A short description",
-    settings: {
-        general: {
-            slug: "my-article"
-        }
+  title: "My Article",
+  description: "A short description",
+  settings: {
+    general: {
+      slug: "my-article"
     }
+  }
 });
 ```
 
