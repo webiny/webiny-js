@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Input, Textarea, Tags } from "@webiny/admin-ui";
+import { Grid, Input, Switch, Textarea, Tags } from "@webiny/admin-ui";
 import { validation } from "@webiny/validation";
 import type { BindComponent } from "@webiny/form";
 import GroupSelect from "./GroupSelect.js";
@@ -54,6 +54,16 @@ const GeneralSettings = ({ Bind }: GeneralSettingsProps) => {
                 <Grid.Column span={12}>
                     <Bind name={"tags"}>
                         <Tags label={"Tags"} protectedValues={["type:model"]} />
+                    </Bind>
+                </Grid.Column>
+                <Grid.Column span={12}>
+                    <Bind name={"settings.aiEntryWizard"}>
+                        <Switch
+                            label={"Generate with AI"}
+                            note={
+                                "Show an AI-powered wizard that generates content before opening the editor."
+                            }
+                        />
                     </Bind>
                 </Grid.Column>
             </Grid>
