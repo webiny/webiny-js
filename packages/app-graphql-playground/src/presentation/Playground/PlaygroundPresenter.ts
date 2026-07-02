@@ -37,6 +37,7 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
     private endpoints: PlaygroundPresenter.EndpointVm[] = [];
     private schemas = new Map<string, PlaygroundPresenter.Schema>();
     private disposeReaction: (() => void) | null = null;
+    private endpointSchemaTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(
         tabRegistry: PlaygroundTabRegistry.Interface,
@@ -56,7 +57,8 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
                 pendingIntrospections: false,
                 initialized: false,
                 nextUserTabId: false,
-                disposeReaction: false
+                disposeReaction: false,
+                endpointSchemaTimer: false
             } as any,
             { autoBind: true }
         );
@@ -237,7 +239,13 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
         }
 
         tab.endpoint = endpoint;
-        this.loadSchema(tab);
+
+        if (this.endpointSchemaTimer) {
+            clearTimeout(this.endpointSchemaTimer);
+        }
+        this.endpointSchemaTimer = setTimeout(() => {
+            this.loadSchema(tab);
+        }, 1000);
     }
 
     public executeQuery(): void {

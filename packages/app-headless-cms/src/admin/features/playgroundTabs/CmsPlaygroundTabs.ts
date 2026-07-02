@@ -1,10 +1,10 @@
 import { EnvConfig } from "@webiny/app/features/envConfig/abstractions.js";
 import { AuthenticationContext } from "@webiny/app-admin/features/security/AuthenticationContext/abstractions.js";
 import { TenantContext } from "@webiny/app-admin/features/tenancy/abstractions.js";
-import { PlaygroundTabRegistry } from "@webiny/app-graphql-playground/features/tabRegistry/abstractions.js";
+import { PlaygroundTabRegistry } from "@webiny/app-graphql-playground/features/tabRegistry/index.js";
 import { PlaygroundClientImpl } from "@webiny/app-graphql-playground/features/playgroundClient/index.js";
 import { AuthenticatedPlaygroundClient } from "@webiny/app-graphql-playground/features/tabRegistry/index.js";
-import type { PlaygroundClient } from "@webiny/app-graphql-playground/features/playgroundClient/abstractions.js";
+import type { PlaygroundClient } from "@webiny/app-graphql-playground/features/playgroundClient/index.js";
 import { manageQuery } from "./queries/placeholder.manage.graphql.js";
 import { readQuery } from "./queries/placeholder.read.graphql.js";
 import { previewQuery } from "./queries/placeholder.preview.graphql.js";
