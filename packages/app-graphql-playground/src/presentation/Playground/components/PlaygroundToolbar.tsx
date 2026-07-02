@@ -11,7 +11,11 @@ interface PlaygroundToolbarProps {
     presenter: PlaygroundPresenter.Interface;
 }
 
-const isMac = typeof navigator !== "undefined" && navigator.platform.startsWith("Mac");
+const isMac =
+    (typeof navigator !== "undefined" &&
+        (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData
+            ?.platform === "macOS") ||
+    (typeof navigator !== "undefined" && /Mac/.test(navigator.userAgent));
 const shortcutKey = isMac ? "Cmd" : "Ctrl";
 
 export const PlaygroundToolbar: React.FC<PlaygroundToolbarProps> = observer(

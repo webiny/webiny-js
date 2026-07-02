@@ -97,35 +97,33 @@ const graphqlLanguageConfig: languages.LanguageConfiguration = {
     ]
 };
 
-let languageRegistered = false;
-
 interface UseMonacoGraphQLParams {
     onExecute: () => void;
     schema: IPlaygroundSchema | null;
 }
 
 export function useMonacoGraphQL(params: UseMonacoGraphQLParams) {
-    const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const monacoRef = useRef<typeof import("monaco-editor") | null>(null);
     const disposableRef = useRef<{ dispose(): void } | null>(null);
 
     const handleBeforeMount: BeforeMount = useCallback(monaco => {
         monacoRef.current = monaco;
 
-        if (languageRegistered) {
+        const alreadyRegistered = monaco.languages
+            .getLanguages()
+            .some(lang => lang.id === "graphql");
+
+        if (alreadyRegistered) {
             return;
         }
 
         monaco.languages.register({ id: "graphql" });
         monaco.languages.setMonarchTokensProvider("graphql", graphqlTokensProvider);
         monaco.languages.setLanguageConfiguration("graphql", graphqlLanguageConfig);
-        languageRegistered = true;
     }, []);
 
     const handleEditorDidMount: OnMount = useCallback(
         (ed, monaco) => {
-            editorRef.current = ed;
-
             ed.addAction({
                 id: "execute-query",
                 label: "Execute Query",
@@ -210,7 +208,6 @@ export function useMonacoGraphQL(params: UseMonacoGraphQLParams) {
     }, [params.schema]);
 
     return {
-        editorRef,
         handleBeforeMount,
         handleEditorDidMount
     };
