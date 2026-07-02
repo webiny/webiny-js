@@ -2,8 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { reaction } from "mobx";
 import { runInAction } from "mobx";
 import { getIntrospectionQuery } from "graphql";
-import { parse } from "graphql";
-import { print } from "graphql";
+import { prettifyGraphQL } from "./prettifyGraphQL.js";
 import { PlaygroundClient } from "../../features/playgroundClient/abstractions.js";
 import { PlaygroundRepository } from "../../features/repository/abstractions.js";
 import { PlaygroundTabRegistry } from "../../features/tabRegistry/abstractions.js";
@@ -294,8 +293,7 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
         }
 
         try {
-            const parsed = parse(tab.query);
-            tab.query = print(parsed);
+            tab.query = prettifyGraphQL(tab.query);
         } catch {
             /* Invalid query — leave it unchanged. */
         }
