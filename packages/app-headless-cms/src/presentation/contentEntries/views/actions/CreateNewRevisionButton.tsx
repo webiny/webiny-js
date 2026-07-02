@@ -3,19 +3,25 @@ import { observer } from "mobx-react-lite";
 import { Button, useToast } from "@webiny/admin-ui";
 import { usePermission } from "~/admin/hooks/usePermission.js";
 import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
-import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
+import { ReactComponent as NewRevisionIcon } from "@webiny/icons/add.svg";
 
-export const SaveContentButton = observer(() => {
+export const CreateNewRevisionButton = observer(() => {
     const { canEdit } = usePermission();
     const presenter = useContentEntryFormPresenter();
-    const listPresenter = useContentEntriesPresenter();
     const { showSuccessToast } = useToast();
-
+    
+    console.log({
+        entry: presenter.vm.entry,
+        canCreateNewRevision: presenter.vm.canCreateNewRevision,
+        canEdit: canEdit(presenter.vm.entry!, "cms.contentEntry")
+    });
+    
     if (
-        presenter.vm.canCreateNewRevision ||
-        !presenter.vm.canSave ||
-        (presenter.vm.entry && !canEdit(presenter.vm.entry, "cms.contentEntry"))
+        !presenter.vm.entry ||
+        !presenter.vm.canCreateNewRevision ||
+        !canEdit(presenter.vm.entry, "cms.contentEntry")
     ) {
+
         return null;
     }
 
@@ -23,24 +29,21 @@ export const SaveContentButton = observer(() => {
         const model = presenter.vm.model;
         const isPublishable = !model.tags.includes("$publishing:false");
 
-        const isNew = presenter.vm.isNewEntry;
         const saved = await presenter.saveRevision({ skipValidation: isPublishable });
-        if (saved) {
-            if (isNew && presenter.vm.entry) {
-                listPresenter.selectEntry(presenter.vm.entry.id);
-            }
-            showSuccessToast({
-                title: `${presenter.vm.entry?.meta?.title || "Entry"} saved successfully!`
-            });
+        if (!saved) {
+            return;
         }
+        showSuccessToast({
+            title: `A new revision of "${presenter.vm.entry?.meta?.title || "Entry"}" was created!`
+        });
     };
 
     return (
         <Button
-            variant={"secondary"}
-            data-testid={"cms-content-save-content-button"}
+            variant="primary"
+            text={"New Revision"}
             onClick={handleSave}
-            text={"Save"}
+            icon={<NewRevisionIcon />}
         />
     );
 });
