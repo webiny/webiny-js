@@ -4,7 +4,7 @@ import { CmsPlaygroundTabs } from "./CmsPlaygroundTabs.js";
 export const CmsPlaygroundTabsFeature = createFeature({
     name: "CmsPlaygroundTabs",
     register(container) {
-        container.register(CmsPlaygroundTabs);
+        container.registerDecorator(CmsPlaygroundTabs);
     },
     resolve() {
         return {};
