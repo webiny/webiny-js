@@ -14,7 +14,7 @@ import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import type { APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
 import { WebsocketsRunner } from "~/runner/index.js";
 import { WebsocketsResponse } from "~/response/index.js";
-import type { Context, IWebsocketsEvent, WebsocketsEventType } from "~/types.js";
+import type { Context, IWebsocketsEvent, WebsocketsEventType, WebsocketsRoute } from "~/types.js";
 import { getEventValues } from "~/handler/headers.js";
 import type { IWebsocketsIncomingEvent } from "~/handler/types.js";
 import { WebsocketsEventRequestContextEventType, WebsocketsEventRoute } from "~/handler/types.js";
@@ -26,7 +26,16 @@ const toWebsocketsEvent = (raw: IWebsocketsIncomingEvent, endpoint: string): IWe
         [WebsocketsEventRequestContextEventType.connect]: "connect",
         [WebsocketsEventRequestContextEventType.disconnect]: "disconnect"
     };
+    // AWS delivers routeKey as "$connect"/"$disconnect"/"$default"; route handlers register under the
+    // un-prefixed WebsocketsRoute ("connect"/"disconnect"/"default"). Without this map the runner
+    // matches the raw "$connect" and finds no handler ("There are no handlers for the route: $connect").
+    const routeMap: Record<string, WebsocketsRoute> = {
+        [WebsocketsEventRoute.connect]: "connect",
+        [WebsocketsEventRoute.disconnect]: "disconnect",
+        [WebsocketsEventRoute.default]: "default"
+    };
     const routeKey = rc.routeKey as string | undefined;
+    const route = routeMap[routeKey ?? ""] ?? "default";
     return {
         headers: raw.headers as Record<string, string> | undefined,
         context: {
@@ -34,7 +43,7 @@ const toWebsocketsEvent = (raw: IWebsocketsIncomingEvent, endpoint: string): IWe
             connectedAt: rc.connectedAt ?? 0,
             host: rc.domainName ?? "",
             eventType: eventTypeMap[rc.eventType ?? ""] ?? "message",
-            route: routeKey ?? WebsocketsEventRoute.default,
+            route,
             endpoint
         },
         body:

@@ -6,7 +6,8 @@ import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js
 import {
     createLambdaHandler,
     ApiGatewayFeature,
-    BackgroundTaskEventType
+    BackgroundTaskEventType,
+    WebSocketEventType
 } from "@webiny/event-handler-aws";
 import { BackgroundTaskLambdaHandler } from "@webiny/background-tasks/api";
 import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
@@ -27,8 +28,9 @@ import { AcoDdbFeature } from "@webiny/api-aco-ddb";
 import { AcoHcmsFeature } from "@webiny/api-headless-cms-aco";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { HcmsTasksFeature } from "@webiny/api-headless-cms-tasks";
-import { WebsocketsFeature } from "@webiny/api-websockets";
+import { WebsocketsFeature, WebSocketLambdaHandler } from "@webiny/api-websockets";
 import { WebsocketsDdbFeature } from "@webiny/api-websockets-ddb";
+import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
 import { WorkflowsFeature } from "@webiny/api-workflows";
 import { CmsWorkflowsFeature } from "@webiny/api-headless-cms-workflows";
 import { WebsiteBuilderWorkflowsFeature } from "@webiny/api-website-builder-workflows";
@@ -58,6 +60,12 @@ export const handler = createLambdaHandler({
         // Background task invocations (Step Functions → Lambda directly)
         container.register(BackgroundTaskEventType);
         container.register(BackgroundTaskLambdaHandler);
+
+        // WebSocket invocations (API Gateway WebSocket → this Lambda: $connect/$disconnect/$default).
+        // Without the event type + handler, the DI dispatcher can't match a WS event ("No event type
+        // matched") so $connect fails and no connection is ever registered → no server→client push.
+        container.register(WebSocketEventType);
+        container.register(WebSocketLambdaHandler);
 
         // ── Database ───────────────────────────────────────────────
         DbFeature.register(container, {
@@ -105,6 +113,10 @@ export const handler = createLambdaHandler({
 
         // ── Websockets ─────────────────────────────────────────────
         WebsocketsFeature.register(container);
+        // Real AWS transport (API Gateway Management API). MUST register after WebsocketsFeature so
+        // it overrides the NullWebsocketsTransport (nearest-container-last-wins); otherwise every
+        // server→client send() is a silent no-op.
+        WebsocketsAwsFeature.register(container);
 
         // ── Supporting services ────────────────────────────────────
         MailerFeature.register(container);

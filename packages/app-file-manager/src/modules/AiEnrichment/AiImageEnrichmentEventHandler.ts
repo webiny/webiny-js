@@ -26,7 +26,10 @@ class AiImageEnrichmentEventHandlerImpl implements WebsocketEventHandler.Interfa
             return;
         }
 
-        const { id, tags, description } = event.payload as unknown as FileEnrichmentData;
+        // Payload envelope is `{ action, data: { ... } }` (see the api-side sender + the threat-scan
+        // handler which reads message.data). The enrichment fields live under `.data`, not top-level.
+        const { id, tags, description } = (event.payload as unknown as { data: FileEnrichmentData })
+            .data;
 
         this.filesListCache.updateItems(item =>
             item.id === id ? { ...item, tags, description } : item
