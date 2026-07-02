@@ -14,7 +14,7 @@ export const NewRevisionButton = () => {
 
     const id = useSelectFromDocument(document => document.id);
 
-    const publish = () => {
+    const createNewRevision = () => {
         showDialog({
             title: "Create a new page revision",
             icon: <NewRevisionIcon />,
@@ -40,7 +40,7 @@ export const NewRevisionButton = () => {
         <Button
             variant="primary"
             text={"New Revision"}
-            onClick={publish}
+            onClick={createNewRevision}
             icon={<NewRevisionIcon />}
         />
     );

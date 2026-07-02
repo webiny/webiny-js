@@ -1,14 +1,16 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import { FormModel } from "@webiny/app-admin";
 import type { IFormModel } from "@webiny/app-admin/features/formModel/abstractions.js";
-import type { CmsContentEntry } from "~/types.js";
+import type { CmsContentEntry, CmsContentEntryStatusType } from "~/types.js";
 import type { CmsModel } from "~/types.js";
 
 export interface IContentEntryFormViewModel {
     loading: string | null;
     entry: CmsContentEntry | null;
+    canCreateNewRevision: boolean;
     model: CmsModel;
     form: FormModel.FormVM | null;
+    status: CmsContentEntryStatusType | undefined;
     canSave: boolean;
     canPublish: boolean;
     canUnpublish: boolean;
