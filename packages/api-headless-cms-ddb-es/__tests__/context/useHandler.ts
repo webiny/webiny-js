@@ -14,7 +14,7 @@ import { CreateTenantUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { RegisterExtensionPlugin } from "@webiny/handler";
-import { createBackgroundTaskContext } from "@webiny/background-tasks/api";
+import { createBackgroundTaskContext, TasksCrud } from "@webiny/background-tasks/api";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
@@ -144,6 +144,14 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
         const schemas = container.resolveAll(GraphQLContextualSchema);
         for (const schema of schemas) {
             await schema.build(ctx);
+        }
+
+        // DI-native source for the legacy `context.tasks` service-locator: resolve the CRUD
+        // aggregate from the container and expose it on the captured context. See the "full-DI
+        // tasks" cleanup note to retire this bridge.
+        const [tasksCrud] = container.resolveAll(TasksCrud);
+        if (tasksCrud) {
+            ctx.tasks = tasksCrud;
         }
 
         return ctx as C;

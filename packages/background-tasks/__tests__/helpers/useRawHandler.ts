@@ -13,6 +13,7 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment/index.j
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { BackgroundTasksFeature } from "~/api/BackgroundTasksFeature.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
 import { TaskServiceTransport } from "~/api/plugins";
@@ -90,6 +91,13 @@ export const useRawHandler = <C = any>(params?: UseRawHandlerParams) => {
                 },
                 body: { query: "{ __typename }" }
             });
+            // DI-native source for the legacy `context.tasks` service-locator: resolve the CRUD
+            // aggregate from the container (registered by BackgroundTasksFeature) and expose it on
+            // the captured context. See the "full-DI tasks" cleanup note to retire this bridge.
+            const [tasksCrud] = capturedCtx.container.resolveAll(TasksCrud);
+            if (tasksCrud) {
+                capturedCtx.tasks = tasksCrud;
+            }
             return capturedCtx as C;
         }
     };

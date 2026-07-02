@@ -5,7 +5,8 @@ import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-gra
 import {
     createBackgroundTaskContext,
     createBackgroundTaskGraphQL,
-    TaskServiceTransport
+    TaskServiceTransport,
+    TasksCrud
 } from "@webiny/background-tasks/api";
 import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
@@ -42,6 +43,16 @@ export const useHandler = <C extends Context = Context>(params: Params = {}) => 
         identity: { id: "id-12345678", type: "admin", displayName: "John Doe" },
         tenant: { id: "root" },
         elasticsearch: createTestOpenSearchClient(),
-        handler: () => getContext<C>()
+        // DI-native source for the legacy `context.tasks` service-locator: resolve the CRUD
+        // aggregate from the container and expose it on the captured context. See the "full-DI
+        // tasks" cleanup note to retire this bridge.
+        handler: async () => {
+            const ctx = await getContext<C>();
+            const [tasksCrud] = (ctx as any).container.resolveAll(TasksCrud);
+            if (tasksCrud) {
+                (ctx as any).tasks = tasksCrud;
+            }
+            return ctx;
+        }
     };
 };
