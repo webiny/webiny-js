@@ -14,6 +14,7 @@ export enum OperationType {
 
 export class Operations implements IOperations {
     private _items: GenericRecord[] = [];
+    private _count = 0;
 
     public get items(): GenericRecord[] {
         return this._items;
@@ -23,11 +24,17 @@ export class Operations implements IOperations {
         return this.items.length;
     }
 
+    public get count(): number {
+        return this._count;
+    }
+
     public clear() {
         this._items = [];
+        this._count = 0;
     }
 
     public insert(params: IInsertOperationParams): void {
+        this._count++;
         this.items.push(
             {
                 index: {
@@ -40,10 +47,12 @@ export class Operations implements IOperations {
     }
 
     public modify(params: IModifyOperationParams): void {
+        // Reuses insert()'s bulk shape (and its single record-count increment).
         this.insert(params);
     }
 
     public delete(params: IDeleteOperationParams): void {
+        this._count++;
         this.items.push({
             delete: {
                 _id: params.id,

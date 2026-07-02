@@ -12,9 +12,13 @@ import { createStoreKey } from "~/helpers/store.js";
 import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
 import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
+import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { DbInstance } from "@webiny/handler-db/abstractions.js";
+import { GetTaskUseCase } from "@webiny/background-tasks/api";
 
 export interface IGetDeleteModelProgress {
-    readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "db">;
+    readonly context: Pick<HcmsTasksContext, "container">;
     readonly modelId: string;
 }
 
@@ -25,7 +29,11 @@ export const getDeleteModelProgress = async (
 
     let model: CmsModel;
     try {
-        model = await context.cms.getModel(modelId);
+        const modelResult = await context.container.resolve(GetModelUseCase).execute(modelId);
+        if (modelResult.isFail()) {
+            throw modelResult.error;
+        }
+        model = modelResult.value;
     } catch (ex) {
         if (ex instanceof NotFoundError === false) {
             throw ex;
@@ -39,25 +47,30 @@ export const getDeleteModelProgress = async (
         });
     }
 
-    const canAccessModel = await context.cms.accessControl.canAccessModel({ model, rwd: "d" });
+    const accessControl = context.container.resolve(AccessControl);
+    const canAccessModel = await accessControl.canAccessModel({ model, rwd: "d" });
     if (!canAccessModel) {
         throw new NotAuthorizedError(`Not allowed to access content model "${model.name}".`);
     }
 
-    const canAccessEntry = await context.cms.accessControl.canAccessEntry({ model, rwd: "w" });
+    const canAccessEntry = await accessControl.canAccessEntry({ model, rwd: "w" });
     if (!canAccessEntry) {
         throw new NotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
     }
 
     const storeKey = createStoreKey(model);
-    const result = await context.db.store.getValue<IStoreValue>(storeKey);
+    const result = await context.container
+        .resolve(DbInstance)
+        .store.getValue<IStoreValue>(storeKey);
 
     const taskId = result.data?.task;
     if (!taskId) {
         throw new Error(`Model "${modelId}" is not being deleted.`);
     }
 
-    const task = await context.tasks.getTask<IDeleteModelTaskInput, IDeleteModelTaskOutput>(taskId);
+    const task = await context.container
+        .resolve(GetTaskUseCase)
+        .execute<IDeleteModelTaskInput, IDeleteModelTaskOutput>(taskId);
     if (task?.definitionId !== DELETE_MODEL_TASK) {
         throw new WebinyError({
             message: `The task which is deleting a model cannot be found.`,

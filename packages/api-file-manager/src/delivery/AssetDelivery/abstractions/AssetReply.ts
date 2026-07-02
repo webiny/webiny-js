@@ -21,37 +21,33 @@ export class AssetReply {
     private code: number;
     private body: AssetReplyBody;
 
-    public static create(params: AssetReplyParams = { code: 200 }) {
-        return new AssetReply(params);
-    }
-
-    protected constructor(params: AssetReplyParams = { code: 200 }) {
+    constructor(params: AssetReplyParams = { code: 200 }) {
         this.code = params.code;
         this.headers = params.headers || ResponseHeaders.create();
         this.body = params.body || defaultBody;
     }
 
-    public setHeaders(cb: HeadersSetter) {
+    setHeaders(cb: HeadersSetter) {
         this.headers = cb(this.headers);
     }
 
-    public getHeaders() {
+    getHeaders() {
         return this.headers;
     }
 
-    public setCode(code: number) {
+    setCode(code: number) {
         this.code = code;
     }
 
-    public getCode() {
+    getCode() {
         return this.code;
     }
 
-    public setBody(body: AssetReplyBody) {
+    setBody(body: AssetReplyBody) {
         this.body = body;
     }
 
-    public getBody() {
+    getBody() {
         return this.body();
     }
 }

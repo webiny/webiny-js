@@ -1,10 +1,3 @@
-import type { SecurityContext, Team } from "~/types/security.js";
-import type { TenancyContext } from "~/types/tenancy.js";
-
-export interface AdminUsersContext extends SecurityContext, TenancyContext {
-    adminUsers: AdminUsers;
-}
-
 export interface CreatedBy {
     id: string;
     displayName: string | null;
@@ -65,18 +58,6 @@ export interface ListUsersParams {
         id_in?: string[];
     };
     sort?: string[];
-}
-
-export interface AdminUsers {
-    getUser<TUser extends AdminUser = AdminUser>(params: GetUserParams): Promise<TUser>;
-    listUsers<TUser extends AdminUser = AdminUser>(params?: ListUsersParams): Promise<TUser[]>;
-    listUserTeams(id: string): Promise<Team[]>;
-    createUser<TUser extends AdminUser = AdminUser>(data: CreateUserInput): Promise<TUser>;
-    updateUser<TUser extends AdminUser = AdminUser>(
-        id: string,
-        data: UpdateUserInput
-    ): Promise<TUser>;
-    deleteUser(id: string): Promise<void>;
 }
 
 /* Storage Operations */

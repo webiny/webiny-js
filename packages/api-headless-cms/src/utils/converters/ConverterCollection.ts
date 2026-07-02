@@ -1,8 +1,7 @@
 import WebinyError from "@webiny/error";
 import { Converter } from "./Converter.js";
 import type { CmsEntryValues, CmsModelField } from "~/types/index.js";
-import { CmsModelFieldConverterPlugin } from "~/plugins/index.js";
-import type { PluginsContainer } from "@webiny/plugins";
+import type { CmsModelFieldConverterPlugin } from "~/plugins/index.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
@@ -20,7 +19,7 @@ export interface ConverterCollectionConvertParams<T extends CmsEntryValues = Cms
 }
 
 export interface ConverterCollectionParams {
-    plugins: PluginsContainer;
+    fieldConverters: CmsModelFieldConverterPlugin[];
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
@@ -28,11 +27,8 @@ export class ConverterCollection {
     private readonly converters: Map<string, Converter> = new Map();
 
     public constructor(params: ConverterCollectionParams) {
-        const { plugins, fieldRegistry } = params;
+        const { fieldConverters: fieldConverterPlugins, fieldRegistry } = params;
         const fieldGraphQLPlugins = fieldRegistry.getAll();
-        const fieldConverterPlugins = plugins.byType<CmsModelFieldConverterPlugin>(
-            CmsModelFieldConverterPlugin.type
-        );
         const defaultFieldConverterPlugin = fieldConverterPlugins.find(
             pl => pl.getFieldType() === "*"
         );

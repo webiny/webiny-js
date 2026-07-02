@@ -2,7 +2,7 @@ import { describe, test, expect, beforeEach } from "vitest";
 import { mdbid } from "@webiny/utils";
 import useGqlHandler from "~tests/utils/useGqlHandler";
 import { assignFileLifecycleEvents, tracker } from "./mocks/lifecycleEvents";
-import { ROOT_FOLDER } from "~/constants";
+import { ROOT_FOLDER } from "~/contants";
 
 const TAG = "webiny";
 

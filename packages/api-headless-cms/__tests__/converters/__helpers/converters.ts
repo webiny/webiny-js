@@ -1,9 +1,9 @@
 import { createValueKeyToStorageConverter } from "~/utils/converters/valueKeyToStorageConverter.js";
 import { createValueKeyFromStorageConverter } from "~/utils/converters/valueKeyFromStorageConverter.js";
 import type { CmsModel } from "~/types/index.js";
-import { usePlugins } from "~tests/testHelpers/usePlugins.js";
 import { Context } from "@webiny/api";
 import { PluginsContainer } from "@webiny/plugins";
+import { createFieldConverters } from "~/fieldConverters/index.js";
 import { CmsModelFieldToGraphQLRegistry, GraphQLFeature } from "~/features/graphql/index.js";
 
 export interface IConvertersResponse {
@@ -23,18 +23,18 @@ const createFieldRegistry = (plugins: PluginsContainer) => {
 export const getConverters = async (
     model: Pick<CmsModel, "fields">
 ): Promise<IConvertersResponse> => {
-    const plugins = usePlugins();
-    const fieldRegistry = createFieldRegistry(plugins);
+    const fieldConverters = createFieldConverters();
+    const fieldRegistry = createFieldRegistry(new PluginsContainer([]));
 
     const convertToStorage = createValueKeyToStorageConverter({
         model,
-        plugins,
+        fieldConverters,
         fieldRegistry
     });
 
     const convertFromStorage = createValueKeyFromStorageConverter({
         model,
-        plugins,
+        fieldConverters,
         fieldRegistry
     });
     return {

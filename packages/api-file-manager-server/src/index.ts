@@ -1,8 +1,8 @@
 import { existsSync } from "node:fs";
 import { mkdirSync } from "node:fs";
 import { ContextPlugin } from "@webiny/api";
-import { uploadRoutesPlugin } from "~/routes/uploadRoutes.js";
-import { modifyFastifyPlugin } from "~/routes/uploadRoutes.js";
+import { UploadSingleFileRoute } from "~/routes/uploadRoutes.js";
+import { UploadPartRoute } from "~/routes/uploadRoutes.js";
 import { CleanupStaleMultipartUploadsFeature } from "~/features/CleanupStaleMultipartUploads/feature.js";
 import { DeleteFileFromDiskFeature } from "~/features/DeleteFileFromDisk/feature.js";
 import { ExtractMetadataFeature } from "~/features/ExtractMetadata/feature.js";
@@ -45,12 +45,12 @@ const contextPlugin = new ContextPlugin(context => {
     CreateMultiPartUploadFeature.register(container);
     CompleteMultiPartUploadFeature.register(container);
     CleanupStaleMultipartUploadsFeature.register(container);
+
+    // Self-hosted upload HTTP routes (transport-agnostic HttpRoute, formerly Fastify RoutePlugin).
+    container.register(UploadSingleFileRoute);
+    container.register(UploadPartRoute);
 });
 
 contextPlugin.name = `fileManagerServer.context`;
 
-export const createFileManagerServer = () => [
-    contextPlugin,
-    uploadRoutesPlugin,
-    modifyFastifyPlugin
-];
+export const createFileManagerServer = () => [contextPlugin];

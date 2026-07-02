@@ -12,6 +12,8 @@ import { GetUserTeamsUseCase } from "@webiny/api-workflows/features/internal/Get
 import { Result } from "@webiny/feature/api/index.js";
 import { WorkflowStateRecordState } from "@webiny/api-workflows/domain/workflowState/abstractions.js";
 import { ListWorkflowStatesUseCase } from "@webiny/api-workflows/features/workflowState/ListWorkflowStates/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 
 describe("On After Entry Delete", () => {
     it("should remove content review when deleted entry which was under review", async () => {
@@ -62,12 +64,13 @@ describe("On After Entry Delete", () => {
         });
         expect(state.isOk()).toBe(true);
 
-        const identity = context.security.getIdentity();
+        const identityCtx = context.container.resolve(IdentityContext);
+        const identity = identityCtx.getIdentity();
         // @ts-expect-error
         identity.data.id = "user-which-can-edit";
         // @ts-expect-error
         identity.profile.id = "user-which-can-edit";
-        context.security.setIdentity(identity);
+        identityCtx.setIdentity(identity);
 
         const startResult = await startWorkflowState.execute(state.value.id);
         expect(startResult.isOk()).toBe(true);
@@ -80,9 +83,14 @@ describe("On After Entry Delete", () => {
         expect(beforeDelete.isOk()).toBe(true);
         expect(beforeDelete.value.items).toHaveLength(1);
         // delete the entry
-        await context.cms.deleteEntry(model, entry.id, {
-            permanently: true
-        });
+        const deleteResult = await context.container
+            .resolve(DeleteEntryUseCase)
+            .execute(model, entry.id, {
+                permanently: true
+            });
+        if (deleteResult.isFail()) {
+            throw deleteResult.error;
+        }
         // there must be no content review
 
         const afterDelete = await listWorkflowStates.execute();

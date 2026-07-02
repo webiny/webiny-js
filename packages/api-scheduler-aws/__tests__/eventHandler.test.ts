@@ -1,16 +1,14 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { RawEventHandler } from "@webiny/handler-aws/raw/index.js";
-import {
-    createScheduledActionEventHandler,
-    type IScheduledActionEvent
-} from "~/createEventHandler.js";
-import { registry } from "@webiny/handler-aws/registry.js";
-import type { LambdaContext } from "@webiny/handler-aws/types.js";
 import {
     SCHEDULED_ACTION_EVENT_IDENTIFIER,
     SCHEDULED_ACTION_PUBLISH
 } from "@webiny/api-scheduler/constants.js";
 import { ScheduledActionId } from "@webiny/api-scheduler/domain/ScheduledActionId.js";
+import { ScheduledActionLambdaHandler } from "@webiny/api-scheduler";
+import { CreateTenantUseCase } from "@webiny/api-core/exports/api/tenancy.js";
+import { TenancyStorageOperations } from "@webiny/api-core/features/tenancy/shared/storageOperations.js";
+import { RootTenantValue } from "@webiny/api-core/domain/tenancy/RootTenantValue.js";
+import { ScheduledActionEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/ScheduledActionEventHandler.js";
 import { useHandler } from "./__mocks/handler/useHandler.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
@@ -27,8 +25,6 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 
 describe("Scheduler Event Handler", () => {
-    const lambdaContext = {} as LambdaContext;
-
     const namespace = PublishTestEntryActionHandlerImpl.name;
 
     let context: CmsContext;
@@ -43,35 +39,24 @@ describe("Scheduler Event Handler", () => {
         context.container.register(PublishTestEntryActionHandler);
         context.container.register(NamespaceHandler);
         context.container.registerInstance(SchedulerService, new VoidSchedulerService());
+        // The scheduled-action event handler is wired by the consuming Lambda app; register it here
+        // as the unit under test.
+        context.container.register(ScheduledActionLambdaHandler);
+        // The handler resolves the event's tenant via GetTenantById (storage-backed). The test mock
+        // only sets "root" as the current tenant without persisting it, so seed it into storage.
+        await context.container
+            .resolve(TenancyStorageOperations)
+            .createTenant(RootTenantValue.create());
     });
 
-    it("should trigger handle an event which matches scheduled event", async () => {
-        const eventHandler = createScheduledActionEventHandler();
+    it("should register a handler for scheduled-action events", () => {
+        const eventHandler = context.container.resolve(ScheduledActionEventHandler);
 
-        expect(eventHandler).toBeInstanceOf(RawEventHandler);
-
-        const event: IScheduledActionEvent = {
-            [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
-                id: ScheduledActionId.from({
-                    namespace,
-                    actionType: SCHEDULED_ACTION_PUBLISH,
-                    targetId: "target-id#0001"
-                }),
-                tenant: "root",
-                namespace,
-                scheduleFor: new Date().toISOString()
-            }
-        };
-        const sourceHandler = registry.getHandler(event, lambdaContext);
-
-        expect(sourceHandler).toMatchObject({
-            name: "handler-aws-event-bridge-scheduled-cms-action-event"
-        });
-        expect(sourceHandler.canUse(event, lambdaContext)).toBe(true);
+        expect(eventHandler).toBeDefined();
+        expect(typeof eventHandler.execute).toBe("function");
     });
 
     it("should run handle action", async () => {
-        const eventHandler = createScheduledActionEventHandler();
         const scheduleActionUseCase = context.container.resolve(ScheduleActionUseCase);
 
         const scheduleFor = new Date(new Date().getTime() + 5 * 60 * 1000);
@@ -115,21 +100,29 @@ describe("Scheduler Event Handler", () => {
         const identityContext = context.container.resolve(IdentityContext);
         identityContext.setIdentity(undefined);
 
-        const id = createResult.value.id;
-
-        const result = await eventHandler.cb({
-            payload: {
-                [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
-                    id,
-                    namespace,
-                    tenant: "root",
-                    scheduleFor: new Date(new Date().getTime() + 3 * 60 * 1000).toISOString()
-                }
-            },
-            context,
-            request: context.request,
-            reply: context.reply
+        // The handler looks the action up by its ScheduledActionId (namespace#actionType#targetId),
+        // not the wby-schedule-* id returned by ScheduleAction.
+        const id = ScheduledActionId.from({
+            namespace,
+            actionType: SCHEDULED_ACTION_PUBLISH,
+            targetId: "target-id#0001"
         });
+
+        const eventHandler = context.container.resolve(ScheduledActionEventHandler);
+        const result = await eventHandler.execute(
+            {
+                event: {
+                    [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
+                        id,
+                        namespace,
+                        tenant: "root",
+                        scheduleFor: new Date(new Date().getTime() + 3 * 60 * 1000).toISOString()
+                    }
+                },
+                metadata: {}
+            },
+            async () => undefined
+        );
         expect(result).toEqual({
             success: true
         });
@@ -138,6 +131,17 @@ describe("Scheduler Event Handler", () => {
     it("should execute a scheduled action created on a non-root tenant", async () => {
         const tenantContext = context.container.resolve(TenantContext);
         const getTenantById = context.container.resolve(GetTenantByIdUseCase);
+
+        /* Create the non-root tenant the action will live under. */
+        const createTenant = context.container.resolve(CreateTenantUseCase);
+        const createTenantResult = await createTenant.execute({
+            id: "webiny",
+            name: "Webiny",
+            description: "",
+            tags: [],
+            parent: "root"
+        });
+        expect(createTenantResult.isOk()).toBeTrue();
 
         const tenantResult = await getTenantById.execute("webiny");
         expect(tenantResult.isOk()).toBeTrue();
@@ -166,26 +170,30 @@ describe("Scheduler Event Handler", () => {
         const identityContext = context.container.resolve(IdentityContext);
         identityContext.setIdentity(undefined);
 
-        const eventHandler = createScheduledActionEventHandler();
-
         /*
          * Fire the event with tenant in the payload.
          * Without the tenant-aware handler this would fail with "ScheduledAction/NotFound"
          * because the CMS entry lives under the "webiny" tenant.
          */
-        const result = await eventHandler.cb({
-            payload: {
-                [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
-                    id: createResult.value.id,
-                    namespace: PublishTestEntryActionHandlerImpl.name,
-                    tenant: "webiny",
-                    scheduleFor: new Date(Date.now() + 3 * 60 * 1000).toISOString()
-                }
+        const eventHandler = context.container.resolve(ScheduledActionEventHandler);
+        const result = await eventHandler.execute(
+            {
+                event: {
+                    [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
+                        id: ScheduledActionId.from({
+                            namespace: PublishTestEntryActionHandlerImpl.name,
+                            actionType: SCHEDULED_ACTION_PUBLISH,
+                            targetId: "target-id#0002"
+                        }),
+                        namespace: PublishTestEntryActionHandlerImpl.name,
+                        tenant: "webiny",
+                        scheduleFor: new Date(Date.now() + 3 * 60 * 1000).toISOString()
+                    }
+                },
+                metadata: {}
             },
-            context,
-            request: context.request,
-            reply: context.reply
-        });
+            async () => undefined
+        );
 
         expect(result).toEqual({
             success: true

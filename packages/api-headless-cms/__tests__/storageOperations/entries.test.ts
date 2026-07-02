@@ -1,3 +1,4 @@
+import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createPersonEntries, createPersonModel, deletePersonModel } from "./helpers";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
@@ -21,7 +22,7 @@ describe("Entries storage operations", () => {
     beforeEach(async () => {
         await handler.isInstalledQuery();
         const context = handler.getContext();
-        storageOperations = context.cms.storageOperations;
+        storageOperations = context.container.resolve(HeadlessCms).storageOperations;
 
         await deletePersonModel({
             storageOperations

@@ -2,10 +2,8 @@ import { Result } from "@webiny/feature/api";
 import { AbortTaskUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
-import type { Context } from "~/api/types.js";
-
 export class AbortTaskUseCaseImpl implements UseCaseAbstraction.Interface {
-    public constructor(private context: Context) {}
+    public constructor(private taskService: TaskService.Interface) {}
 
     async execute<
         I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
@@ -13,7 +11,7 @@ export class AbortTaskUseCaseImpl implements UseCaseAbstraction.Interface {
     >(
         params: UseCaseAbstraction.Params
     ): Promise<Result<TaskService.Task<I, O>, UseCaseAbstraction.Error>> {
-        const result = await this.context.tasks.abort<I, O>(params);
+        const result = await this.taskService.abort<I, O>(params);
         return result as unknown as Promise<
             Result<TaskService.Task<I, O>, UseCaseAbstraction.Error>
         >;

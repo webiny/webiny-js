@@ -2,7 +2,6 @@ import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing/dynamodb/index.js";
-import { ContextPlugin } from "@webiny/api";
 import { registerCmsOpenSearchStorageOperations } from "../../src/index";
 import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
@@ -12,12 +11,10 @@ import {
     getTestOpenSearchClient,
     registerOpenSearchCoreForTests
 } from "@webiny/api-opensearch/testing/index.js";
-import { registerOpenSearchCore, getBaseConfiguration } from "@webiny/api-opensearch";
+import { getBaseConfiguration } from "@webiny/api-opensearch";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
-import { createHandler } from "@webiny/handler-aws";
-import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
-import { createMockApiLogContextPlugin } from "@webiny/project-utils/testing/mockApiLog";
+import { createDdbToEsStreamHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 
 if (typeof registerCmsOpenSearchStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -31,14 +28,7 @@ if (!prefix.includes("api-")) {
 const documentClient = getDocumentClient();
 const opensearchClient = getTestOpenSearchClient();
 
-const dynamoDbToEsHandler = createHandler({
-    plugins: [
-        registerOpenSearchCore(opensearchClient),
-        createMockApiLogContextPlugin(),
-        createDynamoDBToElasticsearchEventHandler()
-    ]
-});
-simulateStream(documentClient, dynamoDbToEsHandler);
+simulateStream(documentClient, createDdbToEsStreamHandler(opensearchClient));
 
 setStorageOps("cms", () => {
     const createIndexName = model => {
@@ -54,20 +44,20 @@ setStorageOps("cms", () => {
      *
      * When creating, updating, creating from, publishing, unpublishing and deleting we need to refresh index.
      */
-    const createOrRefreshIndexSubscription = new ContextPlugin(async context => {
-        context.container.registerFactory(EntryBeforeCreateEventHandler, () => ({
+    const createOrRefreshIndexSubscription = createRegisterExtensionPlugin(({ container }) => {
+        container.registerFactory(EntryBeforeCreateEventHandler, () => ({
             async handle(event) {
-                const client = context.container.resolve(OpenSearchClient);
+                const client = container.resolve(OpenSearchClient);
                 const { model } = event.payload;
                 const index = createIndexName(model);
                 try {
-                    const response = await client.indices.exists({
+                    const response = await client.use().indices.exists({
                         index
                     });
                     if (response.body) {
                         return;
                     }
-                    await client.indices.create({
+                    await client.use().indices.create({
                         index,
                         body: {
                             ...getBaseConfiguration().body

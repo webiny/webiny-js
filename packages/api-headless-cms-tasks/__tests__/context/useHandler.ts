@@ -1,51 +1,55 @@
-import type { CreateHandlerCoreParams } from "./plugins";
-import { createHandlerCore } from "./plugins";
-import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import type { HcmsTasksContext } from "~/types";
-import { defaultIdentity } from "./tenancySecurity";
-import type { LambdaContext } from "@webiny/handler-aws/types";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
+import { DbFeature } from "@webiny/handler-db";
+import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
+import {
+    createBackgroundTaskContext,
+    createBackgroundTaskGraphQL,
+    TaskServiceTransport
+} from "@webiny/background-tasks/api";
+import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
+import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
+import type { HcmsTasksContext } from "~/types";
+import { HcmsTasksFeature } from "~/HcmsTasksFeature.js";
 
-interface CmsHandlerEvent {
-    path: string;
-    headers: {
-        ["x-tenant"]: string;
-        [key: string]: string;
-    };
-}
+type Params = Omit<CmsTestHandlerParams, "features">;
 
-type Params = CreateHandlerCoreParams;
+const identity = {
+    id: "id-12345678",
+    type: "admin",
+    displayName: "John Doe"
+};
+
+const tenant = { id: "root" };
+
 export const useHandler = <C extends HcmsTasksContext = HcmsTasksContext>(params: Params = {}) => {
-    const core = createHandlerCore(params);
+    const { getContext } = createCmsTestHandler({
+        identity,
+        ...params,
+        features: container => {
+            // cms-tasks resolves the DI DbInstance (key-value store). The shared cms-ddb storage
+            // preset only sets the legacy ctx.db via dbPlugins, so register DbFeature here.
+            DbFeature.register(container, {
+                documentClient: getDocumentClient(),
+                table: process.env.DB_TABLE
+            });
+            HcmsTasksFeature.register(container);
 
-    const plugins = [...core.plugins].concat([
-        createRawEventHandler<CmsHandlerEvent, C, C>(async ({ context }) => {
-            return context;
-        })
-    ]);
-
-    const handler = createRawHandler<CmsHandlerEvent, C>({
-        plugins,
-        debug: process.env.DEBUG === "true"
+            // Background tasks (TriggerTaskUseCase etc.) + a mock trigger transport (DI) so the task
+            // isn't actually dispatched to AWS during tests.
+            registerLegacyPluginsViaGqlContextualSchema(container, [
+                createBackgroundTaskContext(),
+                ...createBackgroundTaskGraphQL()
+            ]);
+            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin()[0]);
+        }
     });
 
-    const elasticsearchClient = createTestOpenSearchClient();
-
     return {
-        plugins,
-        identity: params.identity || defaultIdentity,
-        tenant: core.tenant,
-        elasticsearch: elasticsearchClient,
-        handler: (input?: CmsHandlerEvent) => {
-            const payload: CmsHandlerEvent = {
-                path: "/cms/manage/en-US",
-                headers: {
-                    "x-webiny-cms-endpoint": "manage",
-                    "x-tenant": "root"
-                },
-                ...input
-            };
-            return handler(payload, {} as LambdaContext);
-        }
+        identity,
+        tenant,
+        elasticsearch: createTestOpenSearchClient(),
+        handler: () => getContext<C>()
     };
 };

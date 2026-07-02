@@ -1,20 +1,6 @@
-import type { HandlerFactoryParams } from "@webiny/handler-aws/types.js";
-import type { WebsocketsResponse } from "@webiny/api-websockets/exports/api.js";
-import type {
-    APIGatewayProxyResult,
-    Context as LambdaContext
-} from "@webiny/aws-sdk/types/index.js";
 import type { WebsocketsRunner } from "@webiny/api-websockets/exports/api.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { PartialDeep } from "type-fest";
-
-export interface HandlerCallable {
-    (event: IAwsWebsocketsIncomingEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
-}
-
-export interface HandlerParams extends HandlerFactoryParams {
-    response?: WebsocketsResponse.Interface;
-}
 
 export enum WebsocketsEventRoute {
     "connect" = "$connect",

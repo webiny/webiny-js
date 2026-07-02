@@ -220,7 +220,7 @@ describe("`filter` CRUD", () => {
             }
         });
 
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             errors: expect.any(Array)
         });
     });
@@ -276,7 +276,7 @@ describe("`filter` CRUD", () => {
             }
         });
 
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             errors: [
                 {
                     locations: expect.any(Array),

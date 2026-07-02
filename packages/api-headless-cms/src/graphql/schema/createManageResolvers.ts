@@ -1,4 +1,5 @@
 import type { CmsContext, CmsEntry, CmsModel } from "~/types/index.js";
+import { GetRevisionsByEntryIdUseCase } from "~/features/contentEntry/GetRevisionsByEntryId/index.js";
 import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 import { resolveGet } from "./resolvers/manage/resolveGet.js";
 import { resolveList } from "./resolvers/manage/resolveList.js";
@@ -118,8 +119,13 @@ export const createManageResolvers: CreateManageResolvers = ({ models, model, fi
                 return entry.status;
             },
             async revisions(entry: Pick<CmsEntry, "entryId">, _: any, context: CmsContext) {
-                const revisions = await context.cms.getEntryRevisions(model, entry.entryId);
-                return revisions.sort((a, b) => b.version - a.version);
+                const result = await context.container
+                    .resolve(GetRevisionsByEntryIdUseCase)
+                    .execute(model, entry.entryId);
+                if (result.isFail()) {
+                    throw result.error;
+                }
+                return result.value.sort((a, b) => b.version - a.version);
             }
         }
     };

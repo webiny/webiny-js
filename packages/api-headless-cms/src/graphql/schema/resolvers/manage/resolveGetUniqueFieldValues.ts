@@ -3,6 +3,7 @@ import type {
     CmsEntryListParams,
     CmsEntryResolverFactory as ResolverFactory
 } from "~/types/index.js";
+import { GetUniqueFieldValuesUseCase } from "~/features/contentEntry/GetUniqueFieldValues/index.js";
 
 type ResolveGetUniqueFieldValuesList = ResolverFactory<any, CmsEntryListParams>;
 
@@ -10,9 +11,13 @@ export const resolveGetUniqueFieldValues: ResolveGetUniqueFieldValuesList =
     ({ model }) =>
     async (_, params: any, context) => {
         try {
-            const response = await context.cms.getUniqueFieldValues(model, params);
-
-            return new Response(response);
+            const result = await context.container
+                .resolve(GetUniqueFieldValuesUseCase)
+                .execute(model, params);
+            if (result.isFail()) {
+                throw result.error;
+            }
+            return new Response(result.value);
         } catch (e) {
             return new ListErrorResponse(e);
         }
