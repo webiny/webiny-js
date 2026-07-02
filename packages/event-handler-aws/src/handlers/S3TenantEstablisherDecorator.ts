@@ -1,30 +1,34 @@
 import type { S3Event } from "@webiny/aws-sdk/types/index.js";
 import { S3EventHandler } from "~/abstractions/handlers/S3EventHandler.js";
-import { RequestTenantEstablisher } from "@webiny/api-core/features/requestContext/index.js";
-import type { IRequestTenantEstablisher } from "@webiny/api-core/features/requestContext/abstractions.js";
+import {
+    RawTenantId,
+    RequestTenantLoader
+} from "@webiny/api-core/features/requestContext/index.js";
+import type { IRequestTenantLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 
 /**
- * Thin transport adapter: establishes the request tenant from an S3 event using the shared,
- * transport-agnostic RequestTenantEstablisher (which consumes the registered TenantIdExtractor
- * implementations — e.g. the S3 bucket-name extractor), then delegates to the inner handler.
- *
- * Mirrors ApiGatewayTenantEstablisherDecorator: one establishment rule (api-core), driven per
- * transport by a thin decorator over that transport's event-handler chain.
+ * EXTRACT (transport-specific): reads the tenant id from an S3 event's bucket name (convention
+ * "<tenant>-…" → "<tenant>") into RawTenantId, then invokes the shared LOAD step
+ * (RequestTenantLoader). Mirrors the API Gateway tenant decorator — same shared load, different
+ * extract. S3 events carry no user identity, so no auth token is extracted.
  */
 class S3TenantEstablisherDecoratorImpl implements S3EventHandler.Interface {
     constructor(
-        private tenantEstablisher: IRequestTenantEstablisher,
+        private rawTenantId: RawTenantId.Interface,
+        private tenantEstablisher: IRequestTenantLoader,
         private decoratee: S3EventHandler.Interface
     ) {}
 
     async execute(ctx: EventContext<S3Event>, next: NextFunction): Promise<any> {
-        await this.tenantEstablisher.establish(ctx.event);
+        const bucket = ctx.event?.Records?.[0]?.s3?.bucket?.name;
+        this.rawTenantId.set(bucket ? (bucket.split("-")[0] ?? null) : null);
+        await this.tenantEstablisher.establish();
         return this.decoratee.execute(ctx, next);
     }
 }
 
 export const S3TenantEstablisherDecorator = S3EventHandler.createDecorator({
     decorator: S3TenantEstablisherDecoratorImpl,
-    dependencies: [RequestTenantEstablisher]
+    dependencies: [RawTenantId, RequestTenantLoader]
 });

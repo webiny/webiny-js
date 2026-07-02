@@ -1,78 +1,70 @@
 import { createAbstraction } from "@webiny/feature/api";
 
 /**
- * Extracts the raw tenant identifier from a transport event (e.g. the `x-tenant` header of an API
- * Gateway event, or a field of an S3 event). This is the ONLY transport-aware part of establishing
- * the request tenant — the resolution (id -> Tenant) and setting of TenantContext is transport-
- * agnostic and lives in RequestTenantEstablisher.
+ * Per-request holder for the raw tenant id EXTRACTED by the transport (e.g. the `x-tenant` header
+ * of an API Gateway event, the bucket name of an S3 event, or `payload.tenant` of a background
+ * task). The transport-specific EXTRACT step sets this; the transport-agnostic LOAD step
+ * (RequestTenantLoader) reads it, resolves the Tenant, and sets TenantContext.
+ */
+export interface IRawTenantId {
+    get(): string | null;
+    set(id: string | null): void;
+}
+
+export const RawTenantId = createAbstraction<IRawTenantId>("RequestContext/RawTenantId");
+
+export namespace RawTenantId {
+    export type Interface = IRawTenantId;
+}
+
+/**
+ * Per-request holder for the raw auth token EXTRACTED by the transport (e.g. the `Authorization`
+ * bearer header or an auth cookie of an API Gateway event). Only token-based transports set this;
+ * the transport-agnostic LOAD step (RequestIdentityLoader) reads it, authenticates it, and
+ * sets IdentityContext. A null/absent value authenticates as anonymous.
  *
- * Multiple extractors may be registered; they are tried in registration order and the first one
- * to return a value wins. An extractor returns null/undefined when the event isn't its shape.
+ * Note: non-token transports (S3, background tasks) never set this — S3 has no user identity, and
+ * background-task identity is derived from `task.createdBy` after the task is fetched.
  */
-export interface ITenantIdExtractor {
-    extract(event: unknown): string | null | undefined;
+export interface IRawAuthToken {
+    get(): string | null;
+    set(token: string | null): void;
 }
 
-export const TenantIdExtractor = createAbstraction<ITenantIdExtractor>(
-    "RequestContext/TenantIdExtractor"
-);
+export const RawAuthToken = createAbstraction<IRawAuthToken>("RequestContext/RawAuthToken");
 
-export namespace TenantIdExtractor {
-    export type Interface = ITenantIdExtractor;
+export namespace RawAuthToken {
+    export type Interface = IRawAuthToken;
 }
 
 /**
- * Extracts a raw auth token from a transport event (e.g. the `Authorization` header or an auth
- * cookie). Transport-aware; the token -> Identity authentication is transport-agnostic and lives
- * in RequestIdentityEstablisher.
- *
- * Multiple extractors may be registered; they are tried in registration order. An extractor
- * returns null/undefined when it does not apply to the event (and is skipped); an empty string is
- * treated as "applicable but no token" (authenticated as anonymous), matching the previous
- * always-authenticate-the-header behavior.
+ * LOAD step: authenticates the token held by RawAuthToken and sets IdentityContext. Fully
+ * transport-agnostic — transports only EXTRACT the token into RawAuthToken.
  */
-export interface IAuthTokenExtractor {
-    extract(event: unknown): string | null | undefined;
+export interface IRequestIdentityLoader {
+    establish(): Promise<void>;
 }
 
-export const AuthTokenExtractor = createAbstraction<IAuthTokenExtractor>(
-    "RequestContext/AuthTokenExtractor"
+export const RequestIdentityLoader = createAbstraction<IRequestIdentityLoader>(
+    "RequestContext/RequestIdentityLoader"
 );
 
-export namespace AuthTokenExtractor {
-    export type Interface = IAuthTokenExtractor;
+export namespace RequestIdentityLoader {
+    export type Interface = IRequestIdentityLoader;
 }
 
 /**
- * Establishes the request identity from a raw transport event, using the registered
- * AuthTokenExtractor implementations to find an auth token, then authenticating it and setting
- * IdentityContext. Transport-agnostic — transports only contribute extractors.
+ * LOAD step: resolves the Tenant for the id held by RawTenantId and sets TenantContext. Fully
+ * transport-agnostic — transports only EXTRACT the id into RawTenantId.
  */
-export interface IRequestIdentityEstablisher {
-    establish(event: unknown): Promise<void>;
+export interface IRequestTenantLoader {
+    establish(): Promise<void>;
 }
 
-export const RequestIdentityEstablisher = createAbstraction<IRequestIdentityEstablisher>(
-    "RequestContext/RequestIdentityEstablisher"
+export const RequestTenantLoader = createAbstraction<IRequestTenantLoader>(
+    "RequestContext/RequestTenantLoader"
 );
 
-export namespace RequestIdentityEstablisher {
-    export type Interface = IRequestIdentityEstablisher;
-}
-
-/**
- * Establishes the request tenant from a raw transport event, using the registered TenantIdExtractor
- * implementations to find a tenant id, then resolving the Tenant and setting TenantContext.
- * Transport-agnostic — transports only contribute extractors.
- */
-export interface IRequestTenantEstablisher {
-    establish(event: unknown): Promise<void>;
-}
-
-export const RequestTenantEstablisher = createAbstraction<IRequestTenantEstablisher>(
-    "RequestContext/RequestTenantEstablisher"
-);
-
-export namespace RequestTenantEstablisher {
-    export type Interface = IRequestTenantEstablisher;
+export namespace RequestTenantLoader {
+    export type Interface = IRequestTenantLoader;
 }

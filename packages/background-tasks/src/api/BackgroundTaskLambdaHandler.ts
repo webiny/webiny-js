@@ -2,8 +2,10 @@ import type { Container } from "@webiny/feature/api";
 import { BackgroundTaskEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/BackgroundTaskEventHandler.js";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { RequestContainer, runRequestContextInitializers } from "@webiny/event-handler-core";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
+import {
+    RawTenantId,
+    RequestTenantLoader
+} from "@webiny/api-core/features/requestContext/index.js";
 import { timerFactory } from "@webiny/handler-aws/utils/index.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import type { IBackgroundTaskEvent } from "@webiny/event-handler-aws/eventTypes/BackgroundTaskEventType.js";
@@ -23,16 +25,14 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Inte
         // itself if it's already flat).
         const taskEvent = (eventCtx.event as any)?.payload ?? eventCtx.event;
 
-        // Background tasks have no HTTP request establisher, so establish the tenant from the task
-        // event here. The CRUD (TasksCrud) and downstream use cases resolve the current tenant, so it
-        // must be set before the task runs.
+        // Background tasks have no HTTP request establisher. This is the bg-task EXTRACT step: put the
+        // tenant id from the task event into RawTenantId, then run the shared LOAD step
+        // (RequestTenantLoader) — same tenant-establishment path as every other transport. The
+        // CRUD (TasksCrud) and downstream use cases resolve the current tenant, so it must be set
+        // before the task runs.
         if (taskEvent?.tenant) {
-            const tenantResult = await this.container
-                .resolve(GetTenantByIdUseCase)
-                .execute(taskEvent.tenant);
-            if (tenantResult.isOk()) {
-                this.container.resolve(TenantContext).setTenant(tenantResult.value);
-            }
+            this.container.resolve(RawTenantId).set(taskEvent.tenant);
+            await this.container.resolve(RequestTenantLoader).establish();
         }
 
         // Run the post-context initializers (register TasksCrud, FileModel, etc.). The HTTP layer does

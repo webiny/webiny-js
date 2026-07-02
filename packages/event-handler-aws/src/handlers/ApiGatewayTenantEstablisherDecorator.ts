@@ -1,30 +1,36 @@
 import type { APIGatewayProxyEvent } from "@webiny/aws-sdk/types/index.js";
 import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
-import { RequestTenantEstablisher } from "@webiny/api-core/features/requestContext/index.js";
-import type { IRequestTenantEstablisher } from "@webiny/api-core/features/requestContext/abstractions.js";
+import {
+    RawTenantId,
+    RequestTenantLoader
+} from "@webiny/api-core/features/requestContext/index.js";
+import type { IRequestTenantLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 
 /**
- * Thin transport adapter: establishes the request tenant from the API Gateway event using the
- * shared, transport-agnostic RequestTenantEstablisher (which consumes the registered
- * TenantIdExtractor implementations — e.g. the "x-tenant" header), then delegates to the inner
- * handler.
+ * EXTRACT (transport-specific): reads the tenant id from the `x-tenant` header of an API Gateway
+ * event into RawTenantId, then invokes the shared LOAD step (RequestTenantLoader) which
+ * resolves the Tenant and sets TenantContext. A missing header leaves RawTenantId null → the
+ * establisher defaults to the "root" tenant.
  *
  * Registered AFTER ApiGatewayIdentityEstablisherDecorator (see ApiGatewayFeature).
  */
 class ApiGatewayTenantEstablisherDecoratorImpl implements ApiGatewayEventHandler.Interface {
     constructor(
-        private tenantEstablisher: IRequestTenantEstablisher,
-        private inner: ApiGatewayEventHandler.Interface
+        private rawTenantId: RawTenantId.Interface,
+        private tenantEstablisher: IRequestTenantLoader,
+        private decoratee: ApiGatewayEventHandler.Interface
     ) {}
 
     async execute(ctx: EventContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
-        await this.tenantEstablisher.establish(ctx.event);
-        return this.inner.execute(ctx, next);
+        const headers = ctx.event?.headers;
+        this.rawTenantId.set(headers ? (headers["x-tenant"] ?? headers["X-Tenant"] ?? null) : null);
+        await this.tenantEstablisher.establish();
+        return this.decoratee.execute(ctx, next);
     }
 }
 
 export const ApiGatewayTenantEstablisherDecorator = ApiGatewayEventHandler.createDecorator({
     decorator: ApiGatewayTenantEstablisherDecoratorImpl,
-    dependencies: [RequestTenantEstablisher]
+    dependencies: [RawTenantId, RequestTenantLoader]
 });
