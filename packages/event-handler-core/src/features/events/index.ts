@@ -5,5 +5,6 @@ export * from "./RequestContextInitializer.js";
 export * from "./RequestInitializer.js";
 export * from "./chain.js";
 export * from "./createHandler.js";
+export * from "./Transport.js";
 export * from "./types.js";
 export * from "./runRequestContextInitializers.js";
