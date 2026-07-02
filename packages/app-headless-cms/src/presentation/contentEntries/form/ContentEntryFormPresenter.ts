@@ -303,9 +303,12 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         this.folderId = folderId;
     }
 
-    newEntry(): void {
+    newEntry(initialValues?: Record<string, unknown>): void {
         this.entry = null;
         this.form = this.buildForm();
+        if (initialValues) {
+            this.form.setData(initialValues, { dirty: true });
+        }
     }
 
     reset(): void {

@@ -25,7 +25,7 @@ export interface IContentEntryFormPresenter {
     unpublishRevision(): Promise<boolean>;
     deleteEntry(): Promise<boolean>;
     setFolderId(folderId: string | null): void;
-    newEntry(): void;
+    newEntry(initialValues?: Record<string, unknown>): void;
     reset(): void;
 }
 
