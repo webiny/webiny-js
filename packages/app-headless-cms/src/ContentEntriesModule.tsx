@@ -49,6 +49,7 @@ import { SaveAndPublishButton } from "~/presentation/contentEntries/views/action
 import { DeleteEntryMenuItem } from "~/presentation/contentEntries/views/actions/DeleteEntryMenuItem.js";
 import { ShowRevisionListMenuItem } from "~/presentation/contentEntries/views/actions/ShowRevisionListMenuItem.js";
 import { CreateNewRevisionButton } from "~/presentation/contentEntries/views/actions/CreateNewRevisionButton.js";
+import { PublishOnlyButton } from "~/presentation/contentEntries/views/actions/PublishOnlyButton.js";
 
 const { Browser } = InternalContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
@@ -154,6 +155,7 @@ export const ContentEntriesModule = () => {
                         element={<CreateNewRevisionButton />}
                     />
                     <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
+                    <Actions.ButtonAction name={"publishOnly"} element={<PublishOnlyButton />} />
                 </IsModelPublishable>
                 <Actions.MenuItemAction
                     name={"delete"}
