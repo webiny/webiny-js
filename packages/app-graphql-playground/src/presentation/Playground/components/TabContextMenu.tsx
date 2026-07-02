@@ -1,4 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React from "react";
+import { useCallback } from "react";
+import { useEffect } from "react";
+import { useRef } from "react";
+import { useState } from "react";
 import type { PlaygroundPresenter } from "../abstractions.js";
 
 interface TabContextMenuProps {

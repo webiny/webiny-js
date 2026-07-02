@@ -1,6 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Button, Loader } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
+import { Loader } from "@webiny/admin-ui";
 import { ReactComponent as PlayArrowIcon } from "@webiny/icons/play_arrow.svg";
 import { ReactComponent as AutoFixHighIcon } from "@webiny/icons/auto_fix_high.svg";
 import { ReactComponent as ContentCopyIcon } from "@webiny/icons/content_copy.svg";

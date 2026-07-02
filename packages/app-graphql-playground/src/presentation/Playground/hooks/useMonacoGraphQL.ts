@@ -1,10 +1,15 @@
-import { useCallback, useEffect, useRef } from "react";
-import type { BeforeMount, OnMount } from "@monaco-editor/react";
+import { useCallback } from "react";
+import { useEffect } from "react";
+import { useRef } from "react";
+import type { BeforeMount } from "@monaco-editor/react";
+import type { OnMount } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 import type { languages } from "monaco-editor";
 import type { IntrospectionQuery } from "graphql";
-import { buildClientSchema, GraphQLSchema } from "graphql";
-import { getAutocompleteSuggestions, Position } from "graphql-language-service";
+import { buildClientSchema } from "graphql";
+import { GraphQLSchema } from "graphql";
+import { getAutocompleteSuggestions } from "graphql-language-service";
+import { Position } from "graphql-language-service";
 import type { IPlaygroundSchema } from "../abstractions.js";
 
 /* Monarch tokenizer for basic GraphQL syntax highlighting. */
@@ -101,12 +106,15 @@ interface UseMonacoGraphQLParams {
 
 export function useMonacoGraphQL(params: UseMonacoGraphQLParams) {
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+    const monacoRef = useRef<typeof import("monaco-editor") | null>(null);
     const disposableRef = useRef<{ dispose(): void } | null>(null);
     const schemaRef = useRef<IPlaygroundSchema | null>(null);
 
     schemaRef.current = params.schema;
 
     const handleBeforeMount: BeforeMount = useCallback(monaco => {
+        monacoRef.current = monaco;
+
         if (languageRegistered) {
             return;
         }
@@ -154,8 +162,8 @@ export function useMonacoGraphQL(params: UseMonacoGraphQLParams) {
             return;
         }
 
-        /* Dynamic import of monaco to get the languages namespace. */
-        const monacoInstance = (window as any).monaco;
+        /* Use the monaco instance captured during beforeMount. */
+        const monacoInstance = monacoRef.current;
         if (!monacoInstance) {
             return;
         }

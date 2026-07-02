@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
+import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app/shared/di/useFeature.js";
 import { PlaygroundPresenterFeature } from "../feature.js";

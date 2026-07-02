@@ -1,4 +1,5 @@
-import React, { useCallback } from "react";
+import React from "react";
+import { useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import Editor from "@monaco-editor/react";
 import type { PlaygroundPresenter } from "../abstractions.js";

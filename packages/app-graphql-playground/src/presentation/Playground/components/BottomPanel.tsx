@@ -1,9 +1,11 @@
-import React, { useCallback } from "react";
+import React from "react";
+import { useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import Editor from "@monaco-editor/react";
 import { ReactComponent as ExpandLessIcon } from "@webiny/icons/expand_less.svg";
 import { ReactComponent as ExpandMoreIcon } from "@webiny/icons/expand_more.svg";
-import type { PlaygroundPresenter, IPlaygroundBottomPanel } from "../abstractions.js";
+import type { PlaygroundPresenter } from "../abstractions.js";
+import type { IPlaygroundBottomPanel } from "../abstractions.js";
 
 interface BottomPanelProps {
     presenter: PlaygroundPresenter.Interface;
