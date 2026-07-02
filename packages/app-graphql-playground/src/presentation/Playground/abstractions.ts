@@ -28,7 +28,7 @@ export interface IPlaygroundEndpointVm {
 export interface IPlaygroundVm {
     tabs: IPlaygroundTabVm[];
     activeTabId: string;
-    activeTab: IPlaygroundTabVm;
+    activeTab: IPlaygroundTabVm | null;
     endpoints: IPlaygroundEndpointVm[];
     schema: IPlaygroundSchema | null;
 }

@@ -1,5 +1,9 @@
-import { makeAutoObservable, reaction, runInAction } from "mobx";
-import { getIntrospectionQuery, parse, print } from "graphql";
+import { makeAutoObservable } from "mobx";
+import { reaction } from "mobx";
+import { runInAction } from "mobx";
+import { getIntrospectionQuery } from "graphql";
+import { parse } from "graphql";
+import { print } from "graphql";
 import { PlaygroundClient } from "../../features/playgroundClient/abstractions.js";
 import { PlaygroundRepository } from "../../features/repository/abstractions.js";
 import { PlaygroundTabRegistry } from "../../features/tabRegistry/abstractions.js";
@@ -62,7 +66,7 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
         return {
             tabs: this.tabs,
             activeTabId: this.activeTabId,
-            activeTab: activeTab as PlaygroundPresenter.TabVm,
+            activeTab: activeTab,
             endpoints: this.endpoints,
             schema: this.getActiveSchema()
         };
