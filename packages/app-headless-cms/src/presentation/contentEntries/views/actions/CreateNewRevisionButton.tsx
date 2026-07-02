@@ -9,20 +9,12 @@ export const CreateNewRevisionButton = observer(() => {
     const { canEdit } = usePermission();
     const presenter = useContentEntryFormPresenter();
     const { showSuccessToast } = useToast();
-    
-    console.log({
-        CreateNewRevisionButton: true,
-        entry: presenter.vm.entry,
-        canCreateNewRevision: presenter.vm.canCreateNewRevision,
-        canEdit: canEdit(presenter.vm.entry!, "cms.contentEntry")
-    });
-    
+
     if (
         !presenter.vm.entry ||
         !presenter.vm.canCreateNewRevision ||
         !canEdit(presenter.vm.entry, "cms.contentEntry")
     ) {
-
         return null;
     }
 
