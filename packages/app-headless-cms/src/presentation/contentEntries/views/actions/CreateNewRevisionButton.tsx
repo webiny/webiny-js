@@ -11,6 +11,7 @@ export const CreateNewRevisionButton = observer(() => {
     const { showSuccessToast } = useToast();
     
     console.log({
+        CreateNewRevisionButton: true,
         entry: presenter.vm.entry,
         canCreateNewRevision: presenter.vm.canCreateNewRevision,
         canEdit: canEdit(presenter.vm.entry!, "cms.contentEntry")

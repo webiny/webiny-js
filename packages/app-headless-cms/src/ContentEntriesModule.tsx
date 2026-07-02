@@ -147,12 +147,12 @@ export const ContentEntriesModule = () => {
                     />
                 </IsModelPublishable>
                 <Actions.ButtonAction name={"optionsMenu"} element={<ContentFormOptionsMenu />} />
-                <Actions.ButtonAction
-                    name={"createNewRevision"}
-                    element={<CreateNewRevisionButton />}
-                />
                 <Actions.ButtonAction name={"save"} element={<SaveContentButton />} />
                 <IsModelPublishable>
+                    <Actions.ButtonAction
+                        name={"createNewRevision"}
+                        element={<CreateNewRevisionButton />}
+                    />
                     <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
                 </IsModelPublishable>
                 <Actions.MenuItemAction

@@ -10,7 +10,14 @@ export const SaveContentButton = observer(() => {
     const presenter = useContentEntryFormPresenter();
     const listPresenter = useContentEntriesPresenter();
     const { showSuccessToast } = useToast();
-
+    
+    console.log({
+        SaveContentButton: true,
+        entry: presenter.vm.entry,
+        canCreateNewRevision: presenter.vm.canCreateNewRevision,
+        canEdit: canEdit(presenter.vm.entry!, "cms.contentEntry")
+    });
+    
     if (
         presenter.vm.canCreateNewRevision ||
         !presenter.vm.canSave ||
