@@ -1,0 +1,61 @@
+{
+  "name": "@webiny/api-event-handler-core",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "types": "index.d.ts",
+  "description": "Transport-agnostic composition of the Webiny API request stack (registerApiRequestStack).",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Webiny Team"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-aco": "0.0.0",
+    "@webiny/api-audit-logs": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-file-manager": "0.0.0",
+    "@webiny/api-file-manager-aco": "0.0.0",
+    "@webiny/api-file-manager-s3": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-headless-cms-aco": "0.0.0",
+    "@webiny/api-headless-cms-scheduler": "0.0.0",
+    "@webiny/api-headless-cms-tasks": "0.0.0",
+    "@webiny/api-headless-cms-workflows": "0.0.0",
+    "@webiny/api-mailer": "0.0.0",
+    "@webiny/api-record-locking": "0.0.0",
+    "@webiny/api-scheduler": "0.0.0",
+    "@webiny/api-website-builder": "0.0.0",
+    "@webiny/api-website-builder-scheduler": "0.0.0",
+    "@webiny/api-website-builder-workflows": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
+    "@webiny/api-workflows": "0.0.0",
+    "@webiny/background-tasks": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
+    "@webiny/webhooks": "0.0.0"
+  },
+  "peerDependencies": {
+    "@webiny/di": ">=0.2.3"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "^1.0.1",
+    "rimraf": "^6.1.3",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.9"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

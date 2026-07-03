@@ -1,12 +1,13 @@
 /**
  * DI-native Webiny API handler for the AWS Lambda transport — storage-agnostic BASE.
  *
- * This is the composition root: it assembles the transport + every storage-agnostic API feature
- * onto the DI container in the correct (order-sensitive) sequence. The storage variant — which CMS
- * storage operations, whether OpenSearch is wired, etc. — is injected via `registerRootStorage` /
- * `registerRequestStorage` by a thin variant package (`@webiny/api-event-handler-aws-ddb`,
- * `@webiny/api-event-handler-aws-ddb-os`). Keeping the wiring here (a real, testable package) rather than in
- * an app template is what makes it unit/integration testable.
+ * The ROOT container wires the AWS transport (API Gateway HTTP + auth/tenant loaders, background-task
+ * and WebSocket Lambda invocations, DynamoDB, Cognito, storage). The per-request feature stack is the
+ * transport-AGNOSTIC `registerApiRequestStack` from `@webiny/api-event-handler-core`, with the two
+ * AWS-specific interleave points supplied as hooks (real-time WebSockets transport + scheduler
+ * transport). The storage variant is injected via `registerRootStorage` / `registerRequestStorage`
+ * by a thin variant package (`@webiny/api-event-handler-aws-ddb`, `-aws-ddb-os`). Keeping the wiring
+ * in real packages (not an app template) is what makes it unit/integration testable.
  */
 import type { Container } from "@webiny/di";
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
@@ -20,31 +21,11 @@ import {
 import { BackgroundTaskLambdaHandler } from "@webiny/background-tasks/api";
 import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { registerExtensions } from "@webiny/handler";
-import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { DbFeature } from "@webiny/handler-db";
-import { ApiCoreFeature } from "@webiny/api-core";
-import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { MailerFeature } from "@webiny/api-mailer";
-import { RecordLockingAppFeature } from "@webiny/api-record-locking";
-import { AuditLogsFeature } from "@webiny/api-audit-logs";
-import { WebhooksFeature } from "@webiny/webhooks/api";
-import { AcoFeature } from "@webiny/api-aco";
-import { AcoHcmsFeature } from "@webiny/api-headless-cms-aco";
-import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
-import { HcmsTasksFeature } from "@webiny/api-headless-cms-tasks";
-import { WebsocketsFeature, WebSocketLambdaHandler } from "@webiny/api-websockets";
+import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
-import { WorkflowsFeature } from "@webiny/api-workflows";
-import { CmsWorkflowsFeature } from "@webiny/api-headless-cms-workflows";
-import { WebsiteBuilderWorkflowsFeature } from "@webiny/api-website-builder-workflows";
-import { SchedulerFeature } from "@webiny/api-scheduler";
 import { registerSchedulerAwsExtension } from "@webiny/api-scheduler-aws";
-import { CmsSchedulerFeature } from "@webiny/api-headless-cms-scheduler";
-import { WebsiteBuilderSchedulerFeature } from "@webiny/api-website-builder-scheduler";
-import { FileManagerAppFeature } from "@webiny/api-file-manager";
-import { FileManagerAcoFeature } from "@webiny/api-file-manager-aco";
-import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
-import { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "@webiny/api-website-builder";
+import { WebSocketLambdaHandler } from "@webiny/api-websockets";
 // CognitoIdpFeature must be in the root container so the request auth step
 // (ApiGatewayIdentityLoaderDecorator → RequestIdentityLoader) sees CognitoIdentityProvider
 // when it is first instantiated. Extensions register in the child/request container — too late.
@@ -132,66 +113,25 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
         },
 
         request: async container => {
-            // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind
-            // to the request child container so per-request event handlers are resolvable) ─────────
-            ApiCoreFeature.register(container, { wcpLicense: undefined });
-
-            // ── Request-phase storage (variant-specific; must precede HeadlessCmsFeature) ──
-            // e.g. DbRegistryFeature for DDB+ES: CMS storage beforeInit registers entities into it.
-            await config.registerRequestStorage?.(container);
-
-            // ── CMS ────────────────────────────────────────────────────
-            HeadlessCmsFeature.register(container, { type: "manage" });
-            AcoFeature.register(container);
-            AcoHcmsFeature.register(container);
-            HcmsTasksFeature.register(container);
-
-            // ── File Manager ───────────────────────────────────────────
-            FileManagerAppFeature.register(container);
-            FileManagerAcoFeature.register(container);
-            FileManagerS3Feature.register(container, {});
-
-            // ── Website Builder ────────────────────────────────────────
-            WebsiteBuilderFeature.register(container);
-            await setupWebsiteBuilderModels(container);
-            WebsiteBuilderWorkflowsFeature.register(container);
-            WebsiteBuilderSchedulerFeature.register(container);
-
-            // ── Websockets ─────────────────────────────────────────────
-            WebsocketsFeature.register(container);
-            // Real AWS transport (API Gateway Management API). MUST register after WebsocketsFeature so
-            // it overrides the NullWebsocketsTransport (nearest-container-last-wins); otherwise every
-            // server→client send() is a silent no-op.
-            WebsocketsAwsFeature.register(container);
-
-            // ── Supporting services ────────────────────────────────────
-            MailerFeature.register(container);
-            RecordLockingAppFeature.register(container, {});
-            AuditLogsFeature.register(container, {});
-            WebhooksFeature.register(container);
-            BackgroundTasksFeature.register(container);
-
-            // ── Workflows ──────────────────────────────────────────────
-            WorkflowsFeature.register(container);
-            CmsWorkflowsFeature.register(container);
-
-            // ── Scheduler ──────────────────────────────────────────────
-            SchedulerFeature.register(container);
-            registerLegacyPluginsViaGqlContextualSchema(container, [
-                ...registerSchedulerAwsExtension({
-                    getClient: schedulerConfig => createSchedulerClient(schedulerConfig)
-                })
-            ]);
-            CmsSchedulerFeature.register(container);
-
-            // ── Extensions ─────────────────────────────────────────────
-            // Apply at register() time (not via a post-auth initializer) so extension features —
-            // including code-defined CMS models (ModelFactory), e.g. Languages — are registered before
-            // any initializer (e.g. ACO) lists + caches the per-request model set.
-            await registerExtensions(container, config.extensions());
-
-            // ── GraphQL engine (always last) ───────────────────────────
-            GraphQLEngineFeature.register(container);
+            // The per-request feature stack is transport-agnostic (shared with the future server
+            // transport). The two AWS-specific interleave points are supplied as hooks.
+            await registerApiRequestStack(container, {
+                extensions: config.extensions,
+                registerRequestStorage: config.registerRequestStorage,
+                // Real AWS WebSocket transport (API Gateway Management API), registered right after
+                // WebsocketsFeature so it overrides the NullWebsocketsTransport.
+                registerRealtimeTransport: c => {
+                    WebsocketsAwsFeature.register(c);
+                },
+                // Scheduler transport: bridge the scheduler-aws extension (EventBridge Scheduler).
+                registerSchedulerTransport: c => {
+                    registerLegacyPluginsViaGqlContextualSchema(c, [
+                        ...registerSchedulerAwsExtension({
+                            getClient: schedulerConfig => createSchedulerClient(schedulerConfig)
+                        })
+                    ]);
+                }
+            });
         }
     });
 }
