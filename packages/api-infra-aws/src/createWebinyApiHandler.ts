@@ -1,11 +1,14 @@
 /**
- * DI-native Webiny API GraphQL handler for the AWS Lambda transport.
+ * DI-native Webiny API handler for the AWS Lambda transport — storage-agnostic BASE.
  *
- * This is the composition root — it assembles every API feature onto the DI container in the
- * correct order. It lives in a real package (not an app template) so the wiring is unit/integration
- * testable: a test can boot this handler against fresh storage and exercise install/GraphQL without
- * a full deploy. The app template becomes a thin shim that calls `createWebinyApiHandler`.
+ * This is the composition root: it assembles the transport + every storage-agnostic API feature
+ * onto the DI container in the correct (order-sensitive) sequence. The storage variant — which CMS
+ * storage operations, whether OpenSearch is wired, etc. — is injected via `registerRootStorage` /
+ * `registerRequestStorage` by a thin variant package (`@webiny/api-infra-aws-ddb`,
+ * `@webiny/api-infra-aws-ddb-os`). Keeping the wiring here (a real, testable package) rather than in
+ * an app template is what makes it unit/integration testable.
  */
+import type { Container } from "@webiny/di";
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 import {
@@ -20,21 +23,16 @@ import { registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { DbFeature } from "@webiny/handler-db";
 import { ApiCoreFeature } from "@webiny/api-core";
-import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { HeadlessCmsDdbFeature } from "@webiny/api-headless-cms-ddb";
 import { MailerFeature } from "@webiny/api-mailer";
 import { RecordLockingAppFeature } from "@webiny/api-record-locking";
 import { AuditLogsFeature } from "@webiny/api-audit-logs";
-import { AuditLogsDdbFeature } from "@webiny/api-audit-logs-ddb";
 import { WebhooksFeature } from "@webiny/webhooks/api";
 import { AcoFeature } from "@webiny/api-aco";
-import { AcoDdbFeature } from "@webiny/api-aco-ddb";
 import { AcoHcmsFeature } from "@webiny/api-headless-cms-aco";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { HcmsTasksFeature } from "@webiny/api-headless-cms-tasks";
 import { WebsocketsFeature, WebSocketLambdaHandler } from "@webiny/api-websockets";
-import { WebsocketsDdbFeature } from "@webiny/api-websockets-ddb";
 import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
 import { WorkflowsFeature } from "@webiny/api-workflows";
 import { CmsWorkflowsFeature } from "@webiny/api-headless-cms-workflows";
@@ -52,6 +50,10 @@ import { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "@webiny/api-we
 // when it is first instantiated. Extensions register in the child/request container — too late.
 import { CognitoIdpFeature } from "@webiny/cognito/api/features/CognitoIdp/feature.js";
 
+export interface RegisterRootStorageContext {
+    documentClient: ReturnType<typeof getDocumentClient>;
+}
+
 export interface CreateWebinyApiHandlerConfig {
     /**
      * Project-defined extensions, applied at register() time. This is the one project-specific
@@ -60,13 +62,27 @@ export interface CreateWebinyApiHandlerConfig {
     extensions: () => Parameters<typeof registerExtensions>[1];
     /**
      * DynamoDB document client. Defaults to the standard AWS client (`getDocumentClient()`).
-     * Injectable so integration tests can point the handler at a local DynamoDB.
+     * Injectable so integration tests can point the handler at a local (dynalite) DynamoDB.
      */
     documentClient?: ReturnType<typeof getDocumentClient>;
     /**
      * DynamoDB table name. Defaults to `process.env.DB_TABLE`. Injectable for tests.
      */
     dbTable?: string;
+    /**
+     * Register the storage-variant features in the ROOT container: the CMS storage operations, the
+     * DDB storage registries, and (for the OpenSearch variant) the OpenSearch core. Supplied by the
+     * variant package.
+     */
+    registerRootStorage: (
+        container: Container,
+        ctx: RegisterRootStorageContext
+    ) => void | Promise<void>;
+    /**
+     * Register any request-phase storage features that must run BEFORE `HeadlessCmsFeature` builds
+     * its storage — e.g. `DbRegistryFeature` for the DDB+ES variant. Optional (DDB-only needs none).
+     */
+    registerRequestStorage?: (container: Container) => void | Promise<void>;
 }
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
@@ -95,26 +111,23 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                 table
             });
 
-            // ── Core API storage (root: DDB storage-ops factory; ApiCoreFeature itself is
-            // registered per-request below) ─────────────────────────────
-            ApiCoreDdbFeature.register(container, { documentClient });
-
             // ── Identity providers ─────────────────────────────────────
             // Must be in root so the request auth step can authenticate
             // requests before the GraphQL engine runs.
             CognitoIdpFeature.register(container);
 
-            // ── DDB storage registries ─────────────────────────────────
-            HeadlessCmsDdbFeature.register(container);
-            AuditLogsDdbFeature.register(container, {});
-            AcoDdbFeature.register(container);
-            WebsocketsDdbFeature.register(container);
+            // ── Storage (variant-specific: CMS storage ops, DDB registries, OpenSearch core) ──
+            await config.registerRootStorage(container, { documentClient });
         },
 
         request: async container => {
             // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind
             // to the request child container so per-request event handlers are resolvable) ─────────
             ApiCoreFeature.register(container, { wcpLicense: undefined });
+
+            // ── Request-phase storage (variant-specific; must precede HeadlessCmsFeature) ──
+            // e.g. DbRegistryFeature for DDB+ES: CMS storage beforeInit registers entities into it.
+            await config.registerRequestStorage?.(container);
 
             // ── CMS ────────────────────────────────────────────────────
             HeadlessCmsFeature.register(container, { type: "manage" });
