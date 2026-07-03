@@ -13,6 +13,7 @@ import { PlaygroundClientFeature } from "./features/playgroundClient/feature.js"
 import { PlaygroundTabRegistryFeature } from "./features/tabRegistry/feature.js";
 import { PlaygroundRepositoryFeature } from "./features/repository/feature.js";
 import { PlaygroundPresenterFeature } from "./presentation/Playground/feature.js";
+import { DocsExplorerFeature } from "./presentation/DocsExplorer/feature.js";
 
 const { Route, Menu } = AdminConfig;
 
@@ -25,6 +26,7 @@ const GraphQLPlaygroundExtension = () => {
             <RegisterFeature feature={PlaygroundTabRegistryFeature} />
             <RegisterFeature feature={PlaygroundRepositoryFeature} />
             <RegisterFeature feature={PlaygroundPresenterFeature} />
+            <RegisterFeature feature={DocsExplorerFeature} />
             <SecurityPermission />
             <AdminConfig>
                 <Menu
