@@ -9,6 +9,7 @@ import { timerFactory } from "../../../handler-aws/src/utils";
 import { TaskEventValidation } from "../../../background-tasks/src/api/runner/TaskEventValidation";
 import { ResponseContinueResult } from "../../../background-tasks/src/api/response/ResponseContinueResult";
 import { createMockTaskServicePlugin } from "./mockTaskTriggerTransportPlugin";
+import { TaskServiceTransport } from "../../../background-tasks/src/api/plugins";
 import { TaskDefinition } from "../../../api-core/src/features/task/TaskDefinition/index.js";
 
 export interface ICreateRunnerParamsOnContinueCallableParams {
@@ -43,7 +44,10 @@ export const createRunner = <
 >(
     params: ICreateRunnerParams<I, O>
 ) => {
-    params.context.plugins.register(createMockTaskServicePlugin());
+    params.context.container.registerInstance(
+        TaskServiceTransport,
+        createMockTaskServicePlugin()[0]
+    );
     const runner = new TaskRunner(
         params.context,
         timerFactory({

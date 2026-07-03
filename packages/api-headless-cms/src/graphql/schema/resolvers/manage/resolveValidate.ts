@@ -3,6 +3,7 @@ import type {
     CmsEntryResolverFactory as ResolverFactory,
     UpdateCmsEntryInput
 } from "~/types/index.js";
+import { ValidateEntryUseCase } from "~/features/contentEntry/ValidateEntry/index.js";
 
 interface ResolveUpdateArgs {
     revision?: string;
@@ -14,9 +15,13 @@ export const resolveValidate: ResolveValidate =
     ({ model }) =>
     async (_, args: any, context) => {
         try {
-            const entry = await context.cms.validateEntry(model, args.revision, args.data);
-
-            return new Response(entry);
+            const result = await context.container
+                .resolve(ValidateEntryUseCase)
+                .execute(model, args.revision, args.data);
+            if (result.isFail()) {
+                throw result.error;
+            }
+            return new Response(result.value);
         } catch (e) {
             return new ErrorResponse(e);
         }

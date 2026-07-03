@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
+import { observer } from "mobx-react-lite";
+import { DiContainerProvider, useContainer } from "@webiny/app";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useModelEditor } from "~/admin/hooks/index.js";
-import { ContentEntryFormPreview } from "../ContentEntryForm/ContentEntryFormPreview.js";
+import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { Button } from "@webiny/admin-ui";
+import { useModelEditor } from "~/admin/hooks/index.js";
+import { ContentModelFormPreviewFeature } from "~/presentation/contentModelEditor/preview/feature.js";
+import { useContentModelFormPreview } from "~/presentation/contentModelEditor/preview/useContentModelFormPreview.js";
 
 const t = i18n.ns("app-headless-cms/admin/components/editor/tabs/preview");
 
@@ -29,9 +33,20 @@ const LayoutIllustration = () => (
 
 export const PreviewTab = ({ activeTab, onSwitchToEdit }: PreviewTabProps) => {
     const { data } = useModelEditor();
+    const container = useContainer();
+
+    const scopedContainer = useMemo(() => {
+        const child = container.createChildContainer();
+        ContentModelFormPreviewFeature.register(child);
+        return child;
+    }, []);
 
     if (data.fields && data.fields.length && activeTab) {
-        return <ContentEntryFormPreview contentModel={data} />;
+        return (
+            <DiContainerProvider container={scopedContainer}>
+                <PreviewForm />
+            </DiContainerProvider>
+        );
     }
 
     return (
@@ -53,3 +68,28 @@ export const PreviewTab = ({ activeTab, onSwitchToEdit }: PreviewTabProps) => {
         </div>
     );
 };
+
+const PreviewForm = observer(() => {
+    const { data } = useModelEditor();
+    const presenter = useContentModelFormPreview();
+
+    useEffect(() => {
+        presenter.buildForm(data);
+
+        return () => {
+            presenter.reset();
+        };
+    }, [data]);
+
+    const { form } = presenter.vm;
+
+    if (!form) {
+        return null;
+    }
+
+    return (
+        <div className={"bg-neutral-base rounded-lg p-lg"}>
+            <FormView name="ContentModelFormPreview" form={form} />
+        </div>
+    );
+});

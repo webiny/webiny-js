@@ -1,4 +1,4 @@
-import { TaskDataStatus } from "@webiny/background-tasks/api";
+import { TaskDataStatus, AbortTaskUseCase, ListTasksUseCase } from "@webiny/background-tasks/api";
 import type {
     IMockDataManagerInput,
     IMockDataManagerOutput
@@ -12,9 +12,13 @@ import { disableIndexing, enableIndexing } from "~/utils/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { MOCK_DATA_CREATOR_TASK_ID } from "~/tasks/MockDataCreatorTask.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 
 export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDataManagerOutput> {
-    constructor(private context: Context) {}
+    constructor(
+        private readonly context: Context,
+        private readonly openSearchClient: OpenSearchClient.Interface
+    ) {}
 
     public async execute(
         params: TaskDefinition.RunParams<I, O>
@@ -45,7 +49,7 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
              * If there are no running tasks, we can enable indexing and finish the manager task.
              */
             await enableIndexing({
-                client: this.context.opensearch,
+                client: this.openSearchClient.use(),
                 model: {
                     modelId: input.modelId,
                     tenant: "root"
@@ -65,7 +69,7 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
 
         await disableIndexing({
             model: result.model,
-            client: this.context.opensearch
+            client: this.openSearchClient.use()
         });
 
         const { amountOfTasks, amountOfRecords } = calculateAmounts(input.amount);
@@ -97,7 +101,7 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
     }
 
     private async listChildTasksNotDone(context: Context, id: string): Promise<TaskService.Task[]> {
-        const { items } = await context.tasks.listTasks({
+        const { items } = await context.container.resolve(ListTasksUseCase).execute({
             where: {
                 parentId: id,
                 taskStatus_in: [TaskDataStatus.PENDING, TaskDataStatus.RUNNING]
@@ -110,7 +114,7 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
     private async abortChildTasks(context: Context, id: string): Promise<void> {
         const items = await this.listChildTasksNotDone(context, id);
         for (const item of items) {
-            await context.tasks.abort({
+            await context.container.resolve(AbortTaskUseCase).execute({
                 id: item.id,
                 message: "Aborted by parent task."
             });

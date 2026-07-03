@@ -1,6 +1,15 @@
-import { createHandler } from "@webiny/handler-aws";
-import graphqlHandlerPlugins from "@webiny/handler-graphql";
-import type { PluginCollection } from "@webiny/plugins/types";
+import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { ApiCoreFeature } from "~/ApiCoreFeature.js";
+import { registerApiCoreStorageOperations } from "~/features/storageOperations/abstractions.js";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { loadWcpLicense } from "~/features/wcp/loadWcpLicense.js";
+import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
+import type { ApiCoreStorageOperations } from "~/types/core.js";
+import { TestAuthenticator } from "./mocks/TestAuthenticator.js";
+import { TestAuthorizer } from "./mocks/TestAuthorizer.js";
+import { AuthTriggerHandler } from "./handlers/AuthTriggerHandler.js";
+import { RootTenantInitializer } from "./handlers/RootTenantInitializer.js";
 
 // Graphql
 import {
@@ -29,64 +38,67 @@ import {
 
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import { LOGIN } from "./graphql/login";
-import { customGroupAuthorizer } from "./mocks/customGroupAuthorizer";
-import { customAuthenticator } from "./mocks/customAuthenticator";
-import { triggerAuthentication } from "./mocks/triggerAuthentication";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
-import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
-import { createApiCore } from "~/index.js";
-import { createRootTenantMock } from "./mocks/createRootTenantMock";
-import { authenticateUsingHttpHeader } from "~/legacy/security/plugins/authenticateUsingHttpHeader.js";
-import type { ApiCoreStorageOperations } from "~/types/core.js";
 
 type UseGqlHandlerParams = {
-    plugins?: PluginCollection;
+    registrations?: any[];
     wcpLicense?: DecryptedWcpProjectLicense;
 };
 
 export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
-    const defaults = { plugins: [] };
-    opts = Object.assign({}, defaults, opts);
-
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
 
-    // Creates the actual handler. Feel free to add additional plugins if needed.
-    const handler = createHandler({
-        plugins: [
-            createApiCore({
-                storageOperations: apiCoreStorage.storageOperations,
-                testProjectLicense: opts.wcpLicense
-            }),
-            graphqlHandlerPlugins(),
-            createRootTenantMock(),
-            triggerAuthentication(),
-            authenticateUsingHttpHeader(),
-            customAuthenticator(),
-            customGroupAuthorizer(),
-            opts.plugins
-        ].filter(Boolean) as PluginCollection
+    const handler = createTestHttpHandler({
+        root: container => {
+            container.register(TestAuthenticator);
+            container.register(TestAuthorizer);
+
+            container.registerDecorator(AuthTriggerHandler);
+            container.registerDecorator(RootTenantInitializer);
+        },
+        request: async container => {
+            // ApiCoreFeature in child container — TenantContext, IdentityContext etc.
+            // registered here become per-request singletons automatically
+            const wcpLicense = await loadWcpLicense(opts.wcpLicense);
+            registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            ApiCoreFeature.register(container, { wcpLicense });
+            GraphQLEngineFeature.register(container);
+
+            for (const registration of opts.registrations ?? []) {
+                // Arrow functions are setup callbacks; classes (which also have typeof "function")
+                // have a prototype and are DI implementations → register in container
+                if (typeof registration === "function" && !registration.prototype) {
+                    await registration(container);
+                } else {
+                    container.register(registration);
+                }
+            }
+        }
     });
 
-    // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ httpMethod = "POST", body = {}, headers = {}, ...rest }) => {
-        const response = await handler(
-            {
-                path: "/graphql",
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
+    const invoke = async ({
+        httpMethod = "POST",
+        body = {},
+        headers = {},
+        path = "/graphql",
+        ...rest
+    }: any = {}) => {
+        const response = await handler({
+            method: httpMethod,
+            path,
+            headers: Object.fromEntries(
+                Object.entries({
+                    "x-tenant": "root",
+                    "content-type": "application/json",
                     ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as unknown as APIGatewayEvent,
-            {} as LambdaContext
-        );
+                }).map(([k, v]) => [k.toLowerCase(), v])
+            ),
+            query: {},
+            pathParameters: {},
+            body,
+            ...rest
+        });
 
-        // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body), response];
+        return [response.body, response];
     };
 
     const securityRole = {
@@ -106,6 +118,7 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             return invoke({ body: { query: GET_SECURITY_ROLE, variables } });
         }
     };
+
     const securityTeam = {
         async create(variables = {}) {
             return invoke({ body: { query: CREATE_SECURITY_TEAM, variables } });

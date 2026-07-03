@@ -15,6 +15,7 @@ class ScheduleUnpublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
             namespace: createNamespace(SCHEDULED_ACTION_TYPE_PAGE),
             actionType: ScheduledActionTypeUnpublish,
             scheduleFor: params.scheduleFor,
+            tenant: params.tenant,
             targetId: params.id
         });
         if (scheduleResult.isFail()) {

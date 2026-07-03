@@ -1,33 +1,32 @@
-import type { Manager } from "~/tasks/Manager.js";
-import type { IndexManager } from "~/settings/index.js";
-import type { IElasticsearchCreateIndexesTaskInput } from "./types.js";
+import type { IIndexManager } from "~/settings/types.js";
+import { Manager } from "~/abstractions/Manager.js";
 import { listIndexes } from "./listIndexes.js";
 import { createIndexFactory } from "./createIndex.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
+import { OpenSearchTenantIndexFactory } from "~/abstractions/OpenSearchTenantIndexFactory.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
-import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
+import { CreateIndexesTaskRunner as Abstraction } from "./abstractions/CreateIndexesTaskRunner.js";
 
-export class CreateIndexesTaskRunner {
-    private taskController: TaskController.Interface;
+class CreateIndexesTaskRunnerImpl implements Abstraction.Interface {
+    private readonly controller;
 
-    public constructor(
-        private tenantContext: TenantContext.Interface,
-        private listTenantsUseCase: ListTenantsUseCase.Interface,
-        private indexFactories: OpensearchTenantIndexFactory.Interface[],
-        manager: Manager<IElasticsearchCreateIndexesTaskInput>,
-        private indexManager: IndexManager
+    constructor(
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly listTenantsUseCase: ListTenantsUseCase.Interface,
+        private readonly indexFactories: OpenSearchTenantIndexFactory.Interface[],
+        manager: Manager.Interface
     ) {
-        this.taskController = manager.controller;
+        this.controller = manager.controller;
     }
 
     public async execute(
         matching: string | undefined,
-        done: string[]
+        done: string[],
+        indexManager: IIndexManager
     ): Promise<TaskDefinition.Result> {
         if (this.indexFactories.length === 0) {
-            return this.taskController.response.done("No index plugins found.");
+            return this.controller.response.done("No index plugins found.");
         }
 
         const tenantsResult = await this.listTenantsUseCase.execute();
@@ -36,7 +35,7 @@ export class CreateIndexesTaskRunner {
         const indexes = await listIndexes(this.tenantContext, tenants, this.indexFactories);
 
         if (indexes.length === 0) {
-            return this.taskController.response.done("No indexes found.");
+            return this.controller.response.done("No indexes found.");
         }
 
         const isIndexAllowed = (index: string): boolean => {
@@ -46,13 +45,13 @@ export class CreateIndexesTaskRunner {
             return index.includes(matching);
         };
 
-        const createIndex = createIndexFactory(this.indexManager);
+        const createIndex = createIndexFactory(indexManager);
 
         for (const { index, settings } of indexes) {
-            if (this.taskController.runtime.isAborted()) {
-                return this.taskController.response.aborted();
-            } else if (this.taskController.runtime.isCloseToTimeout()) {
-                return this.taskController.response.continue({
+            if (this.controller.runtime.isAborted()) {
+                return this.controller.response.aborted();
+            } else if (this.controller.runtime.isCloseToTimeout()) {
+                return this.controller.response.continue({
                     done
                 });
             }
@@ -62,26 +61,36 @@ export class CreateIndexesTaskRunner {
                 } else if (isIndexAllowed(index) === false) {
                     continue;
                 }
-                const exists = await this.indexManager.indexExists(index);
+                const exists = await indexManager.indexExists(index);
                 if (exists) {
                     continue;
                 }
                 done.push(index);
                 await createIndex.create(index, settings);
-                await this.taskController.logger.info({
+                await this.controller.logger.info({
                     message: `Index "${index}" created.`,
                     data: { index }
                 });
             } catch (ex) {
-                await this.taskController.logger.error({
+                await this.controller.logger.error({
                     message: `Failed to create index "${index}".`,
                     error: ex
                 });
             }
         }
 
-        return this.taskController.response.done("Indexes created.", {
+        return this.controller.response.done("Indexes created.", {
             done
         });
     }
 }
+
+export const CreateIndexesTaskRunner = Abstraction.createImplementation({
+    implementation: CreateIndexesTaskRunnerImpl,
+    dependencies: [
+        TenantContext,
+        ListTenantsUseCase,
+        [OpenSearchTenantIndexFactory, { multiple: true }],
+        Manager
+    ]
+});

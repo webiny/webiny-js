@@ -2,7 +2,7 @@ import type { z } from "zod";
 import type {
     IFieldConfig,
     IValueOption,
-    IFormModel,
+    IFieldCallbackParams,
     IFieldBuilder,
     IFieldBuilderRegistry,
     IFieldTypeFactory,
@@ -12,8 +12,10 @@ import type {
     AfterSetValueCallback,
     ComputedFieldCallback,
     HiddenWhenCallback,
+    DisabledWhenCallback,
     OnBlurCallback,
-    CloneValueCallback
+    CloneValueCallback,
+    FieldContextCallback
 } from "./abstractions.js";
 
 /**
@@ -34,6 +36,14 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
     }
 
     get fieldType(): string {
+        return this._config.type;
+    }
+
+    getName(): string {
+        return this._config.name;
+    }
+
+    getType(): string {
         return this._config.type;
     }
 
@@ -96,13 +106,21 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
+    disabledWhen(fn: DisabledWhenCallback): this {
+        if (!this._config.disabledWhenCallbacks) {
+            this._config.disabledWhenCallbacks = [];
+        }
+        this._config.disabledWhenCallbacks.push(fn);
+        return this;
+    }
+
     required(message?: string): this {
         this._config.required = true;
         this._config.requiredMessage = message;
         return this;
     }
 
-    requiredWhen(fn: (form: IFormModel) => boolean, message?: string): this {
+    requiredWhen(fn: (params: IFieldCallbackParams) => boolean, message?: string): this {
         if (!this._config.requiredWhenCallbacks) {
             this._config.requiredWhenCallbacks = [];
         }
@@ -172,6 +190,11 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
+    context(fn: FieldContextCallback): this {
+        this._config.context = fn;
+        return this;
+    }
+
     getTags(): string[] {
         return this._config.tags ?? [];
     }
@@ -181,7 +204,7 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
-    options(opts: IValueOption[] | ((form: IFormModel) => IValueOption[])): this {
+    options(opts: IValueOption[] | ((params: IFieldCallbackParams) => IValueOption[])): this {
         this._config.options = opts;
         if (this._config.renderer === "textInput" || this._config.renderer === "numberInput") {
             this._config.renderer = "dropdown";
@@ -199,7 +222,8 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
     }
 
     build(name: string): IFieldConfig {
-        return { ...this._config, name, normalizeValue: (v: unknown) => this.normalizeValue(v) };
+        this._config.name = name;
+        return { ...this._config, normalizeValue: (v: unknown) => this.normalizeValue(v) };
     }
 }
 

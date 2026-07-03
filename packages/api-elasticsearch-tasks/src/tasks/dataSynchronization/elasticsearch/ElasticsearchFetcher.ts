@@ -1,9 +1,7 @@
-import type { Client } from "@webiny/api-opensearch";
-import type {
-    IElasticsearchFetcher,
-    IElasticsearchFetcherFetchParams,
-    IElasticsearchFetcherFetchResponse,
-    IElasticsearchFetcherFetchResponseItem
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import {
+    ElasticsearchFetcher as Abstraction,
+    type IElasticsearchFetcherFetchResponseItem
 } from "./abstractions/ElasticsearchFetcher.js";
 import {
     type OpenSearchSearchResponse,
@@ -13,21 +11,18 @@ import {
 import { shouldIgnoreEsResponseError } from "./shouldIgnoreEsResponseError.js";
 import { inspect } from "node:util";
 
-export interface IElasticsearchFetcherParams {
-    client: Client;
-}
+class ElasticsearchFetcherImpl implements Abstraction.Interface {
+    private readonly client: OpenSearchClient.Client;
 
-export class ElasticsearchFetcher implements IElasticsearchFetcher {
-    private readonly client: Client;
-
-    public constructor(params: IElasticsearchFetcherParams) {
-        this.client = params.client;
+    constructor(openSearchClient: OpenSearchClient.Interface) {
+        this.client = openSearchClient.use();
     }
+
     public async fetch({
         index,
         cursor,
         limit
-    }: IElasticsearchFetcherFetchParams): Promise<IElasticsearchFetcherFetchResponse> {
+    }: Abstraction.FetchParams): Promise<Abstraction.FetchResponse> {
         let response: OpenSearchSearchResponse;
         try {
             response = await this.client.search({
@@ -48,9 +43,6 @@ export class ElasticsearchFetcher implements IElasticsearchFetcher {
                 }
             });
         } catch (ex) {
-            /**
-             * If we ignore the error, we can continue with the next index.
-             */
             if (shouldIgnoreEsResponseError(ex)) {
                 if (process.env.DEBUG === "true") {
                     console.error(
@@ -80,10 +72,6 @@ export class ElasticsearchFetcher implements IElasticsearchFetcher {
             };
         }
 
-        /**
-         * TODO expect errors over hit properties is required due to opensearch library narrowing types too much because of the _source: false. At least what Claude says, didnt go into it too much.
-         * Properties are there, but types are not correct.
-         */
         const hasMoreItems = hits.length > limit;
         let nextCursor: PrimitiveValue[] | undefined;
         if (hasMoreItems) {
@@ -117,3 +105,8 @@ export class ElasticsearchFetcher implements IElasticsearchFetcher {
         };
     }
 }
+
+export const ElasticsearchFetcher = Abstraction.createImplementation({
+    implementation: ElasticsearchFetcherImpl,
+    dependencies: [OpenSearchClient]
+});

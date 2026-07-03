@@ -1,78 +1,59 @@
-import { createApiCore } from "@webiny/api-core";
-import createGraphQLHandler from "@webiny/handler-graphql";
-import { createEventHandler, createHandler } from "@webiny/handler-aws/raw";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
-import { SecurityPermission } from "@webiny/api-core/types/security.js";
-import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import type { ApiCoreContext, ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
+import {
+    createBackgroundTaskContext,
+    createBackgroundTaskGraphQL,
+    TaskServiceTransport
+} from "@webiny/background-tasks/api";
+import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
+import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { createContextPlugin } from "@webiny/api";
 import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
-import { createTenancyAndSecurity } from "./tenancySecurity.js";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createWebsiteBuilder } from "~/index.js";
 import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
-import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createIdentity } from "./identity.js";
-import { createBackgroundTasks } from "~tests/mocks/mockBackgroundTasks.js";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { PageModelPlugin } from "~/domain/page/page.model.js";
+import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
-export interface UseHandlerParams {
-    permissions?: SecurityPermission[];
-    identity?: IdentityData | null;
-    plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-}
+const DEFAULT_IDENTITY: IdentityData = {
+    id: "id-12345678",
+    type: "admin",
+    displayName: "John Doe"
+};
 
-export const useHandler = (params: UseHandlerParams = {}) => {
-    const { permissions, identity, plugins = [] } = params;
+type Params = Omit<CmsTestHandlerParams, "features">;
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-
-    const testProjectLicense = createTestWcpLicense();
-
-    const handler = createHandler<any, ApiCoreContext>({
+export const useHandler = (params: Params = {}) => {
+    const { getContext } = createCmsTestHandler({
+        ...params,
+        // identity === null → anonymous; the shared harness authenticates the null identity natively
+        // (TestAuthenticator returns it), so no post-auth override is needed.
+        //
+        // Background-task plugins must come BEFORE the Website Builder plugins: createBackgroundTaskContext
+        // registers the "wbyTask" CMS model, and it has to be present before WB/Languages init lists +
+        // caches the per-request model set (otherwise createBackgroundTaskGraphQL can't find it).
         plugins: [
-            createApiCore({
-                storageOperations: apiCoreStorage.storageOperations,
-                testProjectLicense
+            createBackgroundTaskContext(),
+            ...createBackgroundTaskGraphQL(),
+            createContextPlugin(ctx => {
+                ctx.container.register(InvalidateCloudfrontCacheTaskDefinition);
             }),
-            ...cmsStorage.plugins,
-            createGraphQLHandler(),
-            ...createTenancyAndSecurity({
-                permissions,
-                identity: identity === undefined ? createIdentity() : identity
-            }),
-            createHeadlessCmsContext(),
-            createBackgroundTasks(),
-            createHeadlessCmsGraphQL(),
             createWebsiteBuilder(),
-            createContextPlugin(context => {
-                context.container.register(InvalidateCloudfrontCacheTaskDefinition);
-            }),
-            createRegisterExtensionPlugin(context => {
-                LanguagesExtension.register(context.container);
-            }),
-            createEventHandler<any, ApiCoreContext, ApiCoreContext>(async ({ context }) => {
-                return context;
-            }),
-            plugins
-        ]
+            ...[params.plugins].flat(Infinity as 1).filter(Boolean)
+        ],
+        features: container => {
+            container.register(PageModelPlugin);
+            container.register(RedirectModelPlugin);
+            LanguagesExtension.register(container);
+            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin()[0]);
+        }
     });
 
     return {
-        handler: () => {
-            return handler(
-                {
-                    headers: {
-                        ["x-tenant"]: "root",
-                        ["Content-Type"]: "application/json"
-                    }
-                } as unknown as APIGatewayEvent,
-                {} as unknown as LambdaContext
-            );
-        }
+        identity: params.identity === undefined ? DEFAULT_IDENTITY : params.identity,
+        tenant: { id: "root" },
+        elasticsearch: createTestOpenSearchClient(),
+        handler: () => getContext<ApiCoreContext>()
     };
 };

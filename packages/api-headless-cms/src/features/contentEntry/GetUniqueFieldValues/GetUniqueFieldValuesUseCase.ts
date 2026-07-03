@@ -5,6 +5,7 @@ import {
     GetUniqueFieldValuesUseCase as UseCaseAbstraction
 } from "./abstractions.js";
 import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { FieldNotSearchableError, InvalidWhereConditionError } from "./errors.js";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
@@ -14,7 +15,8 @@ class GetUniqueFieldValuesUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
         private repository: GetUniqueFieldValuesRepository.Interface,
         private accessControl: AccessControl.Interface,
-        private cmsContext: CmsContext.Interface
+        private cmsContext: CmsContext.Interface,
+        private identityContext: IdentityContext.Interface
     ) {}
 
     async execute(
@@ -37,7 +39,7 @@ class GetUniqueFieldValuesUseCaseImpl implements UseCaseAbstraction.Interface {
         // Apply ownership filter if needed
         const canAccessOnlyOwned = await this.accessControl.canAccessOnlyOwnedEntries({ model });
         if (canAccessOnlyOwned) {
-            const identity = this.cmsContext.security.getIdentity();
+            const identity = this.identityContext.getIdentity();
             where.createdBy = identity.id;
         }
 
@@ -87,5 +89,5 @@ class GetUniqueFieldValuesUseCaseImpl implements UseCaseAbstraction.Interface {
 export const GetUniqueFieldValuesUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: GetUniqueFieldValuesUseCaseImpl,
-    dependencies: [GetUniqueFieldValuesRepository, AccessControl, CmsContext]
+    dependencies: [GetUniqueFieldValuesRepository, AccessControl, CmsContext, IdentityContext]
 });

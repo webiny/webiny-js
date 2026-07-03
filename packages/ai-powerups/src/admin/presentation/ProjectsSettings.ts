@@ -1,5 +1,4 @@
 import { generateAlphaNumericId } from "@webiny/utils";
-import type { IFormModel } from "@webiny/app-admin";
 import { AiPowerUpsSettingsGroup } from "./AiPowerUpsSettings/settingsGroup.js";
 
 class ProjectsSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
@@ -47,8 +46,8 @@ class ProjectsSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                         .description(
                             "Auto-populates the reader persona when this project is selected."
                         )
-                        .options((formModel: IFormModel) => {
-                            const data = formModel.getData();
+                        .options(({ form }) => {
+                            const data = form.getData();
                             const presets = data?.readerPersonas?.presets;
                             if (!presets || presets.length === 0) {
                                 return [];
@@ -64,8 +63,8 @@ class ProjectsSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                         .description(
                             "Auto-populates the writer persona when this project is selected."
                         )
-                        .options((formModel: IFormModel) => {
-                            const data = formModel.getData();
+                        .options(({ form }) => {
+                            const data = form.getData();
                             const presets = data?.writerPersonas?.presets;
                             if (!presets || presets.length === 0) {
                                 return [];

@@ -1,0 +1,17 @@
+import { CmsFieldRenderer } from "~/presentation/fieldRenderers/abstractions.js";
+
+class ObjectAccordionMultipleRendererImpl implements CmsFieldRenderer.Interface {
+    rendererName = "object-accordion-multiple";
+    formRenderer = "objectAccordionMultiple";
+    name = "Accordion (Multiple)";
+    description = "Renders fields within an accordion.";
+
+    canUse() {
+        return false;
+    }
+}
+
+export const ObjectAccordionMultipleRenderer = CmsFieldRenderer.createImplementation({
+    implementation: ObjectAccordionMultipleRendererImpl,
+    dependencies: []
+});

@@ -3,7 +3,6 @@ import type { PluginsContainer as PluginsContainerType } from "@webiny/plugins";
 import type { CmsEntry, CmsEntryValues, CmsModel, CmsModelField } from "~/types/index.js";
 
 export const PluginsContainer = createAbstraction<PluginsContainerType>("PluginsContainer");
-
 export namespace PluginsContainer {
     export type Interface = PluginsContainerType;
 }

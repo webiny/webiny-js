@@ -1,4 +1,4 @@
-import type { WbIdentity, WbLive, WbLocation, WbSystem } from "~/types.js";
+import type { WbIdentity, WbLive, WbLocation, WbPageSystem } from "~/types.js";
 import type { WbStatus } from "~/constants.js";
 import type { Page } from "~/domain/Page/index.js";
 
@@ -19,7 +19,7 @@ export interface PageDto {
     savedOn: string;
     modifiedBy: WbIdentity;
     modifiedOn: string;
-    system: WbSystem | null;
+    system: WbPageSystem | null;
     live: WbLive | null;
 }
 

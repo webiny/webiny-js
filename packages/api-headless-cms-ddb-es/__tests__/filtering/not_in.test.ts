@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types";
-import { createPluginsContainer, createQuery, Query } from "./mocks";
+import { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types";
+import { createQuery, Query } from "./mocks";
 import { createExecFiltering, CreateExecFilteringResponse } from "./mocks/filtering";
 
 describe("not_in filter", () => {
@@ -10,9 +10,7 @@ describe("not_in filter", () => {
 
     beforeEach(() => {
         query = createQuery();
-        execFiltering = createExecFiltering({
-            plugins: createPluginsContainer()
-        });
+        execFiltering = createExecFiltering();
     });
 
     it("should add not_in filter - string only", async () => {
@@ -26,7 +24,7 @@ describe("not_in filter", () => {
             where
         });
 
-        const expected: ElasticsearchBoolQueryConfig = {
+        const expected: OpenSearchBoolQueryConfig = {
             should: [],
             must: [],
             filter: [],
@@ -53,7 +51,7 @@ describe("not_in filter", () => {
             where
         });
 
-        const expected: ElasticsearchBoolQueryConfig = {
+        const expected: OpenSearchBoolQueryConfig = {
             should: [],
             must: [],
             filter: [],

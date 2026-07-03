@@ -1,24 +1,16 @@
-import type { IManager } from "~/types.js";
-import type { ITaskResult } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type { IndexManager } from "~/settings/index.js";
 import type { IIndexManager } from "~/settings/types.js";
+import { Manager } from "~/abstractions/Manager.js";
+import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { IElasticsearchEnableIndexingTaskInput } from "~/tasks/enableIndexing/types.js";
+import { EnableIndexingTaskRunner as Abstraction } from "./abstractions/EnableIndexingTaskRunner.js";
 
-export class EnableIndexingTaskRunner {
-    private readonly manager: IManager<IElasticsearchEnableIndexingTaskInput>;
-    private readonly indexManager: IIndexManager;
-
-    public constructor(
-        manager: IManager<IElasticsearchEnableIndexingTaskInput>,
-        indexManager: IndexManager
-    ) {
-        this.manager = manager;
-        this.indexManager = indexManager;
-    }
+class EnableIndexingTaskRunnerImpl implements Abstraction.Interface {
+    constructor(private readonly manager: Manager.Interface) {}
 
     public async exec(
-        matching?: string
-    ): Promise<ITaskResult<IElasticsearchEnableIndexingTaskInput>> {
+        matching: string | undefined,
+        indexManager: IIndexManager
+    ): Promise<TaskDefinition.Result<IElasticsearchEnableIndexingTaskInput>> {
         if (this.manager.controller.runtime.isAborted()) {
             return this.manager.controller.response.aborted();
         }
@@ -30,7 +22,7 @@ export class EnableIndexingTaskRunner {
             return index.includes(matching);
         };
 
-        const indexes = await this.indexManager.list();
+        const indexes = await indexManager.list();
         const enabled: string[] = [];
         const failed: string[] = [];
         for (const index of indexes) {
@@ -38,7 +30,7 @@ export class EnableIndexingTaskRunner {
                 continue;
             }
             try {
-                await this.indexManager.enableIndexing(index);
+                await indexManager.enableIndexing(index);
                 enabled.push(index);
             } catch (ex) {
                 failed.push(index);
@@ -54,3 +46,8 @@ export class EnableIndexingTaskRunner {
         });
     }
 }
+
+export const EnableIndexingTaskRunner = Abstraction.createImplementation({
+    implementation: EnableIndexingTaskRunnerImpl,
+    dependencies: [Manager]
+});

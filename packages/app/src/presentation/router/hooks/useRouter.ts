@@ -10,6 +10,7 @@ export const useRouter = () => {
 
     return {
         goToRoute: presenter.goToRoute.bind(presenter),
+        goBack: presenter.goBack.bind(presenter),
         getLink: presenter.getLink.bind(presenter),
         addTransitionGuard: presenter.addTransitionGuard.bind(presenter),
         isTransitionBlocked: presenter.isTransitionBlocked.bind(presenter),

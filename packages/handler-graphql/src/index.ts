@@ -1,15 +1,15 @@
-import type { Plugin } from "@webiny/plugins/types.js";
-import type { HandlerGraphQLOptions } from "./types.js";
-import createGraphQLHandler from "./createGraphQLHandler.js";
-
 export * from "./errors.js";
+export { registerLegacyPluginsViaGqlContextEnhancer } from "./registerLegacyPluginsViaGqlContextEnhancer.js";
+export { registerLegacyPluginsViaGqlContextualSchema } from "./registerLegacyPluginsViaGqlContextualSchema.js";
 export * from "./responses.js";
 export * from "./utils/index.js";
 export * from "./plugins/index.js";
+export * from "./createRequestBody.js";
 export * from "./processRequestBody.js";
 export * from "./createResolverDecorator.js";
 export * from "./ResolverDecoration.js";
+export * from "./engine/index.js";
 
-export default (options: HandlerGraphQLOptions = {}): Plugin[] => {
-    return createGraphQLHandler(options);
-};
+// Backward-compat stub — the Fastify GraphQL route was replaced by GraphQLRoute
+// registered via GraphQLEngineFeature. This default export is a no-op.
+export default () => [];

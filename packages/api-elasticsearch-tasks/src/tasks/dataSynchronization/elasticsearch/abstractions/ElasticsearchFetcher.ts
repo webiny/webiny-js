@@ -1,3 +1,4 @@
+import { createAbstraction } from "@webiny/feature/api";
 import type { PrimitiveValue } from "@webiny/api-opensearch/types.js";
 
 export interface IElasticsearchFetcherFetchResponseItem {
@@ -22,4 +23,15 @@ export interface IElasticsearchFetcherFetchResponse {
 
 export interface IElasticsearchFetcher {
     fetch(params: IElasticsearchFetcherFetchParams): Promise<IElasticsearchFetcherFetchResponse>;
+}
+
+export const ElasticsearchFetcher = createAbstraction<IElasticsearchFetcher>(
+    "ElasticsearchTasks/ElasticsearchFetcher"
+);
+
+export namespace ElasticsearchFetcher {
+    export type Interface = IElasticsearchFetcher;
+    export type FetchParams = IElasticsearchFetcherFetchParams;
+    export type FetchResponse = IElasticsearchFetcherFetchResponse;
+    export type FetchResponseItem = IElasticsearchFetcherFetchResponseItem;
 }

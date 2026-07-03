@@ -16,9 +16,9 @@
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/project-utils": "0.0.0",
     "typescript": "6.0.3",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.9"
   }
 }

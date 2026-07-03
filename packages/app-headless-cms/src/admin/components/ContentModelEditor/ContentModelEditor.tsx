@@ -19,8 +19,6 @@ import DragPreview from "../DragPreview.js";
 import { useModelEditor } from "./useModelEditor.js";
 import type { CmsEditorFieldsLayout, CmsModelField } from "~/types.js";
 import { ContentEntryEditorWithConfig } from "~/admin/config/contentEntries/index.js";
-import { ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext.js";
-import { ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext.js";
 import { ModelIsBeingDeletedError } from "~/admin/components/ContentModelEditor/ModelIsBeingDeletedError/index.js";
 
 const t = i18n.ns("app-headless-cms/admin/editor");
@@ -184,14 +182,10 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                                         data-testid={"cms.editor.tab.preview"}
                                     >
                                         <ContentEntryEditorWithConfig>
-                                            <ContentEntriesProvider contentModel={data}>
-                                                <ContentEntryProvider readonly={true}>
-                                                    <PreviewTab
-                                                        activeTab={true}
-                                                        onSwitchToEdit={() => setActiveTab("edit")}
-                                                    />
-                                                </ContentEntryProvider>
-                                            </ContentEntriesProvider>
+                                            <PreviewTab
+                                                activeTab={true}
+                                                onSwitchToEdit={() => setActiveTab("edit")}
+                                            />
                                         </ContentEntryEditorWithConfig>
                                     </div>
                                 )}

@@ -1,6 +1,6 @@
 import React from "react";
 import { PageEditorConfig } from "@webiny/app-website-builder";
-import { useWorkflowState, WorkflowStateValue } from "@webiny/app-workflows";
+import { useWorkflowState } from "@webiny/app-workflows";
 import { observer } from "mobx-react-lite";
 
 const { Ui } = PageEditorConfig;
@@ -14,7 +14,7 @@ const WrappedPublishButton = observer((props: IWrappedPublishButtonProps) => {
     /**
      * Publish button should be visible only when there is no workflow available and when workflow state is approved.
      */
-    if (!presenter.vm.workflow || presenter.vm.state?.state === WorkflowStateValue.approved) {
+    if (!presenter.vm.hasWorkflow || presenter.vm.isApproved) {
         return props.element;
     }
 

@@ -23,16 +23,18 @@ describe("Webhook persistence error in GraphQL", () => {
             (cause as any).code = "ECONNREFUSED";
             (cause as any).data = { host: "localhost", port: 5432 };
 
+            const createWebhookRepositoryMock = createRegisterExtensionPlugin(context => {
+                context.container.registerInstance(CreateWebhookRepository, {
+                    execute: async () => {
+                        return Result.fail(WebhookPersistenceError.from(cause));
+                    }
+                });
+            });
+
+            createWebhookRepositoryMock.name = "test-create-webhook-repository-mock";
+
             const handler = useGraphQLHandler({
-                plugins: [
-                    createRegisterExtensionPlugin(context => {
-                        context.container.registerInstance(CreateWebhookRepository, {
-                            execute: async () => {
-                                return Result.fail(WebhookPersistenceError.from(cause));
-                            }
-                        });
-                    })
-                ]
+                plugins: [createWebhookRepositoryMock]
             });
 
             const [response] = await handler.invoke({

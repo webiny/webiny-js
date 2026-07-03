@@ -38,6 +38,8 @@ export { FileUrlGenerator } from "~/features/file/FileUrlGenerator/abstractions.
 
 export { GetFileRepository, GetFileUseCase } from "~/features/file/GetFile/abstractions.js";
 
+export { GetFileByUrlUseCase } from "~/features/file/GetFileByUrl/abstractions.js";
+
 export { ListFilesRepository, ListFilesUseCase } from "~/features/file/ListFiles/abstractions.js";
 
 export { ListTagsRepository, ListTagsUseCase } from "~/features/file/ListTags/abstractions.js";

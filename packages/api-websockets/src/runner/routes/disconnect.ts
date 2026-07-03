@@ -1,15 +1,15 @@
-import { WebsocketsEventRoute } from "~/handler/types.js";
-import { createWebsocketsRoutePlugin } from "~/plugins/WebsocketsRoutePlugin.js";
+import type { WebsocketsRoute } from "~/types.js";
+import type { WebsocketsRouteHandler } from "~/features/Routes/abstractions.js";
 
-export const createWebsocketsRouteDisconnectPlugin = () => {
-    const plugin = createWebsocketsRoutePlugin(WebsocketsEventRoute.disconnect, async params => {
-        const { registry, event, response } = params;
+const DISCONNECT: WebsocketsRoute = "disconnect";
+
+export const websocketsRouteDisconnect: WebsocketsRouteHandler.Interface = {
+    route: DISCONNECT,
+    async run({ registry, event, response }) {
         await registry.unregister({
-            connectionId: event.requestContext.connectionId
+            connectionId: event.context.connectionId
         });
 
         return response.ok();
-    });
-    plugin.name = "websockets.route.disconnect.default";
-    return plugin;
+    }
 };

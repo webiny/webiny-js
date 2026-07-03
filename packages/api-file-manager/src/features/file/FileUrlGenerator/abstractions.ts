@@ -1,11 +1,15 @@
 import { createAbstraction } from "@webiny/feature/api";
+import type { File } from "~/domain/file/types.js";
 
-interface IFileUrlGenerator {
+export interface IFileUrlGenerator {
     generateUrl(file: File): string;
+    init?(): Promise<void>;
 }
 
-/** Generate URLs for uploaded files. */
-export const FileUrlGenerator = createAbstraction<IFileUrlGenerator>("IFileUrlGenerator");
+/* Generate URLs for uploaded files. */
+export const FileUrlGenerator = createAbstraction<IFileUrlGenerator>(
+    "FileManager/FileUrlGenerator"
+);
 
 export namespace FileUrlGenerator {
     export type Interface = IFileUrlGenerator;

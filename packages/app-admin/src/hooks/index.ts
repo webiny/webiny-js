@@ -1,3 +1,4 @@
+export * from "./useNamedConfirmationDialog.js";
 export * from "./useConfirmationDialog.js";
 export * from "./useDialog.js";
 export * from "./useOpenDialog.js";

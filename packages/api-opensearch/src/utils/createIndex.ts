@@ -1,7 +1,5 @@
 import type { Client } from "~/client.js";
-import type { PluginsContainer } from "@webiny/plugins";
-import { getLastAddedIndexPlugin } from "~/indices.js";
-import type { OpenSearchIndexPlugin } from "~/plugins/index.js";
+import type { OpenSearchIndex } from "~/features/OpenSearchIndex/abstractions/OpenSearchIndex.js";
 import WebinyError from "@webiny/error";
 
 interface OnExists {
@@ -15,11 +13,10 @@ interface OnError {
 interface ExistsIndexParams {
     client: Client;
     index: string;
-    onExists?: OnExists;
 }
 
 const indexExists = async (params: ExistsIndexParams): Promise<boolean> => {
-    const { client, index, onExists } = params;
+    const { client, index } = params;
 
     try {
         const response = await client.indices.exists({
@@ -33,9 +30,6 @@ const indexExists = async (params: ExistsIndexParams): Promise<boolean> => {
         if (!response.body) {
             return false;
         }
-        if (onExists) {
-            onExists();
-        }
         return true;
     } catch {
         console.error(`Could not determine if the index "${index}" exists.`);
@@ -48,7 +42,7 @@ interface IndexCreateParams {
     index: string;
     type: string;
     tenant: string;
-    plugin: OpenSearchIndexPlugin;
+    plugin: OpenSearchIndex.Interface;
     onError?: OnError;
 }
 
@@ -88,7 +82,7 @@ const indexCreate = async (params: IndexCreateParams): Promise<void> => {
 
 interface CreateIndexParams {
     client: Client;
-    plugins: PluginsContainer;
+    plugin: OpenSearchIndex.Interface;
     type: string;
     tenant: string;
     index: string;
@@ -97,11 +91,7 @@ interface CreateIndexParams {
 }
 
 export const createIndex = async (params: CreateIndexParams): Promise<void> => {
-    const { plugins, type, onExists } = params;
-    const plugin = getLastAddedIndexPlugin<OpenSearchIndexPlugin>({
-        container: plugins,
-        type
-    });
+    const { plugin, onExists } = params;
 
     const exists = await indexExists(params);
     if (exists) {

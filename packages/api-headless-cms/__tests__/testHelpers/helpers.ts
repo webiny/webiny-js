@@ -1,5 +1,11 @@
 import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
+export const defaultIdentity: IdentityData = {
+    id: "id-12345678",
+    type: "admin",
+    displayName: "John Doe"
+};
+
 export interface PermissionsArg {
     name: string;
     models?: string[];

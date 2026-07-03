@@ -1,6 +1,5 @@
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { DynamoDBRecord, Context as HandlerContext } from "@webiny/handler-aws/types.js";
-import type { OpenSearchContext } from "@webiny/api-opensearch/types.js";
+import type { DynamoDBRecord } from "@webiny/aws-sdk/types/index.js";
 
 export interface IOperationsBuilderBuildParams {
     records: DynamoDBRecord[];
@@ -25,11 +24,12 @@ export interface IDeleteOperationParams {
 
 export interface IOperations {
     items: GenericRecord[];
+    /* Number of Elasticsearch bulk-array entries (an insert/modify contributes 2: action + doc). */
     total: number;
+    /* Number of records that produced an operation (insert/modify/delete each count once). */
+    count: number;
     clear(): void;
     insert(params: IInsertOperationParams): void;
     modify(params: IModifyOperationParams): void;
     delete(params: IDeleteOperationParams): void;
 }
-
-export interface Context extends OpenSearchContext, HandlerContext {}

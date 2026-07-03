@@ -9,6 +9,7 @@ export const HorizontalTabsRenderer = observer(function HorizontalTabsRenderer({
 }: TabsNodeRendererProps) {
     return (
         <Tabs
+            {...(node.rendererSettings as Record<string, any>)}
             value={node.activeTabId}
             onValueChange={id => node.setActiveTab(id)}
             tabs={node.tabs.map(tab => (
@@ -19,7 +20,7 @@ export const HorizontalTabsRenderer = observer(function HorizontalTabsRenderer({
                     trigger={tab.label}
                     disabled={tab.disabled}
                     content={
-                        <div className={"flex flex-col gap-4 mt-md"}>
+                        <div className={"flex flex-col gap-4"}>
                             {tab.layout.map((childNode, index) => (
                                 <LayoutNodeRenderer key={index} node={childNode} />
                             ))}

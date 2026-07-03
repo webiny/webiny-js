@@ -21,6 +21,7 @@ function createMockFormModel(overrides?: Partial<IFormVM>): IFormModel {
     const vm: IFormVM = {
         layout: [],
         errors: [],
+        hasErrors: false,
         isDirty: false,
         isValid: true,
         submitCount: 0,

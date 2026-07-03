@@ -16,7 +16,7 @@ jobs:
       AWS_REGION: ${{ secrets.DEV_AWS_REGION }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.DEV_PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.DEV_PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND: ${{ secrets.DEV_WEBINY_PULUMI_BACKEND }}
+      WEBINY_CLI_PULUMI_BACKEND: ${{ secrets.DEV_WEBINY_PULUMI_BACKEND }}
       WEBINY_PROJECT_ID: ${{ secrets.DEV_WEBINY_PROJECT_ID }}
       WEBINY_PROJECT_API_KEY: ${{ secrets.DEV_WEBINY_PROJECT_API_KEY }}
     permissions:
@@ -28,11 +28,11 @@ jobs:
         with:
           role-to-assume: ${{ secrets.DEV_AWS_ROLE_ARN }}
           aws-region: ${{ secrets.DEV_AWS_REGION }}
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Install and cache dependencies.
       - uses: actions/cache@v4

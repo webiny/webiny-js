@@ -5,7 +5,6 @@ import {
     useDocumentEditor
 } from "@webiny/app-website-builder/exports/admin/website-builder/page/editor.js";
 import { Icon } from "@webiny/admin-ui";
-import { useApolloClient } from "@apollo/react-hooks";
 import { useScheduleDialog } from "@webiny/app-scheduler";
 import { WB_PAGE_NAMESPACE } from "~/utils/namespace.js";
 
@@ -17,9 +16,7 @@ export const PageEditorScheduleMenuItem = () => {
     // @ts-expect-error status is not defined in the document interface, but we know it is there
     const status = (state.status || "draft") as string;
 
-    const client = useApolloClient();
     const { showDialog: showSchedulerDialog } = useScheduleDialog({
-        client,
         namespace: WB_PAGE_NAMESPACE,
         target: {
             id: state.id,

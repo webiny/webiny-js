@@ -4,11 +4,11 @@
   "references": [
     { "path": "../api" },
     { "path": "../error" },
+    { "path": "../event-handler-core" },
     { "path": "../feature" },
     { "path": "../handler" },
     { "path": "../plugins" },
-    { "path": "../utils" },
-    { "path": "../handler-aws" }
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -21,8 +21,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/feature/api": ["../feature/src/api/index.js"],
-      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
@@ -30,9 +30,7 @@
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"]
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }

@@ -1,4 +1,3 @@
-import type { HandlerFactoryParams } from "@webiny/handler-aws/types.js";
 import type { IWebsocketsEventValidator } from "~/validator/index.js";
 import type { IWebsocketsResponse } from "~/response/index.js";
 import type {
@@ -12,7 +11,7 @@ export interface HandlerCallable {
     (event: IWebsocketsIncomingEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
 }
 
-export interface HandlerParams extends HandlerFactoryParams {
+export interface HandlerParams {
     validator?: IWebsocketsEventValidator;
     response?: IWebsocketsResponse;
 }

@@ -1,52 +1,27 @@
-import type { CreateHandlerCoreParams } from "./plugins";
-import { createHandlerCore } from "./plugins";
-import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import { defaultIdentity } from "./tenancySecurity";
-import type { LambdaContext } from "@webiny/handler-aws/types";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import { createHeadlessCmsScheduleContext } from "~/context.js";
+import { CmsSchedulerFeature } from "~/CmsSchedulerFeature.js";
+import { SchedulerFeature, SchedulerService } from "@webiny/api-scheduler";
+import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
 
-interface CmsHandlerEvent {
-    path: string;
-    headers: {
-        ["x-tenant"]: string;
-        [key: string]: string;
-    };
-}
+type Params = Omit<CmsTestHandlerParams, "features">;
 
-export const useHandler = <C extends CmsContext>(params: CreateHandlerCoreParams) => {
-    const core = createHandlerCore(params);
-
-    const plugins = [...core.plugins].concat([
-        createRawEventHandler<CmsHandlerEvent, C, C>(async ({ context }) => {
-            return context;
-        }),
-        createHeadlessCmsScheduleContext()
-    ]);
-
-    const handler = createRawHandler<CmsHandlerEvent, C>({
-        plugins,
-        debug: process.env.DEBUG === "true"
+export const useHandler = <C extends CmsContext = CmsContext>(params: Params = {}) => {
+    const { getContext } = createCmsTestHandler({
+        ...params,
+        features: container => {
+            SchedulerFeature.register(container);
+            CmsSchedulerFeature.register(container);
+            container.registerInstance(SchedulerService, new VoidSchedulerService());
+        }
     });
 
-    const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
-
     return {
-        plugins,
-        identity: params.identity || defaultIdentity,
-        tenant: core.tenant,
-        elasticsearch: elasticsearchClient,
-        handler: (input?: CmsHandlerEvent) => {
-            const payload: CmsHandlerEvent = {
-                path: "/cms/manage",
-                headers: {
-                    "x-webiny-cms-endpoint": "manage",
-                    "x-tenant": "root"
-                },
-                ...input
-            };
-            return handler(payload, {} as LambdaContext);
-        }
+        identity: { id: "id-12345678", type: "admin", displayName: "John Doe" },
+        tenant: { id: "root" },
+        elasticsearch: createTestOpenSearchClient(),
+        handler: () => getContext<C>()
     };
 };

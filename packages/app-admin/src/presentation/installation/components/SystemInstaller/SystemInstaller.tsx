@@ -36,42 +36,44 @@ export const SystemInstaller = observer(({ children }: SystemInstallerProps) => 
 
     return (
         <Tags tags={{ installer: true }}>
-            <div className={"bg-neutral-light h-screen w-[312px] p-xl"}>
-                <div className={"w-[240px] p-"}>
-                    <div className={"mb-lg"}>
-                        <Logo />
+            <div className="flex w-full">
+                <div className={"bg-neutral-light h-screen w-[312px] p-xl"}>
+                    <div className={"w-[240px] p-"}>
+                        <div className={"mb-lg"}>
+                            <Logo />
+                        </div>
+                        <Text as="div" size={"md"} className={"text-neutral-strong mb-lg"}>
+                            Follow these steps to create your very first Webiny project:
+                        </Text>
+                        <SteppedProgress
+                            items={vm.steps.map(step => ({
+                                id: step.name,
+                                label: step.label,
+                                state: stateMap[step.state]
+                            }))}
+                        />
                     </div>
-                    <Text as="div" size={"md"} className={"text-neutral-strong mb-lg"}>
-                        Follow these steps to create your very first Webiny project:
-                    </Text>
-                    <SteppedProgress
-                        items={vm.steps.map(step => ({
-                            id: step.name,
-                            label: step.label,
-                            state: stateMap[step.state]
-                        }))}
-                    />
                 </div>
-            </div>
-            <div className={"flex h-screen w-full justify-center"}>
-                {vm.currentStep === "introduction" ? (
-                    <IntroductionStep nextStep={presenter.nextStep} />
-                ) : null}
-                {vm.currentStep === "basic-info" ? (
-                    <BasicInfoStep nextStep={presenter.nextStep} />
-                ) : null}
-                {vm.currentStep === "admin-account" ? (
-                    <AdminUserStep nextStep={presenter.nextStep} />
-                ) : null}
-                {vm.currentStep === "finish" ? (
-                    <FinishSetupStep
-                        error={vm.error}
-                        installing={vm.installing}
-                        isInstalled={vm.isInstalled}
-                        finishInstallation={presenter.finishInstallation}
-                        installSystem={presenter.installSystem}
-                    />
-                ) : null}
+                <div className={"flex h-screen w-full justify-center"}>
+                    {vm.currentStep === "introduction" ? (
+                        <IntroductionStep nextStep={presenter.nextStep} />
+                    ) : null}
+                    {vm.currentStep === "basic-info" ? (
+                        <BasicInfoStep nextStep={presenter.nextStep} />
+                    ) : null}
+                    {vm.currentStep === "admin-account" ? (
+                        <AdminUserStep nextStep={presenter.nextStep} />
+                    ) : null}
+                    {vm.currentStep === "finish" ? (
+                        <FinishSetupStep
+                            error={vm.error}
+                            installing={vm.installing}
+                            isInstalled={vm.isInstalled}
+                            finishInstallation={presenter.finishInstallation}
+                            installSystem={presenter.installSystem}
+                        />
+                    ) : null}
+                </div>
             </div>
         </Tags>
     );

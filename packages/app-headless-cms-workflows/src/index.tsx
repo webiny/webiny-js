@@ -1,30 +1,30 @@
 import React from "react";
-import { Wcp } from "@webiny/app-admin";
+import { RegisterFeature, Wcp } from "@webiny/app-admin";
 import { CmsWorkflowsEditor } from "~/Routes/index.js";
 import {
-    CmsEntryFormSaveAndPublishButton,
-    CmsEntryFormSaveButton,
     CmsEntryFormScheduleMenuItemAction,
     CmsEntryFormTooltipButton,
-    ContentEntryFormWorkflow,
-    ContentEntryWorkflow
+    ContentEntryFormWorkflow
 } from "~/Components/ContentEntryForm/index.js";
 import { CmsEntriesWorkflowStateListFooterMenu } from "~/Components/CmsEntriesWorkflowStateList/index.js";
 import { ListOpenInNewWindow } from "~/Components/OptionItem/OpenInNewWindow.js";
 import { CmsEntryFormCreateNewRevisionButton } from "~/Components/ContentEntryForm/CmsEntryFormCreateNewRevisionButton.js";
+import { CmsWorkflowsFeature } from "~/presentation/feature.js";
+import { CmsWorkflowsCacheFeature } from "~/features/feature.js";
+import { CmsWorkflowsEditorPresenterFeature } from "~/presentation/cmsWorkflowsEditor/feature.js";
 
 export const CmsWorkflows = () => {
     return (
         <Wcp.CanUseWorkflows>
+            <RegisterFeature feature={CmsWorkflowsFeature} />
+            <RegisterFeature feature={CmsWorkflowsCacheFeature} />
+            <RegisterFeature feature={CmsWorkflowsEditorPresenterFeature} />
             <ListOpenInNewWindow />
             <CmsEntriesWorkflowStateListFooterMenu />
             <CmsWorkflowsEditor />
             <ContentEntryFormWorkflow />
-            <ContentEntryWorkflow />
             <CmsEntryFormTooltipButton />
             <CmsEntryFormScheduleMenuItemAction />
-            <CmsEntryFormSaveAndPublishButton />
-            <CmsEntryFormSaveButton />
             <CmsEntryFormCreateNewRevisionButton />
         </Wcp.CanUseWorkflows>
     );

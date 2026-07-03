@@ -1,4 +1,5 @@
 import WebinyError from "@webiny/error";
+import { BenchmarkAbstraction } from "@webiny/api";
 import type { CmsContext, CmsModel, CmsModelContext, ICmsModelListParams } from "~/types/index.js";
 import { CreateModelUseCase } from "~/features/contentModel/CreateModel/index.js";
 import { CreateModelFromUseCase } from "~/features/contentModel/CreateModelFrom/index.js";
@@ -19,6 +20,7 @@ export interface CreateModelsCrudParams {
 
 export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContext => {
     const { context } = params;
+    const benchmark = context.container.resolve(BenchmarkAbstraction);
 
     const listFilteredModelsCache = createMemoryCache<Promise<CmsModel[]>>();
     const listDatabaseModelsCache = createMemoryCache<Promise<CmsModel[]>>();
@@ -42,7 +44,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
      * Then we combine them and run access filtering on them
      */
     const listModels = async (input?: ICmsModelListParams) => {
-        return context.benchmark.measure("headlessCms.crud.models.listModels", async () => {
+        return benchmark.measure("headlessCms.crud.models.listModels", async () => {
             // Delegate to new ListModels use case
             const useCase = context.container.resolve(ListModelsUseCase);
             const result = await useCase.execute(input);
@@ -56,7 +58,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     };
 
     const getModel = async (modelId: string): Promise<CmsModel> => {
-        return context.benchmark.measure("headlessCms.crud.models.getModel", async () => {
+        return benchmark.measure("headlessCms.crud.models.getModel", async () => {
             // Delegate to new GetModel use case
             const useCase = context.container.resolve(GetModelUseCase);
             const result = await useCase.execute(modelId);
@@ -122,26 +124,23 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         getModelToAstConverter,
         listModels,
         async createModel(input) {
-            return context.benchmark.measure("headlessCms.crud.models.createModel", async () => {
+            return benchmark.measure("headlessCms.crud.models.createModel", async () => {
                 return createModel(input);
             });
         },
 
         async createModelFrom(modelId, userInput) {
-            return context.benchmark.measure(
-                "headlessCms.crud.models.createModelFrom",
-                async () => {
-                    return createModelFrom(modelId, userInput);
-                }
-            );
+            return benchmark.measure("headlessCms.crud.models.createModelFrom", async () => {
+                return createModelFrom(modelId, userInput);
+            });
         },
         async updateModel(modelId, input) {
-            return context.benchmark.measure("headlessCms.crud.models.updateModel", async () => {
+            return benchmark.measure("headlessCms.crud.models.updateModel", async () => {
                 return updateModel(modelId, input);
             });
         },
         async deleteModel(modelId) {
-            return context.benchmark.measure("headlessCms.crud.models.deleteModel", async () => {
+            return benchmark.measure("headlessCms.crud.models.deleteModel", async () => {
                 return deleteModel(modelId);
             });
         }

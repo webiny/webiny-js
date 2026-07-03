@@ -58,7 +58,9 @@ class TaskExecutionsPresenterImpl implements ITaskExecutionsPresenter {
     filter = {
         set: (key: string, value: unknown) => this.listPresenter.actions.filter.set(key, value),
         clear: (key: string) => this.listPresenter.actions.filter.clear(key),
-        clearAll: () => this.listPresenter.actions.filter.clearAll()
+        clearAll: () => this.listPresenter.actions.filter.clearAll(),
+        show: () => this.listPresenter.actions.filter.show(),
+        hide: () => this.listPresenter.actions.filter.hide()
     };
 
     selection = {

@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFeature, useTenantContext } from "@webiny/app-admin";
 import { AuthenticationContextFeature } from "@webiny/app-admin/features/security/AuthenticationContext/feature.js";
+import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
+import { WebsocketEvent } from "./events/WebsocketEvent.js";
 import type {
     IncomingGenericData,
     IWebsocketsContext,
@@ -35,6 +37,7 @@ interface ICurrentData {
 export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps) => {
     const { tenant } = useTenantContext();
     const { authenticationContext } = useFeature(AuthenticationContextFeature);
+    const { eventPublisher } = useFeature(EventPublisherFeature);
 
     const socketsRef = useRef<IWebsocketsManager | null>(null);
 
@@ -143,6 +146,23 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
             setCurrent({ tenant });
         })();
     }, [tenant, subscriptionManager, getToken]);
+
+    /**
+     * Bridge: subscribe once to ALL incoming websocket messages and re-publish each one through
+     * the EventPublisher as a `WebsocketEvent`. Feature code registers `WebsocketEventHandler`
+     * handlers instead of subscribing to the websocket service directly.
+     */
+    useEffect(() => {
+        if (!socketsRef.current) {
+            return;
+        }
+        const subscription = socketsRef.current.onMessage<IncomingGenericData>(async event => {
+            await eventPublisher.publish(new WebsocketEvent(event.data));
+        });
+        return () => {
+            subscription.off();
+        };
+    }, [current.tenant, eventPublisher]);
 
     const websocketActions = useMemo(() => {
         return createWebsocketsActions({

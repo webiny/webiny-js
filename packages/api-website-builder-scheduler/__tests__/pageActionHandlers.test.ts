@@ -1,8 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "./__mocks/context/useHandler.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
-import { createWebsiteBuilderScheduler } from "~/index.js";
 import {
     CreatePageUseCase,
     GetPageByIdUseCase
@@ -22,10 +20,7 @@ describe("Page Action Handlers", () => {
 
     beforeEach(async () => {
         const contextHandler = useHandler({
-            plugins: [createWebsiteBuilderScheduler()],
-            getScheduleClient: () => {
-                return createMockScheduleClient();
-            }
+            plugins: []
         });
         context = await contextHandler.handler();
     });
@@ -52,6 +47,7 @@ describe("Page Action Handlers", () => {
 
         const publishActionResult = await schedulePublishPage.execute({
             id: page.id,
+            tenant: "root",
             scheduleFor: new Date(Date.now() + 100000)
         });
 
@@ -66,6 +62,7 @@ describe("Page Action Handlers", () => {
 
         await executeScheduledAction.execute({
             id: publishActionResult.value!.scheduledAction.id,
+            tenant: "root",
             namespace: publishActionResult.value!.scheduledAction.namespace
         });
 
@@ -94,10 +91,12 @@ describe("Page Action Handlers", () => {
 
         const publishResult = await schedulePublishPage.execute({
             id: page.id,
+            tenant: "root",
             scheduleFor: new Date(Date.now() + 100000)
         });
         await executeScheduledAction.execute({
             id: publishResult.value!.scheduledAction.id,
+            tenant: "root",
             namespace: publishResult.value!.scheduledAction.namespace
         });
 
@@ -106,10 +105,12 @@ describe("Page Action Handlers", () => {
 
         const unpublishResult = await scheduleUnpublishPage.execute({
             id: page.id,
+            tenant: "root",
             scheduleFor: new Date(Date.now() + 1000000)
         });
         await executeScheduledAction.execute({
             id: unpublishResult.value!.scheduledAction.id,
+            tenant: "root",
             namespace: unpublishResult.value!.scheduledAction.namespace
         });
 

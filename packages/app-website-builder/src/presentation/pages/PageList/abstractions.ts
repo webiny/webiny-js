@@ -1,40 +1,38 @@
-import type { FolderDto } from "@webiny/app-aco/domain/folder/FolderDto.js";
 import { createAbstraction } from "@webiny/feature/admin";
-import type { ColumnSorting } from "@webiny/app-utils";
-import type { PageDto } from "~/domain/Page/index.js";
+import type { IListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
+import type { IFolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import type { FolderDto } from "@webiny/app-aco";
+import type { Page } from "~/domain/Page/Page.js";
 
-export interface IDocumentListPresenterInit {
-    folderId: string;
+export interface IPageListInitConfig {
+    initialFolderId?: string;
+    initialSearch?: string;
 }
 
-export interface IDocumentListVm {
-    folderId: string;
-    title: string | undefined;
-    data: PageDto[];
-    folders: FolderDto[];
-    selected: any[];
-    meta: { totalCount: number; currentCount: number };
-    sorting: ColumnSorting[];
-    searchQuery: string;
-    searchLabel: string;
-    isSearch: boolean;
-    isEmpty: boolean;
-    isRoot: boolean;
-    isLoading: boolean;
-    isLoadingMore: boolean;
-    isFilterVisible: boolean;
+export interface IPageListViewModel {
+    showFolders: boolean;
+    childFolders: FolderDto[];
 }
 
-export interface IDocumentListPresenter {
-    init(params: IDocumentListPresenterInit): void;
-    showFilters(show: boolean): void;
-    vm: IDocumentListVm;
+export interface IPageListPresenter {
+    readonly vm: IPageListViewModel;
+    readonly list: IListPresenter<Page>;
+    readonly folders: IFolderTreePresenter;
+
+    deletePage(id: string): Promise<boolean>;
+    publishPage(id: string): Promise<boolean>;
+    unpublishPage(id: string): Promise<boolean>;
+    movePage(id: string, folderId: string): Promise<boolean>;
+    duplicatePage(id: string): Promise<boolean>;
+
+    init(config?: IPageListInitConfig): void;
+    dispose(): void;
 }
 
-export const PageListPresenter = createAbstraction<IDocumentListPresenter>("PageListPresenter");
+export const PageListPresenter = createAbstraction<IPageListPresenter>("PageListPresenter");
 
 export namespace PageListPresenter {
-    export type Interface = IDocumentListPresenter;
-    export type Init = IDocumentListPresenterInit;
-    export type ViewModel = IDocumentListVm;
+    export type Interface = IPageListPresenter;
+    export type ViewModel = IPageListViewModel;
+    export type InitConfig = IPageListInitConfig;
 }

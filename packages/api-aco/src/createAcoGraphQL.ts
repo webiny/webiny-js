@@ -1,13 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { filterSchema } from "~/filter/filter.gql.js";
-import { createFoldersSchema } from "~/folder/folder.gql.js";
-import type { AcoContext } from "~/types.js";
-import { ContextPlugin } from "@webiny/api";
-import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import { createGraphQLSchemaPluginFromFieldPlugins } from "@webiny/api-headless-cms/utils/getSchemaFromFieldPlugins.js";
-import { FOLDER_MODEL_ID } from "~/domain/folder/folder.model.js";
-import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 const emptyResolver = () => ({});
 
@@ -76,40 +68,9 @@ const baseSchema = new GraphQLSchemaPlugin({
     }
 });
 
+// The dynamic folder schema (field plugins + folders schema) is built per-request by AcoInitializer,
+// which needs the resolved per-tenant folder model. Here we only provide the static base + filter
+// schema plugins.
 export const createAcoGraphQL = () => {
-    const folderSchema = new ContextPlugin<AcoContext>(async context => {
-        if (!(await isHeadlessCmsReady(context))) {
-            return;
-        }
-
-        const fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
-
-        await context.security.withoutAuthorization(async () => {
-            const model = (await context.cms.getModel(FOLDER_MODEL_ID)) as CmsModel;
-            const models = await context.cms.listModels();
-            /**
-             * We need to register all plugins for all the CMS fields.
-             */
-            const plugins = createGraphQLSchemaPluginFromFieldPlugins({
-                models,
-                type: "manage",
-                fieldRegistry,
-                createPlugin: ({ schema, type, fieldType }) => {
-                    const plugin = new GraphQLSchemaPlugin(schema);
-                    plugin.name = `aco.graphql.folder.schema.${type}.field.${fieldType}`;
-                    return plugin;
-                }
-            });
-
-            const graphQlPlugin = createFoldersSchema({
-                model,
-                models,
-                fieldRegistry
-            });
-
-            context.plugins.register([...plugins, graphQlPlugin]);
-        });
-    });
-
-    return [baseSchema, folderSchema, filterSchema];
+    return [baseSchema, filterSchema];
 };

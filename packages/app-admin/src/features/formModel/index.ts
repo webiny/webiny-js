@@ -7,12 +7,12 @@ import "./renderers.js";
 // Abstractions (types + DI tokens)
 export {
     FormModelFactory,
-    FormModel,
     RuleEvaluator,
     FieldType,
     FieldBuilderRegistry
 } from "./abstractions.js";
 export type {
+    FormModel,
     IFieldRendererRegistry,
     FieldRendererName,
     FieldRendererSettings,
@@ -55,6 +55,8 @@ export type {
     IRowNodeVM,
     ISeparatorNode,
     ISeparatorNodeVM,
+    IAlertNode,
+    IAlertNodeVM,
     ITabsNode,
     ITabDefinition,
     ITabsNodeVM,
@@ -86,11 +88,10 @@ export type {
 } from "./abstractions.js";
 
 // Implementations
-export { FormModel as FormModelImpl } from "./FormModel.js";
 export { Field } from "./Field.js";
 export { FieldBuilder, createFieldBuilderRegistry } from "./FieldBuilder.js";
 
-// Field type augmentations (side-effect imports ensure declare module blocks are included)
+// Field type augmentations (side effect imports ensure declare module blocks are included)
 import "./fieldTypes/TextFieldType.js";
 import "./fieldTypes/NumberFieldType.js";
 import "./fieldTypes/BooleanFieldType.js";

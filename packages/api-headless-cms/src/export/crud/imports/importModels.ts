@@ -1,6 +1,9 @@
 import type { CmsContext } from "~/types/index.js";
 import type { CmsModelImportResult, ValidCmsModelResult } from "~/export/types.js";
 import { CmsImportAction } from "~/export/types.js";
+import { ListGroupsUseCase } from "~/features/contentModelGroup/ListGroups/index.js";
+import { UpdateModelUseCase } from "~/features/contentModel/UpdateModel/index.js";
+import { CreateModelUseCase } from "~/features/contentModel/CreateModel/index.js";
 
 interface Params {
     context: CmsContext;
@@ -10,7 +13,11 @@ interface Params {
 export const importModels = async (params: Params) => {
     const { context, models } = params;
 
-    const groups = await context.cms.listGroups();
+    const groupsResult = await context.container.resolve(ListGroupsUseCase).execute();
+    if (groupsResult.isFail()) {
+        throw groupsResult.error;
+    }
+    const groups = groupsResult.value;
 
     const results: CmsModelImportResult[] = [];
 
@@ -71,18 +78,11 @@ export const importModels = async (params: Params) => {
          */
         //
         if (model.action === CmsImportAction.UPDATE) {
-            try {
-                const result = await context.cms.updateModel(model.model.modelId, model.model);
-                results.push({
-                    action: model.action,
-                    model: {
-                        ...result,
-                        group: group.slug
-                    },
-                    related: model.related,
-                    imported: true
-                });
-            } catch (ex) {
+            const updateResult = await context.container
+                .resolve(UpdateModelUseCase)
+                .execute(model.model.modelId, model.model);
+            if (updateResult.isFail()) {
+                const ex = updateResult.error;
                 results.push({
                     action: model.action,
                     model: model.model,
@@ -90,12 +90,16 @@ export const importModels = async (params: Params) => {
                     related: model.related,
                     error: {
                         message: ex.message,
-                        code: ex.code || "UPDATE_MODEL_ERROR",
-                        data: {
-                            model: model.model,
-                            ...ex.data
-                        }
+                        code: (ex as any).code || "UPDATE_MODEL_ERROR",
+                        data: { model: model.model, ...(ex as any).data }
                     }
+                });
+            } else {
+                results.push({
+                    action: model.action,
+                    model: { ...updateResult.value, group: group.slug },
+                    related: model.related,
+                    imported: true
                 });
             }
             continue;
@@ -103,18 +107,11 @@ export const importModels = async (params: Params) => {
         /**
          * Create a new model.
          */
-        try {
-            const result = await context.cms.createModel(model.model);
-            results.push({
-                action: model.action,
-                model: {
-                    ...result,
-                    group: group.slug
-                },
-                related: model.related,
-                imported: true
-            });
-        } catch (ex) {
+        const createResult = await context.container
+            .resolve(CreateModelUseCase)
+            .execute(model.model);
+        if (createResult.isFail()) {
+            const ex = createResult.error;
             results.push({
                 action: model.action,
                 model: model.model,
@@ -122,12 +119,16 @@ export const importModels = async (params: Params) => {
                 related: model.related,
                 error: {
                     message: ex.message,
-                    code: ex.code || "CREATE_MODEL_ERROR",
-                    data: {
-                        model: model.model,
-                        ...ex.data
-                    }
+                    code: (ex as any).code || "CREATE_MODEL_ERROR",
+                    data: { model: model.model, ...(ex as any).data }
                 }
+            });
+        } else {
+            results.push({
+                action: model.action,
+                model: { ...createResult.value, group: group.slug },
+                related: model.related,
+                imported: true
             });
         }
     }

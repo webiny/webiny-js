@@ -7,6 +7,7 @@ import { useSnackbar } from "~/hooks/index.js";
 import { Dialog, type DialogProps } from "./Dialog.js";
 import { DialogParamsContext } from "./DialogParamsContext.js";
 import { useAdminConfig } from "~/config/AdminConfig.js";
+import { ConfirmationBridge } from "~/features/confirmation/index.js";
 
 interface ShowDialogParams {
     title: ReactNode;
@@ -208,6 +209,7 @@ export const createDialogsProvider = () => {
             return (
                 <DialogsProvider>
                     <Component>{children}</Component>
+                    <ConfirmationBridge />
                 </DialogsProvider>
             );
         };

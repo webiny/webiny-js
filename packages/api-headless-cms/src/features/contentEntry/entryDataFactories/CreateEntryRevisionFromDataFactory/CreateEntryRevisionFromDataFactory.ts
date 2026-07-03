@@ -5,7 +5,6 @@ import {
     type ICreateEntryRevisionFromDataResponse
 } from "./abstractions.js";
 import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type {
     CmsEntry,
@@ -50,7 +49,6 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
     public constructor(
         private readonly cmsContext: CmsContext.Interface,
         private readonly identityContext: IdentityContext.Interface,
-        private readonly tenantContext: TenantContext.Interface,
         private readonly accessControl: AccessControl.Interface
     ) {}
 
@@ -72,7 +70,7 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
             model,
             values: initialValues,
             entry: originalEntry,
-            skipValidators: options?.skipValidators
+            skipValidation: options?.skipValidation
         });
 
         const values = await referenceFieldsMapping<TValues>({
@@ -189,6 +187,7 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
             revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity)!,
             revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity)!,
             revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
+            revisionDescription: undefined,
             ...revisionLevelPublishingMetaFields,
             locked,
             status,
@@ -214,5 +213,5 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
 export const CreateEntryRevisionFromDataFactory = createImplementation({
     abstraction: FactoryAbstraction,
     implementation: CreateEntryRevisionFromDataFactoryImpl,
-    dependencies: [CmsContext, IdentityContext, TenantContext, AccessControl]
+    dependencies: [CmsContext, IdentityContext, AccessControl]
 });

@@ -1,6 +1,5 @@
-import { IndexSettingsManager } from "~/settings/IndexSettingsManager.js";
-import { DisableIndexing } from "./DisableIndexing.js";
-import { EnableIndexing } from "./EnableIndexing.js";
+import type { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
+import type { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
 import type { IElasticsearchIndexingTaskValuesSettings, IIndexSettingsValues } from "~/types.js";
 import type { IIndexManager } from "~/settings/types.js";
 import type { Client } from "@webiny/api-opensearch";
@@ -29,8 +28,8 @@ const filterIndex = (item?: string) => {
 
 export class IndexManager implements IIndexManager {
     private readonly client: Client;
-    private readonly disable: DisableIndexing;
-    private readonly enable: EnableIndexing;
+    private readonly disable: DisableIndexing.Interface;
+    private readonly enable: EnableIndexing.Interface;
     private readonly _settings: IElasticsearchIndexingTaskValuesSettings;
 
     private readonly defaults: IIndexSettingsValues;
@@ -41,13 +40,14 @@ export class IndexManager implements IIndexManager {
 
     public constructor(
         client: Client,
+        disableIndexing: DisableIndexing.Interface,
+        enableIndexing: EnableIndexing.Interface,
         settings: IElasticsearchIndexingTaskValuesSettings,
         defaults?: Partial<IIndexSettingsValues>
     ) {
-        const indexSettings = new IndexSettingsManager(client);
         this.client = client;
-        this.disable = new DisableIndexing(indexSettings);
-        this.enable = new EnableIndexing(indexSettings);
+        this.disable = disableIndexing;
+        this.enable = enableIndexing;
         this._settings = settings;
         this.defaults = {
             refreshInterval: defaults?.refreshInterval || defaultIndexSettings.refreshInterval,
@@ -78,9 +78,6 @@ export class IndexManager implements IIndexManager {
     }
 
     public async disableIndexing(index: string) {
-        /**
-         * No need to disable indexing if it's already disabled.
-         */
         if (this._settings[index]) {
             return this._settings[index];
         }

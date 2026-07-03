@@ -1,6 +1,6 @@
 import React from "react";
 import { AcoConfig } from "@webiny/app-aco";
-import { useModel } from "@webiny/app-headless-cms-common";
+import { useModel } from "~/admin/components/ModelProvider/index.js";
 
 const { Folder } = AcoConfig;
 

@@ -6,6 +6,7 @@ import {
     Button,
     DelayedOnChange,
     FormComponentDescription,
+    FormComponentErrorMessage,
     IconButton,
     Separator,
     Textarea
@@ -63,6 +64,11 @@ export const TextareasRenderer = createFieldRenderer<"textareas">(({ field }) =>
                 icon={<AddIcon />}
                 text={field.rendererSettings?.addItemLabel ?? "Add Value"}
                 onClick={() => field.addItem("")}
+            />
+            <FormComponentErrorMessage
+                text={field.validation.message}
+                invalid={field.validation.isValid === false}
+                disabled={field.disabled}
             />
         </div>
     );

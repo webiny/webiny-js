@@ -5,8 +5,9 @@ import {
     ListAllLockRecordsOutput
 } from "./abstractions.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
-import { RecordLockingConfig, RecordLockingModel } from "~/domain/abstractions.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsWhereMapper } from "@webiny/api-headless-cms";
+import { RecordLockingConfig, RecordLockingModel } from "~/domain/abstractions.js";
 import { LockRecordPersistenceError } from "~/domain/errors.js";
 import { convertWhereCondition } from "~/utils/convertWhereCondition.js";
 import { LockRecord } from "~/domain/LockRecord.js";
@@ -16,7 +17,8 @@ class ListAllLockRecordsRepositoryImpl implements RepositoryAbstraction.Interfac
     constructor(
         private config: RecordLockingConfig.Interface,
         private listEntries: ListLatestEntriesUseCase.Interface,
-        private model: CmsModel
+        private model: CmsModel,
+        private cmsWhereMapper: CmsWhereMapper.Interface
     ) {}
 
     async execute(
@@ -25,7 +27,10 @@ class ListAllLockRecordsRepositoryImpl implements RepositoryAbstraction.Interfac
         try {
             const params = {
                 ...input,
-                where: convertWhereCondition(input?.where)
+                where: this.cmsWhereMapper.map({
+                    input: convertWhereCondition(input?.where),
+                    fields: this.model.fields
+                })
             };
 
             const result = await this.listEntries.execute<LockRecordValues>(this.model, params);
@@ -50,5 +55,10 @@ class ListAllLockRecordsRepositoryImpl implements RepositoryAbstraction.Interfac
 
 export const ListAllLockRecordsRepository = RepositoryAbstraction.createImplementation({
     implementation: ListAllLockRecordsRepositoryImpl,
-    dependencies: [RecordLockingConfig, ListLatestEntriesUseCase, RecordLockingModel]
+    dependencies: [
+        RecordLockingConfig,
+        ListLatestEntriesUseCase,
+        RecordLockingModel,
+        CmsWhereMapper
+    ]
 });

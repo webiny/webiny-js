@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { createOpenSearchClient } from "../helpers";
+import { getTestOpenSearchClient } from "~/testing/index.js";
 import { OpenSearchCatNodes } from "~/operations/index.js";
 import { IOpenSearchCatNodeResponse } from "~/operations/types.js";
 
 describe("cat nodes", () => {
     it("should fetch nodes information", async () => {
-        const client = createOpenSearchClient();
+        const client = getTestOpenSearchClient();
         const catNodes = new OpenSearchCatNodes(client);
 
         const expected: Partial<IOpenSearchCatNodeResponse> = {

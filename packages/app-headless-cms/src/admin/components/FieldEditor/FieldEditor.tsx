@@ -10,9 +10,8 @@ import { LayoutCell } from "./LayoutCell.js";
 import { useModelFieldEditor } from "./useModelFieldEditor.js";
 import type { IsVisibleCallable } from "./FieldEditorContext.js";
 import { FieldEditorProvider } from "./FieldEditorContext.js";
-import type { CmsEditorFieldsLayout, CmsModelField, DragSource } from "~/types.js";
-import type { CmsLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
-import { isLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
+import type { CmsEditorFieldsLayout, CmsModelField, CmsLayoutField, DragSource } from "~/types.js";
+import { isLayoutField } from "~/types.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
 import { IconButton } from "@webiny/admin-ui";
 
@@ -34,36 +33,31 @@ const Editor = () => {
         onEndDrag,
         field,
         dropTarget,
-        getFieldPlugin,
-        getLayoutFieldPlugin,
+        getFieldType,
+        getLayoutFieldType,
         getField
     } = useModelFieldEditor();
 
     /**
      * Collect all data fields referenced inside a layout descriptor (e.g. fields inside tabs).
-     * Delegates to the layout field plugin's `collectFields` method if available.
+     * Delegates to the layout field type's `collectFields` method if available.
      */
     const collectLayoutFieldFields = (layoutField: CmsLayoutField): CmsModelField[] => {
-        const plugin = getLayoutFieldPlugin(layoutField.type);
-        if (!plugin?.field.collectFields) {
+        const lft = getLayoutFieldType(layoutField.type);
+        if (!lft || !lft.collectFields) {
             return [];
         }
-        return plugin.field.collectFields({
+        return lft.collectFields({
             field: layoutField,
             getField: (id: string) => getField({ id })
         });
     };
 
     const canDropIntoField = (field: CmsModelField, draggable: DragSource) => {
-        const fieldPlugin = getFieldPlugin(field.type);
-        if (!fieldPlugin) {
-            return true;
-        }
-        const canAccept = fieldPlugin.field.canAccept;
-        if (typeof canAccept === "function" && !canAccept(field, draggable)) {
+        const ft = getFieldType(field.type);
+        if (ft && typeof ft.canAccept === "function" && !ft.canAccept(field, draggable)) {
             return false;
         }
-
         return true;
     };
 
@@ -78,9 +72,9 @@ const Editor = () => {
                 return cb(item);
             }
 
-            const fieldPlugin = getFieldPlugin(parent.type);
-            if (fieldPlugin) {
-                const allowLayout = fieldPlugin.field.allowLayout ?? true;
+            const parentFieldType = getFieldType(parent.type);
+            if (parentFieldType) {
+                const allowLayout = parentFieldType.allowLayout ?? true;
                 if (!allowLayout) {
                     return false;
                 }

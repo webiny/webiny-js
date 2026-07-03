@@ -30,3 +30,4 @@ const contextPlugin = new ContextPlugin(context => {
 contextPlugin.name = `fileManagerS3.context`;
 
 export const createFileManagerS3 = () => [contextPlugin, createS3GraphQLSchema()];
+export { FileManagerS3Feature } from "./FileManagerS3Feature.js";

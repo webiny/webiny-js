@@ -2,7 +2,6 @@ import { PluginsContainer } from "@webiny/plugins/types.js";
 import type {
     CmsContext,
     CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
-    CmsModel,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
 import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
@@ -44,7 +43,7 @@ export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations
 }
 
 export interface DataLoadersHandlerInterfaceClearAllParams {
-    model: Pick<CmsModel, "tenant">;
+    tenant: string;
 }
 export interface IDataLoadersHandler {
     clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;

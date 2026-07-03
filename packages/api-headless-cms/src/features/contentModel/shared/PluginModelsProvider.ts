@@ -1,7 +1,10 @@
-import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
-import { PluginModelsProvider as ProviderAbstraction } from "./abstractions.js";
+import { AccessControl } from "~/features/shared/abstractions.js";
+import {
+    CmsModelPluginInstance,
+    PluginModelsProvider as ProviderAbstraction
+} from "./abstractions.js";
 import type { CmsModel } from "~/types/index.js";
-import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
+import type { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import { filterAsync } from "~/utils/filterAsync.js";
 import {
     ModelsProvider,
@@ -10,21 +13,19 @@ import {
 
 /**
  * PluginModelsProvider implementation that fetches models from:
- * 1. Legacy CmsModelPlugin instances
+ * 1. Legacy CmsModelPlugin instances (resolved from the DI container)
  * 2. New ModelBuilder providers (public and private)
  */
 class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
     public constructor(
-        private cmsContext: CmsContext.Interface,
+        private modelPlugins: CmsModelPlugin[],
         private accessControl: AccessControl.Interface,
         private modelsProvider: IModelsProvider
     ) {}
 
     async list(tenant: string): Promise<CmsModel[]> {
-        // Get models from legacy plugins
-        const modelPlugins = this.cmsContext.plugins.byType<CmsModelPlugin>(CmsModelPlugin.type);
-
-        const legacyModels = modelPlugins
+        // Get models from code-defined plugins
+        const legacyModels = this.modelPlugins
             .filter(plugin => {
                 const { tenant: modelTenant } = plugin.contentModel;
                 // Filter by tenant if specified in plugin
@@ -67,5 +68,5 @@ class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
 
 export const PluginModelsProvider = ProviderAbstraction.createImplementation({
     implementation: PluginModelsProviderImpl,
-    dependencies: [CmsContext, AccessControl, ModelsProvider]
+    dependencies: [[CmsModelPluginInstance, { multiple: true }], AccessControl, ModelsProvider]
 });

@@ -1,82 +1,38 @@
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createTenancyAndSecurity } from "./tenancySecurity";
-import { createIdentity, createPermissions } from "./helpers";
-import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import type { PluginCollection } from "@webiny/plugins/types";
-import { createBackgroundTaskContext } from "@webiny/background-tasks/api";
-import { createHandler } from "@webiny/background-tasks/api/handler";
-import type { ITaskEvent } from "@webiny/background-tasks/api/handler/types";
-import type { LambdaContext } from "@webiny/handler-aws/types";
-import type { Context } from "~/types";
+import { useContextHandler } from "@webiny/testing";
+import type { UseContextHandlerParams } from "@webiny/testing";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
+import { createBackgroundTaskContext, TasksCrud } from "@webiny/background-tasks/api";
 import { createElasticsearchBackgroundTasks } from "~/index";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
-import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import { createApiCore } from "@webiny/api-core";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { Context } from "~/types";
 
-export interface UseHandlerParams {
-    plugins?: PluginCollection;
-}
+type Params = Omit<UseContextHandlerParams, "plugins">;
 
-export const useHandler = (params?: UseHandlerParams) => {
-    const { plugins: initialPlugins = [] } = params || {};
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-
-    const documentClient = getDocumentClient();
-
-    const plugins = [
-        [
-            dbPlugins({
-                table: process.env.DB_TABLE,
-                driver: new DynamoDbDriver({
-                    documentClient
-                })
-            }),
-            createApiCore({
-                storageOperations: apiCoreStorage.storageOperations
-            }),
-            ...cmsStorage.plugins,
-            ...createTenancyAndSecurity({
-                setupGraphQL: false,
-                permissions: createPermissions(),
-                identity: createIdentity()
-            }),
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
-            graphQLHandlerPlugins(),
+export const useHandler = <C extends Context = Context>(params: Params = {}) => {
+    const inner = useContextHandler<C>({
+        ...params,
+        // OpenSearch core is already registered by useContextHandler's cmsStorage (DDB-OS preset);
+        // registering it again here throws "OpenSearch core must not be loaded more than once".
+        plugins: [
             ...createBackgroundTaskContext(),
-            createRawEventHandler(async ({ context }) => {
-                return context;
-            }),
-            ...createElasticsearchBackgroundTasks({
-                documentClient: getDocumentClient()
-            }),
-            ...initialPlugins
+            createElasticsearchBackgroundTasks(),
+            ...[params.plugins].flat(Infinity as 1).filter(Boolean)
         ]
-    ];
-
-    const handle = createHandler({
-        plugins
-    });
-
-    const rawHandler = createRawHandler<any, Context>({
-        plugins
     });
 
     return {
-        handle: (event: ITaskEvent, context?: Partial<LambdaContext>) => {
-            return handle(event, {
-                getRemainingTimeInMillis: () => 1000000,
-                ...context
-            } as LambdaContext);
-        },
-        rawHandle: async () => {
-            return await rawHandler({}, {} as LambdaContext);
+        identity: inner.identity,
+        tenant: inner.tenant,
+        elasticsearch: createTestOpenSearchClient(),
+        // DI-native source for the legacy `context.tasks` service-locator: resolve the CRUD
+        // aggregate from the container and expose it on the captured context. See the "full-DI
+        // tasks" cleanup note to retire this bridge.
+        rawHandle: async (input?: Parameters<typeof inner.context>[0]) => {
+            const ctx = await inner.context(input);
+            const [tasksCrud] = ctx.container.resolveAll(TasksCrud);
+            if (tasksCrud) {
+                ctx.tasks = tasksCrud;
+            }
+            return ctx;
         }
     };
 };

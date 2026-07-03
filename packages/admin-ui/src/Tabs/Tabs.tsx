@@ -11,6 +11,7 @@ interface TabsProps extends Omit<TabsPrimitive.TabsProps, "children"> {
     size?: VariantProps<typeof tabListVariants>["size"];
     spacing?: VariantProps<typeof tabListVariants>["spacing"];
     separator?: VariantProps<typeof tabListVariants>["separator"];
+    loading?: boolean;
 }
 
 const DecoratableTabs = ({
@@ -18,6 +19,7 @@ const DecoratableTabs = ({
     size,
     spacing,
     separator,
+    loading,
     tabs: tabComponents,
     ...props
 }: TabsProps) => {
@@ -45,6 +47,7 @@ const DecoratableTabs = ({
                         disabled={tab.disabled}
                         icon={tab.icon}
                         key={tab.id}
+                        loading={loading}
                         size={size}
                         text={tab.trigger}
                         value={tab.value}
@@ -53,7 +56,7 @@ const DecoratableTabs = ({
                 ))}
             </List>
         ),
-        [tabs, size, spacing]
+        [tabs, size, spacing, separator, loading]
     );
 
     const contents = useMemo(

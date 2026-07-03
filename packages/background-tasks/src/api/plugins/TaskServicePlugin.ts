@@ -1,4 +1,5 @@
 import { Plugin } from "@webiny/plugins";
+import { createAbstraction } from "@webiny/feature/api";
 import type { ITask } from "~/api/types.js";
 
 export interface ITaskServiceCreatePluginParams {
@@ -27,3 +28,9 @@ export abstract class TaskServicePlugin extends Plugin {
 
     public abstract createService(params: ITaskServiceCreatePluginParams): ITaskService;
 }
+
+/**
+ * DI multiple-abstraction for task-service transports (StepFunction / EventBridge / test mock).
+ * Replaces the old `context.plugins.byType(TaskServicePlugin.type)` lookup in createService.
+ */
+export const TaskServiceTransport = createAbstraction<TaskServicePlugin>("TaskServiceTransport");

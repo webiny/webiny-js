@@ -40,7 +40,7 @@ describe("Deployment", () => {
             deployment.getTable("unknown" as any);
         }).toThrow(`Unknown table type "unknown".`);
 
-        const deploymentWithoutOpensearch = createDeployment({
+        const deploymentWithoutOpenSearch = createDeployment({
             name: "test#blue",
             env: "test",
             variant: "blue",
@@ -60,7 +60,7 @@ describe("Deployment", () => {
         });
 
         expect(() => {
-            deploymentWithoutOpensearch.getTable(DynamoDBTableType.OPENSEARCH);
+            deploymentWithoutOpenSearch.getTable(DynamoDBTableType.OPENSEARCH);
         }).toThrow(`Unknown table type "opensearch" - no data.`);
     });
 });
