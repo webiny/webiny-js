@@ -1,5 +1,6 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
 import type { CmsEntryResolverFactory as ResolverFactory } from "~/types/index.js";
+import { MoveEntryUseCase } from "~/features/contentEntry/MoveEntry/index.js";
 
 interface ResolveMoveArgs {
     revision: string;
@@ -16,8 +17,12 @@ export const resolveMove: ResolveMove =
             if (!folderId) {
                 throw new Error(`The input value "folderId" is required!`);
             }
-            await context.cms.moveEntry(model, revision, folderId);
-
+            const result = await context.container
+                .resolve(MoveEntryUseCase)
+                .execute(model, revision, folderId);
+            if (result.isFail()) {
+                throw result.error;
+            }
             return new Response(true);
         } catch (ex) {
             return new ErrorResponse(ex);

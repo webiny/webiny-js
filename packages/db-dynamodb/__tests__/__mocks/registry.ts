@@ -1,4 +1,4 @@
-import { Container } from "@webiny/di";
+import { Container } from "@webiny/feature/api";
 import { ValueFilterFeature, ValueFilterRegistry } from "~/feature/ValueFilter";
 
 export const createValueFilterRegistry = (): ValueFilterRegistry.Interface => {

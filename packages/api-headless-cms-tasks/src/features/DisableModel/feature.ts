@@ -1,7 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { BlockActionIfModelDisabled as Abstraction } from "./abstractions.js";
 import { BlockActionIfModelDisabled } from "./BlockActionIfModelDisabled.js";
-import type { HeadlessCmsFullyDeleteModel } from "~/types.js";
+import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
 import { BlockModelActionOnEntryBeforeCreate } from "./handlers/BlockModelActionOnEntryBeforeCreate.js";
 import { BlockModelActionOnEntryRevisionBeforeCreate } from "./handlers/BlockModelActionOnEntryRevisionBeforeCreate.js";
 import { BlockModelActionOnEntryBeforeUpdate } from "./handlers/BlockModelActionOnEntryBeforeUpdate.js";
@@ -13,20 +13,16 @@ import { BlockModelActionOnEntryBeforeMove } from "./handlers/BlockModelActionOn
 import { BlockModelActionOnModelBeforeUpdate } from "./handlers/BlockModelActionOnModelBeforeUpdate.js";
 import { BlockModelActionOnModelBeforeCreateFrom } from "./handlers/BlockModelActionOnModelBeforeCreateFrom.js";
 
-export interface LegacyDeps {
-    isModelBeingDeleted: HeadlessCmsFullyDeleteModel["isModelBeingDeleted"];
-}
-
-export const DisableModelFeature = createFeature<LegacyDeps>({
+export const DisableModelFeature = createFeature({
     name: "DisableModel",
-    register(container, params) {
-        // Register the blocking service
+    register(container) {
+        const ops = container.resolve(DeleteModelOperations);
+
         container.registerInstance(
             Abstraction,
-            new BlockActionIfModelDisabled(params.isModelBeingDeleted)
+            new BlockActionIfModelDisabled(ops.isModelBeingDeleted.bind(ops))
         );
 
-        // Register entry event handlers
         container.register(BlockModelActionOnEntryBeforeCreate);
         container.register(BlockModelActionOnEntryRevisionBeforeCreate);
         container.register(BlockModelActionOnEntryBeforeUpdate);
@@ -36,7 +32,6 @@ export const DisableModelFeature = createFeature<LegacyDeps>({
         container.register(BlockModelActionOnEntryBeforeRestoreFromBin);
         container.register(BlockModelActionOnEntryBeforeMove);
 
-        // Register model event handlers
         container.register(BlockModelActionOnModelBeforeUpdate);
         container.register(BlockModelActionOnModelBeforeCreateFrom);
     }

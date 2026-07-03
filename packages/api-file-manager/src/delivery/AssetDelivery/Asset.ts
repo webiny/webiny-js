@@ -9,66 +9,58 @@ export interface AssetData {
     size: number;
     contentType: string;
 }
+
 export class Asset {
     protected readonly props: AssetData;
     private outputStrategy: AssetOutputStrategy | undefined;
     private contentsReader: AssetContentsReader | undefined;
 
-    public static create(props: AssetData) {
-        return new Asset(props);
-    }
-
-    private constructor(props: AssetData) {
+    constructor(props: AssetData) {
         this.props = props;
     }
 
-    public clone() {
+    clone() {
         return this.withProps(structuredClone(this.props));
     }
 
-    public withProps(props: Partial<AssetData>) {
-        const newAsset = Asset.create({ ...this.props, ...props });
+    withProps(props: Partial<AssetData>) {
+        const newAsset = new Asset({ ...this.props, ...props });
         newAsset.contentsReader = this.contentsReader;
         newAsset.outputStrategy = this.outputStrategy;
         return newAsset;
     }
 
-    public getId() {
+    getId() {
         return this.props.id;
     }
-
-    public getTenant() {
+    getTenant() {
         return this.props.tenant;
     }
-
-    public getKey() {
+    getKey() {
         return this.props.key;
     }
-
-    public getSize() {
+    getSize() {
         return this.props.size;
     }
-
-    public getContentType() {
+    getContentType() {
         return this.props.contentType;
     }
-
-    public getExtension() {
+    getExtension() {
         return this.getKey().split(".").pop() ?? "";
     }
 
-    public getContents() {
+    getContents() {
         if (!this.contentsReader) {
             throw Error(`Asset contents reader was not configured!`);
         }
         return this.contentsReader.read(this);
     }
 
-    public setContentsReader(reader: AssetContentsReader) {
+    setContentsReader(reader: AssetContentsReader) {
         this.contentsReader = reader;
     }
 
-    public output() {
+    output() {
         if (!this.outputStrategy) {
             throw Error(`Asset output strategy was not configured!`);
         }
@@ -76,7 +68,7 @@ export class Asset {
         return this.outputStrategy.output(this);
     }
 
-    public setOutputStrategy(setter: Setter<AssetOutputStrategy> | AssetOutputStrategy) {
+    setOutputStrategy(setter: Setter<AssetOutputStrategy> | AssetOutputStrategy) {
         if (typeof setter === "function") {
             this.outputStrategy = setter(this.outputStrategy);
         } else {

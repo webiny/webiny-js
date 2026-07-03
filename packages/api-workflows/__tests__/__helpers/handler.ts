@@ -5,7 +5,8 @@ import {
     type UseGraphQLHandlerParams,
     FULL_ACCESS_TEAM_ID
 } from "@webiny/testing";
-import { createWorkflows } from "~/index.js";
+import { WorkflowsFeature } from "~/WorkflowsFeature.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { WORKFLOW_MODEL_ID, WORKFLOW_STATE_MODEL_ID } from "~/constants.js";
 import { GetUserTeamsUseCase } from "~/features/internal/GetUserTeams/index.js";
@@ -94,9 +95,9 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
         })
     );
 
-    plugins.register(createWorkflows());
     const handler = useContextHandler({
         ...params,
+        features: container => WorkflowsFeature.register(container),
         permissions: [
             {
                 name: "*"
@@ -106,8 +107,14 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
         plugins: plugins.all()
     });
     const context = await handler.context();
-    const workflowModel = await context.cms.getModel(WORKFLOW_MODEL_ID);
-    const stateModel = await context.cms.getModel(WORKFLOW_STATE_MODEL_ID);
+    const workflowModelResult = await context.container
+        .resolve(GetModelUseCase)
+        .execute(WORKFLOW_MODEL_ID);
+    const workflowModel = workflowModelResult.value;
+    const stateModelResult = await context.container
+        .resolve(GetModelUseCase)
+        .execute(WORKFLOW_STATE_MODEL_ID);
+    const stateModel = stateModelResult.value;
     return {
         handler,
         context,
@@ -118,7 +125,6 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
 
 export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     const plugins = new PluginsContainer(params.plugins || []);
-    plugins.register(createWorkflows());
 
     // Register mock GetUserTeamsUseCase for testing
     plugins.register(
@@ -129,6 +135,7 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
 
     const handler = useGraphQLHandler({
         ...params,
+        features: container => WorkflowsFeature.register(container),
         permissions: [
             {
                 name: "*"

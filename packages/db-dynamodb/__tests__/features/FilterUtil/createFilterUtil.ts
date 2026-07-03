@@ -1,4 +1,4 @@
-import { Container } from "@webiny/di";
+import { Container } from "@webiny/feature/api";
 import { ValueFilterFeature } from "~/feature/ValueFilter";
 import { FilterUtil, FilterUtilFeature } from "~/feature/FilterUtil";
 

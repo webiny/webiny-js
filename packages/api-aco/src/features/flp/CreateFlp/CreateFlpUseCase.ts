@@ -4,10 +4,10 @@ import { Permissions, ROOT_FOLDER } from "@webiny/shared-aco";
 import type { CreateFlpUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { FolderLevelPermission as IFolderLevelPermission } from "~/flp/flp.types.js";
 import type { Folder } from "~/folder/folder.types.js";
-import type { AcoContext } from "~/types.js";
+import type { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
 
 export class CreateFlpUseCase implements UseCaseAbstraction.Interface {
-    constructor(private context: AcoContext) {}
+    constructor(private flpCrud: AcoFlpCrud.Interface) {}
 
     async execute(folder: Folder): Promise<void> {
         try {
@@ -15,7 +15,7 @@ export class CreateFlpUseCase implements UseCaseAbstraction.Interface {
             let parentFlp: IFolderLevelPermission | null = null;
 
             if (parentId) {
-                parentFlp = await this.context.aco.flp.get(parentId);
+                parentFlp = await this.flpCrud.get(parentId);
 
                 if (!parentFlp) {
                     throw new WebinyError(
@@ -25,7 +25,7 @@ export class CreateFlpUseCase implements UseCaseAbstraction.Interface {
                 }
             }
 
-            await this.context.aco.flp.create({
+            await this.flpCrud.create({
                 id,
                 type,
                 slug,

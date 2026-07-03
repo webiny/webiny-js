@@ -2,9 +2,6 @@ import { describe, test, expect, vi, beforeEach } from "vitest";
 import { mockCreateGetWcpProjectEnvironment } from "./mocks/mockCreateGetWcpProjectEnvironment.js";
 import { mockCreateGetWcpProjectLicense } from "./mocks/mockCreateGetWcpProjectLicense.js";
 import { useGqlHandler } from "../useGqlHandler.js";
-import apiKeyAuthentication from "~/legacy/security/plugins/apiKeyAuthentication.js";
-import apiKeyAuthorization from "~/legacy/security/plugins/apiKeyAuthorization.js";
-
 vi.mock("~/features/wcp/WcpContext/utils.js", async () => {
     // The mock returned only mocks the generateServerSeed method.
     const actual = await vi.importActual("~/features/wcp/WcpContext/utils.js");
@@ -178,12 +175,7 @@ describe("Security API Key Test", () => {
     test("should authenticate using API key sent via headers", async () => {
         const { securityApiKeys } = useGqlHandler();
 
-        const { securityRole } = useGqlHandler({
-            plugins: [
-                apiKeyAuthentication({ identityType: "apiKey" }),
-                apiKeyAuthorization({ identityType: "apiKey" })
-            ]
-        });
+        const { securityRole } = useGqlHandler();
 
         const [createResponse] = await securityApiKeys.create({
             data: {

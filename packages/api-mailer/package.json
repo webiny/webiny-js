@@ -19,7 +19,6 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
-    "@webiny/api-headless-cms": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
@@ -31,6 +30,8 @@
     "@types/nodemailer": "^8.0.1",
     "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "*",
+    "@webiny/event-handler-core": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-db": "0.0.0",

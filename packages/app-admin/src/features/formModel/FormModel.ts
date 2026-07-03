@@ -254,14 +254,16 @@ export class FormModel implements IFormModel {
         return data;
     }
 
-    setData(data: Record<string, unknown>): void {
+    setData(data: Record<string, unknown>, options?: { dirty?: boolean }): void {
         for (const [name, value] of Object.entries(data)) {
             const field = this._fields.get(name);
             if (field) {
                 field.setValueSilent(value);
             }
         }
-        this._snapshotBaseline();
+        if (!options?.dirty) {
+            this._snapshotBaseline();
+        }
         this._resetAllValidation();
         this._submitted = false;
         this._submitCount = 0;
@@ -434,7 +436,8 @@ export class FormModel implements IFormModel {
             submitCount: this._submitCount,
             focusField: (path: string) => this.focusField(path),
             getData: () => this.getData() as Record<string, unknown>,
-            setData: (data: Record<string, unknown>) => this.setData(data)
+            setData: (data: Record<string, unknown>, options?: { dirty?: boolean }) =>
+                this.setData(data, options)
         };
     }
 

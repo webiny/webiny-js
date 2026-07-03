@@ -1,13 +1,14 @@
+import type { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
 import { NullAssetReply } from "./NullAssetReply.js";
-import { AssetOutputStrategy } from "./abstractions/AssetOutputStrategy.js";
+import { AssetOutputStrategy, type IAssetOutputStrategy } from "./abstractions.js";
 
-class NullAssetOutputStrategyImpl implements AssetOutputStrategy.Interface {
-    async output(): Promise<AssetOutputStrategy.AssetReply> {
-        return NullAssetReply.instance();
+export class NullAssetOutputStrategy implements IAssetOutputStrategy {
+    async output(): Promise<AssetReply> {
+        return new NullAssetReply();
     }
 }
 
-export const NullAssetOutputStrategy = AssetOutputStrategy.createImplementation({
-    implementation: NullAssetOutputStrategyImpl,
+export const NullAssetOutputStrategyImpl = AssetOutputStrategy.createImplementation({
+    implementation: NullAssetOutputStrategy,
     dependencies: []
 });

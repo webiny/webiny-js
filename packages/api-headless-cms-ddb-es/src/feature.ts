@@ -48,7 +48,7 @@ import {
 import { CreateElasticsearchIndexTask } from "~/tasks/CreateElasticsearchIndexTask.js";
 
 const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
-    const { table, esTable, elasticsearch, plugins, container } = params;
+    const { table, esTable, elasticsearch, container } = params;
 
     const db = container.resolve(DynamoDBClient);
     const documentClient = db.client;
@@ -58,7 +58,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         documentClient
     });
     const tableElasticsearchInstance = createOpenSearchTable({
-        name: esTable,
+        name: esTable || (process.env.DB_TABLE_OPENSEARCH as string),
         documentClient
     });
 
@@ -129,7 +129,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const entries = createEntriesStorageOperations({
         entity: entities.entries,
         esEntity: entities.entriesEs,
-        plugins,
+        container,
         operatorRegistry,
         elasticsearch,
         fieldRegistry,
@@ -147,7 +147,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
 
     return {
         name: "dynamodb:opensearch",
-        beforeInit: async context => {
+        beforeInit: context => {
             const dbRegistry = context.container.resolve(DbRegistry);
 
             dbRegistry.register({
@@ -183,7 +183,7 @@ class OpenSearchStorageOperationsFactoryImpl
 {
     public constructor(private readonly openSearchClient: OpenSearchClient.Interface) {}
 
-    public async create(context: CmsContext) {
+    public create(context: CmsContext) {
         return createOpenSearchStorageOperations({
             elasticsearch: this.openSearchClient.use(),
             plugins: context.plugins,
@@ -199,7 +199,12 @@ const OpenSearchStorageOperationsFactory = StorageOperationsFactoryAbstraction.c
     }
 );
 
-const storageOperationsFeature = createFeature({
+/**
+ * DI-native feature — registers the DynamoDB+OpenSearch CMS storage operations factory (parallel to
+ * HeadlessCmsDdbFeature). Requires DynamoDBClient (DbFeature) and OpenSearchClient
+ * (OpenSearchClientFeature) to be registered in the container first.
+ */
+export const HeadlessCmsDdbEsFeature = createFeature({
     name: "cms.storageOperations.openSearch",
     register: container => {
         CmsEntryOpenSearchFieldIndexFeature.register(container);
@@ -213,7 +218,7 @@ const storageOperationsFeature = createFeature({
 
 export const registerCmsOpenSearchStorageOperations = () => {
     const plugin = createRegisterExtensionPlugin(context => {
-        return storageOperationsFeature.register(context.container);
+        return HeadlessCmsDdbEsFeature.register(context.container);
     });
 
     plugin.name = "cms.registerOpenSearchStorageOperations";

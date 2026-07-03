@@ -5,6 +5,10 @@ import { createCarsModel } from "./model.js";
 import { createIndex } from "~/utils/index.js";
 import { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-ddb-es/exports/api/cms/opensearch.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
+import { ListGroupsUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/ListGroups/index.js";
+import { CreateGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/index.js";
+import { CreateModelUseCase } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 
 interface ICreateModelAndGroupParams {
     context: Context;
@@ -24,21 +28,41 @@ export const createModelAndGroup = async (
     /**
      * First we need to check if the model already exists in the database. If not, we need to create it.
      */
-    let model = (await context.cms.listModels()).find(m => m.modelId === modelId);
+    const modelsResult = await context.container.resolve(ListModelsUseCase).execute();
+    if (modelsResult.isFail()) {
+        throw modelsResult.error;
+    }
+    let model = modelsResult.value.find(m => m.modelId === modelId);
     let group: CmsGroup | undefined;
     if (model && !overwrite) {
         return `Model "${modelId}" already exists.`;
     } else if (!model) {
-        group = (await context.cms.listGroups()).find(group => group.slug === "mocks");
+        const groupsResult = await context.container.resolve(ListGroupsUseCase).execute();
+        if (groupsResult.isFail()) {
+            throw groupsResult.error;
+        }
+        group = groupsResult.value.find(g => g.slug === "mocks");
         if (!group) {
             const groupData = createGroupData();
-            group = await context.cms.createGroup(groupData);
+            const createGroupResult = await context.container
+                .resolve(CreateGroupUseCase)
+                .execute(groupData);
+            if (createGroupResult.isFail()) {
+                throw createGroupResult.error;
+            }
+            group = createGroupResult.value;
         }
         /**
          * Possibly we need to create the model.
          */
         const carsModel = createCarsModel(group);
-        model = await context.cms.createModel(carsModel);
+        const createModelResult = await context.container
+            .resolve(CreateModelUseCase)
+            .execute(carsModel);
+        if (createModelResult.isFail()) {
+            throw createModelResult.error;
+        }
+        model = createModelResult.value;
     }
     await createIndex({
         model,

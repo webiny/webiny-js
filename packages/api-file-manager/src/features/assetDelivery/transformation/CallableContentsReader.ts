@@ -1,4 +1,4 @@
-import { AssetContentsReader } from "~/features/assetDelivery/abstractions/AssetContentsReader.js";
+import { AssetContentsReader } from "~/features/assetDelivery/abstractions.js";
 
 interface ContentsCallable {
     (): Promise<Buffer> | Buffer;

@@ -37,6 +37,17 @@ const createPermissions = ({ groups, models }: ICreatePermissionsParams) => [
     }
 ];
 
+/**
+ * The date-range filter tests below (e.g. `savedOn_between` / `savedOn_not_between`) use a tight
+ * ±5ms window around one entry's timestamp. They rely on the three categories having distinct,
+ * well-separated `createdOn`/`savedOn` values. Created back-to-back, the DI handler is fast enough
+ * (no Fastify per-request overhead) that all three land within ~2-3ms of each other — inside that
+ * window — making `not_between` exclude everything. Wait between creates so the gaps deterministically
+ * exceed the window instead of depending on per-request latency.
+ */
+const SPACING_MS = 15;
+const wait = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
+
 const categoryManagerHelper = async (manager: ReturnType<typeof useCategoryManageHandler>) => {
     const [fruitsResponse] = await manager.createCategory({
         variables: {
@@ -50,6 +61,7 @@ const categoryManagerHelper = async (manager: ReturnType<typeof useCategoryManag
         }
     });
     const fruits = fruitsResponse.data.createCategory.data!;
+    await wait(SPACING_MS);
     const [vegetablesResponse] = await manager.createCategory({
         variables: {
             data: {
@@ -62,6 +74,7 @@ const categoryManagerHelper = async (manager: ReturnType<typeof useCategoryManag
         }
     });
     const vegetables = vegetablesResponse.data.createCategory.data!;
+    await wait(SPACING_MS);
     const [animalsResponse] = await manager.createCategory({
         variables: {
             data: {

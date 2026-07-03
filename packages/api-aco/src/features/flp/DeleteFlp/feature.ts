@@ -2,17 +2,13 @@ import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
 import { DeleteFlpUseCase } from "./DeleteFlpUseCase.js";
 import { DeleteFlpUseCase as UseCaseAbstraction } from "./abstractions.js";
-import type { AcoContext } from "~/types.js";
-
-interface LegacyDeps {
-    context: AcoContext;
-}
+import { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
 
 export const DeleteFlpFeature = createFeature({
     name: "DeleteFlp",
-    register(container: Container, deps: LegacyDeps) {
+    register(container: Container) {
         container.registerFactory(UseCaseAbstraction, () => {
-            return new DeleteFlpUseCase(deps.context);
+            return new DeleteFlpUseCase(container.resolve(AcoFlpCrud));
         });
     }
 });

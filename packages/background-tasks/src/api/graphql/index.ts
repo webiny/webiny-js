@@ -1,6 +1,9 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";
 import { ContextPlugin } from "@webiny/handler";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { Context, IListTaskLogParams, IListTaskParams, ITask, ITaskLog } from "~/api/types.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
 import { emptyResolver, resolve, resolveList } from "./utils.js";
@@ -9,6 +12,10 @@ import { checkPermissions } from "./checkPermissions.js";
 import type { Plugin } from "@webiny/plugins/types.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
+import { ListTaskDefinitionsUseCase } from "~/api/features/ListTaskDefinitions/abstractions.js";
+import { TriggerTaskUseCase } from "~/api/features/TriggerTask/abstractions.js";
+import { AbortTaskUseCase } from "~/api/features/AbortTask/abstractions.js";
 
 interface IGetTaskQueryParams {
     id: string;
@@ -32,21 +39,24 @@ interface IDeleteTaskMutationParams {
 
 const createGraphQL = () => {
     const plugin = new ContextPlugin<Context>(async ctx => {
-        if (!ctx.tenancy.getCurrentTenant()) {
+        if (!ctx.container.resolve(TenantContext).getTenant()) {
             return;
         }
 
-        const taskModel = await ctx.tasks.getTaskModel();
-        const logModel = await ctx.tasks.getLogModel();
+        const tasksCrud = ctx.container.resolve(TasksCrud);
+        const taskModel = await tasksCrud.getTaskModel();
+        const logModel = await tasksCrud.getLogModel();
 
         const listModels = ctx.container.resolve(ListModelsUseCase);
         const fieldRegistry = ctx.container.resolve(CmsModelFieldToGraphQLRegistry);
 
-        const models = await ctx.security.withoutAuthorization(async () => {
-            const modelsResult = await listModels.execute({ includePrivate: false });
+        const models = await ctx.container
+            .resolve(IdentityContext)
+            .withoutAuthorization(async () => {
+                const modelsResult = await listModels.execute({ includePrivate: false });
 
-            return modelsResult.value.filter(model => model.fields.length > 0);
-        });
+                return modelsResult.value.filter(model => model.fields.length > 0);
+            });
         const taskFields = renderFields({
             models,
             model: taskModel,
@@ -250,7 +260,7 @@ const createGraphQL = () => {
                             await checkPermissions(context, {
                                 rwd: "r"
                             });
-                            return await context.tasks.getTask(args.id);
+                            return await context.container.resolve(TasksCrud).getTask(args.id);
                         });
                     },
                     listTasks: async (_, args: IListTaskParams, context) => {
@@ -258,7 +268,7 @@ const createGraphQL = () => {
                             await checkPermissions(context, {
                                 rwd: "r"
                             });
-                            return await context.tasks.listTasks(args);
+                            return await context.container.resolve(TasksCrud).listTasks(args);
                         });
                     },
                     listDefinitions: async (_, __, context) => {
@@ -266,7 +276,9 @@ const createGraphQL = () => {
                             await checkPermissions(context, {
                                 rwd: "r"
                             });
-                            const result = context.tasks.listDefinitions();
+                            const result = context.container
+                                .resolve(ListTaskDefinitionsUseCase)
+                                .execute();
                             /**
                              * Do not output private tasks.
                              */
@@ -280,7 +292,7 @@ const createGraphQL = () => {
                             await checkPermissions(context, {
                                 rwd: "r"
                             });
-                            return await context.tasks.listLogs(args);
+                            return await context.container.resolve(TasksCrud).listLogs(args);
                         });
                     }
                 },
@@ -293,7 +305,9 @@ const createGraphQL = () => {
                             rwd: "w"
                         });
                         return resolve<ITask>(async () => {
-                            const result = await context.tasks.abort(args);
+                            const result = await context.container
+                                .resolve(AbortTaskUseCase)
+                                .execute(args);
                             if (result.isOk()) {
                                 return result.value;
                             }
@@ -309,7 +323,9 @@ const createGraphQL = () => {
                             rwd: "w"
                         });
                         return resolve<ITask>(async () => {
-                            const result = await context.tasks.trigger(args);
+                            const result = await context.container
+                                .resolve(TriggerTaskUseCase)
+                                .execute(args);
                             if (result.isOk()) {
                                 return result.value;
                             }
@@ -325,7 +341,7 @@ const createGraphQL = () => {
                             rwd: "d"
                         });
                         return resolve(async () => {
-                            return await context.tasks.deleteTask(args.id);
+                            return await context.container.resolve(TasksCrud).deleteTask(args.id);
                         });
                     }
                 },
@@ -334,7 +350,7 @@ const createGraphQL = () => {
                  */
                 WebinyBackgroundTask: {
                     logs: async (parent: ITask, args: IListTaskLogParams, context) => {
-                        const { items } = await context.tasks.listLogs({
+                        const { items } = await context.container.resolve(TasksCrud).listLogs({
                             sort: ["createdBy_ASC"],
                             limit: 10000,
                             ...args,
@@ -348,7 +364,7 @@ const createGraphQL = () => {
                 },
                 WebinyBackgroundTaskLog: {
                     task: async (parent: ITaskLog, _, context) => {
-                        return await context.tasks.getTask(parent.task);
+                        return await context.container.resolve(TasksCrud).getTask(parent.task);
                     }
                 }
             }
@@ -356,7 +372,18 @@ const createGraphQL = () => {
 
         plugin.name = "tasks.graphql.schema";
 
-        ctx.plugins.register(plugin);
+        ctx.container.registerInstance(CoreGraphQLSchemaFactory, {
+            async execute(builder) {
+                const { schema } = plugin;
+                if (schema.typeDefs) {
+                    builder.addTypeDefs(schema.typeDefs);
+                }
+                if (schema.resolvers) {
+                    builder.addLegacyResolvers(schema.resolvers as Record<string, any>);
+                }
+                return builder;
+            }
+        });
     });
 
     plugin.name = "tasks.graphql";

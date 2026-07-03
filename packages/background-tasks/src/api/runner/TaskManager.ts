@@ -8,6 +8,7 @@ import {
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
 export class TaskManager implements ITaskManager {
     private readonly context: Context;
@@ -98,12 +99,14 @@ export class TaskManager implements ITaskManager {
             /**
              * We always run the task without authorization because we are running a task without a user - nothing to authorize against.
              */
-            result = await this.context.security.withoutAuthorization(async () => {
-                return await definition.run({
-                    input,
-                    controller
+            result = await this.context.container
+                .resolve(IdentityContext)
+                .withoutAuthorization(async () => {
+                    return await definition.run({
+                        input,
+                        controller
+                    });
                 });
-            });
         } catch (ex) {
             return this.response.error({
                 error: getErrorProperties(ex)

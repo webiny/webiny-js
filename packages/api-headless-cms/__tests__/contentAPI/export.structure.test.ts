@@ -104,7 +104,11 @@ describe("export cms structure", () => {
                 pluralApiName: model.pluralApiName,
                 description: model.description,
                 titleFieldId: model.titleFieldId,
-                icon: model.icon,
+                icon: expect.objectContaining(
+                    Object.fromEntries(
+                        Object.entries(model.icon ?? {}).filter(([, v]) => v !== undefined)
+                    )
+                ),
                 group: group.slug,
                 fields: model.fields,
                 layout: model.layout

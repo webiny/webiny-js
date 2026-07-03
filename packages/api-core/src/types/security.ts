@@ -1,5 +1,3 @@
-import type { TenancyContext } from "~/types/tenancy.js";
-import type { LegacyContext } from "~/legacy/security/LegacyContext.js";
 import { Identity } from "~/features/security/IdentityContext/index.js";
 
 export type { Jwk, Jwt } from "~/features/security/utils/verifyJwtUsingJwk.js";
@@ -17,8 +15,6 @@ export interface GetTeamWhere {
     slug?: string;
     tenant?: string;
 }
-
-export type Security = LegacyContext;
 
 export interface SecurityStorageOperations {
     getRole(params: StorageOperationsGetRoleParams): Promise<Role | null>;
@@ -61,10 +57,6 @@ export interface SecurityStorageOperations {
 export type SecurityPermission<T = Record<string, any>> = T & {
     name: string;
 };
-
-export interface SecurityContext extends TenancyContext {
-    security: Security;
-}
 
 export interface FullAccessPermission {
     name: "*";

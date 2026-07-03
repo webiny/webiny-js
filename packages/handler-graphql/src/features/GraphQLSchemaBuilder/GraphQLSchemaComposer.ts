@@ -1,22 +1,25 @@
+import { Container } from "@webiny/di";
+import { RequestContainer } from "@webiny/event-handler-core";
 import { GraphQLSchemaComposer as Abstraction } from "./abstractions.js";
 import { GraphQLSchemaFactory, CoreGraphQLSchemaFactory } from "~/graphql/abstractions.js";
 import { GraphQLSchemaBuilder } from "./GraphQLSchemaBuilder.js";
 import type { IGraphQLSchema } from "~/graphql/abstractions.public.js";
 
 class GraphQLSchemaComposerImpl implements Abstraction.Interface {
-    constructor(
-        private coreSchemas: CoreGraphQLSchemaFactory.Interface[],
-        private userSchemas: GraphQLSchemaFactory.Interface[]
-    ) {}
+    constructor(private container: Container) {}
 
-    async build(): Promise<IGraphQLSchema> {
+    async build(ctx?: Record<string, any>): Promise<IGraphQLSchema> {
         const builder = new GraphQLSchemaBuilder();
 
-        for (const factory of this.coreSchemas) {
-            await factory.execute(builder);
+        // Resolve lazily so factories registered during enhance() (e.g. by extensions) are included.
+        const coreSchemas = this.container.resolveAll(CoreGraphQLSchemaFactory);
+        const userSchemas = this.container.resolveAll(GraphQLSchemaFactory);
+
+        for (const factory of coreSchemas) {
+            await factory.execute(builder, ctx);
         }
 
-        for (const factory of this.userSchemas) {
+        for (const factory of userSchemas) {
             await factory.execute(builder);
         }
 
@@ -26,8 +29,5 @@ class GraphQLSchemaComposerImpl implements Abstraction.Interface {
 
 export const GraphQLSchemaComposer = Abstraction.createImplementation({
     implementation: GraphQLSchemaComposerImpl,
-    dependencies: [
-        [CoreGraphQLSchemaFactory, { multiple: true }],
-        [GraphQLSchemaFactory, { multiple: true }]
-    ]
+    dependencies: [RequestContainer]
 });

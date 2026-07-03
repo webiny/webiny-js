@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { articleModel } from "./mocks/article.model";
 import { ValuesSelectionGenerator } from "~/features/contentModel/ValuesSelectionGenerator/abstractions";
+import { HeadlessCms } from "~/features/shared/abstractions.js";
 
 describe("ValuesSelectionGenerator", () => {
     it("should generate a values selection for the article model", async () => {
@@ -18,7 +19,7 @@ describe("ValuesSelectionGenerator", () => {
         });
 
         const generator = context.container.resolve(ValuesSelectionGenerator);
-        const model = await context.cms.getModel("article");
+        const model = await context.container.resolve(HeadlessCms).getModel("article");
 
         if (!model) {
             throw new Error(`Missing "article" model!`);

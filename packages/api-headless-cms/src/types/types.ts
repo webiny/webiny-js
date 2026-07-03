@@ -1,7 +1,5 @@
 import type { Context, GenericRecord } from "@webiny/api/types.js";
-import type { GraphQLFieldResolver, GraphQLRequestBody } from "@webiny/handler-graphql/types.js";
-import type { processRequestBody } from "@webiny/handler-graphql";
-import type { DbContext } from "@webiny/handler-db/types.js";
+import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
 import type { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection.js";
 import type { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
@@ -17,7 +15,6 @@ import type {
 } from "./model.js";
 import type { CmsGroup } from "./modelGroup.js";
 import type { CmsIdentity } from "./identity.js";
-import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type {
     DateStringInterfaceGenerator,
@@ -75,25 +72,18 @@ export interface HeadlessCms extends CmsGroupContext, CmsModelContext, CmsEntryC
      */
     export: HeadlessCmsExport;
     importing: HeadlessCmsImport;
-    getExecutableSchema: GetExecutableSchema;
 }
 
-export type GetExecutableSchema = (
-    type: ApiEndpoint
-) => Promise<
-    <TData = Record<string, any>, TExtensions = Record<string, any>>(
-        input: GraphQLRequestBody | GraphQLRequestBody[]
-    ) => ReturnType<typeof processRequestBody<TData, TExtensions>>
->;
-
 /**
- * @description This combines all contexts used in the CMS into a single one.
+ * The CMS request context. Services are resolved from the DI container
+ * (`context.container.resolve(...)`); the CMS facade is the `HeadlessCms` token
+ * (see ~/features/shared/abstractions.js). ApiCoreContext aliases the base Context
+ * and DbContext only adds an unused `db`, so the historical
+ * `Context & DbContext & ApiCoreContext` merge collapses to the base Context.
  *
  * @category Context
  */
-export interface CmsContext extends Context, DbContext, ApiCoreContext {
-    cms: HeadlessCms;
-}
+export type CmsContext = Context;
 
 /**
  * Used for our internal functionality.
@@ -1429,8 +1419,9 @@ export interface HeadlessCmsStorageOperations<C extends CmsContext = CmsContext>
     models: CmsModelStorageOperations;
     entries: CmsEntryStorageOperations;
     /**
-     * Either attach something from the storage operations or run something in it.
+     * Either attach something from the storage operations or run something in it. Synchronous so
+     * the storage stack can be built inside HeadlessCmsFeature.register() (for every event), not in
+     * a per-request async initializer. All adapters (ddb/ddb-es/sql) have sync bodies.
      */
-    beforeInit: (context: C) => Promise<void>;
-    init?: (context: C) => Promise<void>;
+    beforeInit: (context: C) => void;
 }

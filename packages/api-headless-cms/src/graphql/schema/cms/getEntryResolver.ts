@@ -1,7 +1,7 @@
-import type { CmsContext } from "~/types/index.js";
-import type { ApiEndpoint } from "~/types/index.js";
+import type { CmsContext, ApiEndpoint } from "~/types/index.js";
 import type { ExecutionResult } from "graphql";
 import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
+import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 
 export interface GetEntryArgs {
     modelId: string;
@@ -20,7 +20,6 @@ export const createGetEntryResolver = () => {
             // Determine which API to use based on the preview flag.
             // preview=true -> preview API, preview=false -> read API
             const apiType: ApiEndpoint = preview ? "preview" : "read";
-            const executeSchema = await context.cms.getExecutableSchema(apiType);
 
             const fieldsSelection = buildFieldsSelection(fields);
 
@@ -39,10 +38,9 @@ export const createGetEntryResolver = () => {
                 }
             `;
 
-            const result = (await executeSchema({
-                query,
-                variables: { where }
-            })) as ExecutionResult;
+            const result = (await context.container
+                .resolve(CmsSchemaExecutor)
+                .execute(apiType, { query, variables: { where } })) as ExecutionResult;
 
             if (result.errors && result.errors.length > 0) {
                 return {

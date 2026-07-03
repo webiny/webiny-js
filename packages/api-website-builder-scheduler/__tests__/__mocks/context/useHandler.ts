@@ -1,51 +1,38 @@
-import type { CreateHandlerCoreParams } from "./plugins";
-import { createHandlerCore } from "./plugins";
-import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import { defaultIdentity } from "./tenancySecurity";
-import type { LambdaContext } from "@webiny/handler-aws/types";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { createWebsiteBuilderScheduleContext } from "~/context.js";
+import { WebsiteBuilderSchedulerFeature } from "~/WebsiteBuilderSchedulerFeature.js";
+import { SchedulerFeature, SchedulerService } from "@webiny/api-scheduler";
+import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
+import { PageModelPlugin } from "@webiny/api-website-builder/domain/page/page.model.js";
+import { RedirectModelPlugin } from "@webiny/api-website-builder/domain/redirect/redirect.model.js";
+import { createWebsiteBuilder } from "@webiny/api-website-builder";
+import { createMockBackgroundTasks } from "../mockBackgroundTasks.js";
 
-interface WbHandlerEvent {
-    path: string;
-    headers: {
-        ["x-tenant"]: string;
-        [key: string]: string;
-    };
-}
+type Params = Omit<CmsTestHandlerParams, "features">;
 
-export const useHandler = <C extends ApiCoreContext>(params: CreateHandlerCoreParams) => {
-    const core = createHandlerCore(params);
-
-    const plugins = [...core.plugins].concat([
-        createRawEventHandler<WbHandlerEvent, C, C>(async ({ context }) => {
-            return context;
-        }),
-        createWebsiteBuilderScheduleContext()
-    ]);
-
-    const handler = createRawHandler<WbHandlerEvent, C>({
-        plugins,
-        debug: process.env.DEBUG === "true"
+export const useHandler = <C extends ApiCoreContext = ApiCoreContext>(params: Params = {}) => {
+    const { getContext } = createCmsTestHandler({
+        ...params,
+        plugins: [
+            createWebsiteBuilder(),
+            createMockBackgroundTasks(),
+            ...[params.plugins].flat(Infinity as 1).filter(Boolean)
+        ],
+        features: container => {
+            container.register(PageModelPlugin);
+            container.register(RedirectModelPlugin);
+            SchedulerFeature.register(container);
+            WebsiteBuilderSchedulerFeature.register(container);
+            container.registerInstance(SchedulerService, new VoidSchedulerService());
+        }
     });
 
-    const elasticsearchClient = createTestOpenSearchClient();
-
     return {
-        plugins,
-        identity: params.identity || defaultIdentity,
-        tenant: core.tenant,
-        elasticsearch: elasticsearchClient,
-        handler: (input?: WbHandlerEvent) => {
-            const payload: WbHandlerEvent = {
-                path: "/graphql",
-                headers: {
-                    "x-tenant": "root"
-                },
-                ...input
-            };
-            return handler(payload, {} as LambdaContext);
-        }
+        identity: { id: "id-12345678", type: "admin", displayName: "John Doe" },
+        tenant: { id: "root" },
+        elasticsearch: createTestOpenSearchClient(),
+        handler: () => getContext<C>()
     };
 };

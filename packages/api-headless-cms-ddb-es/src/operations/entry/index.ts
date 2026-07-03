@@ -38,7 +38,8 @@ import {
     type IOpenSearchEntity as IElasticsearchEntity,
     type IOpenSearchEntityAttributes as IElasticsearchEntityAttributes
 } from "@webiny/api-opensearch";
-import type { PluginsContainer } from "@webiny/plugins";
+import type { Container } from "@webiny/di";
+import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import type { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
@@ -60,7 +61,6 @@ import {
 import type { CmsEntryStorageOperations, CmsIndexEntry } from "~/types.js";
 import { createElasticsearchBody } from "./elasticsearch/body.js";
 import { shouldIgnoreEsResponseError } from "./elasticsearch/shouldIgnoreEsResponseError.js";
-import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 import { createTransformer } from "./transformations/index.js";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys.js";
 import {
@@ -85,7 +85,7 @@ export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
     esEntity: IElasticsearchEntity;
     elasticsearch: Client;
-    plugins: PluginsContainer;
+    container: Container;
     operatorRegistry: OpenSearchQueryBuilderOperatorRegistry.Interface;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
@@ -127,7 +127,7 @@ export const createEntriesStorageOperations = (
         entity,
         esEntity,
         elasticsearch,
-        plugins,
+        container,
         operatorRegistry,
         fieldRegistry,
         fieldIndexRegistry,
@@ -142,22 +142,18 @@ export const createEntriesStorageOperations = (
         fieldFactory
     } = params;
 
-    let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
-    const getStorageOperationsCmsModelPlugin = () => {
-        if (storageOperationsCmsModelPlugin) {
-            return storageOperationsCmsModelPlugin;
+    let storageModelProvider: CmsStorageModelProvider.Interface | undefined;
+    const getStorageModelProvider = () => {
+        if (!storageModelProvider) {
+            storageModelProvider = container.resolve(CmsStorageModelProvider);
         }
-        storageOperationsCmsModelPlugin = plugins.oneByType<StorageOperationsCmsModelPlugin>(
-            StorageOperationsCmsModelPlugin.type
-        );
-        return storageOperationsCmsModelPlugin;
+        return storageModelProvider;
     };
 
     const getStorageOperationsModel = <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel
     ): StorageOperationsCmsModel<T> => {
-        const plugin = getStorageOperationsCmsModelPlugin();
-        return plugin.getModel(model) as StorageOperationsCmsModel<T>;
+        return getStorageModelProvider().getModel<T>(model);
     };
 
     const dataLoaders = new DataLoadersHandler({

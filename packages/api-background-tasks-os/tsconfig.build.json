@@ -18,8 +18,6 @@
       "@webiny/api-elasticsearch-tasks": ["../api-elasticsearch-tasks/src"],
       "@webiny/api-headless-cms-es-tasks/*": ["../api-headless-cms-es-tasks/src/*"],
       "@webiny/api-headless-cms-es-tasks": ["../api-headless-cms-es-tasks/src"],
-      "@webiny/background-tasks/api": ["../background-tasks/src/api/index.js"],
-      "@webiny/background-tasks/admin/*": ["../background-tasks/src/admin/*"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

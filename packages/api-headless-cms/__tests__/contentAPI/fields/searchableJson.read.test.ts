@@ -1,3 +1,4 @@
+import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createAuthorWithSearchableJsonContextHandler } from "~tests/__helpers/handler/authorWithSearchableJson/context.js";
 import type { IAuthorWithSearchableJsonCmsEntryValues } from "~tests/__helpers/models/authorWithSearchableJson.js";
@@ -31,18 +32,18 @@ describe("searchable-json field - read - author", () => {
         const contextHandler = createAuthorWithSearchableJsonContextHandler();
         context = await contextHandler.handler();
 
-        model = await context.cms.getModel(AUTHOR_WITH_SEARCHABLE_JSON_MODEL_ID);
+        model = await context.container
+            .resolve(HeadlessCms)
+            .getModel(AUTHOR_WITH_SEARCHABLE_JSON_MODEL_ID);
 
-        const createdEntry = await context.cms.createEntry<IAuthorWithSearchableJsonCmsEntryValues>(
-            model,
-            {
+        const createdEntry = await context.container
+            .resolve(HeadlessCms)
+            .createEntry<IAuthorWithSearchableJsonCmsEntryValues>(model, {
                 values
-            }
-        );
-        entry = await context.cms.publishEntry<IAuthorWithSearchableJsonCmsEntryValues>(
-            model,
-            createdEntry.id
-        );
+            });
+        entry = await context.container
+            .resolve(HeadlessCms)
+            .publishEntry<IAuthorWithSearchableJsonCmsEntryValues>(model, createdEntry.id);
     });
 
     it("should have an entry with searchable-json field", async () => {
@@ -52,19 +53,25 @@ describe("searchable-json field - read - author", () => {
         });
         expect(entry.values).toEqual(values);
 
-        const getEntryResult = await context.cms.getEntryById(model, entry.id);
+        const getEntryResult = await context.container
+            .resolve(HeadlessCms)
+            .getEntryById(model, entry.id);
         expect(getEntryResult).toMatchObject({
             id: entry.id,
             values
         });
 
-        const [listLatestEntriesResult] = await context.cms.listLatestEntries(model);
+        const [listLatestEntriesResult] = await context.container
+            .resolve(HeadlessCms)
+            .listLatestEntries(model);
         expect(listLatestEntriesResult[0]).toMatchObject({
             id: entry.id,
             values
         });
 
-        const [listPublishedEntriesResult] = await context.cms.listPublishedEntries(model);
+        const [listPublishedEntriesResult] = await context.container
+            .resolve(HeadlessCms)
+            .listPublishedEntries(model);
         expect(listPublishedEntriesResult[0]).toMatchObject({
             id: entry.id,
             values

@@ -3,8 +3,8 @@ import { Container } from "@webiny/di";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { License } from "@webiny/wcp";
-import { WcpContextFeature } from "~/features/wcp/WcpContext/index.js";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
+import { registerApiCoreStorageOperations } from "~/features/storageOperations/abstractions.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
 import { RootTenantValue } from "~/domain/tenancy/RootTenantValue.js";
 import type { SecurityPermission } from "~/types/security.js";
@@ -49,8 +49,8 @@ describe("API Keys", function () {
         const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
         const testLicense = License.fromLicenseDto(createTestWcpLicense());
 
-        ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
-        WcpContextFeature.register(container, testLicense);
+        registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+        ApiCoreFeature.register(container, { wcpLicense: testLicense });
         container.registerInstance(Authorizer, new TestAuthorizer());
 
         const tenantContext = container.resolve(TenantContext);

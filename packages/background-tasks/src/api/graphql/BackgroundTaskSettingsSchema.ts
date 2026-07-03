@@ -1,5 +1,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { ContextPlugin } from "@webiny/handler";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import type { Context } from "~/api/types.js";
 import { GetBackgroundTaskSettingsRepository } from "~/api/features/GetBackgroundTaskSettings/abstractions.js";
 import { UpdateBackgroundTaskSettingsUseCase } from "~/api/features/UpdateBackgroundTaskSettings/abstractions.js";
@@ -29,11 +31,11 @@ const resolve = async <T = unknown>(fn: () => Promise<T>) => {
 
 export const createBackgroundTaskSettingsGraphQL = (): Plugin[] => {
     const plugin = new ContextPlugin<Context>(async ctx => {
-        if (!ctx.tenancy.getCurrentTenant()) {
+        if (!ctx.container.resolve(TenantContext).getTenant()) {
             return;
         }
 
-        const schema = new GraphQLSchemaPlugin<Context>({
+        const schemaPlugin = new GraphQLSchemaPlugin<Context>({
             typeDefs: /* GraphQL */ `
                 type WebinyBackgroundTaskSettings {
                     retentionDays: Int
@@ -91,8 +93,20 @@ export const createBackgroundTaskSettingsGraphQL = (): Plugin[] => {
             }
         });
 
-        schema.name = "backgroundTasks.settings.graphql.schema";
-        ctx.plugins.register(schema);
+        schemaPlugin.name = "backgroundTasks.settings.graphql.schema";
+
+        ctx.container.registerInstance(CoreGraphQLSchemaFactory, {
+            async execute(builder) {
+                const { schema } = schemaPlugin;
+                if (schema.typeDefs) {
+                    builder.addTypeDefs(schema.typeDefs);
+                }
+                if (schema.resolvers) {
+                    builder.addLegacyResolvers(schema.resolvers as Record<string, any>);
+                }
+                return builder;
+            }
+        });
     });
 
     plugin.name = "backgroundTasks.settings.graphql";

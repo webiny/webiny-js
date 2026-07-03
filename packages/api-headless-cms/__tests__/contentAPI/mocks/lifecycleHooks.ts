@@ -72,10 +72,6 @@ export const pubSubTracker = new PubSubTracker();
 
 export const assignModelEvents = () => {
     return new ContextPlugin<CmsContext>(async context => {
-        if (!context.cms) {
-            throw new Error("Missing cms on context.");
-        }
-
         context.container.registerFactory(ModelBeforeCreateEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentModel:beforeCreate");
@@ -128,10 +124,6 @@ export const assignModelEvents = () => {
 
 export const assignEntryEvents = () => {
     return new ContextPlugin<CmsContext>(async (context: CmsContext) => {
-        if (!context.cms) {
-            throw new Error("Missing cms on context.");
-        }
-
         context.container.registerFactory(EntryBeforeCreateEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:beforeCreate");

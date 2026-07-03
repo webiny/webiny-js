@@ -22,3 +22,5 @@ export const registerAuditLogsDdbStorageOperations = (
         context.container.registerInstance(AuditLogsStorage, storage);
     });
 };
+export { AuditLogsDdbFeature } from "./AuditLogsDdbFeature.js";
+export type { AuditLogsDdbFeatureConfig } from "./AuditLogsDdbFeature.js";
