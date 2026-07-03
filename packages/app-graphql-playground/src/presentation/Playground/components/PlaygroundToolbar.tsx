@@ -5,10 +5,13 @@ import { Loader } from "@webiny/admin-ui";
 import { ReactComponent as PlayArrowIcon } from "@webiny/icons/play_arrow.svg";
 import { ReactComponent as AutoFixHighIcon } from "@webiny/icons/auto_fix_high.svg";
 import { ReactComponent as ContentCopyIcon } from "@webiny/icons/content_copy.svg";
+import { ReactComponent as MenuBookIcon } from "@webiny/icons/menu_book.svg";
 import type { PlaygroundPresenter } from "../abstractions.js";
+import type { DocsExplorerPresenter } from "../../DocsExplorer/abstractions.js";
 
 interface PlaygroundToolbarProps {
     presenter: PlaygroundPresenter.Interface;
+    docsPresenter: DocsExplorerPresenter.Interface;
 }
 
 const isMac =
@@ -29,6 +32,13 @@ export const PlaygroundToolbar = observer((props: PlaygroundToolbarProps) => {
                 <span className="ml-4 text-xs text-gray-500">{shortcutKey}+Enter to execute</span>
             </div>
             <div className="flex gap-2 items-center">
+                <Button
+                    onClick={() => props.docsPresenter.toggle()}
+                    icon={<MenuBookIcon />}
+                    variant={props.docsPresenter.vm.open ? "primary" : "secondary"}
+                >
+                    Docs
+                </Button>
                 <Button
                     onClick={() => props.presenter.copyResponse()}
                     icon={<ContentCopyIcon />}

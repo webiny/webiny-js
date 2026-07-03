@@ -9,19 +9,28 @@ import { TabBar } from "./TabBar.js";
 import { QueryEditor } from "./QueryEditor.js";
 import { ResponseEditor } from "./ResponseEditor.js";
 import { BottomPanel } from "./BottomPanel.js";
+import { DocsExplorerFeature } from "../../DocsExplorer/feature.js";
+import { DocsExplorerDrawer } from "../../DocsExplorer/components/DocsExplorerDrawer.js";
 import type { PlaygroundPresenter } from "../abstractions.js";
 
 export const PlaygroundPage = observer(() => {
     const { presenter } = useFeature(PlaygroundPresenterFeature);
+    const { presenter: docsPresenter } = useFeature(DocsExplorerFeature);
     const { splitRef, editorPct, handleDividerMouseDown } = useResizableSplit();
 
     useEffect(() => {
         presenter.init();
     }, [presenter]);
 
+    useEffect(() => {
+        const schema = presenter.vm.schema;
+        const status = presenter.vm.schemaStatus;
+        docsPresenter.setSchema(schema, status);
+    }, [presenter.vm.schema, presenter.vm.schemaStatus, docsPresenter]);
+
     return (
         <div className="flex flex-col bg-gray-100" style={{ height: "calc(100vh - 45px)" }}>
-            <PlaygroundToolbar presenter={presenter} />
+            <PlaygroundToolbar presenter={presenter} docsPresenter={docsPresenter} />
             <TabBar presenter={presenter} />
             <ActiveTabContent
                 presenter={presenter}
@@ -29,6 +38,7 @@ export const PlaygroundPage = observer(() => {
                 editorPct={editorPct}
                 onDividerMouseDown={handleDividerMouseDown}
             />
+            <DocsExplorerDrawer presenter={docsPresenter} />
         </div>
     );
 });
