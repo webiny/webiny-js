@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {},
   "dependencies": {
+    "@webiny/api-event-handler-server-sql": "latest",
     "@webiny/api-aco": "latest",
     "@webiny/api-core": "latest",
     "@webiny/api-file-manager": "latest",
@@ -15,6 +16,7 @@
     "@webiny/api-websockets": "latest",
     "@webiny/api-workflows": "latest",
     "@webiny/build-tools": "latest",
-    "@webiny/handler-graphql": "latest"
+    "better-sqlite3": "^11.0.0",
+    "knex": "^3.3.0"
   }
 }
