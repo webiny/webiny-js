@@ -4,9 +4,19 @@ export class PlaygroundClient implements PlaygroundClientAbstraction.Interface {
     private readonly defaultEndpoint: string;
     private readonly getToken: PlaygroundClientAbstraction.TokenGetter;
 
-    constructor(defaultEndpoint: string, getToken: PlaygroundClientAbstraction.TokenGetter) {
+    private constructor(
+        defaultEndpoint: string,
+        getToken: PlaygroundClientAbstraction.TokenGetter
+    ) {
         this.defaultEndpoint = defaultEndpoint;
         this.getToken = getToken;
+    }
+
+    public static create(
+        defaultEndpoint: string,
+        getToken: PlaygroundClientAbstraction.TokenGetter
+    ) {
+        return new PlaygroundClient(defaultEndpoint, getToken);
     }
 
     public async execute(

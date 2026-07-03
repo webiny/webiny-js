@@ -14,18 +14,18 @@ class PlaygroundClientFactoryImpl implements PlaygroundClientFactory.Interface {
         endpoint: string,
         options?: PlaygroundClientFactory.Options
     ): PlaygroundClientAbstraction.Interface {
-        const getToken: PlaygroundClientAbstraction.TokenGetter =
-            options?.getToken ||
-            (async () => {
-                const token = await this.authenticationContext.getIdToken();
-                if (!token) {
-                    return null;
-                }
+        if (options?.getToken) {
+            return PlaygroundClient.create(endpoint, options.getToken);
+        }
 
-                return token;
-            });
+        return PlaygroundClient.create(endpoint, async () => {
+            const token = await this.authenticationContext.getIdToken();
+            if (!token) {
+                return null;
+            }
 
-        return new PlaygroundClient(endpoint, getToken);
+            return token;
+        });
     }
 }
 
