@@ -13972,7 +13972,7 @@ __metadata:
   resolution: "@webiny/project-server@workspace:packages/project-server"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.1"
+    "@webiny/di": "npm:^1.0.2"
     "@webiny/project": "npm:0.0.0"
     replace-in-path: "npm:^1.1.0"
     typescript: "npm:6.0.3"

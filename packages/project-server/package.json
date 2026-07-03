@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/project": "0.0.0",
     "replace-in-path": "^1.1.0"
   },
