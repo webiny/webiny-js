@@ -9,8 +9,10 @@ export const WorkflowStateListEmpty = () => {
         <EmptyState
             size={"sm"}
             type={"table"}
-            title={t`Nothing to show`}
             description={t`There are no entries available.`}
+            // Match the loading skeleton's height (3 rows) so the widget doesn't
+            // resize when loading finishes and the empty state is shown.
+            className={"min-h-[194px] py-0"}
         />
     );
 };

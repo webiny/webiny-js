@@ -37,18 +37,14 @@ const emptyStateVariants = cva(
     }
 );
 
-const illustrationVariants = cva("shrink-0", {
-    variants: {
-        size: {
-            sm: "w-[103px] h-[85px]",
-            md: "w-[145px] h-[120px]",
-            lg: "w-[181px] h-[150px]"
-        }
-    },
-    defaultVariants: {
-        size: "md"
-    }
-});
+// Illustration dimensions per size. Set as explicit SVG `width`/`height` so the
+// rendered size is deterministic and doesn't depend on Tailwind generating
+// arbitrary width/height utilities for consumers.
+const ILLUSTRATION_DIMENSIONS = {
+    sm: { width: 88, height: 73 },
+    md: { width: 145, height: 120 },
+    lg: { width: 181, height: 150 }
+} as const;
 
 const contentVariants = cva(
     "flex flex-col items-center w-full text-neutral-strong [word-break:break-word]",
@@ -101,7 +97,9 @@ const DecoratableEmptyState = ({
         <div className={cn(emptyStateVariants({ size: resolvedSize }), className)} {...props}>
             {illustration ? (
                 <Illustration
-                    className={illustrationVariants({ size: resolvedSize })}
+                    className={"shrink-0"}
+                    width={ILLUSTRATION_DIMENSIONS[resolvedSize].width}
+                    height={ILLUSTRATION_DIMENSIONS[resolvedSize].height}
                     aria-hidden={true}
                 />
             ) : null}
