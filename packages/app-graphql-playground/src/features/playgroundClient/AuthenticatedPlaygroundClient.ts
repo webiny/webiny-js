@@ -1,5 +1,5 @@
 import { TenantContext } from "@webiny/app-admin/features/tenancy/abstractions.js";
-import { PlaygroundClient } from "../playgroundClient/abstractions.js";
+import { PlaygroundClient } from "./abstractions.js";
 
 /*
  * Internal wrapper around a playground client that adds the `x-tenant` header

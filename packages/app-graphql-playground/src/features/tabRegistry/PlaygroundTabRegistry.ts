@@ -4,7 +4,7 @@ import { TenantContext } from "@webiny/app-admin/features/tenancy/abstractions.j
 import { PlaygroundClient } from "../playgroundClient/abstractions.js";
 import { PlaygroundClientImpl } from "../playgroundClient/PlaygroundClient.js";
 import { PlaygroundTabRegistry } from "./abstractions.js";
-import { AuthenticatedPlaygroundClient } from "./AuthenticatedPlaygroundClient.js";
+import { AuthenticatedPlaygroundClient } from "../playgroundClient/AuthenticatedPlaygroundClient.js";
 
 const DEFAULT_QUERY = `# Webiny Main API
 #
