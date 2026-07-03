@@ -1,12 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { createLambdaHandler } from "~/createLambdaHandler.js";
-import { ApiGatewayEventType, FunctionUrlEventType, FunctionUrlTranslator } from "~/index.js";
+import { ApiGatewayEventType } from "~/index.js";
 import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHandler.js";
 import { HttpFeature } from "@webiny/event-handler-core";
 import { HttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
-import { EventHandler } from "@webiny/event-handler-core";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 
 const apiGwEvent = {
     httpMethod: "POST",
@@ -15,20 +13,6 @@ const apiGwEvent = {
     queryStringParameters: { foo: "bar" },
     pathParameters: { id: "123" },
     requestContext: { requestId: "req-1" },
-    body: JSON.stringify({ query: "{ hello }" }),
-    isBase64Encoded: false
-};
-
-const fnUrlEvent = {
-    rawPath: "/graphql",
-    rawQueryString: "foo=bar",
-    headers: { "content-type": "application/json" },
-    queryStringParameters: { foo: "bar" },
-    pathParameters: { id: "123" },
-    requestContext: {
-        http: { method: "POST", path: "/graphql" },
-        apiId: "abc123"
-    },
     body: JSON.stringify({ query: "{ hello }" }),
     isBase64Encoded: false
 };
@@ -102,32 +86,5 @@ describe("ApiGatewayHttpRouterHandler", () => {
         const result = await handler(apiGwEvent);
         expect(result.isBase64Encoded).toBe(true);
         expect(result.body).toBe(Buffer.from("PNG").toString("base64"));
-    });
-});
-
-describe("FunctionUrlTranslator", () => {
-    it("should translate LambdaFunctionURLEvent to IHttpRequest", async () => {
-        const fnUrlCaptureHandler = EventHandler.createImplementation({
-            implementation: class {
-                async execute(ctx: EventContext, _next: NextFunction) {
-                    return { statusCode: 200, body: ctx.event };
-                }
-            },
-            dependencies: []
-        });
-
-        const handler = createLambdaHandler({
-            root: container => {
-                container.register(FunctionUrlEventType);
-                container.register(FunctionUrlTranslator);
-                container.register(fnUrlCaptureHandler);
-            }
-        });
-
-        const result = await handler(fnUrlEvent);
-        const body = JSON.parse(result.body);
-        expect(body.method).toBe("POST");
-        expect(body.path).toBe("/graphql");
-        expect(body.query).toEqual({ foo: "bar" });
     });
 });

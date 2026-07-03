@@ -13,7 +13,6 @@ export type {
     HandlerSetup,
     EventContext
 } from "@webiny/event-handler-core";
-export * from "./translators/FunctionUrlTranslator.js";
 export * from "./translators/apiGatewayEventToHttpRequest.js";
 export * from "./translators/httpResponseToApiGatewayResult.js";
 export * from "./handlers/index.js";

@@ -3,7 +3,6 @@ import { Container } from "@webiny/di";
 import { EventType } from "@webiny/event-handler-core";
 import {
     ApiGatewayEventType,
-    FunctionUrlEventType,
     S3EventType,
     SqsEventType,
     SnsEventType,
@@ -74,13 +73,6 @@ describe("EventType detection", () => {
         expect(et.canHandle(s3Event)).toBe(false);
     });
 
-    it("FunctionUrlEventType detects Function URL events", () => {
-        const [et] = resolveEventTypes(FunctionUrlEventType);
-        expect(et.canHandle(fnUrlEvent)).toBe(true);
-        expect(et.canHandle(apiGwEvent)).toBe(false);
-        expect(et.canHandle(s3Event)).toBe(false);
-    });
-
     it("S3EventType detects S3 events", () => {
         const [et] = resolveEventTypes(S3EventType);
         expect(et.canHandle(s3Event)).toBe(true);
@@ -113,19 +105,16 @@ describe("EventType detection", () => {
     });
 
     it("each event type returns the correct handler abstraction", async () => {
-        const { EventHandler } = await import("@webiny/event-handler-core");
         const { ApiGatewayEventHandler } =
             await import("~/abstractions/handlers/ApiGatewayEventHandler.js");
         const { S3EventHandler } = await import("~/abstractions/handlers/S3EventHandler.js");
         const { SqsEventHandler } = await import("~/abstractions/handlers/SqsEventHandler.js");
 
         const [agw] = resolveEventTypes(ApiGatewayEventType);
-        const [fn] = resolveEventTypes(FunctionUrlEventType);
         const [s3] = resolveEventTypes(S3EventType);
         const [sqs] = resolveEventTypes(SqsEventType);
 
         expect(agw.getHandlerAbstraction()).toBe(ApiGatewayEventHandler);
-        expect(fn.getHandlerAbstraction()).toBe(EventHandler);
         expect(s3.getHandlerAbstraction()).toBe(S3EventHandler);
         expect(sqs.getHandlerAbstraction()).toBe(SqsEventHandler);
     });
