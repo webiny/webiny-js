@@ -23,14 +23,14 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "email-addresses": "^5.0.0",
-    "nodemailer": "^9.0.1",
+    "nodemailer": "^9.0.3",
     "zod": "4.4.3"
   },
   "devDependencies": {
     "@types/nodemailer": "^8.0.1",
     "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "*",
+    "@webiny/di": "^1.0.2",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
