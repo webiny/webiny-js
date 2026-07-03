@@ -30,8 +30,8 @@ export const QueryEditor: React.FC<QueryEditorProps> = observer(function QueryEd
     );
 
     const handleEndpointChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            presenter.updateEndpoint(e.target.value);
+        (ev: React.ChangeEvent<HTMLInputElement>) => {
+            presenter.updateEndpoint(ev.target.value);
         },
         [presenter]
     );

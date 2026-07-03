@@ -37,21 +37,21 @@ export const TabBar: React.FC<TabBarProps> = observer(function TabBar({ presente
     );
 
     const handleCloseTab = useCallback(
-        (e: React.MouseEvent, id: string) => {
-            e.stopPropagation();
+        (ev: React.MouseEvent, id: string) => {
+            ev.stopPropagation();
             presenter.closeTab(id);
         },
         [presenter]
     );
 
     const handleContextMenu = useCallback(
-        (e: React.MouseEvent, tabId: string, isRegistered: boolean) => {
-            e.preventDefault();
+        (ev: React.MouseEvent, tabId: string, isRegistered: boolean) => {
+            ev.preventDefault();
             setContextMenu({
                 tabId,
                 isRegistered,
-                x: e.clientX,
-                y: e.clientY
+                x: ev.clientX,
+                y: ev.clientY
             });
         },
         []
@@ -61,8 +61,8 @@ export const TabBar: React.FC<TabBarProps> = observer(function TabBar({ presente
         setContextMenu(null);
     }, []);
 
-    const handleAddClick = useCallback((e: React.MouseEvent) => {
-        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const handleAddClick = useCallback((ev: React.MouseEvent) => {
+        const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
         setEndpointSelector({
             x: rect.left,
             y: rect.bottom + 4
@@ -85,7 +85,7 @@ export const TabBar: React.FC<TabBarProps> = observer(function TabBar({ presente
                             isActive ? "bg-white border-b-2 border-b-blue-500" : "hover:bg-gray-100"
                         }`}
                         onClick={() => handleTabClick(tab.id)}
-                        onContextMenu={e => handleContextMenu(e, tab.id, tab.isRegistered)}
+                        onContextMenu={ev => handleContextMenu(ev, tab.id, tab.isRegistered)}
                     >
                         <div className="flex flex-col min-w-0">
                             <span className="text-sm font-medium truncate">{tab.name}</span>
@@ -125,7 +125,7 @@ export const TabBar: React.FC<TabBarProps> = observer(function TabBar({ presente
 interface TabCloseButtonProps {
     isRegistered: boolean;
     tabId: string;
-    onClose: (e: React.MouseEvent, id: string) => void;
+    onClose: (ev: React.MouseEvent, id: string) => void;
 }
 
 /* Only renders the close button for user tabs. */
@@ -141,7 +141,7 @@ const TabCloseButton: React.FC<TabCloseButtonProps> = function TabCloseButton({
     return (
         <button
             className="ml-1 p-0.5 rounded hover:bg-gray-200"
-            onClick={e => onClose(e, tabId)}
+            onClick={ev => onClose(ev, tabId)}
             title="Close tab"
         >
             <CloseIcon className="w-3 h-3 text-gray-400" />

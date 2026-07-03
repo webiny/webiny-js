@@ -10,20 +10,20 @@ export function useResizableSplit() {
     const [editorPct, setEditorPct] = useState(50);
     const isDragging = useRef(false);
 
-    const handleDividerMouseDown = useCallback((e: React.MouseEvent) => {
-        e.preventDefault();
+    const handleDividerMouseDown = useCallback((ev: React.MouseEvent) => {
+        ev.preventDefault();
         isDragging.current = true;
         document.body.style.cursor = "col-resize";
         document.body.style.userSelect = "none";
     }, []);
 
     useEffect(() => {
-        const onMouseMove = (e: MouseEvent) => {
+        const onMouseMove = (ev: MouseEvent) => {
             if (!isDragging.current || !splitRef.current) {
                 return;
             }
             const rect = splitRef.current.getBoundingClientRect();
-            const pct = ((e.clientX - rect.left) / rect.width) * 100;
+            const pct = ((ev.clientX - rect.left) / rect.width) * 100;
             setEditorPct(Math.min(100 - MIN_PANE_PCT, Math.max(MIN_PANE_PCT, pct)));
         };
 

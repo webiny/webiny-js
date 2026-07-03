@@ -17,15 +17,23 @@ export const EndpointSelector: React.FC<EndpointSelectorProps> = observer(
         const menuRef = useRef<HTMLDivElement>(null);
 
         useEffect(() => {
-            const handleClickOutside = (e: MouseEvent) => {
-                if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-                    onClose();
-                }
-            };
+            const controller = new AbortController();
 
-            document.addEventListener("mousedown", handleClickOutside);
+            document.addEventListener(
+                "mousedown",
+                ev => {
+                    if (!menuRef.current) {
+                        return;
+                    } else if (menuRef.current.contains(ev.target as Node)) {
+                        return;
+                    }
+                    onClose();
+                },
+                { signal: controller.signal }
+            );
+
             return () => {
-                document.removeEventListener("mousedown", handleClickOutside);
+                controller.abort();
             };
         }, [onClose]);
 
@@ -38,6 +46,18 @@ export const EndpointSelector: React.FC<EndpointSelectorProps> = observer(
         );
 
         const endpoints = presenter.vm.endpoints;
+
+        useEffect(() => {
+            const element = menuRef.current;
+            if (!element) {
+                return;
+            }
+
+            const rect = element.getBoundingClientRect();
+            if (rect.right > window.innerWidth) {
+                element.style.left = `${window.innerWidth - rect.width - 8}px`;
+            }
+        }, [x, y]);
 
         return (
             <div

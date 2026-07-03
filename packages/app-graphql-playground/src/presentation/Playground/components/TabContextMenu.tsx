@@ -28,15 +28,26 @@ export const TabContextMenu: React.FC<TabContextMenuProps> = function TabContext
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-                onClose();
-            }
-        };
+        const controller = new AbortController();
 
-        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener(
+            "mousedown",
+            (ev: MouseEvent) => {
+                if (!menuRef.current) {
+                    return;
+                }
+
+                if (menuRef.current.contains(ev.target as Node)) {
+                    return;
+                }
+
+                onClose();
+            },
+            { signal: controller.signal }
+        );
+
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
+            controller.abort();
         };
     }, [onClose]);
 
@@ -71,11 +82,11 @@ export const TabContextMenu: React.FC<TabContextMenuProps> = function TabContext
     }, [presenter, tabId, renameValue, onClose]);
 
     const handleRenameKeyDown = useCallback(
-        (e: React.KeyboardEvent) => {
-            if (e.key === "Enter") {
+        (ev: React.KeyboardEvent) => {
+            if (ev.key === "Enter") {
                 handleConfirmRename();
             }
-            if (e.key === "Escape") {
+            if (ev.key === "Escape") {
                 onClose();
             }
         },
@@ -93,7 +104,7 @@ export const TabContextMenu: React.FC<TabContextMenuProps> = function TabContext
                     ref={inputRef}
                     type="text"
                     value={renameValue}
-                    onChange={e => setRenameValue(e.target.value)}
+                    onChange={ev => setRenameValue(ev.target.value)}
                     onKeyDown={handleRenameKeyDown}
                     onBlur={handleConfirmRename}
                     className="px-2 py-1 border border-gray-300 rounded text-sm w-40"

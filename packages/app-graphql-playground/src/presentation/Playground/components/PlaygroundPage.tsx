@@ -37,7 +37,7 @@ interface ActiveTabContentProps {
     presenter: PlaygroundPresenter.Interface;
     splitRef: React.RefObject<HTMLDivElement>;
     editorPct: number;
-    onDividerMouseDown: (e: React.MouseEvent) => void;
+    onDividerMouseDown: (ev: React.MouseEvent) => void;
 }
 
 /* Renders the main split-pane content area when an active tab exists. */
@@ -56,17 +56,18 @@ const ActiveTabContent: React.FC<ActiveTabContentProps> = observer(function Acti
             <div
                 className="flex flex-col overflow-hidden border-r border-gray-200"
                 style={{ flex: "none", width: `${editorPct}%` }}
-                onMouseMove={e => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    e.currentTarget.style.cursor = e.clientX >= rect.right - 4 ? "col-resize" : "";
+                onMouseMove={ev => {
+                    const rect = ev.currentTarget.getBoundingClientRect();
+                    ev.currentTarget.style.cursor =
+                        ev.clientX >= rect.right - 4 ? "col-resize" : "";
                 }}
-                onMouseLeave={e => {
-                    e.currentTarget.style.cursor = "";
+                onMouseLeave={ev => {
+                    ev.currentTarget.style.cursor = "";
                 }}
-                onMouseDown={e => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    if (e.clientX >= rect.right - 4) {
-                        onDividerMouseDown(e);
+                onMouseDown={ev => {
+                    const rect = ev.currentTarget.getBoundingClientRect();
+                    if (ev.clientX >= rect.right - 4) {
+                        onDividerMouseDown(ev);
                     }
                 }}
             >
