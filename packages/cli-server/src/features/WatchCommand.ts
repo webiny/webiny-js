@@ -1,4 +1,7 @@
 import { Transform } from "node:stream";
+import { spawn } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
 import { createImplementation } from "@webiny/di";
 import {
     CliCommandFactory,
@@ -47,6 +50,57 @@ function colorForString(value: string) {
         hash |= 0;
     }
     return COLORS[Math.abs(hash) % COLORS.length];
+}
+
+/**
+ * Boot (and keep booting) the built api handler as a live HTTP server, alongside the build watchers.
+ *
+ * The api workspace compiles to `<cwd>/.webiny/workspace/apps/api/graphql/build/_handler.mjs`, which
+ * (for the server flavour) exports the Node `http.Server` from `createNodeHandler`. We write a tiny
+ * runner next to it that imports that handler and calls `.listen(PORT)`, then run it under Node's
+ * built-in `--watch` scoped to the build dir — so every rebuild restarts the server in an isolated
+ * child process (a server crash never kills the watcher). If the build doesn't exist yet, the runner
+ * throws and `--watch` retries once the first build lands.
+ */
+function startApiServer(cwd: string, ui: UiService.Interface) {
+    const workspaceApi = path.join(cwd, ".webiny", "workspace", "apps", "api");
+    const buildDir = path.join(workspaceApi, "graphql", "build");
+    const runnerPath = path.join(workspaceApi, ".serve.mjs");
+    const port = process.env.PORT || "3000";
+
+    fs.mkdirSync(workspaceApi, { recursive: true });
+    fs.writeFileSync(
+        runnerPath,
+        [
+            `const port = Number(process.env.PORT || ${JSON.stringify(port)});`,
+            `const { handler } = await import("./graphql/build/_handler.mjs");`,
+            `handler.listen(port, () => {`,
+            `    console.log("\\n🚀 Webiny API (server flavour) listening on http://localhost:" + port + "\\n");`,
+            `});`,
+            ``
+        ].join("\n")
+    );
+
+    ui.info(`Starting api server on http://localhost:%s ...`, port);
+
+    const child = spawn(process.execPath, ["--watch-path", buildDir, runnerPath], {
+        cwd: workspaceApi,
+        stdio: "inherit",
+        env: { ...process.env, PORT: port }
+    });
+
+    const cleanup = () => {
+        if (!child.killed) {
+            child.kill();
+        }
+    };
+    process.on("exit", cleanup);
+    process.on("SIGINT", () => {
+        cleanup();
+        process.exit(0);
+    });
+
+    return child;
 }
 
 function createPrefixer(prefix: string) {
@@ -132,6 +186,12 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                         `No watch processes were started. Please ensure you have specified a valid "app" or "package" parameter.`
                     );
                     return;
+                }
+
+                // When watching the "api" app, also boot it as a live HTTP server that reloads on
+                // rebuild — so `webiny watch api` both compiles AND serves (no separate command).
+                if (apps.includes("api")) {
+                    startApiServer(process.cwd(), ui);
                 }
 
                 if (allProcesses.length === 1) {
