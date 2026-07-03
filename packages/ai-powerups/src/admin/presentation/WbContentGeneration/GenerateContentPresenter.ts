@@ -207,7 +207,7 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
                     .label("Files included")
                     .description("Uncheck files to exclude them from this generation only.")
                     .options(() => this.getProjectFileOptions())
-                    .renderer("checkboxes")
+                    .renderer("multiSelect", { showSelectionCount: true })
                     .list()
                     .hiddenWhen(({ form }) => {
                         const projectId = form.field("project").as("text").getValue();

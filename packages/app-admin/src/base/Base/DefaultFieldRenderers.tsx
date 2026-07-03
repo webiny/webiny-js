@@ -30,12 +30,16 @@ import { PermissionsRenderer } from "~/base/Base/FieldRenderers/PermissionsRende
 import { RolesMultiSelectRenderer } from "~/base/Base/FieldRenderers/RolesMultiSelectRenderer.js";
 import { ApiKeyTokenRenderer } from "~/base/Base/FieldRenderers/ApiKeyTokenRenderer.js";
 import { MultiAutoCompleteRenderer } from "~/base/Base/FieldRenderers/MultiAutoCompleteRenderer.js";
+import { MultiSelectRenderer } from "~/base/Base/FieldRenderers/MultiSelectRenderer.js";
 
 export const DefaultFieldRenderers = () => {
     return (
         <AdminConfig>
             <AdminConfig.Form.FieldRenderer name={"textInput"} component={InputRenderer} />
             <AdminConfig.Form.FieldRenderer name={"textarea"} component={TextareaRenderer} />
+            <AdminConfig.Form.FieldRenderer name={"select"} component={SelectRenderer} />
+            <AdminConfig.Form.FieldRenderer name={"multiSelect"} component={MultiSelectRenderer} />
+            {/* @deprecated "dropdown" is for BC only./ */}
             <AdminConfig.Form.FieldRenderer name={"dropdown"} component={SelectRenderer} />
             <AdminConfig.Form.FieldRenderer
                 name={"objectAccordionSingle"}
