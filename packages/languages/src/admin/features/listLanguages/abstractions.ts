@@ -1,5 +1,5 @@
+import { IListCache } from "@webiny/app-admin/features/listCache/index.js";
 import { createAbstraction } from "@webiny/feature/admin";
-import type { IListCache } from "@webiny/app-headless-cms/features/ListCache.js";
 
 //
 // DTO

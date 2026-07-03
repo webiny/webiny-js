@@ -1,8 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "./__mocks/context/useHandler.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
-import { createHeadlessCmsScheduler } from "~/index.js";
 import { createMockTargetModelPlugins, MOCK_TARGET_MODEL_ID } from "./__mocks/targetModel.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
@@ -22,10 +20,7 @@ describe("Action Handlers", () => {
 
     beforeEach(async () => {
         const contextHandler = useHandler({
-            plugins: [createHeadlessCmsScheduler(), createMockTargetModelPlugins()],
-            getScheduleClient: () => {
-                return createMockScheduleClient();
-            }
+            plugins: [createMockTargetModelPlugins()]
         });
         context = await contextHandler.handler();
     });
@@ -54,6 +49,7 @@ describe("Action Handlers", () => {
         const publishActionResult = await schedulePublish.execute({
             id: entryResult.value.id,
             model: modelResult.value,
+            tenant: "root",
             scheduleFor: new Date(Date.now() + 100000)
         });
 
@@ -71,6 +67,7 @@ describe("Action Handlers", () => {
         const scheduledAction = publishActionResult.value;
         await executeScheduledAction.execute({
             id: scheduledAction.scheduledAction.id,
+            tenant: "root",
             namespace: scheduledAction.scheduledAction.namespace
         });
 
@@ -86,12 +83,14 @@ describe("Action Handlers", () => {
         const unpublishActionResult = await scheduleUnpublish.execute({
             id: entryResult.value.id,
             model: modelResult.value,
+            tenant: "root",
             scheduleFor: new Date(Date.now() + 1000000)
         });
 
         // Execute action handler
         await executeScheduledAction.execute({
             id: unpublishActionResult.value.scheduledAction.id,
+            tenant: "root",
             namespace: unpublishActionResult.value.scheduledAction.namespace
         });
 

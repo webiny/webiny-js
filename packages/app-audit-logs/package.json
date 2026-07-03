@@ -13,7 +13,6 @@
   "description": "",
   "license": "MIT",
   "dependencies": {
-    "@apollo/react-hooks": "^3.1.5",
     "@emotion/css": "^11.13.5",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -21,12 +20,12 @@
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/common-audit-logs": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "@webiny/react-properties": "0.0.0",
     "date-fns": "^4.4.0",
-    "graphql-tag": "^2.12.6",
     "lodash": "^4.18.1",
     "zod": "4.4.3"
   },

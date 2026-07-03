@@ -1,5 +1,4 @@
 import { getIntrospectionQuery } from "graphql";
-import { createHandler } from "@webiny/handler-aws";
 import type { CreateHandlerCoreParams } from "./plugins";
 import { createHandlerCore } from "./plugins";
 import { createGroupPlugin, createModelPlugin } from "./model";
@@ -25,10 +24,8 @@ import {
     LIST_ENTRIES_QUERY
 } from "./graphql/contentEntry";
 import { createUpdateLocationGraphQl } from "./updateLocationGraphQlPlugin";
-import type { LambdaContext } from "@webiny/handler-aws/types";
-import type { APIGatewayEvent } from "@webiny/handler-aws/types";
 
-export type GraphQLHandlerParams = CreateHandlerCoreParams;
+export type GraphQLHandlerParams = Omit<CreateHandlerCoreParams, "extraPlugins">;
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
@@ -40,104 +37,66 @@ export interface InvokeParams {
 }
 
 export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
-    const { identity, path } = params;
-
-    const core = createHandlerCore(params);
+    const { path } = params;
 
     const group = createGroupPlugin();
     const model = createModelPlugin();
-    const handler = createHandler({
-        plugins: core.plugins.concat([group, model, createUpdateLocationGraphQl()]),
-        debug: false
+
+    const core = createHandlerCore({
+        ...params,
+        extraPlugins: [group, model, ...createUpdateLocationGraphQl()]
     });
 
     const invoke = async <T = any>({
         httpMethod = "POST",
         body,
-        headers = {},
-        ...rest
-    }: InvokeParams): Promise<[T, any]> => {
-        const response = await handler(
-            {
-                /**
-                 * If no path defined, use /graphql as we want to make request to main api
-                 */
-                path: path ? `/cms/${path}` : "/graphql",
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as unknown as APIGatewayEvent,
-            {} as LambdaContext
-        );
-        // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body || "{}"), response];
+        headers = {}
+    }: InvokeParams = {}): Promise<[T, any]> => {
+        const response = await core.handler({
+            method: httpMethod,
+            path: path ? `/cms/${path}` : "/graphql",
+            headers: {
+                ["x-tenant"]: "root",
+                ["Content-Type"]: "application/json",
+                ...headers
+            },
+            body
+        });
+        return [response.body as T, response];
     };
 
     return {
-        handler,
+        handler: core.handler,
         invoke,
         tenant: core.tenant,
-        identity,
+        identity: core.identity,
         storageOperations: core.storageOperations,
         model: model.contentModel as CmsModel,
         async introspect() {
-            return invoke({
-                body: {
-                    query: getIntrospectionQuery()
-                }
-            });
+            return invoke({ body: { query: getIntrospectionQuery() } });
         },
         async getContentModelQuery(variables: Record<string, any>) {
-            return invoke({
-                body: {
-                    query: GET_MODEL_QUERY,
-                    variables
-                }
-            });
+            return invoke({ body: { query: GET_MODEL_QUERY, variables } });
         },
         async getEntry(variables: GetEntryInputVariables) {
-            return invoke<GetEntryResult>({
-                body: {
-                    query: GET_ENTRY_QUERY,
-                    variables
-                }
-            });
+            return invoke<GetEntryResult>({ body: { query: GET_ENTRY_QUERY, variables } });
         },
         async listEntries(variables: ListEntriesInputVariables) {
-            return invoke<ListEntriesResult>({
-                body: {
-                    query: LIST_ENTRIES_QUERY,
-                    variables
-                }
-            });
+            return invoke<ListEntriesResult>({ body: { query: LIST_ENTRIES_QUERY, variables } });
         },
         async createEntry(variables: CreateEntryInputVariables) {
             return invoke<CreateEntryResult>({
-                body: {
-                    query: CREATE_ENTRY_MUTATION,
-                    variables
-                }
+                body: { query: CREATE_ENTRY_MUTATION, variables }
             });
         },
         async updateEntry(variables: UpdateEntryInputVariables) {
             return invoke<UpdateEntryResult>({
-                body: {
-                    query: UPDATE_ENTRY_MUTATION,
-                    variables
-                }
+                body: { query: UPDATE_ENTRY_MUTATION, variables }
             });
         },
         async updateEntryLocation(variables: UpdateEntryLocationVariables) {
             return invoke<UpdateEntryLocationResult>({
-                body: {
-                    query: UPDATE_ENTRY_LOCATION_MUTATION,
-                    variables
-                }
+                body: { query: UPDATE_ENTRY_LOCATION_MUTATION, variables }
             });
         }
     };

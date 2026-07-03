@@ -10,6 +10,7 @@ import type {
     LayoutPosition,
     IRowNode,
     ISeparatorNode,
+    IAlertNode,
     ITabsNode,
     IElementNode,
     IObjectNode,
@@ -26,6 +27,10 @@ export class LayoutMutator {
             },
             separator(): ILayoutNodeHandle {
                 const node: ISeparatorNode = { type: "separator" };
+                return LayoutBuilderFactory.createNodeHandle(node);
+            },
+            alert(): ILayoutNodeHandle {
+                const node: IAlertNode = { type: "alert" };
                 return LayoutBuilderFactory.createNodeHandle(node);
             },
             tabs(config: {

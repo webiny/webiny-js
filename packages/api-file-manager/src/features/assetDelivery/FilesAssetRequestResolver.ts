@@ -5,7 +5,7 @@ import { AssetRequestResolver, type IAssetRequestResolver } from "./abstractions
 
 export class FilesAssetRequestResolver implements IAssetRequestResolver {
     async resolve(request: Request): Promise<AssetRequest | undefined> {
-        if (!request.url.startsWith("/files/")) {
+        if (!request.url?.startsWith("/files/")) {
             return undefined;
         }
 
@@ -26,7 +26,7 @@ export class FilesAssetRequestResolver implements IAssetRequestResolver {
         return new AssetRequest({
             key: decodeURI(path).replace("/files/", ""),
             context: {
-                url: request.url
+                url: request.url ?? ""
             },
             options
         });

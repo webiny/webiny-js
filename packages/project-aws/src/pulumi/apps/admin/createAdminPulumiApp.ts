@@ -1,7 +1,8 @@
 import { createReactPulumiApp } from "~/pulumi/apps/index.js";
 import { getProjectSdk } from "@webiny/project";
-import { AdminPulumi } from "~/abstractions/features/pulumi/index.js";
+import { AdminPulumi, SetAdminCustomDomains } from "~/abstractions/features/pulumi/index.js";
 import { adminPulumi } from "~/pulumi/features/AdminPulumi/index.js";
+import { DefaultSetAdminCustomDomains } from "~/pulumi/features/DefaultSetAdminCustomDomains.js";
 import { AdminCustomDomains as adminCustomDomainsExt } from "~/pulumi/extensions/AdminCustomDomains.js";
 import { withServiceManifest } from "~/pulumi/index.js";
 
@@ -31,6 +32,17 @@ export const createAdminPulumiApp = async () => {
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied to late.
             sdk.getContainer().registerComposite(adminPulumi);
+
+            // Make the `SetAdminCustomDomains` service injectable into user-defined `AdminPulumi`
+            // implementations. This allows applying custom domains using dynamically created
+            // Pulumi resources (e.g. ACM certificates), from within a single implementation file.
+            // We register an instance (bound to the current `app`) so that user implementations
+            // only need to pass the custom domain params - not the `app` itself.
+            sdk.getContainer().registerInstance(
+                SetAdminCustomDomains,
+                new DefaultSetAdminCustomDomains(app as AdminPulumiApp)
+            );
+
             const pulumiHandlers = sdk.getContainer().resolve(AdminPulumi);
 
             app.addHandler(() => {

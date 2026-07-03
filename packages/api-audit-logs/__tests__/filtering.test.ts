@@ -3,6 +3,7 @@ import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { useHandler } from "~tests/helpers/useHandler.js";
 import { AUDIT } from "~/config.js";
 import type { AuditLogsContext } from "~/types.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { IAuditLog } from "~/storage/types.js";
 
 // FM
@@ -185,7 +186,7 @@ describe("audit logs filtering", () => {
         });
 
         const foundResult = await context.auditLogs.listAuditLogs({
-            createdBy: context.security.getIdentity().id
+            createdBy: context.container.resolve(IdentityContext).getIdentity().id
         });
         expect(foundResult.items).toHaveLength(6);
         expect(foundResult.items).toMatchObject([...createdAuditLogs]);

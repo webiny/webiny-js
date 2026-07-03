@@ -6,6 +6,7 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index"
 import { auditAction } from "~tests/mocks/auditAction.js";
 import type { IAuditLog } from "~/storage/types.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
 const convertDates = (item: IAuditLog | null) => {
     return {
@@ -64,7 +65,9 @@ describe.skipIf(isSql)("create audit log", () => {
             action: ActionType.CREATE,
             app: "cms",
             entity: "user",
-            createdBy: getIdentitySnapshot(context.security.getIdentity()),
+            createdBy: getIdentitySnapshot(
+                context.container.resolve(IdentityContext).getIdentity()
+            ),
             createdOn: expect.any(Date),
             content: JSON.stringify(data),
             tags: []
@@ -121,7 +124,9 @@ describe.skipIf(isSql)("create audit log", () => {
             action: ActionType.CREATE,
             app: "cms",
             entity: "user",
-            createdBy: getIdentitySnapshot(context.security.getIdentity()),
+            createdBy: getIdentitySnapshot(
+                context.container.resolve(IdentityContext).getIdentity()
+            ),
             createdOn: expect.any(Date),
             content: JSON.stringify(data),
             tags: []

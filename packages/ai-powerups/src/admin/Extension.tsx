@@ -3,6 +3,7 @@ import { AdminConfig, AdminLayout, useRouter, RegisterFeature } from "@webiny/ap
 import { AiPowerUpsSettingsFeature } from "./presentation/AiPowerUpsSettings/index.js";
 import { AiPowerUpsSettingsPage } from "./presentation/AiPowerUpsSettings/AiPowerUpsSettingsPage.js";
 import { WbContentGeneration } from "~/admin/presentation/WbContentGeneration/Extension.js";
+import { CmsContentGeneration } from "~/admin/presentation/CmsContentGeneration/Extension.js";
 import { AiPowerUpsHeadlessFeatures } from "~/admin/features/feature.js";
 import { Routes } from "./routes.js";
 
@@ -45,6 +46,8 @@ export const Extension = () => {
             <AiPowerUpsSettings />
             {/* Website Builder Extension */}
             <WbContentGeneration />
+            {/* Headless CMS Extension */}
+            <CmsContentGeneration />
         </>
     );
 };

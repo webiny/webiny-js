@@ -6,36 +6,30 @@ import type {
     CmsModelField,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import type { PluginsContainer } from "@webiny/plugins";
-import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
+import type { Container } from "@webiny/di";
+import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 import type { StorageTransformRegistry } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import type { FilterItemFromStorage } from "../filtering/fields/types.js";
 
-/* Creates a lazy-cached getter for StorageOperationsCmsModelPlugin. */
-export const createStorageModelAccessor = (plugins: PluginsContainer) => {
-    let cached: StorageOperationsCmsModelPlugin | undefined;
+/* Creates a lazy-cached getter for the storage representation of a CMS model. */
+export const createStorageModelAccessor = (container: Container) => {
+    let cached: CmsStorageModelProvider.Interface | undefined;
 
-    const getPlugin = () => {
-        if (cached) {
-            return cached;
+    const getProvider = () => {
+        if (!cached) {
+            cached = container.resolve(CmsStorageModelProvider);
         }
-
-        cached = plugins.oneByType<StorageOperationsCmsModelPlugin>(
-            StorageOperationsCmsModelPlugin.type
-        );
-
         return cached;
     };
 
     const getModel = <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel
     ): StorageOperationsCmsModel<T> => {
-        const plugin = getPlugin();
-        return plugin.getModel<T>(model);
+        return getProvider().getModel<T>(model);
     };
 
-    return { getPlugin, getModel };
+    return { getModel };
 };
 
 /* Creates a fromStorage transform callable for a given model. */

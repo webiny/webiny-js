@@ -1,80 +1,48 @@
 import React from "react";
-import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { observer } from "mobx-react-lite";
-import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
-import { useRecords } from "@webiny/app-aco";
-import { useSnackbar } from "@webiny/app-admin";
-import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
-import { useCms, useModel } from "~/admin/hooks/index.js";
-import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions.js";
-import { Tooltip } from "@webiny/admin-ui";
+import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
+import { useToast } from "@webiny/admin-ui";
+import { useFeature } from "@webiny/app";
+import { BulkDeleteFeature } from "~/presentation/contentEntries/bulkActions/feature.js";
+import {
+    BulkActionButton,
+    useBulkActionDialog
+} from "@webiny/app-admin/components/BulkActions/index.js";
+import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 
 export const ActionDelete = observer(() => {
-    const { model } = useModel();
-    const { deleteEntry } = useCms();
-    const { removeRecordFromCache } = useRecords();
-    const { showSnackbar } = useSnackbar();
+    const toast = useToast();
+    const presenter = useContentEntriesPresenter();
+    const { showConfirmationDialog, showResultsDialog } = useBulkActionDialog();
+    const { presenter: bulkDelete } = useFeature(BulkDeleteFeature);
 
-    const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
-    const { ButtonDefault } = useButtons();
-    const worker = useWorker();
-    const { showConfirmationDialog, showResultsDialog } = useDialog();
-
-    const entriesLabel = getEntriesLabel();
+    const selection = presenter.list.vm.selection;
+    const selectedItems = presenter.list.vm.rows.filter(row => {
+        return selection.selectedIds.has(row.id);
+    });
 
     const openDeleteEntriesDialog = () =>
         showConfirmationDialog({
             title: "Trash entries",
-            message: `You are about to move ${entriesLabel} to trash. Are you sure you want to continue?`,
-            loadingLabel: `Processing ${entriesLabel}`,
+            message: `You are about to move ${selection.label} to trash. Are you sure you want to continue?`,
+            loadingLabel: `Processing ${selection.label}`,
             execute: async () => {
-                if (worker.isSelectedAll) {
-                    await worker.processInBulk({ action: "MoveToTrash" });
-                    worker.resetItems();
-                    showSnackbar(
-                        "All entries will be moved to trash. This process will be carried out in the background and may take some time. You can safely navigate away from this page while the process is running.",
-                        {
-                            dismissIcon: true,
-                            timeout: -1
-                        }
-                    );
+                await bulkDelete.execute(selectedItems, selection.allSelected);
+                presenter.list.actions.selection.deselectAll();
+
+                if (selection.allSelected) {
+                    toast.showSuccessToast({
+                        title: "Entries will be trashed in the background",
+                        description:
+                            "All entries will be moved to trash. This process will be carried out in the background and may take some time. You can safely navigate away from this page while the process is running.",
+                        dismissible: true,
+                        duration: Infinity
+                    });
                     return;
                 }
 
-                await worker.processInSeries(async ({ item, report }) => {
-                    try {
-                        /**
-                         * We need an entryId because we want to delete all revisions of the entry.
-                         * By sending an entryId (id without #version), we are telling to the API to delete all revisions.
-                         */
-                        const { id } = parseIdentifier(item.id);
-                        const response = await deleteEntry({ model, id });
-
-                        if (typeof response !== "boolean") {
-                            throw new Error(
-                                response.error.message ||
-                                    "Unknown error while moving the entry to trash."
-                            );
-                        }
-
-                        removeRecordFromCache(id);
-
-                        report.success({
-                            title: `${item.meta.title}`,
-                            message: "Entry successfully moved to trash."
-                        });
-                    } catch (e) {
-                        report.error({
-                            title: `${item.meta.title}`,
-                            message: e.message
-                        });
-                    }
-                });
-
-                worker.resetItems();
-
                 showResultsDialog({
-                    results: worker.results,
+                    results: bulkDelete.vm.results,
                     title: "Trash entries",
                     message: "Finished moving entries to trash! See full report below:"
                 });
@@ -82,14 +50,11 @@ export const ActionDelete = observer(() => {
         });
 
     return (
-        <Tooltip
-            side={"bottom"}
-            content={`Trash ${entriesLabel}`}
-            trigger={
-                <ButtonDefault icon={<DeleteIcon />} onAction={openDeleteEntriesDialog} size={"sm"}>
-                    {"Trash"}
-                </ButtonDefault>
-            }
+        <BulkActionButton
+            text="Trash"
+            tooltipContent={`Trash ${selection.label}`}
+            icon={<DeleteIcon />}
+            onClick={openDeleteEntriesDialog}
         />
     );
 });

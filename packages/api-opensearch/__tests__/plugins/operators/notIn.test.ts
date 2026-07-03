@@ -1,15 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { createBlankQuery } from "../../helpers";
+import { createBlankQuery } from "~/testing/index.js";
 import { OpenSearchBoolQueryConfig } from "~/types.js";
-import { OpenSearchQueryBuilderOperatorNotInPlugin } from "~/plugins/operator/index.js";
+import { Container } from "@webiny/di";
+import { OpenSearchQueryBuilderOperatorFeature } from "~/features/OpenSearchQueryBuilderOperator/feature.js";
+import { OpenSearchQueryBuilderOperatorRegistry } from "~/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperatorRegistry.js";
 
-describe("OpenSearchQueryBuilderOperatorNotInPlugin", () => {
-    const plugin = new OpenSearchQueryBuilderOperatorNotInPlugin();
+describe("not_in operator", () => {
+    const container = new Container();
+    OpenSearchQueryBuilderOperatorFeature.register(container);
+    const registry = container.resolve(OpenSearchQueryBuilderOperatorRegistry);
+    const operator = registry.get("not_in")!;
 
     it("should apply not in correctly", () => {
         const query = createBlankQuery();
 
-        plugin.apply(query, {
+        operator.apply(query, {
             name: "name",
             basePath: "name",
             path: "name.keyword",
@@ -35,7 +40,7 @@ describe("OpenSearchQueryBuilderOperatorNotInPlugin", () => {
         const query = createBlankQuery();
 
         expect(() => {
-            plugin.apply(query, {
+            operator.apply(query, {
                 name: "name",
                 basePath: "name",
                 path: "name.keyword",
@@ -51,7 +56,7 @@ describe("OpenSearchQueryBuilderOperatorNotInPlugin", () => {
         const query = createBlankQuery();
 
         expect(() => {
-            plugin.apply(query, {
+            operator.apply(query, {
                 name: "name",
                 basePath: "name",
                 path: "name.keyword",

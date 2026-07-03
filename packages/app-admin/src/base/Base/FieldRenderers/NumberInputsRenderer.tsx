@@ -6,7 +6,8 @@ import {
     Button,
     DelayedOnChange,
     FormComponentDescription,
-    Icon,
+    FormComponentErrorMessage,
+    IconButton,
     Input,
     Separator
 } from "@webiny/admin-ui";
@@ -35,23 +36,28 @@ export const NumberInputsRenderer = createFieldRenderer<"numberInputs">(({ field
             </Separator>
             {field.description && <FormComponentDescription text={field.description} />}
             {values.map((val, index) => (
-                <DelayedOnChange key={index} value={val} onChange={value => updateAt(index, value)}>
-                    <Input
-                        disabled={field.disabled}
-                        label={`Value ${index + 1}`}
-                        placeholder={field.placeholder}
-                        type="number"
-                        onEnter={() => field.addItem("")}
-                        endIcon={
-                            <Icon
-                                icon={<DeleteIcon />}
-                                label={"Delete"}
-                                onClick={() => field.removeItem(index)}
-                                className={"cursor-pointer"}
+                <div key={index} className={"flex items-end gap-sm"}>
+                    <div className={"flex-1"}>
+                        <DelayedOnChange value={val} onChange={value => updateAt(index, value)}>
+                            <Input
+                                disabled={field.disabled}
+                                label={`Value ${index + 1}`}
+                                placeholder={field.placeholder}
+                                type="number"
+                                onEnter={() => field.addItem("")}
                             />
-                        }
+                        </DelayedOnChange>
+                    </div>
+                    <IconButton
+                        icon={<DeleteIcon />}
+                        onClick={e => {
+                            e.stopPropagation();
+                            field.removeItem(index);
+                        }}
+                        size={"lg"}
+                        variant={"ghost"}
                     />
-                </DelayedOnChange>
+                </div>
             ))}
             <Button
                 disabled={field.disabled}
@@ -59,6 +65,11 @@ export const NumberInputsRenderer = createFieldRenderer<"numberInputs">(({ field
                 icon={<AddIcon />}
                 text={field.rendererSettings?.addItemLabel ?? "Add Value"}
                 onClick={() => field.addItem("")}
+            />
+            <FormComponentErrorMessage
+                text={field.validation.message}
+                invalid={field.validation.isValid === false}
+                disabled={field.disabled}
             />
         </div>
     );

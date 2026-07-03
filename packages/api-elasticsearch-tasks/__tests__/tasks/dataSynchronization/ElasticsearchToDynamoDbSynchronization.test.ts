@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/helpers/useHandler";
-import { createDataSynchronization, DATA_SYNCHRONIZATION_TASK } from "~/tasks";
-import type { Context } from "@webiny/api-dynamodb-to-elasticsearch";
+import { DATA_SYNCHRONIZATION_TASK } from "~/tasks";
 import { SynchronizationBuilder } from "@webiny/api-dynamodb-to-elasticsearch";
 import type { ITimer } from "@webiny/handler-aws";
 import type { IIndexManager } from "~/settings/types";
-import { IndexManager } from "~/settings";
 import { timerFactory } from "@webiny/handler-aws/utils";
-import { createRunner } from "@webiny/project-utils/testing/tasks";
+import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition";
+import { IndexManagerFactory } from "~/settings/abstractions/IndexManagerFactory";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch";
 
 const queryAllRecords = (index: string) => {
     return {
@@ -26,15 +26,15 @@ const queryAllRecords = (index: string) => {
 interface ICreateSyncBuilderParams {
     records: number;
     timer: ITimer;
-    context: Pick<Context, "opensearch">;
+    opensearch: OpenSearchClient.Client;
     index: string;
 }
 
 const createRecordsFactory = (params: ICreateSyncBuilderParams) => {
-    const { timer, context, index, records } = params;
+    const { timer, opensearch, index, records } = params;
     const syncBuilder = new SynchronizationBuilder({
         timer,
-        context
+        openSearchClient: opensearch
     });
 
     for (let i = 0; i < records; i++) {
@@ -67,13 +67,10 @@ const getTaskIndex = async (manager: IIndexManager): Promise<string> => {
 
 describe("ElasticsearchToDynamoDbSynchronization", () => {
     it("should run a sync without any indexes and throw an error", async () => {
-        const handler = useHandler({
-            plugins: [createDataSynchronization()]
-        });
+        const handler = useHandler({});
 
         const context = await handler.rawHandle();
 
-        // Create task
         const task = await context.tasks.createTask({
             definitionId: DATA_SYNCHRONIZATION_TASK,
             input: {
@@ -82,33 +79,26 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
             name: "Test Sync No Indexes"
         });
 
-        // Get task definition from container
         const taskDefinitions = context.container.resolveAll(TaskDefinition);
         const taskDefinition = taskDefinitions.find(td => td.id === DATA_SYNCHRONIZATION_TASK)!;
 
-        // Create runner
         const runner = createRunner({
             context,
             task: taskDefinition,
             onContinue: async () => {}
         });
 
-        // Run the task - it should succeed even without indexes (task creation creates required indexes)
         const result = await runner({ webinyTaskId: task.id });
 
-        // Verify it completed successfully
         expect(result.status).toBe("done");
         expect(result.webinyTaskId).toBe(task.id);
     });
 
     it("should run a sync with indexes and finish", async () => {
-        const handler = useHandler({
-            plugins: [createDataSynchronization()]
-        });
+        const handler = useHandler({});
 
         const context = await handler.rawHandle();
 
-        // Create task first
         const task = await context.tasks.createTask({
             definitionId: DATA_SYNCHRONIZATION_TASK,
             input: {
@@ -117,14 +107,18 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
             name: "Test Sync With Indexes"
         });
 
-        // Get task index from context
-        const indexManager = new IndexManager(context.opensearch, {});
+        const opensearchClient = context.container.resolve(OpenSearchClient);
+        const client = opensearchClient.use();
+
+        const indexManagerFactory = context.container.resolve(IndexManagerFactory);
+        const indexManager = indexManagerFactory.createIndexManager({
+            settings: {}
+        });
         const index = await getTaskIndex(indexManager);
 
-        // Insert mock data into Elasticsearch
         const totalMockItemsToInsert = 101;
         const recordsFactory = createRecordsFactory({
-            context,
+            opensearch: client,
             index,
             timer: timerFactory(),
             records: totalMockItemsToInsert
@@ -132,11 +126,9 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
 
         await recordsFactory.run();
 
-        // Verify data was inserted (includes task record created during task creation)
-        const response = await context.opensearch.search(queryAllRecords(index));
+        const response = await client.search(queryAllRecords(index));
         expect(response.body.hits.hits).toHaveLength(totalMockItemsToInsert + 1);
 
-        // Get task definition and create runner
         const taskDefinitions = context.container.resolveAll(TaskDefinition);
         const taskDefinition = taskDefinitions.find(td => td.id === DATA_SYNCHRONIZATION_TASK)!;
 
@@ -146,15 +138,12 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
             onContinue: async () => {}
         });
 
-        // Run the task
         const result = await runner({ webinyTaskId: task.id });
 
-        // Verify result structure (new format)
         expect(result.status).toBeDefined();
         expect(result.webinyTaskId).toBe(task.id);
 
-        // Verify data was cleaned up
-        const afterRunResponse = await context.opensearch.search(queryAllRecords(index));
+        const afterRunResponse = await client.search(queryAllRecords(index));
         expect(afterRunResponse.body.hits.hits).toHaveLength(1);
     });
 });

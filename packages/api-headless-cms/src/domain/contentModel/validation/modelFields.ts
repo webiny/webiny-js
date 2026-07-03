@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
-import { generateAlphaNumericId } from "@webiny/utils";
 import WebinyError from "@webiny/error";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 import type { CmsContext, CmsModel, CmsModelField } from "~/types/index.js";
 import type { ValidateChildFieldsValidate } from "~/features/graphql/fields/abstractions/CmsModelFieldToGraphQL.js";
 import { createManageSDL } from "~/graphql/schema/createManageSDL.js";
@@ -11,8 +12,9 @@ import { getContentModelTitleFieldId } from "./fields/titleField.js";
 import { getContentModelDescriptionFieldId } from "./fields/descriptionField.js";
 import { getContentModelImageFieldId } from "./fields/imageField.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
-import { CmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins.js";
+import { HeadlessCms } from "~/features/shared/abstractions.js";
+import { CmsGraphQLSchemaFactory } from "~/graphql/CmsGraphQLSchemaFactory.js";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema.js";
 import {
     CmsGraphQLSchemaSorter,
@@ -194,37 +196,46 @@ interface CreateGraphQLSchemaParams {
 const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
     const { context, model } = params;
 
-    const models = await context.security.withoutAuthorization(async () => {
-        return (await context.cms.listModels()).filter((model): model is CmsModel => {
-            return model.isPrivate !== true;
+    const modelsResult = await context.container
+        .resolve(IdentityContext)
+        .withoutAuthorization(async () => {
+            return context.container.resolve(ListModelsUseCase).execute();
         });
-    });
+    if (modelsResult.isFail()) {
+        throw modelsResult.error;
+    }
+    const models = modelsResult.value.filter(
+        (model): model is CmsModel => model.isPrivate !== true
+    );
 
-    const modelPlugins = await buildSchemaPlugins({
+    const generatedSchemaPlugins = await buildSchemaPlugins({
         context,
         /**
          * Must remove the current model from the list, as we are possibly updating it - there would be two if we didn't.
          */
-        models: models.filter(m => m.modelId !== model.modelId).concat([model])
+        models: models.filter(m => m.modelId !== model.modelId).concat([model]),
+        type: context.container.resolve(HeadlessCms).type
     });
 
-    const plugins = context.plugins
-        .byType<ICmsGraphQLSchemaPlugin>(CmsGraphQLSchemaPlugin.type)
-        .filter(plugin => plugin.isApplicable(context))
-        .reduce<Record<string, ICmsGraphQLSchemaPlugin>>((collection, plugin) => {
-            const name =
-                plugin.name || `${CmsGraphQLSchemaPlugin.type}-${generateAlphaNumericId(16)}`;
-            collection[name] = plugin;
-            return collection;
-        }, {});
-    for (const plugin of modelPlugins) {
-        const name = plugin.name || `${plugin.type}-${generateAlphaNumericId(16)}`;
-        plugins[name] = plugin;
+    /**
+     * The base CMS GraphQL types (CmsError, CmsIdentity, entry options, etc.) are provided
+     * by the CmsGraphQLSchemaFactory implementations registered in the DI container — mirror
+     * generateSchema() so model validation builds against the same complete type set.
+     */
+    const staticFactories = context.container.resolveAll(CmsGraphQLSchemaFactory);
+    const staticPlugins: ICmsGraphQLSchemaPlugin[] = [];
+    for (const factory of staticFactories) {
+        staticPlugins.push(...(await factory.execute()));
     }
 
-    return createExecutableSchema({
-        plugins: Object.values(plugins)
+    const schemaPlugins = [...staticPlugins, ...generatedSchemaPlugins].filter(pl => {
+        if (typeof pl.isApplicable === "function") {
+            return pl.isApplicable(context);
+        }
+        return true;
     });
+
+    return createExecutableSchema({ plugins: schemaPlugins });
 };
 
 const extractErrorObject = (error: any) => {

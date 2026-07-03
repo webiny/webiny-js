@@ -1,5 +1,5 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
 import { compress } from "@webiny/utils/features/compression/legacy/gzip.js";
 import { WbGeneratePageContentUseCase } from "~/api/features/WbGeneratePageContent/index.js";
 import type { GenerationTelemetry } from "~/api/features/WbGeneratePageContent/abstractions.js";
@@ -28,7 +28,7 @@ class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGener
     constructor(
         private identityContext: IdentityContext.Interface,
         private generatePageContent: WbGeneratePageContentUseCase.Interface,
-        private websocketService: WebsocketService.Interface
+        private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
     ) {}
 
     async run({
@@ -74,7 +74,7 @@ class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGener
         payload: string,
         telemetry: GenerationTelemetry
     ) {
-        await this.websocketService.send(
+        await this.sendToIdentity.execute(
             { id: identityId },
             {
                 action: "aiPowerUps.generatePageContent.content",
@@ -88,7 +88,7 @@ class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGener
     }
 
     private async sendErrorToUser(identityId: string, message: string) {
-        await this.websocketService.send(
+        await this.sendToIdentity.execute(
             { id: identityId },
             {
                 action: "aiPowerUps.generatePageContent.error",
@@ -102,5 +102,5 @@ class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGener
 
 export const WbGeneratePageContentTask = TaskDefinition.createImplementation({
     implementation: WbGeneratePageContentTaskImpl,
-    dependencies: [IdentityContext, WbGeneratePageContentUseCase, WebsocketService]
+    dependencies: [IdentityContext, WbGeneratePageContentUseCase, WebsocketsSendToIdentityUseCase]
 });

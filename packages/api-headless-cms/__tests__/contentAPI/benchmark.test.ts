@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
-import { ContextPlugin } from "@webiny/api";
+import { BenchmarkAbstraction, ContextPlugin } from "@webiny/api";
 import { createIcon } from "~tests/__helpers/icon.js";
 
 describe("benchmark points", () => {
@@ -10,9 +10,12 @@ describe("benchmark points", () => {
         path: "manage",
         topPlugins: [
             new ContextPlugin(async context => {
-                context.benchmark.enable();
+                // Benchmark moved from `context.benchmark` to the DI container during the
+                // DI migration; resolve the same instance createCmsRoute flushes per request.
+                const benchmark = context.container.resolve(BenchmarkAbstraction);
+                benchmark.enable();
 
-                context.benchmark.onOutput(async ({ benchmark }) => {
+                benchmark.onOutput(async ({ benchmark }) => {
                     elapsed = benchmark.elapsed;
                 });
             })
@@ -51,18 +54,14 @@ describe("benchmark points", () => {
         });
 
         expect(logs).toHaveLength(3);
+        // The GraphQL request flow is measured at the graphql layer (getSchema ->
+        // createRequestBody -> processRequestBody). Per-operation CRUD measures live on the
+        // HeadlessCms facade, which the DI resolvers no longer route through, so they are not
+        // part of the request's benchmark output.
         expect(logs).toMatchObject([
             `Benchmark total time elapsed: ${elapsed}ms`,
             "Benchmark measurements:",
             [
-                {
-                    elapsed: expect.any(Number),
-                    end: expect.any(Date),
-                    memory: expect.any(Number),
-                    name: "headlessCms.crud.models.listModels",
-                    category: "webiny",
-                    start: expect.any(Date)
-                },
                 {
                     elapsed: expect.any(Number),
                     end: expect.any(Date),
@@ -76,14 +75,6 @@ describe("benchmark points", () => {
                     end: expect.any(Date),
                     memory: expect.any(Number),
                     name: "headlessCms.graphql.createRequestBody",
-                    category: "webiny",
-                    start: expect.any(Date)
-                },
-                {
-                    elapsed: expect.any(Number),
-                    end: expect.any(Date),
-                    memory: expect.any(Number),
-                    name: "headlessCms.crud.groups.createGroup",
                     category: "webiny",
                     start: expect.any(Date)
                 },

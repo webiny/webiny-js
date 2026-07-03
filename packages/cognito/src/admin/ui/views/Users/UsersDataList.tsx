@@ -1,13 +1,14 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import orderBy from "lodash/orderBy.js";
+import { useFeature } from "@webiny/app";
 import { Avatar, Button, Grid, Select, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { useSecurity } from "@webiny/app-admin";
 import { List, DataList, DataListModal, DeleteIcon } from "@webiny/admin-ui";
 import { useRouter, useSnackbar, useConfirmationDialog, SearchUI } from "@webiny/app-admin";
-import { DELETE_USER, LIST_USERS } from "./graphql.js";
+import { ListUsersFeature } from "~/admin/features/users/listUsers/index.js";
+import { DeleteUserFeature } from "~/admin/features/users/deleteUser/index.js";
 import { deserializeSorters } from "../utils.js";
 import { Routes } from "~/admin/routes.js";
 import type { UserItem } from "~/admin/ui/UserItem.js";
@@ -40,6 +41,9 @@ interface FilterUsersCallable {
 const UsersDataList = () => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorter);
+    const [users, setUsers] = useState<UserItem[]>([]);
+    const [usersLoading, setUsersLoading] = useState(true);
+    const [deleteLoading, setDeleteLoading] = useState(false);
     const { identity } = useSecurity();
     const { goToRoute } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -48,6 +52,21 @@ const UsersDataList = () => {
         title: "Delete user",
         message: "Are you sure you want to delete this user? This action cannot be undone."
     });
+
+    const { useCase: listUsers } = useFeature(ListUsersFeature);
+    const { useCase: deleteUser } = useFeature(DeleteUserFeature);
+
+    const fetchUsers = useCallback(() => {
+        setUsersLoading(true);
+        listUsers.execute().then(data => {
+            setUsers((data || []) as UserItem[]);
+            setUsersLoading(false);
+        });
+    }, [listUsers]);
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
     const filterUsers = useCallback<FilterUsersCallable>(
         ({ email, firstName, lastName }) => {
@@ -61,47 +80,41 @@ const UsersDataList = () => {
     );
 
     const sortUsers = useCallback(
-        (users: UserItem[]) => {
+        (list: UserItem[]) => {
             if (!sort) {
-                return users;
+                return list;
             }
             const [key, sortBy] = deserializeSorters(sort);
-            return orderBy(users, [key], [sortBy]);
+            return orderBy(list, [key], [sortBy]);
         },
         [sort]
     );
 
-    const { data: listUsers, loading: usersLoading } = useQuery(LIST_USERS);
-
-    const [deleteIt, { loading: deleteLoading }] = useMutation(DELETE_USER, {
-        refetchQueries: [{ query: LIST_USERS }]
-    });
-
-    const data = usersLoading && !listUsers ? [] : listUsers.adminUsers.users.data || [];
-    const filteredData = filter === "" ? data : data.filter(filterUsers);
+    const filteredData = filter === "" ? users : users.filter(filterUsers);
     const userList = sortUsers(filteredData);
     const id = new URLSearchParams(location.search).get("id");
 
     const deleteItem = useCallback(
         (item: Pick<UserItem, "id" | "email">) => {
             showConfirmation(async () => {
-                const response = await deleteIt({
-                    variables: item
-                });
+                setDeleteLoading(true);
+                try {
+                    await deleteUser.execute({ id: item.id });
+                    showSnackbar(t`User "{email}" deleted.`({ email: item.email }));
+                    fetchUsers();
 
-                const error = response?.data?.adminUsers?.deleteUser?.error;
-                if (error) {
-                    return showSnackbar(error.message);
-                }
-
-                showSnackbar(t`User "{email}" deleted.`({ email: item.email }));
-
-                if (id === item.id) {
-                    goToRoute(Routes.Users.List);
+                    if (id === item.id) {
+                        goToRoute(Routes.Users.List);
+                    }
+                } catch (error) {
+                    const message = error instanceof Error ? error.message : "Unknown error";
+                    showSnackbar(message);
+                } finally {
+                    setDeleteLoading(false);
                 }
             });
         },
-        [id]
+        [id, deleteUser, fetchUsers]
     );
 
     const usersDataListModalOverlay = useMemo(

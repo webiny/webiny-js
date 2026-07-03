@@ -24,8 +24,9 @@ import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
-import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
+import { ApiPulumi, SetApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
 import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
+import { DefaultSetApiCustomDomains } from "~/pulumi/features/DefaultSetApiCustomDomains.js";
 import { ApiCustomDomains as apiCustomDomainsExt } from "~/pulumi/extensions/ApiCustomDomains.js";
 import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 
@@ -142,6 +143,17 @@ export const createApiPulumiApp = () => {
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied to late.
             sdk.getContainer().registerComposite(apiPulumi);
+
+            // Make the `SetApiCustomDomains` service injectable into user-defined `ApiPulumi`
+            // implementations. This allows applying custom domains using dynamically created
+            // Pulumi resources (e.g. ACM certificates), from within a single implementation file.
+            // We register an instance (bound to the current `app`) so that user implementations
+            // only need to pass the custom domain params - not the `app` itself.
+            sdk.getContainer().registerInstance(
+                SetApiCustomDomains,
+                new DefaultSetApiCustomDomains(app as ApiPulumiApp)
+            );
+
             const pulumiHandlers = sdk.getContainer().resolve(ApiPulumi);
 
             app.addHandler(() => {

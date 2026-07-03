@@ -8,6 +8,8 @@ import { CreateApiKeyFeature } from "./CreateApiKey/feature.js";
 import { UpdateApiKeyFeature } from "./UpdateApiKey/feature.js";
 import { DeleteApiKeyFeature } from "./DeleteApiKey/feature.js";
 import { ApiKeyProvider } from "./shared/ApiKeyProvider.js";
+import { ApiKeyAuthenticator } from "./ApiKeyAuthenticator.js";
+import { ApiKeyAuthorizer } from "./ApiKeyAuthorizer.js";
 
 export const ApiKeysFeature = createFeature({
     name: "ApiKeys",
@@ -15,6 +17,8 @@ export const ApiKeysFeature = createFeature({
         // Register repository in singleton scope
         container.register(ApiKeysRepository).inSingletonScope();
         container.register(ApiKeyProvider).inSingletonScope();
+        container.register(ApiKeyAuthenticator);
+        container.register(ApiKeyAuthorizer);
 
         // Register all use cases
         GetApiKeyFeature.register(container);

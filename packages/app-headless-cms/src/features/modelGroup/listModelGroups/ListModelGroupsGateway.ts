@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsErrorResponse } from "~/types.js";
 import type { ModelGroupDto } from "./abstractions.js";
@@ -11,7 +10,7 @@ export interface ListModelGroupsResponse {
     };
 }
 
-const LIST_CONTENT_MODEL_GROUPS = gql`
+const LIST_CONTENT_MODEL_GROUPS = /* GraphQL */ `
     query CmsListContentModelGroups {
         listContentModelGroups {
             data {
@@ -30,6 +29,7 @@ const LIST_CONTENT_MODEL_GROUPS = gql`
                 contentModels {
                     modelId
                     name
+                    icon
                 }
             }
             error {

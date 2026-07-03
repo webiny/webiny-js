@@ -1,28 +1,27 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type { IElasticsearchTaskConfig } from "~/types.js";
 import type {
     IDataSynchronizationInput,
     IDataSynchronizationOutput
 } from "~/tasks/dataSynchronization/types.js";
-import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchSynchronize.js";
+import { ElasticsearchToDynamoDbSynchronization } from "./elasticsearch/abstractions/ElasticsearchToDynamoDbSynchronization.js";
+import { IndexManagerFactory } from "~/settings/abstractions/IndexManagerFactory.js";
 
 export const DATA_SYNCHRONIZATION_TASK = "dataSynchronization";
 
-export class DataSynchronizationTask implements TaskDefinition.Interface<
+class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
     IDataSynchronizationInput,
     IDataSynchronizationOutput
 > {
-    id = DATA_SYNCHRONIZATION_TASK;
-    title = "Data Synchronization";
-    description = "Synchronize data between Elasticsearch and DynamoDB";
-    isPrivate = false;
-    maxIterations = 100;
-    databaseLogs = false;
+    public readonly id = DATA_SYNCHRONIZATION_TASK;
+    public readonly title = "Data Synchronization";
+    public readonly description = "Synchronize data between Elasticsearch and DynamoDB";
+    public readonly isPrivate = false;
+    public readonly maxIterations = 100;
+    public readonly databaseLogs = false;
 
     constructor(
-        private elasticsearchClient: IElasticsearchTaskConfig["elasticsearchClient"],
-        private documentClient: IElasticsearchTaskConfig["documentClient"],
-        private elasticsearchSynchronize: ElasticsearchSynchronize
+        private readonly indexManagerFactory: IndexManagerFactory.Interface,
+        private readonly sync: ElasticsearchToDynamoDbSynchronization.Interface
     ) {}
 
     async run({
@@ -33,42 +32,16 @@ export class DataSynchronizationTask implements TaskDefinition.Interface<
             return controller.response.aborted();
         }
 
-        const { Manager } = await import(
-            /* webpackChunkName: "Manager" */
-            "../Manager.js"
-        );
+        if (input.elasticsearchToDynamoDb?.finished) {
+            return controller.response.done();
+        }
 
-        const { IndexManager } = await import(
-            /* webpackChunkName: "IndexManager" */ "~/settings/index.js"
-        );
-
-        const manager = new Manager<IDataSynchronizationInput, IDataSynchronizationOutput>({
-            elasticsearchClient: this.elasticsearchClient,
-            documentClient: this.documentClient,
-            controller
+        const indexManager = this.indexManagerFactory.createIndexManager({
+            settings: {}
         });
 
-        const indexManager = new IndexManager(manager.elasticsearch, {});
-
-        const { DataSynchronizationTaskRunner } = await import(
-            /* webpackChunkName: "DataSynchronizationTaskRunner" */ "./DataSynchronizationTaskRunner.js"
-        );
-
-        const { createFactories } = await import(
-            /* webpackChunkName: "createFactories" */ "./createFactories.js"
-        );
-
         try {
-            const dataSynchronization = new DataSynchronizationTaskRunner({
-                manager,
-                indexManager,
-                factories: createFactories(),
-                elasticsearchSynchronize: this.elasticsearchSynchronize
-            });
-
-            return await dataSynchronization.run({
-                ...input
-            });
+            return await this.sync.run(input, indexManager);
         } catch (ex) {
             return controller.response.error(ex);
         }
@@ -90,3 +63,8 @@ export class DataSynchronizationTask implements TaskDefinition.Interface<
         };
     }
 }
+
+export const DataSynchronizationTask = TaskDefinition.createImplementation({
+    implementation: DataSynchronizationTaskImpl,
+    dependencies: [IndexManagerFactory, ElasticsearchToDynamoDbSynchronization]
+});

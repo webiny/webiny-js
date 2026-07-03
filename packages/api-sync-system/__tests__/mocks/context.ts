@@ -1,11 +1,11 @@
 import { vi } from "vitest";
 import { Context } from "@webiny/api/Context";
 import type { Context as ContextType } from "~/types";
-import type { Reply as FastifyReply, Request as FastifyRequest } from "@webiny/handler/types.js";
+import type { Reply, Request } from "@webiny/handler/types.js";
 
 export const createMockRequest = () => {
     return {
-        request: {} as FastifyRequest
+        request: {} as Request
     };
 };
 
@@ -20,7 +20,7 @@ export const createMockReply = () => {
                 sent.push(data);
                 return send(data);
             }
-        } as unknown as FastifyReply
+        } as unknown as Reply
     };
 };
 

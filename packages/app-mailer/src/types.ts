@@ -1,18 +1,20 @@
 import { Identity } from "@webiny/app-admin/domain/Identity.js";
 
-/**
- * A base security permission for APW.
- *
- * @category SecurityPermission
- */
 export interface MailerSecurityPermission extends Identity.Permission {
     changeSettings?: boolean;
 }
 
-/**
- * GraphQL API call response for the transport settings values
- * @category GraphQL
- */
+export type MailerSettingsSource = "code" | "storage" | null;
+
+export interface MailerSettings {
+    host: string;
+    port?: number;
+    user: string;
+    from: string;
+    replyTo?: string;
+    source?: MailerSettingsSource;
+}
+
 export interface TransportSettings {
     host: string;
     port?: number;
@@ -20,27 +22,4 @@ export interface TransportSettings {
     from: string;
     replyTo?: string;
     password?: string;
-}
-/**
- *
- * @category GraphQL
- */
-export interface ApiError<T = Record<string, any>> {
-    message: string;
-    code: string;
-    data: T;
-}
-
-/**
- * Description of the JOI validation errors received from the API.
- *
- * @category GraphQL
- */
-export interface ValidationError {
-    message: string;
-    path: string[];
-}
-
-export interface ValidationErrors {
-    errors: ValidationError[];
 }

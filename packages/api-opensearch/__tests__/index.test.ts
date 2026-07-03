@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { getBaseConfiguration } from "~/indexConfiguration/index.js";
 import { OpenSearchIndexRequestBody } from "~/types.js";
-import { createOpenSearchClient } from "./helpers";
+import { getTestOpenSearchClient } from "~/testing/index.js";
 import { getOpenSearchIndexPrefix } from "~/indexPrefix.js";
 
 /**
@@ -10,7 +10,7 @@ import { getOpenSearchIndexPrefix } from "~/indexPrefix.js";
 const settings: [string, OpenSearchIndexRequestBody][] = [["base", getBaseConfiguration()]];
 
 describe("OpenSearch Index Mapping And Settings", () => {
-    const client = createOpenSearchClient();
+    const client = getTestOpenSearchClient();
 
     const prefix: string = getOpenSearchIndexPrefix();
 

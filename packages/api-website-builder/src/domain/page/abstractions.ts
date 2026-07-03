@@ -32,6 +32,8 @@ export interface WbPage extends CmsEntryWbPage {
     savedBy: WbIdentity;
     modifiedOn: string | null;
     modifiedBy: WbIdentity | null;
+    deletedOn: string | null;
+    deletedBy: WbIdentity | null;
     tenant: string;
     system?: ICmsEntrySystem;
     deleted: boolean;

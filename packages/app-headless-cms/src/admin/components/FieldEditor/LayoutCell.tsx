@@ -1,5 +1,5 @@
 import React from "react";
-import type { CmsLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
+import type { CmsLayoutField } from "~/types.js";
 import { useModelFieldEditor } from "./useModelFieldEditor.js";
 import { Text } from "@webiny/admin-ui";
 
@@ -10,11 +10,11 @@ interface LayoutCellProps {
 }
 
 export const LayoutCell = ({ field }: LayoutCellProps) => {
-    const { getLayoutFieldPlugin, updateLayoutCell, deleteLayoutCell } = useModelFieldEditor();
+    const { getLayoutFieldType, updateLayoutCell, deleteLayoutCell } = useModelFieldEditor();
 
-    const plugin = getLayoutFieldPlugin(field.type);
+    const layoutFieldType = getLayoutFieldType(field.type);
 
-    if (!plugin) {
+    if (!layoutFieldType) {
         return (
             <div className={"p-md bg-destructive-dimmed rounded-xs"}>
                 <Text size={"sm"}>Unknown layout field type: &quot;{field.type}&quot;</Text>
@@ -30,5 +30,5 @@ export const LayoutCell = ({ field }: LayoutCellProps) => {
         deleteLayoutCell(field.id);
     };
 
-    return plugin.field.render({ field, onUpdate, onDelete });
+    return layoutFieldType.render({ field, onUpdate, onDelete });
 };

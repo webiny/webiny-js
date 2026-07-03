@@ -6,7 +6,8 @@ import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import type { GraphQLField, GraphQLSchema } from "graphql";
 
 interface Params {
-    plugins: ICmsGraphQLSchemaPlugin[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    plugins: ICmsGraphQLSchemaPlugin<any>[];
 }
 
 export const assertFieldDescriptionsAreStrings = (schema: GraphQLSchema): void => {

@@ -14,6 +14,7 @@ import { IsRootTenant } from "./IsRootTenant.js";
 import { TENANT_MODEL_ID } from "~/shared/constants.js";
 import { SecurityPermission } from "./SecurityPermission.js";
 import { TmPermissionsFeature } from "./features/permissions/feature.js";
+import { InstallTenantFeature } from "./InstallTenant/index.js";
 
 const { Menu } = AdminConfig;
 
@@ -28,6 +29,7 @@ export const Extension = () => {
         <>
             <RegisterFeature feature={CurrentTenantFeature} />
             <RegisterFeature feature={TmPermissionsFeature} />
+            <RegisterFeature feature={InstallTenantFeature} />
             <CurrentTenantProvider />
             <TenantSelector />
             <TenantEntryList />

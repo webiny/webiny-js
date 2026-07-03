@@ -49,7 +49,7 @@ export const FileTable = observer(function FileTable() {
     // No useMemo — MobX observer needs to track these observable accesses during render.
     const fileRows = createRecordsData(vm.list.rows);
     const data: FileTableItem[] = vm.showFolders
-        ? [...toFolderTableRows(vm.folders.childFolders), ...fileRows]
+        ? [...toFolderTableRows(vm.childFolders), ...fileRows]
         : fileRows;
 
     const selected: FileTableItem[] = createRecordsData(

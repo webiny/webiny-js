@@ -22,3 +22,4 @@ export const createHcmsTasks = () => [
     createEmptyTrashBinsTask(),
     createDeleteModelTask()
 ];
+export { HcmsTasksFeature } from "./HcmsTasksFeature.js";

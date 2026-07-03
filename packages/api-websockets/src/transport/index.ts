@@ -1,2 +1,8 @@
-export * from "./WebsocketsTransport.js";
-export type * from "./abstractions/IWebsocketsTransport.js";
+export {
+    WebsocketsTransport,
+    type IWebsocketsTransport,
+    type IWebsocketsTransportSendConnection,
+    type IWebsocketsTransportSendData,
+    type IWebsocketsTransportSendDataError,
+    type IWebsocketsTransportDisconnectConnection
+} from "./abstractions/WebsocketsTransport.js";

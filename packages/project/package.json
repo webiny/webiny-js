@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/feature-flags": "0.0.0",
     "@webiny/global-config": "0.0.0",
     "@webiny/react-properties": "0.0.0",

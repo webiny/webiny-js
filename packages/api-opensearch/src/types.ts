@@ -4,7 +4,6 @@ import type {
     Search_Response,
     Indices_Create_RequestBody
 } from "@opensearch-project/opensearch/api/index.js";
-import type { Context } from "@webiny/api/types.js";
 
 // ---------------------------------------------------------------------------
 // Types inferred from the accessible API surface.
@@ -63,18 +62,6 @@ export type SortType = Record<string, FieldSortOptions>;
 export type SearchBody = Omit<SearchRequestBody, "search_after"> & {
     search_after?: PrimitiveValue[];
 };
-
-// ---------------------------------------------------------------------------
-// Context
-// ---------------------------------------------------------------------------
-
-export interface OpenSearchContext extends Context {
-    /**
-     * @deprecated Use `context.opensearch` instead.
-     */
-    elasticsearch: Client;
-    opensearch: Client;
-}
 
 // ---------------------------------------------------------------------------
 // Bool query with required arrays (our convention)

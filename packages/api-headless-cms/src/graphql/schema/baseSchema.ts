@@ -1,36 +1,8 @@
 import type { CmsContext } from "~/types/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
-import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import { ContextPlugin } from "@webiny/api";
-import camelCase from "lodash/camelCase.js";
-import { CmsModelFieldValidatorRegistry } from "~/features/validation/index.js";
-import type { Container } from "@webiny/di";
+import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 
-const createSkipValidatorEnum = (container: Container) => {
-    const registry = container.resolve(CmsModelFieldValidatorRegistry);
-    const names = registry.getAll().reduce<string[]>((collection, validator) => {
-        const name = camelCase(validator.name);
-        if (collection.includes(name)) {
-            return collection;
-        }
-        collection.push(name);
-        return collection;
-    }, []);
-
-    if (names.length === 0) {
-        names.push("_empty");
-    }
-    return /* GraphQL */ `
-        enum SkipValidatorEnum {
-           ${names.join("\n")}
-        }
-    `;
-};
-
-const createSchema = (context: CmsContext): IGraphQLSchemaPlugin<CmsContext>[] => {
-    const skipValidatorEnum = createSkipValidatorEnum(context.container);
-
+export const createBaseSchemaPlugins = (_context: CmsContext): ICmsGraphQLSchemaPlugin[] => {
     const cmsPlugin = createCmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsIdentity {
@@ -100,18 +72,16 @@ const createSchema = (context: CmsContext): IGraphQLSchemaPlugin<CmsContext>[] =
                 folderId_not_in: [ID!]
             }
 
-            ${skipValidatorEnum}
-
             input CreateCmsEntryOptionsInput {
-                skipValidators: [SkipValidatorEnum!]
+                skipValidation: Boolean
             }
 
             input CreateRevisionCmsEntryOptionsInput {
-                skipValidators: [SkipValidatorEnum!]
+                skipValidation: Boolean
             }
 
             input UpdateCmsEntryOptionsInput {
-                skipValidators: [SkipValidatorEnum!]
+                skipValidation: Boolean
             }
 
             input CmsIdentityInput {
@@ -158,23 +128,6 @@ const createSchema = (context: CmsContext): IGraphQLSchemaPlugin<CmsContext>[] =
         resolvers: {}
     });
     cmsPlugin.name = "headless-cms.graphql.schema.base";
-    const corePlugin = new GraphQLSchemaPlugin<CmsContext>({
-        typeDefs: cmsPlugin.schema.typeDefs,
-        resolvers: cmsPlugin.schema.resolvers
-    });
-    corePlugin.name = "headless-cms.graphql.core.schema.base";
-    /**
-     * Due to splitting of CMS and Core schema plugins, we must have both defined for CMS to work.
-     */
-    return [cmsPlugin, corePlugin];
-};
 
-export const createBaseSchema = () => {
-    const plugin = new ContextPlugin<CmsContext>(async context => {
-        context.plugins.register(...createSchema(context));
-    });
-
-    plugin.name = "headless-cms.graphql.createBaseSchema";
-
-    return plugin;
+    return [cmsPlugin];
 };

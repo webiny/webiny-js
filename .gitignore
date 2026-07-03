@@ -1,4 +1,5 @@
 .idea
+.nx
 .webpack
 .webiny
 .artifacts
@@ -39,7 +40,6 @@ globalConfig.json
 schema.graphql
 .tmp/
 .swc/
-.nx/*
 # yarn2 files
 .yarn/*
 !.yarn/releases
@@ -57,7 +57,7 @@ packages/*/README.md
 packages/tasks/tpl/*
 ./nextjs
 
-db/
+./db/
 
 /.local
 CLAUDE.local.md
@@ -66,3 +66,5 @@ CLAUDE.local.md
 .claire/**
 .codegraph
 .mcp.json
+docs/.reports
+tsconfig.check-tests.json

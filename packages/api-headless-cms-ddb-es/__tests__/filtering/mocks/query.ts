@@ -1,9 +1,9 @@
 import { createBaseQuery } from "~/operations/entry/elasticsearch/initialQuery";
-import type { ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
+import type { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
 
-export type { ElasticsearchBoolQueryConfig as Query };
+export type { OpenSearchBoolQueryConfig as Query };
 
-export const createQuery = (query: Partial<ElasticsearchBoolQueryConfig> = {}) => {
+export const createQuery = (query: Partial<OpenSearchBoolQueryConfig> = {}) => {
     const initial = createBaseQuery();
 
     return {

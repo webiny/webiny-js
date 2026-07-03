@@ -7,6 +7,7 @@ import {
     DatePickerPrimitive,
     type DatePickerPrimitiveProps,
     FormComponentDescription,
+    FormComponentErrorMessage,
     Separator
 } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
@@ -96,6 +97,11 @@ export const DateTimeInputsRenderer = createFieldRenderer<"dateTimeInputs">(({ f
                 icon={<AddIcon />}
                 text={field.rendererSettings?.addItemLabel ?? "Add Value"}
                 onClick={() => field.addItem("")}
+            />
+            <FormComponentErrorMessage
+                text={field.validation.message}
+                invalid={field.validation.isValid === false}
+                disabled={field.disabled}
             />
         </div>
     );

@@ -1,16 +1,12 @@
-import type {
-    IWebsocketsTransport,
-    IWebsocketsTransportSendConnection,
-    IWebsocketsTransportSendData
-} from "~/transport/abstractions/IWebsocketsTransport";
 import type { GenericRecord } from "@webiny/api/types";
+import { WebsocketsTransport } from "~/transport/abstractions/WebsocketsTransport";
 
-export class MockWebsocketsTransport implements IWebsocketsTransport {
-    public messages = new Map<string, IWebsocketsTransportSendData<any>>();
+export class MockWebsocketsTransport implements WebsocketsTransport.Interface {
+    public messages = new Map<string, WebsocketsTransport.SendData<any>>();
 
     public async send<T extends GenericRecord = GenericRecord>(
-        connections: IWebsocketsTransportSendConnection[],
-        data: IWebsocketsTransportSendData<T>
+        connections: WebsocketsTransport.SendConnection[],
+        data: WebsocketsTransport.SendData<T>
     ): Promise<void> {
         for (const connection of connections) {
             this.messages.set(connection.connectionId, data);

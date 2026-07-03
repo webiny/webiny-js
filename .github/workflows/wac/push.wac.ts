@@ -21,7 +21,8 @@ const DIR_WEBINY_JS = "v6";
 const DIR_TEST_PROJECT = "new-webiny-project";
 
 const installBuildSteps = createInstallBuildSteps({
-    workingDirectory: DIR_WEBINY_JS
+    workingDirectory: DIR_WEBINY_JS,
+    rebuildDependents: true
 });
 const yarnCacheSteps = createYarnCacheSteps({
     workingDirectory: DIR_WEBINY_JS
@@ -377,7 +378,7 @@ export const push = createWorkflow({
                         { name: "Lint", run: "yarn lint" },
                         {
                             name: "Check Package Node Modules",
-                            run: "yarn check-package-dependencies"
+                            run: "yarn check:node-modules:ci"
                         }
                     ],
                     { "working-directory": DIR_WEBINY_JS }

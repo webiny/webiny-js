@@ -3,6 +3,7 @@ import { mdbid } from "@webiny/utils";
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 import { CmsEntry } from "~/types";
 import { setupGroupAndModels } from "../testHelpers/setup";
+import { HeadlessCms } from "~/features/shared/abstractions.js";
 
 const NUMBER_OF_FRUITS = 200;
 
@@ -61,9 +62,10 @@ describe("entry pagination", () => {
             manager,
             models: ["fruit"]
         });
-        const storageOperations = manager.getContext().cms.storageOperations;
+        const cms = manager.getContext().container.resolve(HeadlessCms);
+        const storageOperations = cms.storageOperations;
 
-        const models = await manager.getContext().cms.listModels();
+        const models = await cms.listModels();
         const model = models.find(m => m.modelId === "fruit")!;
         for (let i = 1; i <= NUMBER_OF_FRUITS; i++) {
             const fruit = createFruitData(i);

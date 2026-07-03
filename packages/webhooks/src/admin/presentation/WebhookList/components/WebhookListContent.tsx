@@ -158,7 +158,7 @@ export const WebhookListContent = observer(function WebhookListContent({
                         <HasPermission entity="webhook" action="delete">
                             <DropdownMenu.Separator />
                             <DropdownMenu.Item
-                                className={"text-destructive-primary! [&_svg]:fill-destructive"}
+                                variant={"destructive"}
                                 onClick={() => {
                                     showDeleteConfirmation(() => presenter.deleteWebhook(row.id));
                                 }}

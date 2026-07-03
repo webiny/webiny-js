@@ -6,6 +6,7 @@
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../common-audit-logs/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
     { "path": "../react-properties/tsconfig.build.json" }
@@ -25,6 +26,8 @@
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/common-audit-logs/*": ["../common-audit-logs/src/*"],
       "@webiny/common-audit-logs": ["../common-audit-logs/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],

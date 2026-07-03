@@ -56,12 +56,13 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
             const core = app.addModule(CoreOutput);
             app.addModule(ApiOutput);
 
-            // Overrides must be applied via a handler, registered at the very start of the program.
-            // By doing this, we're ensuring user's adjustments are not applied to late.
+            // Overrides must be applied at the very start of the program, before other resources
+            // (e.g. the CloudFront distribution) are added. The callback registers its work via
+            // `app.addHandler`, so invoking it directly here (instead of wrapping it in yet another
+            // handler) ensures those handlers are queued before - and therefore run before - the
+            // resources they adjust get instantiated. This also mirrors how the API app behaves.
             if (projectAppParams.pulumi) {
-                app.addHandler(() => {
-                    return projectAppParams.pulumi!(app as unknown as ReactPulumiApp);
-                });
+                await projectAppParams.pulumi(app as unknown as ReactPulumiApp);
             }
 
             const bucket = createPrivateAppBucket(app, `${name}-app`);

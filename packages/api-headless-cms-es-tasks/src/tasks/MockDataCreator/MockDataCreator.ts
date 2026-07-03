@@ -7,9 +7,13 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { Context } from "~/types.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 
 export class MockDataCreator<I extends IMockDataCreatorInput, O extends IMockDataCreatorOutput> {
-    constructor(private context: Context) {}
+    constructor(
+        private readonly context: Context,
+        private readonly openSearchClient: OpenSearchClient.Interface
+    ) {}
 
     public async execute(
         params: TaskDefinition.RunParams<I, O>
@@ -34,7 +38,7 @@ export class MockDataCreator<I extends IMockDataCreatorInput, O extends IMockDat
 
         const model = modelResult.value;
 
-        const healthCheck = createWaitUntilHealthy(this.context.opensearch, {
+        const healthCheck = createWaitUntilHealthy(this.openSearchClient.use(), {
             waitingTimeStep: 20,
             maxWaitingTime: 150,
             maxProcessorPercent: 80,

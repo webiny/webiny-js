@@ -1,3 +1,4 @@
+import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
     createPersonEntries,
@@ -21,7 +22,7 @@ describe("field unique values listing", () => {
     beforeEach(async () => {
         await handler.isInstalledQuery();
         const context = handler.getContext();
-        storageOperations = context.cms.storageOperations;
+        storageOperations = context.container.resolve(HeadlessCms).storageOperations;
 
         await deletePersonModel({
             storageOperations

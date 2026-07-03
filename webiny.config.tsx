@@ -15,6 +15,7 @@ export const Extensions = () => {
             <Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />
             <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
             <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
+            <Admin.Extension src={"@/extensions/newEntryWizardDemo/index.tsx"} />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
@@ -24,6 +25,7 @@ export const Extensions = () => {
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
             <Infra.ProductionEnvironments environments={["prod", "staging"]} />
             <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
+            {/*<Infra.Admin.Pulumi src={"/extensions/adminCustomDomains/AdminCustomDomains.ts"} />*/}
             <Infra.Vpc enabled={false} />
             <Infra.OpenSearch enabled={false} />
 
@@ -39,6 +41,8 @@ export const Extensions = () => {
             {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}
             {/*    pulumiSrc="/extensions/myLambdaFunction/pulumi.ts"*/}
             {/*/>*/}
+            <Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />
+            <Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />
             {/*<Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />*/}
             {/*<Api.Extension src={"/extensions/models/ProductModel.ts"} />*/}
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}

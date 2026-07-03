@@ -1,7 +1,7 @@
-import type { CmsContext } from "~/types/index.js";
-import type { ApiEndpoint } from "~/types/index.js";
+import type { CmsContext, ApiEndpoint } from "~/types/index.js";
 import type { ExecutionResult } from "graphql";
 import { getModel, getErrorMessage } from "./helpers.js";
+import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 
 export interface DeleteEntryRevisionArgs {
     modelId: string;
@@ -18,7 +18,6 @@ export const createDeleteEntryRevisionResolver = () => {
 
             // Use manage API for deleting entries.
             const apiType: ApiEndpoint = "manage";
-            const executeSchema = await context.cms.getExecutableSchema(apiType);
 
             const query = /* GraphQL */ `
                 mutation Delete${model.singularApiName}($revisionId: ID!, $options: CmsDeleteEntryOptions) {
@@ -33,12 +32,9 @@ export const createDeleteEntryRevisionResolver = () => {
                 }
             `;
 
-            const result = (await executeSchema({
+            const result = (await context.container.resolve(CmsSchemaExecutor).execute(apiType, {
                 query,
-                variables: {
-                    revisionId,
-                    options: { permanently: permanent }
-                }
+                variables: { revisionId, options: { permanently: permanent } }
             })) as ExecutionResult;
 
             if (result.errors && result.errors.length > 0) {

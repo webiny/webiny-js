@@ -10,6 +10,8 @@ import type { IAuditLog, IAuditLogCreatedBy } from "~/storage/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
 import type { IStorage, IStorageListParams } from "~/storage/abstractions/Storage.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     AuditLogBeforeCreateEvent,
@@ -146,7 +148,9 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
         if (!auditLog.action) {
             throw new Error("Audit log action is not defined. Cannot check permissions.");
         }
-        const permissions = await this.getContext().security.getPermissions("al.*");
+        const permissions = await this.getContext()
+            .container.resolve(IdentityContext)
+            .getPermissions("al.*");
         for (const permission of permissions) {
             if (permission.name === "*") {
                 return;
@@ -164,11 +168,11 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
     }
 
     private getTenantId(): string {
-        return this.getContext().tenancy.getCurrentTenant().id;
+        return this.getContext().container.resolve(TenantContext).getTenant().id;
     }
 
     private getIdentity(): IAuditLogCreatedBy {
-        const identity = this.getContext().security.getIdentity();
+        const identity = this.getContext().container.resolve(IdentityContext).getIdentity();
         return {
             id: identity.id,
             type: identity.type,

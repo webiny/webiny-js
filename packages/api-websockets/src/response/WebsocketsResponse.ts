@@ -1,20 +1,18 @@
-import type {
-    IWebsocketsResponse,
-    IWebsocketsResponseErrorParams,
-    IWebsocketsResponseErrorResult,
-    IWebsocketsResponseOkParams,
-    IWebsocketsResponseOkResult
-} from "./abstractions/IWebsocketsResponse.js";
+import { WebsocketsResponse as WebsocketsResponseAbstraction } from "./abstractions/WebsocketsResponse.js";
 
-export class WebsocketsResponse implements IWebsocketsResponse {
-    public ok(params?: IWebsocketsResponseOkParams): IWebsocketsResponseOkResult {
+class WebsocketsResponse implements WebsocketsResponseAbstraction.Interface {
+    public ok(
+        params?: WebsocketsResponseAbstraction.OkParams
+    ): WebsocketsResponseAbstraction.OkResult {
         return {
             statusCode: 200,
             ...params
         };
     }
 
-    public error(params: IWebsocketsResponseErrorParams): IWebsocketsResponseErrorResult {
+    public error(
+        params: WebsocketsResponseAbstraction.ErrorParams
+    ): WebsocketsResponseAbstraction.ErrorResult {
         return {
             ...params,
             statusCode: params.statusCode || 200,
@@ -27,3 +25,8 @@ export class WebsocketsResponse implements IWebsocketsResponse {
         };
     }
 }
+
+export const DefaultWebsocketsResponse = WebsocketsResponseAbstraction.createImplementation({
+    implementation: WebsocketsResponse,
+    dependencies: []
+});

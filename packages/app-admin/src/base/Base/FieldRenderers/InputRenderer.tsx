@@ -14,6 +14,7 @@ export const InputRenderer = createFieldRenderer(({ field }) => {
         <DelayedOnChange value={field.value} onChange={value => field.onChange(value)}>
             <Input
                 label={field.label}
+                hint={field.help}
                 placeholder={field.placeholder}
                 description={field.description}
                 note={field.note}

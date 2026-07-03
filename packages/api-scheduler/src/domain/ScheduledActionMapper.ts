@@ -17,7 +17,8 @@ export class ScheduledActionMapper {
             actionType: action.values.actionType,
             title: action.values.title,
             payload: action.values.payload,
-            error: action.values.error
+            error: action.values.error,
+            tenant: action.tenant
         };
     }
 

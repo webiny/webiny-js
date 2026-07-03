@@ -1,4 +1,5 @@
-import type { PluginsContainer } from "@webiny/plugins";
+import type { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import type { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type {
     CmsEntryListParams,
     CmsEntryListWhere,
@@ -26,7 +27,7 @@ import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSea
 import type { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter/index.js";
 
 interface ICreateElasticsearchBodyParams {
-    plugins: PluginsContainer;
+    operatorRegistry: OpenSearchQueryBuilderOperatorRegistry.Interface;
     model: CmsModel;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
@@ -36,13 +37,14 @@ interface ICreateElasticsearchBodyParams {
     valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
     fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
     filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
+    fieldFactory: OpenSearchFieldFactory.Interface;
     params: Omit<CmsEntryListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
         after?: PrimitiveValue[];
     };
 }
 export const createElasticsearchBody = ({
-    plugins,
+    operatorRegistry,
     model,
     params,
     fieldRegistry,
@@ -52,7 +54,8 @@ export const createElasticsearchBody = ({
     queryModifiers,
     valueSearchRegistry,
     fullTextSearches,
-    filterRegistry
+    filterRegistry,
+    fieldFactory
 }: ICreateElasticsearchBodyParams): SearchBody => {
     const { fields, search: term, where, sort: initialSort, after, limit } = params;
     /**
@@ -112,7 +115,7 @@ export const createElasticsearchBody = ({
     const execFiltering = createExecFiltering({
         model,
         fields: modelFields,
-        plugins,
+        operatorRegistry,
         valueSearchRegistry,
         filterRegistry
     });
@@ -130,7 +133,8 @@ export const createElasticsearchBody = ({
         sort: initialSort,
         modelFields,
         model,
-        valueSearchRegistry
+        valueSearchRegistry,
+        fieldFactory
     });
 
     for (const modifier of applicableSortModifiers) {

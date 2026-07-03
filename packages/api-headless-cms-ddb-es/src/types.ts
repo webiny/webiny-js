@@ -1,21 +1,16 @@
 import type {
-    CmsContext as BaseCmsContext,
+    CmsContext,
     CmsEntry,
     CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
     CmsEntryValues,
-    CmsModel,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
-import type {
-    Client,
-    IOpenSearchEntity as IElasticsearchEntity,
-    OpenSearchContext
-} from "@webiny/api-opensearch";
-import type { PluginsContainer } from "@webiny/plugins";
+import type { Client, IOpenSearchEntity as IElasticsearchEntity } from "@webiny/api-opensearch";
 import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
 import type { ITable } from "@webiny/db-dynamodb";
+import type { PluginsContainer } from "@webiny/plugins";
 
-export interface CmsContext extends BaseCmsContext, OpenSearchContext {}
+export { CmsContext };
 /**
  * A definition of the entry that is being prepared for the Elasticsearch.
  *
@@ -70,7 +65,7 @@ export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations
 }
 
 export interface DataLoadersHandlerInterfaceClearAllParams {
-    model: Pick<CmsModel, "tenant">;
+    tenant: string;
 }
 export interface IDataLoadersHandler {
     clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;

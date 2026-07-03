@@ -1,1 +1,2 @@
-export * from "@webiny/app-headless-cms-common/ModelProvider/index.js";
+export * from "./ModelContext.js";
+export * from "./useModel.js";

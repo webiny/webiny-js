@@ -1,4 +1,4 @@
-import type { CmsGroup, CmsModel } from "~/types";
+import type { CmsGroup, CmsIcon, CmsModel } from "~/types";
 import allModels from "../contentAPI/mocks/contentModels";
 import type { useGraphQLHandler } from "./useGraphQLHandler";
 import type { TestCmsModel } from "../types";
@@ -96,7 +96,7 @@ interface SetupContentModelGroupGqlVars {
     data: {
         name: string;
         slug: string;
-        icon: string;
+        icon: CmsIcon;
         description: string;
     };
 }
@@ -110,7 +110,11 @@ const setupContentModelGroup = async (
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    name: "icon-name",
+                    type: "icon",
+                    value: "icon-value"
+                },
                 description: "description"
             }
         };
@@ -126,27 +130,3 @@ const setupContentModelGroup = async (
     }
     return response.data.createContentModelGroup.data;
 };
-
-// export const setupContentModels = async (
-//     manager: ReturnType<typeof useGraphQLHandler>,
-//     group: CmsGroup,
-//     modelsList: string[]
-// ): Promise<Record<string, any>> => {
-//     const items = modelsList.reduce<Record<string, any>>((acc, m) => ({ ...acc, [m]: null }), {});
-//     for (const name in items) {
-//         if (items.hasOwnProperty(name) === false) {
-//             continue;
-//         }
-//         const model = allModels.find(m => m.modelId === name);
-//         if (!model) {
-//             console.log(`[setupContentModel] There is no model "${name}" defined.`);
-//             process.exit(1);
-//         }
-//         items[name] = await setupContentModel({
-//             manager,
-//             group,
-//             model
-//         });
-//     }
-//     return items;
-// };

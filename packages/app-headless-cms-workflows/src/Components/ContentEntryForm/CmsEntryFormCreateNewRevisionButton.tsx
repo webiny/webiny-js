@@ -1,11 +1,13 @@
 import React, { useCallback } from "react";
+import { useFeature } from "@webiny/app";
 import { useRoute } from "@webiny/app";
 import { useToast } from "@webiny/admin-ui";
 import { ContentEntryEditorConfig, usePermission } from "@webiny/app-headless-cms";
-import { useContentEntryForm } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/useContentEntryForm.js";
-import { usePersistEntry } from "@webiny/app-headless-cms/admin/hooks/usePersistEntry.js";
+import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
+import { RevisionsListFeature } from "@webiny/app-headless-cms/presentation/contentEntries/revisionsList/feature.js";
 import { ReactComponent as NewReleaseIcon } from "@webiny/icons/new_releases.svg";
 import { IsModelPublishable } from "@webiny/app-headless-cms/exports/admin/cms.js";
+import { OptionsMenuItem } from "@webiny/app-admin";
 
 const { Actions } = ContentEntryEditorConfig;
 
@@ -13,37 +15,31 @@ const CreateNewRevisionMenuItem = () => {
     const toast = useToast();
     const { setRouteParams } = useRoute();
     const { canEdit } = usePermission();
-    const { OptionsMenuItem } = Actions.MenuItemAction.useOptionsMenuItem();
-    const { entry } = useContentEntryForm();
-    const { persistEntry } = usePersistEntry({
-        addItemToListCache: true
-    });
+    const formPresenter = useContentEntryFormPresenter();
+    const { presenter: revisionsPresenter } = useFeature(RevisionsListFeature);
+
+    const entry = formPresenter.vm.entry;
 
     const onClick = useCallback(async () => {
-        const newRevision = await persistEntry(
-            {
-                id: entry.id
-            },
-            {
-                skipValidators: ["required"],
-                createNewRevision: true
-            }
-        );
+        if (!entry) {
+            return;
+        }
 
-        if (newRevision.error) {
+        const newEntry = await revisionsPresenter.createRevision(entry.id);
+
+        if (!newEntry) {
             toast.showWarningToast({
-                title: "Could not create a new revision.",
-                description: newRevision.error.message
+                title: "Could not create a new revision."
             });
             return;
         }
 
         setRouteParams(params => {
-            return { ...params, id: newRevision.entry.id };
+            return { ...params, id: newEntry.id };
         });
-    }, [entry, persistEntry]);
+    }, [entry, revisionsPresenter]);
 
-    if (!canEdit(entry, "cms.contentEntry")) {
+    if (!entry || !canEdit(entry, "cms.contentEntry")) {
         return null;
     }
 

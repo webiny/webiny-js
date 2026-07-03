@@ -14,7 +14,16 @@ export class MetadataWriter {
          */
         const writers = files.map(async file => {
             const metadata = this.getMetadata(file);
-            await this.keyValueStore.set(`FileManager/File/${file.id}/Metadata`, metadata);
+            const key = `FileManager/File/${file.id}/Metadata`;
+            // Check the result: the KV store returns a failed Result (it does not throw), so an
+            // ignored failure here would silently break asset delivery (missing metadata → 404).
+            const result = await this.keyValueStore.set(key, metadata);
+            if (result.isFail()) {
+                console.error(
+                    `[FileManagerS3] Failed to write delivery metadata "${key}":`,
+                    result.error
+                );
+            }
         });
 
         await Promise.all(writers);

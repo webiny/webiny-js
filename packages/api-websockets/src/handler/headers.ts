@@ -25,6 +25,17 @@ const getTenant = (body: IWebsocketsEventData, event: IWebsocketsIncomingEvent):
     return body?.tenant || event.queryStringParameters?.tenant || "root";
 };
 
+const getEndpoint = (event: IWebsocketsIncomingEvent): string => {
+    // The API Gateway Management API endpoint used to post messages back to a connection. It MUST be
+    // the real WS API endpoint (https://<domainName>/<stage>); "manage" was a placeholder that made
+    // every server→client send() target an invalid endpoint and silently fail.
+    const rc = event.requestContext;
+    if (rc?.domainName && rc?.stage) {
+        return `https://${rc.domainName}/${rc.stage}`;
+    }
+    return "manage";
+};
+
 export const getEventValues = (event: IWebsocketsIncomingEvent) => {
     const body = getEventBody(event);
 
@@ -33,6 +44,6 @@ export const getEventValues = (event: IWebsocketsIncomingEvent) => {
     return {
         tenant,
         token,
-        endpoint: "manage"
+        endpoint: getEndpoint(event)
     };
 };

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { useHandler } from "~tests/context/useHandler";
-import { createRunner } from "@webiny/project-utils/testing/tasks";
+import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
 import type { IMockDataCreatorInput, IMockDataCreatorOutput } from "~/tasks/MockDataCreator/types";
 import type { ICreateModelAndGroupResultSuccess } from "~/tasks/MockDataManager/createModelAndGroup";
 import { createModelAndGroup } from "~/tasks/MockDataManager/createModelAndGroup";
@@ -13,6 +13,7 @@ import {
 import { MOCK_DATA_CREATOR_TASK_ID } from "~/tasks/MockDataCreatorTask.js";
 import type { Context } from "~/types.js";
 import { MOCK_DATA_MANAGER_TASK_ID } from "~/tasks/MockDataManagerTask.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 
 vi.setConfig({
     testTimeout: 120_000
@@ -39,6 +40,7 @@ describe("mock data creator task", () => {
         const { handler } = useHandler();
 
         const context = await handler();
+        const opensearch = context.container.resolve(OpenSearchClient);
 
         const definition = getDataCreatorTaskDefinition(context);
 
@@ -49,7 +51,7 @@ describe("mock data creator task", () => {
         expect(modelAndGroupResult).not.toBeInstanceOf(String);
 
         await disableIndexing({
-            client: context.opensearch,
+            client: opensearch.use(),
             model: modelAndGroupResult.model
         });
 
@@ -73,7 +75,7 @@ describe("mock data creator task", () => {
         });
 
         await enableIndexing({
-            client: context.opensearch,
+            client: opensearch.use(),
             model: modelAndGroupResult.model
         });
 

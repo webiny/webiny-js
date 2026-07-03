@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { createWaitUntilHealthy } from "~/utils/waitUntilHealthy/index.js";
-import { createOpenSearchClient } from "../helpers";
+import { getTestOpenSearchClient } from "~/testing/index.js";
 import { OpenSearchCatClusterHealthStatus } from "~/operations/types.js";
 import { UnhealthyClusterError } from "~/utils/waitUntilHealthy/UnhealthyClusterError.js";
 import { WaitingHealthyClusterAbortedError } from "~/utils/waitUntilHealthy/WaitingHealthyClusterAbortedError.js";
 
 describe("wait until healthy", () => {
-    const client = createOpenSearchClient();
+    const client = getTestOpenSearchClient();
 
     it("should wait until the cluster is healthy - single run", async () => {
         const waitUntilHealthy = createWaitUntilHealthy(client, {

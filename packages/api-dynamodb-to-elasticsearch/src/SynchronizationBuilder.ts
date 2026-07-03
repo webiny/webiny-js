@@ -1,18 +1,17 @@
 import type {
-    Context,
     IDeleteOperationParams,
     IInsertOperationParams,
-    IModifyOperationParams,
-    IOperations
+    IModifyOperationParams
 } from "~/types.js";
 import { Operations } from "~/Operations.js";
 import type { IExecuteWithRetryParams } from "~/executeWithRetry.js";
 import { executeWithRetry } from "~/executeWithRetry.js";
 import type { ITimer } from "@webiny/handler-aws";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 
 export type ISynchronizationBuilderExecuteWithRetryParams = Omit<
     IExecuteWithRetryParams,
-    "context" | "timer" | "maxRunningTime" | "operations"
+    "opensearch" | "timer" | "maxRunningTime" | "operations"
 >;
 
 export interface ISynchronizationBuilder {
@@ -23,17 +22,17 @@ export interface ISynchronizationBuilder {
 
 export interface ISynchronizationBuilderParams {
     timer: ITimer;
-    context: Pick<Context, "opensearch">;
+    openSearchClient: OpenSearchClient.Client;
 }
 
 export class SynchronizationBuilder implements ISynchronizationBuilder {
-    private readonly timer: ITimer;
-    private readonly context: Pick<Context, "opensearch">;
-    private readonly operations: IOperations;
+    private readonly timer;
+    private readonly openSearchClient;
+    private readonly operations;
 
     public constructor(params: ISynchronizationBuilderParams) {
         this.timer = params.timer;
-        this.context = params.context;
+        this.openSearchClient = params.openSearchClient;
         this.operations = new Operations();
     }
 
@@ -58,7 +57,7 @@ export class SynchronizationBuilder implements ISynchronizationBuilder {
                 ...params,
                 maxRunningTime: this.timer.getRemainingMilliseconds(),
                 timer: this.timer,
-                context: this.context,
+                openSearchClient: this.openSearchClient,
                 operations: this.operations
             });
             this.operations.clear();

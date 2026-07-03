@@ -1,10 +1,10 @@
 import { CleanupTaskSubtreeUseCase as UseCaseAbstraction } from "./abstractions.js";
-import type { Context } from "~/api/types.js";
+import type { TasksCrud } from "~/api/TasksCrud.js";
 
 export class CleanupTaskSubtreeUseCaseImpl implements UseCaseAbstraction.Interface {
-    public constructor(private readonly context: Context) {}
+    public constructor(private readonly tasksCrud: TasksCrud.Interface) {}
 
     public async execute(taskId: string): Promise<void> {
-        await this.context.tasks.cleanupTaskSubtree(taskId);
+        await this.tasksCrud.cleanupTaskSubtree(taskId);
     }
 }

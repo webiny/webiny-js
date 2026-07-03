@@ -1,12 +1,10 @@
-import React from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import React, { useEffect } from "react";
 import { PageEditorConfig } from "@webiny/app-website-builder";
 import {
     type EditorDocument,
     useSelectFromDocument
 } from "@webiny/app-website-builder/BaseEditor/hooks/useSelectFromDocument.js";
-import { useAuthentication } from "@webiny/app-admin";
-import { WorkflowStateProvider } from "@webiny/app-workflows/Components/WorkflowState/index.js";
+import { useWorkflowState } from "@webiny/app-workflows";
 import { WB_PAGE_APP } from "~/constants.js";
 import { PageFormWorkflowState } from "~/Components/PageEditor/PageFormWorkflowState.js";
 import { ToggleEditorMode } from "~/Components/PageEditor/ToggleEditorMode.js";
@@ -34,22 +32,21 @@ export const PageEditorTopBar = Ui.TopBar.Layout.createDecorator(Original => {
             };
         });
 
-        const client = useApolloClient();
-        const { identity } = useAuthentication();
+        const { presenter } = useWorkflowState();
+
+        useEffect(() => {
+            if (page.status === WbPageStatus.Draft) {
+                presenter.init(WB_PAGE_APP, page.id, `Website Builder: ${page.title}`);
+            }
+            return () => presenter.dispose();
+        }, [page.id, page.status]);
 
         return (
-            <WorkflowStateProvider
-                app={WB_PAGE_APP}
-                id={page.id}
-                disabled={page.status !== WbPageStatus.Draft}
-                identity={identity}
-                client={client}
-                title={`Website Builder: ${page.title}`}
-            >
+            <>
                 <Original />
                 <ToggleEditorMode />
                 <PageFormWorkflowState />
-            </WorkflowStateProvider>
+            </>
         );
     };
 });

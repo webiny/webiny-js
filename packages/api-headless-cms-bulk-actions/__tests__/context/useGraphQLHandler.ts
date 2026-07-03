@@ -1,25 +1,18 @@
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import { createHandler } from "@webiny/handler-aws";
-import createGraphQLHandler from "@webiny/handler-graphql";
-import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createTenancyAndSecurity } from "./tenancySecurity";
-import { until } from "@webiny/project-utils/testing/helpers/until";
 import { getIntrospectionQuery } from "graphql";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createIdentity, createPermissions } from "~tests/context/helpers";
+import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
+import { HeadlessCmsContextualSchema } from "@webiny/api-headless-cms/HeadlessCmsContextualSchema.js";
+import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
+import { until } from "@webiny/project-utils/testing/helpers/until.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { Plugin, PluginCollection } from "@webiny/plugins/types";
+import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import {
     createBackgroundTaskContext,
     createBackgroundTaskGraphQL
 } from "@webiny/background-tasks/api";
 import { createHcmsBulkActions } from "~/index";
-import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
-import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import { createApiCore } from "@webiny/api-core";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import { createIdentity, createPermissions } from "~tests/context/helpers";
 
 export interface UseGQLHandlerParams {
     identity?: IdentityData;
@@ -31,7 +24,6 @@ export interface UseGQLHandlerParams {
 
 interface InvokeParams {
     httpMethod?: "POST";
-    type?: string;
     body: {
         query: string;
         variables?: Record<string, any>;
@@ -42,55 +34,28 @@ interface InvokeParams {
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { plugins = [] } = params;
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const extraCmsPlugins = ([plugins] as any[]).flat(Infinity as 1).filter(Boolean);
 
-    const handler = createHandler({
-        plugins: [
-            createApiCore({
-                storageOperations: apiCoreStorage.storageOperations
-            }),
-            ...cmsStorage.plugins,
-            createGraphQLHandler(),
-            ...createTenancyAndSecurity({
-                permissions: createPermissions(),
-                identity: createIdentity()
-            }),
-            createHeadlessCmsContext(),
-            createHeadlessCmsGraphQL(),
-            graphQLHandlerPlugins(),
-            createBackgroundTaskContext(),
-            createBackgroundTaskGraphQL(),
-            createHcmsBulkActions(),
-            plugins
-        ],
-        debug: true
+    // createBackgroundTaskContext/GraphQL and createHcmsBulkActions are legacy gql plugins applied
+    // via the contextual-schema path on /graphql (after the CMS contextual schema).
+    const latePlugins = [
+        createBackgroundTaskContext(),
+        createBackgroundTaskGraphQL(),
+        createHcmsBulkActions()
+    ]
+        .flat(Infinity as 1)
+        .filter(Boolean);
+
+    const { handler, invoke } = createCmsTestHandler({
+        identity: params.identity ?? createIdentity(),
+        permissions: params.permissions ?? (createPermissions() as SecurityPermission[]),
+        testProjectLicense: params.testProjectLicense,
+        extraCmsPlugins,
+        features: container => {
+            container.register(HeadlessCmsContextualSchema);
+            registerLegacyPluginsViaGqlContextualSchema(container, latePlugins);
+        }
     });
-
-    const invoke = async ({
-        httpMethod = "POST",
-        type = "manage",
-        body,
-        headers = {},
-        ...rest
-    }: InvokeParams) => {
-        const response = await handler(
-            {
-                path: `/cms/${type}`,
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as unknown as APIGatewayEvent,
-            {} as LambdaContext
-        );
-        // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body), response];
-    };
 
     const introspect = async () => {
         return invoke({
@@ -104,7 +69,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         params,
         until,
         handler,
-        invoke,
+        invoke: (p: InvokeParams) => invoke(p),
         introspect
     };
 };

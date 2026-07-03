@@ -1,51 +1,58 @@
-import type { CreateHandlerCoreParams } from "./plugins";
-import { createHandlerCore } from "./plugins";
-import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
+import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
+import { DbFeature } from "@webiny/handler-db";
+import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
+import {
+    createBackgroundTaskContext,
+    createBackgroundTaskGraphQL,
+    TaskServiceTransport,
+    TasksCrud
+} from "@webiny/background-tasks/api";
+import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
+import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
 import type { Context } from "~/types";
-import { defaultIdentity } from "./tenancySecurity";
-import type { LambdaContext } from "@webiny/handler-aws/types";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
+import { createHeadlessCmsEsTasks } from "~/index.js";
 
-interface CmsHandlerEvent {
-    path: string;
-    headers: {
-        ["x-tenant"]: string;
-        [key: string]: string;
-    };
-}
+type Params = Omit<CmsTestHandlerParams, "features"> & { plugins?: any };
 
-type Params = CreateHandlerCoreParams;
 export const useHandler = <C extends Context = Context>(params: Params = {}) => {
-    const core = createHandlerCore(params);
+    const { plugins, ...rest } = params;
 
-    const plugins = [...core.plugins].concat([
-        createRawEventHandler<CmsHandlerEvent, C, C>(async ({ context }) => {
-            return context;
-        })
-    ]);
+    const { getContext } = createCmsTestHandler({
+        ...rest,
+        features: container => {
+            DbFeature.register(container, {
+                documentClient: getDocumentClient(),
+                table: process.env.DB_TABLE
+            });
 
-    const handler = createRawHandler<CmsHandlerEvent, C>({
-        plugins,
-        debug: process.env.DEBUG === "true"
+            // Background tasks (context.tasks, TriggerTaskUseCase) + a mock transport (DI), then the
+            // es-tasks task definitions and any test-supplied plugins.
+            registerLegacyPluginsViaGqlContextualSchema(container, [
+                createBackgroundTaskContext(),
+                ...createBackgroundTaskGraphQL(),
+                createHeadlessCmsEsTasks(),
+                ...[plugins].flat(Infinity as 1).filter(Boolean)
+            ]);
+            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin()[0]);
+        }
     });
 
-    const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
-
     return {
-        plugins,
-        identity: params.identity || defaultIdentity,
-        tenant: core.tenant,
-        elasticsearch: elasticsearchClient,
-        handler: (input?: CmsHandlerEvent) => {
-            const payload: CmsHandlerEvent = {
-                path: "/cms/manage/en-US",
-                headers: {
-                    "x-webiny-cms-endpoint": "manage",
-                    "x-tenant": "root"
-                },
-                ...input
-            };
-            return handler(payload, {} as LambdaContext);
+        identity: { id: "id-12345678", type: "admin", displayName: "John Doe" },
+        tenant: { id: "root" },
+        elasticsearch: createTestOpenSearchClient(),
+        // DI-native source for the legacy `context.tasks` service-locator: resolve the CRUD
+        // aggregate from the container and expose it on the captured context. See the "full-DI
+        // tasks" cleanup note to retire this bridge.
+        handler: async () => {
+            const ctx = await getContext<C>();
+            const [tasksCrud] = (ctx as any).container.resolveAll(TasksCrud);
+            if (tasksCrud) {
+                (ctx as any).tasks = tasksCrud;
+            }
+            return ctx;
         }
     };
 };

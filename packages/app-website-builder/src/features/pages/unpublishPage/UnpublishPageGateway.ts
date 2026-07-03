@@ -8,7 +8,7 @@ const UNPUBLISH_PAGE = /* GraphQL */ `
         websiteBuilder {
             unpublishPage(id: $id) {
                 data {
-                    ${getPageGraphQLFields(["properties", "metadata"]).join("\n")}
+                    ${getPageGraphQLFields(["properties", "metadata", "bindings", "elements", "extensions"]).join("\n")}
                 }
                 error {
                     code

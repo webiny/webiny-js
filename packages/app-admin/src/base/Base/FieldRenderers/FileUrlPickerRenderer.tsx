@@ -17,6 +17,7 @@ export const FileUrlPickerRenderer = createFieldRenderer(({ field }) => {
             render={({ showFileManager }) => (
                 <FilePicker
                     label={field.label}
+                    hint={field.help}
                     description={field.description}
                     type="area"
                     value={field.value as string | undefined}
