@@ -11,11 +11,14 @@ import { ResponseEditor } from "./ResponseEditor.js";
 import { BottomPanel } from "./BottomPanel.js";
 import { DocsExplorerFeature } from "../../DocsExplorer/feature.js";
 import { DocsExplorerDrawer } from "../../DocsExplorer/components/DocsExplorerDrawer.js";
+import { QueryHistoryFeature } from "../../QueryHistory/feature.js";
+import { QueryHistoryDrawer } from "../../QueryHistory/components/QueryHistoryDrawer.js";
 import type { PlaygroundPresenter } from "../abstractions.js";
 
 export const PlaygroundPage = observer(() => {
     const { presenter } = useFeature(PlaygroundPresenterFeature);
     const { presenter: docsPresenter } = useFeature(DocsExplorerFeature);
+    const { presenter: historyPresenter } = useFeature(QueryHistoryFeature);
     const { splitRef, editorPct, handleDividerMouseDown } = useResizableSplit();
 
     useEffect(() => {
@@ -28,9 +31,24 @@ export const PlaygroundPage = observer(() => {
         docsPresenter.setSchema(schema, status);
     }, [presenter.vm.schema, presenter.vm.schemaStatus, docsPresenter]);
 
+    useEffect(() => {
+        historyPresenter.load();
+    }, [historyPresenter]);
+
+    useEffect(() => {
+        const activeTab = presenter.vm.activeTab;
+        if (activeTab && !activeTab.isExecuting) {
+            historyPresenter.refresh();
+        }
+    }, [presenter.vm.activeTab?.isExecuting, historyPresenter]);
+
     return (
         <div className="flex flex-col bg-gray-100" style={{ height: "calc(100vh - 45px)" }}>
-            <PlaygroundToolbar presenter={presenter} docsPresenter={docsPresenter} />
+            <PlaygroundToolbar
+                presenter={presenter}
+                docsPresenter={docsPresenter}
+                historyPresenter={historyPresenter}
+            />
             <TabBar presenter={presenter} />
             <ActiveTabContent
                 presenter={presenter}
@@ -39,6 +57,7 @@ export const PlaygroundPage = observer(() => {
                 onDividerMouseDown={handleDividerMouseDown}
             />
             <DocsExplorerDrawer presenter={docsPresenter} />
+            <QueryHistoryDrawer presenter={historyPresenter} playgroundPresenter={presenter} />
         </div>
     );
 });

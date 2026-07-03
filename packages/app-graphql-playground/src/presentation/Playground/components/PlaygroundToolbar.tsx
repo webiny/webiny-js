@@ -6,12 +6,15 @@ import { ReactComponent as PlayArrowIcon } from "@webiny/icons/play_arrow.svg";
 import { ReactComponent as AutoFixHighIcon } from "@webiny/icons/auto_fix_high.svg";
 import { ReactComponent as ContentCopyIcon } from "@webiny/icons/content_copy.svg";
 import { ReactComponent as MenuBookIcon } from "@webiny/icons/menu_book.svg";
+import { ReactComponent as HistoryIcon } from "@webiny/icons/history.svg";
 import type { PlaygroundPresenter } from "../abstractions.js";
 import type { DocsExplorerPresenter } from "../../DocsExplorer/abstractions.js";
+import type { QueryHistoryPresenter } from "../../QueryHistory/abstractions.js";
 
 interface PlaygroundToolbarProps {
     presenter: PlaygroundPresenter.Interface;
     docsPresenter: DocsExplorerPresenter.Interface;
+    historyPresenter: QueryHistoryPresenter.Interface;
 }
 
 const isMac =
@@ -32,6 +35,13 @@ export const PlaygroundToolbar = observer((props: PlaygroundToolbarProps) => {
                 <span className="ml-4 text-xs text-gray-500">{shortcutKey}+Enter to execute</span>
             </div>
             <div className="flex gap-2 items-center">
+                <Button
+                    onClick={() => props.historyPresenter.toggle()}
+                    icon={<HistoryIcon />}
+                    variant={props.historyPresenter.vm.open ? "primary" : "secondary"}
+                >
+                    History
+                </Button>
                 <Button
                     onClick={() => props.docsPresenter.toggle()}
                     icon={<MenuBookIcon />}
