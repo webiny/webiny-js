@@ -12546,7 +12546,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/di@npm:^1.0.2":
+"@webiny/di@npm:^1.0.1, @webiny/di@npm:^1.0.2":
   version: 1.0.2
   resolution: "@webiny/di@npm:1.0.2"
   dependencies:
