@@ -11,7 +11,7 @@ import { AwsLambdaContext } from "./abstractions/AwsLambdaContext.js";
  * `createHandler` in @webiny/event-handler-core.
  */
 export const awsLambdaTransport: Transport = {
-    extract(container: Container, event: any, context?: Context) {
+    bind(container: Container, event: any, context?: Context) {
         container.registerInstance(AwsLambdaEvent, event);
         if (context) {
             container.registerInstance(AwsLambdaContext, context);

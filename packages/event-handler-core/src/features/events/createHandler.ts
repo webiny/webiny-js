@@ -31,9 +31,9 @@ export function createHandler(options: CreateHandlerOptions) {
         const child = rootContainer.createChildContainer();
         child.registerInstance(RequestContainer, child);
 
-        // Transport-specific extract: bind the raw platform arguments into the request container
+        // Transport-specific bind: register the raw platform arguments into the request container
         // before request setup runs. The default transport binds nothing.
-        await transport.extract(child, ...rawArgs);
+        await transport.bind(child, ...rawArgs);
 
         if (options.request) {
             await options.request(child);
