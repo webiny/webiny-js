@@ -1,4 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { beforeEach } from "vitest";
+import { vi } from "vitest";
 import { DefaultQueryHistoryPresenter } from "~/presentation/QueryHistory/QueryHistoryPresenter";
 import type { IQueryHistoryPresenter } from "~/presentation/QueryHistory/abstractions";
 import type { IQueryHistoryRepository } from "~/features/queryHistory/abstractions";
