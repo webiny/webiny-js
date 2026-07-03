@@ -4,6 +4,8 @@ export type IPlaygroundBottomPanel = "variables" | "headers";
 
 export type IPlaygroundSchema = Record<string, any>;
 
+export type ISchemaStatus = "idle" | "loading" | "ready";
+
 export interface IPlaygroundTabVm {
     id: string;
     definitionId: string;
@@ -31,6 +33,7 @@ export interface IPlaygroundVm {
     activeTab: IPlaygroundTabVm | null;
     endpoints: IPlaygroundEndpointVm[];
     schema: IPlaygroundSchema | null;
+    schemaStatus: ISchemaStatus;
 }
 
 export interface IPlaygroundPresenter {
@@ -62,4 +65,5 @@ export namespace PlaygroundPresenter {
     export type EndpointVm = IPlaygroundEndpointVm;
     export type BottomPanel = IPlaygroundBottomPanel;
     export type Schema = IPlaygroundSchema;
+    export type SchemaStatus = ISchemaStatus;
 }

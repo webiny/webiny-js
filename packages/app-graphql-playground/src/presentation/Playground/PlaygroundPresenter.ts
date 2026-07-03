@@ -71,7 +71,8 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
             activeTabId: this.activeTabId,
             activeTab: activeTab,
             endpoints: this.endpoints,
-            schema: this.getActiveSchema()
+            schema: this.getActiveSchema(),
+            schemaStatus: this.getSchemaStatus()
         };
     }
 
@@ -520,6 +521,23 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
         }
 
         return schema;
+    }
+
+    private getSchemaStatus(): PlaygroundPresenter.SchemaStatus {
+        const tab = this.getActiveTab();
+        if (!tab) {
+            return "idle";
+        }
+
+        if (this.schemas.has(tab.endpoint)) {
+            return "ready";
+        }
+
+        if (this.pendingIntrospections.has(tab.endpoint)) {
+            return "loading";
+        }
+
+        return "idle";
     }
 
     private getActiveTab(): PlaygroundPresenter.TabVm | null {

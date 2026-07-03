@@ -660,4 +660,70 @@ describe("PlaygroundPresenter", () => {
             expect(userTab.headers).toBeUndefined();
         });
     });
+
+    describe("schemaStatus", () => {
+        it("should be idle before init", () => {
+            const presenter = createPresenter({
+                registry: mockRegistry,
+                repository: mockRepository
+            });
+
+            expect(presenter.vm.schemaStatus).toBe("idle");
+        });
+
+        it("should be loading while introspection is in flight", () => {
+            let resolveIntrospection: (value: any) => void;
+            const pendingClient: PlaygroundClient.Interface = {
+                execute: vi.fn().mockImplementation(() => {
+                    return new Promise(resolve => {
+                        resolveIntrospection = resolve;
+                    });
+                })
+            };
+            const registry = createMockRegistry(pendingClient);
+            const presenter = createPresenter({
+                registry,
+                repository: mockRepository
+            });
+
+            presenter.init();
+
+            expect(presenter.vm.schemaStatus).toBe("loading");
+        });
+
+        it("should be ready after introspection completes", async () => {
+            const schemaResponse = {
+                data: {
+                    __schema: {
+                        queryType: { name: "Query" },
+                        mutationType: null,
+                        subscriptionType: null,
+                        types: [
+                            {
+                                name: "Query",
+                                kind: "OBJECT",
+                                fields: [],
+                                description: null,
+                                inputFields: null,
+                                enumValues: null,
+                                interfaces: [],
+                                possibleTypes: null
+                            }
+                        ]
+                    }
+                }
+            };
+            const client = createMockClient(schemaResponse);
+            const registry = createMockRegistry(client);
+            const presenter = createPresenter({
+                registry,
+                repository: mockRepository
+            });
+
+            presenter.init();
+            await vi.runAllTimersAsync();
+
+            expect(presenter.vm.schemaStatus).toBe("ready");
+        });
+    });
 });
