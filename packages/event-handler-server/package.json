@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/event-handler-node",
+  "name": "@webiny/event-handler-server",
   "version": "0.0.0",
   "type": "module",
   "main": "index.js",
@@ -8,7 +8,7 @@
     "./*": "./*"
   },
   "types": "index.d.ts",
-  "description": "Node.js HTTP adapter for @webiny/event-handler.",
+  "description": "Node.js HTTP server transport for @webiny/event-handler-core.",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
