@@ -13,7 +13,7 @@ const SearchInput = (props: { value: string; presenter: DocsExplorerPresenter.In
         <div className="p-3 border-b border-gray-200">
             <input
                 type="text"
-                placeholder="Search types..."
+                placeholder="Search types, fields, args..."
                 value={props.value}
                 onChange={ev => props.presenter.setSearchQuery(ev.target.value)}
                 className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:border-blue-500"
@@ -106,6 +106,11 @@ const TypeSummaryRow = (props: {
                 {props.type.name}
             </span>
             <span className="text-xs text-gray-400">{props.type.typeKind}</span>
+            {props.type.matchContext ? (
+                <span className="text-xs text-gray-400 italic ml-auto">
+                    {props.type.matchContext}
+                </span>
+            ) : null}
         </div>
     );
 };

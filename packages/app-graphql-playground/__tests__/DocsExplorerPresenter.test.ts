@@ -463,7 +463,7 @@ describe("DocsExplorerPresenter", () => {
             expect(names).toContain("Post");
             expect(names).toContain("PostStatus");
             expect(names).toContain("CreatePostInput");
-            expect(names).not.toContain("User");
+            expect(names).not.toContain("String");
         });
 
         it("should show all types when search is empty", () => {
@@ -481,6 +481,71 @@ describe("DocsExplorerPresenter", () => {
             presenter.navigateToType("Post");
 
             expect(presenter.vm.searchQuery).toBe("");
+        });
+
+        it("should find types by field name", () => {
+            presenter.setSchema(createSchema(), "ready");
+            presenter.setSearchQuery("title");
+
+            const rootView = presenter.vm.currentView as any;
+            const names = rootView.filteredTypes.map((t: any) => t.name);
+            expect(names).toContain("Post");
+            expect(names).toContain("CreatePostInput");
+            expect(names).not.toContain("User");
+
+            const post = rootView.filteredTypes.find((t: any) => t.name === "Post");
+            expect(post.matchContext).toBe("field: title");
+
+            const input = rootView.filteredTypes.find((t: any) => t.name === "CreatePostInput");
+            expect(input.matchContext).toBe("input: title");
+        });
+
+        it("should find types by argument name", () => {
+            presenter.setSchema(createSchema(), "ready");
+            presenter.setSearchQuery("input");
+
+            const rootView = presenter.vm.currentView as any;
+            const mutation = rootView.filteredTypes.find((t: any) => t.name === "Mutation");
+            expect(mutation.matchContext).toBe("arg: input");
+        });
+
+        it("should find types by enum value name", () => {
+            presenter.setSchema(createSchema(), "ready");
+            presenter.setSearchQuery("PUBLISHED");
+
+            const rootView = presenter.vm.currentView as any;
+            const names = rootView.filteredTypes.map((t: any) => t.name);
+            expect(names).toContain("PostStatus");
+
+            const enumType = rootView.filteredTypes.find((t: any) => t.name === "PostStatus");
+            expect(enumType.matchContext).toBe("enum: PUBLISHED");
+        });
+
+        it("should set matchContext to null when type name matches directly", () => {
+            presenter.setSchema(createSchema(), "ready");
+            presenter.setSearchQuery("User");
+
+            const rootView = presenter.vm.currentView as any;
+            const user = rootView.filteredTypes.find((t: any) => t.name === "User");
+            expect(user.matchContext).toBeNull();
+        });
+
+        it("should set matchContext to null when search is empty", () => {
+            presenter.setSchema(createSchema(), "ready");
+
+            const rootView = presenter.vm.currentView as any;
+            const user = rootView.filteredTypes.find((t: any) => t.name === "User");
+            expect(user.matchContext).toBeNull();
+        });
+
+        it("should find types by field name case-insensitively", () => {
+            presenter.setSchema(createSchema(), "ready");
+            presenter.setSearchQuery("TITLE");
+
+            const rootView = presenter.vm.currentView as any;
+            const post = rootView.filteredTypes.find((t: any) => t.name === "Post");
+            expect(post).toBeDefined();
+            expect(post.matchContext).toBe("field: title");
         });
     });
 

@@ -127,6 +127,34 @@ class DocsExplorerPresenterImpl implements DocsExplorerPresenter.Interface {
         this.search = query;
     }
 
+    private findDeepMatch(type: IIntrospectionType, lowerSearch: string): string | null {
+        for (const field of type.fields) {
+            if (field.name.toLowerCase().includes(lowerSearch)) {
+                return `field: ${field.name}`;
+            }
+
+            for (const arg of field.args || []) {
+                if (arg.name.toLowerCase().includes(lowerSearch)) {
+                    return `arg: ${arg.name}`;
+                }
+            }
+        }
+
+        for (const field of type.inputFields) {
+            if (field.name.toLowerCase().includes(lowerSearch)) {
+                return `input: ${field.name}`;
+            }
+        }
+
+        for (const value of type.enumValues) {
+            if (value.name.toLowerCase().includes(lowerSearch)) {
+                return `enum: ${value.name}`;
+            }
+        }
+
+        return null;
+    }
+
     private buildCurrentView():
         | DocsExplorerPresenter.RootView
         | DocsExplorerPresenter.TypeView
@@ -166,20 +194,33 @@ class DocsExplorerPresenterImpl implements DocsExplorerPresenter.Interface {
         const allTypes = Array.from(this.typeMap.values());
         const lowerSearch = this.search.toLowerCase();
 
-        const filteredTypes: DocsExplorerPresenter.TypeSummary[] = allTypes
-            .filter(type => {
-                if (this.search === "") {
-                    return true;
-                }
+        const filteredTypes: DocsExplorerPresenter.TypeSummary[] = [];
 
-                return type.name.toLowerCase().includes(lowerSearch);
-            })
-            .map(type => ({
+        for (const type of allTypes) {
+            const summary: DocsExplorerPresenter.TypeSummary = {
                 name: type.name,
                 typeKind: type.kind as DocsExplorerPresenter.GraphQLTypeKind,
                 description: type.description,
-                isNavigable: !NON_NAVIGABLE_KINDS.has(type.kind)
-            }));
+                isNavigable: !NON_NAVIGABLE_KINDS.has(type.kind),
+                matchContext: null
+            };
+
+            if (this.search === "") {
+                filteredTypes.push(summary);
+                continue;
+            }
+
+            if (type.name.toLowerCase().includes(lowerSearch)) {
+                filteredTypes.push(summary);
+                continue;
+            }
+
+            const context = this.findDeepMatch(type, lowerSearch);
+            if (context) {
+                summary.matchContext = context;
+                filteredTypes.push(summary);
+            }
+        }
 
         return {
             kind: "root",

@@ -47,6 +47,7 @@ export interface IDocsTypeSummary {
     typeKind: IDocsGraphQLTypeKind;
     description: string | null;
     isNavigable: boolean;
+    matchContext: string | null;
 }
 
 export interface IDocsRootSection {
