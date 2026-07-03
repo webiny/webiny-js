@@ -1,7 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Drawer } from "@webiny/admin-ui";
-import { Loader } from "@webiny/admin-ui";
+import { Drawer, Loader } from "@webiny/admin-ui";
 import { DocsRootView } from "./DocsRootView.js";
 import { DocsTypeView } from "./DocsTypeView.js";
 import type { DocsExplorerPresenter } from "../abstractions.js";
@@ -81,14 +80,15 @@ export const DocsExplorerDrawer = observer((props: DocsExplorerDrawerProps) => {
             title="Schema Docs"
             open={presenter.vm.open}
             onOpenChange={open => {
-                if (!open) {
-                    presenter.toggle();
+                if (open) {
+                    return;
                 }
+                presenter.toggle();
             }}
             modal={false}
             bodyPadding={false}
             headerSeparator={true}
-            width={380}
+            width={"40%"}
         >
             <DrawerHeader presenter={presenter} />
             <DrawerBody presenter={presenter} />
