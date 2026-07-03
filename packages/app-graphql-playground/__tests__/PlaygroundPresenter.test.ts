@@ -6,6 +6,7 @@ import type { PlaygroundRepository } from "~/features/repository/abstractions.js
 import type { PlaygroundClient } from "~/features/playgroundClient/abstractions/PlaygroundClient.js";
 import { DefaultPlaygroundPresenter } from "~/presentation/Playground/PlaygroundPresenter.js";
 import type { IPlaygroundPresenter } from "~/presentation/Playground/abstractions.js";
+import type { IQueryHistoryRepository } from "~/features/queryHistory/abstractions.js";
 
 function createMockClient(
     response: Record<string, any> = { data: { test: { id: "1" } } }
@@ -57,9 +58,16 @@ function createMockRepository(
 function createPresenter(params: {
     registry: PlaygroundTabRegistry.Interface;
     repository: PlaygroundRepository.Interface;
+    historyRepository?: IQueryHistoryRepository;
 }): IPlaygroundPresenter {
     const Ctor = DefaultPlaygroundPresenter as any;
-    const presenter = new Ctor(params.registry, params.repository);
+    const historyRepo = params.historyRepository || {
+        record: vi.fn(),
+        remove: vi.fn(),
+        clear: vi.fn(),
+        getAll: vi.fn().mockReturnValue([])
+    };
+    const presenter = new Ctor(params.registry, params.repository, historyRepo);
     return presenter as IPlaygroundPresenter;
 }
 
@@ -723,6 +731,150 @@ describe("PlaygroundPresenter", () => {
             await vi.runAllTimersAsync();
 
             expect(presenter.vm.schemaStatus).toBe("ready");
+        });
+    });
+
+    describe("history recording", () => {
+        it("should record a history entry after successful query execution", async () => {
+            const mockHistoryRepo = {
+                record: vi.fn(),
+                remove: vi.fn(),
+                clear: vi.fn(),
+                getAll: vi.fn().mockReturnValue([])
+            };
+            const presenter = createPresenter({
+                registry: mockRegistry,
+                repository: mockRepository,
+                historyRepository: mockHistoryRepo
+            });
+            presenter.init();
+            presenter.executeQuery();
+
+            await vi.advanceTimersByTimeAsync(0);
+
+            expect(mockHistoryRepo.record).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    query: expect.any(String),
+                    variables: expect.any(String),
+                    endpoint: expect.any(String),
+                    definitionId: expect.any(String)
+                })
+            );
+        });
+
+        it("should record a history entry after failed query execution", async () => {
+            const failClient = { execute: vi.fn().mockRejectedValue(new Error("network")) };
+            const failRegistry = createMockRegistry(failClient);
+            const mockHistoryRepo = {
+                record: vi.fn(),
+                remove: vi.fn(),
+                clear: vi.fn(),
+                getAll: vi.fn().mockReturnValue([])
+            };
+            const presenter = createPresenter({
+                registry: failRegistry,
+                repository: mockRepository,
+                historyRepository: mockHistoryRepo
+            });
+            presenter.init();
+            presenter.executeQuery();
+
+            await vi.advanceTimersByTimeAsync(0);
+
+            expect(mockHistoryRepo.record).toHaveBeenCalled();
+        });
+
+        it("should not crash if history record throws", async () => {
+            const badHistoryRepo = {
+                record: vi.fn().mockImplementation(() => {
+                    throw new Error("quota exceeded");
+                }),
+                remove: vi.fn(),
+                clear: vi.fn(),
+                getAll: vi.fn().mockReturnValue([])
+            };
+            const presenter = createPresenter({
+                registry: mockRegistry,
+                repository: mockRepository,
+                historyRepository: badHistoryRepo
+            });
+            presenter.init();
+            presenter.executeQuery();
+
+            await vi.advanceTimersByTimeAsync(0);
+
+            expect(presenter.vm.activeTab!.response).toContain("test");
+            expect(presenter.vm.activeTab!.isExecuting).toBe(false);
+        });
+    });
+
+    describe("restoreFromHistory", () => {
+        it("should overwrite active tab query and variables", () => {
+            const mockHistoryRepo = {
+                record: vi.fn(),
+                remove: vi.fn(),
+                clear: vi.fn(),
+                getAll: vi.fn().mockReturnValue([])
+            };
+            const presenter = createPresenter({
+                registry: mockRegistry,
+                repository: mockRepository,
+                historyRepository: mockHistoryRepo
+            });
+            presenter.init();
+
+            presenter.restoreFromHistory("{ restored }", '{"x":1}');
+
+            expect(presenter.vm.activeTab!.query).toBe("{ restored }");
+            expect(presenter.vm.activeTab!.variables).toBe('{"x":1}');
+        });
+    });
+
+    describe("restoreFromHistoryInNewTab", () => {
+        it("should create a new tab with the given data", () => {
+            const mockHistoryRepo = {
+                record: vi.fn(),
+                remove: vi.fn(),
+                clear: vi.fn(),
+                getAll: vi.fn().mockReturnValue([])
+            };
+            const presenter = createPresenter({
+                registry: mockRegistry,
+                repository: mockRepository,
+                historyRepository: mockHistoryRepo
+            });
+            presenter.init();
+            const tabCountBefore = presenter.vm.tabs.length;
+
+            presenter.restoreFromHistoryInNewTab(
+                "{ restored }",
+                '{"x":1}',
+                "http://localhost:3000/graphql",
+                "main-api"
+            );
+
+            expect(presenter.vm.tabs.length).toBe(tabCountBefore + 1);
+            expect(presenter.vm.activeTab!.query).toBe("{ restored }");
+            expect(presenter.vm.activeTab!.variables).toBe('{"x":1}');
+        });
+
+        it("should fall back to first definition if definitionId is unknown", () => {
+            const mockHistoryRepo = {
+                record: vi.fn(),
+                remove: vi.fn(),
+                clear: vi.fn(),
+                getAll: vi.fn().mockReturnValue([])
+            };
+            const presenter = createPresenter({
+                registry: mockRegistry,
+                repository: mockRepository,
+                historyRepository: mockHistoryRepo
+            });
+            presenter.init();
+
+            presenter.restoreFromHistoryInNewTab("{ restored }", "", "/unknown", "deleted-api");
+
+            expect(presenter.vm.activeTab!.query).toBe("{ restored }");
         });
     });
 });

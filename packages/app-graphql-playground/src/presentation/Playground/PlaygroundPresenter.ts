@@ -6,6 +6,7 @@ import { prettifyGraphQL } from "./prettifyGraphQL.js";
 import { PlaygroundClient } from "../../features/playgroundClient/abstractions/PlaygroundClient.js";
 import { PlaygroundRepository } from "../../features/repository/abstractions.js";
 import { PlaygroundTabRegistry } from "../../features/tabRegistry/abstractions.js";
+import { QueryHistoryRepository } from "../../features/queryHistory/abstractions.js";
 import { PlaygroundPresenter } from "./abstractions.js";
 
 const USER_TAB_ID_PREFIX = "user-";
@@ -40,7 +41,8 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
 
     constructor(
         tabRegistry: PlaygroundTabRegistry.Interface,
-        repository: PlaygroundRepository.Interface
+        repository: PlaygroundRepository.Interface,
+        private readonly historyRepository: QueryHistoryRepository.Interface
     ) {
         this.tabRegistry = tabRegistry;
         this.repository = repository;
@@ -52,6 +54,7 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
             {
                 tabRegistry: false,
                 repository: false,
+                historyRepository: false,
                 definitions: false,
                 pendingIntrospections: false,
                 initialized: false,
@@ -271,17 +274,46 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
             headers: this.parseJson<Record<string, string>>(tab.headers)
         };
 
+        const capturedQuery = tab.query;
+        const capturedVariables = tab.variables;
+        const capturedEndpoint = tab.endpoint;
+        const capturedDefinitionId = tab.definitionId;
+
         definition.client
             .execute(request)
             .then(result => {
                 runInAction(() => {
                     tab.response = JSON.stringify(result, null, 2);
+
+                    try {
+                        this.historyRepository.record({
+                            query: capturedQuery,
+                            variables: capturedVariables,
+                            endpoint: capturedEndpoint,
+                            definitionId: capturedDefinitionId
+                        });
+                    } catch {
+                        /* History write failure must not affect the playground. */
+                    }
+
                     tab.isExecuting = false;
                 });
             })
             .catch(error => {
                 runInAction(() => {
                     tab.response = this.stringifyError(error);
+
+                    try {
+                        this.historyRepository.record({
+                            query: capturedQuery,
+                            variables: capturedVariables,
+                            endpoint: capturedEndpoint,
+                            definitionId: capturedDefinitionId
+                        });
+                    } catch {
+                        /* History write failure must not affect the playground. */
+                    }
+
                     tab.isExecuting = false;
                 });
             });
@@ -343,6 +375,47 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
         }
 
         tab.isBottomPanelCollapsed = !tab.isBottomPanelCollapsed;
+    }
+
+    public restoreFromHistory(query: string, variables: string): void {
+        const tab = this.getActiveTab();
+        if (!tab) {
+            return;
+        }
+
+        tab.query = query;
+        tab.variables = variables;
+    }
+
+    public restoreFromHistoryInNewTab(
+        query: string,
+        variables: string,
+        endpoint: string,
+        definitionId: string
+    ): void {
+        let resolvedDefinitionId = definitionId;
+        if (!this.definitions.has(definitionId)) {
+            const firstKey = this.definitions.keys().next().value;
+            if (!firstKey) {
+                return;
+            }
+            resolvedDefinitionId = firstKey;
+        }
+
+        const tab = this.buildTab({
+            id: this.generateUserTabId(),
+            definitionId: resolvedDefinitionId,
+            name: "History",
+            endpoint,
+            query,
+            variables,
+            headers: "",
+            isRegistered: false
+        });
+
+        this.tabs.push(tab);
+        this.activeTabId = tab.id;
+        this.loadSchema(tab);
     }
 
     private createRegisteredTab(
@@ -612,5 +685,5 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
 
 export const DefaultPlaygroundPresenter = PlaygroundPresenter.createImplementation({
     implementation: PlaygroundPresenterImpl,
-    dependencies: [PlaygroundTabRegistry, PlaygroundRepository]
+    dependencies: [PlaygroundTabRegistry, PlaygroundRepository, QueryHistoryRepository]
 });

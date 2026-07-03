@@ -54,6 +54,13 @@ export interface IPlaygroundPresenter {
     copyResponse(): Promise<void>;
     selectBottomPanel(panel: IPlaygroundBottomPanel): void;
     toggleBottomPanel(): void;
+    restoreFromHistory(query: string, variables: string): void;
+    restoreFromHistoryInNewTab(
+        query: string,
+        variables: string,
+        endpoint: string,
+        definitionId: string
+    ): void;
 }
 
 export const PlaygroundPresenter = createAbstraction<IPlaygroundPresenter>("PlaygroundPresenter");
