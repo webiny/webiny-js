@@ -4,9 +4,10 @@ import { replaceInPath } from "replace-in-path";
 import {
     BuildAppWorkspaceService,
     GetApp,
-    LoggerService
+    LoggerService,
+    ProjectSdkParamsService
 } from "@webiny/project/abstractions/index.js";
-import { getTemplatesFolderPath } from "~/utils/index.js";
+import { getTemplatesFolderPath, getPulumiBaseTemplatesFolderPath } from "~/utils/index.js";
 
 const wait = () => new Promise(resolve => setTimeout(resolve, 10));
 
@@ -14,10 +15,18 @@ class BuildAppWorkspaceImpl implements BuildAppWorkspaceService.Interface {
     constructor(
         private getApp: GetApp.Interface,
         private logger: LoggerService.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface,
         private decoratee: BuildAppWorkspaceService.Interface
     ) {}
 
     async execute(appName: GetApp.AppName, options: BuildAppWorkspaceService.Options = {}) {
+        const sdkParams = this.projectSdkParamsService.get();
+
+        if (!sdkParams.env) {
+            throw new Error(`Please specify environment, for example "dev".`);
+        }
+
+        // Base service creates/clears the workspace directory.
         await this.decoratee.execute(appName, options);
 
         const app = this.getApp.execute(appName);
@@ -34,11 +43,34 @@ class BuildAppWorkspaceImpl implements BuildAppWorkspaceService.Interface {
 
         this.logger.info({ appName, options }, "Building app workspace (project-aws)...");
 
-        const templatesFolderPath = getTemplatesFolderPath();
         const appWorkspaceFolderPath = app.paths.workspaceFolder.toString();
-        const appTemplateFolderPath = path.join(templatesFolderPath, "appTemplates", app.name);
 
-        // Create app.
+        // Copy Pulumi scaffolding (Pulumi.yaml, pulumi/index.js).
+        const pulumiBaseTemplatePath = path.join(
+            getPulumiBaseTemplatesFolderPath(),
+            "appTemplates",
+            "base"
+        );
+        fs.cpSync(pulumiBaseTemplatePath, appWorkspaceFolderPath, { recursive: true });
+
+        await wait();
+
+        // Replace Pulumi-specific placeholders.
+        const { env, variant } = sdkParams;
+        replaceInPath(path.join(appWorkspaceFolderPath, "/**/*.{ts,js,yaml}"), [
+            { find: "%{PROJECT_ID}", replaceWith: app.name },
+            { find: "%{PROJECT_DESCRIPTION}", replaceWith: `Webiny's ${env} app.` },
+            { find: "%{DEPLOY_ENV}", replaceWith: env },
+            {
+                find: "%{DEPLOY_VARIANT}",
+                replaceWith: !variant || variant === "undefined" ? "" : variant
+            }
+        ]);
+
+        await wait();
+
+        // Copy app source templates (graphql/, admin src/, etc.).
+        const appTemplateFolderPath = path.join(getTemplatesFolderPath(), "appTemplates", appName);
         fs.cpSync(appTemplateFolderPath, appWorkspaceFolderPath, { recursive: true });
 
         // Copy `public` folder into `admin` app workspace folder.
@@ -76,5 +108,5 @@ class BuildAppWorkspaceImpl implements BuildAppWorkspaceService.Interface {
 
 export const BuildAppWorkspace = BuildAppWorkspaceService.createDecorator({
     decorator: BuildAppWorkspaceImpl,
-    dependencies: [GetApp, LoggerService]
+    dependencies: [GetApp, LoggerService, ProjectSdkParamsService]
 });

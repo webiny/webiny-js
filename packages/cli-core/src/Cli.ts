@@ -13,8 +13,11 @@ export class Cli {
         return this.container.resolve(RunCliRunnerService).execute();
     }
 
-    static async init(params: CliParamsService.Params = {}) {
-        const container = await createCliContainer(params);
+    static async init(
+        params: CliParamsService.Params = {},
+        register?: (container: Container) => void
+    ) {
+        const container = await createCliContainer(params, register);
         return new Cli(container);
     }
 }

@@ -1,0 +1,22 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@webiny/cli-server": "latest",
+    "@webiny/project-server": "latest",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "webiny": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.1",
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "typescript": "6.0.3"
+  },
+  "scripts": {
+    "webiny": "webiny"
+  },
+  "engines": {
+    "node": "^24.0.0"
+  }
+}

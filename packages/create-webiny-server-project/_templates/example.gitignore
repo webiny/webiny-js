@@ -1,0 +1,16 @@
+.DS_Store
+.idea
+.webiny
+.tmp/
+.env
+.env.*
+.npmrc
+htpasswd
+npm-debug.log
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+build/
+.history

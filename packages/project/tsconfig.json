@@ -2,9 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    { "path": "../aws-sdk" },
     { "path": "../feature-flags" },
-    { "path": "../pulumi-sdk" },
     { "path": "../react-properties" },
     { "path": "../utils" },
     { "path": "../wcp" }
@@ -16,12 +14,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
-      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/feature-flags/*": ["../feature-flags/src/*"],
       "@webiny/feature-flags": ["../feature-flags/src"],
-      "@webiny/pulumi-sdk/*": ["../pulumi-sdk/src/*"],
-      "@webiny/pulumi-sdk": ["../pulumi-sdk/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
       "@webiny/react-properties": ["../react-properties/src"],
       "@webiny/utils/*": ["../utils/src/*"],

@@ -4,6 +4,7 @@ import {
     argvParserService,
     cliParamsService,
     commandsRegistryService,
+    defaultAppsService,
     getArgvService,
     getCliRunnerService,
     getIsCiService,
@@ -19,9 +20,6 @@ import {
     aboutCommand,
     buildCommand,
     configCommand,
-    ddbPutItemConditionalCheckFailedGracefulErrorHandler,
-    deployCommand,
-    destroyCommand,
     disableTelemetryCommand,
     enableTelemetryCommand,
     extensionCommand,
@@ -33,16 +31,11 @@ import {
     logoutCommand,
     missingFilesInBuildGracefulErrorHandler,
     openCommand,
-    outputCommand,
-    pendingOperationsGracefulErrorHandler,
-    pulumiCommand,
-    refreshCommand,
     showLogsGlobalOption,
     stackTraceGlobalOption,
     syncDepsCommand,
     UpgradeCommandFeature,
     verifyDepsCommand,
-    watchCommand,
     whoAmICommand
 } from "./features/index.js";
 
@@ -54,35 +47,29 @@ import {
     UiService
 } from "~/abstractions/index.js";
 import { GracefulError, toImportSpecifier } from "@webiny/project";
-import {
-    commandsWithGracefulErrorHandling,
-    deployCommandWithTelemetry
-} from "./decorators/index.js";
+import { commandsWithGracefulErrorHandling } from "./decorators/index.js";
 import { CliCommand } from "~/extensions/index.js";
 
 const { bgYellow, bold } = chalk;
 
-export const createCliContainer = async (params: CliParamsService.Params) => {
+export const createCliContainer = async (
+    params: CliParamsService.Params,
+    register?: (container: Container) => void
+) => {
     const container = new Container();
 
-    // Features (commands).
+    // Core commands.
     container.register(aboutCommand).inSingletonScope();
     container.register(buildCommand).inSingletonScope();
     container.register(configCommand).inSingletonScope();
-    container.register(deployCommand).inSingletonScope();
-    container.register(pulumiCommand).inSingletonScope();
-    container.register(refreshCommand).inSingletonScope();
     container.register(enableTelemetryCommand).inSingletonScope();
     container.register(disableTelemetryCommand).inSingletonScope();
     container.register(extensionCommand).inSingletonScope();
     container.register(syncDepsCommand).inSingletonScope();
     container.register(verifyDepsCommand).inSingletonScope();
-    container.register(destroyCommand).inSingletonScope();
     container.register(infoCommand).inSingletonScope();
     container.register(isCi).inSingletonScope();
     container.register(openCommand).inSingletonScope();
-    container.register(outputCommand).inSingletonScope();
-    container.register(watchCommand).inSingletonScope();
     UpgradeCommandFeature.register(container);
 
     container.register(linkProjectCommand).inSingletonScope();
@@ -91,9 +78,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(whoAmICommand).inSingletonScope();
 
     // Graceful error handlers.
-    container.register(ddbPutItemConditionalCheckFailedGracefulErrorHandler).inSingletonScope();
     container.register(missingFilesInBuildGracefulErrorHandler).inSingletonScope();
-    container.register(pendingOperationsGracefulErrorHandler).inSingletonScope();
 
     // Global options.
     container.register(showLogsGlobalOption).inSingletonScope();
@@ -104,6 +89,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(argvParserService).inSingletonScope();
     container.register(cliParamsService).inSingletonScope();
     container.register(commandsRegistryService).inSingletonScope();
+    container.register(defaultAppsService).inSingletonScope();
     container.register(getArgvService).inSingletonScope();
     container.register(getCliRunnerService).inSingletonScope();
     container.register(getIsCiService).inSingletonScope();
@@ -113,6 +99,9 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(runCliRunnerService).inSingletonScope();
     container.register(stdioService).inSingletonScope();
     container.register(uiService).inSingletonScope();
+
+    // Allow flavour-specific registrations (e.g. cli-aws, cli-server).
+    register?.(container);
 
     // Extensions.
     const ui = container.resolve(UiService);
@@ -183,9 +172,8 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
         process.exit(1);
     }
 
-    // Decorators.
+    // Decorators (must be registered after all commands).
     container.registerDecorator(commandsWithGracefulErrorHandling);
-    container.registerDecorator(deployCommandWithTelemetry);
 
     return container;
 };
