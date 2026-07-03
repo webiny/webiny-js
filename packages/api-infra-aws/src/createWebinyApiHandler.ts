@@ -58,10 +58,20 @@ export interface CreateWebinyApiHandlerConfig {
      * input; everything else is standard AWS/env wiring owned by this package.
      */
     extensions: () => Parameters<typeof registerExtensions>[1];
+    /**
+     * DynamoDB document client. Defaults to the standard AWS client (`getDocumentClient()`).
+     * Injectable so integration tests can point the handler at a local DynamoDB.
+     */
+    documentClient?: ReturnType<typeof getDocumentClient>;
+    /**
+     * DynamoDB table name. Defaults to `process.env.DB_TABLE`. Injectable for tests.
+     */
+    dbTable?: string;
 }
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
-    const documentClient = getDocumentClient();
+    const documentClient = config.documentClient ?? getDocumentClient();
+    const table = config.dbTable ?? process.env.DB_TABLE;
 
     return createLambdaHandler({
         root: async container => {
@@ -82,7 +92,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // ── Database ───────────────────────────────────────────────
             DbFeature.register(container, {
                 documentClient,
-                table: process.env.DB_TABLE
+                table
             });
 
             // ── Core API storage (root: DDB storage-ops factory; ApiCoreFeature itself is
