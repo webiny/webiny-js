@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { print } from "graphql";
 import { parse } from "graphql";
-import type { PlaygroundTabRegistry } from "~/features/tabRegistry/abstractions";
-import type { PlaygroundRepository } from "~/features/repository/abstractions";
-import type { PlaygroundClient } from "~/features/playgroundClient/abstractions";
-import { DefaultPlaygroundPresenter } from "~/presentation/Playground/PlaygroundPresenter";
-import type { IPlaygroundPresenter } from "~/presentation/Playground/abstractions";
+import type { PlaygroundTabRegistry } from "~/features/tabRegistry/abstractions.js";
+import type { PlaygroundRepository } from "~/features/repository/abstractions.js";
+import type { PlaygroundClient } from "~/features/playgroundClient/abstractions/PlaygroundClient.js";
+import { DefaultPlaygroundPresenter } from "~/presentation/Playground/PlaygroundPresenter.js";
+import type { IPlaygroundPresenter } from "~/presentation/Playground/abstractions.js";
 
 function createMockClient(
     response: Record<string, any> = { data: { test: { id: "1" } } }
@@ -651,7 +651,7 @@ describe("PlaygroundPresenter", () => {
 
             const savedState = (mockRepository.save as ReturnType<typeof vi.fn>).mock.calls.at(
                 -1
-            )[0];
+            )![0];
             const userTab = savedState.userTabs.find(
                 (t: PlaygroundRepository.PersistedUserTab) => t.id === "user-1"
             );
@@ -672,11 +672,10 @@ describe("PlaygroundPresenter", () => {
         });
 
         it("should be loading while introspection is in flight", () => {
-            let resolveIntrospection: (value: any) => void;
             const pendingClient: PlaygroundClient.Interface = {
                 execute: vi.fn().mockImplementation(() => {
-                    return new Promise(resolve => {
-                        resolveIntrospection = resolve;
+                    return new Promise<void>(resolve => {
+                        resolve();
                     });
                 })
             };
