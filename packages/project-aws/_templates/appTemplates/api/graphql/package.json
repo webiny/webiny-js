@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {},
   "dependencies": {
+    "@webiny/api-infra-aws": "latest",
     "@webiny/api-aco": "latest",
     "@webiny/api-aco-ddb": "latest",
     "@webiny/api-aco-sql": "latest",
