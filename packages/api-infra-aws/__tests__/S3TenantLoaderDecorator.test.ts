@@ -5,7 +5,7 @@ import {
     RawTenantId,
     RequestTenantLoader
 } from "@webiny/api-core/features/requestContext/index.js";
-import { S3EventHandler } from "~/abstractions/handlers/S3EventHandler.js";
+import { S3EventHandler } from "@webiny/event-handler-aws";
 import { S3TenantLoaderDecorator } from "~/handlers/S3TenantLoaderDecorator.js";
 
 function s3Event(bucketName: string): any {

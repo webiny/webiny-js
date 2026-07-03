@@ -1,5 +1,5 @@
 import type { S3Event } from "@webiny/aws-sdk/types/index.js";
-import { S3EventHandler } from "~/abstractions/handlers/S3EventHandler.js";
+import { S3EventHandler } from "@webiny/event-handler-aws";
 import {
     RawTenantId,
     RequestTenantLoader

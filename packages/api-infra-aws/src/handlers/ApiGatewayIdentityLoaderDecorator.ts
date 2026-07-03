@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEvent } from "@webiny/aws-sdk/types/index.js";
-import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
+import { ApiGatewayEventHandler } from "@webiny/event-handler-aws";
 import {
     RawAuthToken,
     RequestIdentityLoader

@@ -49,6 +49,8 @@ import { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "@webiny/api-we
 // (ApiGatewayIdentityLoaderDecorator → RequestIdentityLoader) sees CognitoIdentityProvider
 // when it is first instantiated. Extensions register in the child/request container — too late.
 import { CognitoIdpFeature } from "@webiny/cognito/api/features/CognitoIdp/feature.js";
+import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
+import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
 
 export interface RegisterRootStorageContext {
     documentClient: ReturnType<typeof getDocumentClient>;
@@ -92,8 +94,17 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     return createLambdaHandler({
         root: async container => {
             // ── Transport ──────────────────────────────────────────────
-            // ApiGatewayFeature registers the HTTP transport + auth/tenant establishment.
+            // ApiGatewayFeature registers the HTTP transport (event type + router + HttpFeature).
             ApiGatewayFeature.register(container);
+
+            // ── Auth + tenant (extract → shared load) ──────────────────
+            // These decorators depend on api-core (RequestIdentityLoader/RequestTenantLoader), so
+            // they live in this composition layer, not event-handler-aws. registerDecorator applies
+            // LATER registrations as the OUTER wrapper (whose execute() runs first). Identity must be
+            // established before tenant, so register tenant first (inner) and identity last (outer)
+            // → identity runs, then tenant, then the router.
+            container.registerDecorator(ApiGatewayTenantLoaderDecorator);
+            container.registerDecorator(ApiGatewayIdentityLoaderDecorator);
 
             // Background task invocations (Step Functions → Lambda directly)
             container.register(BackgroundTaskEventType);
