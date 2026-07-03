@@ -30,7 +30,7 @@
     "@types/nodemailer": "^8.0.1",
     "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "*",
+    "@webiny/di": "^1.0.2",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
