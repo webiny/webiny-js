@@ -1,4 +1,7 @@
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsById/index.js";
+import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
+import { TextExtractor } from "@webiny/api-core/features/ai/index.js";
 import {
     AiPromptContextBuilder as Abstraction,
     ProjectFileAssembler,
@@ -85,7 +88,10 @@ function emptyContext(warnings: string[]): AiPromptContext {
 class AiPromptContextBuilderImpl implements Abstraction.Interface {
     constructor(
         private getSettings: GetSettingsUseCase.Interface,
-        private fileAssembler: ProjectFileAssembler.Interface
+        private fileAssembler: ProjectFileAssembler.Interface,
+        private getFileContents: GetFileContentsByIdUseCase.Interface,
+        private getFile: GetFileUseCase.Interface,
+        private textExtractor: TextExtractor.Interface
     ) {}
 
     async execute(params: AiPromptContextParams): Promise<AiPromptContext> {
@@ -132,6 +138,11 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
             };
         }
 
+        const additionalFiles = await this.fetchAdditionalFiles(params.additionalFileIds, warnings);
+        if (additionalFiles.length > 0) {
+            allProjectFiles = [...allProjectFiles, ...additionalFiles];
+        }
+
         const ctx: AiPromptContext = {
             project,
             readerPersona: reader,
@@ -147,9 +158,67 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
 
         return ctx;
     }
+
+    private async fetchAdditionalFiles(
+        fileIds: string[] | null | undefined,
+        warnings: string[]
+    ): Promise<ProjectFileContent[]> {
+        if (!fileIds || fileIds.length === 0) {
+            return [];
+        }
+
+        const results = await Promise.all(
+            fileIds.map(async (fileId): Promise<ProjectFileContent | null> => {
+                const [contentsResult, damResult] = await Promise.all([
+                    this.getFileContents.execute(fileId),
+                    this.getFile.execute(fileId)
+                ]);
+
+                if (contentsResult.isFail()) {
+                    warnings.push(
+                        `Failed to load additional file (${fileId}): ${contentsResult.error.message}`
+                    );
+                    return null;
+                }
+
+                const name = damResult.isOk() ? damResult.value.name : fileId;
+                const mimeType = damResult.isOk()
+                    ? damResult.value.type
+                    : "application/octet-stream";
+
+                if (!this.textExtractor.canExtract(mimeType)) {
+                    warnings.push(
+                        `Skipped additional file "${name}" (${fileId}): unsupported type "${mimeType}".`
+                    );
+                    return null;
+                }
+
+                const { text: content } = await this.textExtractor.extract(
+                    contentsResult.value.buffer,
+                    mimeType
+                );
+
+                return {
+                    id: fileId,
+                    name,
+                    content,
+                    description: damResult.isOk() ? damResult.value.description : undefined,
+                    tokenCount: Math.ceil(content.length / 4)
+                };
+            })
+        );
+
+        return results.filter((r): r is ProjectFileContent => r !== null);
+    }
 }
 
 export const AiPromptContextBuilder = Abstraction.createImplementation({
     implementation: AiPromptContextBuilderImpl,
-    dependencies: [GetSettingsUseCase, ProjectFileAssembler]
+    dependencies: [
+        GetSettingsUseCase,
+        ProjectFileAssembler,
+        GetFileContentsByIdUseCase,
+        GetFileUseCase,
+        TextExtractor
+    ]
 });

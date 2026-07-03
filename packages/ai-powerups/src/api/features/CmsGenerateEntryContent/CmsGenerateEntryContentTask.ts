@@ -14,6 +14,7 @@ export interface ICmsGenerateEntryContentTaskInput {
     excludedFileIds?: string[] | null;
     readerPersonaId?: string | null;
     writerPersonaId?: string | null;
+    additionalFileIds?: string[] | null;
 }
 
 class CmsGenerateEntryContentTaskImpl implements TaskDefinition.Interface<ICmsGenerateEntryContentTaskInput> {
@@ -46,7 +47,8 @@ class CmsGenerateEntryContentTaskImpl implements TaskDefinition.Interface<ICmsGe
             projectId: input.projectId,
             excludedFileIds: input.excludedFileIds,
             readerPersonaId: input.readerPersonaId,
-            writerPersonaId: input.writerPersonaId
+            writerPersonaId: input.writerPersonaId,
+            additionalFileIds: input.additionalFileIds
         });
 
         const identity = this.identityContext.getIdentity();

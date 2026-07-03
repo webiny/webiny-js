@@ -6,6 +6,7 @@ import { WbContentGeneration } from "~/admin/presentation/WbContentGeneration/Ex
 import { CmsContentGeneration } from "~/admin/presentation/CmsContentGeneration/Extension.js";
 import { CmsEntryWizardExtension } from "~/admin/presentation/CmsEntryWizard/Extension.js";
 import { AiPowerUpsHeadlessFeatures } from "~/admin/features/feature.js";
+import { AiPromptFormFeature } from "~/admin/presentation/AiPromptFormFactory/feature.js";
 import { Routes } from "./routes.js";
 
 const { Menu, Route } = AdminConfig;
@@ -42,6 +43,7 @@ const AiPowerUpsSettings = () => {
 export const Extension = () => {
     return (
         <>
+            <RegisterFeature feature={AiPromptFormFeature} />
             <RegisterFeature feature={AiPowerUpsHeadlessFeatures} />
             <RegisterFeature feature={AiPowerUpsSettingsFeature} />
             <AiPowerUpsSettings />
