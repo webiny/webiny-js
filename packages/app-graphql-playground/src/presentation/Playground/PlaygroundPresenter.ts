@@ -3,7 +3,7 @@ import { reaction } from "mobx";
 import { runInAction } from "mobx";
 import { getIntrospectionQuery } from "graphql";
 import { prettifyGraphQL } from "./prettifyGraphQL.js";
-import { PlaygroundClient } from "../../features/playgroundClient/abstractions.js";
+import { PlaygroundClient } from "../../features/playgroundClient/abstractions/PlaygroundClient.js";
 import { PlaygroundRepository } from "../../features/repository/abstractions.js";
 import { PlaygroundTabRegistry } from "../../features/tabRegistry/abstractions.js";
 import { PlaygroundPresenter } from "./abstractions.js";

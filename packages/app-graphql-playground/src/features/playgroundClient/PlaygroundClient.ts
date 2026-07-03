@@ -1,18 +1,20 @@
-import { PlaygroundClient } from "./abstractions.js";
+import { PlaygroundClient as PlaygroundClientAbstraction } from "./abstractions/PlaygroundClient.js";
 
-export class PlaygroundClientImpl implements PlaygroundClient.Interface {
+export class PlaygroundClient implements PlaygroundClientAbstraction.Interface {
     private readonly defaultEndpoint: string;
-    private readonly getToken: PlaygroundClient.TokenGetter;
+    private readonly getToken: PlaygroundClientAbstraction.TokenGetter;
 
-    constructor(defaultEndpoint: string, getToken: PlaygroundClient.TokenGetter) {
+    constructor(defaultEndpoint: string, getToken: PlaygroundClientAbstraction.TokenGetter) {
         this.defaultEndpoint = defaultEndpoint;
         this.getToken = getToken;
     }
 
-    public async execute(params: PlaygroundClient.Request): Promise<PlaygroundClient.Response> {
+    public async execute(
+        params: PlaygroundClientAbstraction.Request
+    ): Promise<PlaygroundClientAbstraction.Response> {
         const endpoint = params.endpoint || this.defaultEndpoint;
 
-        const defaultHeaders: PlaygroundClient.Headers = {
+        const defaultHeaders: PlaygroundClientAbstraction.Headers = {
             "Content-Type": "application/json"
         };
 
@@ -23,7 +25,7 @@ export class PlaygroundClientImpl implements PlaygroundClient.Interface {
 
         const userHeaders = params.headers || {};
 
-        const headers: PlaygroundClient.Headers = {
+        const headers: PlaygroundClientAbstraction.Headers = {
             ...defaultHeaders,
             ...userHeaders
         };
@@ -38,9 +40,7 @@ export class PlaygroundClientImpl implements PlaygroundClient.Interface {
                 })
             });
 
-            const result = await response.json();
-
-            return result;
+            return await response.json();
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
 

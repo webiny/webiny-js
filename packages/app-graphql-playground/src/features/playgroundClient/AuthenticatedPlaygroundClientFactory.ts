@@ -1,7 +1,6 @@
 import { TenantContext } from "@webiny/app-admin/features/tenancy/abstractions.js";
-import type { PlaygroundClient } from "./abstractions.js";
-import { AuthenticatedPlaygroundClientFactory } from "./factories.js";
-import { PlaygroundClientFactory } from "./factories.js";
+import { AuthenticatedPlaygroundClientFactory } from "./abstractions/AuthenticatedPlaygroundClientFactory.js";
+import { PlaygroundClientFactory } from "./abstractions/PlaygroundClientFactory.js";
 import { AuthenticatedPlaygroundClient } from "./AuthenticatedPlaygroundClient.js";
 
 class AuthenticatedPlaygroundClientFactoryImpl
@@ -21,14 +20,14 @@ class AuthenticatedPlaygroundClientFactoryImpl
     public createClient(
         endpoint: string,
         options?: AuthenticatedPlaygroundClientFactory.Options
-    ): PlaygroundClient.Interface {
+    ): AuthenticatedPlaygroundClientFactory.Client {
         const client = this.clientFactory.createClient(endpoint, {
             getToken: options?.getToken
         });
 
         const getTenant = options?.getTenant || (() => this.tenantContext.getCurrentTenant());
 
-        return new AuthenticatedPlaygroundClient(client, getTenant);
+        return AuthenticatedPlaygroundClient.create(client, getTenant);
     }
 }
 

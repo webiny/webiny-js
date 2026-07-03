@@ -1,4 +1,4 @@
-import { PlaygroundClient } from "./abstractions.js";
+import { PlaygroundClient } from "./abstractions/PlaygroundClient.js";
 
 interface TenantGetter {
     (): string | null;
@@ -12,9 +12,13 @@ export class AuthenticatedPlaygroundClient implements PlaygroundClient.Interface
     private readonly client: PlaygroundClient.Interface;
     private readonly getTenant: TenantGetter;
 
-    constructor(client: PlaygroundClient.Interface, getTenant: TenantGetter) {
+    private constructor(client: PlaygroundClient.Interface, getTenant: TenantGetter) {
         this.client = client;
         this.getTenant = getTenant;
+    }
+
+    public static create(client: PlaygroundClient.Interface, getTenant: TenantGetter) {
+        return new AuthenticatedPlaygroundClient(client, getTenant);
     }
 
     public async execute(params: PlaygroundClient.Request): Promise<PlaygroundClient.Response> {

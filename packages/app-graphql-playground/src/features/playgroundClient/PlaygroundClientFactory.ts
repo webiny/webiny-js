@@ -1,6 +1,6 @@
-import { PlaygroundClient } from "./abstractions.js";
-import { PlaygroundClientFactory } from "./factories.js";
-import { PlaygroundClientImpl } from "./PlaygroundClient.js";
+import { PlaygroundClient } from "./abstractions/PlaygroundClient.js";
+import { PlaygroundClientFactory } from "./abstractions/PlaygroundClientFactory.js";
+import { PlaygroundClient as PlaygroundClientImpl } from "./PlaygroundClient.js";
 import { AuthenticationContext } from "@webiny/app-admin/features/security/AuthenticationContext/abstractions.js";
 
 class PlaygroundClientFactoryImpl implements PlaygroundClientFactory.Interface {

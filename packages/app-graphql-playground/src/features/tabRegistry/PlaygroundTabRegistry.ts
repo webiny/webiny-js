@@ -1,6 +1,6 @@
 import { EnvConfig } from "@webiny/app/features/envConfig/index.js";
-import type { PlaygroundClient } from "../playgroundClient/abstractions.js";
-import { AuthenticatedPlaygroundClientFactory } from "../playgroundClient/factories.js";
+import type { PlaygroundClient } from "../playgroundClient/abstractions/PlaygroundClient.js";
+import { AuthenticatedPlaygroundClientFactory } from "../playgroundClient/abstractions/AuthenticatedPlaygroundClientFactory.js";
 import { PlaygroundTabRegistry } from "./abstractions.js";
 
 const DEFAULT_QUERY = `# Webiny Main API

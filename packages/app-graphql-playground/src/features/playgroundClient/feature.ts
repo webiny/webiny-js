@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/app/shared/di/createFeature.js";
-import { PlaygroundClientFactory } from "./factories.js";
-import { AuthenticatedPlaygroundClientFactory } from "./factories.js";
+import { PlaygroundClientFactory } from "./abstractions/PlaygroundClientFactory.js";
+import { AuthenticatedPlaygroundClientFactory } from "./abstractions/AuthenticatedPlaygroundClientFactory.js";
 import { DefaultPlaygroundClientFactory } from "./PlaygroundClientFactory.js";
 import { DefaultAuthenticatedPlaygroundClientFactory } from "./AuthenticatedPlaygroundClientFactory.js";
 

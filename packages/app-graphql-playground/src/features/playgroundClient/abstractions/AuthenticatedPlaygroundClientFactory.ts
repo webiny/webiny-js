@@ -1,24 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { PlaygroundClient } from "./abstractions.js";
-
-export interface IPlaygroundClientFactoryOptions {
-    getToken?: PlaygroundClient.TokenGetter;
-}
-
-export interface IPlaygroundClientFactory {
-    createClient(
-        endpoint: string,
-        options?: IPlaygroundClientFactoryOptions
-    ): PlaygroundClient.Interface;
-}
-
-export const PlaygroundClientFactory =
-    createAbstraction<IPlaygroundClientFactory>("PlaygroundClientFactory");
-
-export namespace PlaygroundClientFactory {
-    export type Interface = IPlaygroundClientFactory;
-    export type Options = IPlaygroundClientFactoryOptions;
-}
+import type { PlaygroundClient } from "./PlaygroundClient.js";
 
 export interface IAuthenticatedPlaygroundClientFactoryOptions {
     getToken?: PlaygroundClient.TokenGetter;
@@ -40,4 +21,5 @@ export const AuthenticatedPlaygroundClientFactory =
 export namespace AuthenticatedPlaygroundClientFactory {
     export type Interface = IAuthenticatedPlaygroundClientFactory;
     export type Options = IAuthenticatedPlaygroundClientFactoryOptions;
+    export type Client = PlaygroundClient.Interface;
 }

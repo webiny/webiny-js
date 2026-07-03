@@ -1,7 +1,8 @@
 import { EnvConfig } from "@webiny/app/features/envConfig/abstractions.js";
-import { PlaygroundTabRegistry } from "@webiny/app-graphql-playground/features/tabRegistry/index.js";
-import { AuthenticatedPlaygroundClientFactory } from "@webiny/app-graphql-playground/features/playgroundClient/index.js";
-import type { PlaygroundClient } from "@webiny/app-graphql-playground/features/playgroundClient/index.js";
+import {
+    AuthenticatedPlaygroundClientFactory,
+    PlaygroundTabRegistry
+} from "@webiny/app-graphql-playground/exports/admin/graphql-playground.js";
 import { manageQuery } from "./queries/placeholder.manage.graphql.js";
 import { readQuery } from "./queries/placeholder.read.graphql.js";
 import { previewQuery } from "./queries/placeholder.preview.graphql.js";
@@ -52,7 +53,7 @@ class CmsPlaygroundTabsDecorator implements PlaygroundTabRegistry.Interface {
         return [...baseTabs, ...cmsTabs];
     }
 
-    private createClient(endpoint: string): PlaygroundClient.Interface {
+    private createClient(endpoint: string) {
         return this.clientFactory.createClient(endpoint);
     }
 }

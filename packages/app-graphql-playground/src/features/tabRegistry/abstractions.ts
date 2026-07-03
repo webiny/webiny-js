@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import { PlaygroundClient } from "../playgroundClient/abstractions.js";
+import { PlaygroundClient } from "../playgroundClient/abstractions/PlaygroundClient.js";
 
 export interface IPlaygroundTabDefinition {
     id: string;
