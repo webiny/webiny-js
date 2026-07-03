@@ -8,7 +8,7 @@ interface DocsTypeViewProps {
     typeView: DocsExplorerPresenter.TypeView;
 }
 
-const KindBadge = (props: { kind: string }) => {
+const KindBadge = (props: { kind: DocsExplorerPresenter.GraphQLTypeKind }) => {
     return (
         <span className="inline-block px-2 py-0.5 text-xs rounded bg-gray-200 text-gray-700 ml-2">
             {props.kind}
