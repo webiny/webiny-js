@@ -2,7 +2,9 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { WbExperiment } from "~/domain/experiment/abstractions.js";
 import type {
     ExperimentNotAuthorizedError,
-    ExperimentPersistenceError
+    ExperimentPausedError,
+    ExperimentPersistenceError,
+    NoActiveExperimentError
 } from "~/domain/experiment/errors.js";
 import type {
     PageNotAuthorizedError,
@@ -23,13 +25,20 @@ export interface ActiveExperimentForPath {
     path: string;
 }
 
-// Repository: reads the published, running experiment for a page.
+// Repository: reads the published, running experiment for a page. Fails with
+// NoActiveExperimentError when there is none.
 
 export interface IGetActiveExperimentForPathRepository {
-    getPublishedRunningExperiment(
-        pageEntryId: string
-    ): Promise<Result<WbExperiment | null, ExperimentPersistenceError>>;
+    execute(pageEntryId: string): Promise<Result<WbExperiment, RepositoryError>>;
 }
+
+export interface IGetActiveExperimentForPathRepositoryErrors {
+    noActiveExperiment: NoActiveExperimentError;
+    persistence: ExperimentPersistenceError;
+}
+
+type RepositoryError =
+    IGetActiveExperimentForPathRepositoryErrors[keyof IGetActiveExperimentForPathRepositoryErrors];
 
 export const GetActiveExperimentForPathRepository =
     createAbstraction<IGetActiveExperimentForPathRepository>(
@@ -38,16 +47,20 @@ export const GetActiveExperimentForPathRepository =
 
 export namespace GetActiveExperimentForPathRepository {
     export type Interface = IGetActiveExperimentForPathRepository;
+    export type Return = Promise<Result<WbExperiment, RepositoryError>>;
+    export type Error = RepositoryError;
 }
 
-// Use case.
+// Use case. Fails with NoActiveExperimentError (none running) or ExperimentPausedError (paused).
 
 export interface IGetActiveExperimentForPathUseCase {
-    execute(path: string): Promise<Result<ActiveExperimentForPath | null, UseCaseError>>;
+    execute(path: string): Promise<Result<ActiveExperimentForPath, UseCaseError>>;
 }
 
 export interface IGetActiveExperimentForPathUseCaseErrors {
     notAuthorized: ExperimentNotAuthorizedError;
+    noActiveExperiment: NoActiveExperimentError;
+    paused: ExperimentPausedError;
     notFound: PageNotFoundError;
     persistence: ExperimentPersistenceError;
     pageNotAuthorized: PageNotAuthorizedError;
@@ -57,12 +70,12 @@ export interface IGetActiveExperimentForPathUseCaseErrors {
 type UseCaseError =
     IGetActiveExperimentForPathUseCaseErrors[keyof IGetActiveExperimentForPathUseCaseErrors];
 
-/** Resolve the active, published, non-paused experiment (if any) for the live page at a path. */
+/** Resolve the active, published, non-paused experiment for the live page at a path. */
 export const GetActiveExperimentForPathUseCase =
     createAbstraction<IGetActiveExperimentForPathUseCase>("Wb/GetActiveExperimentForPathUseCase");
 
 export namespace GetActiveExperimentForPathUseCase {
     export type Interface = IGetActiveExperimentForPathUseCase;
-    export type Return = Promise<Result<ActiveExperimentForPath | null, UseCaseError>>;
+    export type Return = Promise<Result<ActiveExperimentForPath, UseCaseError>>;
     export type Error = UseCaseError;
 }

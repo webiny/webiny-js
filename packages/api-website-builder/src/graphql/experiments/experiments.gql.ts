@@ -88,9 +88,14 @@ export const createExperimentsSchema = () => {
                         );
                         const result = await useCase.execute(revisionId);
                         if (result.isFail()) {
+                            if (
+                                result.error.code === "WebsiteBuilder/Experiment/NoActiveExperiment"
+                            ) {
+                                return null;
+                            }
                             throw new Error(result.error.message);
                         }
-                        return result.value ? mapExperiment(result.value) : null;
+                        return mapExperiment(result.value);
                     });
                 },
                 listExperiments: async (_, { pageEntryId }, context) => {
@@ -134,12 +139,19 @@ export const createExperimentsSchema = () => {
                         );
                         const result = await useCase.execute(path);
                         if (result.isFail()) {
+                            // No experiment to serve (none running, paused, or no such page) — the
+                            // SDK reads this null as "serve the control", so it isn't an error.
+                            const code = result.error.code;
+                            if (
+                                code === "WebsiteBuilder/Experiment/NoActiveExperiment" ||
+                                code === "WebsiteBuilder/Experiment/Paused" ||
+                                code === "WebsiteBuilder/Page/NotFound"
+                            ) {
+                                return null;
+                            }
                             throw new Error(result.error.message);
                         }
                         const active = result.value;
-                        if (!active) {
-                            return null;
-                        }
                         const trafficSplit = active.experiment.trafficSplit ?? {
                             control: 100,
                             variants: {}

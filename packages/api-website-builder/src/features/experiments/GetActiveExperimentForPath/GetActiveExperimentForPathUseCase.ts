@@ -5,6 +5,7 @@ import {
 } from "./abstractions.js";
 import { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/index.js";
 import { IsExperimentPausedUseCase } from "~/features/experiments/ExperimentPause/index.js";
+import { ExperimentPausedError } from "~/domain/experiment/errors.js";
 
 class GetActiveExperimentForPathUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -21,20 +22,18 @@ class GetActiveExperimentForPathUseCaseImpl implements UseCaseAbstraction.Interf
         }
         const page = pageResult.value;
 
-        // The published, running experiment for this page (draft experiments never serve).
-        const experimentResult = await this.repository.getPublishedRunningExperiment(page.entryId);
+        // The published, running experiment for this page (draft experiments never serve). Fails
+        // with NoActiveExperimentError when there is none.
+        const experimentResult = await this.repository.execute(page.entryId);
         if (experimentResult.isFail()) {
             return Result.fail(experimentResult.error);
         }
         const experiment = experimentResult.value;
-        if (!experiment) {
-            return Result.ok(null);
-        }
 
         // Honour the instant kill-switch: a paused experiment serves the control.
         const pausedResult = await this.isPaused.execute(experiment.entryId);
         if (pausedResult.isOk() && pausedResult.value) {
-            return Result.ok(null);
+            return Result.fail(new ExperimentPausedError(experiment.entryId));
         }
 
         return Result.ok({

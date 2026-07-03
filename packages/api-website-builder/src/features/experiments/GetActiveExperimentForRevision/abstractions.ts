@@ -2,14 +2,16 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { WbExperiment } from "~/domain/experiment/abstractions.js";
 import type {
     ExperimentNotAuthorizedError,
-    ExperimentPersistenceError
+    ExperimentPersistenceError,
+    NoActiveExperimentError
 } from "~/domain/experiment/errors.js";
 
 export interface IGetActiveExperimentForRevisionRepository {
-    execute(revisionId: string): Promise<Result<WbExperiment | null, RepositoryError>>;
+    execute(revisionId: string): Promise<Result<WbExperiment, RepositoryError>>;
 }
 
 export interface IGetActiveExperimentForRevisionRepositoryErrors {
+    noActiveExperiment: NoActiveExperimentError;
     persistence: ExperimentPersistenceError;
 }
 
@@ -23,16 +25,17 @@ export const GetActiveExperimentForRevisionRepository =
 
 export namespace GetActiveExperimentForRevisionRepository {
     export type Interface = IGetActiveExperimentForRevisionRepository;
-    export type Return = Promise<Result<WbExperiment | null, RepositoryError>>;
+    export type Return = Promise<Result<WbExperiment, RepositoryError>>;
     export type Error = RepositoryError;
 }
 
 export interface IGetActiveExperimentForRevisionUseCase {
-    execute(revisionId: string): Promise<Result<WbExperiment | null, UseCaseError>>;
+    execute(revisionId: string): Promise<Result<WbExperiment, UseCaseError>>;
 }
 
 export interface IGetActiveExperimentForRevisionUseCaseErrors {
     notAuthorized: ExperimentNotAuthorizedError;
+    noActiveExperiment: NoActiveExperimentError;
     persistence: ExperimentPersistenceError;
 }
 
@@ -47,7 +50,7 @@ export const GetActiveExperimentForRevisionUseCase =
 
 export namespace GetActiveExperimentForRevisionUseCase {
     export type Interface = IGetActiveExperimentForRevisionUseCase;
-    export type Return = Promise<Result<WbExperiment | null, UseCaseError>>;
+    export type Return = Promise<Result<WbExperiment, UseCaseError>>;
     export type Error = UseCaseError;
     export type Experiment = WbExperiment;
 }

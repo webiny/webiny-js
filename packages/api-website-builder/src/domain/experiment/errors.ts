@@ -53,3 +53,27 @@ export class ExperimentNotAuthorizedError extends BaseError {
         super({ message: "Not authorized!" });
     }
 }
+
+/** Raised when there is no active (published, running) experiment for a path or revision. */
+export class NoActiveExperimentError extends BaseError<{ reference: string }> {
+    override readonly code = "WebsiteBuilder/Experiment/NoActiveExperiment" as const;
+
+    constructor(reference: string) {
+        super({
+            message: "No active experiment found.",
+            data: { reference }
+        });
+    }
+}
+
+/** Raised when the active experiment is paused (kill-switch); serving falls back to the control. */
+export class ExperimentPausedError extends BaseError<{ id: string }> {
+    override readonly code = "WebsiteBuilder/Experiment/Paused" as const;
+
+    constructor(id: string) {
+        super({
+            message: "The experiment is paused.",
+            data: { id }
+        });
+    }
+}

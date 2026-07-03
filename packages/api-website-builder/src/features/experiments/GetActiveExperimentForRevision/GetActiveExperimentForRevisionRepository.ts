@@ -4,7 +4,7 @@ import { GetActiveExperimentForRevisionRepository as RepositoryAbstraction } fro
 import { ExperimentModel } from "~/domain/experiment/abstractions.js";
 import type { CmsEntryWbExperimentValues } from "~/domain/experiment/abstractions.js";
 import { EntryToExperimentMapper } from "~/domain/experiment/EntryToExperimentMapper.js";
-import { ExperimentPersistenceError } from "~/domain/experiment/errors.js";
+import { ExperimentPersistenceError, NoActiveExperimentError } from "~/domain/experiment/errors.js";
 
 class GetActiveExperimentForRevisionRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -28,13 +28,13 @@ class GetActiveExperimentForRevisionRepositoryImpl implements RepositoryAbstract
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/NotFound") {
-                return Result.ok(null);
+                return Result.fail(new NoActiveExperimentError(revisionId));
             }
             return Result.fail(new ExperimentPersistenceError(result.error));
         }
 
         if (!result.value) {
-            return Result.ok(null);
+            return Result.fail(new NoActiveExperimentError(revisionId));
         }
 
         return Result.ok(EntryToExperimentMapper.toExperiment(result.value));

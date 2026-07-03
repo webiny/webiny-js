@@ -49,23 +49,8 @@ import { GetDeletedPageByIdFeature } from "~/features/pages/GetDeletedPageById/f
 import { GetPageLanguagePathsFeature } from "~/features/pages/GetPageLanguagePaths/feature.js";
 import { UpdatePageRevisionDescriptionFeature } from "./features/pages/UpdatePageRevisionDescription/feature.js";
 import { WbWebhooksFeature } from "./features/webhooks/feature.js";
-import { CreateExperimentFeature } from "~/features/experiments/CreateExperiment/feature.js";
-import { UpdateExperimentFeature } from "~/features/experiments/UpdateExperiment/feature.js";
-import { GetExperimentByIdFeature } from "~/features/experiments/GetExperimentById/feature.js";
-import { ListExperimentsFeature } from "~/features/experiments/ListExperiments/feature.js";
-import { GetActiveExperimentForRevisionFeature } from "~/features/experiments/GetActiveExperimentForRevision/feature.js";
-import { StartExperimentFeature } from "~/features/experiments/StartExperiment/feature.js";
-import { StopExperimentFeature } from "~/features/experiments/StopExperiment/feature.js";
-import { DeleteExperimentFeature } from "~/features/experiments/DeleteExperiment/feature.js";
-import { GraduateVariantFeature } from "~/features/experiments/GraduateVariant/feature.js";
-import { GetActiveExperimentForPathFeature } from "~/features/experiments/GetActiveExperimentForPath/feature.js";
-import { EndExperimentOnPublishFeature } from "~/features/experiments/EndExperimentOnPublish/feature.js";
-import { ExperimentPauseFeature } from "~/features/experiments/ExperimentPause/feature.js";
-import { CreateVariantFeature } from "~/features/variants/CreateVariant/feature.js";
-import { UpdateVariantFeature } from "~/features/variants/UpdateVariant/feature.js";
-import { DeleteVariantFeature } from "~/features/variants/DeleteVariant/feature.js";
-import { GetVariantByIdFeature } from "~/features/variants/GetVariantById/feature.js";
-import { ListVariantsFeature } from "~/features/variants/ListVariants/feature.js";
+import { ExperimentFeature } from "~/features/experiments/feature.js";
+import { VariantFeature } from "~/features/variants/feature.js";
 // import { TenantModelExtensionFeature } from "~/features/tenantManager/feature.js";
 
 const createContext = () => {
@@ -136,23 +121,8 @@ const createContext = () => {
             WbWebhooksFeature.register(container);
 
             // A/B testing — experiments and variants.
-            CreateExperimentFeature.register(container);
-            UpdateExperimentFeature.register(container);
-            GetExperimentByIdFeature.register(container);
-            ListExperimentsFeature.register(container);
-            GetActiveExperimentForRevisionFeature.register(container);
-            StartExperimentFeature.register(container);
-            StopExperimentFeature.register(container);
-            DeleteExperimentFeature.register(container);
-            GraduateVariantFeature.register(container);
-            GetActiveExperimentForPathFeature.register(container);
-            EndExperimentOnPublishFeature.register(container);
-            ExperimentPauseFeature.register(container);
-            CreateVariantFeature.register(container);
-            UpdateVariantFeature.register(container);
-            DeleteVariantFeature.register(container);
-            GetVariantByIdFeature.register(container);
-            ListVariantsFeature.register(container);
+            ExperimentFeature.register(container);
+            VariantFeature.register(container);
             // TenantModelExtensionFeature.register(container);
 
             // Register GraphQL

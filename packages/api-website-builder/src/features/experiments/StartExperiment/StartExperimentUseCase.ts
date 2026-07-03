@@ -48,9 +48,11 @@ class StartExperimentUseCaseImpl implements UseCaseAbstraction.Interface {
         // v1: one active experiment per revision.
         const activeResult = await this.getActiveExperiment.execute(experiment.baselineRevisionId);
         if (activeResult.isFail()) {
-            return Result.fail(activeResult.error);
-        }
-        if (activeResult.value && activeResult.value.entryId !== experiment.entryId) {
+            // No active experiment on the revision is the normal case — it's what lets us start.
+            if (activeResult.error.code !== "WebsiteBuilder/Experiment/NoActiveExperiment") {
+                return Result.fail(activeResult.error);
+            }
+        } else if (activeResult.value.entryId !== experiment.entryId) {
             return Result.fail(new ExperimentAlreadyActiveError(experiment.baselineRevisionId));
         }
 
