@@ -30,7 +30,7 @@
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.0.1",
+    "@webiny/di": "^1.0.2",
     "@webiny/handler-db": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/project-utils": "0.0.0",
