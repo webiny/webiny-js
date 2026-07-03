@@ -1,5 +1,8 @@
-import { TenantContext } from "@webiny/app-admin/features/tenancy/abstractions.js";
 import { PlaygroundClient } from "./abstractions.js";
+
+interface TenantGetter {
+    (): string | null;
+}
 
 /*
  * Internal wrapper around a playground client that adds the `x-tenant` header
@@ -7,17 +10,17 @@ import { PlaygroundClient } from "./abstractions.js";
  */
 export class AuthenticatedPlaygroundClient implements PlaygroundClient.Interface {
     private readonly client: PlaygroundClient.Interface;
-    private readonly tenantContext: TenantContext.Interface;
+    private readonly getTenant: TenantGetter;
 
-    constructor(client: PlaygroundClient.Interface, tenantContext: TenantContext.Interface) {
+    constructor(client: PlaygroundClient.Interface, getTenant: TenantGetter) {
         this.client = client;
-        this.tenantContext = tenantContext;
+        this.getTenant = getTenant;
     }
 
     public async execute(params: PlaygroundClient.Request): Promise<PlaygroundClient.Response> {
         const tenantHeaders: PlaygroundClient.Headers = {};
 
-        const tenant = this.tenantContext.getCurrentTenant();
+        const tenant = this.getTenant();
         if (tenant) {
             tenantHeaders["x-tenant"] = tenant;
         }

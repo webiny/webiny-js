@@ -9,6 +9,7 @@ import { ReactComponent as DevToolsIcon } from "@webiny/icons/developer_mode.svg
 import { SecurityPermission } from "./SecurityPermission.js";
 import { Routes } from "~/routes.js";
 import { PlaygroundPage } from "./presentation/Playground/components/PlaygroundPage.js";
+import { PlaygroundClientFeature } from "./features/playgroundClient/feature.js";
 import { PlaygroundTabRegistryFeature } from "./features/tabRegistry/feature.js";
 import { PlaygroundRepositoryFeature } from "./features/repository/feature.js";
 import { PlaygroundPresenterFeature } from "./presentation/Playground/feature.js";
@@ -20,6 +21,7 @@ const GraphQLPlaygroundExtension = () => {
 
     return (
         <>
+            <RegisterFeature feature={PlaygroundClientFeature} />
             <RegisterFeature feature={PlaygroundTabRegistryFeature} />
             <RegisterFeature feature={PlaygroundRepositoryFeature} />
             <RegisterFeature feature={PlaygroundPresenterFeature} />
