@@ -5,6 +5,7 @@ import { useAdminConfig } from "~/config/AdminConfig.js";
 import type { PermissionRendererConfig } from "~/permissions/types.js";
 import { PermissionValueProvider } from "~/permissions/PermissionValueContext.js";
 import { PermissionRenderer } from "~/permissions/PermissionRenderer.js";
+import { mergeByName } from "./mergeByName.js";
 
 const byTitle = (a: PermissionRendererConfig, b: PermissionRendererConfig) => {
     return a.title.localeCompare(b.title);
@@ -21,7 +22,7 @@ export const Permissions = ({ id, value, onChange }: PermissionsProps) => {
         const systemRenderers: PermissionRendererConfig[] = [];
         const appRenderers: PermissionRendererConfig[] = [];
 
-        for (const renderer of permissionRenderers) {
+        for (const renderer of mergeByName(permissionRenderers)) {
             if (renderer.system) {
                 systemRenderers.push(renderer);
             } else {
