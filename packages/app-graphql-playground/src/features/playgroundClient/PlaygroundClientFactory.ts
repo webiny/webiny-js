@@ -1,6 +1,6 @@
-import { PlaygroundClient } from "./abstractions/PlaygroundClient.js";
+import { PlaygroundClient as PlaygroundClientAbstraction } from "./abstractions/PlaygroundClient.js";
 import { PlaygroundClientFactory } from "./abstractions/PlaygroundClientFactory.js";
-import { PlaygroundClient as PlaygroundClientImpl } from "./PlaygroundClient.js";
+import { PlaygroundClient } from "./PlaygroundClient.js";
 import { AuthenticationContext } from "@webiny/app-admin/features/security/AuthenticationContext/abstractions.js";
 
 class PlaygroundClientFactoryImpl implements PlaygroundClientFactory.Interface {
@@ -13,8 +13,8 @@ class PlaygroundClientFactoryImpl implements PlaygroundClientFactory.Interface {
     public createClient(
         endpoint: string,
         options?: PlaygroundClientFactory.Options
-    ): PlaygroundClient.Interface {
-        const getToken: PlaygroundClient.TokenGetter =
+    ): PlaygroundClientAbstraction.Interface {
+        const getToken: PlaygroundClientAbstraction.TokenGetter =
             options?.getToken ||
             (async () => {
                 const token = await this.authenticationContext.getIdToken();
@@ -25,7 +25,7 @@ class PlaygroundClientFactoryImpl implements PlaygroundClientFactory.Interface {
                 return token;
             });
 
-        return new PlaygroundClientImpl(endpoint, getToken);
+        return new PlaygroundClient(endpoint, getToken);
     }
 }
 
