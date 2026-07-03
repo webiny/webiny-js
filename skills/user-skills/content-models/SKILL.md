@@ -12,7 +12,8 @@ description: >
   (text, longText, number, boolean, datetime, file, ref, object, richText, dynamicZone),
   list (array) fields via .list() and the singular-vs-plural renderer rule,
   validation (required, unique, email, pattern, minLength, maxLength, gte, predefinedValues),
-  single-entry (singleton) models via .singleEntry(), and model/field tags via .tags().
+  single-entry (singleton) models via .singleEntry(), model/field tags via .tags(),
+  and field rules via .rules() for access-control and conditional visibility/editability.
   Includes the correct `fields` projection syntax when querying entries via the SDK:
   `ref` fields use double-`values.` nesting (e.g. `values.author.values.name`) because
   they resolve to another entry, while `object` and `dynamicZone` sub-fields are inline
@@ -261,6 +262,95 @@ The same rule applies to every field type that has both variants:
 For `ref()` fields the pluralization rule is the same but the singular/multiple renderers
 have distinct names (e.g. `refDialogSingle` → `refDialogMultiple`) — see the table.
 
+## Layout Fields
+
+Layout fields are UI-only elements that do not store data. They decorate the editor
+form with visual structure. Place them in `.fields()` like data fields, and reference
+them by key in `.layout()`.
+
+All layout fields inherit the base methods: `.label()`, `.help()`, `.description()`,
+`.note()`, `.fieldId()`, `.rules()`.
+
+| Builder Method         | Description                                     | Extra Methods                                              |
+| ---------------------- | ----------------------------------------------- | ---------------------------------------------------------- |
+| `fields.uiSeparator()` | Horizontal divider with an optional label       | —                                                          |
+| `fields.uiAlert()`     | Colored banner (info, success, warning, danger) | `.alertType("info" \| "success" \| "warning" \| "danger")` |
+| `fields.uiTabs()`      | Tabbed container that groups fields into tabs   | `.tab(id, config)` — see below                             |
+
+### uiSeparator
+
+A horizontal line to visually separate field groups. The label appears as section text.
+
+```typescript
+.fields(fields => ({
+  name: fields.text().renderer("textInput").label("Name"),
+  divider: fields.uiSeparator().label("Additional Info"),
+  bio: fields.longText().renderer("textarea").label("Bio")
+}))
+.layout([["name"], ["divider"], ["bio"]])
+```
+
+### uiAlert
+
+A colored callout banner. Use `.alertType()` to set the severity.
+
+```typescript
+.fields(fields => ({
+  warning: fields
+    .uiAlert()
+    .label("Changes to this section require approval.")
+    .alertType("warning"),
+  title: fields.text().renderer("textInput").label("Title")
+}))
+.layout([["warning"], ["title"]])
+```
+
+### uiTabs
+
+Groups fields into tabs. Each tab has its own fields and layout. Fields inside tabs
+are hoisted to the model level (flat field list), but visually grouped under their tab.
+
+`.tab(id, config)` accepts:
+
+| Config Property | Type                                             | Required | Description                   |
+| --------------- | ------------------------------------------------ | -------- | ----------------------------- |
+| `label`         | `string`                                         | yes      | Tab label                     |
+| `icon`          | `CmsIcon`                                        | no       | Tab icon                      |
+| `description`   | `string`                                         | no       | Tab description               |
+| `fields`        | `(registry) => Record<string, BaseFieldBuilder>` | yes      | Fields inside this tab        |
+| `layout`        | `string[][]`                                     | no       | Layout for fields in this tab |
+| `rules`         | `FieldRule[]`                                    | no       | Rules for this individual tab |
+
+```typescript
+.fields(fields => ({
+  tabs: fields
+    .uiTabs()
+    .tab("general", {
+      label: "General",
+      fields: sub => ({
+        title: sub.text().renderer("textInput").label("Title").required(),
+        slug: sub.text().renderer("textInput").label("Slug").required()
+      }),
+      layout: [["title", "slug"]]
+    })
+    .tab("seo", {
+      label: "SEO",
+      fields: sub => ({
+        seoTitle: sub.text().renderer("textInput").label("SEO Title"),
+        seoDescription: sub.longText().renderer("textarea").label("SEO Description")
+      }),
+      layout: [["seoTitle"], ["seoDescription"]],
+      rules: [
+        { type: "accessControl", target: "identity", operator: "matches", value: "team:marketing", action: "hide" }
+      ]
+    })
+}))
+.layout([["tabs"]])
+```
+
+The outer `.layout()` references `"tabs"` as a single cell. Tab-internal layouts only
+reference their own field keys (same scoping rule as object/dynamicZone layouts).
+
 ## Field Validators (Chainable)
 
 | Validator                  | Description                         | Example                                                  |
@@ -284,6 +374,174 @@ have distinct names (e.g. `refDialogSingle` → `refDialogMultiple`) — see the
 | `.list()`                       | Make the field accept multiple values (arrays). Requires a multi-value renderer variant — see Field Types table. |
 | `.models([{ modelId: "..." }])` | For `ref()` fields: which models can be referenced                                                               |
 | `.tags(["tag1"])`               | Assign tags to a field (e.g., `"$bulk-edit"`)                                                                    |
+| `.rules([...])`                 | Conditional visibility/editability rules — see [Field Rules](#field-rules) section                               |
+
+## Field Rules
+
+`.rules()` accepts an array of `FieldRule` objects that control field visibility and
+editability in the Admin UI. Rules are evaluated client-side. Available on **all** field
+types (data fields and layout fields — separators, alerts, tabs).
+
+Each rule has the shape:
+
+```typescript
+interface FieldRule {
+  type: "accessControl" | "condition";
+  target: string;
+  operator: string;
+  value: string | number | boolean | null;
+  action: "hide" | "disable";
+}
+```
+
+### Rule types
+
+| `type`            | Purpose                                                                                                | `target`                                     | `value`                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------- | ------------------------------------------------------- |
+| `"accessControl"` | Show/hide or enable/disable a field based on the current user's identity or team membership            | `"identity"`                                 | `"admin:<userId>"` or `"team:<teamSlug>"`               |
+| `"condition"`     | Show/hide or enable/disable a field based on the current entry's field values (reactive, updates live) | Field path, e.g. `"status"` or `"seo.title"` | The value to compare against (type depends on operator) |
+
+### Actions
+
+| `action`    | Effect                                                            |
+| ----------- | ----------------------------------------------------------------- |
+| `"hide"`    | Hides the field entirely from the editor                          |
+| `"disable"` | Shows the field but makes it read-only (greyed out, not editable) |
+
+### Condition operators
+
+Operators available for `type: "condition"` rules, grouped by target field type:
+
+| Operator       | Label            | Applicable to                   | `value`                   |
+| -------------- | ---------------- | ------------------------------- | ------------------------- |
+| `"=="`         | Equals           | text, number, boolean, datetime | The value to match        |
+| `"!="`         | Not equals       | text, number, boolean, datetime | The value to not match    |
+| `">"`          | Greater than     | number, datetime                | Numeric/date threshold    |
+| `"<"`          | Less than        | number, datetime                | Numeric/date threshold    |
+| `">="`         | Greater or equal | number, datetime                | Numeric/date threshold    |
+| `"<="`         | Less or equal    | number, datetime                | Numeric/date threshold    |
+| `"contains"`   | Contains         | text, long-text                 | Substring to search for   |
+| `"startsWith"` | Starts with      | text, long-text                 | Prefix to match           |
+| `"endsWith"`   | Ends with        | text, long-text                 | Suffix to match           |
+| `"isEmpty"`    | Is empty         | all field types                 | `null` (value is ignored) |
+| `"isNotEmpty"` | Is not empty     | all field types                 | `null` (value is ignored) |
+
+### Access control operators
+
+| Operator    | Description                                                   |
+| ----------- | ------------------------------------------------------------- |
+| `"matches"` | Checks if the current user's identity or team matches `value` |
+
+### Target field paths (condition rules)
+
+The `target` for condition rules is a **dot-separated field path** relative to the form
+root. Use the field's `fieldId` (the key in the `.fields()` callback).
+
+- Simple field: `"status"`
+- Nested inside object: `"seo.title"`, `"address.city"`
+- Inside a list item (current index): `"items.$.name"` — the `$` resolves to the
+  current list index at evaluation time
+- Array length: `"items.length"` — evaluates to the number of items in the array
+
+### Examples
+
+**Access control — hide field from non-marketing team:**
+
+```typescript
+title: fields
+  .text()
+  .renderer("textInput")
+  .label("Marketing Title")
+  .rules([
+    {
+      type: "accessControl",
+      target: "identity",
+      operator: "matches",
+      value: "team:marketing",
+      action: "hide"
+    }
+  ]);
+```
+
+**Condition — disable field when another field is empty:**
+
+```typescript
+seoDescription: fields
+  .longText()
+  .renderer("textarea")
+  .label("SEO Description")
+  .rules([
+    { type: "condition", target: "seoTitle", operator: "isEmpty", value: null, action: "disable" }
+  ]);
+```
+
+**Condition — show field only when status equals "published":**
+
+```typescript
+publishDate: fields
+  .datetime()
+  .renderer("dateTimeInput")
+  .label("Publish Date")
+  .rules([
+    { type: "condition", target: "status", operator: "!=", value: "published", action: "hide" }
+  ]);
+```
+
+**Multiple rules on a single field:**
+
+```typescript
+internalNotes: fields
+  .longText()
+  .renderer("textarea")
+  .label("Internal Notes")
+  .rules([
+    {
+      type: "accessControl",
+      target: "identity",
+      operator: "matches",
+      value: "team:editors",
+      action: "hide"
+    },
+    { type: "condition", target: "status", operator: "==", value: "draft", action: "disable" }
+  ]);
+```
+
+**Rules on layout fields (separator, alert, tabs):**
+
+```typescript
+.fields(fields => ({
+  adminAlert: fields
+    .uiAlert()
+    .label("Admin only")
+    .alertType("warning")
+    .rules([
+      { type: "accessControl", target: "identity", operator: "matches", value: "team:admins", action: "hide" }
+    ]),
+}))
+```
+
+**Rules on individual tabs:**
+
+```typescript
+.fields(fields => ({
+  tabs: fields
+    .uiTabs()
+    .tab("general", {
+      label: "General",
+      fields: sub => ({ /* ... */ }),
+      layout: [/* ... */]
+    })
+    .tab("advanced", {
+      label: "Advanced",
+      fields: sub => ({ /* ... */ }),
+      layout: [/* ... */],
+      rules: [
+        { type: "accessControl", target: "identity", operator: "matches", value: "team:developers", action: "hide" }
+      ]
+    })
+    .rules([/* rules on the entire tabs container */])
+}))
+```
 
 ## Querying `ref`, `object`, and `dynamicZone` fields
 
