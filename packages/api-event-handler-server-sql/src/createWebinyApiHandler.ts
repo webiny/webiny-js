@@ -2,8 +2,8 @@
  * EXPERIMENTAL — Webiny API handler for the self-hosted Node server transport with SQL storage.
  *
  * Thin variant over the transport base (@webiny/api-event-handler-server): supplies the SQL storage
- * wiring. Unlike the DDB variants (whose storage is uniform DI Features), the SQL storage layer is
- * currently a MIX: `ApiCoreSqlFeature` / `WebsocketsSqlFeature` are DI Features, while the CMS / ACO /
+ * wiring. The SQL storage layer is currently a MIX: `ApiCoreSqlFeature` / `WebsocketsSqlFeature` are
+ * DI Features (like the AWS DDB storage), while the CMS / ACO /
  * audit-logs SQL storage operations are still legacy `register*StorageOperations` RegisterExtensionPlugins,
  * applied here via `registerExtensions`. The composition mirrors the only existing reference — the
  * api-headless-cms-sql test setup (registerSQLCore + registerSqlStorageOperations + ...).
@@ -14,7 +14,7 @@
  * before this; combined with the server transport's not-yet-deployable status (missing Node routing
  * terminal + auth/tenant loaders — see @webiny/api-event-handler-server), this is a scaffold/starting
  * point, not a working deployment. The SQL storage packages finishing their DI-Feature migration
- * (as DDB has) would let this become a clean mirror of api-event-handler-server-ddb.
+ * would make this a uniform-DI-Feature composition like the AWS DDB storage.
  */
 import type { Knex } from "knex";
 import { registerExtensions } from "@webiny/handler";
