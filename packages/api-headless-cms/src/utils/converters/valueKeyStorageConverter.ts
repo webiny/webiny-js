@@ -7,6 +7,7 @@ import type {
 import { createValueKeyToStorageConverter } from "./valueKeyToStorageConverter.js";
 import { createValueKeyFromStorageConverter } from "./valueKeyFromStorageConverter.js";
 import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
+import { CmsFieldConverter } from "~/fieldConverters/abstractions.js";
 
 export const createCmsModelFieldConvertersAttachFactory = (context: CmsContext) => {
     return <T extends CmsEntryValues = CmsEntryValues>(
@@ -18,16 +19,17 @@ export const createCmsModelFieldConvertersAttachFactory = (context: CmsContext) 
         }
 
         const fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
+        const fieldConverters = context.container.resolveAll(CmsFieldConverter);
         return {
             ...model,
             convertValueKeyToStorage: createValueKeyToStorageConverter<T>({
                 model,
-                plugins: context.plugins,
+                fieldConverters,
                 fieldRegistry
             }),
             convertValueKeyFromStorage: createValueKeyFromStorageConverter<T>({
                 model,
-                plugins: context.plugins,
+                fieldConverters,
                 fieldRegistry
             })
         };

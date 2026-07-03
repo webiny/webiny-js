@@ -5,6 +5,9 @@ import { UpdatePageOnWorkflowStateAfterCreate } from "./handlers/UpdatePageOnWor
 import { UpdatePageOnWorkflowStateAfterUpdate } from "./handlers/UpdatePageOnWorkflowStateAfterUpdate.js";
 import { ClearPageStateOnWorkflowStateAfterDelete } from "./handlers/ClearPageStateOnWorkflowStateAfterDelete.js";
 import { ClearPageStateOnWorkflowStateCancel } from "./handlers/ClearPageStateOnWorkflowStateCancel.js";
+import { BlockMoveOnActiveWorkflowState } from "./handlers/BlockMoveOnActiveWorkflowState.js";
+import { WbWorkflowStateContextProvider } from "./decorators/WbWorkflowStateContextProvider.js";
+import { WbWorkflowStateFilter } from "./decorators/WbWorkflowStateFilter.js";
 
 export const PageWorkflowsFeature = createFeature({
     name: "PageWorkflows",
@@ -15,5 +18,8 @@ export const PageWorkflowsFeature = createFeature({
         container.register(UpdatePageOnWorkflowStateAfterUpdate);
         container.register(ClearPageStateOnWorkflowStateAfterDelete);
         container.register(ClearPageStateOnWorkflowStateCancel);
+        container.register(BlockMoveOnActiveWorkflowState);
+        container.registerDecorator(WbWorkflowStateContextProvider);
+        container.registerDecorator(WbWorkflowStateFilter);
     }
 });

@@ -5,6 +5,8 @@ import { createGlobalModifierPlugin } from "~tests/api/mocks/plugins";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
 import { configurations } from "~/configurations";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 
 describe("missing index", () => {
     it("should return empty result set when index is missing", async () => {
@@ -15,7 +17,8 @@ describe("missing index", () => {
 
         const opensearch = context.container.resolve(OpenSearchClient);
 
-        const model = (await context.cms.getModel("converter")) as CmsModel;
+        const modelResult = await context.container.resolve(GetModelUseCase).execute("converter");
+        const model = modelResult.value as CmsModel;
 
         const config = configurations.es({
             model
@@ -37,15 +40,20 @@ describe("missing index", () => {
             }
         });
 
-        const result = await context.cms.listLatestEntries(model, {});
+        const listResult = await context.container
+            .resolve(ListLatestEntriesUseCase)
+            .execute(model, {});
+        if (listResult.isFail()) {
+            throw listResult.error;
+        }
 
-        expect(result).toEqual([
-            [],
-            {
+        expect(listResult.value).toEqual({
+            entries: [],
+            meta: {
                 cursor: null,
                 hasMoreItems: false,
                 totalCount: 0
             }
-        ]);
+        });
     });
 });

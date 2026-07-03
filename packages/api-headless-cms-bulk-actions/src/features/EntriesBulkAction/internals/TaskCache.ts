@@ -1,5 +1,6 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { HcmsBulkActionsContext } from "~/types.js";
+import { TriggerTaskUseCase } from "@webiny/background-tasks/api";
 
 /**
  * TaskCache class for managing and triggering cached tasks.
@@ -35,7 +36,7 @@ export class TaskCache<TTask extends TaskDefinition.TaskInput = TaskDefinition.T
 
         for (const task of tasks) {
             try {
-                await context.tasks.trigger<TTask>({
+                await context.container.resolve(TriggerTaskUseCase).execute<TTask>({
                     definition: this.taskDefinition,
                     parent,
                     input: task

@@ -9,6 +9,10 @@ import {
     WB_GENERATE_PAGE_CONTENT_TASK_ID,
     type IWbGeneratePageContentTaskInput
 } from "~/api/features/WbGeneratePageContent/WbGeneratePageContentTask.js";
+import {
+    CMS_GENERATE_ENTRY_CONTENT_TASK_ID,
+    type ICmsGenerateEntryContentTaskInput
+} from "~/api/features/CmsGenerateEntryContent/CmsGenerateEntryContentTask.js";
 
 class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
     async execute(
@@ -45,6 +49,14 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     prompt: String!
                     components: JSON!
                     tools: JSON!
+                    projectId: String
+                    excludedFileIds: [String!]
+                    readerPersonaId: String
+                    writerPersonaId: String
+                ): JSON!
+                generateEntryContent(
+                    prompt: String!
+                    modelId: String!
                     projectId: String
                     excludedFileIds: [String!]
                     readerPersonaId: String
@@ -108,6 +120,32 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                             prompt: args.prompt,
                             components: args.components,
                             tools: args.tools,
+                            projectId: args.projectId ?? null,
+                            excludedFileIds: args.excludedFileIds ?? null,
+                            readerPersonaId: args.readerPersonaId ?? null,
+                            writerPersonaId: args.writerPersonaId ?? null
+                        }
+                    });
+
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+
+                    return { id: result.value.id };
+                };
+            }
+        });
+
+        builder.addResolver<ICmsGenerateEntryContentTaskInput>({
+            path: "AiPowerUpsMutation.generateEntryContent",
+            dependencies: [TaskService],
+            resolver: (taskService: TaskService.Interface) => {
+                return async ({ args }) => {
+                    const result = await taskService.trigger<ICmsGenerateEntryContentTaskInput>({
+                        definition: CMS_GENERATE_ENTRY_CONTENT_TASK_ID,
+                        input: {
+                            prompt: args.prompt,
+                            modelId: args.modelId,
                             projectId: args.projectId ?? null,
                             excludedFileIds: args.excludedFileIds ?? null,
                             readerPersonaId: args.readerPersonaId ?? null,

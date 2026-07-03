@@ -1,5 +1,3 @@
-import gql from "graphql-tag";
-
 const ERROR_FIELD = /* GraphQL */ `
     {
         code
@@ -26,7 +24,7 @@ const DATA_FIELD = /* GraphQL */ `
     }
 `;
 
-export const CREATE_FILTER = gql`
+export const CREATE_FILTER = /* GraphQL */ `
     mutation CreateFilter($data: FilterCreateInput!) {
         aco {
             createFilter(data: $data) {
@@ -37,7 +35,7 @@ export const CREATE_FILTER = gql`
     }
 `;
 
-export const LIST_FILTERS = gql`
+export const LIST_FILTERS = /* GraphQL */ `
     query ListFilters($namespace: String!, $limit: Int!) {
         aco {
             listFilters(where: { namespace: $namespace }, limit: $limit) {
@@ -48,7 +46,7 @@ export const LIST_FILTERS = gql`
     }
 `;
 
-export const GET_FILTER = gql`
+export const GET_FILTER = /* GraphQL */ `
     query GetFilters($id: ID!) {
         aco {
             getFilter(id: $id) {
@@ -59,7 +57,7 @@ export const GET_FILTER = gql`
     }
 `;
 
-export const UPDATE_FILTER = gql`
+export const UPDATE_FILTER = /* GraphQL */ `
     mutation UpdateFilter($id: ID!, $data: FilterUpdateInput!) {
         aco {
             updateFilter(id: $id, data: $data) {
@@ -70,7 +68,7 @@ export const UPDATE_FILTER = gql`
     }
 `;
 
-export const DELETE_FILTER = gql`
+export const DELETE_FILTER = /* GraphQL */ `
     mutation DeleteFilter($id: ID!) {
         aco {
             deleteFilter(id: $id) {

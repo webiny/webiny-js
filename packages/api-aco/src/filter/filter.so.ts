@@ -2,12 +2,12 @@ import omit from "lodash/omit.js";
 import WebinyError from "@webiny/error";
 import { FILTER_MODEL_ID } from "./filter.model.js";
 import type { HeadlessCms } from "@webiny/api-headless-cms/types/index.js";
-import type { Security } from "@webiny/api-core/types/security.js";
+import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { Container } from "@webiny/di";
 
 interface CreateFilterOperationsParams {
     cms: HeadlessCms;
-    security: Security;
+    identityContext: IdentityContext.Interface;
     container: Container;
 }
 import { createListSort } from "~/utils/createListSort.js";
@@ -20,7 +20,7 @@ import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
 export const createFilterOperations = (
     params: CreateFilterOperationsParams
 ): AcoFilterStorageOperations => {
-    const { cms, security, container } = params;
+    const { cms, identityContext, container } = params;
 
     const { withModel } = createOperationsWrapper({
         ...params,
@@ -47,7 +47,7 @@ export const createFilterOperations = (
         listFilters(params) {
             return withModel(async model => {
                 const { sort, where } = params;
-                const createdBy = security.getIdentity().id;
+                const createdBy = identityContext.getIdentity().id;
 
                 const [entries, meta] = await cms.listLatestEntries(model, {
                     ...params,

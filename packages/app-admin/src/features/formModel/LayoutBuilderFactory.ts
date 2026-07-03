@@ -473,6 +473,9 @@ export class LayoutBuilderFactory {
     ): void {
         const entries = builders instanceof Map ? builders.entries() : Object.entries(builders);
         for (const [name, builder] of entries) {
+            if (!builder || typeof builder !== "object") {
+                continue;
+            }
             if (predicate(builder)) {
                 result.push(builder);
             }
@@ -520,6 +523,9 @@ export class LayoutBuilderFactory {
         result: IFieldBuilder[]
     ): void {
         for (const builder of Object.values(builders)) {
+            if (!builder || typeof builder !== "object") {
+                continue;
+            }
             if (predicate(builder)) {
                 result.push(builder);
             }

@@ -1,11 +1,10 @@
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
-import {
-    AssetFactory,
-    AssetResolver as AssetResolverAbstraction,
-    ObjectKey
-} from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
+import type { AssetRequest, AssetResolver } from "@webiny/api-file-manager";
+import { Asset } from "@webiny/api-file-manager";
+import { AssetResolver as AssetResolverAbstraction } from "@webiny/api-file-manager/features/assetDelivery/abstractions.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { S3ContentsReader } from "~/assetDelivery/index.js";
+import { ObjectKey } from "~/assetDelivery/threatDetection/ObjectKey.js";
 import { S3Client, S3Bucket } from "~/assetDelivery/abstractions.js";
 
 interface AssetMetadata {
@@ -16,19 +15,15 @@ interface AssetMetadata {
     bucketKey: string;
 }
 
-export class S3AssetResolver implements AssetResolverAbstraction.Interface {
+export class S3AssetResolver implements AssetResolver {
     constructor(
-        private readonly keyValueStore: GlobalKeyValueStore.Interface,
-        private readonly s3: S3,
-        private readonly bucket: string,
-        private readonly objectKey: ObjectKey.Interface,
-        private readonly assetFactory: AssetFactory.Interface
+        private keyValueStore: GlobalKeyValueStore.Interface,
+        private s3: S3,
+        private bucket: string
     ) {}
 
-    async resolve(
-        request: AssetResolverAbstraction.Request
-    ): Promise<AssetFactory.Asset | undefined> {
-        const fileId = this.objectKey.from(request.getKey()).id();
+    async resolve(request: AssetRequest): Promise<Asset | undefined> {
+        const fileId = ObjectKey.from(request.getKey()).id();
         const result = await this.keyValueStore.get<AssetMetadata>(
             `FileManager/File/${fileId}/Metadata`
         );
@@ -39,7 +34,7 @@ export class S3AssetResolver implements AssetResolverAbstraction.Interface {
 
         const metadata = result.value;
 
-        const asset = this.assetFactory.create({
+        const asset = new Asset({
             id: metadata.id,
             tenant: metadata.tenant,
             size: metadata.size,
@@ -47,7 +42,7 @@ export class S3AssetResolver implements AssetResolverAbstraction.Interface {
             key: metadata.bucketKey
         });
 
-        asset.setContentsReader(S3ContentsReader.create(this.s3, this.bucket));
+        asset.setContentsReader(new S3ContentsReader(this.s3, this.bucket));
 
         return asset;
     }
@@ -55,5 +50,5 @@ export class S3AssetResolver implements AssetResolverAbstraction.Interface {
 
 export const S3AssetResolverImpl = AssetResolverAbstraction.createImplementation({
     implementation: S3AssetResolver,
-    dependencies: [GlobalKeyValueStore, S3Client, S3Bucket, ObjectKey, AssetFactory]
+    dependencies: [GlobalKeyValueStore, S3Client, S3Bucket]
 });

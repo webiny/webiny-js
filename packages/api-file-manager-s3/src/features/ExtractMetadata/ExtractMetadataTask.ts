@@ -1,22 +1,27 @@
 import type { ExifTags } from "exifreader";
 import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
-import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
-import type { ExtractMetadataInput } from "@webiny/api-file-manager/features/extractMetadata/ExtractMetadataInput.js";
+import { MetadataReader } from "../WriteFileMetadata/MetadataReader.js";
 
-class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadataInput> {
-    public readonly id = "fileManagerExtractMetadata";
-    public readonly title = "Extract image metadata (dimensions, EXIF, IPTC)";
-    public readonly description = "A task to extract metadata from uploaded image files";
-    public readonly maxIterations = 1;
-    public readonly isPrivate = true;
-    public readonly databaseLogs = false;
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+export interface ExtractMetadataInput {
+    fileId: string;
+}
 
-    public constructor(
-        private readonly metadataReader: MetadataReader.Interface,
-        private readonly updateFileUseCase: UpdateFileUseCase.Interface
+class ExtractMetadataTask implements TaskDefinition.Interface<ExtractMetadataInput> {
+    id = "fileManagerExtractMetadata";
+    title = "Extract image metadata (dimensions, EXIF, IPTC)";
+    description = "A task to extract metadata from uploaded image files";
+    maxIterations = 1;
+    isPrivate = true;
+    databaseLogs = false;
+
+    selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
+    constructor(
+        private keyValueStore: GlobalKeyValueStore.Interface,
+        private updateFileUseCase: UpdateFileUseCase.Interface
     ) {}
 
     public async run({
@@ -29,8 +34,9 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
             return controller.response.aborted();
         }
 
-        /* Load file metadata from the key-value store. */
-        const fileMetadata = await this.metadataReader.read(input.fileId);
+        // Load file metadata
+        const metadataReader = new MetadataReader(this.keyValueStore);
+        const fileMetadata = await metadataReader.read(input.fileId);
 
         if (!fileMetadata) {
             return controller.response.error({
@@ -38,12 +44,12 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
             });
         }
 
-        /* Only process image files. */
+        // Check if it's an image file
         if (!fileMetadata.contentType.startsWith("image/")) {
             return controller.response.done();
         }
 
-        /* Fetch the image from S3. */
+        // Fetch the image from S3
         const s3 = new S3();
         const bucket = String(process.env.S3_BUCKET);
 
@@ -59,9 +65,6 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
                 });
             }
 
-            /* Convert S3 body to buffer. */
-            const buffer = Buffer.from(await s3Object.Body.transformToByteArray());
-
             const sharp = await import(/* webpackChunkName: "sharp" */ "sharp").then(
                 m => m.default
             );
@@ -70,15 +73,18 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
                 m => m.default
             );
 
-            /* Extract image dimensions using Sharp. */
+            // Convert S3 body to buffer
+            const buffer = Buffer.from(await s3Object.Body.transformToByteArray());
+
+            // Extract metadata using Sharp for image dimensions
             const sharpInstance = sharp(buffer);
             const sharpMetadata = await sharpInstance.metadata();
 
-            /* Use ExifReader to extract EXIF and IPTC data. */
+            // Use ExifReader to extract EXIF and IPTC data
             const tags = ExifReader.load(buffer, { expanded: true });
 
-            /* Build metadata object. */
-            const metadata: Record<string, unknown> = {
+            // Build metadata object
+            const metadata: Record<string, any> = {
                 image: {
                     width: sharpMetadata.width,
                     height: sharpMetadata.height,
@@ -87,13 +93,17 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
                 }
             };
 
+            // Extract EXIF data if available
             if (tags.exif) {
                 metadata.exif = this.cleanValues(tags.exif);
             }
 
+            // Extract IPTC data if available
             if (tags.iptc) {
                 metadata.iptc = this.cleanValues(tags.iptc);
             }
+
+            // Update the file with extracted metadata
             const updateResult = await this.updateFileUseCase.execute({
                 id: input.fileId,
                 metadata
@@ -116,18 +126,18 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
     }
 
     private cleanValues(tags: ExifTags) {
-        const cleaned: Record<string, unknown> = {};
+        const cleaned: Record<string, any> = {};
 
         for (const [key, tag] of Object.entries(tags)) {
             if (!tag || typeof tag !== "object") {
                 continue;
             }
 
-            /* Use description if available, otherwise value. */
+            // Use description if available, otherwise value
             if (tag.description !== undefined && tag.description !== null) {
                 cleaned[key] = tag.description;
             } else if (Array.isArray(tag.value) && tag.value.length > 20) {
-                /* Skip large byte arrays. */
+                // Skip large byte arrays
             } else if (tag.value !== undefined) {
                 cleaned[key] = tag.value;
             }
@@ -138,6 +148,6 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
 }
 
 export const ExtractMetadataTaskDefinition = TaskDefinition.createImplementation({
-    implementation: ExtractMetadataTaskImpl,
-    dependencies: [MetadataReader, UpdateFileUseCase]
+    implementation: ExtractMetadataTask,
+    dependencies: [GlobalKeyValueStore, UpdateFileUseCase]
 });

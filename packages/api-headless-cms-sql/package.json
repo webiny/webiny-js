@@ -30,7 +30,7 @@
     "@webiny/handler": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "knex": "^3.2.10"
+    "knex": "^3.3.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

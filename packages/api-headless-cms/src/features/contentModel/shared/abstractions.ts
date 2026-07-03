@@ -1,7 +1,19 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsModel } from "~/types/index.js";
 import type { ICache } from "~/utils/caching/types.js";
+import type { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import { ModelNotFoundError, ModelPersistenceError } from "~/domain/contentModel/errors.js";
+
+/**
+ * Multi-instance DI token holding the code-defined CmsModelPlugin instances
+ * (previously read from the plugins container via byType). PluginModelsProvider
+ * resolves all of these to expose plugin-defined models.
+ */
+export const CmsModelPluginInstance = createAbstraction<CmsModelPlugin>("CmsModelPluginInstance");
+
+export namespace CmsModelPluginInstance {
+    export type Interface = CmsModelPlugin;
+}
 
 /**
  * PluginModelsProvider provides access to plugin-defined (code) models.

@@ -1,3 +1,6 @@
+import type { File } from "~/domain/file/types.js";
+import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
+import type { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetFileUseCase } from "~/features/file/GetFile/index.js";
 import { NotAuthorizedOutputStrategy } from "./NotAuthorizedOutputStrategy.js";
@@ -5,26 +8,36 @@ import { RedirectToPublicUrlOutputStrategy } from "./RedirectToPublicUrlOutputSt
 import { RedirectToPrivateUrlOutputStrategy } from "./RedirectToPrivateUrlOutputStrategy.js";
 import { PrivateCache } from "./PrivateCache.js";
 import { PublicCache } from "./PublicCache.js";
-import { AssetAuthorizer } from "../abstractions/AssetAuthorizer.js";
-import { AssetProcessor } from "../abstractions/AssetProcessor.js";
-import type { File as IFile } from "~/domain/file/types.js";
+import {
+    AssetProcessor,
+    AssetAuthorizer,
+    type IAssetProcessor,
+    type IAssetAuthorizer
+} from "../abstractions.js";
 
 interface MaybePrivate {
     private?: boolean;
 }
 
-class PrivateFilesAssetProcessorImpl implements AssetProcessor.Interface {
-    constructor(
-        private readonly identityContext: IdentityContext.Interface,
-        private readonly getFile: GetFileUseCase.Interface,
-        private readonly assetAuthorizer: AssetAuthorizer.Interface,
-        private readonly assetProcessor: AssetProcessor.Interface
-    ) {}
+export class PrivateFilesAssetProcessor implements IAssetProcessor {
+    private readonly identityContext: IdentityContext.Interface;
+    private readonly getFile: GetFileUseCase.Interface;
+    private readonly assetAuthorizer: IAssetAuthorizer;
+    private readonly assetProcessor: IAssetProcessor;
 
-    async process(
-        assetRequest: AssetProcessor.AssetRequest,
-        asset: AssetProcessor.Asset
-    ): Promise<AssetProcessor.Asset> {
+    constructor(
+        identityContext: IdentityContext.Interface,
+        getFile: GetFileUseCase.Interface,
+        assetAuthorizer: IAssetAuthorizer,
+        assetProcessor: IAssetProcessor
+    ) {
+        this.identityContext = identityContext;
+        this.getFile = getFile;
+        this.assetAuthorizer = assetAuthorizer;
+        this.assetProcessor = assetProcessor;
+    }
+
+    async process(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
         const id = asset.getId();
 
         const file = await this.identityContext.withoutAuthorization(async () => {
@@ -38,12 +51,12 @@ class PrivateFilesAssetProcessorImpl implements AssetProcessor.Interface {
         const isPrivateFile = this.isPrivate(file);
 
         if (!isPrivateFile && this.requestedViaPrivateEndpoint(assetRequest)) {
-            asset.setOutputStrategy(RedirectToPublicUrlOutputStrategy.create(assetRequest));
+            asset.setOutputStrategy(new RedirectToPublicUrlOutputStrategy(assetRequest));
             return asset;
         }
 
         if (isPrivateFile && this.requestedViaPublicEndpoint(assetRequest)) {
-            asset.setOutputStrategy(RedirectToPrivateUrlOutputStrategy.create(assetRequest));
+            asset.setOutputStrategy(new RedirectToPrivateUrlOutputStrategy(assetRequest));
             return asset;
         }
 
@@ -66,20 +79,20 @@ class PrivateFilesAssetProcessorImpl implements AssetProcessor.Interface {
         return processedAsset;
     }
 
-    private isPrivate(file: IFile) {
+    private isPrivate(file: File) {
         return file.accessControl && file.accessControl.type.startsWith("private-");
     }
 
-    private requestedViaPrivateEndpoint(assetRequest: AssetProcessor.AssetRequest) {
+    private requestedViaPrivateEndpoint(assetRequest: AssetRequest) {
         return assetRequest.getContext<MaybePrivate>().private;
     }
 
-    private requestedViaPublicEndpoint(assetRequest: AssetProcessor.AssetRequest) {
+    private requestedViaPublicEndpoint(assetRequest: AssetRequest) {
         return !this.requestedViaPrivateEndpoint(assetRequest);
     }
 }
 
-export const PrivateFilesAssetProcessor = AssetProcessor.createDecorator({
-    decorator: PrivateFilesAssetProcessorImpl,
+export const PrivateFilesAssetProcessorDecorator = AssetProcessor.createDecorator({
+    decorator: PrivateFilesAssetProcessor,
     dependencies: [IdentityContext, GetFileUseCase, AssetAuthorizer]
 });

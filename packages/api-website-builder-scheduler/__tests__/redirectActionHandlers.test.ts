@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "./__mocks/context/useHandler.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { createWebsiteBuilderScheduler } from "~/index.js";
 import {
     CreateRedirectUseCase,
     GetRedirectByIdUseCase
@@ -21,7 +20,7 @@ describe("Redirect Action Handlers", () => {
 
     beforeEach(async () => {
         const contextHandler = useHandler({
-            plugins: [createWebsiteBuilderScheduler()]
+            plugins: []
         });
         context = await contextHandler.handler();
     });

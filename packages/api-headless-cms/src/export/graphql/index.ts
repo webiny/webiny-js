@@ -1,7 +1,6 @@
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { ContextPlugin } from "@webiny/handler";
-import type { CmsContext } from "~/types/index.js";
+import { CmsExport, CmsImport } from "~/export/abstractions.js";
 
 const plugin = createCmsGraphQLSchemaPlugin({
     typeDefs: /* GraphQL */ `
@@ -138,7 +137,7 @@ const plugin = createCmsGraphQLSchemaPlugin({
         Query: {
             exportStructure: async (_, args, context) => {
                 try {
-                    const result = await context.cms.export.structure({
+                    const result = await context.container.resolve(CmsExport).structure({
                         models: args.models
                     });
                     return new Response(JSON.stringify(result));
@@ -150,7 +149,7 @@ const plugin = createCmsGraphQLSchemaPlugin({
         Mutation: {
             validateImportStructure: async (_, args, context) => {
                 try {
-                    const result = await context.cms.importing.validate({
+                    const result = await context.container.resolve(CmsImport).validate({
                         data: args.data
                     });
                     return new Response(result);
@@ -160,7 +159,7 @@ const plugin = createCmsGraphQLSchemaPlugin({
             },
             importStructure: async (_, args, context) => {
                 try {
-                    const result = await context.cms.importing.structure({
+                    const result = await context.container.resolve(CmsImport).structure({
                         data: args.data
                     });
                     return new Response(result);
@@ -173,11 +172,4 @@ const plugin = createCmsGraphQLSchemaPlugin({
 });
 plugin.name = "headless-cms.graphql.export";
 
-export const createExportGraphQL = () => {
-    return new ContextPlugin<CmsContext>(async context => {
-        if (!context.cms.MANAGE) {
-            return;
-        }
-        context.plugins.register(plugin);
-    });
-};
+export { plugin as exportPlugin };

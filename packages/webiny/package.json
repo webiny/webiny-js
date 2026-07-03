@@ -35,7 +35,6 @@
     "@webiny/db-dynamodb": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/form": "0.0.0",
-    "@webiny/handler": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/languages": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",
@@ -143,7 +142,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "acce54f797f30fc695158694f0800b14f3b5447c94a4799bfcf9e26a2565ed98",
+  "exportGenerationHash": "59ab84d4da3152ec86183d365486ec6a05a8ee3995cf76b1244ce79c61302851",
   "webiny": {
     "publishFrom": "dist"
   }

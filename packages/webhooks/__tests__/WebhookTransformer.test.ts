@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Container } from "@webiny/di";
+import { Container } from "@webiny/feature/api";
 import { WebhooksTransformerFeature } from "~/api/features/Transformers/feature.js";
 import { WebhookTransformer } from "~/api/features/Transformers/abstractions/WebhookTransformer.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";

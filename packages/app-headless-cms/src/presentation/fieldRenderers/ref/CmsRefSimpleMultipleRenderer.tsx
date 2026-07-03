@@ -3,7 +3,13 @@ import { observer } from "mobx-react-lite";
 import { createFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 import type { IFieldVM } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { CheckboxGroup } from "@webiny/admin-ui";
+import {
+    CheckboxGroup,
+    FormComponentDescription,
+    FormComponentLabel,
+    FormComponentNote,
+    Text
+} from "@webiny/admin-ui";
 import type { CmsReferenceValue } from "~/features/contentEntry/refTypes.js";
 import type { RefFieldRendererSettings } from "./types.js";
 import { RefSimplePresenterFeature } from "./simple/feature.js";
@@ -56,6 +62,25 @@ const RefSimpleMultipleInner = observer(({ field }: InnerFieldProps) => {
 
     if (presenter.vm.loading) {
         return null;
+    }
+
+    if (items.length === 0) {
+        return (
+            <div>
+                <FormComponentLabel
+                    text={field.label}
+                    hint={field.help}
+                    disabled={field.disabled}
+                />
+                {field.description && (
+                    <FormComponentDescription text={field.description} disabled={field.disabled} />
+                )}
+                <Text size={"sm"} className={"text-neutral-strong"}>
+                    {"No entries to reference."}
+                </Text>
+                {field.note && <FormComponentNote text={field.note} disabled={field.disabled} />}
+            </div>
+        );
     }
 
     return (

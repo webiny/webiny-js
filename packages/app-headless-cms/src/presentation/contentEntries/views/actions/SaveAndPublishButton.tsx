@@ -11,6 +11,7 @@ export const SaveAndPublishButton = observer(() => {
 
     if (
         !presenter.vm.canPublish ||
+        (presenter.vm.status === "unpublished" && !presenter.vm.isDirty) ||
         (presenter.vm.entry && !canEdit(presenter.vm.entry, "cms.contentEntry")) ||
         !canPublish("cms.contentEntry")
     ) {

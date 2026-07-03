@@ -1,12 +1,13 @@
-import { AssetResolver } from "./abstractions/AssetResolver.js";
+import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
+import { AssetResolver, type IAssetResolver } from "./abstractions.js";
 
-class NullAssetResolverImpl implements AssetResolver.Interface {
-    resolve(): Promise<AssetResolver.Asset | undefined> {
+export class NullAssetResolver implements IAssetResolver {
+    resolve(): Promise<Asset | undefined> {
         return Promise.resolve(undefined);
     }
 }
 
-export const NullAssetResolver = AssetResolver.createImplementation({
-    implementation: NullAssetResolverImpl,
+export const NullAssetResolverImpl = AssetResolver.createImplementation({
+    implementation: NullAssetResolver,
     dependencies: []
 });

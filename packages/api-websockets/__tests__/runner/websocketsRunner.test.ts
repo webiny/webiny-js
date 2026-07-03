@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import { WebsocketsRunner } from "~/runner";
 import { useHandler } from "~tests/helpers/useHandler";
 import { MockWebsocketsEventValidator } from "~tests/mocks/MockWebsocketsEventValidator";
-import { createWebsocketsRoutePlugin } from "~/plugins";
 import { WebsocketsResponse } from "~/response/abstractions/WebsocketsResponse.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 
@@ -30,11 +29,11 @@ describe("websockets runner", () => {
         const result = await runner.run(event);
         expect(result).toEqual({
             error: {
-                code: "NO_ROUTE_PLUGINS",
+                code: "NO_ROUTE_HANDLERS",
                 data: {
                     route: "aRouteKey"
                 },
-                message: "There are no plugins for the route: aRouteKey.",
+                message: "There are no handlers for the route: aRouteKey.",
                 stack: expect.any(String)
             },
             message: 'Route "aRouteKey" action failed.',
@@ -206,9 +205,12 @@ describe("websockets runner", () => {
     it("should run and return good status - custom route", async () => {
         const handler = useHandler({
             plugins: [
-                createWebsocketsRoutePlugin("myCustomRouteKey", async ({ response }) => {
-                    return response.ok();
-                })
+                {
+                    route: "myCustomRouteKey",
+                    run: async ({ response }) => {
+                        return response.ok();
+                    }
+                }
             ]
         });
 

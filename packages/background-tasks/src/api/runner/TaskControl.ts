@@ -7,12 +7,17 @@ import type { IResponse, IResponseResult } from "~/api/response/abstractions/ind
 import { DatabaseResponse, TaskResponse } from "~/api/response/index.js";
 import { TaskManagerStore } from "./TaskManagerStore.js";
 import { getErrorProperties } from "~/api/utils/getErrorProperties.js";
-import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import {
+    AuthenticatedIdentity,
+    IdentityContext
+} from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TaskExecutionContext } from "~/api/features/TaskExecutionContext/index.js";
 import {
     TaskDefinition,
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
+import { GetTaskDefinitionUseCase } from "~/api/features/GetTaskDefinition/abstractions.js";
 
 interface IGetTaskLogParams {
     task: ITask;
@@ -41,7 +46,7 @@ export class TaskControl implements ITaskControl {
         let task: ITask<ITaskDataInput>;
         try {
             task = await this.getTask(taskId);
-            this.context.security.setIdentity(
+            this.context.container.resolve(IdentityContext).setIdentity(
                 new AuthenticatedIdentity({
                     id: task.createdBy.id,
                     type: task.createdBy.type,
@@ -63,8 +68,10 @@ export class TaskControl implements ITaskControl {
         /**
          * Let's get the task definition.
          */
-        const definition = this.context.tasks.getDefinition(task.definitionId);
-        if (!definition) {
+        const definitionResult = this.context.container
+            .resolve(GetTaskDefinitionUseCase)
+            .execute(task.definitionId);
+        if (definitionResult.isFail()) {
             return this.response.error({
                 error: {
                     message: `Task "${task.id}" cannot be executed because there is no "${task.definitionId}" definition plugin.`,
@@ -75,6 +82,7 @@ export class TaskControl implements ITaskControl {
                 }
             });
         }
+        const definition = definitionResult.value;
         /**
          * Only enable logs if definition explicitly allows them.
          */
@@ -198,7 +206,7 @@ export class TaskControl implements ITaskControl {
 
     private async getTask<T extends TaskDefinition.TaskInput>(id: string): Promise<ITask<T>> {
         try {
-            const task = await this.runner.context.tasks.getTask<T>(id);
+            const task = await this.context.container.resolve(TasksCrud).getTask<T>(id);
             if (task) {
                 return task;
             }
@@ -241,7 +249,7 @@ export class TaskControl implements ITaskControl {
          * First we are trying to get existing latest log.
          */
         try {
-            taskLog = await this.context.tasks.getLatestLog(task.id);
+            taskLog = await this.context.container.resolve(TasksCrud).getLatestLog(task.id);
         } catch (error) {
             /**
              * If error is not the NotFoundError, we need to throw it.
@@ -259,7 +267,7 @@ export class TaskControl implements ITaskControl {
         const currentIteration = taskLog?.iteration || 0;
 
         try {
-            return await this.context.tasks.createLog(task, {
+            return await this.context.container.resolve(TasksCrud).createLog(task, {
                 executionName: this.response.event.executionName,
                 iteration: currentIteration + 1
             });

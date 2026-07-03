@@ -1,11 +1,13 @@
 import type { CreateHandlerCoreParams } from "./plugins.js";
 import { createHandlerCore } from "./plugins.js";
-import { createHandler } from "@webiny/handler-aws";
+import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { defaultIdentity } from "./tenancySecurity.js";
-import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types.js";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { getIntrospectionQuery } from "graphql";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import type { Container } from "@webiny/di";
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
@@ -16,48 +18,41 @@ export interface InvokeParams {
     headers?: Record<string, string>;
 }
 
-interface IResponse {
-    body: string;
-}
-
 export interface UseGraphQLHandlerParams extends CreateHandlerCoreParams {
     debug?: boolean;
+    /** Called after core setup to register DI-native features (e.g. WorkflowsFeature). */
+    features?: (container: Container) => void;
 }
 export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     const { path } = params;
     const core = createHandlerCore(params);
 
-    const plugins = [...core.plugins];
-    const handler = createHandler({
-        plugins,
-        debug: process.env.DEBUG === "true"
+    const handler = createTestHttpHandler({
+        root: () => {},
+        request: async container => {
+            await core.setup(container, core.legacyPlugins);
+            registerLegacyPluginsViaGqlContextualSchema(container, core.legacyPlugins);
+            params.features?.(container);
+            GraphQLEngineFeature.register(container);
+        }
     });
 
     const invoke = async <T = any>({
         httpMethod = "POST",
         body,
-        headers = {},
-        ...rest
-    }: InvokeParams): Promise<[T, any]> => {
-        const response: IResponse = await handler(
-            {
-                /**
-                 * If no path defined, use /graphql as we want to make request to main api
-                 */
-                path: path ? `/cms/${path}` : "/graphql",
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as unknown as APIGatewayEvent,
-            {} as unknown as LambdaContext
-        );
-        // The first element is the response body, and the second is the raw response.
-        return [JSON.parse(response.body || "{}"), response];
+        headers = {}
+    }: InvokeParams = {}): Promise<[T, any]> => {
+        const response = await handler({
+            path: path ? `/cms/${path}` : "/graphql",
+            method: httpMethod,
+            headers: {
+                ["x-tenant"]: "root",
+                ["Content-Type"]: "application/json",
+                ...headers
+            },
+            body
+        });
+        return [response.body as T, response];
     };
 
     const elasticsearchClient = createTestOpenSearchClient();
@@ -97,7 +92,6 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     };
 
     return {
-        plugins,
         invoke,
         identity: params.identity || defaultIdentity,
         tenant: core.tenant,

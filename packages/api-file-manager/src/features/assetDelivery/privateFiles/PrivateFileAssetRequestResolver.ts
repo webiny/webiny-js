@@ -1,22 +1,16 @@
-import { AssetRequestResolver } from "../abstractions/AssetRequestResolver.js";
-import { AssetRequestFactory } from "../AssetRequest/abstractions.js";
+import type { Request } from "@webiny/handler/types.js";
+import { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
+import { AssetRequestResolver, type IAssetRequestResolver } from "../abstractions.js";
 
-class PrivateFileAssetRequestResolverImpl implements AssetRequestResolver.Interface {
-    private readonly assetRequestFactory: AssetRequestFactory.Interface;
-    private readonly resolver: AssetRequestResolver.Interface;
+export class PrivateFileAssetRequestResolver implements IAssetRequestResolver {
+    private readonly resolver: IAssetRequestResolver;
 
-    constructor(
-        assetRequestFactory: AssetRequestFactory.Interface,
-        resolver: AssetRequestResolver.Interface
-    ) {
-        this.assetRequestFactory = assetRequestFactory;
+    constructor(resolver: IAssetRequestResolver) {
         this.resolver = resolver;
     }
 
-    async resolve(
-        request: AssetRequestResolver.Request
-    ): Promise<AssetRequestResolver.AssetRequest | undefined> {
-        if (!request.url.startsWith("/private/")) {
+    async resolve(request: Request): Promise<AssetRequest | undefined> {
+        if (!request.url?.startsWith("/private/")) {
             return this.resolver.resolve(request);
         }
 
@@ -25,10 +19,10 @@ class PrivateFileAssetRequestResolverImpl implements AssetRequestResolver.Interf
 
         const path = params["*"];
 
-        return this.assetRequestFactory.create({
+        return new AssetRequest({
             key: decodeURI(path).replace("/private/", ""),
             context: {
-                url: request.url,
+                url: request.url ?? "",
                 private: true
             },
             options: {
@@ -39,7 +33,7 @@ class PrivateFileAssetRequestResolverImpl implements AssetRequestResolver.Interf
     }
 }
 
-export const PrivateFileAssetRequestResolver = AssetRequestResolver.createDecorator({
-    decorator: PrivateFileAssetRequestResolverImpl,
-    dependencies: [AssetRequestFactory]
+export const PrivateFileAssetRequestResolverDecorator = AssetRequestResolver.createDecorator({
+    decorator: PrivateFileAssetRequestResolver,
+    dependencies: []
 });

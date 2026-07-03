@@ -1,6 +1,4 @@
-import gql from "graphql-tag";
-
-export const LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS = gql`
+export const LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS = /* GraphQL */ `
     query ListFolderLevelPermissionsTargets {
         aco {
             listFolderLevelPermissionsTargets {

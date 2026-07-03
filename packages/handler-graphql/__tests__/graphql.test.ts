@@ -23,72 +23,6 @@ describe("GraphQL Handler", () => {
         expect(response.data.__schema).toBeTruthy();
     });
 
-    test("should return logs in the extensions", async () => {
-        const { invoke } = useGqlHandler({
-            debug: true,
-            plugins: [booksCrudPlugin, booksSchemaPlugin]
-        });
-        const [response] = await invoke({ body: { query: `{ books { name } }` } });
-        expect(response.errors).toBeFalsy();
-        expect(response.data.books.length).toBe(2);
-        expect(response.extensions.console.length).toBe(6);
-    });
-
-    test("should return logs for specific queries when executed in batch", async () => {
-        const { invoke } = useGqlHandler({
-            debug: true,
-            plugins: [booksCrudPlugin, booksSchemaPlugin]
-        });
-        const [[r1, r2, r3]] = await invoke({
-            body: [
-                { query: `{ books { name } }` },
-                { query: `{ book(name: "Book 1") { name } }` },
-                { query: `{ book(name: "Book 3") { name } }` }
-            ]
-        });
-
-        expect(r1.data.books.length).toBe(2);
-        expect(r1.errors).toBeFalsy();
-        expect(r1.extensions).toStrictEqual({
-            console: [
-                { method: "group", args: ["books resolver"] },
-                { method: "log", args: ["books resolver"] },
-                { method: "log", args: ["getBooks"] },
-                {
-                    method: "table",
-                    args: [
-                        [
-                            {
-                                name: "Book 1"
-                            },
-                            {
-                                name: "Book 2"
-                            }
-                        ]
-                    ]
-                },
-                { method: "warn", args: ["Your store is quite empty!"] },
-                { method: "groupEnd", args: [] }
-            ]
-        });
-        expect(r2.data.book.name).toBe("Book 1");
-        expect(r2.errors).toBeFalsy();
-        expect(r2.extensions).toStrictEqual({
-            console: [
-                { method: "log", args: ["Find book by name"] },
-                { method: "log", args: ['Found book "Book 1"'] }
-            ]
-        });
-        expect(r3.data.book).toBe(null);
-        expect(r3.errors).toBeFalsy();
-        expect(r3.extensions).toStrictEqual({
-            console: [
-                { method: "log", args: ["Find book by name"] },
-                { method: "log", args: ["Book not found!"] }
-            ]
-        });
-    });
-
     test("should compose resolvers", async () => {
         // Create decorator schema using the builder pattern
         class DecoratorsSchema implements CoreGraphQLSchemaFactory.Interface {
@@ -133,7 +67,6 @@ describe("GraphQL Handler", () => {
         });
 
         const { invoke } = useGqlHandler({
-            debug: true,
             plugins: [booksCrudPlugin, booksSchemaPlugin, decoratorsPlugin]
         });
         const [response] = await invoke({ body: { query: `{ books { name } }` } });

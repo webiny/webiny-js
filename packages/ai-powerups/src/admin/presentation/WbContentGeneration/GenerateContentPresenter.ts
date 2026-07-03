@@ -186,7 +186,7 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
                     .label("Project")
                     .description("Select a predefined context to attach.")
                     .options(() => this.getProjectOptions())
-                    .afterChange((value, form) => {
+                    .afterChange((value, { form }) => {
                         const projectId = value as string | undefined;
                         const project = projectId
                             ? this._settings?.projects?.presets?.find(p => p.id === projectId)
@@ -209,7 +209,7 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
                     .options(() => this.getProjectFileOptions())
                     .renderer("checkboxes")
                     .list()
-                    .hiddenWhen(form => {
+                    .hiddenWhen(({ form }) => {
                         const projectId = form.field("project").as("text").getValue();
                         if (!projectId) {
                             return true;

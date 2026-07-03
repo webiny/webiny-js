@@ -184,7 +184,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
                     .text()
                     .label("Name")
                     .required("Name is required.")
-                    .onBlur((value, form) => {
+                    .onBlur((value, { form }) => {
                         const slugValue = form.field("slug").getValue();
                         if (slugValue || !value) {
                             return;

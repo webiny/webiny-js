@@ -2,23 +2,19 @@ import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
 import type { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
 import { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
 import { ResponseHeaders } from "@webiny/handler";
-import { AssetOutputStrategy } from "../abstractions/AssetOutputStrategy.js";
+import type { IAssetOutputStrategy } from "../abstractions.js";
 
-export class RedirectToPublicUrlOutputStrategy implements AssetOutputStrategy.Interface {
-    private readonly assetRequest: AssetRequest;
+export class RedirectToPublicUrlOutputStrategy implements IAssetOutputStrategy {
+    private assetRequest: AssetRequest;
 
-    public static create(assetRequest: AssetRequest) {
-        return new RedirectToPublicUrlOutputStrategy(assetRequest);
-    }
-
-    private constructor(assetRequest: AssetRequest) {
+    constructor(assetRequest: AssetRequest) {
         this.assetRequest = assetRequest;
     }
 
-    public async output(asset: Asset): Promise<AssetReply> {
+    async output(asset: Asset): Promise<AssetReply> {
         const requestUrl = this.assetRequest.getContext().url;
 
-        return AssetReply.create({
+        return new AssetReply({
             code: 301,
             headers: ResponseHeaders.create({
                 location: requestUrl.replace("/private/", "/files/"),

@@ -1,11 +1,13 @@
 import { createFeature } from "@webiny/feature/api";
 import { GetTaskUseCaseImpl } from "./GetTaskUseCase.js";
-import type { Context } from "~/api/types.js";
 import { GetTaskUseCase } from "./abstractions.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
 
-export const GetTaskFeature = createFeature<Context>({
+export const GetTaskFeature = createFeature({
     name: "GetTask",
-    register(container, context) {
-        container.registerInstance(GetTaskUseCase, new GetTaskUseCaseImpl(context!));
+    register(container) {
+        container.registerFactory(GetTaskUseCase, () => {
+            return new GetTaskUseCaseImpl(container.resolve(TasksCrud));
+        });
     }
 });
