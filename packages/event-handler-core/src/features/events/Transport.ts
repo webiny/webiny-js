@@ -1,7 +1,7 @@
 import type { Container } from "@webiny/di";
 
 /**
- * A Transport owns the single transport-specific step of the handler loop: the "extract".
+ * A Transport owns the single transport-specific step of the handler loop: the "bind".
  *
  * Given the raw arguments the platform invoked the handler with, it binds any transport
  * primitives into the per-request container (side-effect only) so downstream translators and
@@ -11,7 +11,7 @@ import type { Container } from "@webiny/di";
  * The event to match on is always `rawArgs[0]`; a Transport never changes the match target.
  */
 export interface Transport {
-    extract(container: Container, ...rawArgs: any[]): void | Promise<void>;
+    bind(container: Container, ...rawArgs: any[]): void | Promise<void>;
 }
 
 /**
@@ -19,5 +19,5 @@ export interface Transport {
  * (e.g. the Node HTTP server) that pass the event straight through with no transport primitives.
  */
 export const noopTransport: Transport = {
-    extract() {}
+    bind() {}
 };
