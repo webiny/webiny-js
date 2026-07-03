@@ -5,9 +5,11 @@
     { "path": "../api-aco-ddb" },
     { "path": "../api-audit-logs-ddb" },
     { "path": "../api-core-ddb" },
-    { "path": "../api-headless-cms-ddb" },
-    { "path": "../api-infra-aws" },
-    { "path": "../api-websockets-ddb" }
+    { "path": "../api-event-handler-aws" },
+    { "path": "../api-headless-cms-ddb-es" },
+    { "path": "../api-opensearch" },
+    { "path": "../api-websockets-ddb" },
+    { "path": "../db" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -22,12 +24,16 @@
       "@webiny/api-audit-logs-ddb": ["../api-audit-logs-ddb/src"],
       "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
       "@webiny/api-core-ddb": ["../api-core-ddb/src"],
-      "@webiny/api-headless-cms-ddb/*": ["../api-headless-cms-ddb/src/*"],
-      "@webiny/api-headless-cms-ddb": ["../api-headless-cms-ddb/src"],
-      "@webiny/api-infra-aws/*": ["../api-infra-aws/src/*"],
-      "@webiny/api-infra-aws": ["../api-infra-aws/src"],
+      "@webiny/api-event-handler-aws/*": ["../api-event-handler-aws/src/*"],
+      "@webiny/api-event-handler-aws": ["../api-event-handler-aws/src"],
+      "@webiny/api-headless-cms-ddb-es/*": ["../api-headless-cms-ddb-es/src/*"],
+      "@webiny/api-headless-cms-ddb-es": ["../api-headless-cms-ddb-es/src"],
+      "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
+      "@webiny/api-opensearch": ["../api-opensearch/src"],
       "@webiny/api-websockets-ddb/*": ["../api-websockets-ddb/src/*"],
-      "@webiny/api-websockets-ddb": ["../api-websockets-ddb/src"]
+      "@webiny/api-websockets-ddb": ["../api-websockets-ddb/src"],
+      "@webiny/db/*": ["../db/src/*"],
+      "@webiny/db": ["../db/src"]
     }
   }
 }

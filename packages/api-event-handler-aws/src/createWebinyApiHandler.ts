@@ -4,8 +4,8 @@
  * This is the composition root: it assembles the transport + every storage-agnostic API feature
  * onto the DI container in the correct (order-sensitive) sequence. The storage variant — which CMS
  * storage operations, whether OpenSearch is wired, etc. — is injected via `registerRootStorage` /
- * `registerRequestStorage` by a thin variant package (`@webiny/api-infra-aws-ddb`,
- * `@webiny/api-infra-aws-ddb-os`). Keeping the wiring here (a real, testable package) rather than in
+ * `registerRequestStorage` by a thin variant package (`@webiny/api-event-handler-aws-ddb`,
+ * `@webiny/api-event-handler-aws-ddb-os`). Keeping the wiring here (a real, testable package) rather than in
  * an app template is what makes it unit/integration testable.
  */
 import type { Container } from "@webiny/di";

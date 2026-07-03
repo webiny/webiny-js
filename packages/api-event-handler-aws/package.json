@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/api-infra-aws",
+  "name": "@webiny/api-event-handler-aws",
   "version": "0.0.0",
   "type": "module",
   "main": "index.js",

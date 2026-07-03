@@ -1,13 +1,13 @@
 /**
  * Webiny API handler for AWS Lambda with DynamoDB storage.
  *
- * Thin variant over the storage-agnostic base (@webiny/api-infra-aws): supplies the DynamoDB
+ * Thin variant over the storage-agnostic base (@webiny/api-event-handler-aws): supplies the DynamoDB
  * storage wiring (core + CMS + audit-logs + ACO + websockets storage operations). No OpenSearch.
  */
 import {
     createWebinyApiHandler as createBaseHandler,
     type CreateWebinyApiHandlerConfig as BaseConfig
-} from "@webiny/api-infra-aws";
+} from "@webiny/api-event-handler-aws";
 import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
 import { HeadlessCmsDdbFeature } from "@webiny/api-headless-cms-ddb";
 import { AuditLogsDdbFeature } from "@webiny/api-audit-logs-ddb";

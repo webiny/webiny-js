@@ -11,7 +11,7 @@ import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHand
  * - ApiGatewayHttpRouterHandler (terminal: translates APIGw ↔ IHttpRequest, routes via HttpRouter)
  *
  * Auth/tenant establishment (the extract→load decorators, which depend on api-core) is NOT here —
- * it lives in the composition layer (@webiny/api-infra-aws), which registers those decorators after
+ * it lives in the composition layer (@webiny/api-event-handler-aws), which registers those decorators after
  * this feature. That keeps event-handler-aws free of any api-* (domain) dependency.
  */
 export const ApiGatewayFeature = createFeature({

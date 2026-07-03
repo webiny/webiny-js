@@ -1,7 +1,7 @@
 /**
  * Webiny API handler for AWS Lambda with DynamoDB + OpenSearch storage.
  *
- * Thin variant over the storage-agnostic base (@webiny/api-infra-aws): same DynamoDB storage as the
+ * Thin variant over the storage-agnostic base (@webiny/api-event-handler-aws): same DynamoDB storage as the
  * `-ddb` variant for core/audit-logs/ACO/websockets, but CMS uses the DynamoDB+OpenSearch storage
  * operations (`HeadlessCmsDdbEsFeature`), the OpenSearch core is registered in the root, and
  * `DbRegistryFeature` is registered per-request before the CMS storage builds (its beforeInit
@@ -10,7 +10,7 @@
 import {
     createWebinyApiHandler as createBaseHandler,
     type CreateWebinyApiHandlerConfig as BaseConfig
-} from "@webiny/api-infra-aws";
+} from "@webiny/api-event-handler-aws";
 import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
 import { HeadlessCmsDdbEsFeature } from "@webiny/api-headless-cms-ddb-es";
 import { AuditLogsDdbFeature } from "@webiny/api-audit-logs-ddb";

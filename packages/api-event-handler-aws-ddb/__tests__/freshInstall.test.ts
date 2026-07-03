@@ -13,7 +13,7 @@ import { createWebinyApiHandler } from "~/createWebinyApiHandler.js";
  * This is the test the untestable app-template comp root never had — it catches composition /
  * fresh-install wiring bugs before an e2e deploy.
  */
-describe("api-infra-aws-ddb — full handler boot (fresh install)", () => {
+describe("api-event-handler-aws-ddb — full handler boot (fresh install)", () => {
     it("builds the GraphQL schema on a fresh DB without a DI wiring failure", async () => {
         const handler = createWebinyApiHandler({
             extensions: () => [],

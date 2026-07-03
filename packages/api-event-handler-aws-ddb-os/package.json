@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/api-infra-aws-ddb-os",
+  "name": "@webiny/api-event-handler-aws-ddb-os",
   "version": "0.0.0",
   "type": "module",
   "main": "index.js",
@@ -21,8 +21,8 @@
     "@webiny/api-aco-ddb": "0.0.0",
     "@webiny/api-audit-logs-ddb": "0.0.0",
     "@webiny/api-core-ddb": "0.0.0",
+    "@webiny/api-event-handler-aws": "0.0.0",
     "@webiny/api-headless-cms-ddb-es": "0.0.0",
-    "@webiny/api-infra-aws": "0.0.0",
     "@webiny/api-opensearch": "0.0.0",
     "@webiny/api-websockets-ddb": "0.0.0",
     "@webiny/db": "0.0.0"
