@@ -9136,7 +9136,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:^9.0.10":
+"@types/jsonwebtoken@npm:^9.0.10, @types/jsonwebtoken@npm:^9.0.6":
   version: 9.0.10
   resolution: "@types/jsonwebtoken@npm:9.0.10"
   dependencies:
@@ -13146,6 +13146,38 @@ __metadata:
     p-retry: "npm:^8.0.0"
     standardwebhooks: "npm:^1.0.0"
     typescript: "npm:6.0.3"
+    vitest: "npm:^4.1.9"
+    zod: "npm:4.4.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/self-hosted-auth-sql@workspace:packages/self-hosted-auth-sql":
+  version: 0.0.0-use.local
+  resolution: "@webiny/self-hosted-auth-sql@workspace:packages/self-hosted-auth-sql"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/self-hosted-auth": "npm:0.0.0"
+    knex: "npm:^3.3.0"
+    vitest: "npm:^4.1.9"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/self-hosted-auth@npm:0.0.0, @webiny/self-hosted-auth@workspace:packages/self-hosted-auth":
+  version: 0.0.0-use.local
+  resolution: "@webiny/self-hosted-auth@workspace:packages/self-hosted-auth"
+  dependencies:
+    "@types/jsonwebtoken": "npm:^9.0.6"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    graphql: "npm:^16.14.2"
+    jsonwebtoken: "npm:^9.0.3"
     vitest: "npm:^4.1.9"
     zod: "npm:4.4.3"
   languageName: unknown
