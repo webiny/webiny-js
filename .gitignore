@@ -1,4 +1,5 @@
 .idea
+.nx
 .webpack
 .webiny
 .artifacts
