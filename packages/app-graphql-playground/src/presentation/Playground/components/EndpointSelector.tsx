@@ -12,73 +12,71 @@ interface EndpointSelectorProps {
     onClose: () => void;
 }
 
-export const EndpointSelector: React.FC<EndpointSelectorProps> = observer(
-    function EndpointSelector({ presenter, x, y, onClose }) {
-        const menuRef = useRef<HTMLDivElement>(null);
+export const EndpointSelector = observer((props: EndpointSelectorProps) => {
+    const menuRef = useRef<HTMLDivElement>(null);
 
-        useEffect(() => {
-            const controller = new AbortController();
+    useEffect(() => {
+        const controller = new AbortController();
 
-            document.addEventListener(
-                "mousedown",
-                ev => {
-                    if (!menuRef.current) {
-                        return;
-                    } else if (menuRef.current.contains(ev.target as Node)) {
-                        return;
-                    }
-                    onClose();
-                },
-                { signal: controller.signal }
-            );
-
-            return () => {
-                controller.abort();
-            };
-        }, [onClose]);
-
-        const handleSelect = useCallback(
-            (definitionId: string) => {
-                presenter.createTab(definitionId);
-                onClose();
+        document.addEventListener(
+            "mousedown",
+            ev => {
+                if (!menuRef.current) {
+                    return;
+                } else if (menuRef.current.contains(ev.target as Node)) {
+                    return;
+                }
+                props.onClose();
             },
-            [presenter, onClose]
+            { signal: controller.signal }
         );
 
-        const endpoints = presenter.vm.endpoints;
+        return () => {
+            controller.abort();
+        };
+    }, [props.onClose]);
 
-        useEffect(() => {
-            const element = menuRef.current;
-            if (!element) {
-                return;
-            }
+    const handleSelect = useCallback(
+        (definitionId: string) => {
+            props.presenter.createTab(definitionId);
+            props.onClose();
+        },
+        [props.presenter, props.onClose]
+    );
 
-            const rect = element.getBoundingClientRect();
-            if (rect.right > window.innerWidth) {
-                element.style.left = `${window.innerWidth - rect.width - 8}px`;
-            }
-        }, [x, y]);
+    const endpoints = props.presenter.vm.endpoints;
 
-        return (
-            <div
-                ref={menuRef}
-                className="fixed z-50 bg-white border border-gray-200 rounded shadow-lg py-1 min-w-48"
-                style={{ left: x, top: y }}
-            >
-                <div className="px-3 py-1.5 text-xs text-gray-500 font-medium">New tab for:</div>
-                {endpoints.map(ep => {
-                    return (
-                        <button
-                            key={ep.definitionId}
-                            className="w-full px-3 py-1.5 text-left text-sm hover:bg-gray-100"
-                            onClick={() => handleSelect(ep.definitionId)}
-                        >
-                            <div className="font-medium">{ep.name}</div>
-                            <div className="text-xs text-gray-400 truncate">{ep.endpoint}</div>
-                        </button>
-                    );
-                })}
-            </div>
-        );
-    }
-);
+    useEffect(() => {
+        const element = menuRef.current;
+        if (!element) {
+            return;
+        }
+
+        const rect = element.getBoundingClientRect();
+        if (rect.right > window.innerWidth) {
+            element.style.left = `${window.innerWidth - rect.width - 8}px`;
+        }
+    }, [props.x, props.y]);
+
+    return (
+        <div
+            ref={menuRef}
+            className="fixed z-50 bg-white border border-gray-200 rounded shadow-lg py-1 min-w-48"
+            style={{ left: props.x, top: props.y }}
+        >
+            <div className="px-3 py-1.5 text-xs text-gray-500 font-medium">New tab for:</div>
+            {endpoints.map(ep => {
+                return (
+                    <button
+                        key={ep.definitionId}
+                        className="w-full px-3 py-1.5 text-left text-sm hover:bg-gray-100"
+                        onClick={() => handleSelect(ep.definitionId)}
+                    >
+                        <div className="font-medium">{ep.name}</div>
+                        <div className="text-xs text-gray-400 truncate">{ep.endpoint}</div>
+                    </button>
+                );
+            })}
+        </div>
+    );
+});

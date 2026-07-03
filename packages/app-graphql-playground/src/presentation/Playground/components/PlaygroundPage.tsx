@@ -11,7 +11,7 @@ import { ResponseEditor } from "./ResponseEditor.js";
 import { BottomPanel } from "./BottomPanel.js";
 import type { PlaygroundPresenter } from "../abstractions.js";
 
-export const PlaygroundPage: React.FC = observer(function PlaygroundPage() {
+export const PlaygroundPage = observer(() => {
     const { presenter } = useFeature(PlaygroundPresenterFeature);
     const { splitRef, editorPct, handleDividerMouseDown } = useResizableSplit();
 
@@ -41,21 +41,16 @@ interface ActiveTabContentProps {
 }
 
 /* Renders the main split-pane content area when an active tab exists. */
-const ActiveTabContent: React.FC<ActiveTabContentProps> = observer(function ActiveTabContent({
-    presenter,
-    splitRef,
-    editorPct,
-    onDividerMouseDown
-}) {
-    if (!presenter.vm.activeTab) {
+const ActiveTabContent = observer((props: ActiveTabContentProps) => {
+    if (!props.presenter.vm.activeTab) {
         return null;
     }
 
     return (
-        <div className="flex flex-1 overflow-hidden" ref={splitRef}>
+        <div className="flex flex-1 overflow-hidden" ref={props.splitRef}>
             <div
                 className="flex flex-col overflow-hidden border-r border-gray-200"
-                style={{ flex: "none", width: `${editorPct}%` }}
+                style={{ flex: "none", width: `${props.editorPct}%` }}
                 onMouseMove={ev => {
                     const rect = ev.currentTarget.getBoundingClientRect();
                     ev.currentTarget.style.cursor =
@@ -67,14 +62,14 @@ const ActiveTabContent: React.FC<ActiveTabContentProps> = observer(function Acti
                 onMouseDown={ev => {
                     const rect = ev.currentTarget.getBoundingClientRect();
                     if (ev.clientX >= rect.right - 4) {
-                        onDividerMouseDown(ev);
+                        props.onDividerMouseDown(ev);
                     }
                 }}
             >
-                <QueryEditor presenter={presenter} />
-                <BottomPanel presenter={presenter} />
+                <QueryEditor presenter={props.presenter} />
+                <BottomPanel presenter={props.presenter} />
             </div>
-            <ResponseEditor presenter={presenter} />
+            <ResponseEditor presenter={props.presenter} />
         </div>
     );
 });

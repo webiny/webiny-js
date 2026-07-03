@@ -11,10 +11,8 @@ interface BottomPanelProps {
     presenter: PlaygroundPresenter.Interface;
 }
 
-export const BottomPanel: React.FC<BottomPanelProps> = observer(function BottomPanel({
-    presenter
-}) {
-    const activeTab = presenter.vm.activeTab;
+export const BottomPanel = observer((props: BottomPanelProps) => {
+    const activeTab = props.presenter.vm.activeTab;
 
     if (!activeTab) {
         return null;
@@ -22,31 +20,31 @@ export const BottomPanel: React.FC<BottomPanelProps> = observer(function BottomP
 
     const handleSelectPanel = useCallback(
         (panel: IPlaygroundBottomPanel) => {
-            presenter.selectBottomPanel(panel);
+            props.presenter.selectBottomPanel(panel);
         },
-        [presenter]
+        [props.presenter]
     );
 
     const handleToggle = useCallback(() => {
-        presenter.toggleBottomPanel();
-    }, [presenter]);
+        props.presenter.toggleBottomPanel();
+    }, [props.presenter]);
 
     const handleVariablesChange = useCallback(
         (value: string | undefined) => {
             if (value !== undefined) {
-                presenter.updateVariables(value);
+                props.presenter.updateVariables(value);
             }
         },
-        [presenter]
+        [props.presenter]
     );
 
     const handleHeadersChange = useCallback(
         (value: string | undefined) => {
             if (value !== undefined) {
-                presenter.updateHeaders(value);
+                props.presenter.updateHeaders(value);
             }
         },
-        [presenter]
+        [props.presenter]
     );
 
     return (
@@ -93,13 +91,8 @@ interface PanelTabProps {
     onSelect: (panel: IPlaygroundBottomPanel) => void;
 }
 
-const PanelTab: React.FC<PanelTabProps> = function PanelTab({
-    label,
-    panel,
-    activePanel,
-    onSelect
-}) {
-    const isActive = panel === activePanel;
+const PanelTab = (props: PanelTabProps) => {
+    const isActive = props.panel === props.activePanel;
 
     return (
         <button
@@ -108,9 +101,9 @@ const PanelTab: React.FC<PanelTabProps> = function PanelTab({
                     ? "text-blue-600 border-b-2 border-blue-500"
                     : "text-gray-500 hover:text-gray-700"
             }`}
-            onClick={() => onSelect(panel)}
+            onClick={() => props.onSelect(props.panel)}
         >
-            {label}
+            {props.label}
         </button>
     );
 };
@@ -119,8 +112,8 @@ interface CollapseIconProps {
     isCollapsed: boolean;
 }
 
-const CollapseIcon: React.FC<CollapseIconProps> = function CollapseIcon({ isCollapsed }) {
-    if (isCollapsed) {
+const CollapseIcon = (props: CollapseIconProps) => {
+    if (props.isCollapsed) {
         return <ExpandLessIcon className="w-4 h-4 text-gray-500" />;
     }
 
@@ -137,20 +130,14 @@ interface PanelContentProps {
 }
 
 /* Renders the editor content when the panel is expanded. */
-const PanelContent: React.FC<PanelContentProps> = function PanelContent({
-    isCollapsed,
-    activePanel,
-    variables,
-    headers,
-    onVariablesChange,
-    onHeadersChange
-}) {
-    if (isCollapsed) {
+const PanelContent = (props: PanelContentProps) => {
+    if (props.isCollapsed) {
         return null;
     }
 
-    const value = activePanel === "variables" ? variables : headers;
-    const onChange = activePanel === "variables" ? onVariablesChange : onHeadersChange;
+    const value = props.activePanel === "variables" ? props.variables : props.headers;
+    const onChange =
+        props.activePanel === "variables" ? props.onVariablesChange : props.onHeadersChange;
 
     return (
         <div style={{ height: 150 }}>

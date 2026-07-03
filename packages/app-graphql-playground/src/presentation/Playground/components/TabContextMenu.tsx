@@ -14,14 +14,7 @@ interface TabContextMenuProps {
     onClose: () => void;
 }
 
-export const TabContextMenu: React.FC<TabContextMenuProps> = function TabContextMenu({
-    presenter,
-    tabId,
-    isRegistered,
-    x,
-    y,
-    onClose
-}) {
+export const TabContextMenu = (props: TabContextMenuProps) => {
     const [isRenaming, setIsRenaming] = useState(false);
     const [renameValue, setRenameValue] = useState("");
     const menuRef = useRef<HTMLDivElement>(null);
@@ -41,7 +34,7 @@ export const TabContextMenu: React.FC<TabContextMenuProps> = function TabContext
                     return;
                 }
 
-                onClose();
+                props.onClose();
             },
             { signal: controller.signal }
         );
@@ -49,7 +42,7 @@ export const TabContextMenu: React.FC<TabContextMenuProps> = function TabContext
         return () => {
             controller.abort();
         };
-    }, [onClose]);
+    }, [props.onClose]);
 
     useEffect(() => {
         if (isRenaming && inputRef.current) {
@@ -59,27 +52,27 @@ export const TabContextMenu: React.FC<TabContextMenuProps> = function TabContext
     }, [isRenaming]);
 
     const handleDuplicate = useCallback(() => {
-        presenter.duplicateTab(tabId);
-        onClose();
-    }, [presenter, tabId, onClose]);
+        props.presenter.duplicateTab(props.tabId);
+        props.onClose();
+    }, [props.presenter, props.tabId, props.onClose]);
 
     const handleStartRename = useCallback(() => {
-        const tab = presenter.vm.tabs.find(t => t.id === tabId);
+        const tab = props.presenter.vm.tabs.find(t => t.id === props.tabId);
         if (!tab) {
             return;
         }
 
         setRenameValue(tab.name);
         setIsRenaming(true);
-    }, [presenter, tabId]);
+    }, [props.presenter, props.tabId]);
 
     const handleConfirmRename = useCallback(() => {
         const trimmed = renameValue.trim();
         if (trimmed) {
-            presenter.renameTab(tabId, trimmed);
+            props.presenter.renameTab(props.tabId, trimmed);
         }
-        onClose();
-    }, [presenter, tabId, renameValue, onClose]);
+        props.onClose();
+    }, [props.presenter, props.tabId, renameValue, props.onClose]);
 
     const handleRenameKeyDown = useCallback(
         (ev: React.KeyboardEvent) => {
@@ -87,10 +80,10 @@ export const TabContextMenu: React.FC<TabContextMenuProps> = function TabContext
                 handleConfirmRename();
             }
             if (ev.key === "Escape") {
-                onClose();
+                props.onClose();
             }
         },
-        [handleConfirmRename, onClose]
+        [handleConfirmRename, props.onClose]
     );
 
     if (isRenaming) {
@@ -98,7 +91,7 @@ export const TabContextMenu: React.FC<TabContextMenuProps> = function TabContext
             <div
                 ref={menuRef}
                 className="fixed z-50 bg-white border border-gray-200 rounded shadow-lg p-2"
-                style={{ left: x, top: y }}
+                style={{ left: props.x, top: props.y }}
             >
                 <input
                     ref={inputRef}
@@ -117,7 +110,7 @@ export const TabContextMenu: React.FC<TabContextMenuProps> = function TabContext
         <div
             ref={menuRef}
             className="fixed z-50 bg-white border border-gray-200 rounded shadow-lg py-1 min-w-32"
-            style={{ left: x, top: y }}
+            style={{ left: props.x, top: props.y }}
         >
             <button
                 className="w-full px-4 py-1.5 text-left text-sm hover:bg-gray-100"
@@ -125,7 +118,7 @@ export const TabContextMenu: React.FC<TabContextMenuProps> = function TabContext
             >
                 Duplicate
             </button>
-            <RenameButton isRegistered={isRegistered} onStartRename={handleStartRename} />
+            <RenameButton isRegistered={props.isRegistered} onStartRename={handleStartRename} />
         </div>
     );
 };
@@ -136,18 +129,15 @@ interface RenameButtonProps {
 }
 
 /* Only renders the rename option for user tabs. */
-const RenameButton: React.FC<RenameButtonProps> = function RenameButton({
-    isRegistered,
-    onStartRename
-}) {
-    if (isRegistered) {
+const RenameButton = (props: RenameButtonProps) => {
+    if (props.isRegistered) {
         return null;
     }
 
     return (
         <button
             className="w-full px-4 py-1.5 text-left text-sm hover:bg-gray-100"
-            onClick={onStartRename}
+            onClick={props.onStartRename}
         >
             Rename
         </button>

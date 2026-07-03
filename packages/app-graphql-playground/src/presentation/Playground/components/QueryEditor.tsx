@@ -9,31 +9,29 @@ interface QueryEditorProps {
     presenter: PlaygroundPresenter.Interface;
 }
 
-export const QueryEditor: React.FC<QueryEditorProps> = observer(function QueryEditor({
-    presenter
-}) {
-    const vm = presenter.vm;
+export const QueryEditor = observer((props: QueryEditorProps) => {
+    const vm = props.presenter.vm;
     const activeTab = vm.activeTab;
 
     const { handleBeforeMount, handleEditorDidMount } = useMonacoGraphQL({
-        onExecute: () => presenter.executeQuery(),
+        onExecute: () => props.presenter.executeQuery(),
         schema: vm.schema
     });
 
     const handleQueryChange = useCallback(
         (value: string | undefined) => {
             if (value !== undefined) {
-                presenter.updateQuery(value);
+                props.presenter.updateQuery(value);
             }
         },
-        [presenter]
+        [props.presenter]
     );
 
     const handleEndpointChange = useCallback(
         (ev: React.ChangeEvent<HTMLInputElement>) => {
-            presenter.updateEndpoint(ev.target.value);
+            props.presenter.updateEndpoint(ev.target.value);
         },
-        [presenter]
+        [props.presenter]
     );
 
     if (!activeTab) {

@@ -18,56 +18,46 @@ const isMac =
     (typeof navigator !== "undefined" && /Mac/.test(navigator.userAgent));
 const shortcutKey = isMac ? "Cmd" : "Ctrl";
 
-export const PlaygroundToolbar: React.FC<PlaygroundToolbarProps> = observer(
-    function PlaygroundToolbar({ presenter }) {
-        const vm = presenter.vm;
-        const isExecuting = vm.activeTab ? vm.activeTab.isExecuting : false;
+export const PlaygroundToolbar = observer((props: PlaygroundToolbarProps) => {
+    const vm = props.presenter.vm;
+    const isExecuting = vm.activeTab ? vm.activeTab.isExecuting : false;
 
-        return (
-            <div className="flex justify-between items-center px-4 py-2 bg-white border-b border-gray-200 shadow-sm">
-                <div>
-                    <strong>GraphQL Playground</strong>
-                    <span className="ml-4 text-xs text-gray-500">
-                        {shortcutKey}+Enter to execute
-                    </span>
-                </div>
-                <div className="flex gap-2 items-center">
-                    <Button
-                        onClick={() => presenter.copyResponse()}
-                        icon={<ContentCopyIcon />}
-                        variant="secondary"
-                    >
-                        Copy Response
-                    </Button>
-                    <Button
-                        onClick={() => presenter.copyQuery()}
-                        icon={<ContentCopyIcon />}
-                        variant="secondary"
-                    >
-                        Copy Query
-                    </Button>
-                    <Button
-                        onClick={() => presenter.prettifyQuery()}
-                        icon={<AutoFixHighIcon />}
-                        variant="secondary"
-                    >
-                        Prettify
-                    </Button>
-                    <Button
-                        onClick={() => presenter.executeQuery()}
-                        disabled={isExecuting}
-                        icon={
-                            isExecuting ? (
-                                <Loader size="xs" variant="negative" />
-                            ) : (
-                                <PlayArrowIcon />
-                            )
-                        }
-                    >
-                        {isExecuting ? "Executing..." : "Execute"}
-                    </Button>
-                </div>
+    return (
+        <div className="flex justify-between items-center px-4 py-2 bg-white border-b border-gray-200 shadow-sm">
+            <div>
+                <strong>GraphQL Playground</strong>
+                <span className="ml-4 text-xs text-gray-500">{shortcutKey}+Enter to execute</span>
             </div>
-        );
-    }
-);
+            <div className="flex gap-2 items-center">
+                <Button
+                    onClick={() => props.presenter.copyResponse()}
+                    icon={<ContentCopyIcon />}
+                    variant="secondary"
+                >
+                    Copy Response
+                </Button>
+                <Button
+                    onClick={() => props.presenter.copyQuery()}
+                    icon={<ContentCopyIcon />}
+                    variant="secondary"
+                >
+                    Copy Query
+                </Button>
+                <Button
+                    onClick={() => props.presenter.prettifyQuery()}
+                    icon={<AutoFixHighIcon />}
+                    variant="secondary"
+                >
+                    Prettify
+                </Button>
+                <Button
+                    onClick={() => props.presenter.executeQuery()}
+                    disabled={isExecuting}
+                    icon={isExecuting ? <Loader size="xs" variant="negative" /> : <PlayArrowIcon />}
+                >
+                    {isExecuting ? "Executing..." : "Execute"}
+                </Button>
+            </div>
+        </div>
+    );
+});

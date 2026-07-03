@@ -7,10 +7,8 @@ interface ResponseEditorProps {
     presenter: PlaygroundPresenter.Interface;
 }
 
-export const ResponseEditor: React.FC<ResponseEditorProps> = observer(function ResponseEditor({
-    presenter
-}) {
-    const activeTab = presenter.vm.activeTab;
+export const ResponseEditor = observer((props: ResponseEditorProps) => {
+    const activeTab = props.presenter.vm.activeTab;
 
     if (!activeTab) {
         return null;
@@ -36,11 +34,8 @@ interface ResponseContentProps {
 }
 
 /* Shows either the editor with results or a placeholder message. */
-const ResponseContent: React.FC<ResponseContentProps> = function ResponseContent({
-    hasResponse,
-    response
-}) {
-    if (!hasResponse) {
+const ResponseContent = (props: ResponseContentProps) => {
+    if (!props.hasResponse) {
         return (
             <div className="flex items-center justify-center h-full text-gray-400 text-sm italic">
                 Run a query to see results
@@ -52,7 +47,7 @@ const ResponseContent: React.FC<ResponseContentProps> = function ResponseContent
         <Editor
             height="100%"
             defaultLanguage="json"
-            value={response}
+            value={props.response}
             options={{
                 minimap: { enabled: false },
                 renderLineHighlight: "none",

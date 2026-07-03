@@ -24,24 +24,24 @@ interface EndpointSelectorState {
     y: number;
 }
 
-export const TabBar: React.FC<TabBarProps> = observer(function TabBar({ presenter }) {
+export const TabBar = observer((props: TabBarProps) => {
     const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
     const [endpointSelector, setEndpointSelector] = useState<EndpointSelectorState | null>(null);
-    const vm = presenter.vm;
+    const vm = props.presenter.vm;
 
     const handleTabClick = useCallback(
         (id: string) => {
-            presenter.selectTab(id);
+            props.presenter.selectTab(id);
         },
-        [presenter]
+        [props.presenter]
     );
 
     const handleCloseTab = useCallback(
         (ev: React.MouseEvent, id: string) => {
             ev.stopPropagation();
-            presenter.closeTab(id);
+            props.presenter.closeTab(id);
         },
-        [presenter]
+        [props.presenter]
     );
 
     const handleContextMenu = useCallback(
@@ -110,12 +110,12 @@ export const TabBar: React.FC<TabBarProps> = observer(function TabBar({ presente
             </button>
             <ContextMenuOverlay
                 contextMenu={contextMenu}
-                presenter={presenter}
+                presenter={props.presenter}
                 onClose={handleCloseContextMenu}
             />
             <EndpointSelectorOverlay
                 endpointSelector={endpointSelector}
-                presenter={presenter}
+                presenter={props.presenter}
                 onClose={handleCloseEndpointSelector}
             />
         </div>
@@ -129,19 +129,15 @@ interface TabCloseButtonProps {
 }
 
 /* Only renders the close button for user tabs. */
-const TabCloseButton: React.FC<TabCloseButtonProps> = function TabCloseButton({
-    isRegistered,
-    tabId,
-    onClose
-}) {
-    if (isRegistered) {
+const TabCloseButton = (props: TabCloseButtonProps) => {
+    if (props.isRegistered) {
         return null;
     }
 
     return (
         <button
             className="ml-1 p-0.5 rounded hover:bg-gray-200"
-            onClick={ev => onClose(ev, tabId)}
+            onClick={ev => props.onClose(ev, props.tabId)}
             title="Close tab"
         >
             <CloseIcon className="w-3 h-3 text-gray-400" />
@@ -156,23 +152,19 @@ interface ContextMenuOverlayProps {
 }
 
 /* Renders the context menu when right-clicking a tab. */
-const ContextMenuOverlay: React.FC<ContextMenuOverlayProps> = function ContextMenuOverlay({
-    contextMenu,
-    presenter,
-    onClose
-}) {
-    if (!contextMenu) {
+const ContextMenuOverlay = (props: ContextMenuOverlayProps) => {
+    if (!props.contextMenu) {
         return null;
     }
 
     return (
         <TabContextMenu
-            presenter={presenter}
-            tabId={contextMenu.tabId}
-            isRegistered={contextMenu.isRegistered}
-            x={contextMenu.x}
-            y={contextMenu.y}
-            onClose={onClose}
+            presenter={props.presenter}
+            tabId={props.contextMenu.tabId}
+            isRegistered={props.contextMenu.isRegistered}
+            x={props.contextMenu.x}
+            y={props.contextMenu.y}
+            onClose={props.onClose}
         />
     );
 };
@@ -184,18 +176,17 @@ interface EndpointSelectorOverlayProps {
 }
 
 /* Renders the endpoint selector dropdown when clicking "+". */
-const EndpointSelectorOverlay: React.FC<EndpointSelectorOverlayProps> =
-    function EndpointSelectorOverlay({ endpointSelector, presenter, onClose }) {
-        if (!endpointSelector) {
-            return null;
-        }
+const EndpointSelectorOverlay = (props: EndpointSelectorOverlayProps) => {
+    if (!props.endpointSelector) {
+        return null;
+    }
 
-        return (
-            <EndpointSelector
-                presenter={presenter}
-                x={endpointSelector.x}
-                y={endpointSelector.y}
-                onClose={onClose}
-            />
-        );
-    };
+    return (
+        <EndpointSelector
+            presenter={props.presenter}
+            x={props.endpointSelector.x}
+            y={props.endpointSelector.y}
+            onClose={props.onClose}
+        />
+    );
+};
