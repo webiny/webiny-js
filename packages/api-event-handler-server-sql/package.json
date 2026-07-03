@@ -24,7 +24,9 @@
         "@webiny/api-event-handler-server": "0.0.0",
         "@webiny/api-headless-cms-sql": "0.0.0",
         "@webiny/api-websockets-sql": "0.0.0",
-        "@webiny/handler": "0.0.0"
+        "@webiny/handler": "0.0.0",
+        "@webiny/self-hosted-auth": "0.0.0",
+        "@webiny/self-hosted-auth-sql": "0.0.0"
     },
     "peerDependencies": {
         "@webiny/di": ">=0.2.3",

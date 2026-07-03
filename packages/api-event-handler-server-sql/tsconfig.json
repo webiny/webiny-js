@@ -8,7 +8,9 @@
     { "path": "../api-event-handler-server" },
     { "path": "../api-headless-cms-sql" },
     { "path": "../api-websockets-sql" },
-    { "path": "../handler" }
+    { "path": "../handler" },
+    { "path": "../self-hosted-auth" },
+    { "path": "../self-hosted-auth-sql" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -30,7 +32,11 @@
       "@webiny/api-websockets-sql/*": ["../api-websockets-sql/src/*"],
       "@webiny/api-websockets-sql": ["../api-websockets-sql/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/self-hosted-auth/*": ["../self-hosted-auth/src/*"],
+      "@webiny/self-hosted-auth": ["../self-hosted-auth/src"],
+      "@webiny/self-hosted-auth-sql/*": ["../self-hosted-auth-sql/src/*"],
+      "@webiny/self-hosted-auth-sql": ["../self-hosted-auth-sql/src"]
     }
   }
 }

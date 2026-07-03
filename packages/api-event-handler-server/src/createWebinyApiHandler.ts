@@ -1,32 +1,23 @@
 /**
- * EXPERIMENTAL — Webiny API handler for the self-hosted Node HTTP server transport.
+ * Webiny API handler for the self-hosted Node HTTP server transport — storage-agnostic BASE.
  *
- * This package exists to (a) prove `@webiny/api-event-handler-core`'s `registerApiRequestStack` is
- * genuinely transport-agnostic — note it is called below with NEITHER the realtime nor the scheduler
- * hook, since those are AWS-specific (API Gateway WebSockets / EventBridge Scheduler) and a plain
- * server has no equivalent; the hooks being optional is exactly the point — and (b) give a starting
- * point for a productized server transport.
+ * The ROOT container wires the Node HTTP transport (NodeHttpFeature = event type + router + HttpFeature)
+ * plus the auth/tenant loader decorators (extract token / x-tenant from the IncomingMessage → shared
+ * RequestIdentityLoader / RequestTenantLoader). The per-request feature stack is the transport-agnostic
+ * `registerApiRequestStack` from `@webiny/api-event-handler-core` — the SAME stack the AWS handler uses.
+ * It is called with NEITHER the realtime nor the scheduler hook: those are AWS-specific (API Gateway
+ * WebSockets / EventBridge Scheduler) and this transport has no equivalent — the hooks being optional
+ * is the point. The storage variant (and its identity provider) is injected via `registerRootStorage`.
  *
- * ⚠️ NOT YET DEPLOYABLE. The Node transport in `@webiny/event-handler-server` is incomplete:
- *   1. ROUTING TERMINAL — `NodeHttpTranslator` translates IncomingMessage → IHttpRequest and calls
- *      next(), but there is no Node equivalent of AWS's `ApiGatewayHttpRouterHandler` that dispatches
- *      the IHttpRequest through the HttpRouter and translates the IHttpResponse back. Until that
- *      exists, requests are translated but not routed to HttpRoutes.
- *   2. AUTH / TENANT LOADERS — the AWS transport has ApiGateway{Identity,Tenant}LoaderDecorator that
- *      extract the token / x-tenant from the event. Node equivalents (reading IncomingMessage headers)
- *      do not exist yet, so identity/tenant are not established here.
- * Both are transport primitives that belong in `@webiny/event-handler-server`, not composition here.
- * No app template wires this handler; it is not on any deploy path.
+ * The identity provider (e.g. `@webiny/self-hosted-auth`'s JWT IdP) must be registered by the variant
+ * in `registerRootStorage`, so the RequestIdentityLoader driven by the identity decorator can resolve it.
  */
 import type { Container } from "@webiny/di";
-import {
-    createNodeHandler,
-    NodeHttpEventType,
-    NodeHttpTranslator
-} from "@webiny/event-handler-server";
-import { HttpFeature } from "@webiny/event-handler-core";
+import { createNodeHandler, NodeHttpFeature } from "@webiny/event-handler-server";
 import { registerExtensions } from "@webiny/handler";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
+import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
+import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
@@ -35,8 +26,8 @@ export interface CreateWebinyApiHandlerConfig {
     extensions: () => Parameters<typeof registerExtensions>[1];
     /**
      * Register ALL root-container storage for this deployment (the DB feature + CMS storage ops +
-     * registries). Unlike the AWS base, the server base bakes in no DynamoDB assumption — the
-     * variant supplies the complete storage wiring (e.g. DDB or SQL).
+     * registries) AND the identity provider. Unlike the AWS base, the server base bakes in no DB or
+     * IdP assumption — the variant supplies the complete storage + auth wiring.
      */
     registerRootStorage: (container: Container) => void | Promise<void>;
     /**
@@ -49,15 +40,17 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     return createNodeHandler({
         root: async container => {
             // ── Transport (Node HTTP) ──────────────────────────────────
-            container.register(NodeHttpEventType);
-            container.register(NodeHttpTranslator);
-            // HTTP routing infrastructure (HttpRouter + RequestContextInitializerDecorator).
-            HttpFeature.register(container);
+            // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.
+            NodeHttpFeature.register(container);
 
-            // TODO(server-transport): auth/tenant loader decorators for the Node transport
-            // (extract token / x-tenant from IncomingMessage headers) — see the file header.
+            // ── Auth + tenant (extract → shared load) ──────────────────
+            // registerDecorator applies LATER registrations as the OUTER wrapper (whose execute()
+            // runs first). Identity must be established before tenant, so register tenant first
+            // (inner) and identity last (outer) → identity runs, then tenant, then the router.
+            container.registerDecorator(NodeHttpTenantLoaderDecorator);
+            container.registerDecorator(NodeHttpIdentityLoaderDecorator);
 
-            // ── Storage (variant-supplied; includes the DB feature) ────
+            // ── Storage + identity provider (variant-supplied) ─────────
             await config.registerRootStorage(container);
         },
 

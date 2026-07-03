@@ -8,7 +8,9 @@
     { "path": "../api-event-handler-server/tsconfig.build.json" },
     { "path": "../api-headless-cms-sql/tsconfig.build.json" },
     { "path": "../api-websockets-sql/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" }
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../self-hosted-auth/tsconfig.build.json" },
+    { "path": "../self-hosted-auth-sql/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -30,7 +32,11 @@
       "@webiny/api-websockets-sql/*": ["../api-websockets-sql/src/*"],
       "@webiny/api-websockets-sql": ["../api-websockets-sql/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/self-hosted-auth/*": ["../self-hosted-auth/src/*"],
+      "@webiny/self-hosted-auth": ["../self-hosted-auth/src"],
+      "@webiny/self-hosted-auth-sql/*": ["../self-hosted-auth-sql/src/*"],
+      "@webiny/self-hosted-auth-sql": ["../self-hosted-auth-sql/src"]
     }
   }
 }

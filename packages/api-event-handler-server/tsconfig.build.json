@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-event-handler-core/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../event-handler-server/tsconfig.build.json" },
@@ -14,6 +15,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-event-handler-core/*": ["../api-event-handler-core/src/*"],
       "@webiny/api-event-handler-core": ["../api-event-handler-core/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],

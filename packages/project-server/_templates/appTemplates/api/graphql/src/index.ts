@@ -3,11 +3,12 @@
  *
  * The composition root lives in @webiny/api-event-handler-server-sql (`createWebinyApiHandler`) —
  * the same shared, transport-agnostic request stack the AWS handler uses, over the Node HTTP server
- * transport. This file only supplies project-specific extensions + the SQL (Knex) connection.
+ * transport, with the self-hosted JWT identity provider. This file only supplies project-specific
+ * extensions + the SQL (Knex) connection.
  *
- * ⚠️ EXPERIMENTAL — the server transport is not yet deployable (missing Node routing terminal +
- * auth/tenant loaders; see @webiny/api-event-handler-server). Provided as the server-flavour starting
- * point.
+ * ⚠️ EXPERIMENTAL — the server transport is complete (routing + auth/tenant loaders + self-hosted
+ * IdP) but not yet runtime-verified end-to-end against a live DB. Provided as the server-flavour
+ * starting point.
  */
 import knex from "knex";
 import { createWebinyApiHandler } from "@webiny/api-event-handler-server-sql";

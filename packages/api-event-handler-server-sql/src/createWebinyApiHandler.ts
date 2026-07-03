@@ -2,19 +2,20 @@
  * EXPERIMENTAL — Webiny API handler for the self-hosted Node server transport with SQL storage.
  *
  * Thin variant over the transport base (@webiny/api-event-handler-server): supplies the SQL storage
- * wiring. The SQL storage layer is currently a MIX: `ApiCoreSqlFeature` / `WebsocketsSqlFeature` are
- * DI Features (like the AWS DDB storage), while the CMS / ACO /
- * audit-logs SQL storage operations are still legacy `register*StorageOperations` RegisterExtensionPlugins,
- * applied here via `registerExtensions`. The composition mirrors the only existing reference — the
- * api-headless-cms-sql test setup (registerSQLCore + registerSqlStorageOperations + ...).
+ * wiring AND the self-hosted identity provider (JWT IdP + SQL credential storage). The SQL storage
+ * layer is currently a MIX: `ApiCoreSqlFeature` / `WebsocketsSqlFeature` are DI Features (like the
+ * AWS DDB storage), while the CMS / ACO / audit-logs SQL storage operations are still legacy
+ * `register*StorageOperations` RegisterExtensionPlugins, applied here via `registerExtensions`. The
+ * storage composition mirrors the api-headless-cms-sql test setup (registerSQLCore +
+ * registerSqlStorageOperations + ...).
  *
- * The caller supplies the Knex client (there is no single canonical connection for a self-hosted DB).
+ * The caller supplies the Knex client (there is no single canonical connection for a self-hosted DB)
+ * and the JWT signing secret (or WEBINY_SELF_HOSTED_AUTH_SECRET).
  *
- * ⚠️ BUILD-VERIFIED ONLY, NOT RUNTIME-VERIFIED. No SQL-backed API handler has been assembled/run
- * before this; combined with the server transport's not-yet-deployable status (missing Node routing
- * terminal + auth/tenant loaders — see @webiny/api-event-handler-server), this is a scaffold/starting
- * point, not a working deployment. The SQL storage packages finishing their DI-Feature migration
- * would make this a uniform-DI-Feature composition like the AWS DDB storage.
+ * ⚠️ BUILD-VERIFIED, NOT RUNTIME-VERIFIED END-TO-END. The Node transport primitives (routing terminal
+ * + auth/tenant loaders) and this SQL composition are faithful mirrors of the deployed+tested AWS
+ * equivalents, but no SQL-backed Node API handler has been booted against a live DB here. Treat as a
+ * complete-but-unproven server flavour pending an end-to-end run.
  */
 import type { Knex } from "knex";
 import { registerExtensions } from "@webiny/handler";
@@ -27,6 +28,8 @@ import { registerSqlStorageOperations } from "@webiny/api-headless-cms-sql";
 import { registerAcoSqlStorageOperations } from "@webiny/api-aco-sql";
 import { registerAuditLogsSqlStorageOperations } from "@webiny/api-audit-logs-sql";
 import { WebsocketsSqlFeature } from "@webiny/api-websockets-sql";
+import { SelfHostedAuthApiFeature } from "@webiny/self-hosted-auth";
+import { SelfHostedAuthSqlFeature } from "@webiny/self-hosted-auth-sql";
 
 export type CreateWebinyApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
     /**
@@ -38,6 +41,11 @@ export type CreateWebinyApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
      * Optional table-name prefix, threaded to every SQL storage operation.
      */
     tableNamePrefix?: string;
+    /**
+     * JWT signing secret for the self-hosted identity provider. Falls back to
+     * `WEBINY_SELF_HOSTED_AUTH_SECRET`.
+     */
+    authSecret?: string;
 };
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
@@ -49,6 +57,12 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // Clean DI Features: SQL core storage-ops factory + websockets storage.
             ApiCoreSqlFeature.register(container, { knex, tableNamePrefix });
             WebsocketsSqlFeature.register(container, { tableNamePrefix });
+
+            // Identity provider: the self-hosted JWT IdP + its SQL credential storage. Registered in
+            // the root so the RequestIdentityLoader (driven by NodeHttpIdentityLoaderDecorator) can
+            // resolve it. SelfHostedAuthSqlFeature supplies CredentialsStorageOperations over Knex.
+            SelfHostedAuthSqlFeature.register(container, { knex, tableNamePrefix });
+            SelfHostedAuthApiFeature.register(container, { secret: config.authSecret });
 
             // Legacy RegisterExtensionPlugins (register-time DI wiring), applied in order.
             // registerSQLCore registers the KnexClient (resolved by the SQL storage ops), so it is
