@@ -22,6 +22,28 @@ const SearchInput = (props: { value: string; presenter: DocsExplorerPresenter.In
     );
 };
 
+const RootSectionField = (props: {
+    field: DocsExplorerPresenter.FieldVm;
+    presenter: DocsExplorerPresenter.Interface;
+}) => {
+    const handleClick = () => {
+        if (props.field.type.isNavigable) {
+            props.presenter.navigateToType(props.field.type.name);
+        }
+    };
+
+    return (
+        <div
+            className={`px-4 py-1.5 flex gap-1 items-baseline ${props.field.type.isNavigable ? "hover:bg-gray-50 cursor-pointer" : ""}`}
+            onClick={handleClick}
+        >
+            <span className="font-mono text-sm">{props.field.name}</span>
+            <span className="text-gray-400">:</span>
+            <DocsTypeRef typeRef={props.field.type} presenter={props.presenter} />
+        </div>
+    );
+};
+
 const RootSections = (props: {
     sections: DocsExplorerPresenter.RootSection[];
     presenter: DocsExplorerPresenter.Interface;
@@ -34,15 +56,11 @@ const RootSections = (props: {
                         {section.name}
                     </h4>
                     {section.fields.map(field => (
-                        <div
+                        <RootSectionField
                             key={field.name}
-                            className="px-4 py-1.5 hover:bg-gray-50 cursor-pointer flex gap-1 items-baseline"
-                            onClick={() => props.presenter.navigateToType(field.type.name)}
-                        >
-                            <span className="font-mono text-sm">{field.name}</span>
-                            <span className="text-gray-400">:</span>
-                            <DocsTypeRef typeRef={field.type} presenter={props.presenter} />
-                        </div>
+                            field={field}
+                            presenter={props.presenter}
+                        />
                     ))}
                 </div>
             ))}
