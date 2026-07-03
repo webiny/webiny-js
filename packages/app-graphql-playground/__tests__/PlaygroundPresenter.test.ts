@@ -432,16 +432,32 @@ describe("PlaygroundPresenter", () => {
             expect(presenter.vm.activeTab!.headers).toBe('{ "Authorization": "Bearer token" }');
         });
 
-        it("should update the active tab endpoint", () => {
+        it("should update the endpoint of a user-created tab", () => {
+            const presenter = createPresenter({
+                registry: mockRegistry,
+                repository: mockRepository
+            });
+            presenter.init();
+            presenter.createTab("main-api");
+            const userTab = presenter.vm.tabs.find(t => !t.isRegistered)!;
+            presenter.selectTab(userTab.id);
+
+            presenter.updateEndpoint("http://new-endpoint/graphql");
+
+            expect(presenter.vm.activeTab!.endpoint).toBe("http://new-endpoint/graphql");
+        });
+
+        it("should not update the endpoint of a registered tab", () => {
             const presenter = createPresenter({
                 registry: mockRegistry,
                 repository: mockRepository
             });
             presenter.init();
 
+            const originalEndpoint = presenter.vm.activeTab!.endpoint;
             presenter.updateEndpoint("http://new-endpoint/graphql");
 
-            expect(presenter.vm.activeTab!.endpoint).toBe("http://new-endpoint/graphql");
+            expect(presenter.vm.activeTab!.endpoint).toBe(originalEndpoint);
         });
     });
 

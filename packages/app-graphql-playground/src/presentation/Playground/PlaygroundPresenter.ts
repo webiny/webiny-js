@@ -233,7 +233,7 @@ class PlaygroundPresenterImpl implements PlaygroundPresenter.Interface {
 
     public updateEndpoint(endpoint: string): void {
         const tab = this.getActiveTab();
-        if (!tab) {
+        if (!tab || tab.isRegistered) {
             return;
         }
 

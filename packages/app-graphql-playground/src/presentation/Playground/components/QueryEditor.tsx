@@ -46,7 +46,12 @@ export const QueryEditor = observer((props: QueryEditorProps) => {
                     type="text"
                     value={activeTab.endpoint}
                     onChange={handleEndpointChange}
-                    className="flex-1 text-xs px-2 py-1 border border-gray-300 rounded bg-white font-mono"
+                    readOnly={activeTab.isRegistered}
+                    className={`flex-1 text-xs px-2 py-1 border border-gray-300 rounded font-mono ${
+                        activeTab.isRegistered
+                            ? "bg-gray-100 text-gray-500 cursor-default"
+                            : "bg-white"
+                    }`}
                 />
             </div>
             <div className="flex-1 overflow-hidden">
