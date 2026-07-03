@@ -5,7 +5,7 @@ import {
 import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
-export class LocalOutputStrategy implements AssetOutputStrategyAbstraction.Interface {
+class AssetOutputStrategyImpl implements AssetOutputStrategyAbstraction.Interface {
     private readonly assetStreamingMaxSize: number;
     private readonly streamAssetReply: StreamAssetReply.Interface;
 
@@ -21,7 +21,7 @@ export class LocalOutputStrategy implements AssetOutputStrategyAbstraction.Inter
     }
 }
 
-export const LocalOutputStrategyImpl = AssetOutputStrategyAbstraction.createImplementation({
-    implementation: LocalOutputStrategy,
+export const LocalOutputStrategy = AssetOutputStrategyAbstraction.createImplementation({
+    implementation: AssetOutputStrategyImpl,
     dependencies: [LocalAssetDeliveryConfig, StreamAssetReply]
 });

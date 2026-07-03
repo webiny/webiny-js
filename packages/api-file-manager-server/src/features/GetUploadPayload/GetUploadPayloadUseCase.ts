@@ -1,7 +1,7 @@
 import { validation } from "@webiny/validation";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { Request } from "@webiny/handler/abstractions/Request.js";
-import { GetUploadPayloadUseCase } from "@webiny/api-file-manager/features/upload/GetUploadPayload/index.js";
+import { GetUploadPayloadUseCase as GetUploadPayloadUseCaseAbstraction } from "@webiny/api-file-manager/features/upload/GetUploadPayload/index.js";
 import type { FileData } from "@webiny/api-file-manager/features/upload/types.js";
 import type { UploadPayloadResponse } from "@webiny/api-file-manager/features/upload/types.js";
 import type { FileManagerSettings } from "@webiny/api-file-manager/domain/settings/types.js";
@@ -19,7 +19,7 @@ const sanitizeFileSizeValue = (value: number, defaultValue: number): number => {
     }
 };
 
-class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCase.Interface {
+class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCaseAbstraction.Interface {
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
         private readonly request: Request.Interface
@@ -68,7 +68,7 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCase.Interface {
     }
 }
 
-export const GetUploadPayloadUseCaseImplementation = GetUploadPayloadUseCase.createImplementation({
+export const GetUploadPayloadUseCase = GetUploadPayloadUseCaseAbstraction.createImplementation({
     implementation: GetUploadPayloadUseCaseImpl,
     dependencies: [TenantContext, Request]
 });

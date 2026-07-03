@@ -2,9 +2,9 @@ import { createFeature } from "@webiny/feature/api";
 import { LocalStoragePath } from "./abstractions.js";
 import { LocalAssetDeliveryConfig } from "./abstractions.js";
 import type { AssetDeliveryParams } from "./types.js";
-import { LocalAssetResolverImpl } from "./LocalAssetResolver.js";
-import { LocalOutputStrategyImpl } from "./LocalOutputStrategy.js";
-import { LocalSharpTransformImpl } from "./LocalSharpTransform.js";
+import { LocalAssetResolver } from "./LocalAssetResolver.js";
+import { LocalOutputStrategy } from "./LocalOutputStrategy.js";
+import { LocalSharpTransform } from "./LocalSharpTransform.js";
 
 export const createLocalAssetDeliveryFeature = (params: AssetDeliveryParams = {}) => {
     return createFeature({
@@ -21,9 +21,9 @@ export const createLocalAssetDeliveryFeature = (params: AssetDeliveryParams = {}
                 assetStreamingMaxSize: params.assetStreamingMaxSize ?? 4718592
             });
 
-            container.register(LocalAssetResolverImpl);
-            container.register(LocalOutputStrategyImpl);
-            container.register(LocalSharpTransformImpl);
+            container.register(LocalAssetResolver);
+            container.register(LocalOutputStrategy);
+            container.register(LocalSharpTransform);
         }
     });
 };

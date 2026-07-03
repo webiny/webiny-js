@@ -3,19 +3,21 @@ import { mkdir } from "node:fs/promises";
 import { mdbid } from "@webiny/utils";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { Request } from "@webiny/handler/abstractions/Request.js";
-import { CreateMultiPartUploadUseCase } from "@webiny/api-file-manager/features/upload/CreateMultiPartUpload/index.js";
+import { CreateMultiPartUploadUseCase as CreateMultiPartUploadUseCaseAbstraction } from "@webiny/api-file-manager/features/upload/CreateMultiPartUpload/index.js";
 import type { CreateMultiPartUploadResult } from "@webiny/api-file-manager/features/upload/types.js";
 import { createUploadToken } from "~/utils/uploadToken.js";
 import { resolveServerUrl } from "~/utils/resolveServerUrl.js";
 
-class CreateMultiPartUploadUseCaseImpl implements CreateMultiPartUploadUseCase.Interface {
+class CreateMultiPartUploadUseCaseImpl
+    implements CreateMultiPartUploadUseCaseAbstraction.Interface
+{
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
         private readonly request: Request.Interface
     ) {}
 
     public async execute(
-        params: CreateMultiPartUploadUseCase.Params
+        params: CreateMultiPartUploadUseCaseAbstraction.Params
     ): Promise<CreateMultiPartUploadResult> {
         const { file, numberOfParts } = params;
         const storagePath = String(process.env.WEBINY_LOCAL_STORAGE_PATH);
@@ -53,8 +55,8 @@ class CreateMultiPartUploadUseCaseImpl implements CreateMultiPartUploadUseCase.I
     }
 }
 
-export const CreateMultiPartUploadUseCaseImplementation =
-    CreateMultiPartUploadUseCase.createImplementation({
+export const CreateMultiPartUploadUseCase =
+    CreateMultiPartUploadUseCaseAbstraction.createImplementation({
         implementation: CreateMultiPartUploadUseCaseImpl,
         dependencies: [TenantContext, Request]
     });

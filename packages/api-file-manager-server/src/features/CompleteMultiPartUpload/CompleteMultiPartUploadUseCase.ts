@@ -5,12 +5,14 @@ import { readFile } from "node:fs/promises";
 import { writeFile } from "node:fs/promises";
 import { rm } from "node:fs/promises";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { CompleteMultiPartUploadUseCase } from "@webiny/api-file-manager/features/upload/CompleteMultiPartUpload/index.js";
+import { CompleteMultiPartUploadUseCase as CompleteMultiPartUploadUseCaseAbstraction } from "@webiny/api-file-manager/features/upload/CompleteMultiPartUpload/index.js";
 
-class CompleteMultiPartUploadUseCaseImpl implements CompleteMultiPartUploadUseCase.Interface {
+class CompleteMultiPartUploadUseCaseImpl
+    implements CompleteMultiPartUploadUseCaseAbstraction.Interface
+{
     public constructor(private readonly tenantContext: TenantContext.Interface) {}
 
-    public async execute(params: CompleteMultiPartUploadUseCase.Params): Promise<void> {
+    public async execute(params: CompleteMultiPartUploadUseCaseAbstraction.Params): Promise<void> {
         const { fileKey, uploadId } = params;
         const storagePath = String(process.env.WEBINY_LOCAL_STORAGE_PATH);
         const tenant = this.tenantContext.getTenant();
@@ -66,8 +68,8 @@ function assertPathContained(resolved: string, root: string): void {
     }
 }
 
-export const CompleteMultiPartUploadUseCaseImplementation =
-    CompleteMultiPartUploadUseCase.createImplementation({
+export const CompleteMultiPartUploadUseCase =
+    CompleteMultiPartUploadUseCaseAbstraction.createImplementation({
         implementation: CompleteMultiPartUploadUseCaseImpl,
         dependencies: [TenantContext]
     });

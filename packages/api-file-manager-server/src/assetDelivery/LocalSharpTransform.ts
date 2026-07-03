@@ -12,7 +12,7 @@ import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
 import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
-export class LocalSharpTransform implements AssetTransformationStrategyAbstraction.Interface {
+class AssetTransformationStrategyImpl implements AssetTransformationStrategyAbstraction.Interface {
     private readonly storagePath: string;
     private readonly imageResizeWidths: number[];
 
@@ -169,7 +169,7 @@ export class LocalSharpTransform implements AssetTransformationStrategyAbstracti
     }
 }
 
-export const LocalSharpTransformImpl = AssetTransformationStrategyAbstraction.createImplementation({
-    implementation: LocalSharpTransform,
+export const LocalSharpTransform = AssetTransformationStrategyAbstraction.createImplementation({
+    implementation: AssetTransformationStrategyImpl,
     dependencies: [LocalStoragePath, LocalAssetDeliveryConfig]
 });

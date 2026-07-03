@@ -15,7 +15,7 @@ interface AssetMetadata {
     bucketKey: string;
 }
 
-export class LocalAssetResolver implements AssetResolverAbstraction.Interface {
+class AssetResolverImpl implements AssetResolverAbstraction.Interface {
     constructor(
         private readonly keyValueStore: GlobalKeyValueStore.Interface,
         private readonly storagePath: string,
@@ -52,7 +52,7 @@ export class LocalAssetResolver implements AssetResolverAbstraction.Interface {
     }
 }
 
-export const LocalAssetResolverImpl = AssetResolverAbstraction.createImplementation({
-    implementation: LocalAssetResolver,
+export const LocalAssetResolver = AssetResolverAbstraction.createImplementation({
+    implementation: AssetResolverImpl,
     dependencies: [GlobalKeyValueStore, LocalStoragePath, ObjectKey, AssetFactory]
 });
