@@ -7,7 +7,6 @@ import { FileManager } from "@webiny/app-file-manager/app.js";
 import { GraphQLPlayground } from "@webiny/app-graphql-playground";
 import { SdkPlayground } from "@webiny/app-sdk-playground";
 import { imagePlugin } from "@webiny/app/plugins/index.js";
-import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
 import { createApolloClient } from "./apolloClientFactory.js";
 import apolloLinks from "./apolloLinks.js";
 import { AuditLogs } from "@webiny/app-audit-logs";
@@ -38,7 +37,7 @@ export interface AdminProps extends Omit<
 
 const App = (props: AdminProps) => {
     const createLegacyPlugins = (container: Container): PluginCollection => {
-        return [imagePlugin(), fileStorageS3Plugin(), apolloLinks(container)];
+        return [imagePlugin(), apolloLinks(container)];
     };
 
     return (
@@ -48,7 +47,7 @@ const App = (props: AdminProps) => {
         >
             <AdminUI />
             <SystemInstallerProvider />
-            <GraphQLPlayground createApolloClient={createApolloClient} />
+            <GraphQLPlayground />
             <SdkPlayground />
             <Websockets />
             <RecordLocking />

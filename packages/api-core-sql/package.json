@@ -25,7 +25,7 @@
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "knex": "^3.2.10"
+    "knex": "^3.3.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

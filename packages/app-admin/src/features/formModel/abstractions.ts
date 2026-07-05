@@ -701,7 +701,7 @@ export interface IFormVM {
     submitCount: number;
     focusField(path: string): void;
     getData(): Record<string, unknown>;
-    setData(data: Record<string, unknown>): void;
+    setData(data: Record<string, unknown>, options?: { dirty?: boolean }): void;
 }
 
 /**
@@ -739,7 +739,7 @@ export interface IFormModel<T = Record<string, any>> {
      */
     addRule(rule: FormRule): void;
     getData(): T;
-    setData(data: T): void;
+    setData(data: T, options?: { dirty?: boolean }): void;
     reset(): void;
     validate(): Promise<boolean>;
     submit<T = Record<string, unknown>>(options?: { skipValidation?: boolean }): Promise<T | false>;

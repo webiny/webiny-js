@@ -23,16 +23,22 @@ export const ContentEntryFormView = observer(() => {
     const listPresenter = useContentEntriesPresenter();
     const formPresenter = useContentEntryFormPresenter();
     const { presenter: revisionsPresenter } = useFeature(RevisionsListFeature);
-    const { width } = useContentEntryEditorConfig();
+    const { width, newEntryWizard } = useContentEntryEditorConfig();
     const router = useRouter();
     const dialogs = useDialogs();
     const { route } = useRoute(Routes.ContentEntries.List);
 
     const entryId = listPresenter.vm.selectedEntryId;
+    const { vm } = formPresenter;
+
+    const hasWizard = entryId === "new" && newEntryWizard !== null;
+    const showWizard = hasWizard && vm.form === null;
 
     useEffect(() => {
         if (entryId === "new") {
-            formPresenter.newEntry();
+            if (!newEntryWizard) {
+                formPresenter.newEntry();
+            }
         } else if (entryId) {
             formPresenter.loadRevision(entryId);
             revisionsPresenter.init(entryId);
@@ -65,8 +71,6 @@ export const ContentEntryFormView = observer(() => {
         });
     }, []);
 
-    const { vm } = formPresenter;
-
     const handleBack = () => {
         const { modelId, folderId } = route.params;
         router.goToRoute(Routes.ContentEntries.List, { modelId, folderId });
@@ -89,9 +93,15 @@ export const ContentEntryFormView = observer(() => {
             />
             <ScrollArea>
                 {vm.loading ? <OverlayLoader text={vm.loading} /> : null}
-                <ContentEntryFormContent width={width}>
-                    <ContentEntryForm />
-                </ContentEntryFormContent>
+                {showWizard ? (
+                    newEntryWizard
+                ) : (
+                    <ContentEntryFormContent>
+                        <div className={"bg-neutral-base rounded-lg p-lg"} style={{ width }}>
+                            <ContentEntryForm />
+                        </div>
+                    </ContentEntryFormContent>
+                )}
             </ScrollArea>
             <RevisionDrawer />
         </Container>
