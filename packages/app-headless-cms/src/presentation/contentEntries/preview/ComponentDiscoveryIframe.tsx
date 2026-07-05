@@ -1,6 +1,6 @@
-import React, { useRef, useCallback, useEffect } from "react";
-import { EditorBridge } from "@webiny/cms-sdk";
-import { usePreviewComponents } from "./PreviewComponentsContext.js";
+import React, { useRef, useEffect } from "react";
+import { Messenger, MessageOrigin } from "@webiny/cms-sdk/messenger";
+import { useLivePreviewPresenter } from "./useLivePreviewPresenter.js";
 
 interface ComponentDiscoveryIframeProps {
     previewUrl: string;
@@ -8,44 +8,42 @@ interface ComponentDiscoveryIframeProps {
 
 export const ComponentDiscoveryIframe = ({ previewUrl }: ComponentDiscoveryIframeProps) => {
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
-    const bridgeRef = useRef<EditorBridge | null>(null);
-    const { addComponent } = usePreviewComponents();
-
-    const onIframeLoad = useCallback(() => {
-        const iframe = iframeRef.current;
-        if (!iframe) {
-            return;
-        }
-
-        if (bridgeRef.current) {
-            bridgeRef.current.dispose();
-        }
-
-        const bridge = new EditorBridge(iframe);
-        bridgeRef.current = bridge;
-
-        bridge.onComponentRegister(manifest => addComponent(manifest));
-    }, [addComponent]);
-
-    useEffect(() => {
-        return () => {
-            if (bridgeRef.current) {
-                bridgeRef.current.dispose();
-                bridgeRef.current = null;
-            }
-        };
-    }, []);
+    const messengerRef = useRef<Messenger | null>(null);
+    const presenter = useLivePreviewPresenter();
 
     const iframeSrc = (() => {
-        const url = new URL(previewUrl);
+        const base = previewUrl.endsWith("/") ? previewUrl : previewUrl + "/";
+        const url = new URL("new", base);
         url.searchParams.set("origin", window.location.origin);
         return url.toString();
     })();
 
+    useEffect(() => {
+        const iframe = iframeRef.current;
+        if (!iframe || !iframe.contentWindow) {
+            return;
+        }
+
+        const targetOrigin = new URL(iframe.src).origin;
+        const editorOrigin = new MessageOrigin(() => window, window.location.origin);
+        const previewTarget = new MessageOrigin(() => iframe.contentWindow!, targetOrigin);
+
+        const messenger = new Messenger(editorOrigin, previewTarget, "cms.preview.*");
+        messengerRef.current = messenger;
+
+        messenger.on("preview.component.register", (manifest: { name: string; label: string; description: string }) => {
+            presenter.addComponent(manifest);
+        });
+
+        return () => {
+            messenger.dispose();
+            messengerRef.current = null;
+        };
+    }, [iframeSrc, presenter]);
+
     return (
         <iframe
             ref={iframeRef}
-            onLoad={onIframeLoad}
             src={iframeSrc}
             style={{ display: "none" }}
             sandbox="allow-same-origin allow-scripts"

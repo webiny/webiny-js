@@ -4,6 +4,7 @@ import type {
     CmsEntryValues,
     CmsEntry,
     CmsListResult,
+    CmsModelDefinition,
     GetEntryParams,
     ListEntriesParams,
     IContentSdk
@@ -13,10 +14,13 @@ import { componentRegistry } from "./component/ComponentRegistry.js";
 
 export class EditingSdk implements IContentSdk {
     public readonly messenger: Messenger;
+    private liveSdk: IContentSdk;
     private entry: Record<string, unknown> | null = null;
     private entryListeners = new Set<(entry: Record<string, unknown>) => void>();
 
-    constructor() {
+    constructor(liveSdk: IContentSdk) {
+        this.liveSdk = liveSdk;
+
         const source = new MessageOrigin(() => window, window.location.origin);
         const target = new MessageOrigin(() => window.parent, this.getReferrerOrigin());
 
@@ -34,6 +38,10 @@ export class EditingSdk implements IContentSdk {
         this.messenger.send("preview.ready", true);
     }
 
+    async getModel(modelId: string): Promise<CmsModelDefinition | null> {
+        return this.liveSdk.getModel(modelId);
+    }
+
     async getEntry<T extends CmsEntryValues = CmsEntryValues>(
         _params: GetEntryParams
     ): Promise<CmsEntry<T> | null> {
@@ -44,13 +52,16 @@ export class EditingSdk implements IContentSdk {
     }
 
     async listEntries<T extends CmsEntryValues = CmsEntryValues>(
-        _params: ListEntriesParams
+        params: ListEntriesParams
     ): Promise<CmsListResult<T>> {
-        return { data: [], meta: { cursor: null, hasMoreItems: false, totalCount: 0 } };
+        return this.liveSdk.listEntries<T>(params);
     }
 
     onEntryUpdate(fn: (entry: Record<string, unknown>) => void): () => void {
         this.entryListeners.add(fn);
+        if (this.entry) {
+            fn(this.entry);
+        }
         return () => this.entryListeners.delete(fn);
     }
 

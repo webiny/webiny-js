@@ -89,10 +89,8 @@ export const ContentEntryFormView = observer(() => {
             />
             <ScrollArea>
                 {vm.loading ? <OverlayLoader text={vm.loading} /> : null}
-                <ContentEntryFormContent>
-                    <div className={"bg-neutral-base rounded-lg p-lg"} style={{ width }}>
-                        <ContentEntryForm />
-                    </div>
+                <ContentEntryFormContent width={width}>
+                    <ContentEntryForm />
                 </ContentEntryFormContent>
             </ScrollArea>
             <RevisionDrawer />

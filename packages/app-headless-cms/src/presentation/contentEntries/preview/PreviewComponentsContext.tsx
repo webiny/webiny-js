@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useSyncExternalStore } from "react";
 
 export interface PreviewComponent {
     name: string;
@@ -6,26 +6,57 @@ export interface PreviewComponent {
     description: string;
 }
 
-interface PreviewComponentsContextValue {
-    components: PreviewComponent[];
-    addComponent: (component: PreviewComponent) => void;
-}
+type Listener = () => void;
 
-const ComponentsContext = createContext<PreviewComponentsContextValue | undefined>(undefined);
+class PreviewComponentsStore {
+    private components: PreviewComponent[] = [];
+    private listeners = new Set<Listener>();
 
-const EMPTY_COMPONENTS: PreviewComponent[] = [];
-const NO_OP = () => {
-    return;
-};
-
-export const usePreviewComponents = () => {
-    const context = useContext(ComponentsContext);
-
-    if (!context) {
-        return { components: EMPTY_COMPONENTS, addComponent: NO_OP };
+    getComponents(): PreviewComponent[] {
+        return this.components;
     }
 
-    return context;
+    addComponent(component: PreviewComponent): void {
+        const exists = this.components.some(c => c.name === component.name);
+        if (exists) {
+            this.components = this.components.map(c =>
+                c.name === component.name ? component : c
+            );
+        } else {
+            this.components = [...this.components, component];
+        }
+        console.log("[PreviewComponentsStore] addComponent:", component.name, "total:", this.components.length);
+        this.notify();
+    }
+
+    clear(): void {
+        this.components = [];
+        this.notify();
+    }
+
+    subscribe(listener: Listener): () => void {
+        this.listeners.add(listener);
+        return () => this.listeners.delete(listener);
+    }
+
+    private notify(): void {
+        this.listeners.forEach(fn => fn());
+    }
+}
+
+const store = new PreviewComponentsStore();
+
+export const usePreviewComponents = () => {
+    const components = useSyncExternalStore(
+        cb => store.subscribe(cb),
+        () => store.getComponents(),
+        () => [] as PreviewComponent[]
+    );
+
+    return {
+        components,
+        addComponent: (component: PreviewComponent) => store.addComponent(component)
+    };
 };
 
 interface PreviewComponentsProviderProps {
@@ -33,21 +64,5 @@ interface PreviewComponentsProviderProps {
 }
 
 export const PreviewComponentsProvider = ({ children }: PreviewComponentsProviderProps) => {
-    const [components, setComponents] = useState<PreviewComponent[]>([]);
-
-    const addComponent = useCallback((component: PreviewComponent) => {
-        setComponents(prev => {
-            const exists = prev.some(c => c.name === component.name);
-            if (exists) {
-                return prev.map(c => (c.name === component.name ? component : c));
-            }
-            return [...prev, component];
-        });
-    }, []);
-
-    return (
-        <ComponentsContext.Provider value={{ components, addComponent }}>
-            {children}
-        </ComponentsContext.Provider>
-    );
+    return <>{children}</>;
 };

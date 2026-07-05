@@ -49,7 +49,21 @@ export interface IEnvironment {
     isEditing(): boolean;
 }
 
+export interface CmsModelDefinition {
+    name: string;
+    modelId: string;
+    fields: Array<{
+        fieldId: string;
+        type: string;
+        list?: boolean;
+        settings?: Record<string, unknown>;
+    }>;
+    settings?: Record<string, unknown>;
+    componentMap?: Record<string, string>;
+}
+
 export interface IContentSdk {
+    getModel(modelId: string): Promise<CmsModelDefinition | null>;
     getEntry<T extends CmsEntryValues = CmsEntryValues>(
         params: GetEntryParams
     ): Promise<CmsEntry<T> | null>;

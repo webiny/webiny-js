@@ -4,6 +4,7 @@ import type {
     CmsEntryValues,
     CmsEntry,
     CmsListResult,
+    CmsModelDefinition,
     GetEntryParams,
     ListEntriesParams,
     IContentSdk
@@ -14,6 +15,7 @@ const SYSTEM_FIELDS = ["id", "entryId", "createdOn", "modifiedOn", "savedOn"];
 export class LiveSdk implements IContentSdk {
     private webiny: Webiny;
     private preview: boolean;
+    private modelCache = new Map<string, CmsModelDefinition>();
 
     constructor(config: CmsSdkConfig) {
         this.preview = config.preview === true;
@@ -23,6 +25,22 @@ export class LiveSdk implements IContentSdk {
             tenant: config.apiTenant || "root",
             fetch: config.fetch
         });
+    }
+
+    async getModel(modelId: string): Promise<CmsModelDefinition | null> {
+        const cached = this.modelCache.get(modelId);
+        if (cached) {
+            return cached;
+        }
+
+        const result = await this.webiny.cms.getModel({ modelId });
+        if (result.isFail()) {
+            return null;
+        }
+
+        const model = result.value as CmsModelDefinition;
+        this.modelCache.set(modelId, model);
+        return model;
     }
 
     async getEntry<T extends CmsEntryValues = CmsEntryValues>(

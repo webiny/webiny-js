@@ -28,6 +28,8 @@ export type {
 
 export type { GetEntryParams, GetEntryWhere } from "./methods/cms/getEntry.js";
 
+export type { GetModelParams, CmsModelData, CmsModelField } from "./methods/cms/getModel.js";
+
 export type { ListEntriesParams, ListEntriesResult } from "./methods/cms/listEntries.js";
 
 export type { DeleteEntryRevisionParams } from "./methods/cms/deleteEntryRevision.js";

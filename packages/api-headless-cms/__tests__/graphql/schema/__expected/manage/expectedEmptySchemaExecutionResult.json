@@ -831,6 +831,16 @@
               "name": "valuesSelection",
               "description": null,
               "type": { "kind": "SCALAR", "name": "String", "ofType": null }
+            },
+            {
+              "name": "componentMap",
+              "description": null,
+              "type": { "kind": "SCALAR", "name": "JSON", "ofType": null }
+            },
+            {
+              "name": "settings",
+              "description": null,
+              "type": { "kind": "SCALAR", "name": "JSON", "ofType": null }
             }
           ]
         },

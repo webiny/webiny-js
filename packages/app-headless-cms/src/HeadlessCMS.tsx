@@ -43,6 +43,7 @@ import {
 import { ContentEntriesModule } from "~/ContentEntriesModule.js";
 import { PreviewDecorator } from "~/presentation/contentEntries/preview/PreviewDecorator.js";
 import { ModelEditorComponentDiscovery } from "~/presentation/contentEntries/preview/ModelEditorComponentDiscovery.js";
+import { LivePreviewFeature } from "~/presentation/contentEntries/preview/feature.js";
 
 const HeadlessCMSExtension = () => {
     plugins.register(apiInformation);
@@ -64,6 +65,7 @@ const HeadlessCMSExtension = () => {
             <RegisterFeature feature={FormModelFeature} />
             <RegisterFeature feature={CmsFormModelFeature} />
             <RegisterFeature feature={ContentEntryFeature} />
+            <RegisterFeature feature={LivePreviewFeature} />
             <RegisterFeature feature={CmsFieldRendererFeature} />
             <RegisterFeature feature={CmsFieldTypeFeature} />
             <RegisterFeature feature={FieldEditorFeature} />

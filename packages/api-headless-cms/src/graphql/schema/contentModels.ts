@@ -5,6 +5,7 @@ import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { ValuesSelectionGenerator } from "~/features/contentModel/ValuesSelectionGenerator/abstractions.js";
+import { ComponentMapGenerator } from "~/features/contentModel/ComponentMapGenerator/abstractions.js";
 
 export interface CreateModelsSchemaParams {
     context: CmsContext;
@@ -67,6 +68,10 @@ export const createModelsSchema = ({
             },
             valuesSelection: (model: CmsModel, _: unknown, ctx: CmsContext) => {
                 const generator = ctx.container.resolve(ValuesSelectionGenerator);
+                return generator.generate(model);
+            },
+            componentMap: (model: CmsModel, _: unknown, ctx: CmsContext) => {
+                const generator = ctx.container.resolve(ComponentMapGenerator);
                 return generator.generate(model);
             }
         }
@@ -301,6 +306,7 @@ export const createModelsSchema = ({
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!
                 valuesSelection: String
+                componentMap: JSON
                 settings: JSON
             }
 

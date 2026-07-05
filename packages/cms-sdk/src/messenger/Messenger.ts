@@ -1,11 +1,18 @@
 import type { MessageOrigin } from "./MessageOrigin.js";
 
-type Handler<T = any> = (payload: T) => void;
+export type Message<T = any> = {
+    type: string;
+    payload: T;
+};
+
+type Handler<T = any> = (payload: T, logicalType: string) => void;
+
+const ignored: string[] = [];
 
 export class Messenger {
     private listeners = new Map<string, Set<Handler>>();
-    private readonly prefix: string;
     private readonly pattern: string;
+    private readonly prefixGlob: string;
 
     constructor(
         private source: MessageOrigin,
@@ -13,7 +20,7 @@ export class Messenger {
         pattern: string
     ) {
         this.pattern = pattern;
-        this.prefix = pattern.replace(/\*+$/, "");
+        this.prefixGlob = pattern.replace(/\*+$/, "");
         this.handleMessage = this.handleMessage.bind(this);
         this.source.window.addEventListener("message", this.handleMessage);
     }
@@ -24,15 +31,30 @@ export class Messenger {
             return;
         }
 
-        if (!type || !type.startsWith(this.prefix)) {
+        if (!type || !type.startsWith(this.prefixGlob)) {
             return;
         }
 
-        const logicalType = type.slice(this.prefix.length);
+        const logicalType = this.stripPrefix(type);
+
+        if (!this.isIgnored(logicalType)) {
+            console.debug(`${this.getTime()} --> [${this.source.origin}][${logicalType}]`, payload);
+        }
+
         const handlers = this.listeners.get(logicalType);
         if (handlers) {
-            handlers.forEach(fn => fn(payload));
+            handlers.forEach(fn => fn(payload, logicalType));
         }
+    }
+
+    private stripPrefix(fullType: string): string {
+        return fullType.startsWith(this.prefixGlob)
+            ? fullType.slice(this.prefixGlob.length)
+            : fullType;
+    }
+
+    private isIgnored(logicalType: string): boolean {
+        return ignored.includes(logicalType);
     }
 
     on<T = any>(logicalType: string, handler: Handler<T>) {
@@ -49,12 +71,22 @@ export class Messenger {
     }
 
     send<T = any>(logicalType: string, payload?: T) {
-        const fullType = this.prefix + logicalType;
+        const fullType = this.prefixGlob + logicalType;
+
+        if (!this.isIgnored(logicalType)) {
+            console.debug(`${this.getTime()} <-- [${this.source.origin}][${logicalType}]`, payload);
+        }
+
         this.target.window.postMessage({ type: fullType, payload }, this.target.origin);
     }
 
     dispose() {
         this.source.window.removeEventListener("message", this.handleMessage);
         this.listeners.clear();
+    }
+
+    private getTime() {
+        const date = new Date();
+        return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.${date.getMilliseconds()}`;
     }
 }

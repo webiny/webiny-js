@@ -244,7 +244,8 @@ export const createModelUpdateValidation = () => {
         titleFieldId: optionalShortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
         imageFieldId: optionalShortString.nullish(),
-        tags: zod.array(shortString).optional()
+        tags: zod.array(shortString).optional(),
+        settings: zod.record(zod.string(), zod.any()).optional()
     });
 };
 

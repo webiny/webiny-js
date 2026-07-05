@@ -3,6 +3,7 @@ import type {
     CmsEntryValues,
     CmsEntry,
     CmsListResult,
+    CmsModelDefinition,
     GetEntryParams,
     ListEntriesParams,
     IContentSdk
@@ -13,53 +14,103 @@ import { environment } from "./Environment.js";
 import { componentRegistry } from "./component/ComponentRegistry.js";
 import type { Component } from "./component/types.js";
 
-class ContentSdkImpl {
-    private sdk: IContentSdk | null = null;
+class InternalContentSdk implements IContentSdk {
+    private activeSdk: IContentSdk;
+    private editingSdk: EditingSdk | undefined;
 
-    init(config: CmsSdkConfig): void {
-        if (environment.isEditing()) {
-            this.sdk = new EditingSdk();
-        } else {
-            this.sdk = new LiveSdk(config);
-        }
+    constructor(liveSdk: IContentSdk, editingSdk?: EditingSdk) {
+        this.activeSdk = editingSdk ?? liveSdk;
+        this.editingSdk = editingSdk;
     }
 
-    registerComponent(component: Component): void {
-        componentRegistry.register(component);
+    getEditingSdk() {
+        return this.editingSdk;
     }
 
-    async getEntry<T extends CmsEntryValues = CmsEntryValues>(
+    getModel(modelId: string): Promise<CmsModelDefinition | null> {
+        return this.activeSdk.getModel(modelId);
+    }
+
+    getEntry<T extends CmsEntryValues = CmsEntryValues>(
         params: GetEntryParams
     ): Promise<CmsEntry<T> | null> {
-        return this.getSdk().getEntry<T>(params);
+        return this.activeSdk.getEntry<T>(params);
     }
 
-    async listEntries<T extends CmsEntryValues = CmsEntryValues>(
+    listEntries<T extends CmsEntryValues = CmsEntryValues>(
         params: ListEntriesParams
     ): Promise<CmsListResult<T>> {
-        return this.getSdk().listEntries<T>(params);
-    }
-
-    isEditing(): boolean {
-        return environment.isEditing();
-    }
-
-    isServer(): boolean {
-        return environment.isServer();
-    }
-
-    isClient(): boolean {
-        return environment.isClient();
-    }
-
-    private getSdk(): IContentSdk {
-        if (!this.sdk) {
-            throw new Error(
-                "CMS SDK is not initialized. Call contentSdk.init() before using the SDK."
-            );
-        }
-        return this.sdk;
+        return this.activeSdk.listEntries<T>(params);
     }
 }
 
-export const contentSdk = new ContentSdkImpl();
+export class ContentSdk implements IContentSdk {
+    protected sdk?: InternalContentSdk;
+
+    init(config: CmsSdkConfig): void {
+        const liveSdk = new LiveSdk(config);
+
+        let editingSdk: EditingSdk | undefined;
+        if (environment.isEditing()) {
+            editingSdk = new EditingSdk(liveSdk);
+        }
+
+        this.sdk = new InternalContentSdk(liveSdk, editingSdk);
+    }
+
+    getEditingSdk() {
+        this.assertInitialized();
+        return this.sdk.getEditingSdk();
+    }
+
+    getModel(modelId: string) {
+        this.assertInitialized();
+        return this.sdk.getModel(modelId);
+    }
+
+    getEntry<T extends CmsEntryValues = CmsEntryValues>(params: GetEntryParams) {
+        this.assertInitialized();
+        return this.sdk.getEntry<T>(params);
+    }
+
+    listEntries<T extends CmsEntryValues = CmsEntryValues>(params: ListEntriesParams) {
+        this.assertInitialized();
+        return this.sdk.listEntries<T>(params);
+    }
+
+    registerComponent(component: Component): void {
+        this.assertInitialized();
+        componentRegistry.register(component);
+    }
+
+    onEntryUpdate(fn: (entry: Record<string, unknown>) => void): () => void {
+        this.assertInitialized();
+        const editingSdk = this.sdk.getEditingSdk();
+        if (editingSdk) {
+            return editingSdk.onEntryUpdate(fn);
+        }
+        return () => {
+            return;
+        };
+    }
+
+    isEditing() {
+        return environment.isEditing();
+    }
+
+    isServer() {
+        return environment.isServer();
+    }
+
+    isClient() {
+        return environment.isClient();
+    }
+
+    private assertInitialized(): asserts this is this & { sdk: InternalContentSdk } {
+        if (!this.sdk) {
+            throw new Error("CMS SDK is not initialized. Call contentSdk.init() before using.");
+        }
+    }
+}
+
+export const contentSdk = new ContentSdk();

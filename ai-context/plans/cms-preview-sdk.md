@@ -16,6 +16,37 @@ Durable decisions that apply across all phases:
 
 ---
 
+## Phase 0: Wildcard field selection (`values.*`)
+
+**User stories**: 1
+
+### What to build
+
+Add support for the `values.*` wildcard in the backend's generic `getEntry`/`listEntries` resolvers. This is the foundation that lets the SDK (and any API consumer) fetch all entry values without knowing the model's field structure.
+
+**Backend**: In the generic CMS resolver (`getEntryResolver.ts`), when the `fields` array contains `"values.*"`, expand it to `values { <full selection> }` using the model's `ValuesSelectionGenerator`. The model is already resolved in the resolver, and the `ValuesSelectionGenerator` is already a registered service. The expansion replaces the `values.*` entry in the fields array with the generated selection; other fields (like `id`, `entryId`, `createdOn`) pass through unchanged.
+
+The same wildcard support should apply to `listEntries` as well.
+
+**Test**: Write tests that verify:
+
+- `values.*` expands to the correct GraphQL selection for models with scalar fields, object fields, DZ fields (with templates), and nested DZs
+- Mixing `values.*` with explicit system fields (`id`, `entryId`) works correctly
+- Models with no fields produce a valid (empty or minimal) selection
+- The expanded query actually returns the expected entry data end-to-end (integration test via the existing CMS test infrastructure)
+
+### Acceptance criteria
+
+- [ ] `getEntry` resolver expands `values.*` to the full values selection using `ValuesSelectionGenerator`
+- [ ] `listEntries` resolver supports the same `values.*` wildcard
+- [ ] Explicit fields (`id`, `entryId`, `createdOn`) can be mixed with `values.*`
+- [ ] DZ template values are returned with `_templateId` and all template fields
+- [ ] Object fields and nested structures are fully expanded
+- [ ] Models with no fields don't error out
+- [ ] Integration tests pass for models with scalar, object, DZ, and nested DZ fields
+
+---
+
 ## Phase 1: Model preview URL + SDK skeleton + basic entry rendering
 
 **User stories**: 1, 4, 12, 13, 17
@@ -26,10 +57,6 @@ The thinnest possible end-to-end slice: a CMS model gets a preview URL setting, 
 
 **API side**: Add `previewUrl` to the `CmsModel.settings` schema. The model editor UI gets a "Preview URL" text field in the model settings area. The value is persisted and returned in `getContentModel` responses.
 
-**SDK packages**: Create `@webiny/cms-sdk` with the core architecture — `ContentSdk` singleton with `init(config)`, environment detection (`isClient`, `isServer`, `isEditing`), and a data provider that wraps the existing `@webiny/sdk` `CmsSdk`. Create `@webiny/cms-nextjs` as a thin Next.js wrapper (headers provider, re-exports).
-
-**`values.*` wildcard**: Add support for the `values.*` wildcard in the backend's `getEntry` resolver (in `buildFieldsSelection` or the resolver itself). When the resolver sees `values.*` in the `fields` array, it expands it to the full values selection using the model's `ValuesSelectionGenerator` (the model is already resolved in the resolver). This is the key enabler — the SDK never needs to know about field types or DZ structures.
-
 **SDK packages**: Create `@webiny/cms-sdk` with the core architecture — `ContentSdk` singleton with `init(config)`, environment detection (`isClient`, `isServer`, `isEditing`), and a data provider that wraps the existing `@webiny/sdk` `CmsSdk`. The SDK always passes `["id", "entryId", "values.*"]` to `getEntry`. Create `@webiny/cms-nextjs` as a thin Next.js wrapper (headers provider, re-exports).
 
 **Next.js demo**: A basic Next.js page fetches an entry via the SDK and renders scalar fields (title, slug, body) as plain HTML. No DZ component rendering yet — DZ values are accessible as raw data.
@@ -38,7 +65,6 @@ The thinnest possible end-to-end slice: a CMS model gets a preview URL setting, 
 
 - [ ] `CmsModel.settings.previewUrl` is persisted and returned in the `getContentModel` GraphQL response
 - [ ] Model editor UI has a "Preview URL" field in model settings
-- [ ] Backend `getEntry` resolver expands `values.*` to the full values selection using `ValuesSelectionGenerator`
 - [ ] `@webiny/cms-sdk` package exists with `ContentSdk.init(config)`, environment detection, and `getEntry(modelId, entryId)` that passes `["id", "entryId", "values.*"]`
 - [ ] `@webiny/cms-nextjs` package exists and re-exports the core SDK with Next.js headers provider
 - [ ] A Next.js page can fetch and render an entry's scalar fields without writing any GraphQL
