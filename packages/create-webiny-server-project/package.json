@@ -10,6 +10,7 @@
   "description": "Create a new Webiny server-flavour project.",
   "license": "MIT",
   "dependencies": {
+    "@webiny/self-hosted-auth": "0.0.0",
     "fs-extra": "^11.3.0",
     "react": "18.3.1"
   },

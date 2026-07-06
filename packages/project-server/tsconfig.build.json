@@ -5,8 +5,7 @@
     { "path": "../api-event-handler-server-sql/tsconfig.build.json" },
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-serverless-cms/tsconfig.build.json" },
-    { "path": "../project/tsconfig.build.json" },
-    { "path": "../self-hosted-auth/tsconfig.build.json" }
+    { "path": "../project/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -22,9 +21,7 @@
       "@webiny/app-serverless-cms/*": ["../app-serverless-cms/src/*"],
       "@webiny/app-serverless-cms": ["../app-serverless-cms/src"],
       "@webiny/project/*": ["../project/src/*"],
-      "@webiny/project": ["../project/src"],
-      "@webiny/self-hosted-auth/*": ["../self-hosted-auth/src/*"],
-      "@webiny/self-hosted-auth": ["../self-hosted-auth/src"]
+      "@webiny/project": ["../project/src"]
     }
   }
 }

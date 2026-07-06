@@ -5,8 +5,7 @@
     { "path": "../api-event-handler-server-sql" },
     { "path": "../app" },
     { "path": "../app-serverless-cms" },
-    { "path": "../project" },
-    { "path": "../self-hosted-auth" }
+    { "path": "../project" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -22,9 +21,7 @@
       "@webiny/app-serverless-cms/*": ["../app-serverless-cms/src/*"],
       "@webiny/app-serverless-cms": ["../app-serverless-cms/src"],
       "@webiny/project/*": ["../project/src/*"],
-      "@webiny/project": ["../project/src"],
-      "@webiny/self-hosted-auth/*": ["../self-hosted-auth/src/*"],
-      "@webiny/self-hosted-auth": ["../self-hosted-auth/src"]
+      "@webiny/project": ["../project/src"]
     }
   }
 }

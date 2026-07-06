@@ -20,4 +20,3 @@ export { ToolsFeature } from "@webiny/app-admin/features/tools/index.js";
 export { AdminConfig } from "@webiny/app-admin/config/AdminConfig.js";
 export { Routes } from "@webiny/app-admin/routes.js";
 export { createFeature, createAbstraction, BaseError } from "@webiny/feature/admin/index.js";
-export { Extension as SelfHostedAuth } from "@webiny/self-hosted-auth/admin/index.js";

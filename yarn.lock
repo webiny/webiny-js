@@ -13174,7 +13174,6 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
     "@webiny/project": "npm:0.0.0"
-    "@webiny/self-hosted-auth": "npm:0.0.0"
     knex: "npm:^3.3.0"
     react: "npm:18.3.1"
     replace-in-path: "npm:^1.1.0"
@@ -15939,6 +15938,7 @@ __metadata:
   resolution: "create-webiny-server-project@workspace:packages/create-webiny-server-project"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/self-hosted-auth": "npm:0.0.0"
     fs-extra: "npm:^11.3.0"
     react: "npm:18.3.1"
   bin:
