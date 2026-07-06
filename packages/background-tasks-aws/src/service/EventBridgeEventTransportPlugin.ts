@@ -2,9 +2,9 @@ import type {
     ITaskService,
     ITaskServiceCreatePluginParams,
     ITaskServiceTask
-} from "~/api/plugins/index.js";
-import { TaskServicePlugin } from "~/api/plugins/index.js";
-import type { ITaskEventInput } from "~/api/types.js";
+} from "@webiny/background-tasks/api/plugins/index.js";
+import { TaskServicePlugin } from "@webiny/background-tasks/api/plugins/index.js";
+import type { ITaskEventInput } from "@webiny/background-tasks/api/types.js";
 import type { PutEventsCommandOutput } from "@webiny/aws-sdk/client-eventbridge/index.js";
 import { EventBridgeClient, PutEventsCommand } from "@webiny/aws-sdk/client-eventbridge/index.js";
 import { WebinyError } from "@webiny/error";

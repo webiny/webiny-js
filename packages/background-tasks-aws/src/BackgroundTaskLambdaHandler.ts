@@ -6,12 +6,12 @@ import {
     RawTenantId,
     RequestTenantLoader
 } from "@webiny/api-core/features/requestContext/index.js";
-import { timerFactory } from "@webiny/handler-aws/utils/index.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import type { IBackgroundTaskEvent } from "@webiny/event-handler-aws/eventTypes/BackgroundTaskEventType.js";
-import { TaskRunner } from "~/api/runner/index.js";
-import { TaskEventValidation } from "~/api/runner/TaskEventValidation.js";
-import type { Context } from "~/api/types.js";
+import { TaskRunner } from "@webiny/background-tasks/api/runner/index.js";
+import { TaskEventValidation } from "@webiny/background-tasks/api/runner/TaskEventValidation.js";
+import type { Context } from "@webiny/background-tasks/api/types.js";
+import { LambdaTimer } from "~/timer/LambdaTimer.js";
 
 class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Interface {
     constructor(private container: Container) {}
@@ -51,7 +51,8 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Inte
             await schema.build(ctx);
         }
 
-        const runner = new TaskRunner(ctx as Context, timerFactory(), new TaskEventValidation());
+        const timer = new LambdaTimer({ getRemainingTimeInMillis: () => 900_000 });
+        const runner = new TaskRunner(ctx as Context, timer, new TaskEventValidation());
 
         // Return the task result — the SFN reads `$.status` (continue/done/error) from it to drive
         // the state machine. Returning void makes the SFN see null → UnknownError → FAILED.

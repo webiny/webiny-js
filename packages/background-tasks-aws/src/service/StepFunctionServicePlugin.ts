@@ -2,18 +2,18 @@ import type {
     ITaskService,
     ITaskServiceCreatePluginParams,
     ITaskServiceTask
-} from "~/api/plugins/index.js";
-import { TaskServicePlugin } from "~/api/plugins/index.js";
+} from "@webiny/background-tasks/api/plugins/index.js";
+import { TaskServicePlugin } from "@webiny/background-tasks/api/plugins/index.js";
 import type { DescribeExecutionCommandOutput } from "@webiny/aws-sdk/client-sfn/index.js";
 import {
     createStepFunctionClient,
     describeExecutionFactory,
     triggerStepFunctionFactory
 } from "@webiny/aws-sdk/client-sfn/index.js";
-import type { ITaskEventInput } from "~/api/handler/types.js";
+import type { ITaskEventInput } from "@webiny/background-tasks/api/handler/types.js";
 import { generateAlphaNumericId } from "@webiny/utils";
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
-import type { ITask } from "~/api/types.js";
+import type { ITask } from "@webiny/background-tasks/api/types.js";
 
 export type IStepFunctionServiceFetchResult = DescribeExecutionCommandOutput;
 
