@@ -20,4 +20,6 @@ export type {
     IAiOutputToolRegistry,
     IAiToolPipelineRunner
 } from "./toolPipeline/index.js";
+export { TextExtractor, DefaultTextExtractor } from "./TextExtractor/index.js";
+export type { ITextExtractor, TextExtractorResult } from "./TextExtractor/index.js";
 export { AiFeature } from "./feature.js";

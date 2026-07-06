@@ -7,6 +7,7 @@ export interface GenerateEntryContentParams {
     excludedFileIds?: string[] | null;
     readerPersonaId?: string | null;
     writerPersonaId?: string | null;
+    additionalFileIds?: string[] | null;
 }
 
 export interface IGenerateEntryContentUseCase {

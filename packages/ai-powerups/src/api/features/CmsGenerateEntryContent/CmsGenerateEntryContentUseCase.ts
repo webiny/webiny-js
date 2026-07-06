@@ -71,7 +71,8 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
             projectId: params.projectId,
             readerPersonaId: params.readerPersonaId,
             writerPersonaId: params.writerPersonaId,
-            excludedFileIds: params.excludedFileIds
+            excludedFileIds: params.excludedFileIds,
+            additionalFileIds: params.additionalFileIds
         });
 
         if (context.allProjectFiles.length > 0) {

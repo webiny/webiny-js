@@ -141,6 +141,7 @@ export { useLayoutRenderers } from "./features/formModel/useLayoutRenderers.js";
 // Import all field renderers to ensure their module augmentations are applied.
 import "./base/Base/FieldRenderers/InputRenderer.js";
 import "./base/Base/FieldRenderers/SelectRenderer.js";
+import "./base/Base/FieldRenderers/MultiSelectRenderer.js";
 import "./base/Base/FieldRenderers/TextareaRenderer.js";
 import "./base/Base/FieldRenderers/SwitchRenderer.js";
 import "./base/Base/FieldRenderers/NumberInputRenderer.js";

@@ -44,6 +44,7 @@ export interface AiPromptContextParams {
     readerPersonaId?: string | null;
     writerPersonaId?: string | null;
     excludedFileIds?: string[] | null;
+    additionalFileIds?: string[] | null;
 }
 
 export interface ProjectFileContent {

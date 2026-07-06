@@ -15,6 +15,7 @@ export interface IWbGeneratePageContentTaskInput {
     excludedFileIds?: string[] | null;
     readerPersonaId?: string | null;
     writerPersonaId?: string | null;
+    additionalFileIds?: string[] | null;
 }
 
 class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGeneratePageContentTaskInput> {
@@ -48,7 +49,8 @@ class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGener
             projectId: input.projectId,
             excludedFileIds: input.excludedFileIds,
             readerPersonaId: input.readerPersonaId,
-            writerPersonaId: input.writerPersonaId
+            writerPersonaId: input.writerPersonaId,
+            additionalFileIds: input.additionalFileIds
         });
 
         const identity = this.identityContext.getIdentity();

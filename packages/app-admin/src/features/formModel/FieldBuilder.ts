@@ -207,7 +207,7 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
     options(opts: IValueOption[] | ((params: IFieldCallbackParams) => IValueOption[])): this {
         this._config.options = opts;
         if (this._config.renderer === "textInput" || this._config.renderer === "numberInput") {
-            this._config.renderer = "dropdown";
+            this._config.renderer = "select";
         }
         return this;
     }

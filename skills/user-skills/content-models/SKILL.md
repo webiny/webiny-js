@@ -221,7 +221,8 @@ When a `text` or `number` field uses `.predefinedValues([...])`, additional rend
 become available:
 
 - `"radioButtons"` — single-value; requires `list: false` and `predefinedValues`.
-- `"dropdown"` — single-value; requires `list: false` and `predefinedValues`.
+- `"select"` — single-value; requires `list: false` and `predefinedValues`.
+- `"dropdown"` — **deprecated**, alias for `"select"`. Use `"select"` instead.
 - `"checkboxes"` — multi-value; requires `list: true` and `predefinedValues`.
 - `"tags"` — multi-value free-form entry; `text` only, requires `list: true` and NO
   `predefinedValues`.
