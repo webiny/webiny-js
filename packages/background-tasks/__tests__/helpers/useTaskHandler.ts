@@ -22,7 +22,7 @@ import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
 import { TenantFromHeaderInitializer } from "./mocks/TenantFromHeaderInitializer";
 import { TaskRunner } from "~/api/runner/index.js";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation.js";
-import { timerFactory } from "@webiny/handler-aws/utils/index.js";
+import type { Timer } from "~/api/abstractions/Timer.js";
 import type { ITaskRawEvent } from "~/api/handler/types";
 import type { IResponseResult } from "~/api/response/abstractions/index.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -42,6 +42,11 @@ const defaultPermissions: SecurityPermission[] = [
     { name: "task.entry", rwd: "rwd" },
     { name: "*" }
 ];
+
+const mockTimer: Timer.Interface = {
+    getRemainingMilliseconds: () => 1_000_000,
+    getRemainingSeconds: () => 1_000
+};
 
 export const useTaskHandler = (params?: UseTaskHandlerParams) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
@@ -95,11 +100,7 @@ export const useTaskHandler = (params?: UseTaskHandlerParams) => {
                 body: { query: "{ __typename }" }
             });
 
-            const runner = new TaskRunner(
-                capturedCtx,
-                timerFactory({ getRemainingTimeInMillis: () => 1_000_000 }),
-                new TaskEventValidation()
-            );
+            const runner = new TaskRunner(capturedCtx, mockTimer, new TaskEventValidation());
             return runner.run(event);
         }
     };

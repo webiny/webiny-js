@@ -9,7 +9,10 @@ import {
     BackgroundTaskEventType,
     WebSocketEventType
 } from "@webiny/event-handler-aws";
-import { BackgroundTaskLambdaHandler } from "@webiny/background-tasks/api";
+import {
+    BackgroundTaskLambdaHandler,
+    BackgroundTasksAwsFeature
+} from "@webiny/background-tasks-aws";
 import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
@@ -124,6 +127,7 @@ export const handler = createLambdaHandler({
         AuditLogsFeature.register(container, {});
         WebhooksFeature.register(container);
         BackgroundTasksFeature.register(container);
+        BackgroundTasksAwsFeature.register(container);
 
         // ── Workflows ──────────────────────────────────────────────
         WorkflowsFeature.register(container);
