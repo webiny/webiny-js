@@ -23,7 +23,7 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Inte
         // The SFN/EventBridge transport wraps the task as `{ name, payload }`; TaskRunner expects the
         // flat task event (webinyTaskId at top level), so unwrap `payload` (falling back to the event
         // itself if it's already flat).
-        const taskEvent = (eventCtx.event as any)?.payload ?? eventCtx.event;
+        const taskEvent = (eventCtx.event as any)?.payload || eventCtx.event;
 
         // Background tasks have no HTTP request establisher. This is the bg-task EXTRACT step: put the
         // tenant id from the task event into RawTenantId, then run the shared LOAD step
