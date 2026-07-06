@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 
 export interface CleanupStaleMultipartUploadsInput {
     /* Reserved for future use. */
@@ -22,6 +23,7 @@ async function readdirSafe(dirPath: string): Promise<string[]> {
 }
 
 class CleanupStaleMultipartUploadsTaskImpl implements TaskDefinition.Interface<CleanupStaleMultipartUploadsInput> {
+    public constructor(private readonly config: FileManagerServerConfig.Interface) {}
     public readonly id = "fileManagerCleanupStaleMultipartUploads";
     public readonly title = "Clean up stale multipart upload directories";
     public readonly description =
@@ -40,7 +42,7 @@ class CleanupStaleMultipartUploadsTaskImpl implements TaskDefinition.Interface<C
             return controller.response.aborted();
         }
 
-        const storagePath = String(process.env.WEBINY_LOCAL_STORAGE_PATH);
+        const storagePath = this.config.storagePath;
         const tenantsDir = path.join(storagePath, "tenants");
         const now = Date.now();
 
@@ -75,5 +77,5 @@ class CleanupStaleMultipartUploadsTaskImpl implements TaskDefinition.Interface<C
 
 export const CleanupStaleMultipartUploadsTaskDefinition = TaskDefinition.createImplementation({
     implementation: CleanupStaleMultipartUploadsTaskImpl,
-    dependencies: []
+    dependencies: [FileManagerServerConfig]
 });

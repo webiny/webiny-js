@@ -6,6 +6,7 @@ import { CompleteMultiPartUploadUseCase } from "~/features/CompleteMultiPartUplo
 import { GetFileContentsByKeyUseCase } from "~/features/GetFileContentsByKey/GetFileContentsByKeyUseCase.js";
 import {
     cleanupStorage,
+    makeConfig,
     makeTenantContext,
     makeUploadRequest,
     SECRET,
@@ -23,7 +24,8 @@ afterEach(async () => {
 
 describe("upload + read round trip", () => {
     it("should upload a file via route then read it back via use case", async () => {
-        const route = new UploadSingleFileRoute();
+        const config = makeConfig();
+        const route = new UploadSingleFileRoute(config);
         const tenantContext = makeTenantContext();
         const fileContent = Buffer.from("round trip content");
         const fileKey = "roundtrip/test.txt";
@@ -39,7 +41,7 @@ describe("upload + read round trip", () => {
 
         expect(uploadResponse.statusCode).toBe(204);
 
-        const useCase = new GetFileContentsByKeyUseCase(tenantContext);
+        const useCase = new GetFileContentsByKeyUseCase(tenantContext, config);
         const result = await useCase.execute(fileKey);
 
         expect(result.isOk()).toBe(true);
@@ -48,7 +50,8 @@ describe("upload + read round trip", () => {
     });
 
     it("should upload parts, assemble, then read back", async () => {
-        const partRoute = new UploadPartRoute();
+        const config = makeConfig();
+        const partRoute = new UploadPartRoute(config);
         const tenantContext = makeTenantContext();
         const uploadId = "rt-mp-001";
         const fileKey = "assembled.dat";
@@ -89,10 +92,10 @@ describe("upload + read round trip", () => {
             expect(response.statusCode).toBe(200);
         }
 
-        const completeUseCase = new CompleteMultiPartUploadUseCase(tenantContext);
+        const completeUseCase = new CompleteMultiPartUploadUseCase(tenantContext, config);
         await completeUseCase.execute({ fileKey, uploadId });
 
-        const readUseCase = new GetFileContentsByKeyUseCase(tenantContext);
+        const readUseCase = new GetFileContentsByKeyUseCase(tenantContext, config);
         const result = await readUseCase.execute(fileKey);
 
         expect(result.isOk()).toBe(true);

@@ -2,7 +2,13 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { CompleteMultiPartUploadUseCase } from "~/features/CompleteMultiPartUpload/CompleteMultiPartUploadUseCase.js";
-import { cleanupStorage, makeTenantContext, setupStorage, TENANT_ID } from "./utils/helpers.js";
+import {
+    cleanupStorage,
+    makeConfig,
+    makeTenantContext,
+    setupStorage,
+    TENANT_ID
+} from "./utils/helpers.js";
 
 let storagePath: string;
 
@@ -26,7 +32,7 @@ describe("complete multipart upload", () => {
         await fs.writeFile(path.join(multipartDir, "part-2"), Buffer.from("BBB"));
         await fs.writeFile(path.join(multipartDir, "part-3"), Buffer.from("CCC"));
 
-        const useCase = new CompleteMultiPartUploadUseCase(tenantContext);
+        const useCase = new CompleteMultiPartUploadUseCase(tenantContext, makeConfig());
         await useCase.execute({ fileKey, uploadId });
 
         const finalPath = path.join(storagePath, "tenants", TENANT_ID, "files", fileKey);
@@ -39,7 +45,7 @@ describe("complete multipart upload", () => {
 
     it("should reject path traversal in uploadId", async () => {
         const tenantContext = makeTenantContext();
-        const useCase = new CompleteMultiPartUploadUseCase(tenantContext);
+        const useCase = new CompleteMultiPartUploadUseCase(tenantContext, makeConfig());
 
         await expect(
             useCase.execute({ fileKey: "file.txt", uploadId: "../escape" })
@@ -54,7 +60,7 @@ describe("complete multipart upload", () => {
         await fs.mkdir(multipartDir, { recursive: true });
         await fs.writeFile(path.join(multipartDir, "part-1"), Buffer.from("X"));
 
-        const useCase = new CompleteMultiPartUploadUseCase(tenantContext);
+        const useCase = new CompleteMultiPartUploadUseCase(tenantContext, makeConfig());
 
         await expect(useCase.execute({ fileKey: "../../etc/passwd", uploadId })).rejects.toThrow(
             "Invalid path segment."

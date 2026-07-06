@@ -7,20 +7,22 @@ import { CreateMultiPartUploadUseCase as CreateMultiPartUploadUseCaseAbstraction
 import type { CreateMultiPartUploadResult } from "@webiny/api-file-manager/features/upload/types.js";
 import { createUploadToken } from "~/utils/uploadToken.js";
 import { resolveServerUrl } from "~/utils/resolveServerUrl.js";
+import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 
 class CreateMultiPartUploadUseCaseImpl
     implements CreateMultiPartUploadUseCaseAbstraction.Interface
 {
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
-        private readonly request: Request.Interface
+        private readonly request: Request.Interface,
+        private readonly config: FileManagerServerConfig.Interface
     ) {}
 
     public async execute(
         params: CreateMultiPartUploadUseCaseAbstraction.Params
     ): Promise<CreateMultiPartUploadResult> {
         const { file, numberOfParts } = params;
-        const storagePath = String(process.env.WEBINY_LOCAL_STORAGE_PATH);
+        const storagePath = this.config.storagePath;
         const tenant = this.tenantContext.getTenant();
         const serverUrl = await resolveServerUrl(this.request);
 
@@ -29,7 +31,7 @@ class CreateMultiPartUploadUseCaseImpl
         const multipartDir = path.join(storagePath, "tenants", tenant.id, "multipart", uploadId);
         await mkdir(multipartDir, { recursive: true });
 
-        const secret = process.env.WEBINY_UPLOAD_SECRET as string;
+        const secret = this.config.uploadSecret;
         const expiresAt = Date.now() + 86_400_000; /* 24h */
 
         const parts = Array.from({ length: numberOfParts }, (_, index) => {
@@ -58,5 +60,5 @@ class CreateMultiPartUploadUseCaseImpl
 export const CreateMultiPartUploadUseCase =
     CreateMultiPartUploadUseCaseAbstraction.createImplementation({
         implementation: CreateMultiPartUploadUseCaseImpl,
-        dependencies: [TenantContext, Request]
+        dependencies: [TenantContext, Request, FileManagerServerConfig]
     });

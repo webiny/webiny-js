@@ -7,12 +7,18 @@ import {
     FilePersistenceError
 } from "@webiny/api-file-manager/domain/file/errors.js";
 import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
+import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 
 class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCaseAbstraction.Interface {
     private readonly metadataReader: MetadataReader.Interface;
+    private readonly config: FileManagerServerConfig.Interface;
 
-    public constructor(metadataReader: MetadataReader.Interface) {
+    public constructor(
+        metadataReader: MetadataReader.Interface,
+        config: FileManagerServerConfig.Interface
+    ) {
         this.metadataReader = metadataReader;
+        this.config = config;
     }
 
     public async execute(
@@ -23,7 +29,7 @@ class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCaseAbstra
             return Result.fail(new FileNotFoundError(fileId));
         }
 
-        const storagePath = String(process.env.WEBINY_LOCAL_STORAGE_PATH);
+        const storagePath = this.config.storagePath;
 
         try {
             const filePath = `${storagePath}/${metadata.bucketKey}`;
@@ -43,5 +49,5 @@ class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCaseAbstra
 export const GetFileContentsByIdUseCase =
     GetFileContentsByIdUseCaseAbstraction.createImplementation({
         implementation: GetFileContentsByIdUseCaseImpl,
-        dependencies: [MetadataReader]
+        dependencies: [MetadataReader, FileManagerServerConfig]
     });

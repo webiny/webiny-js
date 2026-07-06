@@ -3,23 +3,18 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { HttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { verifyUploadToken } from "~/utils/uploadToken.js";
-import {
-    getStoragePath,
-    getUploadSecret,
-    isPathContained,
-    json,
-    toBuffer,
-    parseMultipart,
-    getBoundary
-} from "../utils.js";
+import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
+import { isPathContained, json, toBuffer, parseMultipart, getBoundary } from "../utils.js";
 
 class UploadSingleFileRouteImpl implements HttpRoute.Interface {
     public readonly method = "POST";
     public readonly path = "/webiny-file-upload";
 
+    public constructor(private readonly config: FileManagerServerConfig.Interface) {}
+
     public async handle(request: IHttpRequest): Promise<IHttpResponse> {
-        const storagePath = getStoragePath();
-        const secret = getUploadSecret();
+        const storagePath = this.config.storagePath;
+        const secret = this.config.uploadSecret;
 
         const contentType =
             request.headers["content-type"] ?? request.headers["Content-Type"] ?? "";
@@ -75,5 +70,5 @@ class UploadSingleFileRouteImpl implements HttpRoute.Interface {
 
 export const UploadSingleFileRoute = HttpRoute.createImplementation({
     implementation: UploadSingleFileRouteImpl,
-    dependencies: []
+    dependencies: [FileManagerServerConfig]
 });

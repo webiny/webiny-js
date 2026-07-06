@@ -1,6 +1,5 @@
-import { existsSync } from "node:fs";
-import { mkdirSync } from "node:fs";
 import { ContextPlugin } from "@webiny/api";
+import { FileManagerServerConfigFeature } from "~/features/FileManagerServerConfig/feature.js";
 import { UploadSingleFileRouteFeature } from "~/routes/UploadSingleFileRoute/feature.js";
 import { UploadPartRouteFeature } from "~/routes/UploadPartRoute/feature.js";
 import { CleanupStaleMultipartUploadsFeature } from "~/features/CleanupStaleMultipartUploads/feature.js";
@@ -17,26 +16,9 @@ export { createFileUploadModifier } from "@webiny/api-file-manager/features/uplo
 export { createAssetDelivery } from "./assetDelivery/createAssetDelivery.js";
 
 const contextPlugin = new ContextPlugin(context => {
-    const storagePath = process.env["WEBINY_LOCAL_STORAGE_PATH"];
-    if (!storagePath) {
-        throw new Error(
-            `"WEBINY_LOCAL_STORAGE_PATH" environment variable is not defined. Please set it to a valid local path.`
-        );
-    }
-
-    const uploadSecret = process.env["WEBINY_UPLOAD_SECRET"];
-    if (!uploadSecret) {
-        throw new Error(
-            `"WEBINY_UPLOAD_SECRET" environment variable is not defined. Please set it to a secret string used to sign upload tokens.`
-        );
-    }
-
-    if (!existsSync(storagePath)) {
-        mkdirSync(storagePath, { recursive: true });
-    }
-
     const container = context.container;
 
+    FileManagerServerConfigFeature.register(container);
     FlushCacheFeature.register(container);
     DeleteFileFromDiskFeature.register(container);
     ExtractMetadataFeature.register(container);

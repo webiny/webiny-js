@@ -8,16 +8,19 @@ import { WidthCollection } from "@webiny/api-file-manager/features/assetDelivery
 import * as utils from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import { AssetKeyGenerator } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
-import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
 import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
+import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
 class AssetTransformationStrategyImpl implements AssetTransformationStrategyAbstraction.Interface {
     private readonly storagePath: string;
     private readonly imageResizeWidths: number[];
 
-    constructor(storagePath: string, config: ILocalAssetDeliveryConfig) {
-        this.storagePath = storagePath;
+    constructor(
+        serverConfig: FileManagerServerConfig.Interface,
+        config: ILocalAssetDeliveryConfig
+    ) {
+        this.storagePath = serverConfig.storagePath;
         this.imageResizeWidths = config.imageResizeWidths;
     }
 
@@ -171,5 +174,5 @@ class AssetTransformationStrategyImpl implements AssetTransformationStrategyAbst
 
 export const LocalSharpTransform = AssetTransformationStrategyAbstraction.createImplementation({
     implementation: AssetTransformationStrategyImpl,
-    dependencies: [LocalStoragePath, LocalAssetDeliveryConfig]
+    dependencies: [FileManagerServerConfig, LocalAssetDeliveryConfig]
 });

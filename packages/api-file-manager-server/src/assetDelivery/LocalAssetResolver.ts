@@ -5,7 +5,7 @@ import {
 } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { LocalContentsReader } from "~/assetDelivery/LocalContentsReader.js";
-import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
+import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 
 interface AssetMetadata {
     id: string;
@@ -18,7 +18,7 @@ interface AssetMetadata {
 class AssetResolverImpl implements AssetResolverAbstraction.Interface {
     constructor(
         private readonly keyValueStore: GlobalKeyValueStore.Interface,
-        private readonly storagePath: string,
+        private readonly config: FileManagerServerConfig.Interface,
         private readonly objectKey: ObjectKey.Interface,
         private readonly assetFactory: AssetFactory.Interface
     ) {}
@@ -46,7 +46,7 @@ class AssetResolverImpl implements AssetResolverAbstraction.Interface {
             key: metadata.bucketKey
         });
 
-        asset.setContentsReader(LocalContentsReader.create(this.storagePath));
+        asset.setContentsReader(LocalContentsReader.create(this.config.storagePath));
 
         return asset;
     }
@@ -54,5 +54,5 @@ class AssetResolverImpl implements AssetResolverAbstraction.Interface {
 
 export const LocalAssetResolver = AssetResolverAbstraction.createImplementation({
     implementation: AssetResolverImpl,
-    dependencies: [GlobalKeyValueStore, LocalStoragePath, ObjectKey, AssetFactory]
+    dependencies: [GlobalKeyValueStore, FileManagerServerConfig, ObjectKey, AssetFactory]
 });

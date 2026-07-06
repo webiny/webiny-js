@@ -1,9 +1,6 @@
 import path from "node:path";
 import type { IHttpResponse } from "@webiny/event-handler-core";
 
-export const getStoragePath = (): string => String(process.env.WEBINY_LOCAL_STORAGE_PATH);
-export const getUploadSecret = (): string => String(process.env.WEBINY_UPLOAD_SECRET);
-
 export const isPathContained = (filePath: string, storagePath: string): boolean => {
     const resolved = path.resolve(filePath);
     const root = path.resolve(storagePath);

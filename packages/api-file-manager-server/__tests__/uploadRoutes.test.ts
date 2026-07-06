@@ -6,6 +6,7 @@ import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute/UploadSing
 import { UploadPartRoute } from "~/routes/UploadPartRoute/UploadPartRoute.js";
 import {
     cleanupStorage,
+    makeConfig,
     makeUploadRequest,
     SECRET,
     setupStorage,
@@ -24,7 +25,7 @@ afterEach(async () => {
 
 describe("single file upload route", () => {
     it("should upload a file to disk", async () => {
-        const route = new UploadSingleFileRoute();
+        const route = new UploadSingleFileRoute(makeConfig());
         const fileContent = Buffer.from("hello webiny");
         const storageKey = `tenants/${TENANT_ID}/files/abc123/test.txt`;
 
@@ -43,7 +44,7 @@ describe("single file upload route", () => {
     });
 
     it("should reject upload with expired token", async () => {
-        const route = new UploadSingleFileRoute();
+        const route = new UploadSingleFileRoute(makeConfig());
         const storageKey = `tenants/${TENANT_ID}/files/abc/file.txt`;
 
         const request = makeUploadRequest({
@@ -60,7 +61,7 @@ describe("single file upload route", () => {
     });
 
     it("should reject file exceeding max size", async () => {
-        const route = new UploadSingleFileRoute();
+        const route = new UploadSingleFileRoute(makeConfig());
         const storageKey = `tenants/${TENANT_ID}/files/abc/big.txt`;
 
         const request = makeUploadRequest({
@@ -77,7 +78,7 @@ describe("single file upload route", () => {
     });
 
     it("should reject request with missing file", async () => {
-        const route = new UploadSingleFileRoute();
+        const route = new UploadSingleFileRoute(makeConfig());
         const storageKey = `tenants/${TENANT_ID}/files/abc/missing.txt`;
         const boundary = "----TestBoundary123";
 
@@ -112,7 +113,7 @@ describe("single file upload route", () => {
     });
 
     it("should reject token/key mismatch", async () => {
-        const route = new UploadSingleFileRoute();
+        const route = new UploadSingleFileRoute(makeConfig());
         const storageKey = `tenants/${TENANT_ID}/files/abc/file.txt`;
 
         const request = makeUploadRequest({
@@ -131,7 +132,7 @@ describe("single file upload route", () => {
 
 describe("part upload route", () => {
     it("should upload a part to disk and return etag", async () => {
-        const route = new UploadPartRoute();
+        const route = new UploadPartRoute(makeConfig());
         const uploadId = "upload-001";
         const partNumber = 1;
         const partData = Buffer.from("part one data");

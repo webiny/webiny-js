@@ -4,6 +4,7 @@ import { GetFileContentsByIdUseCase } from "~/features/GetFileContentsById/GetFi
 import type { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
 import {
     cleanupStorage,
+    makeConfig,
     makeTenantContext,
     setupStorage,
     TENANT_ID,
@@ -26,7 +27,7 @@ describe("get file contents by key", () => {
 
         await writeTestFile(`tenants/${TENANT_ID}/files/${fileKey}`, fileContent);
 
-        const useCase = new GetFileContentsByKeyUseCase(tenantContext);
+        const useCase = new GetFileContentsByKeyUseCase(tenantContext, makeConfig());
         const result = await useCase.execute(fileKey);
 
         expect(result.isOk()).toBe(true);
@@ -37,7 +38,7 @@ describe("get file contents by key", () => {
     it("should return error for missing file", async () => {
         const tenantContext = makeTenantContext();
 
-        const useCase = new GetFileContentsByKeyUseCase(tenantContext);
+        const useCase = new GetFileContentsByKeyUseCase(tenantContext, makeConfig());
         const result = await useCase.execute("nonexistent.txt");
 
         expect(result.isFail()).toBe(true);
@@ -56,7 +57,7 @@ describe("get file contents by key", () => {
         for (const { key, expected } of cases) {
             await writeTestFile(`tenants/${TENANT_ID}/files/${key}`, Buffer.from("test"));
 
-            const useCase = new GetFileContentsByKeyUseCase(tenantContext);
+            const useCase = new GetFileContentsByKeyUseCase(tenantContext, makeConfig());
             const result = await useCase.execute(key);
 
             expect(result.isOk()).toBe(true);
@@ -87,7 +88,7 @@ describe("get file contents by id", () => {
             }
         };
 
-        const useCase = new GetFileContentsByIdUseCase(metadataReader);
+        const useCase = new GetFileContentsByIdUseCase(metadataReader, makeConfig());
         const result = await useCase.execute("file123");
 
         expect(result.isOk()).toBe(true);
@@ -100,7 +101,7 @@ describe("get file contents by id", () => {
             read: async () => undefined
         };
 
-        const useCase = new GetFileContentsByIdUseCase(metadataReader);
+        const useCase = new GetFileContentsByIdUseCase(metadataReader, makeConfig());
         const result = await useCase.execute("nonexistent");
 
         expect(result.isFail()).toBe(true);
@@ -117,7 +118,7 @@ describe("get file contents by id", () => {
             })
         };
 
-        const useCase = new GetFileContentsByIdUseCase(metadataReader);
+        const useCase = new GetFileContentsByIdUseCase(metadataReader, makeConfig());
         const result = await useCase.execute("ghost");
 
         expect(result.isFail()).toBe(true);

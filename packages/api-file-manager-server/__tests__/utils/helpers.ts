@@ -3,6 +3,7 @@ import path from "node:path";
 import os from "node:os";
 import { createUploadToken } from "~/utils/uploadToken.js";
 import type { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import type { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 import type { IHttpRequest } from "@webiny/event-handler-core";
 
 export const SECRET = "test-upload-secret";
@@ -20,6 +21,11 @@ export const tenant = {
     createdOn: "2026-01-01T00:00:00Z",
     savedOn: "2026-01-01T00:00:00Z"
 };
+
+export const makeConfig = (): FileManagerServerConfig.Interface => ({
+    storagePath: storagePath,
+    uploadSecret: SECRET
+});
 
 export const makeTenantContext = (): TenantContext.Interface => ({
     getTenant: () => tenant,
@@ -90,15 +96,11 @@ let storagePath = "";
 
 export const setupStorage = async (): Promise<string> => {
     storagePath = await fs.mkdtemp(path.join(os.tmpdir(), "webiny-fm-test-"));
-    process.env.WEBINY_LOCAL_STORAGE_PATH = storagePath;
-    process.env.WEBINY_UPLOAD_SECRET = SECRET;
     return storagePath;
 };
 
 export const cleanupStorage = async (): Promise<void> => {
     await fs.rm(storagePath, { recursive: true, force: true });
-    delete process.env.WEBINY_LOCAL_STORAGE_PATH;
-    delete process.env.WEBINY_UPLOAD_SECRET;
 };
 
 export const getStoragePath = (): string => storagePath;

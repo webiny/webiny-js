@@ -7,6 +7,7 @@ import {
     FileNotFoundError,
     FilePersistenceError
 } from "@webiny/api-file-manager/domain/file/errors.js";
+import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 
 const CONTENT_TYPE_MAP: Record<string, string> = {
     jpg: "image/jpeg",
@@ -46,14 +47,17 @@ function resolveContentType(key: string): string {
 }
 
 class GetFileContentsByKeyUseCaseImpl implements GetFileContentsByKeyUseCaseAbstraction.Interface {
-    constructor(private readonly tenantContext: TenantContext.Interface) {}
+    constructor(
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly config: FileManagerServerConfig.Interface
+    ) {}
 
     async execute(
         key: string
     ): Promise<Result<FileContents, GetFileContentsByKeyUseCaseAbstraction.Error>> {
         const tenant = this.tenantContext.getTenant();
         const bucketKey = `tenants/${tenant.id}/files/${key}`;
-        const storagePath = String(process.env.WEBINY_LOCAL_STORAGE_PATH);
+        const storagePath = this.config.storagePath;
         const filePath = `${storagePath}/${bucketKey}`;
 
         try {
@@ -74,5 +78,5 @@ class GetFileContentsByKeyUseCaseImpl implements GetFileContentsByKeyUseCaseAbst
 export const GetFileContentsByKeyUseCase =
     GetFileContentsByKeyUseCaseAbstraction.createImplementation({
         implementation: GetFileContentsByKeyUseCaseImpl,
-        dependencies: [TenantContext]
+        dependencies: [TenantContext, FileManagerServerConfig]
     });
