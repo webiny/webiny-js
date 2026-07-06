@@ -1,5 +1,6 @@
 import type { Knex } from "knex";
 import WebinyError from "@webiny/error";
+import { TableManager } from "@webiny/api-core-sql/TableManager.js";
 import type { CredentialsStorageOperations, StorageCredential } from "@webiny/self-hosted-auth";
 
 const TABLE_NAME = "webiny_self_hosted_credentials";
@@ -30,34 +31,25 @@ export const createStorageOperations = (
     params: CreateStorageOperationsParams
 ): CredentialsStorageOperations.Interface => {
     const { knex } = params;
-    const prefix = params.tableNamePrefix ? `${params.tableNamePrefix}_` : "";
-    const table = `${prefix}${TABLE_NAME}`;
 
-    // Mirrors api-core-sql's TableManager pattern: lazily create the table on
-    // first use, then remember we did so for the process lifetime.
-    let ensured = false;
-    const ensureTable = async () => {
-        if (ensured) {
-            return;
-        }
-        const exists = await knex.schema.hasTable(table);
-        if (!exists) {
-            await knex.schema.createTable(table, t => {
-                t.text("tenant").notNullable();
-                t.text("user_id").notNullable();
-                t.text("email").notNullable();
-                t.text("data").notNullable();
+    // Reuse api-core-sql's shared TableManager (prefixing + lazy ensure + global reset()) instead of
+    // a local copy, so credential tables stay consistent with the rest of the SQL storage.
+    const tableManager = new TableManager(knex, params.tableNamePrefix);
 
-                t.primary(["tenant", "user_id"]);
-                // Email is the login key — unique across the store (see the v0
-                // tenancy note in LoginUseCase).
-                t.unique(["email"]);
-            });
-        }
-        ensured = true;
-    };
+    const ensureTable = () =>
+        tableManager.ensure(TABLE_NAME, t => {
+            t.text("tenant").notNullable();
+            t.text("user_id").notNullable();
+            t.text("email").notNullable();
+            t.text("data").notNullable();
 
-    const query = () => knex<ICredentialRow>(table);
+            t.primary(["tenant", "user_id"]);
+            // Email is the login key — unique across the store (see the v0
+            // tenancy note in LoginUseCase).
+            t.unique(["email"]);
+        });
+
+    const query = () => knex<ICredentialRow>(tableManager.resolve(TABLE_NAME));
 
     return {
         async getCredentialByEmail({ email }) {
