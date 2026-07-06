@@ -1,9 +1,12 @@
 {
   "type": "module",
   "dependencies": {
+    "@webiny/ai-powerups": "latest",
     "@webiny/cli-server": "latest",
+    "@webiny/languages": "latest",
     "@webiny/project-server": "latest",
     "@webiny/self-hosted-auth": "latest",
+    "@webiny/tenant-manager": "latest",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "webiny": "latest"
