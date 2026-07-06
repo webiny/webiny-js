@@ -13360,6 +13360,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/self-hosted-auth-sql@workspace:packages/self-hosted-auth-sql"
   dependencies:
+    "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"

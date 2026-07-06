@@ -41,6 +41,7 @@
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
     "@webiny/project-aws-template": "0.0.0",
+    "@webiny/self-hosted-auth": "0.0.0",
     "@webiny/tenant-manager": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
@@ -142,7 +143,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "d7899dcc69c102fedaff61d0582909be5f528a17f9ac71580f34fe704bb29d6b",
+  "exportGenerationHash": "ada5830932f22615a9a23d9e1130e65cbfb9361ab03e3d128ef2212def64c585",
   "webiny": {
     "publishFrom": "dist"
   }

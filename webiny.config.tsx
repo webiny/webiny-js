@@ -1,6 +1,7 @@
 import React from "react";
 import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
-import { Cognito } from "@webiny/cognito";
+// import { Cognito } from "@webiny/cognito";
+import { SelfHostedAuth } from "webiny/admin/self-hosted-auth";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
@@ -123,7 +124,9 @@ export const Extensions = () => {
             )}
             {/* API */}
             {/*<MyIdpExtension />*/}
-            <Cognito />
+            {/* Self-hosted flavour: the built-in IdP (login screen + JWT auth). */}
+            <SelfHostedAuth />
+            {/*<Cognito />*/}
             {/* Security 👇 */}
             <Api.Extension src={"/extensions/MyApiKey.ts"} />
             <Api.Extension src={"/extensions/MyApiKeyAfterUpdate.ts"} />
