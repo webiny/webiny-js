@@ -55,9 +55,11 @@ function colorForString(value: string) {
 /**
  * Boot (and keep booting) the built api handler as a live HTTP server, alongside the build watchers.
  *
- * The api workspace compiles to `<cwd>/.webiny/workspace/apps/api/graphql/build/_handler.mjs`, which
- * (for the server flavour) exports the Node `http.Server` from `createNodeHandler`. We write a tiny
- * runner next to it that imports that handler and calls `.listen(PORT)`, then run it under Node's
+ * The api workspace compiles to `<cwd>/.webiny/workspace/apps/api/graphql/build/handler.mjs`, which
+ * (for the server flavour) exports the Node `http.Server` from `createNodeHandler`. WCP/deploy builds
+ * additionally rename it to `_handler.mjs` and wrap `handler.mjs` with a telemetry client, so the
+ * runner prefers `_handler.mjs` when present. We write a tiny runner next to it that imports the
+ * handler and calls `.listen(PORT)`, then run it under Node's
  * built-in `--watch` scoped to the build dir — so every rebuild restarts the server in an isolated
  * child process (a server crash never kills the watcher). If the build doesn't exist yet, the runner
  * throws and `--watch` retries once the first build lands.
@@ -66,14 +68,26 @@ function startApiServer(cwd: string, ui: UiService.Interface) {
     const workspaceApi = path.join(cwd, ".webiny", "workspace", "apps", "api");
     const buildDir = path.join(workspaceApi, "graphql", "build");
     const runnerPath = path.join(workspaceApi, ".serve.mjs");
-    const port = process.env.PORT || "3000";
+    // Use a dedicated API port so it never collides with the admin dev server (which uses
+    // WEBINY_ADMIN_PORT | 3001, set by SetServerAdminEnvVarsBeforeWatch). Both previously
+    // defaulted to 3000 via the shared process.env.PORT.
+    const port = process.env.WEBINY_API_PORT || "3000";
 
-    fs.mkdirSync(workspaceApi, { recursive: true });
+    // Create the build dir up front so Node's `--watch-path` (below) doesn't ENOENT when the
+    // first build hasn't landed yet. This also creates `workspaceApi` for the runner file.
+    fs.mkdirSync(buildDir, { recursive: true });
     fs.writeFileSync(
         runnerPath,
         [
+            `import fs from "node:fs";`,
             `const port = Number(process.env.PORT || ${JSON.stringify(port)});`,
-            `const { handler } = await import("./graphql/build/_handler.mjs");`,
+            // Deploy/WCP builds rename the app handler to `_handler.mjs` and put a telemetry
+            // wrapper at `handler.mjs`; dev/watch builds have no telemetry and emit a plain
+            // `handler.mjs`. Prefer the un-wrapped server handler when present, else the plain one.
+            `const wrapped = new URL("./graphql/build/_handler.mjs", import.meta.url);`,
+            `const plain = new URL("./graphql/build/handler.mjs", import.meta.url);`,
+            `const target = fs.existsSync(wrapped) ? wrapped : plain;`,
+            `const { handler } = await import(target.href);`,
             `handler.listen(port, () => {`,
             `    console.log("\\n🚀 Webiny API (server flavour) listening on http://localhost:" + port + "\\n");`,
             `});`,

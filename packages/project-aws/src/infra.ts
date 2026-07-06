@@ -34,6 +34,7 @@ import {
 import { OpenSearch } from "./extensions/OpenSearch.js";
 import { AwsDefaultRegion } from "./extensions/AwsDefaultRegion.js";
 import { Encryption } from "./extensions/Encryption.js";
+import { PasswordHashing } from "./extensions/PasswordHashing.js";
 import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
 import { EnvVar, ApiMaxBundleSize } from "@webiny/project/extensions/index.js";
 import {
@@ -50,6 +51,7 @@ export { useEnv };
 
 export const Infra = {
     Encryption,
+    PasswordHashing,
     Vpc,
     BlueGreenDeployments,
     OpenSearch,

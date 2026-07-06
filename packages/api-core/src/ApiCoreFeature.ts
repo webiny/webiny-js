@@ -12,6 +12,7 @@ import { IdpAuthenticatorFeature } from "~/idp/feature.js";
 import { KeyValueStoreFeature } from "~/features/keyValueStore/feature.js";
 import { BuildParamsFeature } from "~/features/buildParams/feature.js";
 import { EncryptionFeature } from "~/features/encryption/feature.js";
+import { PasswordHasherFeature } from "~/features/passwordHashing/feature.js";
 import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
 import { MaskerFeature } from "~/features/masker/feature.js";
 import { AiFeature } from "~/features/ai/feature.js";
@@ -40,6 +41,7 @@ export const ApiCoreFeature = createFeature({
         EventPublisherFeature.register(container);
         BuildParamsFeature.register(container);
         EncryptionFeature.register(container);
+        PasswordHasherFeature.register(container);
         FeatureFlagsFeature.register(container);
         TenancyFeature.register(container, storageOperations.tenancyStorageOperations);
         SecurityFeature.register(container, storageOperations.securityStorageOperations);

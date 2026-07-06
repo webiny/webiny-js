@@ -30,21 +30,28 @@ const AdminUserInputs = () => {
     const form = useForm();
     const passwordValidator = usePasswordValidator();
 
+    // The install wizard renders BEFORE any auth-provider extension is mounted (it replaces the app
+    // tree), so the installer's app name can't come from DI here — it must be a build-time value.
+    // The submitted data is keyed under this name, becoming `installationInput: [{ app, data }]`, so
+    // it has to match the API-side AppInstaller's `appName`. Defaults to "Cognito" (AWS flavour);
+    // the self-hosted flavour sets REACT_APP_AUTH_INSTALLER_APP_NAME="SelfHostedAuth".
+    const appName = process.env.REACT_APP_AUTH_INSTALLER_APP_NAME || "Cognito";
+
     return (
         <Grid>
             <Grid.Column span={6}>
-                <Bind name={"Cognito.firstName"} validators={validation.create("required")}>
+                <Bind name={`${appName}.firstName`} validators={validation.create("required")}>
                     <Input label={"First name"} />
                 </Bind>
             </Grid.Column>
             <Grid.Column span={6}>
-                <Bind name={"Cognito.lastName"} validators={validation.create("required")}>
+                <Bind name={`${appName}.lastName`} validators={validation.create("required")}>
                     <Input label={"Last name"} />
                 </Bind>
             </Grid.Column>
             <Grid.Column span={12}>
                 <Bind
-                    name={"Cognito.email"}
+                    name={`${appName}.email`}
                     beforeChange={(value: string, cb) => cb(value.toLowerCase())}
                     validators={validation.create("required,email")}
                 >
@@ -53,7 +60,7 @@ const AdminUserInputs = () => {
             </Grid.Column>
             <Grid.Column span={12}>
                 <Bind
-                    name={"Cognito.password"}
+                    name={`${appName}.password`}
                     validators={[passwordValidator, validation.create("required")]}
                 >
                     <Input

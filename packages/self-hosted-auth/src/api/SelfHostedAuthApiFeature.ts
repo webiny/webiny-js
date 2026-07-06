@@ -1,5 +1,4 @@
 import { createFeature } from "@webiny/feature/api";
-import { PasswordHasherFeature } from "./domain/crypto/PasswordHasher.js";
 import { TokenIssuerFeature } from "./domain/crypto/TokenIssuer.js";
 import type { TokenIssuerConfig } from "./domain/crypto/TokenIssuer.js";
 import { SelfHostedIdpFeature } from "./features/SelfHostedIdp/index.js";
@@ -37,7 +36,8 @@ export const SelfHostedAuthApiFeature = createFeature<SelfHostedAuthConfig | und
 
         const tokenIssuerConfig: TokenIssuerConfig = { secret, expiresIn: config?.expiresIn };
 
-        PasswordHasherFeature.register(container);
+        // The PasswordHasher is provided by api-core (ApiCoreFeature → PasswordHasherFeature),
+        // configurable via <Infra.PasswordHashing> in webiny.config.tsx.
         TokenIssuerFeature.register(container, tokenIssuerConfig);
         SelfHostedIdpFeature.register(container);
         LoginFeature.register(container);

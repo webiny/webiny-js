@@ -1,6 +1,7 @@
 import { Container } from "@webiny/di";
 import { serverBuildAppWorkspaceService } from "./services/ServerBuildAppWorkspaceService.js";
 import { serverGetAppStackOutput } from "./features/ServerGetAppStackOutput.js";
+import { SetServerAdminEnvVarsBeforeWatch } from "./features/SetServerAdminEnvVars/SetServerAdminEnvVarsBeforeWatch.js";
 
 export const registerServerProjectFeatures = (container: Container): void => {
     // Replace the default (AWS) workspace builder with the server-flavour one.
@@ -9,4 +10,6 @@ export const registerServerProjectFeatures = (container: Container): void => {
     // No-op stack output: server flavor has no Pulumi deployment, so all
     // EnsureApiDeployed* hooks pass immediately without blocking builds.
     container.register(serverGetAppStackOutput).inSingletonScope();
+    // Hand the admin app the API URL before `watch admin` (no Pulumi output in this flavour).
+    container.register(SetServerAdminEnvVarsBeforeWatch);
 };

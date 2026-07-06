@@ -5,7 +5,7 @@ import type { SetPasswordInput } from "./abstractions.js";
 import { WeakPasswordError } from "~/api/domain/errors.js";
 import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
 import type { StorageCredential } from "~/api/storage/abstractions.js";
-import { PasswordHasher } from "~/api/domain/crypto/PasswordHasher.js";
+import { PasswordHasher } from "@webiny/api-core/features/passwordHashing/index.js";
 
 const passwordPolicy = z.string().min(8);
 

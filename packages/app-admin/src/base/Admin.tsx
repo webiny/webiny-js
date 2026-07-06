@@ -32,7 +32,12 @@ export interface AdminProps {
 const container = createRootContainer();
 
 export const Admin = ({ children, createApolloClient, createLegacyPlugins }: AdminProps) => {
-    const uri = process.env.REACT_APP_GRAPHQL_API_URL as string;
+    // Prefer the build/watch-time URL when set (AWS always sets it; the server flavour sets it for
+    // local `watch`). Otherwise fall back to same-origin `/graphql`, so a deployed self-hosted admin
+    // served behind the same domain as the API needs no baked-in URL at all.
+    const uri =
+        process.env.REACT_APP_GRAPHQL_API_URL ||
+        (typeof window !== "undefined" ? `${window.location.origin}/graphql` : "/graphql");
     const apolloClient = createApolloClient({ uri });
 
     plugins.register(...createLegacyPlugins(container));

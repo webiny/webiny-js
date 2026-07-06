@@ -4,7 +4,7 @@ import type { LoginInput, LoginOutput } from "./abstractions.js";
 import { loginValidation } from "./schema.js";
 import { InvalidCredentialsError } from "~/api/domain/errors.js";
 import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
-import { PasswordHasher } from "~/api/domain/crypto/PasswordHasher.js";
+import { PasswordHasher } from "@webiny/api-core/features/passwordHashing/index.js";
 import { TokenIssuer } from "~/api/domain/crypto/TokenIssuer.js";
 
 class LoginUseCaseImpl implements UseCaseAbstraction.Interface {

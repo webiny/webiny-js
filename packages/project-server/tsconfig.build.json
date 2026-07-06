@@ -1,7 +1,13 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "references": [{ "path": "../project/tsconfig.build.json" }],
+  "references": [
+    { "path": "../api-event-handler-server-sql/tsconfig.build.json" },
+    { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-serverless-cms/tsconfig.build.json" },
+    { "path": "../project/tsconfig.build.json" },
+    { "path": "../self-hosted-auth/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -9,8 +15,16 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/api-event-handler-server-sql/*": ["../api-event-handler-server-sql/src/*"],
+      "@webiny/api-event-handler-server-sql": ["../api-event-handler-server-sql/src"],
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
+      "@webiny/app-serverless-cms/*": ["../app-serverless-cms/src/*"],
+      "@webiny/app-serverless-cms": ["../app-serverless-cms/src"],
       "@webiny/project/*": ["../project/src/*"],
-      "@webiny/project": ["../project/src"]
+      "@webiny/project": ["../project/src"],
+      "@webiny/self-hosted-auth/*": ["../self-hosted-auth/src/*"],
+      "@webiny/self-hosted-auth": ["../self-hosted-auth/src"]
     }
   }
 }

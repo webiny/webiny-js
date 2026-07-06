@@ -25,7 +25,7 @@ export interface UseGQLHandlerParams {
 interface InvokeParams {
     httpMethod?: "POST";
     body: {
-        query: string;
+        query: strading;
         variables?: Record<string, any>;
     };
     headers?: Record<string, string>;

@@ -2,10 +2,13 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../admin-ui" },
     { "path": "../api-core" },
-    { "path": "../error" },
+    { "path": "../app-admin" },
     { "path": "../feature" },
-    { "path": "../handler-graphql" }
+    { "path": "../form" },
+    { "path": "../handler-graphql" },
+    { "path": "../validation" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -14,14 +17,20 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/admin-ui/*": ["../admin-ui/src/*"],
+      "@webiny/admin-ui": ["../admin-ui/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"]
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
     }
   }
 }
