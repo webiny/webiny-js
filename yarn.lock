@@ -12462,7 +12462,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-aws@npm:0.0.0, @webiny/cli-aws@workspace:packages/cli-aws":
+"@webiny/cli-aws@workspace:packages/cli-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-aws@workspace:packages/cli-aws"
   dependencies:
@@ -12472,12 +12472,16 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
+    "@webiny/system-requirements": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^5.6.2"
     execa: "npm:^5.1.1"
     open: "npm:^11.0.0"
     ora: "npm:9.4.0"
+    tsx: "npm:4.22.4"
     typescript: "npm:6.0.3"
+  bin:
+    webiny: ./bin.js
   languageName: unknown
   linkType: soft
 
@@ -12526,22 +12530,6 @@ __metadata:
     chalk: "npm:^5.6.2"
     tsx: "npm:4.22.4"
     typescript: "npm:6.0.3"
-  bin:
-    webiny: ./bin.js
-  languageName: unknown
-  linkType: soft
-
-"@webiny/cli@workspace:packages/cli":
-  version: 0.0.0-use.local
-  resolution: "@webiny/cli@workspace:packages/cli"
-  dependencies:
-    "@types/lodash": "npm:^4.17.24"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/cli-aws": "npm:0.0.0"
-    "@webiny/cli-core": "npm:0.0.0"
-    "@webiny/system-requirements": "npm:0.0.0"
-    execa: "npm:^5.1.1"
-    tsx: "npm:4.22.4"
   bin:
     webiny: ./bin.js
   languageName: unknown
