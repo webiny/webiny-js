@@ -1,4 +1,5 @@
 import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { GenericRecord } from "@webiny/utils";
 
 /* SQL row representation of StorageCmsModel. */
 export interface IModelRow {
@@ -25,6 +26,7 @@ export interface IModelRow {
     createdBy: string | null;
     createdOn: string | null;
     savedOn: string | null;
+    settings: string | null;
 }
 
 /* Validated against StorageCmsModel — TypeScript errors if StorageCmsModel gains a new field. */
@@ -48,7 +50,8 @@ const MODEL_COLUMN_MAP: Record<keyof StorageCmsModel, true> = {
     isPlugin: true,
     createdOn: true,
     savedOn: true,
-    createdBy: true
+    createdBy: true,
+    settings: true
 };
 
 export const MODEL_COLUMNS = Object.keys(MODEL_COLUMN_MAP) as (keyof StorageCmsModel)[];
