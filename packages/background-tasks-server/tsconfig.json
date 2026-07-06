@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [{ "path": "../background-tasks" }],
+  "references": [{ "path": "../background-tasks" }, { "path": "../feature" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -10,7 +10,9 @@
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
-      "@webiny/background-tasks": ["../background-tasks/src"]
+      "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"]
     }
   }
 }

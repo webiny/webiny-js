@@ -15,7 +15,7 @@ interface WorkerHandle {
     readonly worker: Worker;
     readonly startedAt: number;
     readonly taskId: string;
-    status: "running" | "done" | "error" | "timeout";
+    status: "running" | "done" | "error";
     exitCode: number | null;
 }
 
@@ -52,11 +52,20 @@ class WorkerTaskService implements ITaskService {
             }
         });
 
+        worker.on("error", (err: Error) => {
+            handle.status = "error";
+            console.error(`Worker error for task "${task.id}": ${err.message}`);
+        });
+
         worker.on("exit", (code: number) => {
             handle.exitCode = code;
             if (handle.status === "running") {
                 handle.status = code === 0 ? "done" : "error";
             }
+            /* Clean up handle after 60s to allow pending fetch() calls. */
+            setTimeout(() => {
+                this.handles.delete(task.id);
+            }, 60_000);
         });
 
         worker.postMessage({
