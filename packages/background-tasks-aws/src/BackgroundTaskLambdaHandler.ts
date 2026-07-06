@@ -1,4 +1,5 @@
 import type { Container } from "@webiny/feature/api";
+import { AwsLambdaContext } from "@webiny/event-handler-aws/abstractions/AwsLambdaContext.js";
 import { BackgroundTaskEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/BackgroundTaskEventHandler.js";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { RequestContainer, runRequestContextInitializers } from "@webiny/event-handler-core";
@@ -13,6 +14,10 @@ import { TaskEventValidation } from "@webiny/background-tasks/api/runner/TaskEve
 import type { Context } from "@webiny/background-tasks/api/types.js";
 import { LambdaTimer } from "~/timer/LambdaTimer.js";
 
+/* Fallback ceiling used when there is no real Lambda context to read the remaining time from
+ * (mirrors the default Lambda timeout budget handler-aws's CustomTimer uses). */
+const FALLBACK_MAX_RUNNING_MILLISECONDS = 14 * 60 * 1000;
+
 class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Interface {
     constructor(private container: Container) {}
 
@@ -20,6 +25,9 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Inte
         eventCtx: EventContext<IBackgroundTaskEvent>,
         _next: NextFunction
     ): Promise<unknown> {
+        // Date-based fallback in case there is no real Lambda context (see below) — captured up
+        // front so the fallback countdown starts at the beginning of this invocation.
+        const fallbackStartTime = Date.now();
         // The SFN/EventBridge transport wraps the task as `{ name, payload }`; TaskRunner expects the
         // flat task event (webinyTaskId at top level), so unwrap `payload` (falling back to the event
         // itself if it's already flat).
@@ -51,7 +59,17 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Inte
             await schema.build(ctx);
         }
 
-        const timer = new LambdaTimer({ getRemainingTimeInMillis: () => 900_000 });
+        // Use the real Lambda context's countdown when the invocation has one; otherwise fall back
+        // to a Date-based countdown so the timer still winds down instead of staying static.
+        const lambdaContext = this.container.resolve(AwsLambdaContext);
+        const timer = new LambdaTimer({
+            getRemainingTimeInMillis: () => {
+                if (lambdaContext.isSet()) {
+                    return lambdaContext.get().getRemainingTimeInMillis();
+                }
+                return fallbackStartTime + FALLBACK_MAX_RUNNING_MILLISECONDS - Date.now();
+            }
+        });
         const runner = new TaskRunner(ctx as Context, timer, new TaskEventValidation());
 
         // Return the task result — the SFN reads `$.status` (continue/done/error) from it to drive

@@ -49,7 +49,7 @@ export class TaskOrchestrator {
 
                 const payload = {
                     ...this.taskEvent,
-                    ...input
+                    input
                 };
 
                 const response = await this.post(payload);
@@ -104,6 +104,7 @@ export class TaskOrchestrator {
                     port: url.port,
                     path: url.pathname,
                     method: "POST",
+                    timeout: 60_000,
                     headers: {
                         "content-type": "application/json",
                         "content-length": Buffer.byteLength(body)
@@ -115,6 +116,10 @@ export class TaskOrchestrator {
                         data += chunk;
                     });
                     res.on("end", () => {
+                        if (!res.statusCode || res.statusCode < 200 || res.statusCode >= 300) {
+                            reject(new Error(`HTTP ${res.statusCode}: ${data}`));
+                            return;
+                        }
                         try {
                             resolve(JSON.parse(data) as TaskResponse);
                         } catch {
@@ -124,6 +129,9 @@ export class TaskOrchestrator {
                 }
             );
 
+            req.on("timeout", () => {
+                req.destroy(new Error("Request timed out after 60s."));
+            });
             req.on("error", reject);
             req.write(body);
             req.end();
