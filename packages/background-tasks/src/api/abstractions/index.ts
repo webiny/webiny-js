@@ -1,1 +1,1 @@
-export type { ITimer } from "./ITimer.js";
+export { Timer } from "./Timer.js";

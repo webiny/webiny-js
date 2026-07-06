@@ -1,10 +1,10 @@
-import type { ITimer } from "@webiny/background-tasks/api";
+import type { Timer } from "@webiny/background-tasks/api";
 
 interface LambdaTimerFactory {
     getRemainingTimeInMillis(): number;
 }
 
-export class LambdaTimer implements ITimer {
+export class LambdaTimer implements Timer.Interface {
     private readonly factory: LambdaTimerFactory;
 
     public constructor(factory: LambdaTimerFactory) {

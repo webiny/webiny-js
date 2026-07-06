@@ -1,4 +1,4 @@
-export type { ITimer } from "./abstractions/ITimer.js";
+export { Timer } from "./abstractions/Timer.js";
 export { createBackgroundTaskGraphQL } from "./graphql/index.js";
 export { createBackgroundTaskContext } from "./context.js";
 export { TaskServiceTransport } from "./plugins/index.js";
