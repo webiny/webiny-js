@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry";
-import { DeleteExperimentRepository as RepositoryAbstraction } from "./abstractions.js";
+import { DeleteExperimentRepository as RepositoryAbstraction } from "./abstractions/DeleteExperimentRepository.js";
 import { ExperimentModel } from "~/domain/experiment/abstractions.js";
 import { ExperimentNotFoundError, ExperimentPersistenceError } from "~/domain/experiment/errors.js";
 

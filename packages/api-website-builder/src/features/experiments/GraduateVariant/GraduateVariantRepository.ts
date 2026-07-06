@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
-import { GraduateVariantRepository as RepositoryAbstraction } from "./abstractions.js";
+import { GraduateVariantRepository as RepositoryAbstraction } from "./abstractions/GraduateVariantRepository.js";
 import { PageModel } from "~/domain/page/abstractions.js";
 import type { WbPage } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";

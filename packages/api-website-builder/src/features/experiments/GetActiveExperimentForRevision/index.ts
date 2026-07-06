@@ -1,1 +1,1 @@
-export { GetActiveExperimentForRevisionUseCase } from "./abstractions.js";
+export { GetActiveExperimentForRevisionUseCase } from "./abstractions/GetActiveExperimentForRevisionUseCase.js";

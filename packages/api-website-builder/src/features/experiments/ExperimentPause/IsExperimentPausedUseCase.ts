@@ -1,9 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import {
-    IsExperimentPausedUseCase as UseCaseAbstraction,
-    experimentPauseKey
-} from "./abstractions.js";
+import { IsExperimentPausedUseCase as UseCaseAbstraction } from "./abstractions/IsExperimentPausedUseCase.js";
+import { experimentPauseKey } from "./abstractions/experimentPauseKey.js";
 
 /** Reads the kill-switch flag. Consulted uncached on the serving path so pausing is instant. */
 class IsExperimentPausedUseCaseImpl implements UseCaseAbstraction.Interface {

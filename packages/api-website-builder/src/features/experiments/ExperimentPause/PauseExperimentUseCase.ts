@@ -1,9 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import {
-    PauseExperimentUseCase as UseCaseAbstraction,
-    experimentPauseKey
-} from "./abstractions.js";
+import { PauseExperimentUseCase as UseCaseAbstraction } from "./abstractions/PauseExperimentUseCase.js";
+import { experimentPauseKey } from "./abstractions/experimentPauseKey.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { ExperimentNotAuthorizedError } from "~/domain/experiment/errors.js";
 

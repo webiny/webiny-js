@@ -1,8 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import {
-    CreateVariantUseCase as UseCaseAbstraction,
-    CreateVariantRepository
-} from "./abstractions.js";
+import { CreateVariantUseCase as UseCaseAbstraction } from "./abstractions/CreateVariantUseCase.js";
+import { CreateVariantRepository } from "./abstractions/CreateVariantRepository.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { GetExperimentByIdUseCase } from "~/features/experiments/GetExperimentById/index.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";

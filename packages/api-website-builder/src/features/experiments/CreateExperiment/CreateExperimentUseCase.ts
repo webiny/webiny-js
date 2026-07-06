@@ -1,9 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import {
-    CreateExperimentUseCase as UseCaseAbstraction,
-    CreateExperimentRepository
-} from "./abstractions.js";
+import { CreateExperimentUseCase as UseCaseAbstraction } from "./abstractions/CreateExperimentUseCase.js";
+import { CreateExperimentRepository } from "./abstractions/CreateExperimentRepository.js";
 import { ExperimentBeforeCreateEvent, ExperimentAfterCreateEvent } from "./events.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { ExperimentNotAuthorizedError } from "~/domain/experiment/errors.js";

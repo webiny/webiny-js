@@ -1,8 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import {
-    GetActiveExperimentForPathUseCase as UseCaseAbstraction,
-    GetActiveExperimentForPathRepository
-} from "./abstractions.js";
+import { GetActiveExperimentForPathUseCase as UseCaseAbstraction } from "./abstractions/GetActiveExperimentForPathUseCase.js";
+import { GetActiveExperimentForPathRepository } from "./abstractions/GetActiveExperimentForPathRepository.js";
 import { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/index.js";
 import { IsExperimentPausedUseCase } from "~/features/experiments/ExperimentPause/index.js";
 import { ExperimentPausedError } from "~/domain/experiment/errors.js";

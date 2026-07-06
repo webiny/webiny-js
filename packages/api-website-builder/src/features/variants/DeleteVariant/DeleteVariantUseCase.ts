@@ -1,8 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import {
-    DeleteVariantUseCase as UseCaseAbstraction,
-    DeleteVariantRepository
-} from "./abstractions.js";
+import { DeleteVariantUseCase as UseCaseAbstraction } from "./abstractions/DeleteVariantUseCase.js";
+import { DeleteVariantRepository } from "./abstractions/DeleteVariantRepository.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { VariantNotAuthorizedError } from "~/domain/variant/errors.js";
 

@@ -1,2 +1,2 @@
-export { GetActiveExperimentForPathUseCase } from "./abstractions.js";
-export type { ActiveExperimentForPath } from "./abstractions.js";
+export { GetActiveExperimentForPathUseCase } from "./abstractions/GetActiveExperimentForPathUseCase.js";
+export type { ActiveExperimentForPath } from "./abstractions/GetActiveExperimentForPathUseCase.js";

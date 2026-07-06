@@ -1,1 +1,1 @@
-export { DeleteVariantUseCase } from "./abstractions.js";
+export { DeleteVariantUseCase } from "./abstractions/DeleteVariantUseCase.js";

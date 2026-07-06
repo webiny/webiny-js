@@ -1,1 +1,1 @@
-export { GetVariantByIdUseCase } from "./abstractions.js";
+export { GetVariantByIdUseCase } from "./abstractions/GetVariantByIdUseCase.js";

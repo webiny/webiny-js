@@ -1,1 +1,1 @@
-export { GraduateVariantUseCase } from "./abstractions.js";
+export { GraduateVariantUseCase } from "./abstractions/GraduateVariantUseCase.js";

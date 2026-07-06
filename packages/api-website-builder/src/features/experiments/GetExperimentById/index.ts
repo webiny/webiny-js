@@ -1,1 +1,1 @@
-export { GetExperimentByIdUseCase } from "./abstractions.js";
+export { GetExperimentByIdUseCase } from "./abstractions/GetExperimentByIdUseCase.js";

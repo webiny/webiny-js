@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
-import { CreateVariantRepository as RepositoryAbstraction } from "./abstractions.js";
+import { CreateVariantRepository as RepositoryAbstraction } from "./abstractions/CreateVariantRepository.js";
 import { VariantModel } from "~/domain/variant/abstractions.js";
 import type { CmsEntryWbVariantValues } from "~/domain/variant/abstractions.js";
 import { EntryToVariantMapper } from "~/domain/variant/EntryToVariantMapper.js";

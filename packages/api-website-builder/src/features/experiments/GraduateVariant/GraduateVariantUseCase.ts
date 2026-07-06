@@ -1,8 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import {
-    GraduateVariantUseCase as UseCaseAbstraction,
-    GraduateVariantRepository
-} from "./abstractions.js";
+import { GraduateVariantUseCase as UseCaseAbstraction } from "./abstractions/GraduateVariantUseCase.js";
+import { GraduateVariantRepository } from "./abstractions/GraduateVariantRepository.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { GetExperimentByIdUseCase } from "~/features/experiments/GetExperimentById/index.js";
 import { GetVariantByIdUseCase } from "~/features/variants/GetVariantById/index.js";

@@ -1,8 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import {
-    GetExperimentByIdUseCase as UseCaseAbstraction,
-    GetExperimentByIdRepository
-} from "./abstractions.js";
+import { GetExperimentByIdUseCase as UseCaseAbstraction } from "./abstractions/GetExperimentByIdUseCase.js";
+import { GetExperimentByIdRepository } from "./abstractions/GetExperimentByIdRepository.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { ExperimentNotAuthorizedError } from "~/domain/experiment/errors.js";
 

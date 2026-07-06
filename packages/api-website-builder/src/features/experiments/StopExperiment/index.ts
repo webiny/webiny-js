@@ -1,1 +1,2 @@
-export { StopExperimentUseCase, ExperimentAfterStopEventHandler } from "./abstractions.js";
+export { StopExperimentUseCase } from "./abstractions/StopExperimentUseCase.js";
+export { ExperimentAfterStopEventHandler } from "./abstractions/ExperimentAfterStopEventHandler.js";

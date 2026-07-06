@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
-import { UpdateVariantRepository as RepositoryAbstraction } from "./abstractions.js";
+import { UpdateVariantRepository as RepositoryAbstraction } from "./abstractions/UpdateVariantRepository.js";
 import { VariantModel } from "~/domain/variant/abstractions.js";
 import type { CmsEntryWbVariantValues } from "~/domain/variant/abstractions.js";
 import { EntryToVariantMapper } from "~/domain/variant/EntryToVariantMapper.js";

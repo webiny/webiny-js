@@ -1,8 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import {
-    UpdateVariantUseCase as UseCaseAbstraction,
-    UpdateVariantRepository
-} from "./abstractions.js";
+import { UpdateVariantUseCase as UseCaseAbstraction } from "./abstractions/UpdateVariantUseCase.js";
+import { UpdateVariantRepository } from "./abstractions/UpdateVariantRepository.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { VariantNotAuthorizedError } from "~/domain/variant/errors.js";
 

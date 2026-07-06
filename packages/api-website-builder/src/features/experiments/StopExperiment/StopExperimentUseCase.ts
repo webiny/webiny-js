@@ -1,9 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import {
-    StopExperimentUseCase as UseCaseAbstraction,
-    StopExperimentRepository
-} from "./abstractions.js";
+import { StopExperimentUseCase as UseCaseAbstraction } from "./abstractions/StopExperimentUseCase.js";
+import { StopExperimentRepository } from "./abstractions/StopExperimentRepository.js";
 import { ExperimentAfterStopEvent } from "./events.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { GetExperimentByIdUseCase } from "~/features/experiments/GetExperimentById/index.js";

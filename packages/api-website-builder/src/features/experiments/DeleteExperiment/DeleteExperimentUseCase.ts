@@ -1,8 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import {
-    DeleteExperimentUseCase as UseCaseAbstraction,
-    DeleteExperimentRepository
-} from "./abstractions.js";
+import { DeleteExperimentUseCase as UseCaseAbstraction } from "./abstractions/DeleteExperimentUseCase.js";
+import { DeleteExperimentRepository } from "./abstractions/DeleteExperimentRepository.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { ExperimentNotAuthorizedError } from "~/domain/experiment/errors.js";
 

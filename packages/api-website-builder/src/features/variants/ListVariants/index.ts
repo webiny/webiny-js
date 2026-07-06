@@ -1,1 +1,1 @@
-export { ListVariantsUseCase } from "./abstractions.js";
+export { ListVariantsUseCase } from "./abstractions/ListVariantsUseCase.js";

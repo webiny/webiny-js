@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
-import { ListVariantsRepository as RepositoryAbstraction } from "./abstractions.js";
+import { ListVariantsRepository as RepositoryAbstraction } from "./abstractions/ListVariantsRepository.js";
 import { VariantModel } from "~/domain/variant/abstractions.js";
 import type { CmsEntryWbVariantValues } from "~/domain/variant/abstractions.js";
 import { EntryToVariantMapper } from "~/domain/variant/EntryToVariantMapper.js";

@@ -1,12 +1,12 @@
 import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     ExperimentBeforeCreateEventHandler,
-    ExperimentAfterCreateEventHandler
-} from "./abstractions.js";
-import type {
-    ExperimentBeforeCreatePayload,
-    ExperimentAfterCreatePayload
-} from "./abstractions.js";
+    type ExperimentBeforeCreatePayload
+} from "./abstractions/ExperimentBeforeCreateEventHandler.js";
+import {
+    ExperimentAfterCreateEventHandler,
+    type ExperimentAfterCreatePayload
+} from "./abstractions/ExperimentAfterCreateEventHandler.js";
 
 export class ExperimentBeforeCreateEvent extends DomainEvent<ExperimentBeforeCreatePayload> {
     eventType = "experiment.beforeCreate" as const;

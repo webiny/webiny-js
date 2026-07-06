@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry";
-import { GetActiveExperimentForPathRepository as RepositoryAbstraction } from "./abstractions.js";
+import { GetActiveExperimentForPathRepository as RepositoryAbstraction } from "./abstractions/GetActiveExperimentForPathRepository.js";
 import { ExperimentModel } from "~/domain/experiment/abstractions.js";
 import type { CmsEntryWbExperimentValues } from "~/domain/experiment/abstractions.js";
 import { EntryToExperimentMapper } from "~/domain/experiment/EntryToExperimentMapper.js";

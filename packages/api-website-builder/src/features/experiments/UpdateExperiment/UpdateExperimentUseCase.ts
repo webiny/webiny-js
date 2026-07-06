@@ -1,8 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import {
-    UpdateExperimentUseCase as UseCaseAbstraction,
-    UpdateExperimentRepository
-} from "./abstractions.js";
+import { UpdateExperimentUseCase as UseCaseAbstraction } from "./abstractions/UpdateExperimentUseCase.js";
+import { UpdateExperimentRepository } from "./abstractions/UpdateExperimentRepository.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { ExperimentNotAuthorizedError } from "~/domain/experiment/errors.js";
 

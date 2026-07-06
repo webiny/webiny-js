@@ -1,1 +1,1 @@
-export { UpdateVariantUseCase } from "./abstractions.js";
+export { UpdateVariantUseCase } from "./abstractions/UpdateVariantUseCase.js";

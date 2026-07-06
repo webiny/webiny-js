@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry";
-import { DeleteVariantRepository as RepositoryAbstraction } from "./abstractions.js";
+import { DeleteVariantRepository as RepositoryAbstraction } from "./abstractions/DeleteVariantRepository.js";
 import { VariantModel } from "~/domain/variant/abstractions.js";
 import { VariantNotFoundError, VariantPersistenceError } from "~/domain/variant/errors.js";
 

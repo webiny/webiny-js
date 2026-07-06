@@ -1,1 +1,1 @@
-export { DeleteExperimentUseCase } from "./abstractions.js";
+export { DeleteExperimentUseCase } from "./abstractions/DeleteExperimentUseCase.js";
