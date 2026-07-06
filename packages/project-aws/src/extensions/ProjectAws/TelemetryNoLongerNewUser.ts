@@ -1,4 +1,4 @@
-import { AdminAfterDeploy } from "~/abstractions/index.js";
+import { AdminAfterDeploy } from "@webiny/project/abstractions/index.js";
 import { globalConfig } from "@webiny/global-config";
 
 class TelemetryNoLongerNewUserImpl implements AdminAfterDeploy.Interface {

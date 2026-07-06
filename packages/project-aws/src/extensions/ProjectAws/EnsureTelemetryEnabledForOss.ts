@@ -4,8 +4,8 @@ import {
     IsTelemetryEnabled,
     IsWcpEnabled,
     IsWebinyJsRepo
-} from "~/abstractions/index.js";
-import { GracefulError } from "~/index.js";
+} from "@webiny/project/abstractions/index.js";
+import { GracefulError } from "@webiny/project";
 
 class EnsureTelemetryEnabledForOssImpl implements BeforeDeploy.Interface {
     constructor(

@@ -3,8 +3,8 @@ import {
     GetProductionEnvironments,
     GetProjectConfig,
     ProjectSdkParamsService
-} from "~/abstractions/index.js";
-import { GracefulError } from "~/index.js";
+} from "@webiny/project/abstractions/index.js";
+import { GracefulError } from "@webiny/project";
 
 class ValidateEncryptionBeforeDeployImpl implements BeforeDeploy.Interface {
     constructor(

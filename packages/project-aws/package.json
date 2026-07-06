@@ -25,6 +25,7 @@
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/cli-core": "0.0.0",
     "@webiny/di": "^1.0.2",
+    "@webiny/global-config": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/pulumi": "0.0.0",
     "@webiny/pulumi-sdk": "0.0.0",

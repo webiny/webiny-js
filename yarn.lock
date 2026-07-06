@@ -13131,6 +13131,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
+    "@webiny/global-config": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
