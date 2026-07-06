@@ -2,8 +2,8 @@ import {
     AdminBeforeWatch,
     GetAppStackOutput,
     ProjectSdkParamsService
-} from "~/abstractions/index.js";
-import { GracefulError } from "~/index.js";
+} from "@webiny/project/abstractions/index.js";
+import { GracefulError } from "@webiny/project";
 
 const NO_DEPLOYMENT_CHECKS_FLAG_NAME = "--no-deployment-checks";
 

@@ -5,6 +5,7 @@ import {
     AdminBeforeWatch,
     AfterDeploy,
     ApiAfterDeploy,
+    ApiBeforeWatch,
     BeforeDeploy,
     DatabaseSetup,
     ExtensionDefinitions,
@@ -45,6 +46,11 @@ export const ProjectAws = () => {
             {/* Admin env vars */}
             <AdminBeforeBuild src={p("ProjectAws/SetAdminEnvVars/SetAdminEnvVarsBeforeBuild.js")} />
             <AdminBeforeWatch src={p("ProjectAws/SetAdminEnvVars/SetAdminEnvVarsBeforeWatch.js")} />
+
+            {/* Deployment gates — AWS-only (there is no Pulumi stack output to check off-AWS) */}
+            <ApiBeforeWatch src={p("ProjectAws/EnsureApiDeployedBeforeWatch.js")} />
+            <AdminBeforeBuild src={p("ProjectAws/EnsureApiDeployedBeforeAdminBuild.js")} />
+            <AdminBeforeWatch src={p("ProjectAws/EnsureApiDeployedBeforeAdminWatch.js")} />
 
             {/* AWS credentials check */}
             <BeforeDeploy src={p("ProjectAws/EnsureAwsCredentialsBeforeDeploy.js")} />
