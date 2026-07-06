@@ -4049,4 +4049,62 @@ describe("FormModel", () => {
             expect(log).toEqual([["a", "b"], ["b"]]);
         });
     });
+
+    describe("$. static references in rules", () => {
+        it("$. resolves rule targets relative to the parent object", () => {
+            const form = createForm({
+                fields: fields => ({
+                    wrapper: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            status: f.text().defaultValue("draft"),
+                            details: f.text().rules([
+                                {
+                                    type: "condition",
+                                    target: "$.status",
+                                    operator: "eq",
+                                    value: "draft",
+                                    action: "hide"
+                                }
+                            ])
+                        }))
+                }),
+                layout: l => [l.row("wrapper")]
+            });
+
+            expect(form.field("wrapper.details").visible).toBe(false);
+
+            form.field("wrapper.status").setValue("published");
+            expect(form.field("wrapper.details").visible).toBe(true);
+        });
+
+        it("$. in rules with disable action", () => {
+            const form = createForm({
+                fields: fields => ({
+                    wrapper: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            locked: f.text().defaultValue("yes"),
+                            editable: f.text().rules([
+                                {
+                                    type: "condition",
+                                    target: "$.locked",
+                                    operator: "eq",
+                                    value: "yes",
+                                    action: "disable"
+                                }
+                            ])
+                        }))
+                }),
+                layout: l => [l.row("wrapper")]
+            });
+
+            expect(form.field("wrapper.editable").disabled).toBe(true);
+
+            form.field("wrapper.locked").setValue("no");
+            expect(form.field("wrapper.editable").disabled).toBe(false);
+        });
+    });
 });

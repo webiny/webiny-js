@@ -41,6 +41,7 @@ export class Field implements IField {
     private _isUIChange = false;
     private _focusRequested = false;
     private _qualifiedName: string = "";
+    private _parentPath: string = "";
     private _form: IFormModel | null = null;
     private _ancestorRules: IRule[] = [];
 
@@ -169,6 +170,15 @@ export class Field implements IField {
         if (all.length === 0) {
             return { visible: true, disabled: false };
         }
+        if (this._parentPath) {
+            const resolved = all.map(rule => {
+                if (rule.target.startsWith("$.")) {
+                    return { ...rule, target: `${this._parentPath}.${rule.target.slice(2)}` };
+                }
+                return rule;
+            });
+            return this._form.evaluateRules(resolved);
+        }
         return this._form.evaluateRules(all);
     }
 
@@ -276,6 +286,7 @@ export class Field implements IField {
 
     setForm(form: IFormModel, parentPath?: string): void {
         this._form = form;
+        this._parentPath = parentPath || "";
         this._qualifiedName = parentPath ? `${parentPath}.${this.config.name}` : this.config.name;
     }
 
