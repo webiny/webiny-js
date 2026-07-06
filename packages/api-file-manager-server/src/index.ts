@@ -1,4 +1,6 @@
+import { existsSync, mkdirSync } from "node:fs";
 import { ContextPlugin } from "@webiny/api";
+import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 import { FileManagerServerConfigFeature } from "~/features/FileManagerServerConfig/feature.js";
 import { UploadSingleFileRouteFeature } from "~/routes/UploadSingleFileRoute/feature.js";
 import { UploadPartRouteFeature } from "~/routes/UploadPartRoute/feature.js";
@@ -19,6 +21,12 @@ const contextPlugin = new ContextPlugin(context => {
     const container = context.container;
 
     FileManagerServerConfigFeature.register(container);
+
+    const config = container.resolve(FileManagerServerConfig);
+    if (!existsSync(config.storagePath)) {
+        mkdirSync(config.storagePath, { recursive: true });
+    }
+
     FlushCacheFeature.register(container);
     DeleteFileFromDiskFeature.register(container);
     ExtractMetadataFeature.register(container);
