@@ -1,5 +1,5 @@
 import type { CmsModelField, CmsModelFieldValidation } from "../modelField.js";
-import type { CmsIcon } from "~/types/index.js";
+import type { CmsIcon, CmsModelLayoutCell } from "~/types/index.js";
 
 export interface CmsDynamicZoneTemplate {
     id: string;
@@ -8,7 +8,7 @@ export interface CmsDynamicZoneTemplate {
     description: string;
     icon?: CmsIcon;
     fields: CmsModelField[];
-    layout: string[][];
+    layout: CmsModelLayoutCell[][];
     validation: CmsModelFieldValidation[];
     tags?: string[];
 }

@@ -442,6 +442,13 @@ root. Use the field's `fieldId` (the key in the `.fields()` callback).
 - Inside a list item (current index): `"items.$.name"` — the `$` resolves to the
   current list index at evaluation time
 - Array length: `"items.length"` — evaluates to the number of items in the array
+- **Static relative path**: `"$.fieldId"` — resolves relative to the **parent object or
+  template** that contains the field. Use this inside `object`, `dynamicZone` template,
+  or `uiTabs` scopes to reference a sibling field without hard-coding the full path.
+  For example, inside a dynamicZone template, `"$.enabled"` resolves to the sibling
+  `enabled` field within the same template instance. This is the recommended approach
+  for rules inside nested scopes — it keeps the rule portable and avoids coupling to
+  the parent field's name.
 
 ### Examples
 
@@ -542,6 +549,56 @@ internalNotes: fields
     .rules([/* rules on the entire tabs container */])
 }))
 ```
+
+**Static `$.` paths — referencing siblings inside a nested scope:**
+
+Use `$.` to target a sibling field within the same parent object or dynamicZone
+template. The `$` resolves to the parent path at runtime, so the rule stays portable
+regardless of the outer structure.
+
+```typescript
+.fields(fields => ({
+  bannerTypes: fields
+    .dynamicZone()
+    .label("Banner Type")
+    .template("siteBanner", {
+      name: "Site Banner",
+      gqlTypeName: "SiteBannerBlock",
+      fields: t => ({
+        enabled: t.boolean().renderer("switch").label("Enabled"),
+        text: t.richText().renderer("lexicalEditor").label("Text"),
+        global: t
+          .boolean()
+          .renderer("switch")
+          .label("Global"),
+        locationTab: t
+          .uiTabs()
+          .tab("Location", {
+            label: "Location",
+            fields: tabFields => ({
+              location: tabFields.text().label("Location")
+            }),
+            layout: [["location"]]
+          })
+          .rules([
+            {
+              type: "condition",
+              target: "$.global",      // resolves to sibling "global" in this template
+              operator: "==",
+              value: true,
+              action: "hide"
+            }
+          ])
+      }),
+      layout: [["enabled"], ["text"], ["global"], ["locationTab"]]
+    })
+}))
+```
+
+In this example, `"$.global"` resolves to the `global` field within the same
+dynamicZone template instance. Without the `$.` prefix, you would need to hard-code the
+full path (e.g. `"bannerTypes.0.global"`), which breaks across list indices. The same
+pattern works inside `object` fields and `uiTabs` scopes.
 
 ## Querying `ref`, `object`, and `dynamicZone` fields
 
