@@ -4,7 +4,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { HttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { verifyUploadToken } from "~/utils/uploadToken.js";
-import { getStoragePath, getUploadSecret, isPathContained, json, toBuffer } from "./utils.js";
+import { getStoragePath, getUploadSecret, isPathContained, json, toBuffer } from "../utils.js";
 
 class UploadPartRouteImpl implements HttpRoute.Interface {
     public readonly method = "PUT";

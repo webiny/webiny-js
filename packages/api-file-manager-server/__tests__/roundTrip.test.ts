@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createUploadToken } from "~/utils/uploadToken.js";
-import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute.js";
-import { UploadPartRoute } from "~/routes/UploadPartRoute.js";
+import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute/UploadSingleFileRoute.js";
+import { UploadPartRoute } from "~/routes/UploadPartRoute/UploadPartRoute.js";
 import { CompleteMultiPartUploadUseCase } from "~/features/CompleteMultiPartUpload/CompleteMultiPartUploadUseCase.js";
 import { GetFileContentsByKeyUseCase } from "~/features/GetFileContentsByKey/GetFileContentsByKeyUseCase.js";
 import {

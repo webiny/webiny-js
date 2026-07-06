@@ -1,8 +1,8 @@
 import { existsSync } from "node:fs";
 import { mkdirSync } from "node:fs";
 import { ContextPlugin } from "@webiny/api";
-import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute.js";
-import { UploadPartRoute } from "~/routes/UploadPartRoute.js";
+import { UploadSingleFileRouteFeature } from "~/routes/UploadSingleFileRoute/feature.js";
+import { UploadPartRouteFeature } from "~/routes/UploadPartRoute/feature.js";
 import { CleanupStaleMultipartUploadsFeature } from "~/features/CleanupStaleMultipartUploads/feature.js";
 import { DeleteFileFromDiskFeature } from "~/features/DeleteFileFromDisk/feature.js";
 import { ExtractMetadataFeature } from "~/features/ExtractMetadata/feature.js";
@@ -12,6 +12,7 @@ import { GetFileContentsByKeyFeature } from "~/features/GetFileContentsByKey/fea
 import { GetUploadPayloadFeature } from "~/features/GetUploadPayload/feature.js";
 import { CreateMultiPartUploadFeature } from "~/features/CreateMultiPartUpload/feature.js";
 import { CompleteMultiPartUploadFeature } from "~/features/CompleteMultiPartUpload/feature.js";
+
 export { createFileUploadModifier } from "@webiny/api-file-manager/features/upload/index.js";
 export { createAssetDelivery } from "./assetDelivery/createAssetDelivery.js";
 
@@ -45,10 +46,8 @@ const contextPlugin = new ContextPlugin(context => {
     CreateMultiPartUploadFeature.register(container);
     CompleteMultiPartUploadFeature.register(container);
     CleanupStaleMultipartUploadsFeature.register(container);
-
-    // Self-hosted upload HTTP routes (transport-agnostic HttpRoute, formerly Fastify RoutePlugin).
-    container.register(UploadSingleFileRoute);
-    container.register(UploadPartRoute);
+    UploadSingleFileRouteFeature.register(container);
+    UploadPartRouteFeature.register(container);
 });
 
 contextPlugin.name = `fileManagerServer.context`;

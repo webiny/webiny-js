@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { createUploadToken } from "~/utils/uploadToken.js";
-import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute.js";
-import { UploadPartRoute } from "~/routes/UploadPartRoute.js";
+import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute/UploadSingleFileRoute.js";
+import { UploadPartRoute } from "~/routes/UploadPartRoute/UploadPartRoute.js";
 import {
     cleanupStorage,
     makeUploadRequest,

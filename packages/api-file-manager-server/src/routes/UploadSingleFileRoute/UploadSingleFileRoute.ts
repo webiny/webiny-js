@@ -11,7 +11,7 @@ import {
     toBuffer,
     parseMultipart,
     getBoundary
-} from "./utils.js";
+} from "../utils.js";
 
 class UploadSingleFileRouteImpl implements HttpRoute.Interface {
     public readonly method = "POST";
