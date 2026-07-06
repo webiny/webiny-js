@@ -1,12 +1,14 @@
 import React, { useState } from "react";
+import { observer } from "mobx-react-lite";
+import { useFeature } from "@webiny/app";
 import { DropdownMenu } from "@webiny/admin-ui";
 import { ReactComponent as ScienceIcon } from "@webiny/icons/science.svg";
 import { ReactComponent as SwapIcon } from "@webiny/icons/swap_horiz.svg";
 import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
-import { useExperimentsEditor } from "./ExperimentsEditorContext.js";
+import { ExperimentsEditorPresenterFeature } from "../feature.js";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
-import { bucketColor } from "./variantColors.js";
+import { bucketColor } from "../../shared/variantColors.js";
 
 const Dot = ({ color }: { color: string }) => (
     <span style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
@@ -17,9 +19,9 @@ const Dot = ({ color }: { color: string }) => (
  * experiment, shows its status and the bucket currently being edited, and lets the editor switch
  * between the control and each variant or jump to editing the experiment.
  */
-export const ExperimentPreviewToolbar = () => {
-    const { selectedExperiment, selectedVariantId, selectVariant, variantOptions, editExperiment } =
-        useExperimentsEditor();
+export const ExperimentPreviewToolbar = observer(function ExperimentPreviewToolbar() {
+    const { presenter } = useFeature(ExperimentsEditorPresenterFeature);
+    const { selectedExperiment, selectedVariantId, variantOptions } = presenter.vm;
     const isReadOnly = useSelectFromEditor(state => state.isReadOnly);
     const [open, setOpen] = useState(false);
 
@@ -165,7 +167,7 @@ export const ExperimentPreviewToolbar = () => {
                                 </span>
                             </span>
                         }
-                        onClick={() => selectVariant(option.id)}
+                        onClick={() => presenter.selectVariant(option.id)}
                     />
                 ))}
                 {!isReadOnly ? (
@@ -174,11 +176,11 @@ export const ExperimentPreviewToolbar = () => {
                         <DropdownMenu.Item
                             icon={<EditIcon style={{ width: 18, height: 18 }} />}
                             text="Edit experiment"
-                            onClick={() => editExperiment(selectedExperiment)}
+                            onClick={() => presenter.editExperiment(selectedExperiment)}
                         />
                     </>
                 ) : null}
             </DropdownMenu>
         </div>
     );
-};
+});

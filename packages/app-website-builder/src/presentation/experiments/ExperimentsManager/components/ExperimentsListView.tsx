@@ -1,12 +1,14 @@
 import React from "react";
+import { observer } from "mobx-react-lite";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+import type { ExperimentDto } from "~/features/experiments/index.js";
 import { ExperimentsEmptyState } from "./ExperimentsEmptyState.js";
 import { ExperimentCard } from "./ExperimentCard.js";
-import type { ExperimentDto } from "~/features/experiments/index.js";
+import type { IExperimentsManagerPresenter } from "../abstractions/ExperimentsManagerPresenter.js";
 
 interface Props {
-    experiments: ExperimentDto[];
+    presenter: IExperimentsManagerPresenter;
     onCreate: () => void;
     onEdit: (experiment: ExperimentDto) => void;
     onActivate: (experiment: ExperimentDto) => void;
@@ -14,15 +16,17 @@ interface Props {
     onDelete: (experiment: ExperimentDto) => void;
 }
 
-export const ExperimentsListView = ({
-    experiments,
+export const ExperimentsListView = observer(function ExperimentsListView({
+    presenter,
     onCreate,
     onEdit,
     onActivate,
     onDeactivate,
     onDelete
-}: Props) => {
-    if (experiments.length === 0) {
+}: Props) {
+    const { cards } = presenter.vm;
+
+    if (cards.length === 0) {
         return <ExperimentsEmptyState onCreateExperiment={onCreate} />;
     }
 
@@ -65,10 +69,10 @@ export const ExperimentsListView = ({
                 </button>
             </div>
 
-            {experiments.map(experiment => (
+            {cards.map(card => (
                 <ExperimentCard
-                    key={experiment.id}
-                    experiment={experiment}
+                    key={card.experiment.id}
+                    card={card}
                     onEdit={onEdit}
                     onActivate={onActivate}
                     onDeactivate={onDeactivate}
@@ -77,4 +81,4 @@ export const ExperimentsListView = ({
             ))}
         </div>
     );
-};
+});

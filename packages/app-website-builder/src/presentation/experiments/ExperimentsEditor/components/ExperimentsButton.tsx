@@ -1,33 +1,34 @@
 import React, { useEffect } from "react";
+import { observer } from "mobx-react-lite";
+import { useFeature } from "@webiny/app";
 import { Button } from "@webiny/admin-ui";
 import { ReactComponent as ScienceIcon } from "@webiny/icons/science.svg";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 import { ExperimentsSwitcher, type ExperimentItem } from "./ExperimentsSwitcher.js";
 import { ExperimentIndicator } from "./ExperimentIndicator.js";
-import { useExperimentsEditor } from "./ExperimentsEditorContext.js";
+import { ExperimentsEditorPresenterFeature } from "../feature.js";
 
 /**
  * Top-bar entry point for A/B experiments.
  *
  * On an editable (draft) page it's a switcher for picking an experiment to edit; on a published
  * (read-only) page it's an indicator for the running experiment with a pause/resume kill-switch.
- * State is shared through the editor-wide context so the in-preview toolbar tracks the selection.
+ * State is shared through the editor-wide presenter so the in-preview toolbar tracks the selection.
  */
-export const ExperimentsButton = () => {
-    const { experiments, selectedExperimentId, selectExperiment, openManage } =
-        useExperimentsEditor();
+export const ExperimentsButton = observer(function ExperimentsButton() {
+    const { presenter } = useFeature(ExperimentsEditorPresenterFeature);
     const isReadOnly = useSelectFromEditor(state => state.isReadOnly);
+
+    const { experiments, selectedExperimentId } = presenter.vm;
 
     const runningExperiment =
         experiments.find(experiment => experiment.status === "running") ?? null;
 
     // On the published (read-only) view, surface the running experiment and keep it selected so the
-    // preview toolbar tracks it.
+    // preview toolbar tracks it. Forwards the editor read-only selector into the presenter.
     useEffect(() => {
-        if (isReadOnly && runningExperiment && selectedExperimentId !== runningExperiment.id) {
-            selectExperiment(runningExperiment.id);
-        }
-    }, [isReadOnly, runningExperiment, selectedExperimentId, selectExperiment]);
+        presenter.syncReadOnlySelection(isReadOnly);
+    }, [presenter, isReadOnly, runningExperiment, selectedExperimentId]);
 
     if (isReadOnly) {
         if (!runningExperiment) {
@@ -53,16 +54,16 @@ export const ExperimentsButton = () => {
                     variant="secondary"
                     icon={<ScienceIcon />}
                     text="Experiments"
-                    onClick={openManage}
+                    onClick={() => presenter.openManage()}
                 />
             ) : (
                 <ExperimentsSwitcher
                     experiments={items}
                     selectedId={selectedExperimentId}
-                    onSelect={selectExperiment}
-                    onManage={openManage}
+                    onSelect={id => presenter.selectExperiment(id)}
+                    onManage={() => presenter.openManage()}
                 />
             )}
         </div>
     );
-};
+});

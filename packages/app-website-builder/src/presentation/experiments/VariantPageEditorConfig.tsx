@@ -3,7 +3,7 @@ import { InternalPageEditorConfig } from "~/presentation/pages/PageEditor/PageEd
 import { BackButton } from "~/presentation/pages/PageEditor/TopBar/BackButton.js";
 import { Title } from "~/presentation/pages/PageEditor/TopBar/Title.js";
 import { TopBarOptionsMenu } from "~/BaseEditor/config/TopBar/Layout.js";
-import { VariantAutoSave } from "./VariantAutoSave.js";
+import { VariantAutoSave } from "./config/VariantAutoSave.js";
 
 const { Ui } = InternalPageEditorConfig;
 

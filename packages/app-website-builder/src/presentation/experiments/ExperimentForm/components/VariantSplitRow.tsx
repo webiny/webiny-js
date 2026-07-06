@@ -1,6 +1,6 @@
 import React from "react";
 import { IconButton, Input } from "@webiny/admin-ui";
-import { bucketColor } from "./variantColors.js";
+import { bucketColor } from "../../shared/variantColors.js";
 
 interface FieldProps {
     label: string;

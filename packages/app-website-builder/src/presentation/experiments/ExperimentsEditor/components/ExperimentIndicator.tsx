@@ -1,23 +1,30 @@
 import React, { useState } from "react";
+import { observer } from "mobx-react-lite";
+import { useFeature } from "@webiny/app";
 import { ReactComponent as ScienceIcon } from "@webiny/icons/science.svg";
 import { ReactComponent as PauseIcon } from "@webiny/icons/pause.svg";
 import { ReactComponent as PlayIcon } from "@webiny/icons/play_arrow.svg";
-import { useExperimentsEditor } from "./ExperimentsEditorContext.js";
+import { ExperimentsEditorPresenterFeature } from "../feature.js";
 import type { ExperimentDto } from "~/features/experiments/index.js";
 
 /**
  * Top-bar indicator shown on a published (read-only) page: names the running experiment, shows
  * whether it's live (Active) or paused (Inactive), and lets the editor toggle the kill-switch.
  */
-export const ExperimentIndicator = ({ experiment }: { experiment: ExperimentDto }) => {
-    const { paused, pauseSelected, resumeSelected } = useExperimentsEditor();
+export const ExperimentIndicator = observer(function ExperimentIndicator({
+    experiment
+}: {
+    experiment: ExperimentDto;
+}) {
+    const { presenter } = useFeature(ExperimentsEditorPresenterFeature);
+    const { paused } = presenter.vm;
     const [busy, setBusy] = useState(false);
     const active = !paused;
 
     const toggle = async () => {
         setBusy(true);
         try {
-            await (paused ? resumeSelected() : pauseSelected());
+            await (paused ? presenter.resume() : presenter.pause());
         } finally {
             setBusy(false);
         }
@@ -96,4 +103,4 @@ export const ExperimentIndicator = ({ experiment }: { experiment: ExperimentDto 
             </button>
         </div>
     );
-};
+});

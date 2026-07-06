@@ -1,27 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { observer } from "mobx-react-lite";
 import { Button } from "@webiny/admin-ui";
 import { ReactComponent as PlayIcon } from "@webiny/icons/play_arrow.svg";
 import { ReactComponent as PauseIcon } from "@webiny/icons/pause.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
-import { useExperiments } from "./useExperiments.js";
-import { bucketColor } from "./variantColors.js";
-import type { ExperimentDto, VariantDto } from "~/features/experiments/index.js";
-
-// Decorative "hero band" colours for the mini page previews (unrelated to bucket dot colours).
-const BAND_COLORS = ["#4f46e5", "#0f9d58", "#c2410c", "#1f2937", "#0891b2"];
-
-interface Bucket {
-    key: string;
-    name: string;
-    weight: number;
-    dot: string;
-    band: string;
-    isControl: boolean;
-}
+import type { ExperimentDto } from "~/features/experiments/index.js";
+import type { ExperimentCardViewModel } from "../abstractions/ExperimentsManagerPresenter.js";
 
 interface Props {
-    experiment: ExperimentDto;
+    card: ExperimentCardViewModel;
     onEdit: (experiment: ExperimentDto) => void;
     onActivate: (experiment: ExperimentDto) => void;
     onDeactivate: (experiment: ExperimentDto) => void;
@@ -59,50 +47,14 @@ const Thumbnail = ({ band }: { band: string }) => (
     </div>
 );
 
-export const ExperimentCard = ({
-    experiment,
+export const ExperimentCard = observer(function ExperimentCard({
+    card,
     onEdit,
     onActivate,
     onDeactivate,
     onDelete
-}: Props) => {
-    const { gateway } = useExperiments();
-    const [variants, setVariants] = useState<VariantDto[]>([]);
-
-    useEffect(() => {
-        let cancelled = false;
-        gateway
-            .listVariants(experiment.id)
-            .then(list => !cancelled && setVariants(list))
-            .catch(() => !cancelled && setVariants([]));
-        return () => {
-            cancelled = true;
-        };
-    }, [experiment.id, gateway]);
-
-    const active = experiment.status === "running";
-    const split = experiment.trafficSplit ?? { control: 0, variants: {} };
-
-    const buckets: Bucket[] = [
-        {
-            key: "control",
-            name: "Control",
-            weight: split.control ?? 0,
-            dot: bucketColor(true, 0),
-            band: BAND_COLORS[0],
-            isControl: true
-        },
-        ...variants.map((variant, index) => ({
-            key: variant.entryId,
-            name: variant.name,
-            weight: split.variants?.[variant.entryId] ?? 0,
-            dot: bucketColor(false, index),
-            band: BAND_COLORS[(index + 1) % BAND_COLORS.length],
-            isControl: false
-        }))
-    ];
-
-    const variantCount = Object.keys(split.variants ?? {}).length;
+}: Props) {
+    const { experiment, active, buckets, variantCount } = card;
 
     return (
         <div
@@ -320,4 +272,4 @@ export const ExperimentCard = ({
             </div>
         </div>
     );
-};
+});

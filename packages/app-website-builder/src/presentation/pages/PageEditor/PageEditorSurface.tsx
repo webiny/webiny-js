@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { useFeature } from "@webiny/app";
 import { OverlayLoader } from "@webiny/admin-ui";
 import type { EditorPage } from "@webiny/website-builder-sdk";
 import { DocumentEditor } from "~/DocumentEditor/DocumentEditor.js";
@@ -9,9 +11,8 @@ import { useGetPage } from "~/features/pages/index.js";
 import { DefaultPageEditorConfig } from "./DefaultPageEditorConfig.js";
 import { RevisionListDrawer } from "./Revisions/RevisionListDrawer.js";
 import { pageToEditorDocument } from "./pageDocument.js";
-import { useExperimentsEditor } from "~/presentation/experiments/ExperimentsEditorContext.js";
-import { useExperiments } from "~/presentation/experiments/useExperiments.js";
-import { variantToEditorDocument } from "~/presentation/experiments/variantDocument.js";
+import { ExperimentsEditorPresenterFeature } from "~/presentation/experiments/ExperimentsEditor/index.js";
+import { variantToEditorDocument } from "~/presentation/experiments/shared/variantDocument.js";
 import { VariantPageEditorConfig } from "~/presentation/experiments/VariantPageEditorConfig.js";
 
 interface Props {
@@ -24,9 +25,9 @@ interface Props {
  * with the matching document and autosave; content is (re)fetched on each switch so returning to a
  * bucket always shows its latest saved state.
  */
-export const PageEditorSurface = ({ page }: Props) => {
-    const { selectedVariant } = useExperimentsEditor();
-    const { gateway } = useExperiments();
+export const PageEditorSurface = observer(function PageEditorSurface({ page }: Props) {
+    const { presenter } = useFeature(ExperimentsEditorPresenterFeature);
+    const { selectedVariant } = presenter.vm;
     const { getPage } = useGetPage();
 
     const readOnly = page.status !== WbPageStatus.Draft;
@@ -47,7 +48,7 @@ export const PageEditorSurface = ({ page }: Props) => {
         setLoading(true);
 
         const load: Promise<EditorPage | null> = selectedVariant
-            ? gateway
+            ? presenter
                   .getVariant(selectedVariant.id)
                   .then(content => (content ? variantToEditorDocument(content, page) : null))
             : getPage({ id: page.id }).then(pageToEditorDocument);
@@ -65,7 +66,7 @@ export const PageEditorSurface = ({ page }: Props) => {
         return () => {
             cancelled = true;
         };
-    }, [selectedVariant, gateway, getPage, page]);
+    }, [selectedVariant, presenter, getPage, page]);
 
     if (loading) {
         return <OverlayLoader text={selectedVariant ? "Loading variant..." : "Loading page..."} />;
@@ -89,4 +90,4 @@ export const PageEditorSurface = ({ page }: Props) => {
             )}
         </DocumentEditor>
     );
-};
+});
