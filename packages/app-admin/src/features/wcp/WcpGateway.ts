@@ -3,6 +3,7 @@ import { WcpGateway as WcpGatewayAbstraction } from "./abstractions.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import type { GetWcpProjectResponse, WcpProjectData } from "./types.js";
 
+console.log("ajmoooo");
 const GET_WCP_PROJECT = /* GraphQL */ `
     query GetWcpProject {
         wcp {

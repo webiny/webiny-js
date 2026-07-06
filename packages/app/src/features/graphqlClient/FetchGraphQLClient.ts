@@ -24,6 +24,7 @@ class GraphQLClientImpl implements GraphQLClient.Interface {
     ): Promise<TResult> {
         let response: Response;
         try {
+            console.log("ajmooooo!!!", endpoint);
             response = await fetch(endpoint, {
                 method: "POST",
                 headers: {

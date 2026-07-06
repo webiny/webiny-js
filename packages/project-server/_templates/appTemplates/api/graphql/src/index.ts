@@ -10,6 +10,7 @@
  * IdP) but not yet runtime-verified end-to-end against a live DB. Provided as the server-flavour
  * starting point.
  */
+import fs from "node:fs";
 import path from "node:path";
 import knex from "knex";
 import { createWebinyApiHandler } from "@webiny/api-event-handler-server-sql";
@@ -21,6 +22,9 @@ import { extensions } from "./extensions";
 // TODO: source this from project config once server-flavour DB configuration lands.
 const filename =
     process.env.WEBINY_SQL_FILENAME || path.join(process.cwd(), ".webiny", "server.sqlite");
+
+// better-sqlite3 won't create missing parent dirs — ensure the target directory exists.
+fs.mkdirSync(path.dirname(filename), { recursive: true });
 
 const db = knex({
     client: "better-sqlite3",

@@ -22,6 +22,17 @@ import { ClipboardFeature } from "~/features/clipboard/feature.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 
+// Prefer the build/watch-time URL; else same-origin (deployed self-hosted behind one domain).
+// Never bake the literal string "undefined".
+const resolveApiUrl = (): string => {
+    console.log("ye2ssaaah");
+    const url = process.env.REACT_APP_API_URL;
+    if (url && url !== "undefined") {
+        return url;
+    }
+    return typeof window !== "undefined" ? window.location.origin : "";
+};
+
 export function createRootContainer() {
     const container = new Container();
 
@@ -31,9 +42,9 @@ export function createRootContainer() {
 
     EnvConfigFeature.register(container, {
         deploymentId,
-        apiUrl: String(process.env.REACT_APP_API_URL),
+        apiUrl: resolveApiUrl(),
         debug: process.env.WEBINY_ADMIN_DEBUG === "true",
-        graphqlApiUrl: String(process.env.REACT_APP_GRAPHQL_API_URL),
+        graphqlApiUrl: process.env.REACT_APP_GRAPHQL_API_URL || `${resolveApiUrl()}/graphql`,
         telemetryEnabled: process.env.REACT_APP_WEBINY_TELEMETRY === "true",
         telemetryUserId: process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID,
         trashBinRetentionPeriodDays: trashBinRetention,

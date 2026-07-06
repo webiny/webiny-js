@@ -11,6 +11,8 @@ import { AdminBuildParam } from "./AdminBuildParam.js";
 import { AdminExtension } from "./AdminExtension.js";
 import { ApiExtension } from "./ApiExtension.js";
 import { ApiMaxBundleSize } from "./ApiMaxBundleSize.js";
+import { Encryption } from "./infra/Encryption.js";
+import { Hashing } from "./infra/Hashing.js";
 
 // Hooks.
 import {
@@ -59,6 +61,8 @@ export { AdminBuildParam };
 export { AdminExtension };
 export { ApiExtension };
 export { ApiMaxBundleSize };
+export { Encryption };
+export { Hashing };
 
 // Hooks.
 export { BeforeBuild };
@@ -132,7 +136,9 @@ export const definitions = [
     AdminBuildParam.def,
     AdminExtension.def,
     ApiExtension.def,
-    ApiMaxBundleSize.def
+    ApiMaxBundleSize.def,
+    Encryption.def,
+    Hashing.def
 ];
 
 export { Project } from "./Project.js";

@@ -33,10 +33,8 @@ import {
 
 import { OpenSearch } from "./extensions/OpenSearch.js";
 import { AwsDefaultRegion } from "./extensions/AwsDefaultRegion.js";
-import { Encryption } from "./extensions/Encryption.js";
-import { Hashing } from "./extensions/Hashing.js";
 import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
-import { EnvVar, ApiMaxBundleSize } from "@webiny/project/extensions/index.js";
+import { EnvVar, ApiMaxBundleSize, Encryption, Hashing } from "@webiny/project/extensions/index.js";
 import {
     EnvIs,
     EnvIsNot,

@@ -31,7 +31,7 @@ export const Extensions = () => {
 
             <Infra.Crypto.Encryption passphrase={"my-passphrase"} />
             {/* Optional server-side pepper folded into every hash (e.g. self-hosted auth passwords). */}
-            {/*<Infra.Crypto.Hashing pepper={"my-hashing-pepper"} />*/}
+            <Infra.Crypto.Hashing pepper={"my-hashing-pepper"} />
             {/*<Infra.Api.MaxBundleSize size={2359296}  />*/}
 
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
