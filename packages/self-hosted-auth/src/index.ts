@@ -1,3 +1,6 @@
+// Config-time extension for webiny.config.tsx (`<SelfHostedAuth />`).
+export { SelfHostedAuth } from "./SelfHostedAuth.js";
+
 export {
     SelfHostedAuthApiFeature,
     type SelfHostedAuthConfig

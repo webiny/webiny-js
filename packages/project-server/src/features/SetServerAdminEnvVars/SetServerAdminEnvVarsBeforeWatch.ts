@@ -25,12 +25,8 @@ class SetServerAdminEnvVarsBeforeWatchImpl implements AdminBeforeWatch.Interface
             process.env.REACT_APP_GRAPHQL_API_URL = `${apiUrl}/graphql`;
         }
 
-        // Tell the install wizard's admin-user step to key its data under the self-hosted IdP's
-        // AppInstaller name ("SelfHostedAuth"), so the install actually seeds the admin user +
-        // password. Without this it defaults to "Cognito" and the self-hosted installer never runs.
-        if (!process.env.REACT_APP_AUTH_INSTALLER_APP_NAME) {
-            process.env.REACT_APP_AUTH_INSTALLER_APP_NAME = "SelfHostedAuth";
-        }
+        // REACT_APP_AUTH_INSTALLER_APP_NAME is set by the <SelfHostedAuth /> config extension
+        // (webiny.config.tsx), not here — so it only applies when that IdP is actually enabled.
 
         // Keep the admin dev server off the API server's port.
         process.env.PORT = process.env.WEBINY_ADMIN_PORT || "3001";

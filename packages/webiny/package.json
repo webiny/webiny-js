@@ -41,7 +41,6 @@
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
     "@webiny/project-aws-template": "0.0.0",
-    "@webiny/self-hosted-auth": "0.0.0",
     "@webiny/tenant-manager": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",

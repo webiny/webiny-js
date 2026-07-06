@@ -8,6 +8,7 @@
     { "path": "../feature" },
     { "path": "../form" },
     { "path": "../handler-graphql" },
+    { "path": "../project" },
     { "path": "../validation" }
   ],
   "compilerOptions": {
@@ -29,6 +30,8 @@
       "@webiny/form": ["../form/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     }

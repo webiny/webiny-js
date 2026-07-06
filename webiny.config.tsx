@@ -1,7 +1,7 @@
 import React from "react";
 import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
 // import { Cognito } from "@webiny/cognito";
-import { SelfHostedAuth } from "webiny/admin/self-hosted-auth";
+import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 

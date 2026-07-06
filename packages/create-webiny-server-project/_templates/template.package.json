@@ -3,6 +3,7 @@
   "dependencies": {
     "@webiny/cli-server": "latest",
     "@webiny/project-server": "latest",
+    "@webiny/self-hosted-auth": "latest",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "webiny": "latest"
