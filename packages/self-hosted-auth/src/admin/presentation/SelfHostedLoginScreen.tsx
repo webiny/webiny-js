@@ -89,7 +89,11 @@ export const SelfHostedLoginScreen = (props: SelfHostedLoginScreenProps) => {
         return () => {
             cancelled = true;
         };
-    }, [establishSession]);
+        // Run once on mount only. `establishSession` depends on `login` (a fresh bound fn each
+        // render), so keeping it as a dep would re-fire the restore — and the login mutation —
+        // on every render of the still-mounted wrapper, even after authentication.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const onSubmit = useCallback(
         async (data: { email: string; password: string }) => {

@@ -19,7 +19,15 @@ import {
     createWebsocketsSubscriptionManager
 } from "./domain/index.js";
 import type { IGenericData, IWebsocketsManager } from "./domain/types.js";
+import type { IWebsocketsSubscription } from "./domain/abstractions/IWebsocketsSubscriptionManager.js";
 import { getUrl } from "./utils/getUrl.js";
+
+// No-op subscription returned when WS isn't connected (no URL configured).
+const noopSubscription = (): IWebsocketsSubscription<any> => ({
+    cb: () => undefined,
+    id: "",
+    off: () => undefined
+});
 
 export interface IWebsocketsContextProviderProps {
     loader?: React.ReactElement;
@@ -125,10 +133,8 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
             const url = getUrl();
 
             if (!url) {
-                console.error("Not possible to connect to the websocket without a valid URL.", {
-                    tenant,
-                    token
-                });
+                // No WS URL configured (e.g. self-hosted server flavour) — skip WS, run app anyway.
+                console.warn("WebSocket URL not configured; real-time updates are disabled.");
                 return;
             }
 
@@ -197,7 +203,11 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
             action: string,
             cb: (data: T) => void
         ) => {
-            return socketsRef.current!.onMessage<T>(async event => {
+            // No-op subscription when WS isn't connected (e.g. no URL configured).
+            if (!socketsRef.current) {
+                return noopSubscription();
+            }
+            return socketsRef.current.onMessage<T>(async event => {
                 if (event.data.action !== action) {
                     return;
                 }
@@ -209,7 +219,10 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
 
     const onError = useCallback(
         (cb: (data: IWebsocketsManagerErrorEvent) => void) => {
-            return socketsRef.current!.onError(data => {
+            if (!socketsRef.current) {
+                return noopSubscription();
+            }
+            return socketsRef.current.onError(data => {
                 return cb(data);
             });
         },
@@ -218,14 +231,19 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
 
     const onClose = useCallback(
         (cb: (data: IWebsocketsManagerCloseEvent) => void) => {
-            return socketsRef.current!.onClose(data => {
+            if (!socketsRef.current) {
+                return noopSubscription();
+            }
+            return socketsRef.current.onClose(data => {
                 return cb(data);
             });
         },
         [socketsRef.current]
     );
 
-    if (!socketsRef.current) {
+    // Only block the app on the WS connection when WS is actually configured. Without a URL
+    // (e.g. the self-hosted server flavour), skip WS and render the app anyway.
+    if (getUrl() && !socketsRef.current) {
         return props.loader || null;
     }
 
