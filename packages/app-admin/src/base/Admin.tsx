@@ -32,12 +32,16 @@ export interface AdminProps {
 const container = createRootContainer();
 
 export const Admin = ({ children, createApolloClient, createLegacyPlugins }: AdminProps) => {
-    // Prefer the build/watch-time URL when set (AWS always sets it; the server flavour sets it for
-    // local `watch`). Otherwise fall back to same-origin `/graphql`, so a deployed self-hosted admin
-    // served behind the same domain as the API needs no baked-in URL at all.
+    // Prefer the configured API URL (baked by `<Admin.ApiUrl>` into WEBINY_ADMIN_API_URL).
+    // Otherwise fall back to same-origin `/graphql`, so a deployed self-hosted admin served behind
+    // the same domain as the API needs no baked-in URL at all.
+    const configuredApiUrl = process.env.WEBINY_ADMIN_API_URL;
     const uri =
-        process.env.REACT_APP_GRAPHQL_API_URL ||
-        (typeof window !== "undefined" ? `${window.location.origin}/graphql` : "/graphql");
+        configuredApiUrl && configuredApiUrl !== "undefined"
+            ? `${configuredApiUrl}/graphql`
+            : typeof window !== "undefined"
+              ? `${window.location.origin}/graphql`
+              : "/graphql";
     const apolloClient = createApolloClient({ uri });
 
     plugins.register(...createLegacyPlugins(container));

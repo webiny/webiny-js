@@ -8,6 +8,7 @@ import { DatabaseSetup } from "./DatabaseSetup.js";
 import { FeatureFlags } from "./FeatureFlags.js";
 import { BuildParam } from "./ApiBuildParam.js";
 import { AdminBuildParam } from "./AdminBuildParam.js";
+import { AdminApiUrl } from "./AdminApiUrl.js";
 import { AdminExtension } from "./AdminExtension.js";
 import { ApiExtension } from "./ApiExtension.js";
 import { ApiMaxBundleSize } from "./ApiMaxBundleSize.js";
@@ -58,6 +59,7 @@ export { FeatureFlags };
 export { DatabaseSetup };
 export { BuildParam };
 export { AdminBuildParam };
+export { AdminApiUrl };
 export { AdminExtension };
 export { ApiExtension };
 export { ApiMaxBundleSize };
@@ -134,6 +136,7 @@ export const definitions = [
     DatabaseSetup.def,
     BuildParam.def,
     AdminBuildParam.def,
+    AdminApiUrl.def,
     AdminExtension.def,
     ApiExtension.def,
     ApiMaxBundleSize.def,

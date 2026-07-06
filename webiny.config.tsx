@@ -9,6 +9,7 @@ export const Extensions = () => {
     return (
         <>
             {/* Admin 👇 */}
+            <Admin.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3000"} />
             <Admin.Extension src={"@/extensions/previewUrlModifier/index.tsx"} />
             {/*<Admin.Extension src={"@/extensions/fileUrlFormatter/index.tsx"} />*/}
             <Admin.Extension src={"@/extensions/sampleEcommerce/index.tsx"} />

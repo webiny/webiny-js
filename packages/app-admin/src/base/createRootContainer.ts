@@ -22,11 +22,10 @@ import { ClipboardFeature } from "~/features/clipboard/feature.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 
-// Prefer the build/watch-time URL; else same-origin (deployed self-hosted behind one domain).
-// Never bake the literal string "undefined".
+// Prefer the configured API URL (baked by `<Admin.ApiUrl>` into WEBINY_ADMIN_API_URL); else
+// same-origin (deployed self-hosted behind one domain). Never bake the literal string "undefined".
 const resolveApiUrl = (): string => {
-    console.log("ye2ssaaah");
-    const url = process.env.REACT_APP_API_URL;
+    const url = process.env.WEBINY_ADMIN_API_URL;
     if (url && url !== "undefined") {
         return url;
     }
@@ -44,7 +43,7 @@ export function createRootContainer() {
         deploymentId,
         apiUrl: resolveApiUrl(),
         debug: process.env.WEBINY_ADMIN_DEBUG === "true",
-        graphqlApiUrl: process.env.REACT_APP_GRAPHQL_API_URL || `${resolveApiUrl()}/graphql`,
+        graphqlApiUrl: `${resolveApiUrl()}/graphql`,
         telemetryEnabled: process.env.REACT_APP_WEBINY_TELEMETRY === "true",
         telemetryUserId: process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID,
         trashBinRetentionPeriodDays: trashBinRetention,

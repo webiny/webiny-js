@@ -68,9 +68,8 @@ function startApiServer(cwd: string, ui: UiService.Interface) {
     const workspaceApi = path.join(cwd, ".webiny", "workspace", "apps", "api");
     const buildDir = path.join(workspaceApi, "graphql", "build");
     const runnerPath = path.join(workspaceApi, ".serve.mjs");
-    // Use a dedicated API port so it never collides with the admin dev server (which uses
-    // WEBINY_ADMIN_PORT | 3001, set by SetServerAdminEnvVarsBeforeWatch). Both previously
-    // defaulted to 3000 via the shared process.env.PORT.
+    // Use a dedicated API port so it never collides with the admin dev server (rsbuild defaults to
+    // 3001). Set WEBINY_API_PORT to override.
     const port = process.env.WEBINY_API_PORT || "3000";
 
     // Create the build dir up front so Node's `--watch-path` (below) doesn't ENOENT when the
