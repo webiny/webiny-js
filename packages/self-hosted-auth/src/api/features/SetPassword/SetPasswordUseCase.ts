@@ -5,14 +5,14 @@ import type { SetPasswordInput } from "./abstractions.js";
 import { WeakPasswordError } from "~/api/domain/errors.js";
 import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
 import type { StorageCredential } from "~/api/storage/abstractions.js";
-import { PasswordHasher } from "@webiny/api-core/features/passwordHashing/index.js";
+import { Hasher } from "@webiny/api-core/features/hashing/index.js";
 
 const passwordPolicy = z.string().min(8);
 
 class SetPasswordUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private credentials: CredentialsStorageOperations.Interface,
-        private passwordHasher: PasswordHasher.Interface
+        private hasher: Hasher.Interface
     ) {}
 
     async execute(input: SetPasswordInput): Promise<Result<true, UseCaseAbstraction.Error>> {
@@ -25,7 +25,7 @@ class SetPasswordUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new WeakPasswordError("Password must be at least 8 characters."));
         }
 
-        const passwordHash = await this.passwordHasher.hash(input.password);
+        const passwordHash = await this.hasher.hash(input.password);
 
         const existing = await this.credentials.getCredentialByUserId({
             tenant: input.tenant,
@@ -53,5 +53,5 @@ const nowIso = () => new Date().toISOString();
 
 export const SetPasswordUseCase = UseCaseAbstraction.createImplementation({
     implementation: SetPasswordUseCaseImpl,
-    dependencies: [CredentialsStorageOperations, PasswordHasher]
+    dependencies: [CredentialsStorageOperations, Hasher]
 });

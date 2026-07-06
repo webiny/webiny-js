@@ -12,7 +12,7 @@ export interface StorageCredential {
     userId: string;
     email: string;
     /**
-     * Opaque, self-describing hash string produced by a `PasswordHasher`
+     * Opaque, self-describing hash string produced by a `Hasher`
      * (e.g. `scrypt$16384$8$1$<salt>$<hash>`). The algorithm is encoded in the
      * value, so swapping hashers later does not require a migration.
      */

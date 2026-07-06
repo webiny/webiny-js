@@ -4,13 +4,13 @@ import type { LoginInput, LoginOutput } from "./abstractions.js";
 import { loginValidation } from "./schema.js";
 import { InvalidCredentialsError } from "~/api/domain/errors.js";
 import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
-import { PasswordHasher } from "@webiny/api-core/features/passwordHashing/index.js";
+import { Hasher } from "@webiny/api-core/features/hashing/index.js";
 import { TokenIssuer } from "~/api/domain/crypto/TokenIssuer.js";
 
 class LoginUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private credentials: CredentialsStorageOperations.Interface,
-        private passwordHasher: PasswordHasher.Interface,
+        private hasher: Hasher.Interface,
         private tokenIssuer: TokenIssuer.Interface
     ) {}
 
@@ -31,11 +31,11 @@ class LoginUseCaseImpl implements UseCaseAbstraction.Interface {
         const credential = await this.credentials.getCredentialByEmail({ email });
         if (!credential) {
             // Still hash to keep the timing of "no such user" ~ "wrong password".
-            await this.passwordHasher.verify(password, DUMMY_HASH);
+            await this.hasher.verify(password, DUMMY_HASH);
             return Result.fail(new InvalidCredentialsError());
         }
 
-        const ok = await this.passwordHasher.verify(password, credential.passwordHash);
+        const ok = await this.hasher.verify(password, credential.passwordHash);
         if (!ok) {
             return Result.fail(new InvalidCredentialsError());
         }
@@ -61,5 +61,5 @@ const DUMMY_HASH =
 
 export const LoginUseCase = UseCaseAbstraction.createImplementation({
     implementation: LoginUseCaseImpl,
-    dependencies: [CredentialsStorageOperations, PasswordHasher, TokenIssuer]
+    dependencies: [CredentialsStorageOperations, Hasher, TokenIssuer]
 });

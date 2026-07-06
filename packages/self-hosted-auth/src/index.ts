@@ -10,9 +10,9 @@ export {
 } from "./api/storage/abstractions.js";
 
 // Crypto seams — override to swap the KDF (e.g. Argon2id) or token strategy.
-// PasswordHasher now lives in @webiny/api-core (configurable via <Infra.PasswordHashing>); re-exported
+// Hasher lives in @webiny/api-core (configurable via <Infra.Crypto.Hashing>); re-exported
 // here for convenience so the auth module's crypto seams stay discoverable in one place.
-export { PasswordHasher } from "@webiny/api-core/features/passwordHashing/index.js";
+export { Hasher } from "@webiny/api-core/features/hashing/index.js";
 export { TokenIssuer, SELF_HOSTED_ISSUER } from "./api/domain/crypto/TokenIssuer.js";
 
 // Use cases — handy for installers/seeding scripts.

@@ -3,19 +3,19 @@ import { z } from "zod";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { BuildParam } from "@webiny/project/extensions/index.js";
 
-export const PasswordHashing = defineExtension({
-    type: "Infra/PasswordHashing",
+export const Hashing = defineExtension({
+    type: "Infra/Hashing",
     tags: { runtimeContext: "project" },
-    description: "Configure the API's password hashing (scrypt).",
+    description: "Configure the API's hashing service (scrypt).",
     paramsSchema: z.object({
         pepper: z
             .string()
             .min(1)
             .optional()
             .describe(
-                "Server-side secret folded into every password hash (a 'pepper'). It is NOT stored " +
-                    "with the hash, so a stolen database alone cannot be brute-forced without it. " +
-                    "Changing it invalidates existing passwords."
+                "Server-side secret folded into every hash (a 'pepper'). It is NOT stored with the " +
+                    "hash, so a stolen database alone cannot be brute-forced without it. Changing it " +
+                    "invalidates existing hashes."
             ),
         cost: z
             .number()
@@ -27,8 +27,8 @@ export const PasswordHashing = defineExtension({
     render({ pepper, cost }) {
         return (
             <>
-                {pepper && <BuildParam paramName="PasswordHashingPepper" value={pepper} />}
-                {cost && <BuildParam paramName="PasswordHashingCost" value={cost} />}
+                {pepper && <BuildParam paramName="HashingPepper" value={pepper} />}
+                {cost && <BuildParam paramName="HashingCost" value={cost} />}
             </>
         );
     }
