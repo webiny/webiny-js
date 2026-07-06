@@ -83,7 +83,7 @@ const Playground = ({ createApolloClient }: PlaygroundProps) => {
     const createApolloLink = useCallback<CreateApolloLinkCallable>(({ endpoint, headers }) => {
         const current = links.current;
         // If the request endpoint is not know to us, return the first available
-        const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL) as string;
+        const apiUrl = appConfig.getKey("API_URL", process.env.WEBINY_ADMIN_API_URL) as string;
         if (!endpoint.includes(apiUrl)) {
             return { link: withHeaders(Object.values(current)[0], headers) };
         }

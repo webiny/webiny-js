@@ -20,7 +20,7 @@ export function useCodeExecution(
     const { authenticationContext } = useFeature(AuthenticationContextFeature);
 
     const handleRun = useCallback(async () => {
-        const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL) as string;
+        const apiUrl = appConfig.getKey("API_URL", process.env.WEBINY_ADMIN_API_URL) as string;
         if (!apiUrl) {
             showSnackbar("API URL is not configured");
             return;

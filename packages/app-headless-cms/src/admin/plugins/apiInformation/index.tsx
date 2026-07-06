@@ -9,7 +9,7 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
         type: "graphql-playground-tab",
         name: "graphql-playground-tab-manage",
         tab({ identity }) {
-            const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
+            const apiUrl = appConfig.getKey("API_URL", process.env.WEBINY_ADMIN_API_URL);
             if (
                 !identity ||
                 !identity.getPermission ||
@@ -30,7 +30,7 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
         type: "graphql-playground-tab",
         name: "graphql-playground-tab-read",
         tab({ identity }) {
-            const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
+            const apiUrl = appConfig.getKey("API_URL", process.env.WEBINY_ADMIN_API_URL);
             if (
                 !identity ||
                 !identity.getPermission ||
@@ -51,7 +51,7 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
         type: "graphql-playground-tab",
         name: "graphql-playground-tab-preview",
         tab({ identity }) {
-            const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
+            const apiUrl = appConfig.getKey("API_URL", process.env.WEBINY_ADMIN_API_URL);
             if (
                 !identity ||
                 !identity.getPermission ||

@@ -14,7 +14,9 @@ export const AdminApiUrl = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Set the API URL the Admin app talks to.",
     paramsSchema: z.object({
-        url: z.string().describe("The API origin, e.g. https://api.example.com or http://localhost:3000")
+        url: z
+            .string()
+            .describe("The API origin, e.g. https://api.example.com or http://localhost:3000")
     }),
     render: props => {
         return <EnvVar varName="WEBINY_ADMIN_API_URL" value={props.url} />;
