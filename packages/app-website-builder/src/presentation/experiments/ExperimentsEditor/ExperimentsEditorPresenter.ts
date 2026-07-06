@@ -11,9 +11,11 @@ import {
     ExperimentsEditorPresenter as Abstraction,
     type IExperimentsEditorPresenter,
     type IExperimentsEditorViewModel,
+    type SwitcherItem,
     type VariantOption
 } from "./abstractions/ExperimentsEditorPresenter.js";
 import { ExperimentsEditorDataSource } from "./abstractions/ExperimentsEditorDataSource.js";
+import { bucketColor } from "../shared/variantColors.js";
 
 class ExperimentsEditorPresenterImpl implements IExperimentsEditorPresenter {
     // Revision id of the page being edited (e.g. "<entryId>#0001"); the baseline for its experiments.
@@ -50,14 +52,40 @@ class ExperimentsEditorPresenterImpl implements IExperimentsEditorPresenter {
     private get variantOptions(): VariantOption[] {
         const split = this.selectedExperiment?.trafficSplit ?? { control: 0, variants: {} };
         return [
-            { id: null, name: "Control", weight: split.control ?? 0, isControl: true },
-            ...this.variants.map(variant => ({
+            {
+                id: null,
+                name: "Control",
+                weight: split.control ?? 0,
+                isControl: true,
+                color: bucketColor(true, 0)
+            },
+            ...this.variants.map((variant, index) => ({
                 id: variant.entryId,
                 name: variant.name,
                 weight: split.variants?.[variant.entryId] ?? 0,
-                isControl: false
+                isControl: false,
+                color: bucketColor(false, index)
             }))
         ];
+    }
+
+    private get currentBucket(): VariantOption | null {
+        const options = this.variantOptions;
+        return options.find(option => option.id === this.selectedVariantId) ?? options[0] ?? null;
+    }
+
+    private get runningExperiment(): ExperimentDto | null {
+        return this.experiments.find(experiment => experiment.status === "running") ?? null;
+    }
+
+    private get switcherItems(): SwitcherItem[] {
+        return this.experiments.map(
+            (experiment): SwitcherItem => ({
+                id: experiment.id,
+                name: experiment.name,
+                status: experiment.status === "running" ? "active" : "inactive"
+            })
+        );
     }
 
     get vm(): IExperimentsEditorViewModel {
@@ -70,6 +98,9 @@ class ExperimentsEditorPresenterImpl implements IExperimentsEditorPresenter {
             selectedVariantId: this.selectedVariantId,
             selectedVariant: this.selectedVariant,
             variantOptions: this.variantOptions,
+            currentBucket: this.currentBucket,
+            runningExperiment: this.runningExperiment,
+            switcherItems: this.switcherItems,
             paused: this.paused,
             drawerOpen: this.drawerOpen,
             editTarget: this.editTarget

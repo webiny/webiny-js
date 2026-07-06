@@ -14,6 +14,15 @@ export interface VariantOption {
     name: string;
     weight: number;
     isControl: boolean;
+    // Palette colour for the bucket, assigned by index (control neutral, variants cycle).
+    color: string;
+}
+
+/** A row in the top-bar experiment switcher. */
+export interface SwitcherItem {
+    id: string;
+    name: string;
+    status: "active" | "inactive";
 }
 
 export interface IExperimentsEditorViewModel {
@@ -29,6 +38,12 @@ export interface IExperimentsEditorViewModel {
     // The variant DTO matching `selectedVariantId` (null when editing the control).
     selectedVariant: VariantDto | null;
     variantOptions: VariantOption[];
+    // The bucket currently being previewed/edited (control or the selected variant).
+    currentBucket: VariantOption | null;
+    // The single running experiment on the page, if any (drives the read-only indicator).
+    runningExperiment: ExperimentDto | null;
+    // Experiments as switcher rows (id + name + active/inactive status).
+    switcherItems: SwitcherItem[];
     // Kill-switch state of the selected experiment.
     paused: boolean;
     // Manage/edit drawer UI state.

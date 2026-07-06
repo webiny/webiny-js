@@ -1,19 +1,19 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Button } from "@webiny/admin-ui";
+import { Button, Text } from "@webiny/admin-ui";
+import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { ReactComponent as PlayIcon } from "@webiny/icons/play_arrow.svg";
 import { ReactComponent as PauseIcon } from "@webiny/icons/pause.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
-import type { ExperimentDto } from "~/features/experiments/index.js";
-import type { ExperimentCardViewModel } from "../abstractions/ExperimentsManagerPresenter.js";
+import type {
+    ExperimentCardViewModel,
+    IExperimentsManagerPresenter
+} from "../abstractions/ExperimentsManagerPresenter.js";
 
 interface Props {
+    presenter: IExperimentsManagerPresenter;
     card: ExperimentCardViewModel;
-    onEdit: (experiment: ExperimentDto) => void;
-    onActivate: (experiment: ExperimentDto) => void;
-    onDeactivate: (experiment: ExperimentDto) => void;
-    onDelete: (experiment: ExperimentDto) => void;
 }
 
 const Dot = ({ color }: { color: string }) => (
@@ -47,14 +47,47 @@ const Thumbnail = ({ band }: { band: string }) => (
     </div>
 );
 
-export const ExperimentCard = observer(function ExperimentCard({
-    card,
-    onEdit,
-    onActivate,
-    onDeactivate,
-    onDelete
-}: Props) {
+export const ExperimentCard = observer(function ExperimentCard({ presenter, card }: Props) {
     const { experiment, active, buckets, variantCount } = card;
+    const { showSnackbar } = useSnackbar();
+    const { showConfirmation } = useConfirmationDialog({
+        title: "Delete experiment",
+        loading: "Deleting experiment...",
+        message: (
+            <Text>
+                You are about to permanently delete this experiment and all of its variants. This
+                cannot be undone.
+            </Text>
+        )
+    });
+
+    const activate = async () => {
+        try {
+            await presenter.activateExperiment(experiment);
+            showSnackbar(`"${experiment.name}" is now active.`);
+        } catch (ex: any) {
+            showSnackbar(ex.message || "Could not activate the experiment.");
+        }
+    };
+
+    const deactivate = async () => {
+        try {
+            await presenter.deactivateExperiment(experiment);
+            showSnackbar(`"${experiment.name}" was deactivated.`);
+        } catch (ex: any) {
+            showSnackbar(ex.message || "Could not deactivate the experiment.");
+        }
+    };
+
+    const remove = () =>
+        showConfirmation(async () => {
+            try {
+                await presenter.deleteExperiment(experiment);
+                showSnackbar(`"${experiment.name}" was deleted.`);
+            } catch (ex: any) {
+                showSnackbar(ex.message || "Could not delete the experiment.");
+            }
+        });
 
     return (
         <div
@@ -115,12 +148,12 @@ export const ExperimentCard = observer(function ExperimentCard({
                         variant="secondary"
                         icon={<PauseIcon />}
                         text="Deactivate"
-                        onClick={() => onDeactivate(experiment)}
+                        onClick={deactivate}
                     />
                 ) : (
                     <button
                         type="button"
-                        onClick={() => onActivate(experiment)}
+                        onClick={activate}
                         style={{
                             display: "inline-flex",
                             alignItems: "center",
@@ -247,11 +280,11 @@ export const ExperimentCard = observer(function ExperimentCard({
                     variant="secondary"
                     icon={<EditIcon />}
                     text="Edit"
-                    onClick={() => onEdit(experiment)}
+                    onClick={() => presenter.startEdit(experiment)}
                 />
                 <button
                     type="button"
-                    onClick={() => onDelete(experiment)}
+                    onClick={remove}
                     style={{
                         display: "inline-flex",
                         alignItems: "center",

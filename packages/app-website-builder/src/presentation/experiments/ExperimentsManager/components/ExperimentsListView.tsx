@@ -2,32 +2,19 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
-import type { ExperimentDto } from "~/features/experiments/index.js";
 import { ExperimentsEmptyState } from "./ExperimentsEmptyState.js";
 import { ExperimentCard } from "./ExperimentCard.js";
 import type { IExperimentsManagerPresenter } from "../abstractions/ExperimentsManagerPresenter.js";
 
 interface Props {
     presenter: IExperimentsManagerPresenter;
-    onCreate: () => void;
-    onEdit: (experiment: ExperimentDto) => void;
-    onActivate: (experiment: ExperimentDto) => void;
-    onDeactivate: (experiment: ExperimentDto) => void;
-    onDelete: (experiment: ExperimentDto) => void;
 }
 
-export const ExperimentsListView = observer(function ExperimentsListView({
-    presenter,
-    onCreate,
-    onEdit,
-    onActivate,
-    onDeactivate,
-    onDelete
-}: Props) {
+export const ExperimentsListView = observer(function ExperimentsListView({ presenter }: Props) {
     const { cards } = presenter.vm;
 
     if (cards.length === 0) {
-        return <ExperimentsEmptyState onCreateExperiment={onCreate} />;
+        return <ExperimentsEmptyState onCreateExperiment={() => presenter.showCreate()} />;
     }
 
     return (
@@ -47,7 +34,7 @@ export const ExperimentsListView = observer(function ExperimentsListView({
                 </Text>
                 <button
                     type="button"
-                    onClick={onCreate}
+                    onClick={() => presenter.showCreate()}
                     style={{
                         display: "inline-flex",
                         alignItems: "center",
@@ -70,14 +57,7 @@ export const ExperimentsListView = observer(function ExperimentsListView({
             </div>
 
             {cards.map(card => (
-                <ExperimentCard
-                    key={card.experiment.id}
-                    card={card}
-                    onEdit={onEdit}
-                    onActivate={onActivate}
-                    onDeactivate={onDeactivate}
-                    onDelete={onDelete}
-                />
+                <ExperimentCard key={card.experiment.id} presenter={presenter} card={card} />
             ))}
         </div>
     );

@@ -8,7 +8,6 @@ import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ExperimentsEditorPresenterFeature } from "../feature.js";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
-import { bucketColor } from "../../shared/variantColors.js";
 
 const Dot = ({ color }: { color: string }) => (
     <span style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
@@ -21,22 +20,15 @@ const Dot = ({ color }: { color: string }) => (
  */
 export const ExperimentPreviewToolbar = observer(function ExperimentPreviewToolbar() {
     const { presenter } = useFeature(ExperimentsEditorPresenterFeature);
-    const { selectedExperiment, selectedVariantId, variantOptions } = presenter.vm;
+    const { selectedExperiment, variantOptions: options, currentBucket: current } = presenter.vm;
     const isReadOnly = useSelectFromEditor(state => state.isReadOnly);
     const [open, setOpen] = useState(false);
 
-    if (!selectedExperiment) {
+    if (!selectedExperiment || !current) {
         return null;
     }
 
     const active = selectedExperiment.status === "running";
-    // Assign each bucket its palette colour by index (control is first), matching the experiment
-    // form and the list cards.
-    const options = variantOptions.map((option, index) => ({
-        ...option,
-        color: bucketColor(option.isControl, index - 1)
-    }));
-    const current = options.find(option => option.id === selectedVariantId) ?? options[0];
 
     const trigger = (
         <button

@@ -1,18 +1,15 @@
 import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { Drawer, IconButton, Text } from "@webiny/admin-ui";
-import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
+import { Drawer, IconButton } from "@webiny/admin-ui";
 import { ReactComponent as ScienceIcon } from "@webiny/icons/science.svg";
 import { ReactComponent as BackIcon } from "@webiny/icons/arrow_back.svg";
 import { ExperimentFormView } from "../../ExperimentForm/index.js";
-import type { ExperimentDto } from "~/features/experiments/index.js";
 import { ExperimentsManagerPresenterFeature } from "../feature.js";
 import { ExperimentsListView } from "./ExperimentsListView.js";
 
 const ExperimentsDrawerViewInner = observer(function ExperimentsDrawerViewInner() {
     const { presenter } = useFeature(ExperimentsManagerPresenterFeature);
-    const { showSnackbar } = useSnackbar();
 
     useEffect(() => {
         presenter.init();
@@ -20,45 +17,6 @@ const ExperimentsDrawerViewInner = observer(function ExperimentsDrawerViewInner(
     }, [presenter]);
 
     const { open, view, editInitial } = presenter.vm;
-
-    const { showConfirmation } = useConfirmationDialog({
-        title: "Delete experiment",
-        loading: "Deleting experiment...",
-        message: (
-            <Text>
-                You are about to permanently delete this experiment and all of its variants. This
-                cannot be undone.
-            </Text>
-        )
-    });
-
-    const handleActivate = async (experiment: ExperimentDto) => {
-        try {
-            await presenter.activateExperiment(experiment);
-            showSnackbar(`"${experiment.name}" is now active.`);
-        } catch (ex: any) {
-            showSnackbar(ex.message || "Could not activate the experiment.");
-        }
-    };
-
-    const handleDeactivate = async (experiment: ExperimentDto) => {
-        try {
-            await presenter.deactivateExperiment(experiment);
-            showSnackbar(`"${experiment.name}" was deactivated.`);
-        } catch (ex: any) {
-            showSnackbar(ex.message || "Could not deactivate the experiment.");
-        }
-    };
-
-    const handleDelete = (experiment: ExperimentDto) =>
-        showConfirmation(async () => {
-            try {
-                await presenter.deleteExperiment(experiment);
-                showSnackbar(`"${experiment.name}" was deleted.`);
-            } catch (ex: any) {
-                showSnackbar(ex.message || "Could not delete the experiment.");
-            }
-        });
 
     const flask = <ScienceIcon style={{ width: 20, height: 20 }} />;
     const back = (
@@ -107,16 +65,7 @@ const ExperimentsDrawerViewInner = observer(function ExperimentsDrawerViewInner(
             bodyPadding={false}
             className={"flex flex-col"}
         >
-            {view === "list" ? (
-                <ExperimentsListView
-                    presenter={presenter}
-                    onCreate={() => presenter.showCreate()}
-                    onEdit={experiment => presenter.startEdit(experiment)}
-                    onActivate={handleActivate}
-                    onDeactivate={handleDeactivate}
-                    onDelete={handleDelete}
-                />
-            ) : null}
+            {view === "list" ? <ExperimentsListView presenter={presenter} /> : null}
             {view === "create" ? (
                 <ExperimentFormView
                     onCancel={() => presenter.showList()}

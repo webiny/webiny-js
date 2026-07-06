@@ -19,10 +19,7 @@ export const ExperimentsButton = observer(function ExperimentsButton() {
     const { presenter } = useFeature(ExperimentsEditorPresenterFeature);
     const isReadOnly = useSelectFromEditor(state => state.isReadOnly);
 
-    const { experiments, selectedExperimentId } = presenter.vm;
-
-    const runningExperiment =
-        experiments.find(experiment => experiment.status === "running") ?? null;
+    const { runningExperiment, switcherItems, selectedExperimentId } = presenter.vm;
 
     // On the published (read-only) view, surface the running experiment and keep it selected so the
     // preview toolbar tracks it. Forwards the editor read-only selector into the presenter.
@@ -41,15 +38,11 @@ export const ExperimentsButton = observer(function ExperimentsButton() {
         );
     }
 
-    const items: ExperimentItem[] = experiments.map(experiment => ({
-        id: experiment.id,
-        name: experiment.name,
-        status: experiment.status === "running" ? "active" : "inactive"
-    }));
+    const items: ExperimentItem[] = switcherItems;
 
     return (
         <div style={{ display: "flex" }}>
-            {experiments.length === 0 ? (
+            {items.length === 0 ? (
                 <Button
                     variant="secondary"
                     icon={<ScienceIcon />}
