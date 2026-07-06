@@ -1,8 +1,8 @@
 import { existsSync } from "node:fs";
 import { mkdirSync } from "node:fs";
 import { ContextPlugin } from "@webiny/api";
-import { UploadSingleFileRoute } from "~/routes/uploadRoutes.js";
-import { UploadPartRoute } from "~/routes/uploadRoutes.js";
+import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute.js";
+import { UploadPartRoute } from "~/routes/UploadPartRoute.js";
 import { CleanupStaleMultipartUploadsFeature } from "~/features/CleanupStaleMultipartUploads/feature.js";
 import { DeleteFileFromDiskFeature } from "~/features/DeleteFileFromDisk/feature.js";
 import { ExtractMetadataFeature } from "~/features/ExtractMetadata/feature.js";
