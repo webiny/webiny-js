@@ -1,3 +1,4 @@
+export type { ITimer } from "./abstractions/ITimer.js";
 export { createBackgroundTaskGraphQL } from "./graphql/index.js";
 export { createBackgroundTaskContext } from "./context.js";
 export { TaskServiceTransport } from "./plugins/index.js";

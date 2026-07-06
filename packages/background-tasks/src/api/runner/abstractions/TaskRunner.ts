@@ -1,7 +1,7 @@
 import type { Context } from "~/api/types.js";
 import type { ITaskEvent } from "~/api/handler/types.js";
 import type { IResponseResult } from "~/api/response/abstractions/index.js";
-import type { ITimer } from "@webiny/handler-aws";
+import type { ITimer } from "~/api/abstractions/ITimer.js";
 
 export interface IIsCloseToTimeoutCallable {
     (seconds?: number): boolean;
