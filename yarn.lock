@@ -13153,21 +13153,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-server@npm:0.0.0, @webiny/project-server@workspace:packages/project-server":
+"@webiny/project-server-template@workspace:packages/project-server-template":
   version: 0.0.0-use.local
-  resolution: "@webiny/project-server@workspace:packages/project-server"
+  resolution: "@webiny/project-server-template@workspace:packages/project-server-template"
   dependencies:
     "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api-event-handler-server-sql": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.2"
     "@webiny/languages": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
+    "@webiny/project-server": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
     knex: "npm:^3.3.0"
     react: "npm:18.3.1"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/project-server@npm:0.0.0, @webiny/project-server@workspace:packages/project-server":
+  version: 0.0.0-use.local
+  resolution: "@webiny/project-server@workspace:packages/project-server"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.0.2"
+    "@webiny/project": "npm:0.0.0"
     replace-in-path: "npm:^1.1.0"
     typescript: "npm:6.0.3"
   languageName: unknown

@@ -2,13 +2,10 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    { "path": "../ai-powerups" },
     { "path": "../api-event-handler-server-sql" },
     { "path": "../app" },
     { "path": "../app-serverless-cms" },
-    { "path": "../languages" },
-    { "path": "../project" },
-    { "path": "../tenant-manager" }
+    { "path": "../project" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -17,20 +14,14 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/ai-powerups/*": ["../ai-powerups/src/*"],
-      "@webiny/ai-powerups": ["../ai-powerups/src"],
       "@webiny/api-event-handler-server-sql/*": ["../api-event-handler-server-sql/src/*"],
       "@webiny/api-event-handler-server-sql": ["../api-event-handler-server-sql/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-serverless-cms/*": ["../app-serverless-cms/src/*"],
       "@webiny/app-serverless-cms": ["../app-serverless-cms/src"],
-      "@webiny/languages/*": ["../languages/src/*"],
-      "@webiny/languages": ["../languages/src"],
       "@webiny/project/*": ["../project/src/*"],
-      "@webiny/project": ["../project/src"],
-      "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
-      "@webiny/tenant-manager": ["../tenant-manager/src"]
+      "@webiny/project": ["../project/src"]
     }
   }
 }
