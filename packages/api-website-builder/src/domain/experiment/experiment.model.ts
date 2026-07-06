@@ -1,8 +1,6 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 
-export const EXPERIMENT_MODEL_ID = process.env.WEBINY_API_LEGACY_MODELS
-    ? "wbExperiment"
-    : "wbyWbExperiment";
+export const EXPERIMENT_MODEL_ID = "wbyWbExperiment";
 
 class ExperimentModelFactory implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {

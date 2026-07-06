@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import slugify from "slugify";
 import { Button, Input, Text } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
@@ -46,12 +47,7 @@ interface Props {
     allowStructureChange?: boolean;
 }
 
-const slugify = (value: string): string =>
-    value
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
+const toKey = (value: string): string => slugify(value, { lower: true, strict: true });
 
 const defaultBuckets = (): FormBucket[] => [
     {
@@ -149,7 +145,7 @@ export const NewExperimentForm = ({
     const onNameChange = (value: string) => {
         setName(value);
         if (!keyEdited) {
-            setKey(slugify(value));
+            setKey(toKey(value));
         }
     };
 
@@ -169,7 +165,7 @@ export const NewExperimentForm = ({
                     isControl: false,
                     weight: 0,
                     name: variantName,
-                    key: slugify(variantName),
+                    key: toKey(variantName),
                     keyEdited: false,
                     description: ""
                 }
@@ -188,7 +184,7 @@ export const NewExperimentForm = ({
     const changeName = (index: number, value: string) => {
         setBuckets(prev =>
             prev.map((b, i) =>
-                i === index ? { ...b, name: value, key: b.keyEdited ? b.key : slugify(value) } : b
+                i === index ? { ...b, name: value, key: b.keyEdited ? b.key : toKey(value) } : b
             )
         );
     };

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import slugify from "slugify";
 import { Drawer, IconButton, Text } from "@webiny/admin-ui";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { ReactComponent as ScienceIcon } from "@webiny/icons/science.svg";
@@ -25,12 +26,7 @@ interface Props {
     onChanged: () => void | Promise<void>;
 }
 
-const slugify = (value: string): string =>
-    value
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
+const toKey = (value: string): string => slugify(value, { lower: true, strict: true });
 
 export const ExperimentsDrawer = ({
     open,
@@ -77,7 +73,7 @@ export const ExperimentsDrawer = ({
                     id: variant.entryId,
                     isControl: false,
                     name: variant.name,
-                    key: slugify(variant.name),
+                    key: toKey(variant.name),
                     keyEdited: true,
                     description: "",
                     weight: split.variants?.[variant.entryId] ?? 0,
