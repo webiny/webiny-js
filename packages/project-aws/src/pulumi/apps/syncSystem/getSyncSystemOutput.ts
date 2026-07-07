@@ -1,4 +1,4 @@
-import { getStackOutput } from "@webiny/project";
+import { getStackOutput } from "~/pulumi/getAwsProjectSdk.js";
 import type { IGetSyncSystemOutputResult } from "~/pulumi/apps/syncSystem/types.js";
 
 export const getSyncSystemOutput = () => {
