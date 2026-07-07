@@ -10544,7 +10544,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-event-handler-aws-ddb-os@workspace:packages/api-event-handler-aws-ddb-os":
+"@webiny/api-event-handler-aws-ddb-os@npm:0.0.0, @webiny/api-event-handler-aws-ddb-os@workspace:packages/api-event-handler-aws-ddb-os":
   version: 0.0.0-use.local
   resolution: "@webiny/api-event-handler-aws-ddb-os@workspace:packages/api-event-handler-aws-ddb-os"
   dependencies:
@@ -10566,7 +10566,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-event-handler-aws-ddb@workspace:packages/api-event-handler-aws-ddb":
+"@webiny/api-event-handler-aws-ddb@npm:0.0.0, @webiny/api-event-handler-aws-ddb@workspace:packages/api-event-handler-aws-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-event-handler-aws-ddb@workspace:packages/api-event-handler-aws-ddb"
   dependencies:
@@ -12984,6 +12984,10 @@ __metadata:
     "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/api-dynamodb-to-elasticsearch": "npm:0.0.0"
+    "@webiny/api-event-handler-aws": "npm:0.0.0"
+    "@webiny/api-event-handler-aws-ddb": "npm:0.0.0"
+    "@webiny/api-event-handler-aws-ddb-os": "npm:0.0.0"
+    "@webiny/api-event-handler-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-file-manager-aco": "npm:0.0.0"
     "@webiny/api-file-manager-s3": "npm:0.0.0"
