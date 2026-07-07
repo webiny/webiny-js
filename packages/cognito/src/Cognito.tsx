@@ -28,7 +28,8 @@ export const Cognito = defineExtension({
     paramsSchema: z.object({
         apiConfig: z.string().describe("Path to API configuration.").optional(),
         adminConfig: z.string().describe("Path to Admin configuration.").optional(),
-        federation: federationSchema.optional()
+        federation: federationSchema.optional(),
+        mfa: z.boolean().describe("Enable TOTP MFA for all users.").default(false)
     }),
     render: props => {
         const federation = props.federation;
@@ -36,6 +37,7 @@ export const Cognito = defineExtension({
         return (
             <>
                 <Infra.EnvVar varName={"REACT_APP_IDP_TYPE"} value={"cognito"} />
+                {props.mfa ? <Infra.EnvVar varName={"COGNITO_MFA"} value={"true"} /> : null}
 
                 {/* Api extensions */}
                 <Api.Extension

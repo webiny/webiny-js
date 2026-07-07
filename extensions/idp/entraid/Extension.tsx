@@ -4,12 +4,13 @@ import { Cognito } from "@webiny/cognito";
 export const CognitoFederation = () => {
     return (
         <Cognito
+            mfa={true}
             apiConfig={"@/extensions/idp/entraid/EntraIdApiConfig.ts"}
             federation={{
                 domain: "myproj-webiny-with-entraid",
                 callbackUrls: ["https://webiny-6.4.x.localhost"],
                 responseType: "code",
-                allowCredentialsLogin: false,
+                allowCredentialsLogin: true,
                 identityProviders: [
                     {
                         name: "EntraID",

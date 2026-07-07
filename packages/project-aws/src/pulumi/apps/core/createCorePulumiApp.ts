@@ -246,7 +246,8 @@ export function createCorePulumiApp() {
             // Setup Cognito
             const cognito = app.addModule(CoreCognito, {
                 protect,
-                useEmailAsUsername: false
+                useEmailAsUsername: false,
+                mfa: process.env.COGNITO_MFA === "true"
             });
 
             // Cognito custom:id was originally set to maxLength 36 (UUID). Federated OIDC
@@ -269,6 +270,11 @@ export function createCorePulumiApp() {
                         return schema;
                     });
                 });
+            } else {
+                cognito.userPool.opts.ignoreChanges = [
+                    ...(cognito.userPool.opts.ignoreChanges || []),
+                    "schemas"
+                ];
             }
 
             // Setup event bus
