@@ -24,7 +24,7 @@
     "execa": "^5.1.1",
     "open": "^11.0.0",
     "ora": "9.4.1",
-    "tsx": "4.22.4"
+    "tsx": "4.23.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
