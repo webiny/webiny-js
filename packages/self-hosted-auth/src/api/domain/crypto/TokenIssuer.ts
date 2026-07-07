@@ -13,7 +13,6 @@ export const SELF_HOSTED_ISSUER = "webiny-self-hosted";
 export interface IssueTokenParams {
     userId: string;
     email: string;
-    tenant: string;
     displayName?: string;
 }
 
@@ -70,7 +69,6 @@ class JwtTokenIssuer implements ITokenIssuer {
         const token = jwt.sign(
             {
                 email: params.email,
-                tenant: params.tenant,
                 displayName: params.displayName
             },
             this.secret,

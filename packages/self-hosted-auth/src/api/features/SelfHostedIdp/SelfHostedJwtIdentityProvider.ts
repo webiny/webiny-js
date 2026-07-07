@@ -27,7 +27,6 @@ class SelfHostedJwtIdentityProviderImpl implements JwtIdentityProvider.Interface
         }
 
         const email = (payload.email as string | undefined) ?? "";
-        const tenant = (payload.tenant as string | undefined) ?? "root";
         const displayName = (payload.displayName as string | undefined) ?? email;
 
         return {
@@ -38,8 +37,10 @@ class SelfHostedJwtIdentityProviderImpl implements JwtIdentityProvider.Interface
                 email,
                 external: false
             },
+            // No tenant is baked into the token: like Cognito, the identity is tenant-agnostic. Land
+            // in "root" by default; actual per-tenant access is enforced by the security layer.
             context: {
-                defaultTenantId: tenant,
+                defaultTenantId: "root",
                 canAccessTenant: true
             }
         };

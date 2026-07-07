@@ -3,7 +3,6 @@ import type { Result } from "@webiny/feature/api";
 import type { WeakPasswordError, NotAuthorizedError } from "~/api/domain/errors.js";
 
 export interface SetPasswordInput {
-    tenant: string;
     userId: string;
     email: string;
     password: string;

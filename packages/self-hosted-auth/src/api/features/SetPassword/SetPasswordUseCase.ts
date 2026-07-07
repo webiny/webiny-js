@@ -28,13 +28,11 @@ class SetPasswordUseCaseImpl implements UseCaseAbstraction.Interface {
         const passwordHash = await this.hasher.hash(input.password);
 
         const existing = await this.credentials.getCredentialByUserId({
-            tenant: input.tenant,
             userId: input.userId
         });
 
         const now = nowIso();
         const credential: StorageCredential = {
-            tenant: input.tenant,
             userId: input.userId,
             email: input.email,
             passwordHash,

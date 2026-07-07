@@ -6,14 +6,12 @@ import type { CredentialsStorageOperations, StorageCredential } from "@webiny/se
 const TABLE_NAME = "webiny_self_hosted_credentials";
 
 interface ICredentialRow {
-    tenant: string;
     user_id: string;
     email: string;
     data: string;
 }
 
 const toRow = (c: StorageCredential): ICredentialRow => ({
-    tenant: c.tenant,
     user_id: c.userId,
     email: c.email,
     data: JSON.stringify(c)
@@ -38,14 +36,12 @@ export const createStorageOperations = (
 
     const ensureTable = () =>
         tableManager.ensure(TABLE_NAME, t => {
-            t.text("tenant").notNullable();
             t.text("user_id").notNullable();
             t.text("email").notNullable();
             t.text("data").notNullable();
 
-            t.primary(["tenant", "user_id"]);
-            // Email is the login key — unique across the store (see the v0
-            // tenancy note in LoginUseCase).
+            t.primary(["user_id"]);
+            // Email is the global login key.
             t.unique(["email"]);
         });
 
@@ -65,13 +61,10 @@ export const createStorageOperations = (
             }
         },
 
-        async getCredentialByUserId({ tenant, userId }) {
+        async getCredentialByUserId({ userId }) {
             await ensureTable();
             try {
-                const row = await query()
-                    .where("tenant", tenant)
-                    .andWhere("user_id", userId)
-                    .first();
+                const row = await query().where("user_id", userId).first();
                 return row ? toCredential(row) : null;
             } catch (err) {
                 throw WebinyError.from(err, {
@@ -88,7 +81,7 @@ export const createStorageOperations = (
                 const row = toRow(credential);
                 await query()
                     .insert(row)
-                    .onConflict(["tenant", "user_id"])
+                    .onConflict(["user_id"])
                     .merge({ email: row.email, data: row.data });
             } catch (err) {
                 throw WebinyError.from(err, {
@@ -99,10 +92,10 @@ export const createStorageOperations = (
             }
         },
 
-        async deleteCredential({ tenant, userId }) {
+        async deleteCredential({ userId }) {
             await ensureTable();
             try {
-                await query().where("tenant", tenant).andWhere("user_id", userId).delete();
+                await query().where("user_id", userId).delete();
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not delete credential.",

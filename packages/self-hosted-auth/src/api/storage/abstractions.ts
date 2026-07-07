@@ -4,11 +4,11 @@ import { createAbstraction } from "@webiny/feature/api";
  * A single stored credential. Kept in a table separate from admin users so that
  * password material never rides along on user reads.
  *
- * `email` is the login key. See the tenancy note in `LoginUseCase` for why the
- * credential is currently resolved by email alone.
+ * Credentials are global (keyed by `userId`, with `email` as the unique login key) — the same model
+ * as Cognito's user pool. A user's tenant membership lives in the security layer (roles/teams), not
+ * here, so credentials carry no tenant.
  */
 export interface StorageCredential {
-    tenant: string;
     userId: string;
     email: string;
     /**
@@ -26,7 +26,6 @@ export interface GetCredentialByEmailParams {
 }
 
 export interface GetCredentialByUserIdParams {
-    tenant: string;
     userId: string;
 }
 

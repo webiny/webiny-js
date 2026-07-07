@@ -24,10 +24,8 @@ class LoginUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const { email, password } = validation.data;
 
-        // TENANCY DECISION (v0): the credential is resolved by email alone and
-        // the identity is issued for its stored `tenant`. This treats email as a
-        // global admin-login key. If a single email must map to per-tenant
-        // credentials, add `tenant` to this lookup and to the GraphQL input.
+        // Credentials are global (email is the login key), mirroring Cognito's user pool. Tenant
+        // membership is resolved by the security layer, not from the credential.
         const credential = await this.credentials.getCredentialByEmail({ email });
         if (!credential) {
             // Still hash to keep the timing of "no such user" ~ "wrong password".
@@ -42,8 +40,7 @@ class LoginUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const issued = await this.tokenIssuer.issue({
             userId: credential.userId,
-            email: credential.email,
-            tenant: credential.tenant
+            email: credential.email
         });
 
         return Result.ok(issued);

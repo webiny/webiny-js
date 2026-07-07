@@ -36,7 +36,7 @@ class UserInstallerImpl implements AppInstaller.Interface<UserInstallationData> 
         private credentials: CredentialsStorageOperations.Interface
     ) {}
 
-    async install(tenant: Tenant, data: UserInstallationData): Promise<void> {
+    async install(_tenant: Tenant, data: UserInstallationData): Promise<void> {
         const roleResult = await this.getRole.execute({ slug: "full-access" });
         if (roleResult.isFail()) {
             throw new Error(`Failed to get full-access role: ${roleResult.error.message}`);
@@ -59,7 +59,6 @@ class UserInstallerImpl implements AppInstaller.Interface<UserInstallationData> 
         this.createdUser = createResult.value;
 
         const passwordResult = await this.setPasswordUseCase.execute({
-            tenant: tenant.id,
             userId: this.createdUser.id,
             email: this.createdUser.email,
             password: data.password
@@ -72,14 +71,13 @@ class UserInstallerImpl implements AppInstaller.Interface<UserInstallationData> 
         }
     }
 
-    async uninstall(tenant: Tenant): Promise<void> {
+    async uninstall(_tenant: Tenant): Promise<void> {
         if (!this.createdUser) {
             return;
         }
 
         // Deleting the user does not cascade to credentials, so remove both.
         await this.credentials.deleteCredential({
-            tenant: tenant.id,
             userId: this.createdUser.id
         });
         await this.deleteUserUseCase.execute(this.createdUser.id);
