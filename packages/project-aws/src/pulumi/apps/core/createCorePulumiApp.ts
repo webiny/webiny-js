@@ -8,7 +8,6 @@ import { CoreFileManger } from "./CoreFileManager.js";
 import { CoreVpc } from "./CoreVpc.js";
 import { WatchCommand } from "./WatchCommand.js";
 import { withServiceManifest } from "~/pulumi/utils/withServiceManifest.js";
-import { applyProductionEnvironments } from "~/pulumi/utils/applyProductionEnvironments.js";
 import {
     addServiceManifestTableItem,
     type TableDefinition
@@ -34,10 +33,6 @@ export function createCorePulumiApp() {
         program: async app => {
             const sdk = await getProjectSdk();
             const projectConfig = await sdk.getProjectConfig();
-
-            // Resolve production environments (incl. those registered via the
-            // `Infra.ProductionEnvironments` extension) and update `app.env.isProduction`.
-            await applyProductionEnvironments(app, sdk);
 
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
             const coreStackOutput = await sdk.getAppStackOutput<{

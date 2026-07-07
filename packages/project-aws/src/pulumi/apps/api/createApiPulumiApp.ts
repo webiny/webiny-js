@@ -12,7 +12,6 @@ import {
 } from "~/pulumi/apps/index.js";
 import {
     addDomainsUrlsOutputs,
-    applyProductionEnvironments,
     withCommonLambdaEnvVariables,
     withServiceManifest
 } from "~/pulumi/utils/index.js";
@@ -40,10 +39,6 @@ export const createApiPulumiApp = () => {
         program: async (app: PulumiApp & WithServiceManifest) => {
             const sdk = await getProjectSdk();
             const projectConfig = await sdk.getProjectConfig();
-
-            // Resolve production environments (incl. those registered via the
-            // `Infra.ProductionEnvironments` extension) and update `app.env.isProduction`.
-            await applyProductionEnvironments(app, sdk);
 
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);

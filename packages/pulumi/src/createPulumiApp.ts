@@ -23,7 +23,7 @@ import type {
 } from "~/types.js";
 import type { PulumiAppRemoteResource } from "~/PulumiAppRemoteResource.js";
 import cloneDeep from "lodash/cloneDeep.js";
-import { DEFAULT_PROD_ENV_NAMES } from "./constants.js";
+import { getProjectSdk } from "@webiny/project";
 
 export function createPulumiApp<TResources extends Record<string, unknown>>(
     params: CreatePulumiAppParams<TResources>
@@ -79,9 +79,13 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
         async run(config) {
             app.params.run = config;
 
-            // Add environment-related variables.
+            // Add environment-related variables. The list of production environments is
+            // resolved from the project SDK, which merges the built-in defaults with any
+            // environments registered via the `Infra.ProductionEnvironments` extension. An
+            // explicitly provided `productionEnvironments` create-config value still wins.
             const productionEnvironments =
-                app.params.create.productionEnvironments || DEFAULT_PROD_ENV_NAMES;
+                app.params.create.productionEnvironments ??
+                (await getProjectSdk().then(sdk => sdk.getProductionEnvironments()));
             const isProduction = productionEnvironments.includes(app.params.run.env);
 
             app.env = {
