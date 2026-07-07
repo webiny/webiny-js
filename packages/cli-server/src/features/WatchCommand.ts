@@ -96,10 +96,17 @@ function startApiServer(cwd: string, ui: UiService.Interface) {
 
     ui.info(`Starting api server on http://localhost:%s ...`, port);
 
+    // `WCP_PROJECT_LICENSE` is a build-time-only var (written plaintext by applyWcpEnvVars for the
+    // build-time feature-flag computation). The AWS lambda deliberately never receives it (see
+    // project-aws lambdaEnvVariables magicPrefixes), so the runtime fetches + decrypts a fresh,
+    // current license. Mirror that: strip it from the api runtime env so getWcpProjectLicense fetches
+    // instead of reading the plaintext value.
+    const { WCP_PROJECT_LICENSE: _buildTimeLicense, ...runtimeEnv } = process.env;
+
     const child = spawn(process.execPath, ["--watch-path", buildDir, runnerPath], {
         cwd: workspaceApi,
         stdio: "inherit",
-        env: { ...process.env, PORT: port }
+        env: { ...runtimeEnv, PORT: port }
     });
 
     const cleanup = () => {

@@ -58,27 +58,15 @@ export const getWcpProjectLicense = async (params: GetWcpProjectLicenseParams) =
         return null;
     }
 
-    // The license may arrive already decrypted: the AWS flavour bakes a base64 `WCP_PROJECT_LICENSE`
-    // at build (needs decrypt), but the self-hosted/server flavour fetches at runtime and the API can
-    // return the license as a plain object or plaintext JSON string. Accept all three forms.
-    if (typeof encryptedLicense === "object") {
-        return encryptedLicense as DecryptedWcpProjectLicense;
-    }
-
     try {
         return decrypt<DecryptedWcpProjectLicense>(encryptedLicense);
-    } catch {
-        // Not base64-encoded — maybe it's already a plaintext JSON string.
-        try {
-            return JSON.parse(encryptedLicense) as DecryptedWcpProjectLicense;
-        } catch (e) {
-            const projectId = `${params.orgId}/${params.projectId}`;
-            console.warn(
-                `An error occurred while trying to read the retrieved license for project "${projectId}": ${
-                    (e as Error).message
-                }`
-            );
-            return null;
-        }
+    } catch (e) {
+        const projectId = `${params.orgId}/${params.projectId}`;
+        console.warn(
+            `An error occurred while trying to decrypt the retrieved license for project "${projectId}": ${
+                (e as Error).message
+            }`
+        );
+        return null;
     }
 };
