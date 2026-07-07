@@ -28,7 +28,10 @@ class LoginUseCaseImpl implements UseCaseAbstraction.Interface {
         // membership is resolved by the security layer, not from the credential.
         const credential = await this.credentials.getCredentialByEmail({ email });
         if (!credential) {
-            // Still hash to keep the timing of "no such user" ~ "wrong password".
+            // Anti-enumeration: verify against a throwaway hash even though there is no account, so
+            // the "no such user" path spends the same (deliberately slow) scrypt time as the
+            // "wrong password" path below. Without this, an attacker could tell which emails are
+            // registered by timing the response. Result is discarded — we always fail here.
             await this.hasher.verify(password, DUMMY_HASH);
             return Result.fail(new InvalidCredentialsError());
         }
@@ -48,9 +51,11 @@ class LoginUseCaseImpl implements UseCaseAbstraction.Interface {
 }
 
 /**
- * A syntactically valid scrypt hash of a random value. Verifying against it when
- * the account is missing keeps login timing roughly constant, mitigating user
- * enumeration via response time.
+ * A well-formed scrypt hash (`scrypt$N$r$p$salt$hash`) of a throwaway value, used only for the
+ * timing-equalization step above. It must be *syntactically valid* so `hasher.verify` actually
+ * parses it and runs the full (slow) KDF — a garbage string would bail out early and defeat the
+ * purpose. It never matches any real password, so verifying against it always returns false; we
+ * run it purely to spend the same CPU as a real password check.
  */
 const DUMMY_HASH =
     "scrypt$16384$8$1$AAAAAAAAAAAAAAAAAAAAAA==$" +
