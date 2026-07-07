@@ -11,6 +11,7 @@ import { createUiProviders } from "./providers/UiProviders.js";
 import { createDialogsProvider } from "~/components/Dialogs/DialogsContext.js";
 import { DefaultIcons, IconPickerConfigProvider } from "~/components/IconPicker/config/index.js";
 import { createRootContainer } from "~/base/createRootContainer.js";
+import { resolveGraphqlUrl } from "~/base/resolveApiUrl.js";
 import { WcpProvider } from "~/presentation/wcp/WcpProvider.js";
 import { createTenancyProvider } from "~/presentation/tenancy/createTenancyProvider.js";
 import { TelemetryAdminAppStart } from "./TelemetryAdminAppStart.js";
@@ -32,17 +33,7 @@ export interface AdminProps {
 const container = createRootContainer();
 
 export const Admin = ({ children, createApolloClient, createLegacyPlugins }: AdminProps) => {
-    // Prefer the configured API URL (baked by `<Admin.ApiUrl>` into WEBINY_ADMIN_API_URL).
-    // Otherwise fall back to same-origin `/graphql`, so a deployed self-hosted admin served behind
-    // the same domain as the API needs no baked-in URL at all.
-    const configuredApiUrl = process.env.WEBINY_ADMIN_API_URL;
-    const uri =
-        configuredApiUrl && configuredApiUrl !== "undefined"
-            ? `${configuredApiUrl}/graphql`
-            : typeof window !== "undefined"
-              ? `${window.location.origin}/graphql`
-              : "/graphql";
-    const apolloClient = createApolloClient({ uri });
+    const apolloClient = createApolloClient({ uri: resolveGraphqlUrl() });
 
     plugins.register(...createLegacyPlugins(container));
 

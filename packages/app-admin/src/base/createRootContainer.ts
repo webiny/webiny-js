@@ -19,18 +19,9 @@ import { ToolsFeature } from "~/features/tools/feature.js";
 import { TextToLexicalToolFeature } from "~/presentation/textToLexicalTool/feature.js";
 import { ConfirmationFeature } from "~/features/confirmation/feature.js";
 import { ClipboardFeature } from "~/features/clipboard/feature.js";
+import { resolveApiUrl, resolveGraphqlUrl } from "./resolveApiUrl.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
-
-// Prefer the configured API URL (baked by `<Admin.ApiUrl>` into WEBINY_ADMIN_API_URL); else
-// same-origin (deployed self-hosted behind one domain). Never bake the literal string "undefined".
-const resolveApiUrl = (): string => {
-    const url = process.env.WEBINY_ADMIN_API_URL;
-    if (url && url !== "undefined") {
-        return url;
-    }
-    return typeof window !== "undefined" ? window.location.origin : "";
-};
 
 export function createRootContainer() {
     const container = new Container();
@@ -43,7 +34,7 @@ export function createRootContainer() {
         deploymentId,
         apiUrl: resolveApiUrl(),
         debug: process.env.WEBINY_ADMIN_DEBUG === "true",
-        graphqlApiUrl: `${resolveApiUrl()}/graphql`,
+        graphqlApiUrl: resolveGraphqlUrl(),
         telemetryEnabled: process.env.REACT_APP_WEBINY_TELEMETRY === "true",
         telemetryUserId: process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID,
         trashBinRetentionPeriodDays: trashBinRetention,
