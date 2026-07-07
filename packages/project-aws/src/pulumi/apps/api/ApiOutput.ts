@@ -1,6 +1,6 @@
 import type { PulumiAppModule } from "@webiny/pulumi";
 import { createAppModule } from "@webiny/pulumi";
-import { getStackOutput } from "@webiny/project";
+import { getStackOutput } from "~/pulumi/getStackOutput.js";
 import { type IDefaultStackOutput } from "~/pulumi/types.js";
 
 export type ApiOutput = PulumiAppModule<typeof ApiOutput>;

@@ -8,6 +8,7 @@ import { buildAppWithHooks, watchWithHooks } from "~/decorators/index.js";
 import { applyEnvVars } from "./applyEnvVars.js";
 import { applyWcpEnvVars } from "./applyWcpEnvVars.js";
 import { registerHooks } from "./registerHooks.js";
+import { registerPulumiExtensions } from "./registerPulumiExtensions.js";
 import { registerImplementations } from "./registerImplementations.js";
 import { registerDecorators } from "./registerDecorators.js";
 
@@ -31,6 +32,9 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
 
         // Register hooks from extensions.
         await registerHooks(container, projectExtensions, project);
+
+        // Register pulumi extensions (Core/Api/Admin `Pulumi` handlers, e.g. SetDatabaseSetupOutput).
+        await registerPulumiExtensions(container, projectExtensions, project);
 
         // Decorators that must be applied last on top of potentially custom ones.
         container.registerDecorator(buildAppWithHooks);
