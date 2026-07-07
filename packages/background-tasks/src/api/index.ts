@@ -1,4 +1,4 @@
-export { Timer } from "./abstractions/Timer.js";
+export type { Timer } from "./abstractions/Timer.js";
 export { TaskService } from "./domain/TaskService.js";
 export { createBackgroundTaskGraphQL } from "./graphql/index.js";
 export { createBackgroundTaskContext } from "./context.js";
