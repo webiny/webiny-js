@@ -10,6 +10,7 @@ import {
     deployAppRefreshStackOutputCache,
     deployAppWithHooks,
     deployAppWithWatchedLambdaReplacement,
+    destroyAppClearStackOutputCache,
     watchWithHooks,
     getPulumiServiceWithDownloadInfo
 } from "~/decorators/index.js";
@@ -49,6 +50,7 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
         container.registerDecorator(deployAppWithWatchedLambdaReplacement);
         container.registerDecorator(deployAppClearWatchedLambdaFunctions);
         container.registerDecorator(deployAppRefreshStackOutputCache);
+        container.registerDecorator(destroyAppClearStackOutputCache);
         container.registerDecorator(deployAppWithHooks);
         container.registerDecorator(watchWithHooks);
         container.registerDecorator(getPulumiServiceWithDownloadInfo);
