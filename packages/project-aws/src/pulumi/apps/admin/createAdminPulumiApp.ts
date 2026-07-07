@@ -1,5 +1,5 @@
 import { createReactPulumiApp } from "~/pulumi/apps/index.js";
-import { getProjectSdk } from "@webiny/project";
+import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { AdminPulumi, SetAdminCustomDomains } from "~/abstractions/features/pulumi/index.js";
 import { adminPulumi } from "~/pulumi/features/AdminPulumi/index.js";
 import { DefaultSetAdminCustomDomains } from "~/pulumi/features/DefaultSetAdminCustomDomains.js";
@@ -9,7 +9,7 @@ import { withServiceManifest } from "~/pulumi/index.js";
 export type AdminPulumiApp = ReturnType<typeof createReactPulumiApp>;
 
 export const createAdminPulumiApp = async () => {
-    const sdk = await getProjectSdk();
+    const sdk = await getAwsProjectSdk();
     const projectConfig = await sdk.getProjectConfig();
     const baseApp = createReactPulumiApp({
         name: "admin",

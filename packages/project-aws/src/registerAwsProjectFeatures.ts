@@ -58,10 +58,12 @@ import { awsWatch } from "./features/Watch/AwsWatch.js";
 import { BuildProjectWorkspace } from "./extensions/ProjectAws/BuildProjectWorkspace.js";
 import { BuildAppWorkspace } from "./extensions/ProjectAws/BuildAppWorkspace.js";
 
-export const registerAwsProjectFeatures = (container: Container): void => {
-    // Workspace decorators — must be registered before workspace services execute.
-    container.registerDecorator(BuildProjectWorkspace);
-    container.registerDecorator(BuildAppWorkspace);
+/**
+ * Pulumi services + features only — no deploy/workspace decorators or hooks. Safe to register in the
+ * Pulumi program's own ProjectSdk container (a separate process that must resolve the name prefix,
+ * stack output, etc. without re-running the CLI's workspace builders or deploy decorators).
+ */
+export const registerAwsPulumiServices = (container: Container): void => {
     // Pulumi/Lambda services.
     container.register(getPulumiService).inSingletonScope();
     container.register(isRemotePulumiBackendService).inSingletonScope();
@@ -85,6 +87,15 @@ export const registerAwsProjectFeatures = (container: Container): void => {
     container.register(getPulumiResourceNamePrefix).inSingletonScope();
     container.register(refreshApp).inSingletonScope();
     container.register(runPulumiCommand).inSingletonScope();
+};
+
+export const registerAwsProjectFeatures = (container: Container): void => {
+    // Workspace decorators — must be registered before workspace services execute.
+    container.registerDecorator(BuildProjectWorkspace);
+    container.registerDecorator(BuildAppWorkspace);
+
+    // Pulumi services + features (shared with the Pulumi program).
+    registerAwsPulumiServices(container);
 
     // Deploy + core hooks.
     container.registerComposite(beforeDeploy);

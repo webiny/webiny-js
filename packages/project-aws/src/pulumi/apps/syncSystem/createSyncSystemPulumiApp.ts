@@ -9,7 +9,7 @@ import { SyncSystemEventBus } from "./SyncSystemEventBus.js";
 import { customApp } from "./customApp.js";
 import { SyncSystemDynamoDb } from "~/pulumi/apps/syncSystem/SyncSystemDynamoDb.js";
 import { SyncSystemWorkerLambda } from "~/pulumi/apps/syncSystem/SyncSystemWorkerLambda.js";
-import { getProjectSdk } from "@webiny/project";
+import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { applyAwsResourceTags } from "~/pulumi/apps/awsUtils.js";
 
@@ -18,7 +18,7 @@ export function createSyncSystemPulumiApp() {
         name: "sync",
         path: APPS_SYNC_SYSTEM_PATH,
         program: async app => {
-            const sdk = await getProjectSdk();
+            const sdk = await getAwsProjectSdk();
             const projectConfig = await sdk.getProjectConfig();
 
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();

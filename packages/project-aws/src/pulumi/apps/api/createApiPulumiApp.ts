@@ -20,7 +20,7 @@ import { getEnvVariableAwsRegion } from "~/pulumi/env/awsRegion.js";
 import { applyAwsResourceTags, getAwsAccountId } from "~/pulumi/apps/awsUtils.js";
 import type { WithServiceManifest } from "~/pulumi/utils/withServiceManifest.js";
 import { ApiScheduler } from "~/pulumi/apps/api/ApiScheduler.js";
-import { getProjectSdk } from "@webiny/project";
+import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
@@ -37,7 +37,7 @@ export const createApiPulumiApp = () => {
         name: "api",
         path: "apps/api",
         program: async (app: PulumiApp & WithServiceManifest) => {
-            const sdk = await getProjectSdk();
+            const sdk = await getAwsProjectSdk();
             const projectConfig = await sdk.getProjectConfig();
 
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
