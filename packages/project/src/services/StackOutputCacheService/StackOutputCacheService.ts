@@ -7,7 +7,6 @@ import {
 } from "~/abstractions/index.js";
 import { type AppModel } from "~/models/index.js";
 import fs from "fs/promises";
-import path from "path";
 
 export class DefaultStackOutputCacheService implements StackOutputCacheService.Interface {
     private static readonly DEFAULT_ENV = "dev";
@@ -39,7 +38,7 @@ export class DefaultStackOutputCacheService implements StackOutputCacheService.I
 
     async write(app: AppModel, data: Record<string, any>): Promise<void> {
         const cachePath = this.getCachePath(app);
-        const cacheDir = path.dirname(cachePath);
+        const cacheDir = this.getCacheDir().toString();
 
         try {
             // Create cache directory if it doesn't exist.
@@ -77,11 +76,13 @@ export class DefaultStackOutputCacheService implements StackOutputCacheService.I
         return `${app.name}-${env}-${region}-${variant}.json`;
     }
 
-    private getCachePath(app: AppModel): string {
+    private getCacheDir() {
         const project = this.getProjectService.execute();
-        const cacheDir = project.paths.dotWebinyFolder.join("caches", "stack-output").toString();
-        const cacheKey = this.getCacheKey(app);
-        return path.join(cacheDir, cacheKey);
+        return project.paths.dotWebinyFolder.join("caches", "stack-output");
+    }
+
+    private getCachePath(app: AppModel): string {
+        return this.getCacheDir().join(this.getCacheKey(app)).toString();
     }
 }
 
