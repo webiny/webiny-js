@@ -12,6 +12,7 @@ import { SyncSystemWorkerLambda } from "~/pulumi/apps/syncSystem/SyncSystemWorke
 import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { applyAwsResourceTags } from "~/pulumi/apps/awsUtils.js";
+import { applyProductionEnvironments } from "~/pulumi/utils/applyProductionEnvironments.js";
 
 export function createSyncSystemPulumiApp() {
     return createPulumiApp({
@@ -20,6 +21,10 @@ export function createSyncSystemPulumiApp() {
         program: async app => {
             const sdk = await getProjectSdk();
             const projectConfig = await sdk.getProjectConfig();
+
+            // Resolve production environments (incl. those registered via the
+            // `Infra.ProductionEnvironments` extension) and update `app.env.isProduction`.
+            await applyProductionEnvironments(app, sdk);
 
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
 

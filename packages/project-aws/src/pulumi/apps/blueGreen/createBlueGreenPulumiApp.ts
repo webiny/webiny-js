@@ -15,6 +15,7 @@ import { BLUE_GREEN_ROUTER_STORE_KEY } from "./constants.js";
 import { getProjectSdk } from "@webiny/project";
 import { applyAwsResourceTags } from "~/pulumi/apps/awsUtils.js";
 import { getBgDeploymentsConfigFromExtension } from "~/pulumi/apps/extensions/getBgDeploymentsConfigFromExtension.js";
+import { applyProductionEnvironments } from "~/pulumi/utils/applyProductionEnvironments.js";
 
 export function createBlueGreenPulumiApp() {
     return createPulumiApp({
@@ -23,6 +24,10 @@ export function createBlueGreenPulumiApp() {
         program: async app => {
             const sdk = await getProjectSdk();
             const projectConfig = await sdk.getProjectConfig();
+
+            // Resolve production environments (incl. those registered via the
+            // `Infra.ProductionEnvironments` extension) and update `app.env.isProduction`.
+            await applyProductionEnvironments(app, sdk);
 
             const blueGreenConfig = getBgDeploymentsConfigFromExtension(projectConfig);
             if (!blueGreenConfig) {

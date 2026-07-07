@@ -3,3 +3,4 @@ export * from "./addDomainsUrlsOutputs.js";
 export * from "./uploadFolderToS3.js";
 export { withCommonLambdaEnvVariables, getCommonLambdaEnvVariables } from "./lambdaEnvVariables.js";
 export { withServiceManifest } from "./withServiceManifest.js";
+export { applyProductionEnvironments } from "./applyProductionEnvironments.js";
