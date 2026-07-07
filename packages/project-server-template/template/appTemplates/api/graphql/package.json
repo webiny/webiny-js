@@ -16,7 +16,7 @@
     "@webiny/api-websockets": "latest",
     "@webiny/api-workflows": "latest",
     "@webiny/build-tools": "latest",
-    "better-sqlite3": "^11.0.0",
+    "better-sqlite3": "12.11.1",
     "knex": "^3.3.0"
   }
 }

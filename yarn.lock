@@ -9136,7 +9136,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:^9.0.10, @types/jsonwebtoken@npm:^9.0.6":
+"@types/jsonwebtoken@npm:9.0.10, @types/jsonwebtoken@npm:^9.0.10":
   version: 9.0.10
   resolution: "@types/jsonwebtoken@npm:9.0.10"
   dependencies:
@@ -13413,7 +13413,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/self-hosted-auth@workspace:packages/self-hosted-auth"
   dependencies:
-    "@types/jsonwebtoken": "npm:^9.0.6"
+    "@types/jsonwebtoken": "npm:9.0.10"
     "@types/react": "npm:18.3.31"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
