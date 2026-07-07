@@ -142,7 +142,7 @@
     "watch:api": "yarn webiny ws run watch --scope='@webiny/api*'",
     "watch:apps": "yarn webiny ws run watch --scope='@webiny/app*'",
     "wby": "./node_modules/.bin/wby",
-    "webiny": "node packages/cli-aws/bin.js",
+    "webiny": "node packages/cli-aws/dist/bin.js",
     "webiny-mcp": "./node_modules/.bin/webiny-mcp",
     "webiny-admin-build-storybook": "cd packages/admin-ui && cross-env OUT=../../netlify-static yarn build-storybook",
     "webiny-admin-import-from-figma": "node packages/admin-ui/scripts/importFromFigma.js",
@@ -151,7 +151,7 @@
     "webiny-scripts": "tsx ./scripts/cli/src/bin.ts",
     "webiny-versions": "node ./scripts/webinyVersions.js",
     "generate-skills": "tsx ./scripts/generateSkills/src/bin.ts",
-    "webiny-server": "node packages/cli-server/bin.js"
+    "webiny-server": "node packages/cli-server/dist/bin.js"
   },
   "yargs": {
     "populate--": true
