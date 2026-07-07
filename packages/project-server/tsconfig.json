@@ -1,12 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [
-    { "path": "../api-event-handler-server-sql" },
-    { "path": "../app" },
-    { "path": "../app-serverless-cms" },
-    { "path": "../project" }
-  ],
+  "references": [{ "path": "../project" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -14,12 +9,6 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api-event-handler-server-sql/*": ["../api-event-handler-server-sql/src/*"],
-      "@webiny/api-event-handler-server-sql": ["../api-event-handler-server-sql/src"],
-      "@webiny/app/*": ["../app/src/*"],
-      "@webiny/app": ["../app/src"],
-      "@webiny/app-serverless-cms/*": ["../app-serverless-cms/src/*"],
-      "@webiny/app-serverless-cms": ["../app-serverless-cms/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"]
     }
