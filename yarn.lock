@@ -12514,7 +12514,7 @@ __metadata:
     chalk: "npm:^5.6.2"
     execa: "npm:^5.1.1"
     open: "npm:^11.0.0"
-    ora: "npm:9.4.0"
+    ora: "npm:9.4.1"
     tsx: "npm:4.22.4"
     typescript: "npm:6.0.3"
   bin:
@@ -22228,22 +22228,6 @@ __metadata:
   dependencies:
     "@wry/context": "npm:^0.4.0"
   checksum: 10/c66d93f0202aa5fb7b89168491d132418fda8c6ba4107f4715fc82c9f8e05d400299f28966370b6df4ae2b836c1ad3dee46ff2ca02a8e28136cbec2110ed3a4a
-  languageName: node
-  linkType: hard
-
-"ora@npm:9.4.0":
-  version: 9.4.0
-  resolution: "ora@npm:9.4.0"
-  dependencies:
-    chalk: "npm:^5.6.2"
-    cli-cursor: "npm:^5.0.0"
-    cli-spinners: "npm:^3.2.0"
-    is-interactive: "npm:^2.0.0"
-    is-unicode-supported: "npm:^2.1.0"
-    log-symbols: "npm:^7.0.1"
-    stdin-discarder: "npm:^0.3.2"
-    string-width: "npm:^8.1.0"
-  checksum: 10/48fe48f98764d1132a77d845862fab1b1f8d7aacd4c38c39ad42a874a55686c5949194eeb836a7ee4c43027a471ffb93937eff69f4db7353d6800b678073de55
   languageName: node
   linkType: hard
 
