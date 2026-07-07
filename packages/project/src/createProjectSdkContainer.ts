@@ -83,6 +83,7 @@ import {
     pulumiLoginService,
     pulumiSelectStackService,
     setProjectIdService,
+    stackOutputCacheService,
     stdioService,
     uiService,
     validateProjectConfigService,
@@ -143,6 +144,7 @@ export const createProjectSdkContainer = async (
     container.register(pulumiLoginService).inSingletonScope();
     container.register(pulumiSelectStackService).inSingletonScope();
     container.register(setProjectIdService).inSingletonScope();
+    container.register(stackOutputCacheService).inSingletonScope();
     container.register(stdioService).inSingletonScope();
     container.register(uiService).inSingletonScope();
     container.register(validateProjectConfigService).inSingletonScope();
