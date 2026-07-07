@@ -93,8 +93,13 @@ class UpdateBackgroundTaskSettingsRepositoryImpl implements RepositoryAbstractio
                 return Result.fail(BackgroundTaskPersistenceError.from(updateResult.error));
             }
 
+            const retentionDays =
+                entry.values.retentionDays != null
+                    ? entry.values.retentionDays
+                    : this.defaultRetentionDays;
+
             const settings: IBackgroundTaskSettings = {
-                retentionDays: entry.values.retentionDays || this.defaultRetentionDays
+                retentionDays
             };
 
             return Result.ok(settings);
