@@ -63,9 +63,7 @@ export const getWcpProjectLicense = async (params: GetWcpProjectLicenseParams) =
     } catch (e) {
         const projectId = `${params.orgId}/${params.projectId}`;
         console.warn(
-            `An error occurred while trying to decrypt the retrieved license for project "${projectId}": ${
-                (e as Error).message
-            }`
+            `An error occurred while trying to decrypt the retrieved license for project "${projectId}": ${e.message}`
         );
         return null;
     }
