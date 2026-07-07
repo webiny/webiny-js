@@ -12,13 +12,25 @@ import type { Context } from "@webiny/background-tasks/api/types.js";
 import type { Container } from "@webiny/feature/api";
 import { ProcessTimer } from "~/timer/ProcessTimer.js";
 
+/* Shared between worker and route to gate access. */
+const INTERNAL_HEADER = "x-webiny-background-task-token";
+
 class BackgroundTaskRouteImpl implements HttpRoute.Interface {
     public readonly method = "POST";
     public readonly path = "/background-task";
 
-    public constructor(private readonly container: Container) {}
+    private readonly internalToken: string;
+
+    public constructor(private readonly container: Container) {
+        this.internalToken = process.env["WEBINY_BACKGROUND_TASK_TOKEN"] || "";
+    }
 
     public async handle(request: IHttpRequest): Promise<IHttpResponse> {
+        /* Reject requests without a matching internal token. */
+        if (!this.internalToken || request.headers[INTERNAL_HEADER] !== this.internalToken) {
+            return { statusCode: 403, body: { error: "Forbidden." } };
+        }
+
         const taskEvent = request.body;
 
         if (!taskEvent || !taskEvent.webinyTaskId) {

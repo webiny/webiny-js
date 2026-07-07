@@ -17,12 +17,14 @@ export class TaskOrchestrator {
     private readonly serverUrl: string;
     private readonly taskEvent: StartMessage["taskEvent"];
     private readonly timer: Timer.Interface;
+    private readonly internalToken: string;
     private readonly postMessage: (msg: WorkerToParentMessage) => void;
 
     public constructor(message: StartMessage, postMessage: (msg: WorkerToParentMessage) => void) {
         this.serverUrl = message.serverUrl;
         this.taskEvent = message.taskEvent;
         this.timer = new ProcessTimer(message.maxDurationMs);
+        this.internalToken = message.internalToken;
         this.postMessage = postMessage;
     }
 
@@ -107,7 +109,8 @@ export class TaskOrchestrator {
                     timeout: 60_000,
                     headers: {
                         "content-type": "application/json",
-                        "content-length": Buffer.byteLength(body)
+                        "content-length": Buffer.byteLength(body),
+                        "x-webiny-background-task-token": this.internalToken
                     }
                 },
                 res => {

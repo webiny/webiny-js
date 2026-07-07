@@ -10,6 +10,7 @@ export interface StartMessage {
     readonly taskEvent: TaskEventPayload;
     readonly serverUrl: string;
     readonly maxDurationMs: number;
+    readonly internalToken: string;
 }
 
 export interface DoneMessage {

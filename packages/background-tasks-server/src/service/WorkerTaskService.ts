@@ -17,6 +17,7 @@ interface WorkerHandle {
 
 class WorkerServiceImpl implements TaskService.Interface {
     private readonly serverUrl: string;
+    private readonly internalToken: string;
     private readonly handles: Map<string, WorkerHandle> = new Map();
 
     public constructor(
@@ -25,6 +26,7 @@ class WorkerServiceImpl implements TaskService.Interface {
     ) {
         const port = this.buildParams.get<number>("SERVER_PORT") || DEFAULT_SERVER_PORT;
         this.serverUrl = `http://localhost:${port}/background-task`;
+        this.internalToken = process.env["WEBINY_BACKGROUND_TASK_TOKEN"] || "";
     }
 
     public async send(task: TaskService.SendTaskParams, delay: number): Promise<unknown> {
@@ -80,7 +82,8 @@ class WorkerServiceImpl implements TaskService.Interface {
                 delay
             },
             serverUrl: this.serverUrl,
-            maxDurationMs: DEFAULT_MAX_DURATION_MS
+            maxDurationMs: DEFAULT_MAX_DURATION_MS,
+            internalToken: this.internalToken
         });
 
         return { workerId: worker.threadId, taskId: task.id };
