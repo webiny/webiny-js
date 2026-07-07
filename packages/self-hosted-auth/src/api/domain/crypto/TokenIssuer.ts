@@ -59,7 +59,11 @@ class JwtTokenIssuer implements ITokenIssuer {
             );
         }
         this.secret = secret;
-        this.expiresIn = DEFAULT_EXPIRES_IN;
+
+        // Optional token lifetime override (seconds), configured via
+        // `<SelfHostedAuth tokenExpiresIn={...}>`. Defaults to 12 hours.
+        const expiresIn = buildParams.get<number | string>("SelfHostedAuthTokenExpiresIn");
+        this.expiresIn = expiresIn ? Number(expiresIn) : DEFAULT_EXPIRES_IN;
     }
 
     async issue(params: IssueTokenParams): Promise<IssuedToken> {

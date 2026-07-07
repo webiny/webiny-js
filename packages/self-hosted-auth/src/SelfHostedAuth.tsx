@@ -21,13 +21,22 @@ export const SelfHostedAuth = defineExtension({
                 "JWT signing secret (HS256) used to mint and verify login tokens. Keep it stable and " +
                     "shared across all API instances; changing it invalidates every outstanding session. " +
                     "Back it with any env var, e.g. signingSecret={process.env.MY_AUTH_SECRET}."
-            )
+            ),
+        tokenExpiresIn: z
+            .number()
+            .int()
+            .positive()
+            .optional()
+            .describe("Login token lifetime in seconds. Defaults to 43200 (12 hours).")
     }),
-    render: ({ signingSecret }) => {
+    render: ({ signingSecret, tokenExpiresIn }) => {
         return (
             <>
                 {/* JWT signing secret, read at runtime by TokenIssuer via BuildParams. */}
                 <BuildParam paramName="SelfHostedAuthSigningSecret" value={signingSecret} />
+                {tokenExpiresIn && (
+                    <BuildParam paramName="SelfHostedAuthTokenExpiresIn" value={tokenExpiresIn} />
+                )}
                 {/* Tells the install wizard's admin-user step which AppInstaller to target. */}
                 <EnvVar varName="REACT_APP_AUTH_INSTALLER_APP_NAME" value="SelfHostedAuth" />
                 {/* Admin login screen (loaded by path, not imported here). */}
