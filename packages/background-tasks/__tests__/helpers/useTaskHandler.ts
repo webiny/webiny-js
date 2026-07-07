@@ -14,15 +14,15 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { BackgroundTasksFeature } from "~/api/BackgroundTasksFeature.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
-import { TaskServiceTransport } from "~/api/plugins";
+import { createMockTaskService } from "~tests/mocks/taskTriggerTransportPlugin";
+import { TaskService } from "~/api/domain/TaskService.js";
 import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
 import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
 import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
 import { TenantFromHeaderInitializer } from "./mocks/TenantFromHeaderInitializer";
 import { TaskRunner } from "~/api/runner/index.js";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation.js";
-import { timerFactory } from "@webiny/handler-aws/utils/index.js";
+import type { Timer } from "~/api/abstractions/Timer.js";
 import type { ITaskRawEvent } from "~/api/handler/types";
 import type { IResponseResult } from "~/api/response/abstractions/index.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -42,6 +42,11 @@ const defaultPermissions: SecurityPermission[] = [
     { name: "task.entry", rwd: "rwd" },
     { name: "*" }
 ];
+
+const mockTimer: Timer.Interface = {
+    getRemainingMilliseconds: () => 1_000_000,
+    getRemainingSeconds: () => 1_000
+};
 
 export const useTaskHandler = (params?: UseTaskHandlerParams) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
@@ -67,8 +72,8 @@ export const useTaskHandler = (params?: UseTaskHandlerParams) => {
 
             BackgroundTasksFeature.register(container);
 
-            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin());
-            registerLegacyPluginsViaGqlContextualSchema(container, [...(params?.plugins ?? [])]);
+            container.registerInstance(TaskService, createMockTaskService());
+            registerLegacyPluginsViaGqlContextualSchema(container, [...(params?.plugins || [])]);
             const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
             container.registerInstance(GraphQLContextualSchema, {
                 async build(ctx: Record<string, any>) {
@@ -95,11 +100,7 @@ export const useTaskHandler = (params?: UseTaskHandlerParams) => {
                 body: { query: "{ __typename }" }
             });
 
-            const runner = new TaskRunner(
-                capturedCtx,
-                timerFactory({ getRemainingTimeInMillis: () => 1_000_000 }),
-                new TaskEventValidation()
-            );
+            const runner = new TaskRunner(capturedCtx, mockTimer, new TaskEventValidation());
             return runner.run(event);
         }
     };

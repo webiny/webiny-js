@@ -1,32 +1,19 @@
-import type { ITaskService } from "@webiny/background-tasks/api/plugins/TaskServicePlugin";
-import { TaskServicePlugin } from "@webiny/background-tasks/api/plugins/TaskServicePlugin";
+import type { TaskService } from "@webiny/background-tasks/api/domain/TaskService";
 
-class MockTaskServicePlugin extends TaskServicePlugin {
-    public override name = "tasks.mockTaskService";
-
-    public override createService(): ITaskService {
-        return {
-            async send() {
-                return {
-                    Entries: [],
-                    $metadata: {},
-                    FailedEntryCount: 0
-                };
-            },
-            async fetch(input: any) {
-                return {
-                    fetched: true,
-                    input
-                } as any;
-            }
-        };
-    }
-}
-
-export const createMockTaskServicePlugin = () => {
-    return [
-        new MockTaskServicePlugin({
-            default: true
-        })
-    ];
+export const createMockTaskService = (): TaskService.Interface => {
+    return {
+        async send() {
+            return {
+                Entries: [],
+                $metadata: {},
+                FailedEntryCount: 0
+            };
+        },
+        async fetch(input: any) {
+            return {
+                fetched: true,
+                input
+            } as any;
+        }
+    };
 };

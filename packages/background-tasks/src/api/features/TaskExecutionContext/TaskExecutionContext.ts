@@ -1,13 +1,13 @@
 import { TaskExecutionContext as Abstraction } from "./abstractions.js";
 import type { ITaskManagerStore } from "~/api/runner/abstractions/TaskManagerStore.js";
 import type { ITaskRunner } from "~/api/runner/abstractions/TaskRunner.js";
-import type { ITimer } from "@webiny/handler-aws";
+import type { Timer } from "~/api/abstractions/Timer.js";
 import type { ITaskResponse } from "~/api/response/abstractions/index.js";
 
 class TaskExecutionContextImpl implements Abstraction.Interface {
     private _store?: ITaskManagerStore;
     private _runner?: ITaskRunner;
-    private _timer?: ITimer;
+    private _timer?: Timer.Interface;
     private _response?: ITaskResponse;
 
     get store(): ITaskManagerStore {
@@ -24,7 +24,7 @@ class TaskExecutionContextImpl implements Abstraction.Interface {
         return this._runner;
     }
 
-    get timer(): ITimer {
+    get timer(): Timer.Interface {
         if (!this._timer) {
             throw new Error("TaskExecutionContext: timer not set. Task execution not started.");
         }
@@ -46,7 +46,7 @@ class TaskExecutionContextImpl implements Abstraction.Interface {
         this._runner = runner;
     }
 
-    setTimer(timer: ITimer): void {
+    setTimer(timer: Timer.Interface): void {
         this._timer = timer;
     }
 

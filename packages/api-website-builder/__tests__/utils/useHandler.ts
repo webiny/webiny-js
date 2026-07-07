@@ -2,9 +2,9 @@ import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import {
     createBackgroundTaskContext,
     createBackgroundTaskGraphQL,
-    TaskServiceTransport
+    TaskService
 } from "@webiny/background-tasks/api";
-import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
+import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
@@ -46,7 +46,7 @@ export const useHandler = (params: Params = {}) => {
             container.register(PageModelPlugin);
             container.register(RedirectModelPlugin);
             LanguagesExtension.register(container);
-            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin()[0]);
+            container.registerInstance(TaskService, createMockTaskService());
         }
     });
 
