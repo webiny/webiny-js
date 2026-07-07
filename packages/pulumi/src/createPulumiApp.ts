@@ -81,11 +81,9 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
 
             // Add environment-related variables. The list of production environments is
             // resolved from the project SDK, which merges the built-in defaults with any
-            // environments registered via the `Infra.ProductionEnvironments` extension. An
-            // explicitly provided `productionEnvironments` create-config value still wins.
-            const productionEnvironments =
-                app.params.create.productionEnvironments ??
-                (await getProjectSdk().then(sdk => sdk.getProductionEnvironments()));
+            // environments registered via the `Infra.ProductionEnvironments` extension.
+            const sdk = await getProjectSdk();
+            const productionEnvironments = await sdk.getProductionEnvironments();
             const isProduction = productionEnvironments.includes(app.params.run.env);
 
             app.env = {
