@@ -1,6 +1,7 @@
 import { Container } from "@webiny/di";
 import { serverBuildAppWorkspaceService } from "./services/ServerBuildAppWorkspaceService.js";
 import { BuildServerProjectWorkspace } from "./features/BuildServerProjectWorkspace.js";
+import { serverWatch } from "./features/Watch/ServerWatch.js";
 
 export const registerServerProjectFeatures = (container: Container): void => {
     // Replace the default (AWS) workspace builder with the server-flavour one.
@@ -11,4 +12,7 @@ export const registerServerProjectFeatures = (container: Container): void => {
     container.registerDecorator(BuildServerProjectWorkspace);
     // The admin API URL is configured via `<Admin.ApiUrl>` in webiny.config.tsx (baked into the
     // bundle as WEBINY_ADMIN_API_URL), so no env-mutating watch hook is needed here.
+    // Boot the built api handler as a live, reload-on-rebuild HTTP server during `watch api`
+    // (server-flavour counterpart to project-aws's Lambda invocation forwarding).
+    container.registerDecorator(serverWatch);
 };
