@@ -9,8 +9,8 @@
  * storage composition mirrors the api-headless-cms-sql test setup (registerSQLCore +
  * registerSqlStorageOperations + ...).
  *
- * The caller supplies the Knex client (there is no single canonical connection for a self-hosted DB)
- * and the JWT signing secret (or WEBINY_SELF_HOSTED_AUTH_SECRET).
+ * The caller supplies the Knex client (there is no single canonical connection for a self-hosted DB).
+ * The JWT signing secret is configured via `<SelfHostedAuth signingSecret>` (BuildParams).
  *
  * ⚠️ BUILD-VERIFIED, NOT RUNTIME-VERIFIED END-TO-END. The Node transport primitives (routing terminal
  * + auth/tenant loaders) and this SQL composition are faithful mirrors of the deployed+tested AWS
@@ -41,11 +41,6 @@ export type CreateWebinyApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
      * Optional table-name prefix, threaded to every SQL storage operation.
      */
     tableNamePrefix?: string;
-    /**
-     * JWT signing secret for the self-hosted identity provider. Falls back to
-     * `WEBINY_SELF_HOSTED_AUTH_SECRET`.
-     */
-    authSecret?: string;
 };
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
@@ -62,7 +57,8 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // the root so the RequestIdentityLoader (driven by NodeHttpIdentityLoaderDecorator) can
             // resolve it. SelfHostedAuthSqlFeature supplies CredentialsStorageOperations over Knex.
             SelfHostedAuthSqlFeature.register(container, { knex, tableNamePrefix });
-            SelfHostedAuthApiFeature.register(container, { secret: config.authSecret });
+            // The JWT signing secret comes from <SelfHostedAuth signingSecret> (BuildParams).
+            SelfHostedAuthApiFeature.register(container);
 
             // Legacy RegisterExtensionPlugins (register-time DI wiring), applied in order.
             // registerSQLCore registers the KnexClient (resolved by the SQL storage ops), so it is

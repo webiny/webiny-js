@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import type { JwtPayload } from "jsonwebtoken";
 import { createAbstraction, createFeature } from "@webiny/feature/api";
+import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 
 /**
  * The `iss` claim stamped onto every token we mint. The self-hosted
@@ -36,25 +37,29 @@ export namespace TokenIssuer {
     export type Payload = JwtPayload;
 }
 
-export interface TokenIssuerConfig {
-    /**
-     * Signing secret (HS256). MUST be provided in production — a self-hosted
-     * deployment sets this once and shares it between the issuer and verifier
-     * (same process here). Swap for an RS256 keypair if you ever want the
-     * verifier to hold only the public key.
-     */
-    secret: string;
-    /** Token lifetime in seconds. Defaults to 12 hours. */
-    expiresIn?: number;
-}
+/** Default token lifetime: 12 hours (seconds). */
+const DEFAULT_EXPIRES_IN = 60 * 60 * 12;
 
 class JwtTokenIssuer implements ITokenIssuer {
     private readonly secret: string;
     private readonly expiresIn: number;
 
-    constructor(config: TokenIssuerConfig) {
-        this.secret = config.secret;
-        this.expiresIn = config.expiresIn ?? 60 * 60 * 12;
+    /**
+     * The signing secret (HS256) is configured via `<SelfHostedAuth signingSecret={...}>` in
+     * webiny.config.tsx, baked as the `SelfHostedAuthSigningSecret` build param. It MUST be set —
+     * a self-hosted deployment shares one stable secret between issuer and verifier (same process
+     * here). Swap for an RS256 keypair if you ever want the verifier to hold only the public key.
+     */
+    constructor(buildParams: BuildParams.Interface) {
+        const secret = buildParams.get<string>("SelfHostedAuthSigningSecret");
+        if (!secret) {
+            throw new Error(
+                "Self-hosted auth requires a JWT signing secret. Configure it via " +
+                    "`<SelfHostedAuth signingSecret={process.env.YOUR_SECRET_ENV} />` in webiny.config.tsx."
+            );
+        }
+        this.secret = secret;
+        this.expiresIn = DEFAULT_EXPIRES_IN;
     }
 
     async issue(params: IssueTokenParams): Promise<IssuedToken> {
@@ -90,9 +95,14 @@ class JwtTokenIssuer implements ITokenIssuer {
     }
 }
 
-export const TokenIssuerFeature = createFeature<TokenIssuerConfig>({
+const jwtTokenIssuer = TokenIssuer.createImplementation({
+    implementation: JwtTokenIssuer,
+    dependencies: [BuildParams]
+});
+
+export const TokenIssuerFeature = createFeature({
     name: "TokenIssuer",
-    register(container, config) {
-        container.registerInstance(TokenIssuer, new JwtTokenIssuer(config));
+    register(container) {
+        container.register(jwtTokenIssuer);
     }
 });

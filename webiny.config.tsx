@@ -1,15 +1,21 @@
 import React from "react";
 import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
-// import { Cognito } from "@webiny/cognito";
-import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
-// import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
+import { AwsExtensions } from "./webiny.config.aws.js";
+import { ServerExtensions } from "./webiny.config.server.js";
+
+/**
+ * In this monorepo we develop both flavours. The CLI bin sets WEBINY_FLAVOUR ("aws" via `webiny`,
+ * "server" via `webiny-server`). Shared extensions live here; the flavour-specific block below pulls
+ * in AWS-only (webiny.config.aws.tsx) or server-only (webiny.config.server.tsx) extensions so neither
+ * leaks into the other flavour.
+ */
+const isServer = process.env.WEBINY_FLAVOUR === "server";
 
 export const Extensions = () => {
     return (
         <>
             {/* Admin 👇 */}
-            <Admin.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3000"} />
             <Admin.Extension src={"@/extensions/previewUrlModifier/index.tsx"} />
             {/*<Admin.Extension src={"@/extensions/fileUrlFormatter/index.tsx"} />*/}
             <Admin.Extension src={"@/extensions/sampleEcommerce/index.tsx"} />
@@ -18,91 +24,18 @@ export const Extensions = () => {
             <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
             <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
             <Admin.Extension src={"@/extensions/newEntryWizardDemo/index.tsx"} />
-
-            {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
-            {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
-            {/*<Admin.Extension src={"@/extensions/LexicalPlugin.tsx"} />*/}
             <MyFeature />
-            {/* Infra 👇 */}
-            <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
-            <Infra.ProductionEnvironments environments={["prod", "staging"]} />
-            <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
-            {/*<Infra.Admin.Pulumi src={"/extensions/adminCustomDomains/AdminCustomDomains.ts"} />*/}
-            <Infra.Vpc enabled={false} />
-            <Infra.OpenSearch enabled={false} />
 
+            {/* Infra (flavour-agnostic) 👇 */}
+            <Infra.ProductionEnvironments environments={["prod", "staging"]} />
             <Infra.Crypto.Encryption passphrase={"my-passphrase"} />
             {/* Optional server-side pepper folded into every hash (e.g. self-hosted auth passwords). */}
             <Infra.Crypto.Hashing pepper={"my-hashing-pepper"} />
-            {/*<Infra.Api.MaxBundleSize size={2359296}  />*/}
 
-            <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
-            <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
-            <Infra.Aws.DefaultRegion name={"eu-central-1"} />
-            {/*<Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />*/}
-            {/*<Infra.EnvVar varName="MY_ENV_VAR" value="myValue" />*/}
-            {/*<Infra.Api.LambdaFunction*/}
-            {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}
-            {/*    pulumiSrc="/extensions/myLambdaFunction/pulumi.ts"*/}
-            {/*/>*/}
+            {/* Api 👇 */}
             <Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />
             <Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />
-            {/*<Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/ProductModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionHook.ts"} />*/}
-            {/*<Admin.Extension*/}
-            {/*    src={"/extensions/models/contactSubmission/EmailEntryListColumn.tsx"}*/}
-            {/*/>*/}
-            {/*<Api.BuildParam paramName="MY_CUSTOM_BUILD_PARAM" value="customValue" />*/}
-            {/*<Api.BuildParam*/}
-            {/*    paramName="MY_CUSTOM_BUILD_PARAM-2"*/}
-            {/*    value={{ myKey: 2, nested: { foo: "bar" } }}*/}
-            {/*/>*/}
-            {/*<Admin.BuildParam*/}
-            {/*    paramName="MY_CUSTOM_ADMIN_BUILD_PARAM-2"*/}
-            {/*    value={{ myKey: 2, nested: { foo: "bar" } }}*/}
-            {/*/>*/}
-            {/*<Admin.BuildParam paramName="MY_CUSTOM_ADMIN_BUILD_PARAM" value="customAdminValue" />*/}
-            {/* Example: Environment-based conditional configuration */}
-            {/*<Infra.Env.Is env="prod">
-                <Infra.Aws.Tags tags={{ ENV: "production" }} />
-            </Infra.Env.Is>*/}
-            {/*<Infra.Env.Is env={["dev", "staging"]}>
-                <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
-            </Infra.Env.Is>*/}
-            {/*<Infra.Admin.CustomDomains
-                domains={["my.domain.com"]}
-                sslMethod="sni-only"
-                certificateArn="arn:aws:acm:us-east-1:636962863878:certificate/3baf9092-fb27-4efb-9409-XXXXXXXX"
-            />
 
-            <Infra.BlueGreenDeployments
-                enabled={true}
-                domains={{
-                    acmCertificateArn:
-                        "arn:aws:acm:us-east-1:636962863878:certificate/3baf9092-fb27-4efb-9409-XXXXXXXX",
-                    sslSupportMethod: "sni-only",
-                    domains: {
-                        api: ["api.bg.webiny.com"],
-                        admin: ["admin.bg.webiny.com"],
-                        website: ["website.bg.webiny.com"],
-                        preview: ["preview.bg.webiny.com"]
-                    }
-                }}
-                deployments={[
-                    {
-                        name: "green",
-                        env: "dev",
-                        variant: "green"
-                    },
-                    {
-                        name: "blue"
-                        env: "dev",
-                        variant: "blue"
-                    }
-                ]}
-            />*/}
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
             <Project.FeatureFlags
@@ -123,25 +56,22 @@ export const Extensions = () => {
                     }}
                 />
             )}
-            {/* API */}
-            {/*<MyIdpExtension />*/}
-            {/* Self-hosted flavour: the built-in IdP (login screen + JWT auth). */}
-            <SelfHostedAuth />
-            {/*<Cognito />*/}
+
             {/* Security 👇 */}
             <Api.Extension src={"/extensions/MyApiKey.ts"} />
             <Api.Extension src={"/extensions/MyApiKeyAfterUpdate.ts"} />
+
             {/* CLI 👇 */}
             <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
-            {/* 🚧 WIP 👇 */}
-            {/*<AuditLogs.RetentionPeriod days={90} />*/}
 
-            {/* Tasks */}
+            {/* Tasks 👇 */}
             <Api.Extension src={"/extensions/tasks/SelfCleaningTask.ts"} />
-            {/* Headless CMS */}
+
+            {/* Headless CMS 👇 */}
             {/* Set to true to compress model fields before storing them in the database. */}
             <Api.Cms.ModelFieldCompression enabled={false} />
-            {/* Mailer */}
+
+            {/* Mailer 👇 */}
             <Api.Mailer.Smtp
                 host={"smtp.webiny.com"}
                 port={587}
@@ -150,6 +80,9 @@ export const Extensions = () => {
                 from={"Webiny <test@webiny.com>"}
                 replyTo={"No-reply <no-reply@webiny.com>"}
             />
+
+            {/* Flavour-specific 👇 (AWS: Pulumi + Cognito; Server: Admin.ApiUrl + SelfHostedAuth) */}
+            {isServer ? <ServerExtensions /> : <AwsExtensions />}
         </>
     );
 };

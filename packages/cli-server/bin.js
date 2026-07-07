@@ -8,6 +8,10 @@ import { Cli } from "@webiny/cli-core";
 import { ensureSameWebinyPackageVersions } from "@webiny/cli-core/utils/ensureSameWebinyPackageVersions.js";
 import { registerServerFeatures } from "./dist/registerServerFeatures.js";
 
+// Flavour marker — lets webiny.config.tsx branch on which CLI is running (e.g. SelfHostedAuth +
+// Admin.ApiUrl for server, Cognito for AWS). Read at build/watch time when the config is evaluated.
+process.env.WEBINY_FLAVOUR = "server";
+
 // Ensure all @webiny/* packages use the same version.
 ensureSameWebinyPackageVersions();
 

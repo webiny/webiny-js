@@ -9,6 +9,10 @@ import { ensureSameWebinyPackageVersions } from "@webiny/cli-core/utils/ensureSa
 import { registerAwsFeatures } from "./dist/index.js";
 import { ensureSystemRequirements } from "@webiny/system-requirements";
 
+// Flavour marker — lets webiny.config.tsx branch on which CLI is running (e.g. Cognito for AWS,
+// SelfHostedAuth + Admin.ApiUrl for server). Read at build/watch time when the config is evaluated.
+process.env.WEBINY_FLAVOUR = "aws";
+
 // Ensure system requirements are met.
 ensureSystemRequirements();
 

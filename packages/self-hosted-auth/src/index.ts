@@ -1,10 +1,7 @@
 // Config-time extension for webiny.config.tsx (`<SelfHostedAuth />`).
 export { SelfHostedAuth } from "./SelfHostedAuth.js";
 
-export {
-    SelfHostedAuthApiFeature,
-    type SelfHostedAuthConfig
-} from "./api/SelfHostedAuthApiFeature.js";
+export { SelfHostedAuthApiFeature } from "./api/SelfHostedAuthApiFeature.js";
 
 // Storage seam — implemented by database packages (`-sql`, `-mdb`, …).
 export {
