@@ -9,6 +9,7 @@ const whitelist = [
     "@webiny/cognito",
     "@webiny/auth0",
     "@webiny/okta",
+    "@webiny/self-hosted-auth",
     "@webiny/plugins",
     "@webiny/sdk",
     "@webiny/stdlib",

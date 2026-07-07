@@ -34,7 +34,7 @@ export const createTestConfig = async ({
     };
 
     const { PackageJson } = await import("@webiny/build-tools/utils/PackageJson.js");
-    const cliPackage = await PackageJson.fromPackage("@webiny/cli");
+    const cliPackage = await PackageJson.fromPackage("@webiny/cli-core");
     const version = cliPackage.getJson().version;
 
     process.env.DB_TABLE = "DynamoDB";

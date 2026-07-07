@@ -11,6 +11,7 @@ import { createUiProviders } from "./providers/UiProviders.js";
 import { createDialogsProvider } from "~/components/Dialogs/DialogsContext.js";
 import { DefaultIcons, IconPickerConfigProvider } from "~/components/IconPicker/config/index.js";
 import { createRootContainer } from "~/base/createRootContainer.js";
+import { resolveGraphqlUrl } from "~/base/resolveApiUrl.js";
 import { WcpProvider } from "~/presentation/wcp/WcpProvider.js";
 import { createTenancyProvider } from "~/presentation/tenancy/createTenancyProvider.js";
 import { TelemetryAdminAppStart } from "./TelemetryAdminAppStart.js";
@@ -32,8 +33,7 @@ export interface AdminProps {
 const container = createRootContainer();
 
 export const Admin = ({ children, createApolloClient, createLegacyPlugins }: AdminProps) => {
-    const uri = process.env.REACT_APP_GRAPHQL_API_URL as string;
-    const apolloClient = createApolloClient({ uri });
+    const apolloClient = createApolloClient({ uri: resolveGraphqlUrl() });
 
     plugins.register(...createLegacyPlugins(container));
 

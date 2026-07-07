@@ -3,21 +3,16 @@ import type { Container } from "@webiny/di";
 import { HttpFeature } from "@webiny/event-handler-core";
 import { ApiGatewayEventType } from "~/eventTypes/ApiGatewayEventType.js";
 import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHandler.js";
-import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
-import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
 
 /**
- * Registers the full API Gateway infrastructure for a Lambda handler:
+ * Registers the transport-only API Gateway infrastructure for a Lambda handler:
  * - ApiGatewayEventType (recognises API GW Lambda events)
  * - HttpFeature (HttpRouter + RequestContextInitializerDecorator + SecureHeadersDecorator)
  * - ApiGatewayHttpRouterHandler (terminal: translates APIGw ↔ IHttpRequest, routes via HttpRouter)
- * - auth + tenant: two decorators that EXTRACT the token/tenant-id from the event into
- *   RawAuthToken/RawTenantId and invoke the shared, transport-agnostic LOAD steps
- *   (RequestIdentityLoader / RequestTenantLoader in api-core) before routing.
  *
- * Ordering: registerDecorator applies LATER registrations as the OUTER wrapper (whose execute() runs
- * first). Identity must be established before tenant, so the tenant decorator is registered first
- * (inner) and the identity decorator last (outer) → identity runs, then tenant, then the router.
+ * Auth/tenant establishment (the extract→load decorators, which depend on api-core) is NOT here —
+ * it lives in the composition layer (@webiny/api-event-handler-aws), which registers those decorators after
+ * this feature. That keeps event-handler-aws free of any api-* (domain) dependency.
  */
 export const ApiGatewayFeature = createFeature({
     name: "ApiGateway",
@@ -25,9 +20,5 @@ export const ApiGatewayFeature = createFeature({
         container.register(ApiGatewayEventType);
         HttpFeature.register(container);
         container.register(ApiGatewayHttpRouterHandler);
-
-        // ── Auth + tenant (extract → shared load) ──────────────────
-        container.registerDecorator(ApiGatewayTenantLoaderDecorator);
-        container.registerDecorator(ApiGatewayIdentityLoaderDecorator);
     }
 });

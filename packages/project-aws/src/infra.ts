@@ -33,9 +33,8 @@ import {
 
 import { OpenSearch } from "./extensions/OpenSearch.js";
 import { AwsDefaultRegion } from "./extensions/AwsDefaultRegion.js";
-import { Encryption } from "./extensions/Encryption.js";
 import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
-import { EnvVar, ApiMaxBundleSize } from "@webiny/project/extensions/index.js";
+import { EnvVar, ApiMaxBundleSize, Encryption, Hashing } from "@webiny/project/extensions/index.js";
 import {
     EnvIs,
     EnvIsNot,
@@ -49,6 +48,12 @@ import {
 export { useEnv };
 
 export const Infra = {
+    // Grouped crypto config surface.
+    Crypto: {
+        Encryption,
+        Hashing
+    },
+    // Kept top-level for backward compatibility (prefer Infra.Crypto.Encryption going forward).
     Encryption,
     Vpc,
     BlueGreenDeployments,

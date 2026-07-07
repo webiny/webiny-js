@@ -12,7 +12,7 @@ import { resolveDomains } from "./domains/resolveDomains.js";
 import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 import { attachDomainsToOutput } from "~/pulumi/apps/blueGreen/domains/attachDomainsToOutput.js";
 import { BLUE_GREEN_ROUTER_STORE_KEY } from "./constants.js";
-import { getProjectSdk } from "@webiny/project";
+import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { applyAwsResourceTags } from "~/pulumi/apps/awsUtils.js";
 import { getBgDeploymentsConfigFromExtension } from "~/pulumi/apps/extensions/getBgDeploymentsConfigFromExtension.js";
 
@@ -21,7 +21,7 @@ export function createBlueGreenPulumiApp() {
         name: "blueGreen",
         path: "apps/blueGreen",
         program: async app => {
-            const sdk = await getProjectSdk();
+            const sdk = await getAwsProjectSdk();
             const projectConfig = await sdk.getProjectConfig();
 
             const blueGreenConfig = getBgDeploymentsConfigFromExtension(projectConfig);

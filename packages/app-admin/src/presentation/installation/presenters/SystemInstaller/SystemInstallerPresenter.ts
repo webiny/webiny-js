@@ -31,7 +31,11 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
         this.wizardSteps = [
             { name: "introduction", label: "Introduction" },
             { name: "basic-info", label: "Basic info" },
-            process.env.REACT_APP_IDP_TYPE === "cognito"
+            // Show the admin-account step for IdPs that seed the first admin user during install:
+            // Cognito (idp type) or any IdP that declares an installer app name (e.g. self-hosted).
+            // External IdPs (Okta/Auth0) set neither, so the step stays hidden for them.
+            process.env.REACT_APP_IDP_TYPE === "cognito" ||
+            Boolean(process.env.REACT_APP_AUTH_INSTALLER_APP_NAME)
                 ? { name: "admin-account", label: "Admin account" }
                 : undefined,
             { name: "finish", label: "Finish setup" }
@@ -140,11 +144,17 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
 
             // ToS acceptance in the basic-info step covers consent. Fire-and-forget
             // so a slow/failed newsletter call never blocks the wizard.
-            this.newsletter.subscribe({
-                email: installerData.Cognito.email,
-                firstName: installerData.Cognito.firstName,
-                lastName: installerData.Cognito.lastName
-            });
+            // Admin-user data is keyed by the active IdP's installer app name (Cognito,
+            // SelfHostedAuth, …), so don't hardcode "Cognito".
+            const authApp = process.env.REACT_APP_AUTH_INSTALLER_APP_NAME || "Cognito";
+            const adminUser = installerData[authApp];
+            if (adminUser) {
+                this.newsletter.subscribe({
+                    email: adminUser.email,
+                    firstName: adminUser.firstName,
+                    lastName: adminUser.lastName
+                });
+            }
         } catch (error) {
             runInAction(() => {
                 this.error = error;

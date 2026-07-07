@@ -1,5 +1,5 @@
 import { createAppModule, type PulumiAppModule } from "@webiny/pulumi";
-import { ProjectSdk } from "@webiny/project";
+import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 
 export type CoreOutput = PulumiAppModule<typeof CoreOutput>;
 
@@ -39,7 +39,7 @@ export const CoreOutput = createAppModule({
     name: "CoreOutput",
     config(app) {
         return app.addHandler(async () => {
-            const sdk = await ProjectSdk.init();
+            const sdk = await getAwsProjectSdk();
 
             const output = await sdk.getAppStackOutput("core");
             if (!output) {

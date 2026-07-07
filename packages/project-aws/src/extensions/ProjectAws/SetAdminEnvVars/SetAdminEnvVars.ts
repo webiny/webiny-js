@@ -51,8 +51,8 @@ export class SetAdminEnvVars {
 
         if (apiOutput) {
             process.env.REACT_APP_USER_POOL_REGION = apiOutput.region;
-            process.env.REACT_APP_GRAPHQL_API_URL = `${apiOutput.apiUrl}/graphql`;
-            process.env.REACT_APP_API_URL = apiOutput.apiUrl;
+            // Admin API URL, read by createRootContainer / Admin.tsx / playgrounds / api-info.
+            process.env.WEBINY_ADMIN_API_URL = apiOutput.apiUrl;
             process.env.REACT_APP_USER_POOL_ID = apiOutput.cognitoUserPoolId;
             process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID = apiOutput.cognitoAppClientId;
             process.env.REACT_APP_USER_POOL_PASSWORD_POLICY = JSON.stringify(

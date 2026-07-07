@@ -18,7 +18,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/event-handler-core": "0.0.0"
+    "@webiny/event-handler-core": "0.0.0",
+    "@webiny/feature": "0.0.0"
   },
   "peerDependencies": {
     "@webiny/di": "^1.0.2"

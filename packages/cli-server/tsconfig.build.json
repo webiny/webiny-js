@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../cli-core/tsconfig.build.json" },
+    { "path": "../project/tsconfig.build.json" },
+    { "path": "../project-server/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/cli-core/*": ["../cli-core/src/*"],
+      "@webiny/cli-core": ["../cli-core/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"],
+      "@webiny/project-server/*": ["../project-server/src/*"],
+      "@webiny/project-server": ["../project-server/src"]
+    }
+  }
+}

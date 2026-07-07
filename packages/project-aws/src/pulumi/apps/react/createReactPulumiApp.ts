@@ -6,7 +6,8 @@ import { createPrivateAppBucket } from "../createAppBucket.js";
 import { applyCustomDomain, type CustomDomainParams } from "../customDomain.js";
 import { withServiceManifest } from "~/pulumi/utils/withServiceManifest.js";
 import { ApiOutput, CoreOutput } from "~/pulumi/apps/index.js";
-import { type AppName, getProjectSdk } from "@webiny/project";
+import { type AppName } from "@webiny/project";
+import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { applyAwsResourceTags } from "~/pulumi/apps/awsUtils.js";
 
 export type ReactPulumiApp = ReturnType<typeof createReactPulumiApp>;
@@ -38,7 +39,7 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
         path: projectAppParams.folder,
         config: projectAppParams,
         program: async app => {
-            const sdk = await getProjectSdk();
+            const sdk = await getAwsProjectSdk();
 
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
 

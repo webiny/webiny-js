@@ -19,6 +19,7 @@ import { ToolsFeature } from "~/features/tools/feature.js";
 import { TextToLexicalToolFeature } from "~/presentation/textToLexicalTool/feature.js";
 import { ConfirmationFeature } from "~/features/confirmation/feature.js";
 import { ClipboardFeature } from "~/features/clipboard/feature.js";
+import { resolveApiUrl, resolveGraphqlUrl } from "./resolveApiUrl.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 
@@ -31,9 +32,9 @@ export function createRootContainer() {
 
     EnvConfigFeature.register(container, {
         deploymentId,
-        apiUrl: String(process.env.REACT_APP_API_URL),
+        apiUrl: resolveApiUrl(),
         debug: process.env.WEBINY_ADMIN_DEBUG === "true",
-        graphqlApiUrl: String(process.env.REACT_APP_GRAPHQL_API_URL),
+        graphqlApiUrl: resolveGraphqlUrl(),
         telemetryEnabled: process.env.REACT_APP_WEBINY_TELEMETRY === "true",
         telemetryUserId: process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID,
         trashBinRetentionPeriodDays: trashBinRetention,

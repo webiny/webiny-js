@@ -1,0 +1,43 @@
+{
+  "name": "@webiny/api-event-handler-server",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "types": "index.d.ts",
+  "description": "EXPERIMENTAL: Webiny API handler for the self-hosted Node HTTP server transport.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Webiny Team"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-event-handler-core": "0.0.0",
+    "@webiny/event-handler-core": "0.0.0",
+    "@webiny/event-handler-server": "0.0.0",
+    "@webiny/handler": "0.0.0"
+  },
+  "peerDependencies": {
+    "@webiny/di": ">=0.2.3"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "^1.0.1",
+    "rimraf": "^6.1.3",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.9"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

@@ -8,9 +8,12 @@ import { DatabaseSetup } from "./DatabaseSetup.js";
 import { FeatureFlags } from "./FeatureFlags.js";
 import { BuildParam } from "./ApiBuildParam.js";
 import { AdminBuildParam } from "./AdminBuildParam.js";
+import { AdminApiUrl } from "./AdminApiUrl.js";
 import { AdminExtension } from "./AdminExtension.js";
 import { ApiExtension } from "./ApiExtension.js";
 import { ApiMaxBundleSize } from "./ApiMaxBundleSize.js";
+import { Encryption } from "./infra/Encryption.js";
+import { Hashing } from "./infra/Hashing.js";
 
 // Hooks.
 import {
@@ -56,9 +59,12 @@ export { FeatureFlags };
 export { DatabaseSetup };
 export { BuildParam };
 export { AdminBuildParam };
+export { AdminApiUrl };
 export { AdminExtension };
 export { ApiExtension };
 export { ApiMaxBundleSize };
+export { Encryption };
+export { Hashing };
 
 // Hooks.
 export { BeforeBuild };
@@ -130,9 +136,12 @@ export const definitions = [
     DatabaseSetup.def,
     BuildParam.def,
     AdminBuildParam.def,
+    AdminApiUrl.def,
     AdminExtension.def,
     ApiExtension.def,
-    ApiMaxBundleSize.def
+    ApiMaxBundleSize.def,
+    Encryption.def,
+    Hashing.def
 ];
 
 export { Project } from "./Project.js";

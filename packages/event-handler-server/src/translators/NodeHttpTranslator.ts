@@ -1,7 +1,7 @@
-// Translator: converts between transport-specific format and IHttpRequest/IHttpResponse. Not an Adapter (which implies interface compatibility).
-import { IncomingMessage } from "node:http";
-import { EventHandler } from "@webiny/event-handler-core";
-import type { EventContext, IHttpRequest, NextFunction } from "@webiny/event-handler-core";
+// Translator: converts a Node `IncomingMessage` into Webiny's transport-agnostic IHttpRequest.
+// Not an Adapter (which implies interface compatibility).
+import type { IncomingMessage } from "node:http";
+import type { IHttpRequest } from "@webiny/event-handler-core";
 
 async function readBody(req: IncomingMessage): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -40,26 +40,22 @@ function parseQuery(url: string): Record<string, string> {
     return result;
 }
 
-class NodeHttpTranslatorImpl implements EventHandler.Interface {
-    async execute(ctx: EventContext<IncomingMessage>, next: NextFunction): Promise<any> {
-        const url = ctx.event.url || "/";
-        const qIdx = url.indexOf("?");
+/**
+ * Translate a Node `IncomingMessage` into an `IHttpRequest` (method, path, headers, query, body).
+ * Consumed by `NodeHttpRouterHandler` before routing through the shared `HttpRouter`.
+ */
+export async function nodeHttpRequestFromIncomingMessage(
+    req: IncomingMessage
+): Promise<IHttpRequest> {
+    const url = req.url || "/";
+    const qIdx = url.indexOf("?");
 
-        const request: IHttpRequest = {
-            method: ctx.event.method || "GET",
-            path: qIdx === -1 ? url : url.slice(0, qIdx),
-            headers: ctx.event.headers as Record<string, string>,
-            query: parseQuery(url),
-            pathParameters: {},
-            body: await readBody(ctx.event)
-        };
-
-        const httpCtx: EventContext<IHttpRequest> = { event: request, metadata: ctx.metadata };
-        return next(httpCtx);
-    }
+    return {
+        method: req.method || "GET",
+        path: qIdx === -1 ? url : url.slice(0, qIdx),
+        headers: req.headers as Record<string, string>,
+        query: parseQuery(url),
+        pathParameters: {},
+        body: await readBody(req)
+    };
 }
-
-export const NodeHttpTranslator = EventHandler.createImplementation({
-    implementation: NodeHttpTranslatorImpl,
-    dependencies: []
-});

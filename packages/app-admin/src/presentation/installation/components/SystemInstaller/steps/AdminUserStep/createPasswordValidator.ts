@@ -9,7 +9,7 @@ export interface PasswordPolicy {
 }
 
 export const createPasswordValidator =
-    (policy: PasswordPolicy) =>
+    (policy: PasswordPolicy = {}) =>
     (value?: string): void => {
         if (!value) {
             return;

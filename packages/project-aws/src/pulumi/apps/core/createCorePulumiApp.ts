@@ -14,7 +14,7 @@ import {
 } from "~/pulumi/utils/addServiceManifestTableItem.js";
 import * as random from "@pulumi/random";
 
-import { getProjectSdk } from "@webiny/project";
+import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { CorePulumi } from "~/abstractions/features/pulumi/index.js";
 import { corePulumi } from "~/pulumi/features/CorePulumi/index.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
@@ -31,7 +31,7 @@ export function createCorePulumiApp() {
         name: "core",
         path: "apps/core",
         program: async app => {
-            const sdk = await getProjectSdk();
+            const sdk = await getAwsProjectSdk();
             const projectConfig = await sdk.getProjectConfig();
 
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
