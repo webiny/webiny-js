@@ -31,11 +31,11 @@ class RunnableTaskDecoratorImpl implements TaskDefinition.Interface {
 
     // Apply default values
     get isPrivate() {
-        return this.decoratee.isPrivate ?? false;
+        return this.decoratee.isPrivate || false;
     }
 
     get databaseLogs() {
-        return this.decoratee.databaseLogs ?? false;
+        return this.decoratee.databaseLogs || false;
     }
 
     get maxIterations() {

@@ -67,7 +67,7 @@ class BackgroundTaskSettingsPresenterImpl implements IBackgroundTaskSettingsPres
 
             runInAction(() => {
                 this._form.setData({
-                    retentionDays: settings.retentionDays ?? ""
+                    retentionDays: settings.retentionDays || ""
                 });
             });
         } finally {
@@ -87,7 +87,7 @@ class BackgroundTaskSettingsPresenterImpl implements IBackgroundTaskSettingsPres
             runInAction(() => {
                 this._form = this.buildForm();
                 this._form.setData({
-                    retentionDays: settings.retentionDays ?? ""
+                    retentionDays: settings.retentionDays || ""
                 });
                 this._loading = false;
             });

@@ -50,7 +50,7 @@ export class TaskControl implements ITaskControl {
                 new AuthenticatedIdentity({
                     id: task.createdBy.id,
                     type: task.createdBy.type,
-                    displayName: task.createdBy.displayName ?? "",
+                    displayName: task.createdBy.displayName || "",
                     context: {
                         canAccessTenant: true
                     }

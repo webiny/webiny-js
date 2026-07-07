@@ -9,7 +9,7 @@ import {
     BackgroundTaskEventType,
     WebSocketEventType
 } from "@webiny/event-handler-aws";
-import { BackgroundTaskLambdaHandler } from "@webiny/background-tasks/api";
+import {BackgroundTasksAwsFeature} from "@webiny/background-tasks-aws";
 import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/handler-graphql";
@@ -59,7 +59,6 @@ export const handler = createLambdaHandler({
 
         // Background task invocations (Step Functions → Lambda directly)
         container.register(BackgroundTaskEventType);
-        container.register(BackgroundTaskLambdaHandler);
 
         // WebSocket invocations (API Gateway WebSocket → this Lambda: $connect/$disconnect/$default).
         // Without the event type + handler, the DI dispatcher can't match a WS event ("No event type
@@ -124,6 +123,7 @@ export const handler = createLambdaHandler({
         AuditLogsFeature.register(container, {});
         WebhooksFeature.register(container);
         BackgroundTasksFeature.register(container);
+        BackgroundTasksAwsFeature.register(container);
 
         // ── Workflows ──────────────────────────────────────────────
         WorkflowsFeature.register(container);

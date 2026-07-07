@@ -82,7 +82,7 @@ export class TaskExecutionsDataSource implements IDataSource<Task> {
             where: params.filters,
             sort,
             limit: params.limit,
-            after: this._meta.cursor ?? undefined,
+            after: this._meta.cursor || undefined,
             search: params.search
         });
         runInAction(() => {

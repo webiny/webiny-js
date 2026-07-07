@@ -66,11 +66,35 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-core/src/features/task/TaskDefinition/abstractions.ts`
 - **Usage:** Define background tasks. Use `TaskDefinition.createImplementation({ implementation, dependencies })`. Register with `context.container.register(MyTask)`. The `run` method receives `{ input, controller }` where controller provides `response.done/error/aborted/continue` and `runtime.isAborted/isCloseToTimeout`.
 
-### TaskService
+### TaskService (high-level — trigger/abort)
 
 - **Import:** `import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js"`
 - **Interface Type:** See `packages/api-core/src/features/task/TaskService/abstractions.ts`
 - **Usage:** Trigger and abort background tasks. Call `taskService.trigger({ definition: "taskId", input: {...} })`. Inject as DI dependency via `TaskService`.
+
+### TaskService (transport — send/fetch)
+
+- **Import:** `import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js"`
+- **Interface Type:** See `packages/background-tasks/src/api/domain/TaskService.ts`
+- **Usage:** Low-level transport abstraction (`send` + `fetch`). Implemented by `StepFunctionService` (AWS) and `WorkerService` (server). Registered by `BackgroundTasksAwsFeature` or `BackgroundTasksServerFeature`. Namespace types: `TaskService.Interface`, `.SendTaskParams`, `.Task`.
+
+### Timer
+
+- **Import:** `import { Timer } from "@webiny/background-tasks/api"`
+- **Interface Type:** See `packages/background-tasks/src/api/abstractions/Timer.ts`
+- **Usage:** Interface for task execution timeout tracking. Methods: `getRemainingMilliseconds()`, `getRemainingSeconds()`. Implemented by `LambdaTimer` (AWS, wraps Lambda context) and `ProcessTimer` (server, `process.hrtime` with 24h default). Use `Timer.Interface` as the type.
+
+### BackgroundTasksAwsFeature
+
+- **Import:** `import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws"`
+- **Interface Type:** See `packages/background-tasks-aws/src/BackgroundTasksAwsFeature.ts`
+- **Usage:** Registers AWS background task transport (Step Functions + Lambda handler). Call `BackgroundTasksAwsFeature.register(container)` alongside `BackgroundTasksFeature`.
+
+### BackgroundTasksServerFeature
+
+- **Import:** `import { BackgroundTasksServerFeature } from "@webiny/background-tasks-server"`
+- **Interface Type:** See `packages/background-tasks-server/src/BackgroundTasksServerFeature.ts`
+- **Usage:** Registers Node server background task transport (worker thread orchestrator + HTTP route). Call `BackgroundTasksServerFeature.register(container)` alongside `BackgroundTasksFeature`. Uses runtime-generated token for route auth (single-process only).
 
 ### ConnectionRegistry
 

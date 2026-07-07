@@ -5,10 +5,10 @@ import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-gra
 import {
     createBackgroundTaskContext,
     createBackgroundTaskGraphQL,
-    TaskServiceTransport,
+    TaskService,
     TasksCrud
 } from "@webiny/background-tasks/api";
-import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
+import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
 import type { Context } from "~/types";
@@ -35,7 +35,7 @@ export const useHandler = <C extends Context = Context>(params: Params = {}) => 
                 createHeadlessCmsEsTasks(),
                 ...[plugins].flat(Infinity as 1).filter(Boolean)
             ]);
-            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin()[0]);
+            container.registerInstance(TaskService, createMockTaskService());
         }
     });
 
