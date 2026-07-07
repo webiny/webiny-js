@@ -17,6 +17,10 @@ import {
 } from "./abstractions.js";
 import { LogInUseCase } from "@webiny/app-admin/features/security/LogIn/index.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/index.js";
+import { CognitoSignInConfig, type FederatedProvider } from "./CognitoSignInConfig.js";
+
+const federatedDescription =
+    "You will be taken to an external service to complete the sign-in process.";
 
 class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
     private authState: AuthState = "signIn";
@@ -27,9 +31,15 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
     private formLoading = false;
     private initialized = false;
 
+    private signInTitle = "Sign in";
+    private signInDescription: string | undefined = undefined;
+    private allowCredentialsLogin = true;
+    private federatedProviders: FederatedProvider[] = [];
+
     constructor(
         private identity: IdentityContext.Interface,
-        private logInUseCase: LogInUseCase.Interface
+        private logInUseCase: LogInUseCase.Interface,
+        private signInConfig: CognitoSignInConfig.Interface | undefined
     ) {
         makeAutoObservable(this);
     }
@@ -46,7 +56,11 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
             // View-specific VMs
             signIn: {
                 isLoading: this.formLoading,
-                message: this.message
+                message: this.message,
+                title: this.signInTitle,
+                description: this.signInDescription,
+                allowCredentialsLogin: this.allowCredentialsLogin,
+                federatedProviders: this.federatedProviders
             },
             requestPasswordResetCode: {
                 isLoading: this.formLoading,
@@ -72,8 +86,47 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
             return;
         }
 
+        let oauthConfig:
+            | { Cognito: { userPoolId: string; userPoolClientId: string; loginWith: any } }
+            | undefined;
+
+        if (this.signInConfig) {
+            const config = await this.signInConfig.getConfig();
+
+            runInAction(() => {
+                this.signInTitle = config.title ?? "Sign in";
+                this.signInDescription = config.description;
+
+                if (!config.description && !config.allowCredentialsLogin) {
+                    this.signInDescription = federatedDescription;
+                }
+
+                this.allowCredentialsLogin = config.allowCredentialsLogin;
+                this.federatedProviders = config.providers;
+            });
+
+            const domain = process.env.REACT_APP_USER_POOL_DOMAIN;
+            if (domain) {
+                oauthConfig = {
+                    Cognito: {
+                        userPoolId: params.userPoolId,
+                        userPoolClientId: params.clientId,
+                        loginWith: {
+                            oauth: {
+                                domain,
+                                redirectSignIn: config.oauth.redirectSignIn,
+                                redirectSignOut: config.oauth.redirectSignOut,
+                                scopes: config.oauth.scopes,
+                                responseType: config.oauth.responseType
+                            }
+                        }
+                    }
+                };
+            }
+        }
+
         Amplify.configure({
-            Auth: {
+            Auth: oauthConfig ?? {
                 Cognito: {
                     userPoolId: params.userPoolId,
                     userPoolClientId: params.clientId
@@ -290,16 +343,6 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
     }
 
     private async checkUrl(): Promise<void> {
-        const query = new URLSearchParams(window.location.search);
-        const queryData: Record<string, string> = {};
-        query.forEach((value, key) => (queryData[key] = value));
-        const { state } = queryData;
-
-        if (state) {
-            // Handle state from URL if needed
-            return;
-        }
-
         return this.checkSession();
     }
 
@@ -326,5 +369,5 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
 
 export const CognitoPresenter = CognitoPresenterAbstraction.createImplementation({
     implementation: CognitoPresenterImpl,
-    dependencies: [IdentityContext, LogInUseCase]
+    dependencies: [IdentityContext, LogInUseCase, [CognitoSignInConfig, { optional: true }]]
 });

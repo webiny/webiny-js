@@ -75,6 +75,7 @@ export const configureAdminCognitoFederation = (
     );
 
     const idpConfigs: aws.cognito.IdentityProviderArgs[] = [];
+    const idpOutputs: pulumi.Output<aws.cognito.IdentityProvider>[] = [];
 
     for (const idp of config.identityProviders) {
         const config = getIdpConfig(idp.type, userPool.output.id, idp);
@@ -87,10 +88,16 @@ export const configureAdminCognitoFederation = (
         // names to be all lowercase anyway.
         const name = config.providerName.toString().toLowerCase();
 
-        app.addResource(aws.cognito.IdentityProvider, { name, config });
+        const idpResource = app.addResource(aws.cognito.IdentityProvider, { name, config });
+        idpOutputs.push(idpResource.output);
 
         idpConfigs.push(config);
     }
+
+    appClient.opts.dependsOn = [
+        ...(appClient.opts.dependsOn ? (Array.isArray(appClient.opts.dependsOn) ? appClient.opts.dependsOn : [appClient.opts.dependsOn]) : []),
+        ...idpOutputs
+    ] as pulumi.Input<pulumi.Resource>[];
 
     appClient.config.supportedIdentityProviders([
         "COGNITO",
