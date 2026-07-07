@@ -4,6 +4,7 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
 import type { ExtractMetadataInput } from "@webiny/api-file-manager/features/extractMetadata/ExtractMetadataInput.js";
+import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 
 class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadataInput> {
     public readonly id = "fileManagerExtractMetadata";
@@ -16,7 +17,8 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
 
     public constructor(
         private readonly metadataReader: MetadataReader.Interface,
-        private readonly updateFileUseCase: UpdateFileUseCase.Interface
+        private readonly updateFileUseCase: UpdateFileUseCase.Interface,
+        private readonly config: FileManagerServerConfig.Interface
     ) {}
 
     public async run({
@@ -43,7 +45,7 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
             return controller.response.done();
         }
 
-        const storagePath = String(process.env.WEBINY_LOCAL_STORAGE_PATH);
+        const storagePath = this.config.storagePath;
         const filePath = `${storagePath}/${fileMetadata.bucketKey}`;
 
         try {
@@ -131,5 +133,5 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
 
 export const ExtractMetadataTaskDefinition = TaskDefinition.createImplementation({
     implementation: ExtractMetadataTaskImpl,
-    dependencies: [MetadataReader, UpdateFileUseCase]
+    dependencies: [MetadataReader, UpdateFileUseCase, FileManagerServerConfig]
 });
