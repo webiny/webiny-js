@@ -1,4 +1,4 @@
-import { type Container, createFeature } from "@webiny/feature/api";
+import { createFeature } from "@webiny/feature/api";
 import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { createBackgroundTaskContext } from "./context.js";
 import { createBackgroundTaskGraphQL } from "./graphql/index.js";
@@ -8,7 +8,7 @@ import { BackgroundTaskSettingsModel } from "./models/BackgroundTaskSettingsMode
 
 export const BackgroundTasksFeature = createFeature({
     name: "BackgroundTasks",
-    register(container: Container) {
+    register(container) {
         // Register models at register() time so they are available to GetModelUseCase when the
         // ModelsFetcher cache is first filled (which may happen during an earlier feature's enhance).
         container.register(TaskPrivateModel);

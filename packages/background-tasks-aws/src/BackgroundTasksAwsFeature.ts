@@ -1,15 +1,11 @@
-import { type Container, createFeature } from "@webiny/feature/api";
-import { TaskServiceTransport } from "@webiny/background-tasks/api";
-import { StepFunctionServicePlugin } from "~/service/StepFunctionServicePlugin.js";
-import { EventBridgeEventTransportPlugin } from "~/service/EventBridgeEventTransportPlugin.js";
+import { createFeature } from "@webiny/feature/api";
+import { StepFunctionService } from "~/service/StepFunctionService.js";
+import { BackgroundTaskLambdaHandler } from "~/BackgroundTaskLambdaHandler.js";
 
 export const BackgroundTasksAwsFeature = createFeature({
     name: "BackgroundTasksAws",
-    register(container: Container) {
-        container.registerInstance(
-            TaskServiceTransport,
-            new StepFunctionServicePlugin({ default: true })
-        );
-        container.registerInstance(TaskServiceTransport, new EventBridgeEventTransportPlugin());
+    register(container) {
+        container.register(BackgroundTaskLambdaHandler);
+        container.register(StepFunctionService);
     }
 });

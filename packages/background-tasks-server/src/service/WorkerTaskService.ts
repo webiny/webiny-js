@@ -1,12 +1,8 @@
 import { Worker } from "node:worker_threads";
-import { TaskServicePlugin } from "@webiny/background-tasks/api/plugins/TaskServicePlugin.js";
-import type {
-    ITaskService,
-    ITaskServiceCreatePluginParams,
-    ITaskServiceTask
-} from "@webiny/background-tasks/api/plugins/TaskServicePlugin.js";
-import type { ITask } from "@webiny/background-tasks/api/types.js";
 import type { WorkerToParentMessage } from "~/worker/TaskOrchestratorMessage.js";
+import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js";
+import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
+import { BuildParams } from "@webiny/api-core/exports/api.js";
 
 const DEFAULT_SERVER_PORT = 3000;
 const DEFAULT_MAX_DURATION_MS = 86_400_000;
@@ -19,18 +15,25 @@ interface WorkerHandle {
     exitCode: number | null;
 }
 
-class WorkerTaskService implements ITaskService {
-    private readonly getTenant: () => string;
+class WorkerServiceImpl implements TaskService.Interface {
     private readonly serverUrl: string;
     private readonly handles: Map<string, WorkerHandle> = new Map();
 
-    public constructor(params: ITaskServiceCreatePluginParams) {
-        this.getTenant = params.getTenant;
-        const port = parseInt(process.env["WEBINY_SERVER_PORT"] || "") || DEFAULT_SERVER_PORT;
+    public constructor(
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly buildParams: BuildParams.Interface
+    ) {
+        const port = this.buildParams.get<number>("SERVER_PORT") || DEFAULT_SERVER_PORT;
         this.serverUrl = `http://localhost:${port}/background-task`;
     }
 
-    public async send(task: ITaskServiceTask, delay: number): Promise<unknown> {
+    public async send(task: TaskService.SendTaskParams, delay: number): Promise<unknown> {
+        const tenant = this.tenantContext.getTenant();
+        if (!tenant) {
+            console.error("Tenant not found.");
+            return null;
+        }
+
         const workerPath = new URL("../worker/workerEntry.js", import.meta.url);
         const worker = new Worker(workerPath);
 
@@ -73,7 +76,7 @@ class WorkerTaskService implements ITaskService {
             taskEvent: {
                 webinyTaskId: task.id,
                 webinyTaskDefinitionId: task.definitionId,
-                tenant: this.getTenant(),
+                tenant: tenant.id,
                 delay
             },
             serverUrl: this.serverUrl,
@@ -83,7 +86,7 @@ class WorkerTaskService implements ITaskService {
         return { workerId: worker.threadId, taskId: task.id };
     }
 
-    public async fetch(task: ITask): Promise<Record<string, unknown> | null> {
+    public async fetch(task: TaskService.Task): Promise<Record<string, unknown> | null> {
         const handle = this.handles.get(task.id);
         if (!handle) {
             return null;
@@ -97,11 +100,7 @@ class WorkerTaskService implements ITaskService {
     }
 }
 
-export class WorkerTransportPlugin extends TaskServicePlugin {
-    public static override readonly type: string = "tasks.taskService";
-    public override name = "task.workerTransport";
-
-    public createService(params: ITaskServiceCreatePluginParams): ITaskService {
-        return new WorkerTaskService(params);
-    }
-}
+export const WorkerService = TaskService.createImplementation({
+    implementation: WorkerServiceImpl,
+    dependencies: [TenantContext, BuildParams]
+});

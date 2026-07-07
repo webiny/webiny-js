@@ -1,7 +1,6 @@
 export { Timer } from "./abstractions/Timer.js";
 export { createBackgroundTaskGraphQL } from "./graphql/index.js";
 export { createBackgroundTaskContext } from "./context.js";
-export { TaskServiceTransport } from "./plugins/index.js";
 
 export * from "./response/index.js";
 export * from "./types.js";

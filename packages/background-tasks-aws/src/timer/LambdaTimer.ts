@@ -1,4 +1,4 @@
-import type { Timer } from "@webiny/background-tasks/api";
+import { Timer } from "@webiny/background-tasks/api";
 
 interface LambdaTimerFactory {
     getRemainingTimeInMillis(): number;

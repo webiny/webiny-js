@@ -56,7 +56,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
         >(
             params: ITaskTriggerParams<T>
         ): Promise<Result<TaskService.Task<T, O>, BaseError>> => {
-            const service = createService({ context });
+            const service = createService({ container: context.container });
             const { definition: id, input: inputValues, name, parent, delay = 0 } = params;
             const definition = context.tasks.getDefinition(id);
             if (!definition) {
@@ -120,7 +120,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
         fetchServiceInfo: async (
             input: TaskService.Task | string
         ): Promise<Result<IServiceInfo, BaseError<any>>> => {
-            const service = createService({ context });
+            const service = createService({ container: context.container });
             const task = typeof input === "object" ? input : await context.tasks.getTask(input);
             if (!task && typeof input === "string") {
                 throw new NotFoundError(`Task "${input}" was not found!`);
