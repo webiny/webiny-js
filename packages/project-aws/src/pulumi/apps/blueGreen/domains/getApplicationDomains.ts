@@ -1,5 +1,5 @@
 import { type AppName } from "@webiny/project";
-import { getStackOutput } from "~/pulumi/getAwsProjectSdk.js";
+import { getStackOutput } from "~/pulumi/getStackOutput.js";
 import { type IDefaultStackOutput } from "~/pulumi/types.js";
 
 export interface IGetStacksStack {
