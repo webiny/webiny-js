@@ -1686,15 +1686,12 @@
     },
     {
       "name": "ora",
-      "version": "9.4.0",
-      "files": ["/packages/cli-aws/package.json", "/packages/cli-aws/package.json"]
-    },
-    {
-      "name": "ora",
       "version": "9.4.1",
       "files": [
+        "/packages/cli-aws/package.json",
         "/packages/cli-core/package.json",
         "/packages/create-webiny-project/package.json",
+        "/packages/cli-aws/package.json",
         "/packages/cli-core/package.json",
         "/packages/create-webiny-project/package.json"
       ]
@@ -7529,12 +7526,9 @@
       "name": "ora",
       "versions": [
         {
-          "version": "9.4.0",
-          "files": [{ "file": "/packages/cli-aws/package.json", "types": ["dependencies"] }]
-        },
-        {
           "version": "9.4.1",
           "files": [
+            { "file": "/packages/cli-aws/package.json", "types": ["dependencies"] },
             { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
             { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] }
           ]

@@ -41,21 +41,5 @@
         ]
       }
     ]
-  },
-  {
-    "name": "ora",
-    "versions": [
-      {
-        "version": "9.4.0",
-        "files": [{ "file": "/packages/cli-aws/package.json", "types": ["dependencies"] }]
-      },
-      {
-        "version": "9.4.1",
-        "files": [
-          { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
-          { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] }
-        ]
-      }
-    ]
   }
 ]
