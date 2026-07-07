@@ -24,7 +24,7 @@
     "@webiny/api-websockets": "0.0.0",
     "@webiny/api-websockets-aws": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
-    "@webiny/background-tasks": "0.0.0",
+    "@webiny/background-tasks-aws": "0.0.0",
     "@webiny/cognito": "0.0.0",
     "@webiny/event-handler-aws": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",

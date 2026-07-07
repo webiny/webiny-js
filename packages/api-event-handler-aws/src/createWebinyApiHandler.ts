@@ -18,7 +18,7 @@ import {
     BackgroundTaskEventType,
     WebSocketEventType
 } from "@webiny/event-handler-aws";
-import { BackgroundTaskLambdaHandler } from "@webiny/background-tasks/api";
+import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { registerExtensions } from "@webiny/handler";
 import { DbFeature } from "@webiny/handler-db";
@@ -87,9 +87,10 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             container.registerDecorator(ApiGatewayTenantLoaderDecorator);
             container.registerDecorator(ApiGatewayIdentityLoaderDecorator);
 
-            // Background task invocations (Step Functions → Lambda directly)
+            // Background task invocations (Step Functions → Lambda directly). BackgroundTasksAwsFeature
+            // registers the Lambda handler + StepFunctionService (the AWS dispatch transport).
             container.register(BackgroundTaskEventType);
-            container.register(BackgroundTaskLambdaHandler);
+            BackgroundTasksAwsFeature.register(container);
 
             // WebSocket invocations (API Gateway WebSocket → this Lambda: $connect/$disconnect/$default).
             // Without the event type + handler, the DI dispatcher can't match a WS event ("No event type

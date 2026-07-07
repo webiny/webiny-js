@@ -10726,7 +10726,7 @@ __metadata:
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-websockets-aws": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/background-tasks": "npm:0.0.0"
+    "@webiny/background-tasks-aws": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cognito": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.1"
@@ -12381,7 +12381,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/background-tasks-aws@workspace:packages/background-tasks-aws":
+"@webiny/background-tasks-aws@npm:0.0.0, @webiny/background-tasks-aws@workspace:packages/background-tasks-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/background-tasks-aws@workspace:packages/background-tasks-aws"
   dependencies:
