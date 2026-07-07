@@ -95,7 +95,11 @@ export const configureAdminCognitoFederation = (
     }
 
     appClient.opts.dependsOn = [
-        ...(appClient.opts.dependsOn ? (Array.isArray(appClient.opts.dependsOn) ? appClient.opts.dependsOn : [appClient.opts.dependsOn]) : []),
+        ...(appClient.opts.dependsOn
+            ? Array.isArray(appClient.opts.dependsOn)
+                ? appClient.opts.dependsOn
+                : [appClient.opts.dependsOn]
+            : []),
         ...idpOutputs
     ] as pulumi.Input<pulumi.Resource>[];
 

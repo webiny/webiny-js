@@ -24,8 +24,7 @@ export interface ICognitoSignInConfig {
     }>;
 }
 
-export const CognitoSignInConfig =
-    createAbstraction<ICognitoSignInConfig>("CognitoSignInConfig");
+export const CognitoSignInConfig = createAbstraction<ICognitoSignInConfig>("CognitoSignInConfig");
 
 export namespace CognitoSignInConfig {
     export type Interface = ICognitoSignInConfig;

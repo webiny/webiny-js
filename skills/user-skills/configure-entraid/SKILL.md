@@ -199,27 +199,27 @@ export default CognitoIdpConfig.createImplementation({
 
 ```tsx
 <Cognito
-    federation={{
-        domain: "mycompany-webiny",
-        callbackUrls: ["http://localhost:3001", "https://admin.mycompany.com"],
-        logoutUrls: ["http://localhost:3001", "https://admin.mycompany.com"],
-        responseType: "code",
-        allowCredentialsLogin: false,
-        identityProviders: [
-            {
-                name: "EntraID",
-                type: "oidc",
-                label: "Sign in with Microsoft",
-                providerDetails: {
-                    attributes_request_method: "POST",
-                    authorize_scopes: "email profile openid",
-                    client_id: String(process.env.ENTRA_CLIENT_ID),
-                    client_secret: String(process.env.ENTRA_CLIENT_SECRET),
-                    oidc_issuer: String(process.env.ENTRA_ISSUER)
-                }
-            }
-        ]
-    }}
+  federation={{
+    domain: "mycompany-webiny",
+    callbackUrls: ["http://localhost:3001", "https://admin.mycompany.com"],
+    logoutUrls: ["http://localhost:3001", "https://admin.mycompany.com"],
+    responseType: "code",
+    allowCredentialsLogin: false,
+    identityProviders: [
+      {
+        name: "EntraID",
+        type: "oidc",
+        label: "Sign in with Microsoft",
+        providerDetails: {
+          attributes_request_method: "POST",
+          authorize_scopes: "email profile openid",
+          client_id: String(process.env.ENTRA_CLIENT_ID),
+          client_secret: String(process.env.ENTRA_CLIENT_SECRET),
+          oidc_issuer: String(process.env.ENTRA_ISSUER)
+        }
+      }
+    ]
+  }}
 />
 ```
 

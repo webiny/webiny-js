@@ -40,75 +40,75 @@ Cognito Federation has three layers:
 
 ### `<Cognito />` Federation Props
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `federation` | `object` | Federation config (see below) |
-| `apiConfig` | `string` | Path to API identity mapping extension |
+| Prop          | Type     | Description                                 |
+| ------------- | -------- | ------------------------------------------- |
+| `federation`  | `object` | Federation config (see below)               |
+| `apiConfig`   | `string` | Path to API identity mapping extension      |
 | `adminConfig` | `string` | Path to Admin login customization extension |
 
 ### `federation` Object
 
-| Field | Type | Required | Default | Description |
-|-------|------|----------|---------|-------------|
-| `domain` | `string` | Yes | — | Cognito User Pool domain prefix |
-| `callbackUrls` | `string[]` | Yes | — | OAuth callback/redirect URLs |
-| `logoutUrls` | `string[]` | No | `callbackUrls` | OAuth logout redirect URLs |
-| `responseType` | `"code" \| "token"` | No | `"code"` | OAuth response type |
-| `allowCredentialsLogin` | `boolean` | No | `true` | Show email/password form |
-| `identityProviders` | `array` | Yes | — | List of federated IdPs |
+| Field                   | Type                | Required | Default        | Description                     |
+| ----------------------- | ------------------- | -------- | -------------- | ------------------------------- |
+| `domain`                | `string`            | Yes      | —              | Cognito User Pool domain prefix |
+| `callbackUrls`          | `string[]`          | Yes      | —              | OAuth callback/redirect URLs    |
+| `logoutUrls`            | `string[]`          | No       | `callbackUrls` | OAuth logout redirect URLs      |
+| `responseType`          | `"code" \| "token"` | No       | `"code"`       | OAuth response type             |
+| `allowCredentialsLogin` | `boolean`           | No       | `true`         | Show email/password form        |
+| `identityProviders`     | `array`             | Yes      | —              | List of federated IdPs          |
 
 ### `identityProviders[]` Items
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `type` | `"google" \| "facebook" \| "amazon" \| "apple" \| "oidc"` | Yes | Provider type |
-| `name` | `string` | No | Custom provider name (required for OIDC) |
-| `label` | `string` | Yes | Button text on the login screen |
-| `providerDetails` | `object` | Yes | AWS Cognito provider details (client_id, client_secret, etc.) |
-| `attributeMapping` | `object` | No | Custom attribute mapping (overrides defaults) |
+| Field              | Type                                                      | Required | Description                                                   |
+| ------------------ | --------------------------------------------------------- | -------- | ------------------------------------------------------------- |
+| `type`             | `"google" \| "facebook" \| "amazon" \| "apple" \| "oidc"` | Yes      | Provider type                                                 |
+| `name`             | `string`                                                  | No       | Custom provider name (required for OIDC)                      |
+| `label`            | `string`                                                  | Yes      | Button text on the login screen                               |
+| `providerDetails`  | `object`                                                  | Yes      | AWS Cognito provider details (client_id, client_secret, etc.) |
+| `attributeMapping` | `object`                                                  | No       | Custom attribute mapping (overrides defaults)                 |
 
 ### `CognitoSignInConfig.Interface` (Admin Customization)
 
-| Method | Signature | Description |
-|--------|-----------|-------------|
+| Method        | Signature               | Description                                    |
+| ------------- | ----------------------- | ---------------------------------------------- |
 | `getConfig()` | `() => Promise<Config>` | Returns federation config for the login screen |
 
 ### `CognitoSignInConfig.Config` (Return Type)
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `oauth` | `{ scopes, redirectSignIn, redirectSignOut, responseType }` | Yes | Amplify OAuth config |
-| `allowCredentialsLogin` | `boolean` | Yes | Show email/password form |
-| `providers` | `FederatedProvider[]` | Yes | Provider buttons |
-| `title` | `string` | No | Login screen title (default: "Sign in") |
-| `description` | `string` | No | Login screen description |
+| Field                   | Type                                                        | Required | Description                             |
+| ----------------------- | ----------------------------------------------------------- | -------- | --------------------------------------- |
+| `oauth`                 | `{ scopes, redirectSignIn, redirectSignOut, responseType }` | Yes      | Amplify OAuth config                    |
+| `allowCredentialsLogin` | `boolean`                                                   | Yes      | Show email/password form                |
+| `providers`             | `FederatedProvider[]`                                       | Yes      | Provider buttons                        |
+| `title`                 | `string`                                                    | No       | Login screen title (default: "Sign in") |
+| `description`           | `string`                                                    | No       | Login screen description                |
 
 ### `FederatedProvider` (Union Type)
 
 ```ts
 type FederatedProvider =
-    | { name: string; label: string }        // Auto-rendered button
-    | { name: string; component: React.FC<{ signIn: () => void }> }  // Custom button
+  | { name: string; label: string } // Auto-rendered button
+  | { name: string; component: React.FC<{ signIn: () => void }> }; // Custom button
 ```
 
 ### `CognitoIdpConfig.Interface` (API Identity Mapping)
 
-| Method | Signature | Required | Description |
-|--------|-----------|----------|-------------|
-| `getIdentity` | `(token: JwtPayload) => CognitoIdentity \| Promise<CognitoIdentity>` | Yes | Maps JWT claims to Webiny identity |
-| `verifyTokenClaims` | `(token: JwtPayload) => void \| Promise<void>` | No | Custom claim verification |
+| Method              | Signature                                                            | Required | Description                        |
+| ------------------- | -------------------------------------------------------------------- | -------- | ---------------------------------- |
+| `getIdentity`       | `(token: JwtPayload) => CognitoIdentity \| Promise<CognitoIdentity>` | Yes      | Maps JWT claims to Webiny identity |
+| `verifyTokenClaims` | `(token: JwtPayload) => void \| Promise<void>`                       | No       | Custom claim verification          |
 
 ### Identity Return Type
 
 Default identity fields (`id`, `displayName`, `profile`) are auto-populated from standard Cognito claims (`custom:id`, `given_name`, `family_name`, `email`). The custom `getIdentity` only needs to return fields it wants to **override** — typically `roles` and `teams`.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `string` | User ID (default: `custom:id` or `sub`) |
-| `displayName` | `string` | Display name (default: from name claims) |
-| `roles` | `string[]` | Webiny roles by slug |
-| `teams` | `string[]` | Webiny teams by slug |
-| `profile` | `{ email, firstName, lastName }` | User profile (defaults from claims) |
+| Field         | Type                             | Description                              |
+| ------------- | -------------------------------- | ---------------------------------------- |
+| `id`          | `string`                         | User ID (default: `custom:id` or `sub`)  |
+| `displayName` | `string`                         | Display name (default: from name claims) |
+| `roles`       | `string[]`                       | Webiny roles by slug                     |
+| `teams`       | `string[]`                       | Webiny teams by slug                     |
+| `profile`     | `{ email, firstName, lastName }` | User profile (defaults from claims)      |
 
 ## Full Examples
 
@@ -130,12 +130,12 @@ import { Cognito } from "@webiny/cognito";
         providerDetails: {
           authorize_scopes: "email profile openid",
           client_id: String(process.env.GOOGLE_CLIENT_ID),
-          client_secret: String(process.env.GOOGLE_CLIENT_SECRET),
+          client_secret: String(process.env.GOOGLE_CLIENT_SECRET)
         }
       }
     ]
   }}
-/>
+/>;
 ```
 
 This alone creates the Cognito IdP, configures OAuth, shows a "Sign in with Google" button, and auto-syncs federated users.
@@ -159,7 +159,7 @@ This alone creates the Cognito IdP, configures OAuth, shows a "Sign in with Goog
           authorize_scopes: "email profile openid",
           client_id: String(process.env.ENTRA_CLIENT_ID),
           client_secret: String(process.env.ENTRA_CLIENT_SECRET),
-          oidc_issuer: String(process.env.ENTRA_ISSUER),
+          oidc_issuer: String(process.env.ENTRA_ISSUER)
         }
       }
     ]
@@ -182,7 +182,7 @@ This alone creates the Cognito IdP, configures OAuth, shows a "Sign in with Goog
         providerDetails: {
           authorize_scopes: "email profile openid",
           client_id: String(process.env.GOOGLE_CLIENT_ID),
-          client_secret: String(process.env.GOOGLE_CLIENT_SECRET),
+          client_secret: String(process.env.GOOGLE_CLIENT_SECRET)
         }
       },
       {
@@ -194,7 +194,7 @@ This alone creates the Cognito IdP, configures OAuth, shows a "Sign in with Goog
           authorize_scopes: "email profile openid",
           client_id: String(process.env.ENTRA_CLIENT_ID),
           client_secret: String(process.env.ENTRA_CLIENT_SECRET),
-          oidc_issuer: String(process.env.ENTRA_ISSUER),
+          oidc_issuer: String(process.env.ENTRA_ISSUER)
         }
       }
     ]
@@ -209,7 +209,11 @@ Map Cognito groups to Webiny roles/teams:
 ```tsx
 // webiny.config.tsx
 <Cognito
-  federation={{ /* ... */ }}
+  federation={
+    {
+      /* ... */
+    }
+  }
   apiConfig={"/extensions/cognito/api.ts"}
 />
 ```
@@ -219,19 +223,19 @@ Map Cognito groups to Webiny roles/teams:
 import { CognitoIdpConfig } from "@webiny/cognito";
 
 class MyConfig implements CognitoIdpConfig.Interface {
-    getIdentity(token: CognitoIdpConfig.JwtPayload) {
-        const cognitoGroups: string[] = (token["cognito:groups"] as string[]) || [];
+  getIdentity(token: CognitoIdpConfig.JwtPayload) {
+    const cognitoGroups: string[] = (token["cognito:groups"] as string[]) || [];
 
-        return {
-            roles: cognitoGroups.includes("admins") ? ["full-access"] : ["content-editor"],
-            teams: cognitoGroups.filter(g => g.startsWith("team-")),
-        };
-    }
+    return {
+      roles: cognitoGroups.includes("admins") ? ["full-access"] : ["content-editor"],
+      teams: cognitoGroups.filter(g => g.startsWith("team-"))
+    };
+  }
 }
 
 export default CognitoIdpConfig.createImplementation({
-    implementation: MyConfig,
-    dependencies: []
+  implementation: MyConfig,
+  dependencies: []
 });
 ```
 
@@ -242,7 +246,11 @@ export default CognitoIdpConfig.createImplementation({
 ```tsx
 // webiny.config.tsx
 <Cognito
-  federation={{ /* ... */ }}
+  federation={
+    {
+      /* ... */
+    }
+  }
   adminConfig={"/extensions/cognito/admin.tsx"}
 />
 ```
@@ -254,39 +262,37 @@ import { CognitoSignInConfig } from "@webiny/cognito";
 const ALLOWED_IPS = ["1.2.3.4", "5.6.7.8"];
 
 async function fetchUserIP(): Promise<string> {
-    const response = await fetch("https://api64.ipify.org?format=json");
-    const data = await response.json();
-    return data.ip;
+  const response = await fetch("https://api64.ipify.org?format=json");
+  const data = await response.json();
+  return data.ip;
 }
 
 class MyFederationConfig implements CognitoSignInConfig.Interface {
-    async getConfig() {
-        let allowCredentials = false;
+  async getConfig() {
+    let allowCredentials = false;
 
-        if (process.env.REACT_APP_STAGE !== "prod") {
-            const ip = await fetchUserIP();
-            allowCredentials = ALLOWED_IPS.includes(ip);
-        }
-
-        return {
-            oauth: {
-                scopes: ["profile", "email", "openid"],
-                redirectSignIn: [window.location.origin],
-                redirectSignOut: [window.location.origin],
-                responseType: "code" as const,
-            },
-            allowCredentialsLogin: allowCredentials,
-            providers: [
-                { name: "EntraID", label: "Sign in with Microsoft" }
-            ],
-            title: "Welcome",
-        };
+    if (process.env.REACT_APP_STAGE !== "prod") {
+      const ip = await fetchUserIP();
+      allowCredentials = ALLOWED_IPS.includes(ip);
     }
+
+    return {
+      oauth: {
+        scopes: ["profile", "email", "openid"],
+        redirectSignIn: [window.location.origin],
+        redirectSignOut: [window.location.origin],
+        responseType: "code" as const
+      },
+      allowCredentialsLogin: allowCredentials,
+      providers: [{ name: "EntraID", label: "Sign in with Microsoft" }],
+      title: "Welcome"
+    };
+  }
 }
 
 export default CognitoSignInConfig.createImplementation({
-    implementation: MyFederationConfig,
-    dependencies: []
+  implementation: MyFederationConfig,
+  dependencies: []
 });
 ```
 
@@ -298,28 +304,28 @@ import { CognitoSignInConfig } from "@webiny/cognito";
 import { GoogleLoginButton } from "react-social-login-buttons";
 
 class MyFederationConfig implements CognitoSignInConfig.Interface {
-    async getConfig() {
-        return {
-            oauth: {
-                scopes: ["profile", "email", "openid"],
-                redirectSignIn: [window.location.origin],
-                redirectSignOut: [window.location.origin],
-                responseType: "code" as const,
-            },
-            allowCredentialsLogin: true,
-            providers: [
-                {
-                    name: "google",
-                    component: ({ signIn }) => <GoogleLoginButton onClick={signIn} />
-                }
-            ],
-        };
-    }
+  async getConfig() {
+    return {
+      oauth: {
+        scopes: ["profile", "email", "openid"],
+        redirectSignIn: [window.location.origin],
+        redirectSignOut: [window.location.origin],
+        responseType: "code" as const
+      },
+      allowCredentialsLogin: true,
+      providers: [
+        {
+          name: "google",
+          component: ({ signIn }) => <GoogleLoginButton onClick={signIn} />
+        }
+      ]
+    };
+  }
 }
 
 export default CognitoSignInConfig.createImplementation({
-    implementation: MyFederationConfig,
-    dependencies: []
+  implementation: MyFederationConfig,
+  dependencies: []
 });
 ```
 
@@ -327,17 +333,17 @@ export default CognitoSignInConfig.createImplementation({
 
 ```tsx
 class MyFederationConfig implements CognitoSignInConfig.Interface {
-    async getConfig() {
-        return {
-            oauth: { /* ... */ },
-            allowCredentialsLogin: false,
-            providers: [
-                { name: "EntraID", label: "Sign In" }
-            ],
-            title: "Company Portal",
-            description: "Use your corporate credentials to sign in.",
-        };
-    }
+  async getConfig() {
+    return {
+      oauth: {
+        /* ... */
+      },
+      allowCredentialsLogin: false,
+      providers: [{ name: "EntraID", label: "Sign In" }],
+      title: "Company Portal",
+      description: "Use your corporate credentials to sign in."
+    };
+  }
 }
 ```
 
@@ -359,13 +365,13 @@ Override the default OIDC attribute mapping:
           authorize_scopes: "email profile openid",
           client_id: "...",
           client_secret: "...",
-          oidc_issuer: "...",
+          oidc_issuer: "..."
         },
         attributeMapping: {
           username: "sub",
           email: "email",
           given_name: "first_name",
-          family_name: "last_name",
+          family_name: "last_name"
         }
       }
     ]
@@ -390,12 +396,12 @@ import { CognitoSignInConfig } from "@webiny/cognito";
 
 ### Key Interfaces
 
-| Interface | Package | Purpose |
-|-----------|---------|---------|
-| `CognitoIdpConfig.Interface` | `@webiny/cognito` | API-side JWT-to-identity mapping |
-| `CognitoIdpConfig.JwtPayload` | `@webiny/cognito` | JWT token payload type |
-| `CognitoSignInConfig.Interface` | `@webiny/cognito` | Admin login screen customization |
-| `FederatedProvider` | `@webiny/cognito` | Provider button type (label or component) |
+| Interface                       | Package           | Purpose                                   |
+| ------------------------------- | ----------------- | ----------------------------------------- |
+| `CognitoIdpConfig.Interface`    | `@webiny/cognito` | API-side JWT-to-identity mapping          |
+| `CognitoIdpConfig.JwtPayload`   | `@webiny/cognito` | JWT token payload type                    |
+| `CognitoSignInConfig.Interface` | `@webiny/cognito` | Admin login screen customization          |
+| `FederatedProvider`             | `@webiny/cognito` | Provider button type (label or component) |
 
 ### File Structure (Advanced)
 
