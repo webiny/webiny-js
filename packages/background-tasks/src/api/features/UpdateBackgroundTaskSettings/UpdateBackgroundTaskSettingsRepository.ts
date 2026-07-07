@@ -36,7 +36,7 @@ class UpdateBackgroundTaskSettingsRepositoryImpl implements RepositoryAbstractio
         buildParams: BuildParams.Interface
     ) {
         this.defaultRetentionDays =
-            buildParams.get<number>("BackgroundTasks.RetentionDays") ??
+            buildParams.get<number>("BackgroundTasks.RetentionDays") ||
             BACKGROUND_TASK_DEFAULT_RETENTION_DAYS;
     }
 
@@ -94,7 +94,7 @@ class UpdateBackgroundTaskSettingsRepositoryImpl implements RepositoryAbstractio
             }
 
             const settings: IBackgroundTaskSettings = {
-                retentionDays: entry.values.retentionDays ?? this.defaultRetentionDays
+                retentionDays: entry.values.retentionDays || this.defaultRetentionDays
             };
 
             return Result.ok(settings);

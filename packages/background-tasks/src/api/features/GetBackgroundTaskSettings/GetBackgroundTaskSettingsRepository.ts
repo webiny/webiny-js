@@ -31,7 +31,7 @@ class GetBackgroundTaskSettingsRepositoryImpl implements RepositoryAbstraction.I
         buildParams: BuildParams.Interface
     ) {
         this.defaultRetentionDays =
-            buildParams.get<number>("BackgroundTasks.RetentionDays") ??
+            buildParams.get<number>("BackgroundTasks.RetentionDays") ||
             BACKGROUND_TASK_DEFAULT_RETENTION_DAYS;
     }
 
@@ -59,7 +59,7 @@ class GetBackgroundTaskSettingsRepositoryImpl implements RepositoryAbstraction.I
             if (entryResult.isOk()) {
                 return Result.ok({
                     retentionDays:
-                        entryResult.value.values.retentionDays ?? this.defaultRetentionDays
+                        entryResult.value.values.retentionDays || this.defaultRetentionDays
                 });
             }
 

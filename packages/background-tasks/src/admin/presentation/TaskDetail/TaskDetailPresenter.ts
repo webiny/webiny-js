@@ -73,7 +73,7 @@ class TaskDetailPresenterImpl implements ITaskDetailPresenter {
             where: { task: this._taskId! },
             sort: ["createdOn_DESC"],
             limit: 50,
-            after: after ?? undefined
+            after: after || undefined
         });
 
         runInAction(() => {
