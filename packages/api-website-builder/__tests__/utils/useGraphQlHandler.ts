@@ -3,9 +3,9 @@ import { until } from "@webiny/project-utils/testing/helpers/until.js";
 import {
     createBackgroundTaskContext,
     createBackgroundTaskGraphQL,
-    TaskServiceTransport
+    TaskService
 } from "@webiny/background-tasks/api";
-import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
+import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
 import { createContextPlugin } from "@webiny/api";
@@ -42,7 +42,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             container.register(PageModelPlugin);
             container.register(RedirectModelPlugin);
             LanguagesExtension.register(container);
-            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin()[0]);
+            container.registerInstance(TaskService, createMockTaskService());
         }
     });
 
