@@ -1,6 +1,9 @@
-import { HttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
-import { RequestContainer, runRequestContextInitializers } from "@webiny/event-handler-core";
+import {
+    HttpRoute,
+    RequestContainer,
+    runRequestContextInitializers
+} from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import {
     RawTenantId,
@@ -11,6 +14,7 @@ import { TaskEventValidation } from "@webiny/background-tasks/api/runner/TaskEve
 import type { Context } from "@webiny/background-tasks/api/types.js";
 import type { Container } from "@webiny/feature/api";
 import { ProcessTimer } from "~/timer/ProcessTimer.js";
+import { InternalToken } from "~/domain/InternalToken.js";
 
 /* Shared between worker and route to gate access. */
 const INTERNAL_HEADER = "x-webiny-background-task-token";
@@ -19,16 +23,20 @@ class BackgroundTaskRouteImpl implements HttpRoute.Interface {
     public readonly method = "POST";
     public readonly path = "/background-task";
 
-    private readonly internalToken: string;
-
-    public constructor(private readonly container: Container) {
-        this.internalToken = process.env["WEBINY_BACKGROUND_TASK_TOKEN"] || "";
-    }
+    public constructor(
+        private readonly container: Container,
+        private readonly internalToken: InternalToken.Interface
+    ) {}
 
     public async handle(request: IHttpRequest): Promise<IHttpResponse> {
         /* Reject requests without a matching internal token. */
-        if (!this.internalToken || request.headers[INTERNAL_HEADER] !== this.internalToken) {
-            return { statusCode: 403, body: { error: "Forbidden." } };
+        if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
+            return {
+                statusCode: 403,
+                body: {
+                    error: "Forbidden."
+                }
+            };
         }
 
         const taskEvent = request.body;
@@ -36,7 +44,9 @@ class BackgroundTaskRouteImpl implements HttpRoute.Interface {
         if (!taskEvent || !taskEvent.webinyTaskId) {
             return {
                 statusCode: 400,
-                body: { error: "Missing webinyTaskId in request body." }
+                body: {
+                    error: "Missing webinyTaskId in request body."
+                }
             };
         }
 
@@ -71,7 +81,12 @@ class BackgroundTaskRouteImpl implements HttpRoute.Interface {
             console.error(`Background task route error: ${message}`);
             return {
                 statusCode: 500,
-                body: { status: "error", error: { message } }
+                body: {
+                    status: "error",
+                    error: {
+                        message
+                    }
+                }
             };
         }
     }
@@ -79,5 +94,5 @@ class BackgroundTaskRouteImpl implements HttpRoute.Interface {
 
 export const BackgroundTaskRoute = HttpRoute.createImplementation({
     implementation: BackgroundTaskRouteImpl,
-    dependencies: [RequestContainer]
+    dependencies: [RequestContainer, InternalToken]
 });

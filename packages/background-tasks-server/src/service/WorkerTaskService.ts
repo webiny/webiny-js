@@ -3,6 +3,7 @@ import type { WorkerToParentMessage } from "~/worker/TaskOrchestratorMessage.js"
 import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { BuildParams } from "@webiny/api-core/exports/api.js";
+import { InternalToken } from "~/domain/InternalToken.js";
 
 const DEFAULT_SERVER_PORT = 3000;
 const DEFAULT_MAX_DURATION_MS = 86_400_000;
@@ -17,16 +18,15 @@ interface WorkerHandle {
 
 class WorkerServiceImpl implements TaskService.Interface {
     private readonly serverUrl: string;
-    private readonly internalToken: string;
     private readonly handles: Map<string, WorkerHandle> = new Map();
 
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
-        private readonly buildParams: BuildParams.Interface
+        private readonly buildParams: BuildParams.Interface,
+        private readonly internalToken: InternalToken.Interface
     ) {
         const port = this.buildParams.get<number>("SERVER_PORT") || DEFAULT_SERVER_PORT;
         this.serverUrl = `http://localhost:${port}/background-task`;
-        this.internalToken = process.env["WEBINY_BACKGROUND_TASK_TOKEN"] || "";
     }
 
     public async send(task: TaskService.SendTaskParams, delay: number): Promise<unknown> {
@@ -83,7 +83,7 @@ class WorkerServiceImpl implements TaskService.Interface {
             },
             serverUrl: this.serverUrl,
             maxDurationMs: DEFAULT_MAX_DURATION_MS,
-            internalToken: this.internalToken
+            internalToken: this.internalToken.value
         });
 
         return { workerId: worker.threadId, taskId: task.id };
@@ -105,5 +105,5 @@ class WorkerServiceImpl implements TaskService.Interface {
 
 export const WorkerService = TaskService.createImplementation({
     implementation: WorkerServiceImpl,
-    dependencies: [TenantContext, BuildParams]
+    dependencies: [TenantContext, BuildParams, InternalToken]
 });
