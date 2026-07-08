@@ -1,8 +1,8 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type AppName } from "~/abstractions/types.js";
-import { type ExecaChildProcess } from "execa";
+import { type PulumiProcess } from "@webiny/pulumi-sdk";
 
-export type IPulumiProcess = ExecaChildProcess<string>;
+export type IPulumiProcess = PulumiProcess;
 
 export type IRefreshAppParams = { app: AppName };
 

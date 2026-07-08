@@ -1,4 +1,4 @@
-import execa from "execa";
+import { execa } from "execa";
 import { createWatchPackage, createBuildPackage } from "@webiny/build-tools";
 
 const dirname = import.meta.dirname;

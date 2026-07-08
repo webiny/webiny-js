@@ -1,11 +1,24 @@
 import os from "os";
-import execa, { ExecaChildProcess } from "execa";
+import { execa, execaSync } from "execa";
+import { type Readable, type Writable } from "node:stream";
 import * as path from "path";
 import fs from "fs-extra";
 import merge from "lodash/merge.js";
 import kebabCase from "lodash/kebabCase.js";
 import set from "lodash/set.js";
 import downloadBinaries from "./downloadBinaries.js";
+
+export interface PulumiProcessResult {
+    readonly stdout: string;
+    readonly stderr: string;
+    readonly exitCode: number;
+}
+
+export interface PulumiProcess extends Promise<PulumiProcessResult> {
+    readonly stdin: Writable | null;
+    readonly stdout: Readable | null;
+    readonly stderr: Readable | null;
+}
 
 type Command = string | string[];
 
@@ -163,7 +176,7 @@ export class Pulumi {
 
         Object.assign(wrapped, pulumiProcess);
 
-        return wrapped as ExecaChildProcess<string>;
+        return wrapped as unknown as PulumiProcess;
     }
 
     private async install(rawArgs?: InstallArgs): Promise<boolean> {
@@ -178,7 +191,7 @@ export class Pulumi {
 
     private async ensureAwsPluginIsInstalled() {
         let pulumiAwsVersion = "";
-        const { stdout } = execa.sync("yarn", [
+        const { stdout } = execaSync("yarn", [
             "info",
             "@pulumi/aws",
             "-A",
@@ -207,7 +220,7 @@ export class Pulumi {
         );
 
         if (!pluginExists) {
-            execa.sync(
+            execaSync(
                 this.pulumiBinaryPath,
                 ["plugin", "install", "resource", "aws", pulumiAwsVersion],
                 {

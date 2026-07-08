@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di";
 import { GetPulumiVersionService } from "~/abstractions/index.js";
-import execa from "execa";
+import { execaSync } from "execa";
 
 export class DefaultGetPulumiVersion implements GetPulumiVersionService.Interface {
     execute() {
@@ -8,7 +8,7 @@ export class DefaultGetPulumiVersion implements GetPulumiVersionService.Interfac
 
         try {
             {
-                const { stdout } = execa.sync("yarn", [
+                const { stdout } = execaSync("yarn", [
                     "info",
                     "@pulumi/pulumi",
                     "-A",
@@ -24,7 +24,7 @@ export class DefaultGetPulumiVersion implements GetPulumiVersionService.Interfac
             }
 
             {
-                const { stdout } = execa.sync("yarn", [
+                const { stdout } = execaSync("yarn", [
                     "info",
                     "@pulumi/aws",
                     "-A",

@@ -1,5 +1,5 @@
 import pRetry from "p-retry";
-import execa from "execa";
+import { execa } from "execa";
 
 export async function fetchNpmDistTags(): Promise<Record<string, string>> {
     const { stdout: npmRegistry } = await execa("npm", ["config", "get", "registry"]);
