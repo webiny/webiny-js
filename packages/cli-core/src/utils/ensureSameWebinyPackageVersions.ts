@@ -1,4 +1,4 @@
-import execa from "execa";
+import { execaSync } from "execa";
 import chalk from "chalk";
 
 const DEBUG_FLAG = "--debug";
@@ -8,8 +8,8 @@ const SKIP_WEBINY_VERSIONS_CHECK_FLAG = "--no-package-versions-check";
 const skippingWebinyVersionsCheck = process.argv.includes(SKIP_WEBINY_VERSIONS_CHECK_FLAG);
 
 const listWebinyPackageVersions = (): Map<string, Set<string>> => {
-    const { stdout } = execa.sync("yarn", ["info", "@webiny/*", "--name-only", "--all", "--json"], {
-        encoding: "utf-8"
+    const { stdout } = execaSync("yarn", ["info", "@webiny/*", "--name-only", "--all", "--json"], {
+        encoding: "utf8"
     });
 
     // Each line is a JSON string, so parse them individually.

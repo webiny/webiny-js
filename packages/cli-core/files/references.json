@@ -301,7 +301,7 @@
     },
     {
       "name": "@iconify/json",
-      "version": "2.2.495",
+      "version": "2.2.496",
       "files": ["/packages/app-admin/package.json", "/packages/app-admin/package.json"]
     },
     {
@@ -961,9 +961,8 @@
     },
     {
       "name": "execa",
-      "version": "5.1.1",
+      "version": "9.6.1",
       "files": [
-        "/packages/cli-aws/package.json",
         "/packages/cli-core/package.json",
         "/packages/create-webiny-project/package.json",
         "/packages/project/package.json",
@@ -971,7 +970,6 @@
         "/packages/system-requirements/package.json",
         "/scripts/buildPackages/package.json",
         "/scripts/release/package.json",
-        "/packages/cli-aws/package.json",
         "/packages/cli-core/package.json",
         "/packages/create-webiny-project/package.json",
         "/packages/project/package.json",
@@ -2279,7 +2277,7 @@
     },
     {
       "name": "type-fest",
-      "version": "5.7.0",
+      "version": "5.8.0",
       "files": [
         "/packages/admin-ui/package.json",
         "/packages/api-websockets/package.json",
@@ -2915,7 +2913,7 @@
     { "name": "adio", "version": "3.0.1", "files": ["/package.json"] },
     {
       "name": "amazon-cognito-identity-js",
-      "version": "6.3.19",
+      "version": "6.3.20",
       "files": ["/cypress-tests/package.json", "/cypress-tests/package.json"]
     },
     {
@@ -2990,7 +2988,7 @@
     },
     {
       "name": "execa",
-      "version": "5.1.1",
+      "version": "9.6.1",
       "files": [
         "/package.json",
         "/packages/app-audit-logs/package.json",
@@ -3362,7 +3360,7 @@
     },
     {
       "name": "type-fest",
-      "version": "5.7.0",
+      "version": "5.8.0",
       "files": [
         "/package.json",
         "/packages/api-elasticsearch-tasks/package.json",
@@ -3852,7 +3850,7 @@
     },
     {
       "name": "webpack",
-      "version": "5.108.3",
+      "version": "5.108.4",
       "files": [
         "/packages/website-builder-nextjs/package.json",
         "/packages/website-builder-nextjs/package.json"
@@ -4291,12 +4289,11 @@
       "name": "execa",
       "versions": [
         {
-          "version": "5.1.1",
+          "version": "9.6.1",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-audit-logs/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-website-builder/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/cli-aws/package.json", "types": ["dependencies"] },
             { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
             { "file": "/packages/common-audit-logs/package.json", "types": ["devDependencies"] },
             { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
@@ -4766,7 +4763,7 @@
       "name": "type-fest",
       "versions": [
         {
-          "version": "5.7.0",
+          "version": "5.8.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/admin-ui/package.json", "types": ["dependencies"] },
@@ -6700,7 +6697,7 @@
       "name": "@iconify/json",
       "versions": [
         {
-          "version": "2.2.495",
+          "version": "2.2.496",
           "files": [{ "file": "/packages/app-admin/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -8145,7 +8142,7 @@
       "name": "webpack",
       "versions": [
         {
-          "version": "5.108.3",
+          "version": "5.108.4",
           "files": [
             {
               "file": "/packages/website-builder-nextjs/package.json",
@@ -8233,7 +8230,7 @@
       "name": "amazon-cognito-identity-js",
       "versions": [
         {
-          "version": "6.3.19",
+          "version": "6.3.20",
           "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
         }
       ]

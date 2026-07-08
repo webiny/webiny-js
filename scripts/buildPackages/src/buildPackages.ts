@@ -8,7 +8,7 @@ import { getPackageSourceHash } from "./getPackageSourceHash";
 import { getBuildMeta } from "./getBuildMeta";
 import { buildPackage } from "./buildSinglePackage";
 import { getHardwareInfo } from "./getHardwareInfo";
-import execa from "execa";
+import { execa } from "execa";
 import notifier from "node-notifier";
 
 import path from "path";

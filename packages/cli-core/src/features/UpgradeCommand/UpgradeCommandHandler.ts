@@ -1,6 +1,6 @@
 import { UpgradeCommandHandler as UpgradeCommandHandlerAbstraction } from "./abstraction.js";
 import chalk from "chalk";
-import execa from "execa";
+import { execa, execaSync } from "execa";
 import { UiService } from "~/abstractions/index.js";
 
 const GITHUB_REPOSITORY_URL = "https://github.com/webiny/webiny-upgrades-v6";
@@ -37,7 +37,7 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
              */
             let gitStatus = "";
             try {
-                const { stdout } = execa.sync("git", ["status", "--porcelain"]);
+                const { stdout } = execaSync("git", ["status", "--porcelain"]);
                 gitStatus = stdout.trim();
             } catch {}
 
@@ -78,9 +78,7 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
 
         const npx = execa("npx", command, {
             env: {
-                // TODO determine if this actually works
-                // @ts-expect-error
-                FORCE_COLOR: true
+                FORCE_COLOR: "1"
             },
             stdin: process.stdin
         });
