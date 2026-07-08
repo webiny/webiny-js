@@ -25,6 +25,7 @@
     "@webiny/icons": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
+    "@webiny/react-properties": "0.0.0",
     "@webiny/validation": "0.0.0",
     "aws-amplify": "^6.17.0",
     "graphql": "^16.14.0",
