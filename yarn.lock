@@ -2508,13 +2508,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify/json@npm:^2.2.495":
-  version: 2.2.495
-  resolution: "@iconify/json@npm:2.2.495"
+"@iconify/json@npm:^2.2.496":
+  version: 2.2.496
+  resolution: "@iconify/json@npm:2.2.496"
   dependencies:
     "@iconify/types": "npm:*"
     pathe: "npm:^2.0.3"
-  checksum: 10/eeb5ce14ee014c3649aac7a449ec59aacf4deb6d27c6eaa8876aae4dde4d1888318eec4b4c1a587fc072f6a4a8d8f8c4ac7094ecd8aaaf2968b5fa6fbbcd1c65
+  checksum: 10/cc4f2591fc755011786a838da26bdad860d178b2cb12d83dea85390c29f2cb79067c9ebf4419baad69e524645301ffaa39ad84468798fd2c4780b7f002008bff
   languageName: node
   linkType: hard
 
@@ -10113,7 +10113,7 @@ __metadata:
     pino: "npm:^10.3.1"
     rimraf: "npm:^6.1.3"
     ts-morph: "npm:^28.0.0"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
     yargs: "npm:^18.0.0"
   languageName: unknown
@@ -10138,7 +10138,7 @@ __metadata:
     fs-extra: "npm:^11.3.6"
     get-yarn-workspaces: "npm:1.0.2"
     load-json-file: "npm:^7.0.1"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     write-json-file: "npm:^7.0.0"
   bin:
     prepublish-only: ./src/index.js
@@ -10156,7 +10156,7 @@ __metadata:
     load-json-file: "npm:^7.0.1"
     p-retry: "npm:^8.0.0"
     semver: "npm:^7.8.5"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     vitest: "npm:^4.1.9"
     write-json-file: "npm:^7.0.0"
     yargs: "npm:^18.0.0"
@@ -10217,7 +10217,7 @@ __metadata:
     tailwind-merge: "npm:^3.6.0"
     tailwindcss: "npm:^4.3.2"
     tw-animate-css: "npm:^1.4.0"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.9"
   languageName: unknown
@@ -10538,7 +10538,7 @@ __metadata:
     "@webiny/testing": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.9"
   languageName: unknown
@@ -10557,7 +10557,7 @@ __metadata:
     "@webiny/api-websockets-ddb": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.1"
+    "@webiny/di": "npm:^1.0.2"
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.9"
@@ -10577,7 +10577,7 @@ __metadata:
     "@webiny/api-headless-cms-ddb": "npm:0.0.0"
     "@webiny/api-websockets-ddb": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.1"
+    "@webiny/di": "npm:^1.0.2"
     "@webiny/project-utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.3"
@@ -10600,7 +10600,7 @@ __metadata:
     "@webiny/background-tasks-aws": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cognito": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.1"
+    "@webiny/di": "npm:^1.0.2"
     "@webiny/event-handler-aws": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -10639,7 +10639,7 @@ __metadata:
     "@webiny/api-workflows": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.1"
+    "@webiny/di": "npm:^1.0.2"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/webhooks": "npm:0.0.0"
@@ -10662,7 +10662,7 @@ __metadata:
     "@webiny/api-headless-cms-sql": "npm:0.0.0"
     "@webiny/api-websockets-sql": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.1"
+    "@webiny/di": "npm:^1.0.2"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/self-hosted-auth": "npm:0.0.0"
     "@webiny/self-hosted-auth-sql": "npm:0.0.0"
@@ -10683,7 +10683,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-event-handler-core": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.1"
+    "@webiny/di": "npm:^1.0.2"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/event-handler-server": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -11180,7 +11180,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.14.2"
     rimraf: "npm:^6.1.3"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.9"
   languageName: unknown
@@ -11384,7 +11384,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.14.2"
     rimraf: "npm:^6.1.3"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.9"
     zod: "npm:4.4.3"
@@ -11469,7 +11469,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.14.2"
     rimraf: "npm:^6.1.3"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.9"
   languageName: unknown
@@ -11493,7 +11493,7 @@ __metadata:
     "@webiny/testing": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     graphql: "npm:^16.14.2"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.9"
     zod: "npm:4.4.3"
@@ -11578,7 +11578,7 @@ __metadata:
     "@emotion/styled": "npm:11.14.1"
     "@fortawesome/fontawesome-svg-core": "npm:^7.3.0"
     "@fortawesome/react-fontawesome": "npm:^3.3.1"
-    "@iconify/json": "npm:^2.2.495"
+    "@iconify/json": "npm:^2.2.496"
     "@lexical/utils": "npm:^0.46.0"
     "@testing-library/react": "npm:^16.3.2"
     "@types/bytes": "npm:^3.1.5"
@@ -12174,7 +12174,7 @@ __metadata:
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
     ts-invariant: "npm:^0.10.3"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.9"
     warning: "npm:^4.0.3"
@@ -12325,7 +12325,7 @@ __metadata:
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.9"
     zod: "npm:4.4.3"
@@ -12376,7 +12376,7 @@ __metadata:
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.1"
+    "@webiny/di": "npm:^1.0.2"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
@@ -12418,7 +12418,7 @@ __metadata:
     pino-pretty: "npm:^13.1.3"
     rimraf: "npm:^6.1.3"
     semver: "npm:^7.8.5"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
     write-json-file: "npm:^7.0.0"
     yargs: "npm:^18.0.0"
@@ -12432,7 +12432,7 @@ __metadata:
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.1"
+    "@webiny/di": "npm:^1.0.2"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-server": "npm:0.0.0"
     chalk: "npm:^5.6.2"
@@ -12538,12 +12538,12 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
   languageName: unknown
   linkType: soft
 
-"@webiny/di@npm:^1.0.1, @webiny/di@npm:^1.0.2":
+"@webiny/di@npm:^1.0.2":
   version: 1.0.2
   resolution: "@webiny/di@npm:1.0.2"
   dependencies:
@@ -13165,7 +13165,7 @@ __metadata:
     serialize-error: "npm:^13.0.1"
     ts-morph: "npm:^28.0.0"
     tsx: "npm:4.23.0"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
     write-json-file: "npm:^7.0.0"
     zod: "npm:4.4.3"
@@ -13189,7 +13189,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     semver: "npm:^7.8.5"
     tar: "npm:^7.5.19"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
   languageName: unknown
   linkType: soft
@@ -13507,7 +13507,7 @@ __metadata:
     postcss-import: "npm:^16.1.1"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.9"
-    webpack: "npm:^5.108.3"
+    webpack: "npm:^5.108.4"
   peerDependencies:
     next: ">=15"
   languageName: unknown
@@ -13917,16 +13917,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"amazon-cognito-identity-js@npm:^6.3.19":
-  version: 6.3.19
-  resolution: "amazon-cognito-identity-js@npm:6.3.19"
+"amazon-cognito-identity-js@npm:^6.3.20":
+  version: 6.3.20
+  resolution: "amazon-cognito-identity-js@npm:6.3.20"
   dependencies:
     "@aws-crypto/sha256-js": "npm:1.2.2"
     buffer: "npm:4.9.2"
     fast-base64-decode: "npm:^1.0.0"
     isomorphic-unfetch: "npm:^3.0.0"
     js-cookie: "npm:^3.0.7"
-  checksum: 10/c57c9a55e24dd5f1533216783cbe869db8f8615bd1479e53ed3fc89e1d9c55808b0f85e48804ac37245124c025c0b0eb7940cc954ac072ba122ffc1639935c44
+  checksum: 10/929823b2bad65c579a4f28f1d9af1642d5eb6639eb18dec0dfc029958132f40f430b12bd77124d7d5a89e5e8abad94d1d7b1ae008e49fed030a8447d91a76a4e
   languageName: node
   linkType: hard
 
@@ -15836,7 +15836,7 @@ __metadata:
     ora: "npm:9.4.1"
     os: "npm:0.1.2"
     rimraf: "npm:^6.1.3"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     validate-npm-package-name: "npm:^8.0.0"
     vitest: "npm:^4.1.9"
     write-json-file: "npm:^7.0.0"
@@ -16049,7 +16049,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    amazon-cognito-identity-js: "npm:^6.3.19"
+    amazon-cognito-identity-js: "npm:^6.3.20"
     cypress: "npm:^15.18.0"
     cypress-image-snapshot: "npm:^4.0.1"
     cypress-mailosaur: "npm:^5.0.0"
@@ -24530,7 +24530,7 @@ __metadata:
     semver: "npm:^7.8.5"
     ts-expect: "npm:^1.3.0"
     tsx: "npm:4.23.0"
-    type-fest: "npm:^5.7.0"
+    type-fest: "npm:^5.8.0"
     typescript: "npm:6.0.3"
     validator: "npm:^13.15.35"
     verdaccio: "npm:^6.7.4"
@@ -26967,6 +26967,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"type-fest@npm:^5.8.0":
+  version: 5.8.0
+  resolution: "type-fest@npm:5.8.0"
+  dependencies:
+    tagged-tag: "npm:^1.0.0"
+  checksum: 10/4dbe4c78ac6933d3d165b01f9d552991a84d63e5352110e01bebb5c46499fb1f44d199fc88835b18ee5662ee44c73926621f59525e46f7faa031086ac00b2686
+  languageName: node
+  linkType: hard
+
 "type-is@npm:^2.0.1, type-is@npm:^2.1.0":
   version: 2.1.0
   resolution: "type-is@npm:2.1.0"
@@ -27750,9 +27759,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.108.3":
-  version: 5.108.3
-  resolution: "webpack@npm:5.108.3"
+"webpack@npm:^5.108.4":
+  version: 5.108.4
+  resolution: "webpack@npm:5.108.4"
   dependencies:
     "@types/estree": "npm:^1.0.8"
     "@types/json-schema": "npm:^7.0.15"
@@ -27781,7 +27790,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 10/1333c3cf78c9cc2d99c1b8d4ac1415f8303022af1e46508fa942d59757fc4b30e4f96cdd60a803bbd84c295486c7ee5554e6ec4a42b8cf39e8372b2a94d50423
+  checksum: 10/f93cbd33e76a0ba8b708600ca0be66f172dda8f3eff5d201e4a1021af38a5c5d6b57a5d7eaf9a525fbd383907a05d92c2a04b21839e509a03bcbd61f13fa6093
   languageName: node
   linkType: hard
 
