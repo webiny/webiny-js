@@ -19,7 +19,6 @@
     "@webiny/api": "0.0.0",
     "@webiny/di": "^1.0.2",
     "@webiny/error": "0.0.0",
-    "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/feature-flags": "0.0.0",
     "@webiny/handler": "0.0.0",
@@ -40,6 +39,7 @@
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",
     "@webiny/build-tools": "0.0.0",
+    "@webiny/event-handler-core": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "rimraf": "^6.1.3",

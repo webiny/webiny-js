@@ -22,6 +22,7 @@
     { "path": "../api-websockets" },
     { "path": "../api-workflows" },
     { "path": "../background-tasks" },
+    { "path": "../event-handler-core" },
     { "path": "../handler" },
     { "path": "../handler-graphql" },
     { "path": "../webhooks" }
@@ -73,6 +74,8 @@
       "@webiny/api-workflows": ["../api-workflows/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],

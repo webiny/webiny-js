@@ -22,6 +22,7 @@
     { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../api-workflows/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
+    { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../webhooks/tsconfig.build.json" }
@@ -73,6 +74,8 @@
       "@webiny/api-workflows": ["../api-workflows/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
