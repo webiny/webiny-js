@@ -1,5 +1,5 @@
 import { GetApp, UiService, Watch } from "@webiny/project/abstractions/index.js";
-import { startApiServer } from "./startApiServer.js";
+import { runApiServer } from "../../serve/runApiServer.js";
 
 /**
  * Server-flavour counterpart to project-aws's `AwsWatch`: where AWS forwards Lambda invocations to
@@ -28,7 +28,7 @@ export class ServerWatch implements Watch.Interface {
             return result;
         }
 
-        startApiServer(this.getApp.execute(params.app), this.ui);
+        runApiServer(this.getApp.execute(params.app), this.ui, { watch: true });
 
         return result;
     }

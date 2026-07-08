@@ -2,6 +2,7 @@ import { Container } from "@webiny/di";
 import { serverGetProjectSdkService } from "./services/GetProjectSdkService.js";
 import { serverDefaultAppsService } from "./services/DefaultAppsService.js";
 import { serverWatchCommand } from "./features/WatchCommand.js";
+import { serverServeCommand } from "./features/ServeCommand.js";
 
 export const registerServerFeatures = (container: Container): void => {
     // Override GetProjectSdkService so server project features are wired into the ProjectSdk container.
@@ -12,4 +13,7 @@ export const registerServerFeatures = (container: Container): void => {
 
     // Watch command without Lambda-specific options.
     container.register(serverWatchCommand).inSingletonScope();
+
+    // Serve command: run built apps as long-running servers (production).
+    container.register(serverServeCommand).inSingletonScope();
 };
