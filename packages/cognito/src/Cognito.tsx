@@ -1,6 +1,7 @@
 import React from "react";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { Api, Admin, Infra } from "@webiny/project-aws";
+import { Await } from "@webiny/react-properties";
 import { z } from "zod";
 
 const identityProviderSchema = z.object({
@@ -28,11 +29,23 @@ export const Cognito = defineExtension({
     paramsSchema: z.object({
         apiConfig: z.string().describe("Path to API configuration.").optional(),
         adminConfig: z.string().describe("Path to Admin configuration.").optional(),
-        federation: federationSchema.optional(),
+        federation: z
+            .union([
+                federationSchema,
+                z.custom<() => Promise<z.infer<typeof federationSchema>>>(
+                    val => typeof val === "function"
+                )
+            ])
+            .optional(),
         mfa: z.boolean().describe("Enable TOTP MFA for all users.").default(false)
     }),
     render: props => {
-        const federation = props.federation;
+        const federationProp = props.federation;
+        const federationFn = federationProp
+            ? typeof federationProp === "function"
+                ? federationProp
+                : () => Promise.resolve(federationProp)
+            : null;
 
         return (
             <>
@@ -51,43 +64,47 @@ export const Cognito = defineExtension({
                 {props.adminConfig ? <Admin.Extension src={props.adminConfig} /> : null}
 
                 {/* Federation infra + admin config */}
-                {federation ? (
-                    <>
-                        {/* Pulumi: create User Pool Domain, IdP resources, OAuth client */}
-                        <Infra.EnvVar
-                            varName={"COGNITO_FEDERATION_INFRA_CONFIG"}
-                            value={JSON.stringify({
-                                domain: federation.domain,
-                                callbackUrls: federation.callbackUrls,
-                                logoutUrls: federation.logoutUrls,
-                                identityProviders: federation.identityProviders.map(idp => ({
-                                    type: idp.type,
-                                    name: idp.name,
-                                    providerDetails: idp.providerDetails,
-                                    idpIdentifiers: idp.idpIdentifiers,
-                                    attributeMapping: idp.attributeMapping
-                                }))
-                            })}
-                        />
-                        <Infra.Core.Pulumi
-                            src={import.meta.dirname + "/infra/CognitoFederationPulumi.js"}
-                        />
-
-                        {/* Admin: pass federation config as build param */}
-                        <Admin.BuildParam
-                            paramName={"cognitoFederation"}
-                            value={{
-                                callbackUrls: federation.callbackUrls,
-                                logoutUrls: federation.logoutUrls || federation.callbackUrls,
-                                responseType: federation.responseType,
-                                allowCredentialsLogin: federation.allowCredentialsLogin,
-                                providers: federation.identityProviders.map(idp => ({
-                                    name: idp.name || idp.type,
-                                    label: idp.label
-                                }))
-                            }}
-                        />
-                    </>
+                {federationFn ? (
+                    <Await fn={federationFn}>
+                        {federation => (
+                            <>
+                                <Infra.EnvVar
+                                    varName={"COGNITO_FEDERATION_INFRA_CONFIG"}
+                                    value={JSON.stringify({
+                                        domain: federation.domain,
+                                        callbackUrls: federation.callbackUrls,
+                                        logoutUrls: federation.logoutUrls,
+                                        identityProviders: federation.identityProviders.map(
+                                            idp => ({
+                                                type: idp.type,
+                                                name: idp.name,
+                                                providerDetails: idp.providerDetails,
+                                                idpIdentifiers: idp.idpIdentifiers,
+                                                attributeMapping: idp.attributeMapping
+                                            })
+                                        )
+                                    })}
+                                />
+                                <Infra.Core.Pulumi
+                                    src={import.meta.dirname + "/infra/CognitoFederationPulumi.js"}
+                                />
+                                <Admin.BuildParam
+                                    paramName={"cognitoFederation"}
+                                    value={{
+                                        callbackUrls: federation.callbackUrls,
+                                        logoutUrls:
+                                            federation.logoutUrls || federation.callbackUrls,
+                                        responseType: federation.responseType,
+                                        allowCredentialsLogin: federation.allowCredentialsLogin,
+                                        providers: federation.identityProviders.map(idp => ({
+                                            name: idp.name || idp.type,
+                                            label: idp.label
+                                        }))
+                                    }}
+                                />
+                            </>
+                        )}
+                    </Await>
                 ) : null}
             </>
         );
