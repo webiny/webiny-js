@@ -3,7 +3,11 @@ import { Authorizer } from "@webiny/api-core/features/security/authorization/Aut
 import type { IAuthorizer } from "@webiny/api-core/features/security/authorization/Authorizer/abstractions.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
-export const TestPermissions = new Abstraction<SecurityPermission[]>("AcoTestPermissions");
+/**
+ * The permissions granted to the test identity. Register an instance to control access:
+ * `container.registerInstance(TestPermissions, [{ name: "*" }])`.
+ */
+export const TestPermissions = new Abstraction<SecurityPermission[]>("TestPermissions");
 
 class TestAuthorizerImpl implements IAuthorizer {
     constructor(private permissions: SecurityPermission[]) {}
@@ -15,5 +19,7 @@ class TestAuthorizerImpl implements IAuthorizer {
 
 export const TestAuthorizer = Authorizer.createImplementation({
     implementation: TestAuthorizerImpl,
-    dependencies: [TestPermissions]
+    // `dependencies` typing infers an array-valued abstraction as multiple-injection; TestPermissions
+    // is a single registered instance (the whole permissions array), so cast past that inference.
+    dependencies: [TestPermissions] as never
 });

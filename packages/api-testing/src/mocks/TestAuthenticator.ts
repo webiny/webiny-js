@@ -3,7 +3,11 @@ import { Authenticator } from "@webiny/api-core/features/security/authentication
 import type { IAuthenticator } from "@webiny/api-core/features/security/authentication/Authenticator/abstractions.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
-export const TestIdentity = new Abstraction<IdentityData | null>("AcoTestIdentity");
+/**
+ * The identity a test authenticates as. Register an instance in the (root) container to control
+ * who the request runs as: `container.registerInstance(TestIdentity, createIdentity({...}))`.
+ */
+export const TestIdentity = new Abstraction<IdentityData | null>("TestIdentity");
 
 class TestAuthenticatorImpl implements IAuthenticator {
     constructor(private identity: IdentityData | null) {}

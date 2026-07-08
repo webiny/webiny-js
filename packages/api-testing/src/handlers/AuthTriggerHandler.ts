@@ -5,6 +5,10 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import type { IAuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import type { IIdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
+/**
+ * Test-only decorator on the HTTP event handler: authenticates the `authorization` header and sets
+ * the resulting identity before the request is dispatched (mirrors the prod identity loader).
+ */
 class AuthTriggerHandlerImpl implements TestHttpEventHandler.Interface {
     constructor(
         private authCtx: IAuthenticationContext,
