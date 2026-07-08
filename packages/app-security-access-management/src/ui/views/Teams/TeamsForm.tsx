@@ -124,8 +124,10 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
         );
     }
 
+    const team = { ...data, roles: (data.roles ?? []).map((r: any) => r.id) };
+
     return (
-        <Form data={data} onSubmit={onSubmit}>
+        <Form data={team} onSubmit={onSubmit}>
             {({ data, form }) => {
                 return (
                     <SimpleForm>
@@ -233,11 +235,16 @@ const FormContent = (props: FormContentProps) => {
             </Grid.Column>
             <Grid.Column span={12}>
                 <Bind name="roles" validators={validation.create("required")}>
-                    <RolesMultiAutocomplete
-                        disabled={!canModifyTeam}
-                        label={t`Roles`}
-                        data-testid="admin.am.team.new.roles"
-                    />
+                    {({ value, onChange, validation }) => (
+                        <RolesMultiAutocomplete
+                            values={value}
+                            onChange={onChange}
+                            validation={validation}
+                            disabled={!canModifyTeam}
+                            label={t`Roles`}
+                            data-testid="admin.am.team.new.roles"
+                        />
+                    )}
                 </Bind>
             </Grid.Column>
         </Grid>
