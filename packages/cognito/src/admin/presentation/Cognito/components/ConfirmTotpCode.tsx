@@ -4,28 +4,28 @@ import { makeDecoratable } from "@webiny/app-admin";
 import { Form, Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { View } from "./View.js";
-import type { RequestPasswordResetCodeVM } from "~/admin/presentation/Cognito/abstractions.js";
+import type { ConfirmTotpCodeVM } from "~/admin/presentation/Cognito/abstractions.js";
 import { FooterSignIn } from "~/admin/presentation/Cognito/components/FooterSignIn.js";
 
-export interface ForgotPasswordProps {
-    vm: RequestPasswordResetCodeVM;
-    onRequestCode: (username: string) => void;
+export interface ConfirmTotpCodeProps {
+    vm: ConfirmTotpCodeVM;
+    onSubmit: (code: string) => void;
     onCancel: () => void;
 }
 
-export const RequestPasswordResetCode = makeDecoratable(
-    "CognitoRequestPasswordResetCode",
-    (props: ForgotPasswordProps) => {
-        const { vm, ...actions } = props;
+export const ConfirmTotpCode = makeDecoratable(
+    "CognitoConfirmTotpCode",
+    (props: ConfirmTotpCodeProps) => {
+        const { vm, onSubmit, onCancel } = props;
 
         return (
             <View.Container>
-                <Form onSubmit={(data: any) => actions.onRequestCode(data.username)} submitOnEnter>
+                <Form<{ code: string }> onSubmit={data => onSubmit(data.code)} submitOnEnter>
                     {({ submit }) => (
                         <View.Content>
                             <View.Title
-                                title={"Password recovery"}
-                                description={"Request a password reset code."}
+                                title={"Two-factor authentication"}
+                                description={"Enter the 6-digit code from your authenticator app."}
                             />
 
                             {vm.message && (
@@ -38,25 +38,23 @@ export const RequestPasswordResetCode = makeDecoratable(
 
                             <Grid>
                                 <Grid.Column span={12}>
-                                    <Bind
-                                        name="username"
-                                        validators={validation.create("required,email")}
-                                    >
-                                        <Input label={"Email"} />
+                                    <Bind name="code" validators={validation.create("required")}>
+                                        <Input
+                                            label={"Verification Code"}
+                                            autoComplete={"one-time-code"}
+                                            inputMode={"numeric"}
+                                        />
                                     </Bind>
                                 </Grid.Column>
                                 <Grid.Column span={12}>
-                                    <div
-                                        className={
-                                            "flex flex-row-reverse items-center justify-between"
-                                        }
-                                    >
+                                    <div className={"flex items-center justify-between"}>
+                                        <FooterSignIn onSignIn={onCancel} />
                                         <Button
-                                            text={"Send me the code"}
+                                            text={"Verify"}
                                             onClick={submit}
+                                            containerClassName={"ml-auto"}
                                             disabled={vm.isLoading}
                                         />
-                                        <FooterSignIn onSignIn={actions.onCancel} />
                                     </div>
                                 </Grid.Column>
                             </Grid>
