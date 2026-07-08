@@ -5,7 +5,7 @@ export interface SignInProps {
     signIn: () => void;
 }
 
-export type FederatedProvider =
+export type IFederatedProvider =
     | { name: string; label: string }
     | { name: string; component: React.FC<SignInProps> };
 
@@ -18,7 +18,7 @@ export interface ICognitoSignInConfig {
             responseType: "code" | "token";
         };
         allowCredentialsLogin: boolean;
-        providers: FederatedProvider[];
+        providers: IFederatedProvider[];
         title?: string;
         description?: string;
     }>;
@@ -29,4 +29,5 @@ export const CognitoSignInConfig = createAbstraction<ICognitoSignInConfig>("Cogn
 export namespace CognitoSignInConfig {
     export type Interface = ICognitoSignInConfig;
     export type Config = Awaited<ReturnType<ICognitoSignInConfig["getConfig"]>>;
+    export type FederatedProvider = IFederatedProvider;
 }

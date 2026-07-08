@@ -6,7 +6,8 @@
   "sideEffects": false,
   "exports": {
     ".": "./index.js",
-    "./*": "./*"
+    "./api": "./api/index.js",
+    "./admin": "./admin/index.js"
   },
   "description": "Security plugins for Cognito",
   "author": "Webiny Ltd.",

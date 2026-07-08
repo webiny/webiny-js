@@ -17,7 +17,7 @@ import {
 } from "./abstractions.js";
 import { LogInUseCase } from "@webiny/app-admin/features/security/LogIn/index.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/index.js";
-import { CognitoSignInConfig, type FederatedProvider } from "./CognitoSignInConfig.js";
+import { CognitoSignInConfig } from "./CognitoSignInConfig.js";
 
 const federatedDescription =
     "You will be taken to an external service to complete the sign-in process.";
@@ -34,7 +34,7 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
     private signInTitle = "Sign in";
     private signInDescription: string | undefined = undefined;
     private allowCredentialsLogin = true;
-    private federatedProviders: FederatedProvider[] = [];
+    private federatedProviders: CognitoSignInConfig.FederatedProvider[] = [];
 
     private totpSharedSecret = "";
     private totpQrCodeUri = "";

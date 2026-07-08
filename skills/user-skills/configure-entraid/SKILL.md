@@ -47,6 +47,44 @@ Before configuring Webiny, you need to register an application in the Microsoft 
 | `ENTRA_CLIENT_SECRET` | Entra ID client secret value                         |
 | `ENTRA_ISSUER`        | `https://login.microsoftonline.com/{tenant-id}/v2.0` |
 
+### Attribute Mapping
+
+When Cognito receives tokens from Entra ID, it maps the OIDC claims to Cognito user attributes. The default OIDC mapping is:
+
+| Cognito Attribute    | OIDC Claim    | Description                        |
+| -------------------- | ------------- | ---------------------------------- |
+| `username`           | `sub`         | Unique user identifier             |
+| `custom:id`          | `sub`         | Webiny internal user ID            |
+| `email`              | `email`       | User's email address               |
+| `given_name`         | `given_name`  | First name                         |
+| `family_name`        | `family_name` | Last name                          |
+| `preferred_username` | `email`       | Used as the Cognito username alias |
+
+You can override this mapping with the `attributeMapping` property on the identity provider config. This is useful when:
+
+- Your Entra ID uses non-standard claim names
+- You want to skip `custom:id` mapping (e.g., when the `sub` value exceeds the attribute's max length on existing pools)
+- You need to map additional custom attributes
+
+```tsx
+{
+    name: "EntraID",
+    type: "oidc",
+    label: "Sign in with Microsoft",
+    providerDetails: { /* ... */ },
+    attributeMapping: {
+        username: "sub",
+        email: "email",
+        given_name: "given_name",
+        family_name: "family_name",
+        preferred_username: "email"
+        // custom:id intentionally omitted
+    }
+}
+```
+
+When `attributeMapping` is provided, it **replaces** the defaults entirely — include all mappings you need.
+
 ## Full Examples
 
 ### Example 1: Basic Entra ID Federation
@@ -176,7 +214,7 @@ Map Entra ID groups (via Cognito groups or token claims) to Webiny roles:
 
 ```ts
 // extensions/entraid/api.ts
-import { CognitoIdpConfig } from "@webiny/cognito";
+import { CognitoIdpConfig } from "@webiny/cognito/api";
 
 class EntraIdConfig implements CognitoIdpConfig.Interface {
   getIdentity(token: CognitoIdpConfig.JwtPayload) {
@@ -225,7 +263,41 @@ export default CognitoIdpConfig.createImplementation({
 
 Remember to add **all** callback URLs to your Entra ID app registration's redirect URIs.
 
-### Example 5: Entra ID with MFA
+### Example 5: Custom Attribute Mapping
+
+Override the default claim mapping — useful for existing Cognito pools where `custom:id` has a max length of 36 characters (Entra ID `sub` values can be longer):
+
+```tsx
+<Cognito
+  federation={{
+    domain: "mycompany-webiny",
+    callbackUrls: ["http://localhost:3001"],
+    identityProviders: [
+      {
+        name: "EntraID",
+        type: "oidc",
+        label: "Sign in with Microsoft",
+        providerDetails: {
+          attributes_request_method: "POST",
+          authorize_scopes: "email profile openid",
+          client_id: String(process.env.ENTRA_CLIENT_ID),
+          client_secret: String(process.env.ENTRA_CLIENT_SECRET),
+          oidc_issuer: String(process.env.ENTRA_ISSUER)
+        },
+        attributeMapping: {
+          username: "sub",
+          email: "email",
+          given_name: "given_name",
+          family_name: "family_name",
+          preferred_username: "email"
+        }
+      }
+    ]
+  }}
+/>
+```
+
+### Example 6: Entra ID with MFA
 
 Add TOTP-based MFA on top of Entra ID federation:
 
@@ -247,6 +319,14 @@ Add TOTP-based MFA on top of Entra ID federation:
           client_id: String(process.env.ENTRA_CLIENT_ID),
           client_secret: String(process.env.ENTRA_CLIENT_SECRET),
           oidc_issuer: String(process.env.ENTRA_ISSUER)
+        },
+        attributeMapping: {
+          "custom:id": "sub",
+          username: "sub",
+          email: "email",
+          given_name: "given_name",
+          family_name: "family_name",
+          preferred_username: "email"
         }
       }
     ]
@@ -262,8 +342,8 @@ MFA applies to password-based logins. Federated sign-ins via Entra ID are handle
 
 ```typescript
 import { Cognito } from "@webiny/cognito";
-import { CognitoIdpConfig } from "@webiny/cognito"; // for API config
-import { CognitoSignInConfig } from "@webiny/cognito"; // for Admin config
+import { CognitoIdpConfig } from "@webiny/cognito/api"; // for API config
+import { CognitoSignInConfig } from "@webiny/cognito/admin"; // for Admin config
 ```
 
 ### File Structure

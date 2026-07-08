@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { FederatedProvider } from "./CognitoSignInConfig.js";
+import type { IFederatedProvider } from "./CognitoSignInConfig.js";
 
 export type AuthState =
     | "signIn"
@@ -55,7 +55,7 @@ export interface SignInVM {
     title: string;
     description: string | undefined;
     allowCredentialsLogin: boolean;
-    federatedProviders: FederatedProvider[];
+    federatedProviders: IFederatedProvider[];
 }
 
 export interface RequireNewPasswordVM {

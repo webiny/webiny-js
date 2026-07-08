@@ -221,7 +221,7 @@ Map Cognito groups to Webiny roles/teams:
 
 ```ts
 // extensions/cognito/api.ts
-import { CognitoIdpConfig } from "@webiny/cognito";
+import { CognitoIdpConfig } from "@webiny/cognito/api";
 
 class MyConfig implements CognitoIdpConfig.Interface {
   getIdentity(token: CognitoIdpConfig.JwtPayload) {
@@ -258,7 +258,7 @@ export default CognitoIdpConfig.createImplementation({
 
 ```tsx
 // extensions/cognito/admin.tsx
-import { CognitoSignInConfig } from "@webiny/cognito";
+import { CognitoSignInConfig } from "@webiny/cognito/admin";
 
 const ALLOWED_IPS = ["1.2.3.4", "5.6.7.8"];
 
@@ -301,7 +301,7 @@ export default CognitoSignInConfig.createImplementation({
 
 ```tsx
 // extensions/cognito/admin.tsx
-import { CognitoSignInConfig } from "@webiny/cognito";
+import { CognitoSignInConfig } from "@webiny/cognito/admin";
 import { GoogleLoginButton } from "react-social-login-buttons";
 
 class MyFederationConfig implements CognitoSignInConfig.Interface {
@@ -350,7 +350,9 @@ class MyFederationConfig implements CognitoSignInConfig.Interface {
 
 ### Example 6: Custom Attribute Mapping
 
-Override the default OIDC attribute mapping:
+Override the default OIDC attribute mapping when your IdP uses non-standard claim names.
+
+The `custom:id` mapping is important — Webiny uses it as the primary user identifier. It's mapped to the IdP's `sub` claim by default. Always include it in custom mappings unless the IdP's `sub` value exceeds 36 characters on an existing Cognito pool (deployed prior to Webiny 6.4.4). New pools support up to 256 characters.
 
 ```tsx
 <Cognito
@@ -369,6 +371,7 @@ Override the default OIDC attribute mapping:
           oidc_issuer: "..."
         },
         attributeMapping: {
+          "custom:id": "sub",
           username: "sub",
           email: "email",
           given_name: "first_name",
@@ -426,20 +429,20 @@ When MFA is enabled:
 import { Cognito } from "@webiny/cognito";
 
 // API identity mapping
-import { CognitoIdpConfig } from "@webiny/cognito";
+import { CognitoIdpConfig } from "@webiny/cognito/api";
 
 // Admin login customization
-import { CognitoSignInConfig } from "@webiny/cognito";
+import { CognitoSignInConfig } from "@webiny/cognito/admin";
 ```
 
 ### Key Interfaces
 
-| Interface                       | Package           | Purpose                                   |
-| ------------------------------- | ----------------- | ----------------------------------------- |
-| `CognitoIdpConfig.Interface`    | `@webiny/cognito` | API-side JWT-to-identity mapping          |
-| `CognitoIdpConfig.JwtPayload`   | `@webiny/cognito` | JWT token payload type                    |
-| `CognitoSignInConfig.Interface` | `@webiny/cognito` | Admin login screen customization          |
-| `FederatedProvider`             | `@webiny/cognito` | Provider button type (label or component) |
+| Interface                               | Package                 | Purpose                                   |
+| --------------------------------------- | ----------------------- | ----------------------------------------- |
+| `CognitoIdpConfig.Interface`            | `@webiny/cognito/api`   | API-side JWT-to-identity mapping          |
+| `CognitoIdpConfig.JwtPayload`           | `@webiny/cognito/api`   | JWT token payload type                    |
+| `CognitoSignInConfig.Interface`         | `@webiny/cognito/admin` | Admin login screen customization          |
+| `CognitoSignInConfig.FederatedProvider` | `@webiny/cognito/admin` | Provider button type (label or component) |
 
 ### File Structure (Advanced)
 

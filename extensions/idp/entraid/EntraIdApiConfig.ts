@@ -1,4 +1,4 @@
-import { CognitoIdpConfig } from "@webiny/cognito";
+import { CognitoIdpConfig } from "@webiny/cognito/api";
 
 class EntraIdConfig implements CognitoIdpConfig.Interface {
     getIdentity(_token: CognitoIdpConfig.JwtPayload) {

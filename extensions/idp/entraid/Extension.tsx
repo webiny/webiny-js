@@ -24,6 +24,7 @@ export const CognitoFederation = () => {
                             oidc_issuer: process.env.ENTRA_OIDC_ISSUER
                         },
                         attributeMapping: {
+                            "custom:id": "sub",
                             username: "sub",
                             email: "email",
                             given_name: "given_name",
