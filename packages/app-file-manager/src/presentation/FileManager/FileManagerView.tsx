@@ -130,14 +130,14 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
 
         if (vm.viewMode === "table") {
             return (
-                <ScrollArea onScroll={loadMoreOnScroll}>
+                <ScrollArea className={"h-full"} onScroll={loadMoreOnScroll}>
                     <FileTable />
                 </ScrollArea>
             );
         }
 
         return (
-            <ScrollArea onScroll={loadMoreOnScroll}>
+            <ScrollArea className={"h-full"} onScroll={loadMoreOnScroll}>
                 <FileGrid />
             </ScrollArea>
         );
@@ -157,7 +157,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                     <FileDetailsDrawer />
                     <SplitView namespace={"fm/file/list"}>
                         <LeftPanel span={2}>
-                            <div className={"flex flex-col h-main-content"}>
+                            <div className={"flex flex-col h-full"}>
                                 <div className={"py-sm px-md"}>
                                     <Heading level={5}>{t`File Manager`}</Heading>
                                 </div>
@@ -200,13 +200,10 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                             </div>
                         </LeftPanel>
                         <RightPanel span={10}>
-                            <div
-                                className={"flex flex-col relative"}
-                                style={{ height: "calc(100vh - 45px" }}
-                            >
+                            <div className={"flex flex-col relative h-full overflow-hidden"}>
                                 <FileManagerHeader browseFiles={browseFiles} />
                                 <div
-                                    className={"flex-1"}
+                                    className={"flex-1 min-h-0 overflow-hidden"}
                                     {...getDropZoneProps({
                                         onDragEnter: () => actions.setDragging(true),
                                         onDrop: () => actions.setDragging(false),
