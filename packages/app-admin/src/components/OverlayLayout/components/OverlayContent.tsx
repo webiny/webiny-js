@@ -13,6 +13,7 @@ const OverlayContent = ({ visible, className, style, children, ...props }: Overl
                 [
                     "fixed inset-x-0 top-lg z-overlay",
                     "w-screen",
+                    "flex flex-col",
                     "rounded-t-lg overflow-hidden",
                     "bg-neutral-base",
                     "transition ease-in-out",
