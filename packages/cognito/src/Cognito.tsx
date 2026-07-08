@@ -68,6 +68,10 @@ export const Cognito = defineExtension({
                     <Await fn={federationFn}>
                         {federation => (
                             <>
+                                <Admin.Extension
+                                    src={import.meta.dirname + "/admin/SignInExtension.js"}
+                                    exportName={"SignInExtension"}
+                                />
                                 <Infra.EnvVar
                                     varName={"COGNITO_FEDERATION_INFRA_CONFIG"}
                                     value={JSON.stringify({
