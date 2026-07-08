@@ -40,12 +40,12 @@ Cognito Federation has three layers:
 
 ### `<Cognito />` Props
 
-| Prop          | Type      | Description                                      |
-| ------------- | --------- | ------------------------------------------------ |
-| `federation`  | `object`  | Federation config (see below)                    |
-| `mfa`         | `boolean` | Enable TOTP MFA for all users (default: `false`) |
-| `apiConfig`   | `string`  | Path to API identity mapping extension           |
-| `adminConfig` | `string`  | Path to Admin login customization extension      |
+| Prop          | Type                              | Description                                      |
+| ------------- | --------------------------------- | ------------------------------------------------ |
+| `federation`  | `object \| () => Promise<object>` | Federation config (see below) — sync or async    |
+| `mfa`         | `boolean`                         | Enable TOTP MFA for all users (default: `false`) |
+| `apiConfig`   | `string`                          | Path to API identity mapping extension           |
+| `adminConfig` | `string`                          | Path to Admin login customization extension      |
 
 ### `federation` Object
 
@@ -168,7 +168,66 @@ This alone creates the Cognito IdP, configures OAuth, shows a "Sign in with Goog
 />
 ```
 
-### Example 3: Multiple Providers
+### Example 3: Async Federation Config
+
+When provider credentials need to be fetched asynchronously (e.g., from a secrets manager, vault, or remote API), pass `federation` as an async function instead of a plain object. The config rendering pipeline will wait for the promise to resolve before continuing.
+
+```tsx
+// extensions/idp/entraid/Extension.tsx
+import React from "react";
+import { Cognito } from "@webiny/cognito";
+
+async function getCredentials() {
+  return {
+    client_id: process.env.ENTRA_CLIENT_ID,
+    client_secret: process.env.ENTRA_CLIENT_SECRET,
+    oidc_issuer: process.env.ENTRA_OIDC_ISSUER
+  };
+}
+
+export const CognitoFederation = () => {
+  return (
+    <Cognito
+      mfa={true}
+      apiConfig={"@/extensions/idp/entraid/EntraIdApiConfig.ts"}
+      federation={async () => {
+        const credentials = await getCredentials();
+
+        return {
+          domain: "myproj-webiny-with-entraid",
+          callbackUrls: ["https://webiny-6.4.x.localhost"],
+          responseType: "code",
+          allowCredentialsLogin: true,
+          identityProviders: [
+            {
+              name: "EntraID",
+              type: "oidc",
+              label: "Sign in with Microsoft",
+              providerDetails: {
+                attributes_request_method: "POST",
+                authorize_scopes: "email profile openid",
+                ...credentials
+              },
+              attributeMapping: {
+                "custom:id": "sub",
+                username: "sub",
+                email: "email",
+                given_name: "given_name",
+                family_name: "family_name",
+                preferred_username: "email"
+              }
+            }
+          ]
+        };
+      }}
+    />
+  );
+};
+```
+
+Under the hood, the `<Cognito>` component uses `<Await fn={...}>` from `@webiny/react-properties` to resolve the async function. The `AsyncProperties` wrapper in the config rendering worker gates `onChange` until all `<Await>` promises settle, so the CLI won't exit prematurely.
+
+### Example 4: Multiple Providers
 
 ```tsx
 <Cognito
@@ -203,7 +262,7 @@ This alone creates the Cognito IdP, configures OAuth, shows a "Sign in with Goog
 />
 ```
 
-### Example 4: Custom Identity Mapping (apiConfig)
+### Example 5: Custom Identity Mapping (apiConfig)
 
 Map Cognito groups to Webiny roles/teams:
 
@@ -240,7 +299,7 @@ export default CognitoIdpConfig.createImplementation({
 });
 ```
 
-### Example 5: Custom Admin Login Screen (adminConfig)
+### Example 6: Custom Admin Login Screen (adminConfig)
 
 #### IP-based credentials whitelist
 
@@ -348,7 +407,7 @@ class MyFederationConfig implements CognitoSignInConfig.Interface {
 }
 ```
 
-### Example 6: Custom Attribute Mapping
+### Example 7: Custom Attribute Mapping
 
 Override the default OIDC attribute mapping when your IdP uses non-standard claim names.
 
