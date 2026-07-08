@@ -41,7 +41,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         if (!rootContainer) {
             rootContainer = new Container();
             rootContainer.registerInstance(TestIdentity, resolvedIdentity);
-            rootContainer.registerInstance(TestPermissions, resolvedPermissions);
+            rootContainer.registerInstance(TestPermissions, { list: resolvedPermissions });
             rootContainer.register(TestAuthenticator);
             rootContainer.register(TestAuthorizer);
         }

@@ -4,22 +4,25 @@ import type { IAuthorizer } from "@webiny/api-core/features/security/authorizati
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 /**
- * The permissions granted to the test identity. Register an instance to control access:
- * `container.registerInstance(TestPermissions, [{ name: "*" }])`.
+ * The permissions granted to the test identity, wrapped in a holder so DI treats it as a single
+ * value (not a multiple-binding of SecurityPermission):
+ * `container.registerInstance(TestPermissions, { list: [{ name: "*" }] })`.
  */
-export const TestPermissions = new Abstraction<SecurityPermission[]>("TestPermissions");
+export interface TestPermissionsHolder {
+    list: SecurityPermission[];
+}
+
+export const TestPermissions = new Abstraction<TestPermissionsHolder>("TestPermissions");
 
 class TestAuthorizerImpl implements IAuthorizer {
-    constructor(private permissions: SecurityPermission[]) {}
+    constructor(private permissions: TestPermissionsHolder) {}
 
     async authorize(): Promise<SecurityPermission[] | null> {
-        return this.permissions;
+        return this.permissions.list;
     }
 }
 
 export const TestAuthorizer = Authorizer.createImplementation({
     implementation: TestAuthorizerImpl,
-    // `dependencies` typing infers an array-valued abstraction as multiple-injection; TestPermissions
-    // is a single registered instance (the whole permissions array), so cast past that inference.
-    dependencies: [TestPermissions] as never
+    dependencies: [TestPermissions]
 });
