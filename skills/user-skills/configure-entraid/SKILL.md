@@ -225,6 +225,37 @@ export default CognitoIdpConfig.createImplementation({
 
 Remember to add **all** callback URLs to your Entra ID app registration's redirect URIs.
 
+### Example 5: Entra ID with MFA
+
+Add TOTP-based MFA on top of Entra ID federation:
+
+```tsx
+<Cognito
+  mfa={true}
+  federation={{
+    domain: "mycompany-webiny",
+    callbackUrls: ["http://localhost:3001"],
+    allowCredentialsLogin: false,
+    identityProviders: [
+      {
+        name: "EntraID",
+        type: "oidc",
+        label: "Sign in with Microsoft",
+        providerDetails: {
+          attributes_request_method: "POST",
+          authorize_scopes: "email profile openid",
+          client_id: String(process.env.ENTRA_CLIENT_ID),
+          client_secret: String(process.env.ENTRA_CLIENT_SECRET),
+          oidc_issuer: String(process.env.ENTRA_ISSUER)
+        }
+      }
+    ]
+  }}
+/>
+```
+
+MFA applies to password-based logins. Federated sign-ins via Entra ID are handled by Microsoft's own authentication — configure MFA on the Entra ID side if needed for those users.
+
 ## Quick Reference
 
 ### Imports

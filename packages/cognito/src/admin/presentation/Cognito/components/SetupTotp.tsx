@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Grid, Input, Alert, Text } from "@webiny/admin-ui";
+import { makeDecoratable } from "@webiny/app-admin";
 import { Form, Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { View } from "./View.js";
@@ -10,7 +11,7 @@ export interface SetupTotpProps {
     onSubmit: (code: string) => void;
 }
 
-export const SetupTotp = (props: SetupTotpProps) => {
+export const SetupTotp = makeDecoratable("CognitoSetupTotp", (props: SetupTotpProps) => {
     const { vm, onSubmit } = props;
 
     return (
@@ -83,4 +84,4 @@ export const SetupTotp = (props: SetupTotpProps) => {
             </Form>
         </View.Container>
     );
-};
+});

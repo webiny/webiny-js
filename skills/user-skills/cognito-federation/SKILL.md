@@ -38,13 +38,14 @@ Cognito Federation has three layers:
 
 ## Reference Tables
 
-### `<Cognito />` Federation Props
+### `<Cognito />` Props
 
-| Prop          | Type     | Description                                 |
-| ------------- | -------- | ------------------------------------------- |
-| `federation`  | `object` | Federation config (see below)               |
-| `apiConfig`   | `string` | Path to API identity mapping extension      |
-| `adminConfig` | `string` | Path to Admin login customization extension |
+| Prop          | Type      | Description                                      |
+| ------------- | --------- | ------------------------------------------------ |
+| `federation`  | `object`  | Federation config (see below)                    |
+| `mfa`         | `boolean` | Enable TOTP MFA for all users (default: `false`) |
+| `apiConfig`   | `string`  | Path to API identity mapping extension           |
+| `adminConfig` | `string`  | Path to Admin login customization extension      |
 
 ### `federation` Object
 
@@ -378,6 +379,43 @@ Override the default OIDC attribute mapping:
   }}
 />
 ```
+
+## MFA (Multi-Factor Authentication)
+
+Enable TOTP-based MFA for all admin users with `mfa={true}`:
+
+```tsx
+<Cognito mfa={true} />
+```
+
+Or combine with federation:
+
+```tsx
+<Cognito
+  mfa={true}
+  federation={{
+    domain: "my-app",
+    callbackUrls: ["http://localhost:3001"],
+    identityProviders: [
+      {
+        name: "EntraID",
+        type: "oidc",
+        label: "Sign in with Microsoft",
+        providerDetails: {
+          /* ... */
+        }
+      }
+    ]
+  }}
+/>
+```
+
+When MFA is enabled:
+
+- The Cognito User Pool requires TOTP for all users (`mfaConfiguration: "ON"`)
+- On first login, users see a TOTP setup screen with a QR code to scan with their authenticator app (Google Authenticator, Authy, etc.)
+- On subsequent logins, users enter a 6-digit code from their authenticator app
+- MFA applies to password-based logins only — federated IdP logins are handled by the external provider
 
 ## Quick Reference
 
