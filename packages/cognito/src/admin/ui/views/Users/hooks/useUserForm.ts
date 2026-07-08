@@ -106,7 +106,9 @@ export function useUserForm() {
         user: {
             ...user,
             group: user.group ? user.group.id : undefined,
-            team: user.team ? user.team.id : undefined
+            team: user.team ? user.team.id : undefined,
+            roles: user.roles ? user.roles.map((r: any) => r.id) : [],
+            teams: user.teams ? user.teams.map((t: any) => t.id) : []
         },
         onSubmit,
         isNewUser: newUser,
