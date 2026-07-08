@@ -963,7 +963,6 @@
       "name": "execa",
       "version": "9.6.1",
       "files": [
-        "/packages/cli-aws/package.json",
         "/packages/cli-core/package.json",
         "/packages/create-webiny-project/package.json",
         "/packages/project/package.json",
@@ -971,7 +970,6 @@
         "/packages/system-requirements/package.json",
         "/scripts/buildPackages/package.json",
         "/scripts/release/package.json",
-        "/packages/cli-aws/package.json",
         "/packages/cli-core/package.json",
         "/packages/create-webiny-project/package.json",
         "/packages/project/package.json",
@@ -4296,7 +4294,6 @@
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-audit-logs/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-website-builder/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/cli-aws/package.json", "types": ["dependencies"] },
             { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
             { "file": "/packages/common-audit-logs/package.json", "types": ["devDependencies"] },
             { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },

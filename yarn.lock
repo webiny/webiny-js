@@ -12397,7 +12397,6 @@ __metadata:
     "@webiny/system-requirements": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^5.6.2"
-    execa: "npm:^9.6.1"
     open: "npm:^11.0.0"
     ora: "npm:9.4.1"
     tsx: "npm:4.23.0"
