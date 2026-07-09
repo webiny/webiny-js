@@ -61,7 +61,8 @@ export const tsCompile = async ({ cwd = "", overrides, debug, outputDir, checkOn
     }
 
     if (!checkOnly) {
-        const distDir = outputDir || resolveDistDir(normalizedCwd, originalConfigPath, resolvedOutDir);
+        const distDir =
+            outputDir || resolveDistDir(normalizedCwd, originalConfigPath, resolvedOutDir);
         await replaceTscAliases({ distDir, cwd: normalizedCwd, debug });
     }
 };

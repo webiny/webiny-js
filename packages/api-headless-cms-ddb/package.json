@@ -47,7 +47,7 @@
     "@webiny/project-utils": "0.0.0",
     "jest-dynalite": "^3.6.1",
     "typescript": "7.0.2",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "publishConfig": {
     "access": "public"

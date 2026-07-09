@@ -36,7 +36,7 @@
     "@webiny/testing": "0.0.0",
     "type-fest": "^5.8.0",
     "typescript": "7.0.2",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "publishConfig": {
     "access": "public"

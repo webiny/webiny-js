@@ -33,7 +33,7 @@
     "mobx-react-lite": "^4.1.1",
     "rimraf": "^6.1.3",
     "typescript": "7.0.2",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "peerDependencies": {
     "react": "18.3.1"

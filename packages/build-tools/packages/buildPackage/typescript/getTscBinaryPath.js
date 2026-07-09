@@ -13,8 +13,7 @@ export function getTscBinaryPath() {
     const tsPackageJsonPath = require.resolve("typescript/package.json");
     const tsDir = dirname(tsPackageJsonPath);
 
-    const platformPackage =
-        "@typescript/typescript-" + process.platform + "-" + process.arch;
+    const platformPackage = "@typescript/typescript-" + process.platform + "-" + process.arch;
 
     let platformPkgPath;
     try {
@@ -22,8 +21,10 @@ export function getTscBinaryPath() {
         platformPkgPath = platformRequire.resolve(platformPackage + "/package.json");
     } catch {
         throw new Error(
-            "Unable to resolve " + platformPackage + ". " +
-            "Either your platform is unsupported, or you are missing the package on disk."
+            "Unable to resolve " +
+                platformPackage +
+                ". " +
+                "Either your platform is unsupported, or you are missing the package on disk."
         );
     }
 
