@@ -1,10 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import {
-    CliCommandFactory,
-    GetProjectSdkService,
-    UiService
-} from "@webiny/cli-core/abstractions/index.js";
-import { serveApi, serveAdmin, serveAll } from "@webiny/project-server/serve/index.js";
+import { CliCommandFactory, GetProjectSdkService } from "@webiny/cli-core/abstractions/index.js";
 
 interface IServeCommandParams {
     _: string[];
@@ -12,10 +7,7 @@ interface IServeCommandParams {
 }
 
 export class ServerServeCommand implements CliCommandFactory.Interface<IServeCommandParams> {
-    constructor(
-        private getProjectSdkService: GetProjectSdkService.Interface,
-        private uiService: UiService.Interface
-    ) {}
+    constructor(private getProjectSdkService: GetProjectSdkService.Interface) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<IServeCommandParams>> {
         return {
@@ -31,38 +23,8 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                 }
             ],
             handler: async (params: IServeCommandParams) => {
-                const ui = this.uiService;
                 const projectSdk = await this.getProjectSdkService.execute();
-
-                // No app: serve both api (HTTP handler) and admin (static SPA) at once.
-                if (!params.app) {
-                    const [apiApp, adminApp] = await Promise.all([
-                        projectSdk.getApp("api"),
-                        projectSdk.getApp("admin")
-                    ]);
-                    await serveAll(apiApp, adminApp, ui);
-                    return;
-                }
-
-                if (params.app === "api") {
-                    const apiApp = await projectSdk.getApp("api");
-                    await serveApi(apiApp, ui);
-                    return;
-                }
-
-                if (params.app === "admin") {
-                    const adminApp = await projectSdk.getApp("admin");
-                    await serveAdmin(adminApp, ui);
-                    return;
-                }
-
-                ui.warning(
-                    `Unknown app %s. Run one of: %s, %s, or %s.`,
-                    `"${params.app}"`,
-                    "webiny serve",
-                    "webiny serve api",
-                    "webiny serve admin"
-                );
+                await projectSdk.serve({ app: params.app as any });
             }
         };
     }
@@ -71,5 +33,5 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
 export const serverServeCommand = createImplementation({
     abstraction: CliCommandFactory,
     implementation: ServerServeCommand,
-    dependencies: [GetProjectSdkService, UiService]
+    dependencies: [GetProjectSdkService]
 });

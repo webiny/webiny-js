@@ -115,10 +115,9 @@ export async function runApiServer(
     }
 
     // `WCP_PROJECT_LICENSE` is a build-time-only var (written plaintext by applyWcpEnvVars for the
-    // build-time feature-flag computation). The AWS lambda deliberately never receives it (see
-    // project-aws lambdaEnvVariables magicPrefixes), so the runtime fetches + decrypts a fresh,
-    // current license. Mirror that: strip it from the api runtime env so getWcpProjectLicense fetches
-    // instead of reading the plaintext value.
+    // build-time feature-flag computation). Like the AWS lambda, the runtime must NOT read it — the
+    // api event handler's WcpLicenseInitializer fetches a fresh, current license from api.webiny.com.
+    // Strip it so getWcpProjectLicense takes the fetch path.
     const { WCP_PROJECT_LICENSE: _buildTimeLicense, ...runtimeEnv } = process.env;
 
     // The database is mandatory and must be configured via `<Infra.Sqlite filename="..." />` in

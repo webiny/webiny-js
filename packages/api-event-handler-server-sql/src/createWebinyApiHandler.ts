@@ -31,7 +31,7 @@ import { WebsocketsSqlFeature } from "@webiny/api-websockets-sql";
 import { SelfHostedAuthApiFeature } from "@webiny/self-hosted-auth";
 import { SelfHostedAuthSqlFeature } from "@webiny/self-hosted-auth-sql";
 
-export type CreateWebinyApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
+export type CreateSqliteApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
     /**
      * Knex client for the SQL database. Required — the caller owns the connection (there is no single
      * canonical self-hosted DB connection to default to).
@@ -43,7 +43,7 @@ export type CreateWebinyApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
     tableNamePrefix?: string;
 };
 
-export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
+export function createSqliteApiHandler(config: CreateSqliteApiHandlerConfig) {
     const { knex, tableNamePrefix } = config;
 
     return createBaseHandler({
