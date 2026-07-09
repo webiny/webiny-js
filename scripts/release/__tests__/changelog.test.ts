@@ -8,7 +8,7 @@ vi.mock("execa", () => ({
 vi.useFakeTimers();
 vi.setSystemTime(new Date("2025-06-15"));
 
-import execa from "execa";
+import { execa } from "execa";
 
 const mockedExeca = vi.mocked(execa);
 const DELIMITER = "---commit-delimiter---";

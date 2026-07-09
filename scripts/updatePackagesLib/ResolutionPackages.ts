@@ -1,7 +1,7 @@
 import type { IVersionedPackage, PackageJson } from "./types";
 import { loadJsonFileSync } from "load-json-file";
 import { writeJsonFileSync } from "write-json-file";
-import execa from "execa";
+import { execa } from "execa";
 
 export interface IResolutionPackagesParams {
     packages: IVersionedPackage[];

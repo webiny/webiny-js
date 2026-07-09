@@ -1,9 +1,9 @@
-import execa from "execa";
+import { execaSync } from "execa";
 
 export class IsGitAvailable {
     execute() {
         try {
-            execa.sync("git", ["--version"]);
+            execaSync("git", ["--version"]);
             return true;
         } catch {
             return false;

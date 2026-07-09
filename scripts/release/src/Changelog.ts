@@ -1,4 +1,4 @@
-import execa from "execa";
+import { execa } from "execa";
 
 const DELIMITER = "---commit-delimiter---";
 const HEADER_PATTERN = /^(\w+)(?:\(([^)]*)\))?:\s(.+)$/;
