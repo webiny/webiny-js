@@ -39,7 +39,9 @@ export const FinishSetupStep = ({
                     <Grid>
                         {error ? (
                             <Grid.Column span={12} className={"flex flex-col gap-4"}>
-                                <Alert type={"danger"}>{error.data.reason}</Alert>
+                                <Alert type={"danger"}>
+                                    {error.data?.reason ?? error.message ?? "Installation failed."}
+                                </Alert>
                                 <Button
                                     containerClassName={"w-full"}
                                     className={"w-full"}

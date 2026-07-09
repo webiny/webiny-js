@@ -1,6 +1,7 @@
 import { IncomingMessage } from "node:http";
-import { EventType, EventHandler } from "@webiny/event-handler-core";
+import { EventType } from "@webiny/event-handler-core";
 import type { IEventType } from "@webiny/event-handler-core";
+import { NodeHttpEventHandler } from "~/abstractions/NodeHttpEventHandler.js";
 
 class NodeHttpEventTypeImpl implements IEventType<IncomingMessage> {
     canHandle(event: any): event is IncomingMessage {
@@ -8,7 +9,7 @@ class NodeHttpEventTypeImpl implements IEventType<IncomingMessage> {
     }
 
     getHandlerAbstraction() {
-        return EventHandler;
+        return NodeHttpEventHandler;
     }
 }
 

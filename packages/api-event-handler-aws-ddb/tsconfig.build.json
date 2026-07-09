@@ -1,0 +1,33 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-aco-ddb/tsconfig.build.json" },
+    { "path": "../api-audit-logs-ddb/tsconfig.build.json" },
+    { "path": "../api-core-ddb/tsconfig.build.json" },
+    { "path": "../api-event-handler-aws/tsconfig.build.json" },
+    { "path": "../api-headless-cms-ddb/tsconfig.build.json" },
+    { "path": "../api-websockets-ddb/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-aco-ddb/*": ["../api-aco-ddb/src/*"],
+      "@webiny/api-aco-ddb": ["../api-aco-ddb/src"],
+      "@webiny/api-audit-logs-ddb/*": ["../api-audit-logs-ddb/src/*"],
+      "@webiny/api-audit-logs-ddb": ["../api-audit-logs-ddb/src"],
+      "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
+      "@webiny/api-core-ddb": ["../api-core-ddb/src"],
+      "@webiny/api-event-handler-aws/*": ["../api-event-handler-aws/src/*"],
+      "@webiny/api-event-handler-aws": ["../api-event-handler-aws/src"],
+      "@webiny/api-headless-cms-ddb/*": ["../api-headless-cms-ddb/src/*"],
+      "@webiny/api-headless-cms-ddb": ["../api-headless-cms-ddb/src"],
+      "@webiny/api-websockets-ddb/*": ["../api-websockets-ddb/src/*"],
+      "@webiny/api-websockets-ddb": ["../api-websockets-ddb/src"]
+    }
+  }
+}

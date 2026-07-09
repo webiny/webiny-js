@@ -1,4 +1,6 @@
 .idea
+.caveman.json
+.nx
 .webpack
 .webiny
 .artifacts

@@ -1,0 +1,42 @@
+{
+  "name": "@webiny/self-hosted-auth",
+  "version": "0.0.0",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": "./index.js",
+    "./admin": "./admin/index.js",
+    "./*": "./*"
+  },
+  "description": "Self-hosted username/password identity provider for Webiny (no external IdP).",
+  "author": "Webiny Ltd.",
+  "dependencies": {
+    "@webiny/admin-ui": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/app-admin": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/form": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
+    "@webiny/project": "0.0.0",
+    "@webiny/validation": "0.0.0",
+    "graphql": "^16.14.2",
+    "jsonwebtoken": "^9.0.3",
+    "lodash": "^4.18.1",
+    "react": "18.3.1",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "9.0.10",
+    "@types/react": "18.3.31",
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "vitest": "^4.1.9"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { loadJsonFileSync } from "load-json-file";
-import execa from "execa";
+import { execa } from "execa";
 import pRetry from "p-retry";
 import type { PackageJson } from "type-fest";
 

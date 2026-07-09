@@ -15,6 +15,7 @@
     { "path": "../utils" },
     { "path": "../validation" },
     { "path": "../api-file-manager" },
+    { "path": "../api-testing" },
     { "path": "../handler-aws" },
     { "path": "../plugins" },
     { "path": "../wcp" }
@@ -52,6 +53,8 @@
       "@webiny/validation": ["../validation/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
+      "@webiny/api-testing/*": ["../api-testing/src/*"],
+      "@webiny/api-testing": ["../api-testing/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

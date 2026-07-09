@@ -10,7 +10,7 @@ import type {
 import { TaskDataStatus, TaskLogItemType } from "~/api/types.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createService } from "~/api/service/index.js";
-import type { IStepFunctionServiceFetchResult } from "~/api/service/StepFunctionServicePlugin.js";
+import type { IServiceInfo } from "@webiny/api-core/features/task/TaskService/abstractions.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { BaseError, Result } from "@webiny/feature/api";
@@ -56,7 +56,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
         >(
             params: ITaskTriggerParams<T>
         ): Promise<Result<TaskService.Task<T, O>, BaseError>> => {
-            const service = createService({ context });
+            const service = createService({ container: context.container });
             const { definition: id, input: inputValues, name, parent, delay = 0 } = params;
             const definition = context.tasks.getDefinition(id);
             if (!definition) {
@@ -119,8 +119,8 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
         },
         fetchServiceInfo: async (
             input: TaskService.Task | string
-        ): Promise<Result<IStepFunctionServiceFetchResult, BaseError<any>>> => {
-            const service = createService({ context });
+        ): Promise<Result<IServiceInfo, BaseError<any>>> => {
+            const service = createService({ container: context.container });
             const task = typeof input === "object" ? input : await context.tasks.getTask(input);
             if (!task && typeof input === "string") {
                 throw new NotFoundError(`Task "${input}" was not found!`);
@@ -131,7 +131,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
             }
 
             try {
-                const info = (await service.fetch(task)) as IStepFunctionServiceFetchResult | null;
+                const info = (await service.fetch(task)) as IServiceInfo | null;
                 if (info) {
                     return Result.ok(info);
                 }

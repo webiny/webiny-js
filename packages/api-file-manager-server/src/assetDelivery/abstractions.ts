@@ -8,5 +8,3 @@ export interface ILocalAssetDeliveryConfig {
 export const LocalAssetDeliveryConfig = createAbstraction<ILocalAssetDeliveryConfig>(
     "AssetDelivery/LocalConfig"
 );
-
-export const LocalStoragePath = createAbstraction<string>("AssetDelivery/LocalStoragePath");

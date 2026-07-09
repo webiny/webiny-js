@@ -1,11 +1,11 @@
+export type { Timer } from "./abstractions/Timer.js";
+export { TaskService } from "./domain/TaskService.js";
 export { createBackgroundTaskGraphQL } from "./graphql/index.js";
 export { createBackgroundTaskContext } from "./context.js";
-export { TaskServiceTransport } from "./plugins/index.js";
 
 export * from "./response/index.js";
 export * from "./types.js";
 export { BackgroundTasksFeature } from "./BackgroundTasksFeature.js";
-export { BackgroundTaskLambdaHandler } from "./BackgroundTaskLambdaHandler.js";
 
 export { TasksCrud } from "./TasksCrud.js";
 export { TriggerTaskUseCase } from "./features/TriggerTask/abstractions.js";

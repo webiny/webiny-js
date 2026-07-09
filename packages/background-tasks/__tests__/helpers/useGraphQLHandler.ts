@@ -12,11 +12,11 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { BackgroundTasksFeature } from "~/api/BackgroundTasksFeature.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
-import { TaskServiceTransport } from "~/api/plugins";
-import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
-import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
-import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
+import { createMockTaskService } from "~tests/mocks/taskTriggerTransportPlugin";
+import { TaskService } from "~/api/domain/TaskService.js";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
+import { AuthTriggerHandler } from "@webiny/api-testing";
 import { TenantFromHeaderInitializer } from "./mocks/TenantFromHeaderInitializer";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -74,7 +74,7 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
     const handler = createTestHttpHandler({
         root: container => {
             container.registerInstance(TestIdentity, defaultIdentity);
-            container.registerInstance(TestPermissions, defaultPermissions);
+            container.registerInstance(TestPermissions, { list: defaultPermissions });
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             container.registerDecorator(AuthTriggerHandler);
@@ -111,8 +111,8 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
                 }
             }));
 
-            container.registerInstance(TaskServiceTransport, createMockTaskServicePlugin());
-            registerLegacyPluginsViaGqlContextualSchema(container, [...(params?.plugins ?? [])]);
+            container.registerInstance(TaskService, createMockTaskService());
+            registerLegacyPluginsViaGqlContextualSchema(container, [...(params?.plugins || [])]);
 
             GraphQLEngineFeature.register(container);
         }

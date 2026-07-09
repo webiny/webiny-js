@@ -1,0 +1,49 @@
+{
+  "name": "@webiny/api-event-handler-server-sql",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "types": "index.d.ts",
+  "description": "EXPERIMENTAL: Webiny API handler for the Node server transport with SQL storage.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Webiny Team"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-aco-sql": "0.0.0",
+    "@webiny/api-audit-logs-sql": "0.0.0",
+    "@webiny/api-core-sql": "0.0.0",
+    "@webiny/api-event-handler-server": "0.0.0",
+    "@webiny/api-headless-cms-sql": "0.0.0",
+    "@webiny/api-websockets-sql": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/self-hosted-auth": "0.0.0",
+    "@webiny/self-hosted-auth-sql": "0.0.0"
+  },
+  "peerDependencies": {
+    "@webiny/di": ">=0.2.3",
+    "knex": ">=3"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "^1.0.2",
+    "knex": "^3.3.0",
+    "rimraf": "^6.1.3",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.9"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

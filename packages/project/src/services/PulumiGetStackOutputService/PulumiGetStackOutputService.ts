@@ -59,7 +59,7 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
         });
 
         try {
-            const stackOutputJson = JSON.parse(stackOutputString.stdout);
+            const stackOutputJson = JSON.parse(stackOutputString.stdout as string);
             if (!stackOutputJson) {
                 return null;
             }

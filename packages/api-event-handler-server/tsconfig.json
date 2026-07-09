@@ -1,0 +1,30 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../api-core" },
+    { "path": "../api-event-handler-core" },
+    { "path": "../event-handler-core" },
+    { "path": "../event-handler-server" },
+    { "path": "../handler" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-event-handler-core/*": ["../api-event-handler-core/src/*"],
+      "@webiny/api-event-handler-core": ["../api-event-handler-core/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
+      "@webiny/event-handler-server/*": ["../event-handler-server/src/*"],
+      "@webiny/event-handler-server": ["../event-handler-server/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"]
+    }
+  }
+}

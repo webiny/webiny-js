@@ -1,4 +1,4 @@
-import execa from "execa";
+import { execa } from "execa";
 import semver from "semver";
 import type { IBasicPackage, IVersionedPackage } from "./types";
 

@@ -1,0 +1,6 @@
+// Import admin app styles (admin-ui theme + Tailwind design system + lexical).
+@use "~@webiny/app-serverless-cms/styles.scss" as *;
+
+body {
+  margin: 0;
+}

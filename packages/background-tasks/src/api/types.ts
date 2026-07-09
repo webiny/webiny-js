@@ -6,7 +6,7 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import type { IResponseError } from "~/api/response/abstractions/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { IStepFunctionServiceFetchResult } from "~/api/service/StepFunctionServicePlugin.js";
+import type { IServiceInfo } from "@webiny/api-core/features/task/TaskService/abstractions.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
@@ -245,9 +245,7 @@ export interface ITasksContextServiceObject {
     >(
         params: ITaskAbortParams
     ) => Promise<Result<ITask<T, O>, BaseError>>;
-    fetchServiceInfo: (
-        input: ITask<any, any> | string
-    ) => Promise<Result<IStepFunctionServiceFetchResult, BaseError>>;
+    fetchServiceInfo: (input: ITask<any, any> | string) => Promise<Result<IServiceInfo, BaseError>>;
 }
 
 export interface ITasksContextObject

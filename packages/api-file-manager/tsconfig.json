@@ -13,6 +13,7 @@
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
     { "path": "../wcp" },
+    { "path": "../api-testing" },
     { "path": "../handler-aws" },
     { "path": "../utils" }
   ],
@@ -45,6 +46,8 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"],
+      "@webiny/api-testing/*": ["../api-testing/src/*"],
+      "@webiny/api-testing": ["../api-testing/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/utils/*": ["../utils/src/*"],

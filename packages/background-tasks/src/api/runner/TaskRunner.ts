@@ -5,7 +5,7 @@ import { Response, ResponseErrorResult } from "~/api/response/index.js";
 import { TaskControl } from "./TaskControl.js";
 import type { IResponseResult } from "~/api/response/abstractions/index.js";
 import { getErrorProperties } from "~/api/utils/getErrorProperties.js";
-import type { ITimer } from "@webiny/handler-aws/utils/index.js";
+import type { Timer } from "~/api/abstractions/Timer.js";
 
 const transformMinutesIntoMilliseconds = (minutes: number) => {
     return minutes * 60000;
@@ -23,13 +23,13 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
      * Follow the same example for the rest of the properties.
      */
     public readonly context: C;
-    public readonly timer: ITimer;
+    public readonly timer: Timer.Interface;
     private readonly validation: ITaskEventValidation;
 
     /**
      * We take all required variables separately because they will get injected via DI - so less refactoring is required in the future.
      */
-    public constructor(context: C, timer: ITimer, validation: ITaskEventValidation) {
+    public constructor(context: C, timer: Timer.Interface, validation: ITaskEventValidation) {
         this.context = context;
         this.timer = timer;
         this.validation = validation;

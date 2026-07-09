@@ -14,10 +14,10 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { AcoFeature } from "~/index";
-import { createIdentity } from "./identity";
+import { createIdentity } from "@webiny/api-testing";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
-import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
 import type { AcoContext } from "~/types";
 
 export interface UseHandlerParams {
@@ -41,7 +41,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         if (!rootContainer) {
             rootContainer = new Container();
             rootContainer.registerInstance(TestIdentity, resolvedIdentity);
-            rootContainer.registerInstance(TestPermissions, resolvedPermissions);
+            rootContainer.registerInstance(TestPermissions, { list: resolvedPermissions });
             rootContainer.register(TestAuthenticator);
             rootContainer.register(TestAuthorizer);
         }

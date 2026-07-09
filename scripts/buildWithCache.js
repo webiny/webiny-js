@@ -8,7 +8,6 @@ const path = require("path");
 const { writeJsonFileSync } = require("write-json-file");
 const { green, red } = require("chalk");
 const { loadJsonFileSync } = require("load-json-file");
-require("@webiny/cli");
 const argv = require("yargs").argv;
 
 const CACHE_FOLDER_PATH = ".webiny/cached-packages";

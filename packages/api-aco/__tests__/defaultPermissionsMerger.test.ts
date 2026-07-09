@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createIdentity } from "./utils/identity";
+import { createIdentity } from "@webiny/api-testing";
 import { FolderPermission } from "~/flp/flp.types";
 import { DefaultPermissionsMerger } from "~/features/flp/FolderLevelPermissions/useCases/GetDefaultPermissions/DefaultPermissionsMerger.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";

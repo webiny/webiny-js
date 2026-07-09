@@ -1,0 +1,27 @@
+{
+  "name": "@webiny/project-server-template",
+  "version": "0.0.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "A Webiny self-hosted (server) project template.",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/ai-powerups": "0.0.0",
+    "@webiny/api-event-handler-server-sql": "0.0.0",
+    "@webiny/app": "0.0.0",
+    "@webiny/app-serverless-cms": "0.0.0",
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/languages": "0.0.0",
+    "@webiny/project": "0.0.0",
+    "@webiny/project-server": "0.0.0",
+    "@webiny/tenant-manager": "0.0.0",
+    "knex": "^3.3.0",
+    "react": "18.3.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

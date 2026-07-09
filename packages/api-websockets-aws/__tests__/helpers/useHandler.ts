@@ -13,10 +13,10 @@ import { WebsocketsFeature } from "@webiny/api-websockets/features/feature.js";
 import { WebsocketsGraphQLFactoryFeature } from "@webiny/api-websockets/graphql/feature.js";
 import { WebsocketsRouteHandler } from "@webiny/api-websockets/features/Routes/abstractions.js";
 import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
-import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
-import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
-import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
-import { RootTenantInitializer } from "./mocks/RootTenantInitializer";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
+import { AuthTriggerHandler } from "@webiny/api-testing";
+import { RootTenantInitializer } from "@webiny/api-testing";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
@@ -50,7 +50,7 @@ export const useHandler = (params?: UseHandlerParams) => {
     const handler = createTestHttpHandler({
         root: container => {
             container.registerInstance(TestIdentity, resolvedIdentity);
-            container.registerInstance(TestPermissions, resolvedPermissions);
+            container.registerInstance(TestPermissions, { list: resolvedPermissions });
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             container.registerDecorator(AuthTriggerHandler);

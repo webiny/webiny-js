@@ -4,7 +4,8 @@ import { tagResources } from "~/pulumi/utils/index.js";
 import { getEnvVariableWebinyProjectName } from "~/pulumi/env/projectName.js";
 import { getEnvVariableWebinyEnv } from "~/pulumi/env/env.js";
 import { getEnvVariableWebinyVariant } from "~/pulumi/env/variant.js";
-import { type AppName, getProjectSdk } from "@webiny/project";
+import { type AppName } from "@webiny/project";
+import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { AwsTags as awsTagsExt } from "~/pulumi/extensions/AwsTags.js";
 
 export function getAwsAccountId(app: PulumiApp) {
@@ -20,7 +21,7 @@ export function getAwsRegion(app: PulumiApp) {
 }
 
 export async function applyAwsResourceTags(appName: AppName) {
-    const sdk = await getProjectSdk();
+    const sdk = await getAwsProjectSdk();
     const projectConfig = await sdk.getProjectConfig();
 
     const awsTagsFromExtensions: Record<string, string> = {};

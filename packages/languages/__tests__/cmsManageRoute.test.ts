@@ -21,10 +21,10 @@ import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js"
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { Extension } from "~/api/Extension.js";
-import { TestIdentity, TestAuthenticator } from "./utils/mocks/TestAuthenticator";
-import { TestPermissions, TestAuthorizer } from "./utils/mocks/TestAuthorizer";
-import { AuthTriggerHandler } from "./utils/handlers/AuthTriggerHandler";
-import { RootTenantInitializer } from "./utils/handlers/RootTenantInitializer";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
+import { AuthTriggerHandler } from "@webiny/api-testing";
+import { RootTenantInitializer } from "@webiny/api-testing";
 import { processLegacyPlugins } from "./utils/bridgeLegacyPlugins";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -55,7 +55,7 @@ describe("Languages model via the CMS manage route (createCmsRoute)", () => {
         const handler = createTestHttpHandler({
             root: container => {
                 container.registerInstance(TestIdentity, defaultIdentity);
-                container.registerInstance(TestPermissions, defaultPermissions);
+                container.registerInstance(TestPermissions, { list: defaultPermissions });
                 container.register(TestAuthenticator);
                 container.register(TestAuthorizer);
                 container.registerDecorator(AuthTriggerHandler);
@@ -105,7 +105,7 @@ describe("Languages model via the CMS manage route (createCmsRoute)", () => {
         const handler = createTestHttpHandler({
             root: container => {
                 container.registerInstance(TestIdentity, defaultIdentity);
-                container.registerInstance(TestPermissions, defaultPermissions);
+                container.registerInstance(TestPermissions, { list: defaultPermissions });
                 container.register(TestAuthenticator);
                 container.register(TestAuthorizer);
                 container.registerDecorator(AuthTriggerHandler);

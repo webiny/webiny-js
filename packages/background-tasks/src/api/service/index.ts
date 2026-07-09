@@ -1,1 +1,1 @@
-export * from "./createService.js";
+export { createService } from "./createService.js";

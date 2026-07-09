@@ -5,11 +5,13 @@ import {
     AdminBeforeWatch,
     AfterDeploy,
     ApiAfterDeploy,
+    ApiBeforeDeploy,
+    ApiBeforeWatch,
     BeforeDeploy,
+    CoreBeforeDeploy,
     DatabaseSetup,
     ExtensionDefinitions,
     Project,
-    ProjectDecorator,
     ProjectImplementation
 } from "@webiny/project/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
@@ -22,7 +24,6 @@ export const ProjectAws = () => {
     return (
         <>
             <Project />
-            <ProjectDecorator src={p("ProjectAws/BuildAppWorkspace.js")} />
 
             {/* Database Setup - default to DynamoDB only */}
             <DatabaseSetup setupName="ddb" />
@@ -47,6 +48,18 @@ export const ProjectAws = () => {
             {/* Admin env vars */}
             <AdminBeforeBuild src={p("ProjectAws/SetAdminEnvVars/SetAdminEnvVarsBeforeBuild.js")} />
             <AdminBeforeWatch src={p("ProjectAws/SetAdminEnvVars/SetAdminEnvVarsBeforeWatch.js")} />
+
+            {/* Deployment gates — AWS-only (there is no Pulumi stack output to check off-AWS) */}
+            <ApiBeforeWatch src={p("ProjectAws/EnsureApiDeployedBeforeWatch.js")} />
+            <AdminBeforeBuild src={p("ProjectAws/EnsureApiDeployedBeforeAdminBuild.js")} />
+            <AdminBeforeWatch src={p("ProjectAws/EnsureApiDeployedBeforeAdminWatch.js")} />
+            <ApiBeforeDeploy src={p("ProjectAws/EnsureCoreDeployedBeforeApiDeploy.js")} />
+            <CoreBeforeDeploy src={p("ProjectAws/ValidateProductionPulumiState.js")} />
+
+            {/* Deploy-time hooks — server flavour has no deploy command, so these are AWS-only */}
+            <BeforeDeploy src={p("ProjectAws/EnsureTelemetryEnabledForOss.js")} />
+            <BeforeDeploy src={p("ProjectAws/ValidateEncryptionBeforeDeploy.js")} />
+            <AdminAfterDeploy src={p("ProjectAws/TelemetryNoLongerNewUser.js")} />
 
             {/* AWS credentials check */}
             <BeforeDeploy src={p("ProjectAws/EnsureAwsCredentialsBeforeDeploy.js")} />
