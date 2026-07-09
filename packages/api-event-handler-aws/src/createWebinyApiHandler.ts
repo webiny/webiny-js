@@ -19,7 +19,6 @@ import {
     WebSocketEventType
 } from "@webiny/event-handler-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
-import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { registerExtensions } from "@webiny/handler";
 import { DbFeature } from "@webiny/handler-db";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
@@ -124,13 +123,11 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                 registerRealtimeTransport: c => {
                     WebsocketsAwsFeature.register(c);
                 },
-                // Scheduler transport: bridge the scheduler-aws extension (EventBridge Scheduler).
+                // Scheduler transport: the scheduler-aws extension (EventBridge Scheduler).
                 registerSchedulerTransport: c => {
-                    registerLegacyPluginsViaGqlContextualSchema(c, [
-                        ...registerSchedulerAwsExtension({
-                            getClient: schedulerConfig => createSchedulerClient(schedulerConfig)
-                        })
-                    ]);
+                    registerSchedulerAwsExtension(c, {
+                        getClient: schedulerConfig => createSchedulerClient(schedulerConfig)
+                    });
                 }
             });
         }
