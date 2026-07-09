@@ -7,26 +7,16 @@ import {
     ApiBeforeWatch,
     Encryption,
     EnvVar,
-    Hashing,
-    ProductionEnvironments
+    Hashing
 } from "@webiny/project/extensions/index.js";
-import {
-    CiIs,
-    CiIsNot,
-    EnvIs,
-    EnvIsNot,
-    EnvIsNotProd,
-    EnvIsProd,
-    useEnv
-} from "@webiny/project/extensions/infra/index.js";
-
-export { useEnv };
+import { CiIs, CiIsNot } from "@webiny/project/extensions/infra/index.js";
 
 /**
- * Server-flavour counterpart to project-aws's `Infra`, limited to what applies off-AWS: there is no
- * Pulumi, no deploy command, no Lambda, and no `core` app — so the AWS-only surface (Vpc, OpenSearch,
- * blue/green, custom domains, stack outputs, *Pulumi, *Deploy hooks, Lambda/bundle-size) is omitted.
- * Only build/watch hooks for the api + admin apps remain.
+ * Server-flavour counterpart to project-aws's `Infra`, limited to what applies off-AWS. Omits the
+ * AWS-only surface (Pulumi, deploy, Lambda, stack outputs, custom domains, Vpc, OpenSearch,
+ * blue/green) and the environments surface (`Env.*`, `ProductionEnvironments`) — the self-hosted
+ * flavour has no notion of deploy environments. Only build/watch hooks for the api + admin apps,
+ * crypto config, env vars, and CI detection remain.
  */
 export const Infra = {
     // Grouped crypto config surface (mirrors project-aws).
@@ -37,14 +27,6 @@ export const Infra = {
     // Kept top-level for backward compatibility (prefer Infra.Crypto.Encryption going forward).
     Encryption,
     EnvVar,
-    ProductionEnvironments,
-    Env: {
-        useEnv,
-        Is: EnvIs,
-        IsNot: EnvIsNot,
-        IsProd: EnvIsProd,
-        IsNotProd: EnvIsNotProd
-    },
     Ci: {
         Is: CiIs,
         IsNot: CiIsNot
