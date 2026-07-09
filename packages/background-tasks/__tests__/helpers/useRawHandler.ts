@@ -17,9 +17,9 @@ import { TasksCrud } from "~/api/TasksCrud.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { createMockTaskService } from "~tests/mocks/taskTriggerTransportPlugin";
 import { TaskService } from "~/api/domain/TaskService.js";
-import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
-import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
-import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
+import { AuthTriggerHandler } from "@webiny/api-testing";
 import { TenantFromHeaderInitializer } from "./mocks/TenantFromHeaderInitializer";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -48,7 +48,7 @@ export const useRawHandler = <C = any>(params?: UseRawHandlerParams) => {
     const handler = createTestHttpHandler({
         root: container => {
             container.registerInstance(TestIdentity, defaultIdentity);
-            container.registerInstance(TestPermissions, defaultPermissions);
+            container.registerInstance(TestPermissions, { list: defaultPermissions });
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             container.registerDecorator(AuthTriggerHandler);

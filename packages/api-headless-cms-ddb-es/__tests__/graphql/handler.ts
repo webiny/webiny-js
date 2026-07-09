@@ -19,8 +19,8 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { CmsContext } from "~/types";
 import { createIndexConfigurationPlugin } from "~tests/graphql/createIndexConfigurationPlugin";
-import { TestIdentity, TestAuthenticator } from "~tests/mocks/TestAuthenticator";
-import { TestPermissions, TestAuthorizer } from "~tests/mocks/TestAuthorizer";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
 import { processLegacyPlugins } from "~tests/helpers/bridgeLegacyPlugins";
 
 interface UseHandlerParams {
@@ -61,7 +61,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         if (!rootContainer) {
             rootContainer = new Container();
             rootContainer.registerInstance(TestIdentity, defaultIdentity);
-            rootContainer.registerInstance(TestPermissions, [{ name: "*" }]);
+            rootContainer.registerInstance(TestPermissions, { list: [{ name: "*" }] });
             rootContainer.register(TestAuthenticator);
             rootContainer.register(TestAuthorizer);
         }

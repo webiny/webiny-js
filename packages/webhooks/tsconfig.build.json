@@ -13,6 +13,7 @@
     { "path": "../sdk/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
+    { "path": "../api-testing/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
@@ -46,6 +47,8 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
+      "@webiny/api-testing/*": ["../api-testing/src/*"],
+      "@webiny/api-testing": ["../api-testing/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],

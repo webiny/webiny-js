@@ -16,9 +16,9 @@ import { BackgroundTasksFeature } from "~/api/BackgroundTasksFeature.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { createMockTaskService } from "~tests/mocks/taskTriggerTransportPlugin";
 import { TaskService } from "~/api/domain/TaskService.js";
-import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
-import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
-import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
+import { AuthTriggerHandler } from "@webiny/api-testing";
 import { TenantFromHeaderInitializer } from "./mocks/TenantFromHeaderInitializer";
 import { TaskRunner } from "~/api/runner/index.js";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation.js";
@@ -57,7 +57,7 @@ export const useTaskHandler = (params?: UseTaskHandlerParams) => {
     const handler = createTestHttpHandler({
         root: container => {
             container.registerInstance(TestIdentity, defaultIdentity);
-            container.registerInstance(TestPermissions, defaultPermissions);
+            container.registerInstance(TestPermissions, { list: defaultPermissions });
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             container.registerDecorator(AuthTriggerHandler);
