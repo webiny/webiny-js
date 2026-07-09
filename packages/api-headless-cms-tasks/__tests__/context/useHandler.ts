@@ -1,12 +1,7 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { DbFeature } from "@webiny/handler-db";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
-import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
-import {
-    createBackgroundTaskContext,
-    createBackgroundTaskGraphQL,
-    TaskService
-} from "@webiny/background-tasks/api";
+import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
 import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
@@ -36,12 +31,9 @@ export const useHandler = <C extends HcmsTasksContext = HcmsTasksContext>(params
             });
             HcmsTasksFeature.register(container);
 
-            // Background tasks (TriggerTaskUseCase etc.) + a mock trigger transport (DI) so the task
-            // isn't actually dispatched to AWS during tests.
-            registerLegacyPluginsViaGqlContextualSchema(container, [
-                createBackgroundTaskContext(),
-                ...createBackgroundTaskGraphQL()
-            ]);
+            // Background tasks are DI-native (TriggerTaskUseCase etc.); a mock trigger transport (DI)
+            // keeps the task from actually dispatching to AWS during tests.
+            BackgroundTasksFeature.register(container);
             container.registerInstance(TaskService, createMockTaskService());
         }
     });

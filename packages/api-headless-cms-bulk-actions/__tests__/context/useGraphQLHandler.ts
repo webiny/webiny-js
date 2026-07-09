@@ -7,10 +7,7 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
-import {
-    createBackgroundTaskContext,
-    createBackgroundTaskGraphQL
-} from "@webiny/background-tasks/api";
+import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { createHcmsBulkActions } from "~/index";
 import { createIdentity, createPermissions } from "~tests/context/helpers";
 
@@ -36,15 +33,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
     const extraCmsPlugins = ([plugins] as any[]).flat(Infinity as 1).filter(Boolean);
 
-    // createBackgroundTaskContext/GraphQL and createHcmsBulkActions are legacy gql plugins applied
-    // via the contextual-schema path on /graphql (after the CMS contextual schema).
-    const latePlugins = [
-        createBackgroundTaskContext(),
-        createBackgroundTaskGraphQL(),
-        createHcmsBulkActions()
-    ]
-        .flat(Infinity as 1)
-        .filter(Boolean);
+    // createHcmsBulkActions is a legacy gql plugin applied via the contextual-schema path on
+    // /graphql (after the CMS contextual schema). Background tasks are DI-native (feature below).
+    const latePlugins = [createHcmsBulkActions()].flat(Infinity as 1).filter(Boolean);
 
     const { handler, invoke } = createCmsTestHandler({
         identity: params.identity ?? createIdentity(),
@@ -53,6 +44,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         extraCmsPlugins,
         features: container => {
             container.register(HeadlessCmsContextualSchema);
+            BackgroundTasksFeature.register(container);
             registerLegacyPluginsViaGqlContextualSchema(container, latePlugins);
         }
     });
