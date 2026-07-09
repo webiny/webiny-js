@@ -17063,12 +17063,12 @@ __metadata:
   linkType: hard
 
 "enhanced-resolve@npm:^5.22.2":
-  version: 5.24.1
-  resolution: "enhanced-resolve@npm:5.24.1"
+  version: 5.24.2
+  resolution: "enhanced-resolve@npm:5.24.2"
   dependencies:
     graceful-fs: "npm:^4.2.4"
     tapable: "npm:^2.3.3"
-  checksum: 10/161f52840ad84390ad5b9ac611692b0b45dd12a673455df697bb824a6fef47490ee7dadbe9fd7f003d9a576be8741092b7c0d9e8147e8fb47dbad698f2de2a9b
+  checksum: 10/92c801d0f6b635cd5e91762497de1b499082112129870a8672f04f44eb955fbafe69eb27281a788297e33ecae28b4c6151bf74a6ac1a2b5828f85c18d127a340
   languageName: node
   linkType: hard
 
@@ -18858,9 +18858,9 @@ __metadata:
   linkType: hard
 
 "hono@npm:^4.11.4":
-  version: 4.12.27
-  resolution: "hono@npm:4.12.27"
-  checksum: 10/f1bb52f3871093fae5b5bc40fb179ff2e6d43c6dab8d7065ef182d8ff6cdc1c41dc1124b07f2f02e0fe36ec1e39e72300ed3447f64391e39d71978616d4f5a07
+  version: 4.12.28
+  resolution: "hono@npm:4.12.28"
+  checksum: 10/6ba1f88bc6f8502cc3a8a3185895655bb06de516ba3d4d26e356429047d21c848a3e7917a8a1b98d595471972ec3a6e5dd5a43067bca334f98bf2b0fece224e7
   languageName: node
   linkType: hard
 
@@ -28134,9 +28134,9 @@ __metadata:
   linkType: soft
 
 "webpack-sources@npm:^3.5.0":
-  version: 3.5.0
-  resolution: "webpack-sources@npm:3.5.0"
-  checksum: 10/e5af4245dbe52bb1520c7c373d73042fe091e273ff94269b877725a7873481e544ba4e71722df13e278f88069de900052764d98b99f9910be634826ec2f6e67d
+  version: 3.5.1
+  resolution: "webpack-sources@npm:3.5.1"
+  checksum: 10/50b9699a3ab9a698e117d8a6b816235576f17e60aeca0a44269041773f960c3beb2ad10d07bc5f2ef8eebde3db5275c6a23566dad475db8f840a34a7bfabd2c3
   languageName: node
   linkType: hard
 
