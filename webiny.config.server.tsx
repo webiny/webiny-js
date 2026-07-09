@@ -10,7 +10,7 @@ export const ServerExtensions = () => {
     return (
         <>
             {/* Hand the admin app the API URL (AWS derives this from stack output; server has none). */}
-            <Admin.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3000"} />
+            <Admin.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
 
             {/* Auth: built-in self-hosted IdP (login screen + JWT). Back the secret with any env var. */}
             <SelfHostedAuth

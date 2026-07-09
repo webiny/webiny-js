@@ -10,5 +10,5 @@ import { waitForExit } from "./waitForExit.js";
  */
 export async function serveAdmin(app: IAppModel, ui: UiService.Interface): Promise<void> {
     assertAdminBuilt(app);
-    await waitForExit(runAdminServer(app, ui), "admin");
+    await waitForExit(await runAdminServer(app, ui), "admin");
 }

@@ -4,6 +4,7 @@ import path from "node:path";
 import { type UiService } from "@webiny/project/abstractions/index.js";
 import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import { getServerTemplatesFolderPath } from "../utils/getServerTemplatesFolderPath.js";
+import { findFreePort } from "./findFreePort.js";
 
 interface IRunAdminServerOptions {
     /**
@@ -24,20 +25,22 @@ interface IRunAdminServerOptions {
  *
  * Returns the child process; the caller owns its lifecycle.
  */
-export function runAdminServer(
+export async function runAdminServer(
     app: IAppModel,
     ui: UiService.Interface,
     options: IRunAdminServerOptions = {}
-): ChildProcess {
+): Promise<ChildProcess> {
     const { ignoreGenericPort = false } = options;
 
     const workspaceAdmin = app.paths.workspaceFolder;
     const runnerPath = workspaceAdmin.join(".serve.mjs").toString();
     // Port precedence: explicit WEBINY_ADMIN_PORT, then a PORT injected by the environment (e.g.
-    // portless, which assigns a random port and expects the server to honour it), then 3001 (the
-    // admin dev server port) as the default.
+    // portless, which assigns a random port and expects the server to honour it). Both are honoured
+    // strictly. Otherwise fall back to 3001 (the admin dev server port), auto-advancing to the next
+    // free port so a busy default doesn't block startup.
     const genericPort = ignoreGenericPort ? undefined : process.env.PORT;
-    const port = process.env.WEBINY_ADMIN_PORT || genericPort || "3001";
+    const explicitPort = process.env.WEBINY_ADMIN_PORT || genericPort;
+    const port = explicitPort || String(await findFreePort(3001));
 
     // Copy the runner verbatim; it reads PORT from env, so no templating is needed.
     const runnerTemplate = path.join(getServerTemplatesFolderPath(), "adminServerRunner.mjs");

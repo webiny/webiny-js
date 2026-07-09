@@ -21,8 +21,8 @@ export async function serveAll(
 
     // Ignore a generic injected PORT here: api and admin run in this one process and must land on
     // their own dedicated ports rather than both grabbing the same PORT.
-    const apiChild = runApiServer(apiApp, ui, { watch: false, ignoreGenericPort: true });
-    const adminChild = runAdminServer(adminApp, ui, { ignoreGenericPort: true });
+    const apiChild = await runApiServer(apiApp, ui, { watch: false, ignoreGenericPort: true });
+    const adminChild = await runAdminServer(adminApp, ui, { ignoreGenericPort: true });
 
     await Promise.all([waitForExit(apiChild, "api"), waitForExit(adminChild, "admin")]);
 }

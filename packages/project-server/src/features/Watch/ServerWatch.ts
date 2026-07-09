@@ -28,7 +28,8 @@ export class ServerWatch implements Watch.Interface {
             return result;
         }
 
-        runApiServer(this.getApp.execute(params.app), this.ui, { watch: true });
+        const app = this.getApp.execute(params.app);
+        await runApiServer(app, this.ui, { watch: true });
 
         return result;
     }

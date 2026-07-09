@@ -12,5 +12,5 @@ import { waitForExit } from "./waitForExit.js";
  */
 export async function serveApi(app: IAppModel, ui: UiService.Interface): Promise<void> {
     assertApiBuilt(app);
-    await waitForExit(runApiServer(app, ui, { watch: false }), "api");
+    await waitForExit(await runApiServer(app, ui, { watch: false }), "api");
 }

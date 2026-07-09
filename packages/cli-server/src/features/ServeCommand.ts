@@ -45,12 +45,14 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                 }
 
                 if (params.app === "api") {
-                    await serveApi(await projectSdk.getApp("api"), ui);
+                    const apiApp = await projectSdk.getApp("api");
+                    await serveApi(apiApp, ui);
                     return;
                 }
 
                 if (params.app === "admin") {
-                    await serveAdmin(await projectSdk.getApp("admin"), ui);
+                    const adminApp = await projectSdk.getApp("admin");
+                    await serveAdmin(adminApp, ui);
                     return;
                 }
 

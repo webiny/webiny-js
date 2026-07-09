@@ -4,6 +4,7 @@ import path from "node:path";
 import { type UiService } from "@webiny/project/abstractions/index.js";
 import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import { getServerTemplatesFolderPath } from "../utils/getServerTemplatesFolderPath.js";
+import { findFreePort } from "./findFreePort.js";
 
 // Cyan "api" label, prepended to every line of the server's output so it reads clearly alongside the
 // build watchers (and the admin server when running both).
@@ -79,21 +80,23 @@ interface IRunApiServerOptions {
  * Returns the child process. The caller decides its lifecycle: watch leaves it running alongside the
  * build watchers; serve awaits its exit.
  */
-export function runApiServer(
+export async function runApiServer(
     app: IAppModel,
     ui: UiService.Interface,
     options: IRunApiServerOptions = {}
-): ChildProcess {
+): Promise<ChildProcess> {
     const { watch = false, ignoreGenericPort = false } = options;
 
     const workspaceApi = app.paths.workspaceFolder;
     const buildDir = workspaceApi.join("graphql", "build");
     const runnerPath = workspaceApi.join(".serve.mjs").toString();
     // Port precedence: explicit WEBINY_API_PORT, then a PORT injected by the environment (e.g.
-    // portless, which assigns a random port and expects the server to honour it), then a dedicated
-    // default that won't collide with the admin dev server (rsbuild defaults to 3001).
+    // portless, which assigns a random port and expects the server to honour it). Both are honoured
+    // strictly (a busy explicit port errors — moving off it would break the proxy). Otherwise fall
+    // back to 3002, auto-advancing to the next free port so a busy default doesn't block startup.
     const genericPort = ignoreGenericPort ? undefined : process.env.PORT;
-    const port = process.env.WEBINY_API_PORT || genericPort || "3000";
+    const explicitPort = process.env.WEBINY_API_PORT || genericPort;
+    const port = explicitPort || String(await findFreePort(3002));
 
     // In watch mode, create the build dir up front so Node's `--watch-path` doesn't ENOENT when the
     // first build hasn't landed yet.
