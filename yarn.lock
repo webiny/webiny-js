@@ -13087,9 +13087,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-server@workspace:packages/project-server"
   dependencies:
+    "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cli-core": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
     "@webiny/project": "npm:0.0.0"
+    react: "npm:18.3.1"
     replace-in-path: "npm:^1.1.0"
     typescript: "npm:6.0.3"
   languageName: unknown

@@ -1,5 +1,6 @@
 import React from "react";
-import { Project, ProductionEnvironments } from "@webiny/project/extensions/index.js";
+import { ProductionEnvironments } from "@webiny/project/extensions/index.js";
+import { ProjectServer } from "@webiny/project-server";
 import { TenantManager } from "@webiny/tenant-manager";
 import { Languages } from "@webiny/languages";
 import { AiPowerups } from "@webiny/ai-powerups";
@@ -15,7 +16,7 @@ export const Extensions = () => {
     return (
         <>
             <ProductionEnvironments environments={["prod", "production"]} />
-            <Project />
+            <ProjectServer />
             <Languages />
             <TenantManager />
             <AiPowerups />
