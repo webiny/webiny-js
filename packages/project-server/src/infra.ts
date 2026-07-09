@@ -10,6 +10,7 @@ import {
     Hashing
 } from "@webiny/project/extensions/index.js";
 import { CiIs, CiIsNot } from "@webiny/project/extensions/infra/index.js";
+import { Sqlite } from "./extensions/Sqlite.js";
 
 /**
  * Server-flavour counterpart to project-aws's `Infra`, limited to what applies off-AWS. Omits the
@@ -27,6 +28,8 @@ export const Infra = {
     // Kept top-level for backward compatibility (prefer Infra.Crypto.Encryption going forward).
     Encryption,
     EnvVar,
+    // Server-flavour SQL storage (engine-named, like Infra.OpenSearch on AWS).
+    Sqlite,
     Ci: {
         Is: CiIs,
         IsNot: CiIsNot

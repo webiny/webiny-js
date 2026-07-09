@@ -3,6 +3,7 @@ import {
     type ExtensionDefinitionModel
 } from "@webiny/project/extensions/index.js";
 import { definitions as cliDefinitions } from "@webiny/cli-core/extensions/index.js";
+import { Sqlite } from "./Sqlite.js";
 
 /**
  * Built-in extension definitions the server flavour registers with the SDK (via
@@ -15,7 +16,8 @@ import { definitions as cliDefinitions } from "@webiny/cli-core/extensions/index
  */
 const definitions = [
     ...cliDefinitions,
-    ...projectDefinitions
+    ...projectDefinitions,
+    Sqlite.def
 ] as unknown as ExtensionDefinitionModel<any>[];
 
 export default definitions;

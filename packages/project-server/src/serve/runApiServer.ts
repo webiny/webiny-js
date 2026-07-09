@@ -121,6 +121,14 @@ export async function runApiServer(
     // instead of reading the plaintext value.
     const { WCP_PROJECT_LICENSE: _buildTimeLicense, ...runtimeEnv } = process.env;
 
+    // Pin the default sqlite DB to the PROJECT ROOT's `.webiny/` (this CLI's cwd), not the child's
+    // cwd. The child runs from the app workspace, which is regenerated on every build — so the
+    // template's `process.cwd()`-relative default would put the DB inside the disposable workspace
+    // and lose all data on the next watch/build. `<root>/.webiny/` is a sibling of `workspace` and
+    // survives rebuilds. Respect an explicit WEBINY_SQL_FILENAME if the user set one.
+    const sqlFilename =
+        process.env.WEBINY_SQL_FILENAME || path.join(process.cwd(), ".webiny", "server.sqlite");
+
     const args = watch ? ["--watch-path", buildDir.toString(), runnerPath] : [runnerPath];
 
     const child = spawn(process.execPath, args, {
@@ -128,7 +136,7 @@ export async function runApiServer(
         // Watch: capture output so we can filter Node's `--watch` chatter and prefix cleanly.
         // Serve: inherit — it's the foreground process, nothing to filter.
         stdio: watch ? ["ignore", "pipe", "pipe"] : "inherit",
-        env: { ...runtimeEnv, PORT: port }
+        env: { ...runtimeEnv, PORT: port, WEBINY_SQL_FILENAME: sqlFilename }
     });
 
     if (watch) {
