@@ -12,10 +12,10 @@ import { SchedulerFeature } from "@webiny/api-scheduler";
 import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
-import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
-import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
-import { RootTenantInitializer } from "./mocks/RootTenantInitializer";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
+import { AuthTriggerHandler } from "@webiny/api-testing";
+import { RootTenantInitializer } from "@webiny/api-testing";
 import {
     CANCEL_SCHEDULED_ACTION,
     GET_SCHEDULED_ACTION,
@@ -75,7 +75,7 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams) => {
     const handler = createTestHttpHandler({
         root: container => {
             container.registerInstance(TestIdentity, resolvedIdentity);
-            container.registerInstance(TestPermissions, resolvedPermissions);
+            container.registerInstance(TestPermissions, { list: resolvedPermissions });
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             container.registerDecorator(AuthTriggerHandler);

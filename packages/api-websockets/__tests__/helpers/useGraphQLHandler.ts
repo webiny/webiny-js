@@ -13,10 +13,10 @@ import { WebsocketsGraphQLFactoryFeature } from "~/graphql/feature.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 import { WebsocketsTransport } from "~/transport/index.js";
 import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport.js";
-import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
-import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
-import { AuthTriggerHandler } from "./mocks/AuthTriggerHandler";
-import { RootTenantInitializer } from "./mocks/RootTenantInitializer";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
+import { AuthTriggerHandler } from "@webiny/api-testing";
+import { RootTenantInitializer } from "@webiny/api-testing";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { getIntrospectionQuery } from "graphql";
@@ -76,7 +76,7 @@ export const useGraphQLHandler = (params?: UseGraphQLHandlerParams) => {
     const handler = createTestHttpHandler({
         root: container => {
             container.registerInstance(TestIdentity, resolvedIdentity);
-            container.registerInstance(TestPermissions, resolvedPermissions);
+            container.registerInstance(TestPermissions, { list: resolvedPermissions });
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             container.registerDecorator(AuthTriggerHandler);

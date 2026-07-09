@@ -11,6 +11,7 @@
     { "path": "../handler" },
     { "path": "../handler-graphql" },
     { "path": "../api-headless-cms" },
+    { "path": "../api-testing" },
     { "path": "../aws-sdk" },
     { "path": "../handler-db" },
     { "path": "../wcp" }
@@ -40,6 +41,8 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-testing/*": ["../api-testing/src/*"],
+      "@webiny/api-testing": ["../api-testing/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
