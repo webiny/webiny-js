@@ -7,7 +7,7 @@
     },
     {
       "name": "@ai-sdk/openai",
-      "version": "4.0.7",
+      "version": "4.0.8",
       "files": ["/packages/api-core/package.json", "/packages/api-core/package.json"]
     },
     {
@@ -22,7 +22,7 @@
     },
     {
       "name": "@auth0/auth0-spa-js",
-      "version": "2.22.0",
+      "version": "2.23.0",
       "files": ["/packages/auth0/package.json", "/packages/auth0/package.json"]
     },
     {
@@ -1603,7 +1603,7 @@
     },
     {
       "name": "mqtt",
-      "version": "5.15.1",
+      "version": "5.15.2",
       "files": ["/packages/project/package.json", "/packages/project/package.json"]
     },
     {
@@ -2306,7 +2306,7 @@
     },
     {
       "name": "typescript",
-      "version": "6.0.3",
+      "version": "7.0.2",
       "files": ["/packages/build-tools/package.json", "/packages/build-tools/package.json"]
     },
     {
@@ -2347,7 +2347,7 @@
     },
     {
       "name": "vitest",
-      "version": "4.1.9",
+      "version": "4.1.10",
       "files": [
         "/packages/api-headless-cms-aco/package.json",
         "/packages/api-headless-cms-aco/package.json"
@@ -2918,7 +2918,7 @@
         "/scripts/release/package.json"
       ]
     },
-    { "name": "@vitest/coverage-v8", "version": "4.1.9", "files": ["/package.json"] },
+    { "name": "@vitest/coverage-v8", "version": "4.1.10", "files": ["/package.json"] },
     { "name": "adio", "version": "3.0.1", "files": ["/package.json"] },
     {
       "name": "amazon-cognito-identity-js",
@@ -3400,7 +3400,7 @@
     },
     {
       "name": "typescript",
-      "version": "6.0.3",
+      "version": "7.0.2",
       "files": [
         "/package.json",
         "/packages/admin-ui/package.json",
@@ -3682,7 +3682,7 @@
     },
     {
       "name": "vitest",
-      "version": "4.1.9",
+      "version": "4.1.10",
       "files": [
         "/package.json",
         "/packages/admin-ui/package.json",
@@ -4242,7 +4242,10 @@
     {
       "name": "@vitest/coverage-v8",
       "versions": [
-        { "version": "4.1.9", "files": [{ "file": "/package.json", "types": ["devDependencies"] }] }
+        {
+          "version": "4.1.10",
+          "files": [{ "file": "/package.json", "types": ["devDependencies"] }]
+        }
       ]
     },
     {
@@ -4812,7 +4815,7 @@
       "name": "typescript",
       "versions": [
         {
-          "version": "6.0.3",
+          "version": "7.0.2",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
@@ -5065,7 +5068,7 @@
       "name": "vitest",
       "versions": [
         {
-          "version": "4.1.9",
+          "version": "4.1.10",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
@@ -6026,7 +6029,7 @@
       "name": "@ai-sdk/openai",
       "versions": [
         {
-          "version": "4.0.7",
+          "version": "4.0.8",
           "files": [{ "file": "/packages/api-core/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7082,7 +7085,7 @@
       "name": "@auth0/auth0-spa-js",
       "versions": [
         {
-          "version": "2.22.0",
+          "version": "2.23.0",
           "files": [{ "file": "/packages/auth0/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7928,7 +7931,7 @@
       "name": "mqtt",
       "versions": [
         {
-          "version": "5.15.1",
+          "version": "5.15.2",
           "files": [{ "file": "/packages/project/package.json", "types": ["dependencies"] }]
         }
       ]
