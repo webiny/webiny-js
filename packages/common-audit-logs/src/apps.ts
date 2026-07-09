@@ -235,9 +235,9 @@ export const apps: App[] = [
         displayName: "AI",
         entities: [
             {
-                type: "GENERATE_TEXT",
-                displayName: "Generate Text",
-                actions: [{ type: ActionType.CREATE, displayName: "Create", newEntryDelay: 600 }]
+                type: "TEXT",
+                displayName: "Text",
+                actions: [{ type: "GENERATE", displayName: "Generate", newEntryDelay: 600 }]
             }
         ]
     }

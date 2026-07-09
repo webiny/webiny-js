@@ -10,7 +10,7 @@ class AuditLogAiGenerateTextErrorHandlerImpl implements AiGenerateTextErrorEvent
     async handle(event: AiGenerateTextErrorEventHandler.Event): Promise<void> {
         try {
             const { requestId, error, duration } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.AI.GENERATE_TEXT.CREATE);
+            const createAuditLog = getAuditConfig(AUDIT.AI.TEXT.GENERATE);
 
             await createAuditLog(
                 "AI Generate Text",

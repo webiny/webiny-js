@@ -12,7 +12,7 @@ class AuditLogAiBeforeGenerateTextHandlerImpl
     async handle(event: AiBeforeGenerateTextEventHandler.Event): Promise<void> {
         try {
             const { requestId, params } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.AI.GENERATE_TEXT.CREATE);
+            const createAuditLog = getAuditConfig(AUDIT.AI.TEXT.GENERATE);
 
             await createAuditLog(
                 "AI Generate Text",

@@ -22,7 +22,7 @@ export interface AiAuditPayload {
 }
 
 export function isAiGenerateText(auditLog: IAuditLog): boolean {
-    return auditLog.app === "AI" && auditLog.entity.value === "GENERATE_TEXT";
+    return auditLog.app === "AI" && auditLog.entity.value === "TEXT";
 }
 
 export function hasAfter(auditLog: IAuditLog): boolean {

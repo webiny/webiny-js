@@ -10,7 +10,7 @@ class AuditLogAiAfterGenerateTextHandlerImpl implements AiAfterGenerateTextEvent
     async handle(event: AiAfterGenerateTextEventHandler.Event): Promise<void> {
         try {
             const { requestId, result, duration } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.AI.GENERATE_TEXT.CREATE);
+            const createAuditLog = getAuditConfig(AUDIT.AI.TEXT.GENERATE);
 
             await createAuditLog(
                 "AI Generate Text",
