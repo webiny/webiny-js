@@ -2,7 +2,6 @@ import { Transform } from "node:stream";
 import { createImplementation } from "@webiny/di";
 import {
     CliCommandFactory,
-    DefaultAppsService,
     GetProjectSdkService,
     StdioService,
     UiService
@@ -68,8 +67,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private stdioService: StdioService.Interface,
-        private uiService: UiService.Interface,
-        private defaultAppsService: DefaultAppsService.Interface
+        private uiService: UiService.Interface
     ) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<IServerWatchCommandParams>> {
@@ -98,12 +96,19 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 const stdio = this.stdioService;
                 const ui = this.uiService;
 
+                // Watching both apps at once isn't supported yet — the combined output is still
+                // rough. Require an explicit app (or a package whitelist) and run them separately.
+                if (!params.app && !params.package) {
+                    ui.warning(
+                        `Watching all apps at once is not supported yet. Run them separately, e.g. %s and %s.`,
+                        "webiny-server watch api",
+                        "webiny-server watch admin"
+                    );
+                    return;
+                }
+
                 // Decide which apps to watch.
-                const apps = params.app
-                    ? [params.app]
-                    : !params.package
-                      ? await this.defaultAppsService.execute()
-                      : [];
+                const apps = params.app ? [params.app] : [];
 
                 // Collect PackagesWatcher instances — one per app or for package-only mode.
                 const watchers = [];
@@ -169,5 +174,5 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
 export const serverWatchCommand = createImplementation({
     abstraction: CliCommandFactory,
     implementation: ServerWatchCommand,
-    dependencies: [GetProjectSdkService, StdioService, UiService, DefaultAppsService]
+    dependencies: [GetProjectSdkService, StdioService, UiService]
 });
