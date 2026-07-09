@@ -27,7 +27,7 @@ export interface IAuditLogRaw {
     createdBy: IAuditLogCreatedByRaw;
     createdOn: Date;
     app: string;
-    action: ActionType;
+    action: string;
     message: string;
     entity: string;
     entityId: string;
@@ -43,7 +43,7 @@ export interface IAuditLogEntity {
 }
 
 export interface IAuditLogAction {
-    value: ActionType;
+    value: string;
     label: string;
 }
 

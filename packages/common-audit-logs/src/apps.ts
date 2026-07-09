@@ -229,5 +229,16 @@ export const apps: App[] = [
                 ]
             }
         ]
+    },
+    {
+        app: "AI",
+        displayName: "AI",
+        entities: [
+            {
+                type: "GENERATE_TEXT",
+                displayName: "Generate Text",
+                actions: [{ type: ActionType.CREATE, displayName: "Create", newEntryDelay: 600 }]
+            }
+        ]
     }
 ];

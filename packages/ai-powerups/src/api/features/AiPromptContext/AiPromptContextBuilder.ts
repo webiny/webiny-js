@@ -66,7 +66,6 @@ function formatContext(ctx: AiPromptContext): string {
             sections.push(projectText);
         }
     }
-
     return sections.length > 0 ? "\n\n" + sections.join("\n\n") : "";
 }
 
@@ -76,6 +75,7 @@ function emptyContext(warnings: string[]): AiPromptContext {
         readerPersona: undefined,
         writerPersona: undefined,
         allProjectFiles: [],
+        additionalFiles: [],
         excludedFileIds: new Set(),
         cacheHit: false,
         warnings,
@@ -148,6 +148,7 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
             readerPersona: reader,
             writerPersona: writer,
             allProjectFiles,
+            additionalFiles,
             excludedFileIds,
             cacheHit,
             warnings,
@@ -163,18 +164,27 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
         fileIds: string[] | null | undefined,
         warnings: string[]
     ): Promise<ProjectFileContent[]> {
+        console.log("[AiPromptContext] fetchAdditionalFiles called with:", fileIds);
+
         if (!fileIds || fileIds.length === 0) {
+            console.log("[AiPromptContext] No additional file IDs provided.");
             return [];
         }
 
         const results = await Promise.all(
             fileIds.map(async (fileId): Promise<ProjectFileContent | null> => {
+                console.log(`[AiPromptContext] Fetching additional file: ${fileId}`);
+
                 const [contentsResult, damResult] = await Promise.all([
                     this.getFileContents.execute(fileId),
                     this.getFile.execute(fileId)
                 ]);
 
                 if (contentsResult.isFail()) {
+                    console.log(
+                        `[AiPromptContext] Failed to load contents for ${fileId}:`,
+                        contentsResult.error.message
+                    );
                     warnings.push(
                         `Failed to load additional file (${fileId}): ${contentsResult.error.message}`
                     );
@@ -185,6 +195,10 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
                 const mimeType = damResult.isOk()
                     ? damResult.value.type
                     : "application/octet-stream";
+
+                console.log(
+                    `[AiPromptContext] File "${name}" type: ${mimeType}, canExtract: ${this.textExtractor.canExtract(mimeType)}`
+                );
 
                 if (!this.textExtractor.canExtract(mimeType)) {
                     warnings.push(
@@ -198,6 +212,10 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
                     mimeType
                 );
 
+                console.log(
+                    `[AiPromptContext] Extracted ${content.length} chars from "${name}", ~${Math.ceil(content.length / 4)} tokens`
+                );
+
                 return {
                     id: fileId,
                     name,
@@ -208,7 +226,11 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
             })
         );
 
-        return results.filter((r): r is ProjectFileContent => r !== null);
+        const valid = results.filter((r): r is ProjectFileContent => r !== null);
+        console.log(
+            `[AiPromptContext] ${valid.length}/${fileIds.length} additional files processed successfully.`
+        );
+        return valid;
     }
 }
 
