@@ -1,6 +1,5 @@
 import { RequestInitializer } from "@webiny/event-handler-core";
 import { WcpLicenseProvider } from "@webiny/api-core";
-import type { IWcpLicenseProvider } from "@webiny/api-core";
 
 /**
  * Per-request hook that refreshes the WCP license before the request is dispatched (and before any
@@ -12,7 +11,7 @@ import type { IWcpLicenseProvider } from "@webiny/api-core";
  * every flavour (aws + server) via registerApiRequestStack.
  */
 class WcpLicenseInitializerImpl implements RequestInitializer.Interface {
-    constructor(private provider: IWcpLicenseProvider) {}
+    constructor(private provider: WcpLicenseProvider.Interface) {}
 
     async init(): Promise<void> {
         await this.provider.refresh();

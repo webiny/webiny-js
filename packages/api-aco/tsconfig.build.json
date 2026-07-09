@@ -15,6 +15,7 @@
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
+    { "path": "../api-testing/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
@@ -52,6 +53,8 @@
       "@webiny/validation": ["../validation/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
+      "@webiny/api-testing/*": ["../api-testing/src/*"],
+      "@webiny/api-testing": ["../api-testing/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

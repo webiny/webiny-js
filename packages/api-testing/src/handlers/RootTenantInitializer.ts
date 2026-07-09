@@ -3,6 +3,10 @@ import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 
+/**
+ * Test-only decorator on the HTTP event handler: sets the "root" tenant before the request is
+ * dispatched (mirrors the prod tenant loader).
+ */
 class RootTenantInitializerImpl implements TestHttpEventHandler.Interface {
     constructor(
         private tenantCtx: ITenantContext,

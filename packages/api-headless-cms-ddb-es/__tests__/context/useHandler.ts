@@ -23,8 +23,8 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import type { CmsContext } from "~/types";
-import { TestIdentity, TestAuthenticator } from "~tests/mocks/TestAuthenticator";
-import { TestPermissions, TestAuthorizer } from "~tests/mocks/TestAuthorizer";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
 import { processLegacyPlugins } from "~tests/helpers/bridgeLegacyPlugins";
 
 export interface CreateHandlerCoreParams {
@@ -63,7 +63,7 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
         if (!rootContainer) {
             rootContainer = new Container();
             rootContainer.registerInstance(TestIdentity, resolvedIdentity);
-            rootContainer.registerInstance(TestPermissions, resolvedPermissions);
+            rootContainer.registerInstance(TestPermissions, { list: resolvedPermissions });
             rootContainer.register(TestAuthenticator);
             rootContainer.register(TestAuthorizer);
         }

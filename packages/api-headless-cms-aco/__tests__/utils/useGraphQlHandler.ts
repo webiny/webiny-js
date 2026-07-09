@@ -26,10 +26,10 @@ import {
     RESTORE_ENTRY
 } from "~tests/graphql/cms.gql";
 import { CREATE_FOLDER, DELETE_FOLDER, GET_FOLDER } from "~tests/graphql/folder.gql";
-import { TestIdentity, TestAuthenticator } from "./mocks/TestAuthenticator";
-import { TestPermissions, TestAuthorizer } from "./mocks/TestAuthorizer";
-import { RootTenantInitializer } from "./handlers/RootTenantInitializer";
-import { AuthTriggerHandler } from "./handlers/AuthTriggerHandler";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
+import { RootTenantInitializer } from "@webiny/api-testing";
+import { AuthTriggerHandler } from "@webiny/api-testing";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 
 export interface UseGQLHandlerParams {
@@ -70,7 +70,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const handler = createTestHttpHandler({
         root: container => {
             container.registerInstance(TestIdentity, resolvedIdentity);
-            container.registerInstance(TestPermissions, resolvedPermissions);
+            container.registerInstance(TestPermissions, { list: resolvedPermissions });
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             container.registerDecorator(AuthTriggerHandler);

@@ -11,10 +11,10 @@ import type { HeadlessCmsStorageOperations } from "~/types";
 import type { PermissionsArg } from "~tests/testHelpers/helpers";
 import { createPermissions } from "~tests/testHelpers/helpers";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { TestIdentity, TestAuthenticator } from "~tests/testHelpers/mocks/TestAuthenticator";
-import { TestPermissions, TestAuthorizer } from "~tests/testHelpers/mocks/TestAuthorizer";
-import { RootTenantInitializer } from "~tests/testHelpers/handlers/RootTenantInitializer";
-import { AuthTriggerHandler } from "~tests/testHelpers/handlers/AuthTriggerHandler";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
+import { RootTenantInitializer } from "@webiny/api-testing";
+import { AuthTriggerHandler } from "@webiny/api-testing";
 import { defaultIdentity } from "~tests/testHelpers/helpers";
 import { processLegacyPlugins } from "~tests/testHelpers/bridgeLegacyPlugins";
 
@@ -59,7 +59,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
     const handler = createTestHttpHandler({
         root: container => {
             container.registerInstance(TestIdentity, identity);
-            container.registerInstance(TestPermissions, resolvedPermissions);
+            container.registerInstance(TestPermissions, { list: resolvedPermissions });
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             container.registerDecorator(AuthTriggerHandler);

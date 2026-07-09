@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@types/object-hash": "^3.0.6",
+    "@webiny/api-testing": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/utils": "0.0.0",
