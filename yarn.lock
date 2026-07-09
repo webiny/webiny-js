@@ -1707,10 +1707,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@conventional-changelog/template@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "@conventional-changelog/template@npm:1.2.1"
-  checksum: 10/be65738f81cb232a794fc0ab2bbe9af2e32896e0c731fe8bdf8a2ab8dabdcc2645937d1025d6f7ad8878c6a51be1da9cab71e287ac476b8e07fb0b8cb7811425
+"@conventional-changelog/template@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@conventional-changelog/template@npm:1.2.0"
+  checksum: 10/f1be23af9cad17c96fb625557256cd8cae43b46f62d7b6a8c78dcc040b0ada054910e2ec1ed8b6f37367d913e9e6d298549a38f2240cdb5decaaa27501ba30fa
   languageName: node
   linkType: hard
 
@@ -10654,6 +10654,7 @@ __metadata:
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
+    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/webhooks": "npm:0.0.0"
@@ -14499,11 +14500,11 @@ __metadata:
   linkType: hard
 
 "baseline-browser-mapping@npm:^2.10.38, baseline-browser-mapping@npm:^2.9.19":
-  version: 2.10.42
-  resolution: "baseline-browser-mapping@npm:2.10.42"
+  version: 2.10.41
+  resolution: "baseline-browser-mapping@npm:2.10.41"
   bin:
     baseline-browser-mapping: dist/cli.cjs
-  checksum: 10/7ea956db54694e4386fd14de665d9582aaa53901c09f21925abfe0ee0d5751947947775b890daad73d21673ed51de5bbefd888076edb8f9aaf76e53da47b061f
+  checksum: 10/21dde5a32b8415384dfc66e0d4811c9bdb2e269a3e218f6739cbc704aa00ab9b942168313a0537f53da7c521aee66ef7c1df8c091c4cd9a02b91d3a84ef978f7
   languageName: node
   linkType: hard
 
@@ -15663,32 +15664,32 @@ __metadata:
   linkType: hard
 
 "conventional-changelog-angular@npm:^9.0.0":
-  version: 9.2.1
-  resolution: "conventional-changelog-angular@npm:9.2.1"
+  version: 9.2.0
+  resolution: "conventional-changelog-angular@npm:9.2.0"
   dependencies:
-    "@conventional-changelog/template": "npm:^1.2.1"
-  checksum: 10/4a7452489ab2414eacb6a14140a91fa17bafc7cc8f12e01d788aa03e31091a53a6696fe71e599f233e519a0b8605b6d058ad49cf40bb26a3783cdcea377efab1
+    "@conventional-changelog/template": "npm:^1.2.0"
+  checksum: 10/9cb8812249fa7a418dbe451ab82606b4c099e2bd7d88c00b6bd9e064f7c9c57b2a4d96fb4d4f17cc583c0cb08568defa4b6cb4f5bbd0ee0e28442ca09e5a71ee
   languageName: node
   linkType: hard
 
 "conventional-changelog-conventionalcommits@npm:^10.0.0":
-  version: 10.2.1
-  resolution: "conventional-changelog-conventionalcommits@npm:10.2.1"
+  version: 10.2.0
+  resolution: "conventional-changelog-conventionalcommits@npm:10.2.0"
   dependencies:
-    "@conventional-changelog/template": "npm:^1.2.1"
-  checksum: 10/670efe9ba741a1b8daae4cb456961e00e1325b54c5d1af7bed7b2b7f0ab2c034668a0f18b5c8a309773f062795d813d14d64b91fa025790557c9b27d8531e5a0
+    "@conventional-changelog/template": "npm:^1.2.0"
+  checksum: 10/37031cccbbb34f4c4956bcc4191e80f44c503028428948b82307e9d42057e72556949491f8aad67b263763c0e3af2e0df60f4fbc8468e9641601a27f82a772c5
   languageName: node
   linkType: hard
 
 "conventional-commits-parser@npm:^7.0.0":
-  version: 7.0.1
-  resolution: "conventional-commits-parser@npm:7.0.1"
+  version: 7.0.0
+  resolution: "conventional-commits-parser@npm:7.0.0"
   dependencies:
     "@simple-libs/stream-utils": "npm:^2.0.0"
     meow: "npm:^14.0.0"
   bin:
     conventional-commits-parser: ./dist/cli/index.js
-  checksum: 10/8f237651e311618b108d357cd4cce93ae5635455e5f2b5cc092be74534403a5c2603d54e0abda7e389df6a503553ba49e398d7a482e4657aa0596ca7cda314a0
+  checksum: 10/a45a7f0ad640017748f828f0a376e5f452e9317b179c3b8c0d8c35e77df951268137dd26012643d457860bd9cf7b31a33c34f4bf00a04ca0478141ed108c18d6
   languageName: node
   linkType: hard
 
@@ -26415,11 +26416,11 @@ __metadata:
   linkType: hard
 
 "systeminformation@npm:^5.31.1":
-  version: 5.31.13
-  resolution: "systeminformation@npm:5.31.13"
+  version: 5.31.12
+  resolution: "systeminformation@npm:5.31.12"
   bin:
     systeminformation: lib/cli.js
-  checksum: 10/bd7be564bfb431ebffd64db52f4786cb55756687899e4e4edeb18505f0f1419f784ea79cd5d1eb223a0986b008f1c9d3e3b5d1bf82b7a90d75db4b0b159b67e4
+  checksum: 10/ca37af1a4074a82bcee3c5f4b63f09c937f0efb26ce432738dc8063c540b598962704f27b01a55092a74b4aaea7de0924dcae97835879c9765c5bbc10d4529ec
   conditions: (os=darwin | os=linux | os=win32 | os=freebsd | os=openbsd | os=netbsd | os=sunos | os=android)
   languageName: node
   linkType: hard
@@ -27064,7 +27065,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^5.0.0, type-fest@npm:^5.4.1, type-fest@npm:^5.7.0, type-fest@npm:^5.8.0":
+"type-fest@npm:^5.0.0, type-fest@npm:^5.4.1, type-fest@npm:^5.7.0":
+  version: 5.7.0
+  resolution: "type-fest@npm:5.7.0"
+  dependencies:
+    tagged-tag: "npm:^1.0.0"
+  checksum: 10/4867626aa489968df98e09ecdefbc45dfbb191ae5fb8924b3bd45da9cd940879b387086226366dce028570983a3fbe80adc53ad105a169bbbd27621c496bd6f0
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^5.8.0":
   version: 5.8.0
   resolution: "type-fest@npm:5.8.0"
   dependencies:
@@ -27196,9 +27206,9 @@ __metadata:
   linkType: hard
 
 "undici@npm:^8.4.1":
-  version: 8.7.0
-  resolution: "undici@npm:8.7.0"
-  checksum: 10/e9644903bda97f825228b4c7bee95b3586609f94df685b598c32bdaf3ac795928cbd25b0ed2690c3ea0b5abd324f5a9641b63b6c81c9b19f3ef4d5b3e402a48c
+  version: 8.6.0
+  resolution: "undici@npm:8.6.0"
+  checksum: 10/a8a66ea9142f3df6ef6cb5ec5c8a2cafb6525f028b74c5dd4066de855bf9b7ad1089b3e516db23c920d1444e8e16f9a1530b6306d3d9046c62386a9c34c4ac3d
   languageName: node
   linkType: hard
 
