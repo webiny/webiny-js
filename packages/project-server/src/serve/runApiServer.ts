@@ -121,13 +121,17 @@ export async function runApiServer(
     // instead of reading the plaintext value.
     const { WCP_PROJECT_LICENSE: _buildTimeLicense, ...runtimeEnv } = process.env;
 
-    // Pin the default sqlite DB to the PROJECT ROOT's `.webiny/` (this CLI's cwd), not the child's
-    // cwd. The child runs from the app workspace, which is regenerated on every build — so the
-    // template's `process.cwd()`-relative default would put the DB inside the disposable workspace
-    // and lose all data on the next watch/build. `<root>/.webiny/` is a sibling of `workspace` and
-    // survives rebuilds. Respect an explicit WEBINY_SQL_FILENAME if the user set one.
-    const sqlFilename =
-        process.env.WEBINY_SQL_FILENAME || path.join(process.cwd(), ".webiny", "server.sqlite");
+    // The database is mandatory and must be configured via `<Infra.Sqlite filename="..." />` in
+    // webiny.config (which bakes WEBINY_SQL_FILENAME). No implicit default: the child runs from the
+    // disposable app workspace, so a cwd-relative fallback would silently put the DB somewhere that's
+    // wiped on the next build and lose all data. Fail loudly instead.
+    const sqlFilename = process.env.WEBINY_SQL_FILENAME;
+    if (!sqlFilename) {
+        throw new Error(
+            `No database configured for the server flavour. Add ${'`<Infra.Sqlite filename="./.webiny/server.sqlite" />`'} ` +
+                `to your webiny.config (or set WEBINY_SQL_FILENAME).`
+        );
+    }
 
     const args = watch ? ["--watch-path", buildDir.toString(), runnerPath] : [runnerPath];
 

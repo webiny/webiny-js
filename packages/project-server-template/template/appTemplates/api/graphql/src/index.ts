@@ -16,12 +16,16 @@ import knex from "knex";
 import { createWebinyApiHandler } from "@webiny/api-event-handler-server-sql";
 import { extensions } from "./extensions";
 
-// SQL connection. Defaults to a project-local sqlite FILE (not :memory:) so data persists across
-// restarts/reloads and is inspectable (`sqlite3 <file> .tables`). Point WEBINY_SQL_FILENAME elsewhere,
-// or swap the client for Postgres/MySQL, in a real deployment.
-// TODO: source this from project config once server-flavour DB configuration lands.
-const filename =
-    process.env.WEBINY_SQL_FILENAME || path.join(process.cwd(), ".webiny", "server.sqlite");
+// SQL connection. The database is configured via `<Infra.Sqlite filename="..." />` in webiny.config,
+// which bakes WEBINY_SQL_FILENAME (an absolute, project-root-relative path). It's mandatory: there is
+// no implicit fallback, since a cwd-relative default would land in the disposable app workspace and
+// lose data on the next build.
+const filename = process.env.WEBINY_SQL_FILENAME;
+if (!filename) {
+    throw new Error(
+        `WEBINY_SQL_FILENAME is not set. Configure the database via <Infra.Sqlite filename="..." /> in webiny.config.`
+    );
+}
 
 // better-sqlite3 won't create missing parent dirs — ensure the target directory exists.
 fs.mkdirSync(path.dirname(filename), { recursive: true });
