@@ -263,7 +263,7 @@
     },
     {
       "name": "@graphql-tools/merge",
-      "version": "9.1.10",
+      "version": "9.1.11",
       "files": [
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
@@ -277,12 +277,12 @@
     },
     {
       "name": "@graphql-tools/resolvers-composition",
-      "version": "7.0.32",
+      "version": "7.0.33",
       "files": ["/packages/handler-graphql/package.json", "/packages/handler-graphql/package.json"]
     },
     {
       "name": "@graphql-tools/schema",
-      "version": "10.0.34",
+      "version": "10.0.35",
       "files": [
         "/packages/api-audit-logs/package.json",
         "/packages/api-headless-cms/package.json",
@@ -300,7 +300,7 @@
     },
     {
       "name": "@graphql-tools/utils",
-      "version": "11.1.1",
+      "version": "11.2.0",
       "files": ["/packages/handler-graphql/package.json", "/packages/handler-graphql/package.json"]
     },
     {
@@ -533,7 +533,7 @@
     },
     {
       "name": "@swc/plugin-emotion",
-      "version": "14.14.1",
+      "version": "14.15.0",
       "files": ["/packages/build-tools/package.json", "/packages/build-tools/package.json"]
     },
     {
@@ -6001,7 +6001,7 @@
       "name": "@graphql-tools/schema",
       "versions": [
         {
-          "version": "10.0.34",
+          "version": "10.0.35",
           "files": [
             { "file": "/packages/api-audit-logs/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
@@ -6260,7 +6260,7 @@
       "name": "@graphql-tools/merge",
       "versions": [
         {
-          "version": "9.1.10",
+          "version": "9.1.11",
           "files": [
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
@@ -7395,7 +7395,7 @@
       "name": "@swc/plugin-emotion",
       "versions": [
         {
-          "version": "14.14.1",
+          "version": "14.15.0",
           "files": [{ "file": "/packages/build-tools/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7731,7 +7731,7 @@
       "name": "@graphql-tools/resolvers-composition",
       "versions": [
         {
-          "version": "7.0.32",
+          "version": "7.0.33",
           "files": [{ "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7740,7 +7740,7 @@
       "name": "@graphql-tools/utils",
       "versions": [
         {
-          "version": "11.1.1",
+          "version": "11.2.0",
           "files": [{ "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }]
         }
       ]

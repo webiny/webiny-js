@@ -72,7 +72,7 @@
     "ts-expect": "^1.3.0",
     "tsx": "4.23.0",
     "type-fest": "^5.8.0",
-    "typescript": "7.0.2",
+    "typescript": "^7.0.2",
     "validator": "^13.15.35",
     "verdaccio": "^6.7.4",
     "vitest": "^4.1.10",
