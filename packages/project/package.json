@@ -29,7 +29,7 @@
     "debounce": "^3.0.0",
     "deepmerge": "^4.3.1",
     "dotenv": "^17.4.2",
-    "execa": "^5.1.1",
+    "execa": "^9.6.1",
     "exit-hook": "^5.1.0",
     "fast-glob": "^3.3.3",
     "find-up": "^8.0.0",
@@ -58,7 +58,7 @@
     "@types/jsdom": "^28.0.3",
     "@types/lodash": "^4.17.24",
     "rimraf": "^6.1.3",
-    "type-fest": "^5.7.0",
+    "type-fest": "^5.8.0",
     "typescript": "6.0.3"
   },
   "adio": {

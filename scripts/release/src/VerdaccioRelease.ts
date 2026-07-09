@@ -1,4 +1,4 @@
-import execa from "execa";
+import { execa } from "execa";
 import { Release } from "./Release";
 
 export class VerdaccioRelease extends Release {
