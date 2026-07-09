@@ -1,8 +1,8 @@
 import { UiService, StdioService } from "@webiny/cli-core/abstractions/index.js";
 import { IDeploySingleAppParams } from "../DeployCommand.js";
-import { ExecaChildProcess } from "execa";
+import { type PulumiProcess } from "@webiny/pulumi-sdk";
 
-export type IDeployProcess = ExecaChildProcess<string>;
+export type IDeployProcess = PulumiProcess;
 
 export interface IBaseDeployOutputParams {
     deployProcess: IDeployProcess;

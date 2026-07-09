@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import execa from "execa";
+import { execa } from "execa";
 
 const { green } = chalk;
 
