@@ -13087,7 +13087,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-server@workspace:packages/project-server"
   dependencies:
-    "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"

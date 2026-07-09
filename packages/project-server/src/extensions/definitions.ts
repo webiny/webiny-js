@@ -3,7 +3,6 @@ import {
     type ExtensionDefinitionModel
 } from "@webiny/project/extensions/index.js";
 import { definitions as cliDefinitions } from "@webiny/cli-core/extensions/index.js";
-import { definitions as cmsDefinitions } from "@webiny/api-headless-cms/extensions/index.js";
 
 /**
  * Built-in extension definitions the server flavour registers with the SDK (via
@@ -16,8 +15,7 @@ import { definitions as cmsDefinitions } from "@webiny/api-headless-cms/extensio
  */
 const definitions = [
     ...cliDefinitions,
-    ...projectDefinitions,
-    ...cmsDefinitions
+    ...projectDefinitions
 ] as unknown as ExtensionDefinitionModel<any>[];
 
 export default definitions;
