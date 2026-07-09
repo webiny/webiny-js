@@ -5,6 +5,53 @@ import { type UiService } from "@webiny/project/abstractions/index.js";
 import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import { getServerTemplatesFolderPath } from "../utils/getServerTemplatesFolderPath.js";
 
+// Cyan "api" label, prepended to every line of the server's output so it reads clearly alongside the
+// build watchers (and the admin server when running both).
+const PREFIX = "\x1b[36mapi\x1b[0m  ";
+
+// Node's built-in `--watch` prints its own control chatter we don't want to surface verbatim.
+const WATCH_NOISE =
+    /^(Restarting|Completed running|Failed running)\b|Waiting for file changes before restarting/;
+const LISTENING = /listening on (\S+)/i;
+
+/**
+ * Pipe the watch child's output through a line filter: drop Node `--watch` control chatter, turn the
+ * runner's "listening on <url>" into a clean first-time/reload line, and prefix everything else (real
+ * logs and error stacks pass through untouched, just prefixed).
+ */
+function pipeWatchOutput(child: ChildProcess, port: string): void {
+    let started = false;
+    let buffer = "";
+
+    const handle = (data: Buffer) => {
+        buffer += data.toString();
+        const lines = buffer.split(/\r?\n/);
+        buffer = lines.pop() ?? "";
+
+        for (const line of lines) {
+            if (!line.trim() || WATCH_NOISE.test(line)) {
+                continue;
+            }
+
+            const listening = line.match(LISTENING);
+            if (listening) {
+                process.stdout.write(
+                    started
+                        ? `${PREFIX}↻ reloaded (:${port})\n`
+                        : `${PREFIX}✔ listening on ${listening[1]}\n`
+                );
+                started = true;
+                continue;
+            }
+
+            process.stdout.write(`${PREFIX}${line}\n`);
+        }
+    };
+
+    child.stdout?.on("data", handle);
+    child.stderr?.on("data", handle);
+}
+
 interface IRunApiServerOptions {
     /**
      * When true, run the handler under Node's built-in `--watch` scoped to the build dir, so every
@@ -58,7 +105,11 @@ export function runApiServer(
     const runnerTemplate = path.join(getServerTemplatesFolderPath(), "apiServerRunner.mjs");
     fs.copyFileSync(runnerTemplate, runnerPath);
 
-    ui.info(`${watch ? "Starting" : "Serving"} api server on http://localhost:%s ...`, port);
+    // In serve mode we run in the foreground and let the runner's output through directly. In watch
+    // mode we filter/prefix it (see pipeWatchOutput), so we stay quiet here.
+    if (!watch) {
+        ui.info(`Serving api server on http://localhost:%s ...`, port);
+    }
 
     // `WCP_PROJECT_LICENSE` is a build-time-only var (written plaintext by applyWcpEnvVars for the
     // build-time feature-flag computation). The AWS lambda deliberately never receives it (see
@@ -71,9 +122,15 @@ export function runApiServer(
 
     const child = spawn(process.execPath, args, {
         cwd: workspaceApi.toString(),
-        stdio: "inherit",
+        // Watch: capture output so we can filter Node's `--watch` chatter and prefix cleanly.
+        // Serve: inherit — it's the foreground process, nothing to filter.
+        stdio: watch ? ["ignore", "pipe", "pipe"] : "inherit",
         env: { ...runtimeEnv, PORT: port }
     });
+
+    if (watch) {
+        pipeWatchOutput(child, port);
+    }
 
     const cleanup = () => {
         if (!child.killed) {

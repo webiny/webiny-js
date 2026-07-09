@@ -8,7 +8,7 @@ class RendererShowcaseModelImpl implements ModelFactory.Interface {
             builder
                 .public({
                     modelId: RENDERER_SHOWCASE_MODEL_ID,
-                    name: "Renderer Showcase",
+                    name: "Renderessr Showcase",
                     group: "ungrouped"
                 })
                 .description(
