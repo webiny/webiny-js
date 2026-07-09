@@ -2209,6 +2209,11 @@
       "files": ["/packages/telemetry/package.json", "/packages/telemetry/package.json"]
     },
     {
+      "name": "strip-json-comments",
+      "version": "5.0.3",
+      "files": ["/packages/build-tools/package.json", "/packages/build-tools/package.json"]
+    },
+    {
       "name": "style-loader",
       "version": "4.0.0",
       "files": ["/packages/build-tools/package.json", "/packages/build-tools/package.json"]
@@ -7456,6 +7461,15 @@
       "versions": [
         {
           "version": "17.0.0",
+          "files": [{ "file": "/packages/build-tools/package.json", "types": ["dependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "strip-json-comments",
+      "versions": [
+        {
+          "version": "5.0.3",
           "files": [{ "file": "/packages/build-tools/package.json", "types": ["dependencies"] }]
         }
       ]
