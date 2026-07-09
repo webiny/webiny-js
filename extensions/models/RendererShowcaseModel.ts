@@ -21,9 +21,9 @@ class RendererShowcaseModelImpl implements ModelFactory.Interface {
                     textSingle: fields
                         .text()
                         .renderer("textInput")
-                        .label("Text (sinsssgle)")
+                        .label("Text (single)")
                         .description(
-                            "A basic singlsdddsds-value text field using the textInput renderer."
+                            "A basic single-value text field using the textInput renderer."
                         )
                         .help("Standard single-line text input")
                         .note("Renderer: textInput | Type: text | Cardinality: single")
