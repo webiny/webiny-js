@@ -4,7 +4,7 @@ import {
     GetProjectSdkService,
     UiService
 } from "@webiny/cli-core/abstractions/index.js";
-import { serveApi, serveAdmin, serveAll } from "@webiny/project-server";
+import { serveApi, serveAdmin, serveAll } from "@webiny/project-server/serve/index.js";
 
 interface IServeCommandParams {
     _: string[];

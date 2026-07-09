@@ -1,6 +1,6 @@
 import React from "react";
 import { ProductionEnvironments } from "@webiny/project/extensions/index.js";
-import { ProjectServer } from "@webiny/project-server";
+import { ProjectServer } from "@webiny/project-server/extensions/ProjectServer.js";
 import { TenantManager } from "@webiny/tenant-manager";
 import { Languages } from "@webiny/languages";
 import { AiPowerups } from "@webiny/ai-powerups";
