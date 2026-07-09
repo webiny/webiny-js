@@ -1,4 +1,4 @@
-import execa from "execa";
+import { execa } from "execa";
 import fs from "fs-extra";
 import type { ListrTask } from "listr2";
 import { Listr } from "listr2";

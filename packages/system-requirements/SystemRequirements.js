@@ -1,5 +1,5 @@
 import semver from "semver";
-import execa from "execa";
+import { execaSync } from "execa";
 import { constraints } from "./constraints.js";
 
 export class SystemRequirements {
@@ -51,17 +51,17 @@ export class SystemRequirements {
     }
 
     static getNpmVersion() {
-        const { stdout } = execa.sync("npm", ["--version"]);
+        const { stdout } = execaSync("npm", ["--version"]);
         return stdout;
     }
 
     static getNpxVersion() {
-        const { stdout } = execa.sync("npx", ["--version"]);
+        const { stdout } = execaSync("npx", ["--version"]);
         return stdout;
     }
 
     static getYarnVersion() {
-        const { stdout } = execa.sync("yarn", ["--version"]);
+        const { stdout } = execaSync("yarn", ["--version"]);
         return stdout;
     }
 }

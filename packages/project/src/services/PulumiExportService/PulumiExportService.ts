@@ -31,7 +31,7 @@ export class DefaultPulumiExportService implements PulumiExportService.Interface
         });
 
         try {
-            return JSON.parse(stackOutputString.stdout);
+            return JSON.parse(stackOutputString.stdout as string);
         } catch {
             this.loggerService.error(
                 "Could not parse stack export as JSON.",

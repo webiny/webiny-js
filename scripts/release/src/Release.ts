@@ -1,4 +1,4 @@
-import execa from "execa";
+import { execa } from "execa";
 import { Octokit } from "@octokit/rest";
 import { Changelog } from "./Changelog";
 import { GithubRelease } from "./GithubRelease";
