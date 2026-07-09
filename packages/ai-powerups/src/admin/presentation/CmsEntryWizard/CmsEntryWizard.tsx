@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { FormView } from "@webiny/app-admin";
-import { Button, OverlayLoader, useToast } from "@webiny/admin-ui";
+import { BetaBadge } from "@webiny/admin-ui";
+import { Button, Heading, OverlayLoader, useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
 import type { IncomingGenericData } from "@webiny/app-websockets";
 import { useWebsockets } from "@webiny/app-websockets";
@@ -115,7 +116,9 @@ export const CmsEntryWizard = observer(() => {
                 className="bg-neutral-base rounded-lg p-lg flex flex-col gap-md"
                 style={{ width: 600 }}
             >
-                <h3 className="text-lg font-semibold">Generate Entry Content</h3>
+                <Heading level={4} className="flex items-center gap-sm">
+                    Generate Entry Content <BetaBadge />
+                </Heading>
                 <p className="text-neutral-muted">
                     Use AI to generate content for this entry. Configure the prompt and click
                     Generate, or skip to create an empty entry.
