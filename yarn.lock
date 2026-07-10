@@ -2413,7 +2413,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:9.1.11, @graphql-tools/merge@npm:^9.1.11":
+"@graphql-tools/merge@npm:9.1.11":
   version: 9.1.11
   resolution: "@graphql-tools/merge@npm:9.1.11"
   dependencies:
@@ -2452,7 +2452,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:11.2.0, @graphql-tools/utils@npm:^11.2.0":
+"@graphql-tools/utils@npm:11.2.0":
   version: 11.2.0
   resolution: "@graphql-tools/utils@npm:11.2.0"
   dependencies:

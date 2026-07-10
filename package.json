@@ -185,6 +185,9 @@
     "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
     "react": "18.3.1",
+    "@graphql-tools/merge": "9.1.11",
+    "@graphql-tools/schema": "10.0.35",
+    "@graphql-tools/utils": "11.2.0",
     "react-dom": "18.3.1",
     "apollo-link@^1.2.14": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch",
     "apollo-link@^1.0.0": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch"
