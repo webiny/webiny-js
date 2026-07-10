@@ -1,13 +1,3 @@
-import {
-    createEmptyTrashBinsTask,
-    createHcmsBulkActions
-} from "@webiny/api-headless-cms-bulk-actions";
-import { createDeleteModelTask } from "@webiny/api-headless-cms-tasks";
-
-export const createHcmsTasks = () => {
-    return [
-        createHcmsBulkActions({ batchSize: 1000 }),
-        createEmptyTrashBinsTask(),
-        createDeleteModelTask()
-    ];
-};
+// The DDB-ES variant now shares the DI-native HcmsTasksFeature (storage is provided separately via
+// DbFeature / registerRequestStorage). Kept as a re-export for the storage-flavour package surface.
+export { HcmsTasksFeature } from "@webiny/api-headless-cms-tasks";
