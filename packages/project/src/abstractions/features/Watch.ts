@@ -4,7 +4,7 @@ import { type WebinyConfigWatcher } from "~/features/Watch/watchers/WebinyConfig
 import { type PackagesWatcher } from "~/features/Watch/watchers/PackagesWatcher.js";
 import {
     type ServersWatcher,
-    type IServerProcess
+    type RunnableServerProcess
 } from "~/features/Watch/watchers/ServersWatcher.js";
 
 export interface IWatchNoAppParams {
@@ -49,5 +49,5 @@ export namespace Watch {
     export type WatchWithAppParams = IWatchWithAppParams;
     export type Params = IWatchParams;
     export type Result = IWatchResult;
-    export type Process = IServerProcess;
+    export type Process = RunnableServerProcess;
 }

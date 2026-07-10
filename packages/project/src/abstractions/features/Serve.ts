@@ -1,6 +1,9 @@
-import { type ChildProcess } from "node:child_process";
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type GetApp } from "~/abstractions/index.js";
+import {
+    type ServersWatcher,
+    type RunnableServerProcess
+} from "~/features/Watch/watchers/ServersWatcher.js";
 
 export interface IServeParams {
     /**
@@ -10,25 +13,16 @@ export interface IServeParams {
     app?: GetApp.AppName;
 }
 
-/**
- * A running server process. The project layer creates it (port resolution, runner, env); the caller
- * (e.g. the CLI) owns its terminal rendering (prefixing, piping) and lifecycle (awaiting exit) —
- * mirroring how the watch command consumes PackagesWatcher processes.
- */
-export interface IServeProcess {
-    name: string;
-    child: ChildProcess;
-}
-
 export interface IServeResult {
-    processes: IServeProcess[];
+    /**
+     * The server process(es) to serve, wrapped like the watch command's `packagesWatcher`. The caller
+     * (e.g. the CLI) prepares + runs them, owning terminal rendering + lifecycle. Implementations
+     * assume the apps are already built.
+     */
+    serversWatcher: ServersWatcher;
 }
 
 export interface IServe {
-    /**
-     * Spawn the server process(es) for one or all built apps (production) and return them for the
-     * caller (e.g. the CLI) to render + await. Implementations assume the apps are already built.
-     */
     execute(params: IServeParams): Promise<IServeResult>;
 }
 
@@ -38,5 +32,5 @@ export namespace Serve {
     export type Interface = IServe;
     export type Params = IServeParams;
     export type Result = IServeResult;
-    export type Process = IServeProcess;
+    export type Process = RunnableServerProcess;
 }

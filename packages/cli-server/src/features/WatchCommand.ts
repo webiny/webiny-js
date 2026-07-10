@@ -7,7 +7,7 @@ import {
 } from "@webiny/cli-core/abstractions/index.js";
 import chalk from "chalk";
 import { colorForString, createPrefixer } from "./terminalPrefix.js";
-import { pipeWatchServerOutput, waitForExit } from "./serverProcesses.js";
+import { createWatchServerPrefixer } from "./serverProcesses.js";
 import { type Watch } from "@webiny/project/abstractions/index.js";
 
 interface IServerWatchCommandParams {
@@ -75,7 +75,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                         });
                         watchers.push(packagesWatcher);
                         if (serversWatcher) {
-                            serverProcesses.push(...serversWatcher.getProcesses());
+                            serverProcesses.push(...serversWatcher.prepare());
                         }
                     }
                 } else {
@@ -127,15 +127,23 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     });
                 }
 
-                // Render the flavour's server processes (filtered/prefixed) and await them alongside
+                // Render the flavour's server processes (filtered/prefixed) then run them alongside
                 // the build watchers.
-                for (const { name, child } of serverProcesses) {
-                    pipeWatchServerOutput(name, child, stdio.getStdout());
+                for (const serverProcess of serverProcesses) {
+                    const prefix = chalk.hex(colorForString(serverProcess.name))(
+                        serverProcess.name
+                    );
+                    serverProcess.pipeStdout(stdout => {
+                        stdout.pipe(createWatchServerPrefixer(prefix)).pipe(stdio.getStdout());
+                    });
+                    serverProcess.pipeStderr(stderr => {
+                        stderr.pipe(createWatchServerPrefixer(prefix)).pipe(stdio.getStderr());
+                    });
                 }
 
                 await Promise.all([
                     ...allProcesses.map(p => p.run()),
-                    ...serverProcesses.map(({ name, child }) => waitForExit(name, child))
+                    ...serverProcesses.map(p => p.run())
                 ]);
             }
         };

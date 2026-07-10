@@ -41,6 +41,13 @@
     "typescript": "6.0.3",
     "vitest": "^4.1.9"
   },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "better-sqlite3"
+      ]
+    }
+  },
   "publishConfig": {
     "access": "public"
   },

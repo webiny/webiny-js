@@ -29,14 +29,15 @@ export class ServerWatch implements Watch.Interface {
         }
 
         const app = this.getApp.execute(params.app);
-        const child = await runApiServer(app, { watch: true });
 
-        // Hand the server process upstream (wrapped like the build watchers' packagesWatcher) rather
-        // than rendering it here — the caller (e.g. the CLI) owns terminal output + lifecycle.
-        const existing = result.serversWatcher?.getProcesses() ?? [];
+        // Hand the server process upstream as a lazy ServersWatcher (wrapped like the build watchers'
+        // packagesWatcher) rather than spawning/rendering it here — the caller (e.g. the CLI) prepares
+        // + runs it and owns terminal output + lifecycle.
         return {
             ...result,
-            serversWatcher: new ServersWatcher([...existing, { name: "api", child }])
+            serversWatcher: new ServersWatcher([
+                { name: "api", spawn: () => runApiServer(app, { watch: true }) }
+            ])
         };
     }
 }

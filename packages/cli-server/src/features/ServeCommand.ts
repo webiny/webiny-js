@@ -6,7 +6,6 @@ import {
 } from "@webiny/cli-core/abstractions/index.js";
 import chalk from "chalk";
 import { colorForString, createPrefixer } from "./terminalPrefix.js";
-import { waitForExit } from "./serverProcesses.js";
 
 interface IServeCommandParams {
     _: string[];
@@ -50,9 +49,11 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                 const stdio = this.stdioService;
                 const projectSdk = await this.getProjectSdkService.execute();
 
-                // The project layer spawns the server process(es); the CLI owns terminal rendering
-                // (prefixing) and lifecycle (awaiting exit) — same split as the watch command.
-                const { processes } = await projectSdk.serve({ app: params.app as any });
+                // The project layer describes the server process(es) (lazy ServersWatcher); the CLI
+                // prepares + runs them, owning terminal rendering (prefixing) and lifecycle — same
+                // split as the watch command.
+                const { serversWatcher } = await projectSdk.serve({ app: params.app as any });
+                const processes = serversWatcher.prepare();
                 if (processes.length === 0) {
                     return;
                 }
@@ -60,13 +61,19 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                 stdio.getStdout().setMaxListeners(processes.length + 5);
                 stdio.getStderr().setMaxListeners(processes.length + 5);
 
-                for (const { name, child } of processes) {
-                    const prefix = chalk.hex(colorForString(name))(name);
-                    child.stdout?.pipe(createPrefixer(prefix)).pipe(stdio.getStdout());
-                    child.stderr?.pipe(createPrefixer(prefix)).pipe(stdio.getStderr());
+                for (const serverProcess of processes) {
+                    const prefix = chalk.hex(colorForString(serverProcess.name))(
+                        serverProcess.name
+                    );
+                    serverProcess.pipeStdout(stdout => {
+                        stdout.pipe(createPrefixer(prefix)).pipe(stdio.getStdout());
+                    });
+                    serverProcess.pipeStderr(stderr => {
+                        stderr.pipe(createPrefixer(prefix)).pipe(stdio.getStderr());
+                    });
                 }
 
-                await Promise.all(processes.map(({ name, child }) => waitForExit(name, child)));
+                await Promise.all(processes.map(p => p.run()));
             }
         };
     }

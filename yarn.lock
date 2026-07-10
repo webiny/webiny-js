@@ -11105,7 +11105,6 @@ __metadata:
     "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -13057,10 +13056,8 @@ __metadata:
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
-    "@webiny/languages": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-template-base": "npm:0.0.0"
-    "@webiny/tenant-manager": "npm:0.0.0"
     react: "npm:18.3.1"
   languageName: unknown
   linkType: soft
@@ -13074,7 +13071,6 @@ __metadata:
     "@pulumi/random": "npm:^4.21.0"
     "@types/lodash": "npm:^4.17.24"
     "@types/ncp": "npm:^2.0.8"
-    "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/aws-layers": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -13106,17 +13102,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-server-template@workspace:packages/project-server-template"
   dependencies:
-    "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api-event-handler-server-sql": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/languages": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-server": "npm:0.0.0"
     "@webiny/project-template-base": "npm:0.0.0"
-    "@webiny/tenant-manager": "npm:0.0.0"
-    knex: "npm:^3.3.0"
     react: "npm:18.3.1"
   languageName: unknown
   linkType: soft
@@ -13132,6 +13124,7 @@ __metadata:
     react: "npm:18.3.1"
     replace-in-path: "npm:^1.1.0"
     typescript: "npm:6.0.3"
+    zod: "npm:4.4.3"
   languageName: unknown
   linkType: soft
 
