@@ -35,9 +35,23 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
     async execute(): Promise<CliCommandFactory.CommandDefinition<IServeCommandParams>> {
         return {
             name: "serve",
-            description:
+            description: [
                 "Serves built apps as long-running servers (production). Serves both api and admin if no app is specified.",
-            examples: ["serve", "serve api", "serve admin"],
+                "",
+                "Ports:",
+                " ‣ api:   WEBINY_API_PORT (else PORT, else 3002)",
+                " ‣ admin: WEBINY_ADMIN_PORT (else PORT, else 3001)",
+                "PORT applies only when serving a single app (serve api / serve admin). When serving both",
+                "at once (no app), PORT is ignored — set WEBINY_API_PORT / WEBINY_ADMIN_PORT instead.",
+                "Explicit ports are strict; the defaults auto-advance to the next free port."
+            ].join("\n"),
+            examples: [
+                "serve",
+                "serve api",
+                "serve admin",
+                "WEBINY_API_PORT=8000 serve api",
+                "WEBINY_API_PORT=8000 WEBINY_ADMIN_PORT=8001 serve"
+            ],
             params: [
                 {
                     name: "app",
