@@ -17,6 +17,7 @@
     "@webiny/languages": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-server": "0.0.0",
+    "@webiny/project-template-base": "0.0.0",
     "@webiny/tenant-manager": "0.0.0",
     "knex": "^3.3.0",
     "react": "18.3.1"

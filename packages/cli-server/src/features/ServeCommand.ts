@@ -1,4 +1,3 @@
-import { type ChildProcess } from "node:child_process";
 import { createImplementation } from "@webiny/di";
 import {
     CliCommandFactory,
@@ -7,23 +6,11 @@ import {
 } from "@webiny/cli-core/abstractions/index.js";
 import chalk from "chalk";
 import { colorForString, createPrefixer } from "./terminalPrefix.js";
+import { waitForExit } from "./serverProcesses.js";
 
 interface IServeCommandParams {
     _: string[];
     app?: string;
-}
-
-function waitForExit(name: string, child: ChildProcess): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-        child.on("error", reject);
-        child.on("exit", code => {
-            if (code === 0 || code === null) {
-                resolve();
-            } else {
-                reject(new Error(`${name} server exited with code ${code}.`));
-            }
-        });
-    });
 }
 
 export class ServerServeCommand implements CliCommandFactory.Interface<IServeCommandParams> {

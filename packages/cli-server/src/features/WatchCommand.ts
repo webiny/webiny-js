@@ -7,6 +7,8 @@ import {
 } from "@webiny/cli-core/abstractions/index.js";
 import chalk from "chalk";
 import { colorForString, createPrefixer } from "./terminalPrefix.js";
+import { pipeWatchServerOutput, waitForExit } from "./serverProcesses.js";
+import { type Watch } from "@webiny/project/abstractions/index.js";
 
 interface IServerWatchCommandParams {
     _: string[];
@@ -61,13 +63,20 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 // Decide which apps to watch.
                 const apps = params.app ? [params.app] : [];
 
-                // Collect PackagesWatcher instances — one per app or for package-only mode.
+                // Collect PackagesWatcher instances (one per app or for package-only mode) plus any
+                // long-running server processes the flavour attaches (e.g. the api HTTP server).
                 const watchers = [];
+                const serverProcesses: Watch.Process[] = [];
 
                 if (apps.length > 0) {
                     for (const app of apps) {
-                        const { packagesWatcher } = await projectSdk.watch({ app: app as any });
+                        const { packagesWatcher, processes } = await projectSdk.watch({
+                            app: app as any
+                        });
                         watchers.push(packagesWatcher);
+                        if (processes) {
+                            serverProcesses.push(...processes);
+                        }
                     }
                 } else {
                     const whitelist = Array.isArray(params.package)
@@ -83,14 +92,15 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     pl.getProcesses ? pl.getProcesses() : []
                 );
 
-                if (allProcesses.length === 0) {
+                if (allProcesses.length === 0 && serverProcesses.length === 0) {
                     ui.warning(
                         `No watch processes were started. Please ensure you have specified a valid "app" or "package" parameter.`
                     );
                     return;
                 }
 
-                if (allProcesses.length === 1) {
+                // Fast path: a single build process and nothing else — inherit stdio, no prefixing.
+                if (allProcesses.length === 1 && serverProcesses.length === 0) {
                     allProcessLists[0].setForkOptions({ stdio: "inherit", env: process.env });
                     ui.info(`Watching %s package...`, allProcesses[0].pkg.name);
                     await allProcesses[0].run();
@@ -99,8 +109,9 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
 
                 ui.info(`Watching %s packages...`, allProcesses.length);
 
-                stdio.getStdout().setMaxListeners(allProcesses.length + 5);
-                stdio.getStderr().setMaxListeners(allProcesses.length + 5);
+                const listenerCount = allProcesses.length + serverProcesses.length + 5;
+                stdio.getStdout().setMaxListeners(listenerCount);
+                stdio.getStderr().setMaxListeners(listenerCount);
 
                 for (const watchProcess of allProcesses) {
                     const prefix = chalk.hex(colorForString(watchProcess.pkg.name))(
@@ -116,7 +127,16 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     });
                 }
 
-                await Promise.all(allProcesses.map(p => p.run()));
+                // Render the flavour's server processes (filtered/prefixed) and await them alongside
+                // the build watchers.
+                for (const { name, child } of serverProcesses) {
+                    pipeWatchServerOutput(name, child, stdio.getStdout());
+                }
+
+                await Promise.all([
+                    ...allProcesses.map(p => p.run()),
+                    ...serverProcesses.map(({ name, child }) => waitForExit(name, child))
+                ]);
             }
         };
     }

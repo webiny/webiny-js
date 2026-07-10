@@ -13063,6 +13063,7 @@ __metadata:
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/languages": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
+    "@webiny/project-template-base": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
     react: "npm:18.3.1"
   languageName: unknown
@@ -13117,6 +13118,7 @@ __metadata:
     "@webiny/languages": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-server": "npm:0.0.0"
+    "@webiny/project-template-base": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
     knex: "npm:^3.3.0"
     react: "npm:18.3.1"
@@ -13133,6 +13135,19 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     react: "npm:18.3.1"
     replace-in-path: "npm:^1.1.0"
+    typescript: "npm:6.0.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/project-template-base@npm:0.0.0, @webiny/project-template-base@workspace:packages/project-template-base":
+  version: 0.0.0-use.local
+  resolution: "@webiny/project-template-base@workspace:packages/project-template-base"
+  dependencies:
+    "@webiny/ai-powerups": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/languages": "npm:0.0.0"
+    "@webiny/tenant-manager": "npm:0.0.0"
+    react: "npm:18.3.1"
     typescript: "npm:6.0.3"
   languageName: unknown
   linkType: soft
