@@ -39,3 +39,28 @@ export function pickApiRuntimeEnvVariables(
 
     return picked;
 }
+
+/**
+ * True for env vars that are build-time-only and must NOT reach the api runtime — notably
+ * `WCP_PROJECT_LICENSE` (the runtime re-fetches a fresh one). Kept in sync with the allowlist:
+ * `WCP_PROJECT_ENVIRONMENT*` is runtime-safe; any other `WCP_PROJECT_*` is build-time only.
+ */
+export function isBuildTimeApiEnvVar(key: string): boolean {
+    return key.startsWith("WCP_PROJECT_") && !key.startsWith("WCP_PROJECT_ENVIRONMENT");
+}
+
+/**
+ * Return `env` with build-time-only api vars pruned. Use this when a process INHERITS the full (incl.
+ * system) environment — e.g. the self-hosted server spawning its api process, where dropping PATH /
+ * HOME / NODE_EXTRA_CA_CERTS would break it. (The AWS Lambda instead uses `pickApiRuntimeEnvVariables`
+ * — a clean allowlist layered on top of the Lambda runtime's own base env.)
+ */
+export function withRuntimeApiEnv(env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
+    const result: NodeJS.ProcessEnv = { ...env };
+    for (const key of Object.keys(result)) {
+        if (isBuildTimeApiEnvVar(key)) {
+            delete result[key];
+        }
+    }
+    return result;
+}

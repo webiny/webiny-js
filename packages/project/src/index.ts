@@ -27,7 +27,12 @@ export type { IStackOutput } from "~/abstractions/features/GetAppStackOutput.js"
 export { PackageJson } from "@webiny/build-tools/utils/PackageJson.js";
 
 export { createPathResolver } from "./utils/createPathResolver.js";
-export { API_RUNTIME_ENV_PREFIXES, pickApiRuntimeEnvVariables } from "./utils/apiRuntimeEnv.js";
+export {
+    API_RUNTIME_ENV_PREFIXES,
+    pickApiRuntimeEnvVariables,
+    isBuildTimeApiEnvVar,
+    withRuntimeApiEnv
+} from "./utils/apiRuntimeEnv.js";
 
 export { ExtensionSrcResolver } from "./utils/ExtensionSrcResolver.js";
 
