@@ -2,17 +2,12 @@ import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { DbFeature } from "@webiny/handler-db";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
-import {
-    createBackgroundTaskContext,
-    createBackgroundTaskGraphQL,
-    TaskService,
-    TasksCrud
-} from "@webiny/background-tasks/api";
+import { BackgroundTasksFeature, TaskService, TasksCrud } from "@webiny/background-tasks/api";
 import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
 import type { Context } from "~/types";
-import { createHeadlessCmsEsTasks } from "~/index.js";
+import { HeadlessCmsEsTasksFeature } from "~/index.js";
 
 type Params = Omit<CmsTestHandlerParams, "features"> & { plugins?: any };
 
@@ -27,15 +22,16 @@ export const useHandler = <C extends Context = Context>(params: Params = {}) => 
                 table: process.env.DB_TABLE
             });
 
-            // Background tasks (context.tasks, TriggerTaskUseCase) + a mock transport (DI), then the
-            // es-tasks task definitions and any test-supplied plugins.
+            // Background tasks + es-tasks are DI-native. Register the features, then override
+            // TaskService with a mock transport for triggering.
+            BackgroundTasksFeature.register(container);
+            HeadlessCmsEsTasksFeature.register(container);
+            container.registerInstance(TaskService, createMockTaskService());
+
+            // Any test-supplied plugins (still legacy).
             registerLegacyPluginsViaGqlContextualSchema(container, [
-                createBackgroundTaskContext(),
-                ...createBackgroundTaskGraphQL(),
-                createHeadlessCmsEsTasks(),
                 ...[plugins].flat(Infinity as 1).filter(Boolean)
             ]);
-            container.registerInstance(TaskService, createMockTaskService());
         }
     });
 

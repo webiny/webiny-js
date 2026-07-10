@@ -3,8 +3,6 @@
   "include": ["src"],
   "references": [
     { "path": "../api-elasticsearch-tasks/tsconfig.build.json" },
-    { "path": "../api-headless-cms-es-tasks/tsconfig.build.json" },
-    { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -16,10 +14,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-elasticsearch-tasks/*": ["../api-elasticsearch-tasks/src/*"],
       "@webiny/api-elasticsearch-tasks": ["../api-elasticsearch-tasks/src"],
-      "@webiny/api-headless-cms-es-tasks/*": ["../api-headless-cms-es-tasks/src/*"],
-      "@webiny/api-headless-cms-es-tasks": ["../api-headless-cms-es-tasks/src"],
-      "@webiny/background-tasks/*": ["../background-tasks/src/*"],
-      "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     }

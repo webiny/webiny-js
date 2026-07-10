@@ -5,8 +5,8 @@ import type { Db } from "@webiny/db";
 export { DynamoDBClient, DynamoDBClientFeature } from "@webiny/db-dynamodb";
 
 /**
- * The full Db instance (driver + key-value store).
- * Provides context.db compatibility for legacy code.
+ * The full Db instance (driver + key-value store). The DI-native replacement for the old
+ * `context.db` bag — resolve this instead of reading the context.
  */
 export const DbInstance = new Abstraction<Db<unknown>>("DbInstance");
 

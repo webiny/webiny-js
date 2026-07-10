@@ -1,6 +1,6 @@
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { PutCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { ContextPlugin } from "@webiny/api";
+import { DynamoDBClient } from "@webiny/db-dynamodb";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 export const createSchedulerManifestPlugin = () => {
@@ -10,7 +10,7 @@ export const createSchedulerManifestPlugin = () => {
             roleArn: "arn:aws:iam::123456789012:role/my-scheduler-role"
         };
 
-        const client = context.db.driver.getClient() as DynamoDBDocument;
+        const client = context.container.resolve(DynamoDBClient).client;
 
         await client.send(
             new PutCommand({

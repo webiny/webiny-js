@@ -8,3 +8,5 @@ npmPreapprovedPackages:
   - "@webiny/*"
   - "webiny"
   - "wts-client"
+  - typescript
+  - "@typescript/*"

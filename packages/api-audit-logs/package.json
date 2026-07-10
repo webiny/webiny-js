@@ -30,11 +30,11 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/testing": "0.0.0",
     "graphql": "^16.14.2",
-    "typescript": "6.0.3",
-    "vitest": "^4.1.9"
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
   },
   "dependencies": {
-    "@graphql-tools/schema": "^10.0.34",
+    "@graphql-tools/schema": "10.0.35",
     "@webiny/api": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-core": "0.0.0",
@@ -46,7 +46,6 @@
     "@webiny/common-audit-logs": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "@webiny/handler-db": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",

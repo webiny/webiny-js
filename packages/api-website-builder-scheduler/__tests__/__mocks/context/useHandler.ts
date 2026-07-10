@@ -8,19 +8,16 @@ import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerSe
 import { PageModelPlugin } from "@webiny/api-website-builder/domain/page/page.model.js";
 import { RedirectModelPlugin } from "@webiny/api-website-builder/domain/redirect/redirect.model.js";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
-import { createMockBackgroundTasks } from "../mockBackgroundTasks.js";
+import { registerMockBackgroundTasks } from "../mockBackgroundTasks.js";
 
 type Params = Omit<CmsTestHandlerParams, "features">;
 
 export const useHandler = <C extends ApiCoreContext = ApiCoreContext>(params: Params = {}) => {
     const { getContext } = createCmsTestHandler({
         ...params,
-        plugins: [
-            createWebsiteBuilder(),
-            createMockBackgroundTasks(),
-            ...[params.plugins].flat(Infinity as 1).filter(Boolean)
-        ],
+        plugins: [createWebsiteBuilder(), ...[params.plugins].flat(Infinity as 1).filter(Boolean)],
         features: container => {
+            registerMockBackgroundTasks(container);
             container.register(PageModelPlugin);
             container.register(RedirectModelPlugin);
             SchedulerFeature.register(container);
