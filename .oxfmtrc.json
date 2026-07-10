@@ -41,7 +41,9 @@
     ".github/workflows/**/*.yml",
     "./nextjs/",
     "packages/admin-ui/storybook-static/**",
-    "**/*.hbs"
+    "**/*.hbs",
+    "*.yaml",
+    "*.yml"
   ],
   "overrides": [
     {

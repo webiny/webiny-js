@@ -69,3 +69,4 @@ CLAUDE.local.md
 .mcp.json
 docs/.reports
 tsconfig.check-tests.json
+tsconfig.build.tmp-*.json
