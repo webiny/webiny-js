@@ -53,7 +53,13 @@ describe("SetupYarn", () => {
         expect(yarnRc.approvedGitRepositories).toEqual([
             "https://github.com/webiny/webiny-upgrades-v6"
         ]);
-        expect(yarnRc.npmPreapprovedPackages).toEqual(["@webiny/*", "webiny", "wts-client"]);
+        expect(yarnRc.npmPreapprovedPackages).toEqual([
+            "@webiny/*",
+            "webiny",
+            "wts-client",
+            "typescript",
+            "@typescript/*"
+        ]);
     });
 
     it("should copy the yarn binary into .yarn/releases/", async () => {

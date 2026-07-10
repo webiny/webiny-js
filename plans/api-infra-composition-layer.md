@@ -106,6 +106,6 @@ Dependency directions (all inward / acyclic):
 ## Relation to existing memory
 
 - Realizes [[shared api handler factory]] (`registerApiRequestStack` + `createWebinyApiHandler`).
-- Properly resolves [[layering: infra in domain]] — the answer is a dedicated composition layer, not "event-handler is the kernel" nor "event-handler depends on api."
+- Properly resolves [[layering]] — the answer is a dedicated composition layer, not "event-handler is the kernel" nor "event-handler depends on api."
 - Subsumes the WCP `RequestInitializer` relocation debate.
 - The Phase-2 test targets the current CI red (see the FileModel/fresh-install investigation).

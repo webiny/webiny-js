@@ -42,9 +42,7 @@ class MyModelImpl implements ModelFactory.Interface {
         .fields(fields => ({
           // field definitions here
         }))
-        .layout([
-          /* row definitions */
-        ])
+        .layout([/* row definitions */])
         .titleFieldId("fieldId")
         .singularApiName("MyModel")
         .pluralApiName("MyModels")
