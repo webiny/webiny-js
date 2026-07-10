@@ -4,6 +4,7 @@ import type { IStoreValue } from "~/features/DeleteModelTask/types.js";
 import { createStoreKey } from "~/helpers/store.js";
 import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
 import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { DbInstance } from "@webiny/handler-db/abstractions.js";
 
 describe("headless cms tasks crud", () => {
     it("should list models being deleted", async () => {
@@ -22,7 +23,7 @@ describe("headless cms tasks crud", () => {
             tenant: tenant.id
         };
 
-        await context.db.store.storeValue(createStoreKey(value), value);
+        await context.container.resolve(DbInstance).store.storeValue(createStoreKey(value), value);
 
         const secondaryContext = await handler();
 
@@ -32,7 +33,7 @@ describe("headless cms tasks crud", () => {
         expect(resultsPopulated).toHaveLength(1);
         expect(resultsPopulated).toEqual([value]);
 
-        await context.db.store.removeValue(createStoreKey(value));
+        await context.container.resolve(DbInstance).store.removeValue(createStoreKey(value));
 
         const tertiaryContext = await handler();
 

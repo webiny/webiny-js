@@ -8,8 +8,7 @@
     { "path": "../db-dynamodb" },
     { "path": "../db-utils" },
     { "path": "../feature" },
-    { "path": "../handler" },
-    { "path": "../handler-graphql" }
+    { "path": "../handler" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -31,9 +30,7 @@
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"]
+      "@webiny/handler": ["../handler/src"]
     }
   }
 }
