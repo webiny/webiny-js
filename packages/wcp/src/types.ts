@@ -99,9 +99,6 @@ export interface ProjectPackageFeatures {
             hcmsFieldPermissions: boolean;
         };
     };
-    [PROJECT_PACKAGE_FEATURE_NAME.AL]: {
-        enabled: boolean;
-    };
     [PROJECT_PACKAGE_FEATURE_NAME.FILE_MANAGER]: {
         enabled: boolean;
         options: { threatDetection: boolean };

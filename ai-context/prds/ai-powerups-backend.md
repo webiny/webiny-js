@@ -199,9 +199,7 @@ declare module "@core/settings-types" {
 ```ts
 class ProvidersHandler implements IAiPowerUpsSettingsGroupHandler<"providers", ProvidersApiWrite> {
   readonly name = "providers" as const;
-  readonly inputSchema = z.object({
-    /* ... */
-  });
+  readonly inputSchema = z.object({/* ... */});
 
   constructor(
     private readonly encryption: Encryption.Interface,
