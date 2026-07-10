@@ -1,9 +1,5 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
-import {
-    createBackgroundTaskContext,
-    createBackgroundTaskGraphQL,
-    TaskService
-} from "@webiny/background-tasks/api";
+import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
 import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
@@ -30,12 +26,7 @@ export const useHandler = (params: Params = {}) => {
         // identity === null → anonymous; the shared harness authenticates the null identity natively
         // (TestAuthenticator returns it), so no post-auth override is needed.
         //
-        // Background-task plugins must come BEFORE the Website Builder plugins: createBackgroundTaskContext
-        // registers the "wbyTask" CMS model, and it has to be present before WB/Languages init lists +
-        // caches the per-request model set (otherwise createBackgroundTaskGraphQL can't find it).
         plugins: [
-            createBackgroundTaskContext(),
-            ...createBackgroundTaskGraphQL(),
             createContextPlugin(ctx => {
                 ctx.container.register(InvalidateCloudfrontCacheTaskDefinition);
             }),
@@ -43,6 +34,10 @@ export const useHandler = (params: Params = {}) => {
             ...[params.plugins].flat(Infinity as 1).filter(Boolean)
         ],
         features: container => {
+            // Background tasks are DI-native — the feature registers the "wbyTask" CMS model at
+            // register() time (before WB/Languages cache the per-request model set) plus TasksCrud and
+            // the GraphQL contextual schema. The mock TaskService override must come after.
+            BackgroundTasksFeature.register(container);
             container.register(PageModelPlugin);
             container.register(RedirectModelPlugin);
             LanguagesExtension.register(container);

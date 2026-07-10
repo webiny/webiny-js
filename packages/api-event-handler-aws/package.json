@@ -29,8 +29,7 @@
     "@webiny/event-handler-aws": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/handler-db": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0"
+    "@webiny/handler-db": "0.0.0"
   },
   "peerDependencies": {
     "@webiny/di": ">=0.2.3"

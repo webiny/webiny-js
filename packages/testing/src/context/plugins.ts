@@ -1,10 +1,6 @@
 import type { Plugin, PluginCollection } from "@webiny/plugins/types.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import {
-    createBackgroundTaskContext,
-    createBackgroundTaskGraphQL,
-    TaskService
-} from "@webiny/background-tasks/api";
+import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types/index.js";
 import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
@@ -87,16 +83,14 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
 
         HeadlessCmsFeature.register(container, { type: "manage", extraPlugins: extraCmsPlugins });
 
+        // Background tasks are DI-native now — the feature registers TasksCrud, the GraphQL
+        // contextual schema, decorators, etc. The mock TaskService override (below) must come
+        // AFTER so task triggering in tests goes through the mock transport, not the real facade.
+        BackgroundTasksFeature.register(container);
         container.registerInstance(TaskService, createMockTaskService());
     };
 
-    const legacyPlugins = [
-        topPlugins,
-        createBackgroundTaskContext(),
-        ...createBackgroundTaskGraphQL(),
-        plugins,
-        bottomPlugins
-    ];
+    const legacyPlugins = [topPlugins, plugins, bottomPlugins];
 
     return {
         tenant,

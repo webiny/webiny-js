@@ -13,8 +13,7 @@
     { "path": "../event-handler-aws/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-db/tsconfig.build.json" },
-    { "path": "../handler-graphql/tsconfig.build.json" }
+    { "path": "../handler-db/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -46,9 +45,7 @@
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"]
+      "@webiny/handler-db": ["../handler-db/src"]
     }
   }
 }
