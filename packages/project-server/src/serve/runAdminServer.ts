@@ -2,7 +2,6 @@ import { type ChildProcess, spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
-import { getServerTemplatesFolderPath } from "../utils/getServerTemplatesFolderPath.js";
 import { findFreePort } from "./findFreePort.js";
 
 interface IRunAdminServerOptions {
@@ -41,7 +40,7 @@ export async function runAdminServer(
     const port = explicitPort || String(await findFreePort(3001));
 
     // Copy the runner verbatim; it reads PORT from env, so no templating is needed.
-    const runnerTemplate = path.join(getServerTemplatesFolderPath(), "adminServerRunner.mjs");
+    const runnerTemplate = path.join(import.meta.dirname, "runners", "adminServerRunner.mjs");
     fs.copyFileSync(runnerTemplate, runnerPath);
 
     const child = spawn(process.execPath, [runnerPath], {

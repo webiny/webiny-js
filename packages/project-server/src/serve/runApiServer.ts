@@ -3,7 +3,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import { pickServerRuntimeEnvVariables } from "@webiny/project";
-import { getServerTemplatesFolderPath } from "../utils/getServerTemplatesFolderPath.js";
 import { findFreePort } from "./findFreePort.js";
 
 interface IRunApiServerOptions {
@@ -58,7 +57,7 @@ export async function runApiServer(
     }
 
     // Copy the runner verbatim; it reads PORT from env, so no templating is needed.
-    const runnerTemplate = path.join(getServerTemplatesFolderPath(), "apiServerRunner.mjs");
+    const runnerTemplate = path.join(import.meta.dirname, "runners", "apiServerRunner.mjs");
     fs.copyFileSync(runnerTemplate, runnerPath);
 
     // Hybrid runtime env: the api allowlist (WEBINY_/WCP_PROJECT_ENVIRONMENT/OKTA_/AUTH0_ + DEBUG) —
