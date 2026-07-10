@@ -23,7 +23,11 @@ const { green, red } = chalk;
 const projectFolder = path.basename(process.cwd());
 
 const sendNotification = (title: string, message: string) => {
-    notifier.notify({ title, message });
+    try {
+        notifier.notify({ title, message });
+    } catch {
+        // does not matter
+    }
 };
 
 interface BuildOptions {
