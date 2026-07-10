@@ -13,8 +13,7 @@
     { "path": "../event-handler-aws" },
     { "path": "../event-handler-core" },
     { "path": "../handler" },
-    { "path": "../handler-db" },
-    { "path": "../handler-graphql" }
+    { "path": "../handler-db" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -46,9 +45,7 @@
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"]
+      "@webiny/handler-db": ["../handler-db/src"]
     }
   }
 }
