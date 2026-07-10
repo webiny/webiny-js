@@ -2413,7 +2413,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:^9.1.11":
+"@graphql-tools/merge@npm:9.1.11, @graphql-tools/merge@npm:^9.1.11":
   version: 9.1.11
   resolution: "@graphql-tools/merge@npm:9.1.11"
   dependencies:
@@ -2425,7 +2425,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/resolvers-composition@npm:^7.0.33":
+"@graphql-tools/resolvers-composition@npm:7.0.33":
   version: 7.0.33
   resolution: "@graphql-tools/resolvers-composition@npm:7.0.33"
   dependencies:
@@ -2439,7 +2439,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/schema@npm:^10.0.35":
+"@graphql-tools/schema@npm:10.0.35":
   version: 10.0.35
   resolution: "@graphql-tools/schema@npm:10.0.35"
   dependencies:
@@ -2452,7 +2452,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:^11.2.0":
+"@graphql-tools/utils@npm:11.2.0, @graphql-tools/utils@npm:^11.2.0":
   version: 11.2.0
   resolution: "@graphql-tools/utils@npm:11.2.0"
   dependencies:
@@ -10525,7 +10525,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-audit-logs@workspace:packages/api-audit-logs"
   dependencies:
-    "@graphql-tools/schema": "npm:^10.0.35"
+    "@graphql-tools/schema": "npm:10.0.35"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
@@ -11233,8 +11233,8 @@ __metadata:
   resolution: "@webiny/api-headless-cms@workspace:packages/api-headless-cms"
   dependencies:
     "@babel/code-frame": "npm:^8.0.0"
-    "@graphql-tools/merge": "npm:^9.1.11"
-    "@graphql-tools/schema": "npm:^10.0.35"
+    "@graphql-tools/merge": "npm:9.1.11"
+    "@graphql-tools/schema": "npm:10.0.35"
     "@types/pluralize": "npm:^0.0.33"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
@@ -11324,8 +11324,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-record-locking@workspace:packages/api-record-locking"
   dependencies:
-    "@graphql-tools/merge": "npm:^9.1.11"
-    "@graphql-tools/schema": "npm:^10.0.35"
+    "@graphql-tools/merge": "npm:9.1.11"
+    "@graphql-tools/schema": "npm:10.0.35"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
@@ -12865,7 +12865,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/handler-db@workspace:packages/handler-db"
   dependencies:
-    "@graphql-tools/schema": "npm:^10.0.35"
+    "@graphql-tools/schema": "npm:10.0.35"
     "@webiny/api": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -12885,10 +12885,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/handler-graphql@workspace:packages/handler-graphql"
   dependencies:
-    "@graphql-tools/merge": "npm:^9.1.11"
-    "@graphql-tools/resolvers-composition": "npm:^7.0.33"
-    "@graphql-tools/schema": "npm:^10.0.35"
-    "@graphql-tools/utils": "npm:^11.2.0"
+    "@graphql-tools/merge": "npm:9.1.11"
+    "@graphql-tools/resolvers-composition": "npm:7.0.33"
+    "@graphql-tools/schema": "npm:10.0.35"
+    "@graphql-tools/utils": "npm:11.2.0"
     "@webiny/api": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
@@ -26879,10 +26879,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tldts-core@npm:^7.4.6":
-  version: 7.4.6
-  resolution: "tldts-core@npm:7.4.6"
-  checksum: 10/dd819915a34998fbca343b296da94f76cce2fef515ec44f4c6e0f9198ca7e6b5b35f27d5ed59161587fb65be5462543a6671a62caa1e9e3581cb4e464c2434ba
+"tldts-core@npm:^7.4.7":
+  version: 7.4.7
+  resolution: "tldts-core@npm:7.4.7"
+  checksum: 10/221acd5cc5535d2bfe10503acf277afe05e5acc63d76a65266554c0b1ca337cbfd83b5f088d534563ddd9610c802d5f8bb5657cc903ecf76d2755fc09be12a38
   languageName: node
   linkType: hard
 
@@ -26898,13 +26898,13 @@ __metadata:
   linkType: hard
 
 "tldts@npm:^7.0.5":
-  version: 7.4.6
-  resolution: "tldts@npm:7.4.6"
+  version: 7.4.7
+  resolution: "tldts@npm:7.4.7"
   dependencies:
-    tldts-core: "npm:^7.4.6"
+    tldts-core: "npm:^7.4.7"
   bin:
     tldts: bin/cli.js
-  checksum: 10/5fbe456d43f349f54860994ece25268dbae4b17607ec558c73ba8aac0bd24589dc4bde5da5b3dc0c2828f54227609deaa5a872d3fd18115884da27723ede551f
+  checksum: 10/7ff9c34375840d870c3395350099b63e03c1c2b3ee55f9409bf82833129e26768ddf42e6b383c26ebba76a4f1bc8f786e4660ad9f7485ff73f06a378a130ee72
   languageName: node
   linkType: hard
 
