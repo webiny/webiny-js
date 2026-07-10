@@ -8,11 +8,7 @@
  *
  * The default connection is a local SQLite file (`createSqliteConnection`, driven by
  * `<Infra.Sqlite filename="..." />` → WEBINY_SQL_FILENAME). A real deployment can swap this for its
- * own Knex client (Postgres/MySQL) passed straight to `createWebinyApiHandler`.
- *
- * ⚠️ EXPERIMENTAL — the server transport is complete (routing + auth/tenant loaders + self-hosted
- * IdP) but not yet runtime-verified end-to-end against a live DB. Provided as the server-flavour
- * starting point.
+ * own Knex client (Postgres/MySQL) passed straight to `createSqliteApiHandler`.
  */
 import { createSqliteApiHandler, createSqliteConnection } from "@webiny/api-event-handler-server-sql";
 import { extensions } from "./extensions";

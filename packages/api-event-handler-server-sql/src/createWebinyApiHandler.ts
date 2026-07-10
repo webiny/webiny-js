@@ -1,5 +1,5 @@
 /**
- * EXPERIMENTAL — Webiny API handler for the self-hosted Node server transport with SQL storage.
+ * Webiny API handler for the self-hosted Node server transport with SQL storage.
  *
  * Thin variant over the transport base (@webiny/api-event-handler-server): supplies the SQL storage
  * wiring AND the self-hosted identity provider (JWT IdP + SQL credential storage). The SQL storage
@@ -11,11 +11,6 @@
  *
  * The caller supplies the Knex client (there is no single canonical connection for a self-hosted DB).
  * The JWT signing secret is configured via `<SelfHostedAuth signingSecret>` (BuildParams).
- *
- * ⚠️ BUILD-VERIFIED, NOT RUNTIME-VERIFIED END-TO-END. The Node transport primitives (routing terminal
- * + auth/tenant loaders) and this SQL composition are faithful mirrors of the deployed+tested AWS
- * equivalents, but no SQL-backed Node API handler has been booted against a live DB here. Treat as a
- * complete-but-unproven server flavour pending an end-to-end run.
  */
 import type { Knex } from "knex";
 import { registerExtensions } from "@webiny/handler";
