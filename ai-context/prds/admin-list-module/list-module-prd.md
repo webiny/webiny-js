@@ -2026,9 +2026,7 @@ export const PagesListModule = createListModule<Page, PageDTO, PageQueryParams>(
   name: "pages",
   gateway: PagesGateway,
   mapper: PageMapper,
-  config: {
-    /* ... */
-  }
+  config: {/* ... */}
 });
 
 // Usage
