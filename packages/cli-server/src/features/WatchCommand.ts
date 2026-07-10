@@ -70,12 +70,12 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
 
                 if (apps.length > 0) {
                     for (const app of apps) {
-                        const { packagesWatcher, processes } = await projectSdk.watch({
+                        const { packagesWatcher, serversWatcher } = await projectSdk.watch({
                             app: app as any
                         });
                         watchers.push(packagesWatcher);
-                        if (processes) {
-                            serverProcesses.push(...processes);
+                        if (serversWatcher) {
+                            serverProcesses.push(...serversWatcher.getProcesses());
                         }
                     }
                 } else {

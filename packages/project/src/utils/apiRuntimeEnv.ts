@@ -41,26 +41,57 @@ export function pickApiRuntimeEnvVariables(
 }
 
 /**
- * True for env vars that are build-time-only and must NOT reach the api runtime — notably
- * `WCP_PROJECT_LICENSE` (the runtime re-fetches a fresh one). Kept in sync with the allowlist:
- * `WCP_PROJECT_ENVIRONMENT*` is runtime-safe; any other `WCP_PROJECT_*` is build-time only.
+ * System env vars a spawned server process needs to actually run — TLS trust (custom CAs, e.g.
+ * portless), temp dirs, locale, PATH, etc. The AWS Lambda gets these from its own managed runtime;
+ * a spawned Node process gets NOTHING unless we pass them (an explicit `env` replaces, not merges).
+ * Kept explicit (not "everything non-Webiny") so arbitrary user vars don't silently leak into the
+ * runtime — matching Lambda, which forwards only the app allowlist.
  */
-export function isBuildTimeApiEnvVar(key: string): boolean {
-    return key.startsWith("WCP_PROJECT_") && !key.startsWith("WCP_PROJECT_ENVIRONMENT");
-}
+const SYSTEM_ENV_NAMES = [
+    "PATH",
+    "HOME",
+    "TMPDIR",
+    "TMP",
+    "TEMP",
+    "TZ",
+    "LANG",
+    "LC_ALL",
+    "SHELL",
+    "USER",
+    "LOGNAME",
+    "PWD",
+    "HOSTNAME",
+    "TERM",
+    "SSL_CERT_FILE",
+    "SSL_CERT_DIR"
+];
+
+// NODE_* covers NODE_OPTIONS / NODE_EXTRA_CA_CERTS / NODE_ENV; LC_* covers locale categories.
+const SYSTEM_ENV_PREFIXES = ["NODE_", "LC_"];
 
 /**
- * Return `env` with build-time-only api vars pruned. Use this when a process INHERITS the full (incl.
- * system) environment — e.g. the self-hosted server spawning its api process, where dropping PATH /
- * HOME / NODE_EXTRA_CA_CERTS would break it. (The AWS Lambda instead uses `pickApiRuntimeEnvVariables`
- * — a clean allowlist layered on top of the Lambda runtime's own base env.)
+ * Env for a spawned self-hosted server process: the api runtime allowlist (see above) PLUS the
+ * system vars the process needs to run. This is the hybrid the server uses instead of inheriting the
+ * whole environment — it forwards the same app vars as the Lambda (no arbitrary leakage) while still
+ * keeping the process runnable.
  */
-export function withRuntimeApiEnv(env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
-    const result: NodeJS.ProcessEnv = { ...env };
-    for (const key of Object.keys(result)) {
-        if (isBuildTimeApiEnvVar(key)) {
-            delete result[key];
+export function pickServerRuntimeEnvVariables(
+    env: NodeJS.ProcessEnv = process.env
+): Record<string, string> {
+    const picked = pickApiRuntimeEnvVariables(env);
+
+    for (const key of Object.keys(env)) {
+        const value = env[key];
+        if (value === undefined) {
+            continue;
+        }
+        const isSystem =
+            SYSTEM_ENV_NAMES.includes(key) ||
+            SYSTEM_ENV_PREFIXES.some(prefix => key.startsWith(prefix));
+        if (isSystem) {
+            picked[key] = String(value);
         }
     }
-    return result;
+
+    return picked;
 }

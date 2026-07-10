@@ -30,8 +30,7 @@ export { createPathResolver } from "./utils/createPathResolver.js";
 export {
     API_RUNTIME_ENV_PREFIXES,
     pickApiRuntimeEnvVariables,
-    isBuildTimeApiEnvVar,
-    withRuntimeApiEnv
+    pickServerRuntimeEnvVariables
 } from "./utils/apiRuntimeEnv.js";
 
 export { ExtensionSrcResolver } from "./utils/ExtensionSrcResolver.js";

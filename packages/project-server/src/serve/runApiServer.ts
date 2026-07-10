@@ -2,7 +2,7 @@ import { type ChildProcess, spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
-import { withRuntimeApiEnv } from "@webiny/project";
+import { pickServerRuntimeEnvVariables } from "@webiny/project";
 import { getServerTemplatesFolderPath } from "../utils/getServerTemplatesFolderPath.js";
 import { findFreePort } from "./findFreePort.js";
 
@@ -61,12 +61,12 @@ export async function runApiServer(
     const runnerTemplate = path.join(getServerTemplatesFolderPath(), "apiServerRunner.mjs");
     fs.copyFileSync(runnerTemplate, runnerPath);
 
-    // Inherit the full (incl. system) environment — the child needs PATH / HOME / NODE_EXTRA_CA_CERTS
-    // (e.g. portless TLS) etc. — but prune build-time-only api vars per the shared rule. Notably
-    // `WCP_PROJECT_LICENSE` is dropped, so the handler's WcpLicenseInitializer fetches a fresh license
-    // from api.webiny.com rather than reading the build-time plaintext value (same effect as the
-    // Lambda allowlist, without dropping the base env).
-    const runtimeEnv = withRuntimeApiEnv();
+    // Hybrid runtime env: the api allowlist (WEBINY_/WCP_PROJECT_ENVIRONMENT/OKTA_/AUTH0_ + DEBUG) —
+    // the same app vars the AWS Lambda forwards, no arbitrary leakage — PLUS the system vars a spawned
+    // process needs to run (PATH / HOME / NODE_EXTRA_CA_CERTS for portless TLS / temp / locale).
+    // `WCP_PROJECT_LICENSE` is absent (not allowlisted), so the handler's WcpLicenseInitializer
+    // fetches a fresh license rather than reading the build-time plaintext value.
+    const runtimeEnv = pickServerRuntimeEnvVariables();
 
     // The database is mandatory and must be configured via `<Infra.Sqlite filename="..." />` in
     // webiny.config (which bakes WEBINY_SQL_FILENAME). No implicit default: the child runs from the

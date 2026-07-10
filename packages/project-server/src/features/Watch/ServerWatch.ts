@@ -1,4 +1,5 @@
 import { GetApp, Watch } from "@webiny/project/abstractions/index.js";
+import { ServersWatcher } from "@webiny/project/features/Watch/watchers/ServersWatcher.js";
 import { runApiServer } from "../../serve/runApiServer.js";
 
 /**
@@ -30,11 +31,12 @@ export class ServerWatch implements Watch.Interface {
         const app = this.getApp.execute(params.app);
         const child = await runApiServer(app, { watch: true });
 
-        // Hand the server process upstream (like the build watcher processes) rather than rendering
-        // it here — the caller (e.g. the CLI) owns terminal output + lifecycle.
+        // Hand the server process upstream (wrapped like the build watchers' packagesWatcher) rather
+        // than rendering it here — the caller (e.g. the CLI) owns terminal output + lifecycle.
+        const existing = result.serversWatcher?.getProcesses() ?? [];
         return {
             ...result,
-            processes: [...(result.processes ?? []), { name: "api", child }]
+            serversWatcher: new ServersWatcher([...existing, { name: "api", child }])
         };
     }
 }
