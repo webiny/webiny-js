@@ -7,7 +7,7 @@ import { Serve } from "~/abstractions/index.js";
  * that DO support serving (e.g. the self-hosted server flavour) replace this implementation.
  */
 export class DefaultServe implements Serve.Interface {
-    async execute(): Promise<void> {
+    async execute(): Promise<Serve.Result> {
         throw new Error(`The "serve" command is not supported in this project flavour.`);
     }
 }

@@ -1,7 +1,6 @@
 import { type ChildProcess, spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { type UiService } from "@webiny/project/abstractions/index.js";
 import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import { getServerTemplatesFolderPath } from "../utils/getServerTemplatesFolderPath.js";
 import { findFreePort } from "./findFreePort.js";
@@ -62,8 +61,8 @@ interface IRunApiServerOptions {
 
     /**
      * When true, ignore a generic `PORT` from the environment and only honour WEBINY_API_PORT / the
-     * default. Used by the both-at-once path (`serveAll`), where api and admin share one process and
-     * must not both bind the same injected `PORT`.
+     * default. Used when serving both apps at once, where api and admin share one process and must
+     * not both bind the same injected `PORT`.
      */
     ignoreGenericPort?: boolean;
 }
@@ -77,12 +76,12 @@ interface IRunApiServerOptions {
  * it in an isolated child process. In watch mode we add `--watch-path <buildDir>` so every rebuild
  * restarts that child (a server crash never kills the watcher).
  *
- * Returns the child process. The caller decides its lifecycle: watch leaves it running alongside the
- * build watchers; serve awaits its exit.
+ * Returns the spawned child (stdio piped). Watch filters/prefixes the output itself (it runs as a
+ * side effect of the watch decorator); serve hands the child back to the CLI, which owns rendering
+ * and awaits its exit.
  */
 export async function runApiServer(
     app: IAppModel,
-    ui: UiService.Interface,
     options: IRunApiServerOptions = {}
 ): Promise<ChildProcess> {
     const { watch = false, ignoreGenericPort = false } = options;
@@ -108,12 +107,6 @@ export async function runApiServer(
     const runnerTemplate = path.join(getServerTemplatesFolderPath(), "apiServerRunner.mjs");
     fs.copyFileSync(runnerTemplate, runnerPath);
 
-    // In serve mode we run in the foreground and let the runner's output through directly. In watch
-    // mode we filter/prefix it (see pipeWatchOutput), so we stay quiet here.
-    if (!watch) {
-        ui.info(`Serving api server on http://localhost:%s ...`, port);
-    }
-
     // `WCP_PROJECT_LICENSE` is a build-time-only var (written plaintext by applyWcpEnvVars for the
     // build-time feature-flag computation). Like the AWS lambda, the runtime must NOT read it — the
     // api event handler's WcpLicenseInitializer fetches a fresh, current license from api.webiny.com.
@@ -136,9 +129,9 @@ export async function runApiServer(
 
     const child = spawn(process.execPath, args, {
         cwd: workspaceApi.toString(),
-        // Watch: capture output so we can filter Node's `--watch` chatter and prefix cleanly.
-        // Serve: inherit — it's the foreground process, nothing to filter.
-        stdio: watch ? ["ignore", "pipe", "pipe"] : "inherit",
+        // Always pipe: watch filters/prefixes it here (pipeWatchOutput); serve hands the piped child
+        // to the CLI, which prefixes + renders it.
+        stdio: ["ignore", "pipe", "pipe"],
         env: { ...runtimeEnv, PORT: port, WEBINY_SQL_FILENAME: sqlFilename }
     });
 

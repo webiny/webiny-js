@@ -11,7 +11,7 @@ export class ServeWithBuildChecks implements Serve.Interface {
         private decoratee: Serve.Interface
     ) {}
 
-    async execute(params: Serve.Params): Promise<void> {
+    async execute(params: Serve.Params): Promise<Serve.Result> {
         if (!params.app || params.app === "api") {
             assertApiBuilt(this.getApp.execute("api"));
         }

@@ -1,13 +1,36 @@
+import { type ChildProcess } from "node:child_process";
 import { createImplementation } from "@webiny/di";
-import { CliCommandFactory, GetProjectSdkService } from "@webiny/cli-core/abstractions/index.js";
+import {
+    CliCommandFactory,
+    GetProjectSdkService,
+    StdioService
+} from "@webiny/cli-core/abstractions/index.js";
+import chalk from "chalk";
+import { colorForString, createPrefixer } from "./terminalPrefix.js";
 
 interface IServeCommandParams {
     _: string[];
     app?: string;
 }
 
+function waitForExit(name: string, child: ChildProcess): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+        child.on("error", reject);
+        child.on("exit", code => {
+            if (code === 0 || code === null) {
+                resolve();
+            } else {
+                reject(new Error(`${name} server exited with code ${code}.`));
+            }
+        });
+    });
+}
+
 export class ServerServeCommand implements CliCommandFactory.Interface<IServeCommandParams> {
-    constructor(private getProjectSdkService: GetProjectSdkService.Interface) {}
+    constructor(
+        private getProjectSdkService: GetProjectSdkService.Interface,
+        private stdioService: StdioService.Interface
+    ) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<IServeCommandParams>> {
         return {
@@ -23,8 +46,26 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                 }
             ],
             handler: async (params: IServeCommandParams) => {
+                const stdio = this.stdioService;
                 const projectSdk = await this.getProjectSdkService.execute();
-                await projectSdk.serve({ app: params.app as any });
+
+                // The project layer spawns the server process(es); the CLI owns terminal rendering
+                // (prefixing) and lifecycle (awaiting exit) — same split as the watch command.
+                const { processes } = await projectSdk.serve({ app: params.app as any });
+                if (processes.length === 0) {
+                    return;
+                }
+
+                stdio.getStdout().setMaxListeners(processes.length + 5);
+                stdio.getStderr().setMaxListeners(processes.length + 5);
+
+                for (const { name, child } of processes) {
+                    const prefix = chalk.hex(colorForString(name))(name);
+                    child.stdout?.pipe(createPrefixer(prefix)).pipe(stdio.getStdout());
+                    child.stderr?.pipe(createPrefixer(prefix)).pipe(stdio.getStderr());
+                }
+
+                await Promise.all(processes.map(({ name, child }) => waitForExit(name, child)));
             }
         };
     }
@@ -33,5 +74,5 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
 export const serverServeCommand = createImplementation({
     abstraction: CliCommandFactory,
     implementation: ServerServeCommand,
-    dependencies: [GetProjectSdkService]
+    dependencies: [GetProjectSdkService, StdioService]
 });

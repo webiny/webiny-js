@@ -1,7 +1,6 @@
 import { type ChildProcess, spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { type UiService } from "@webiny/project/abstractions/index.js";
 import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import { getServerTemplatesFolderPath } from "../utils/getServerTemplatesFolderPath.js";
 import { findFreePort } from "./findFreePort.js";
@@ -9,8 +8,8 @@ import { findFreePort } from "./findFreePort.js";
 interface IRunAdminServerOptions {
     /**
      * When true, ignore a generic `PORT` from the environment and only honour WEBINY_ADMIN_PORT /
-     * the default. Used by the both-at-once path (`serveAll`), where api and admin share one process
-     * and must not both bind the same injected `PORT`.
+     * the default. Used when serving both apps at once, where api and admin share one process and
+     * must not both bind the same injected `PORT`.
      */
     ignoreGenericPort?: boolean;
 }
@@ -23,11 +22,10 @@ interface IRunAdminServerOptions {
  * is a convenience for zero-infra self-hosting; production deploys can just as well point nginx/CDN
  * at the same `build` folder.
  *
- * Returns the child process; the caller owns its lifecycle.
+ * Returns the spawned child (stdio piped); the CLI owns rendering + lifecycle.
  */
 export async function runAdminServer(
     app: IAppModel,
-    ui: UiService.Interface,
     options: IRunAdminServerOptions = {}
 ): Promise<ChildProcess> {
     const { ignoreGenericPort = false } = options;
@@ -46,11 +44,10 @@ export async function runAdminServer(
     const runnerTemplate = path.join(getServerTemplatesFolderPath(), "adminServerRunner.mjs");
     fs.copyFileSync(runnerTemplate, runnerPath);
 
-    ui.info(`Serving admin app on http://localhost:%s ...`, port);
-
     const child = spawn(process.execPath, [runnerPath], {
         cwd: workspaceAdmin.toString(),
-        stdio: "inherit",
+        // Piped so the CLI can prefix + render the output.
+        stdio: ["ignore", "pipe", "pipe"],
         env: { ...process.env, PORT: port }
     });
 

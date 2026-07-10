@@ -1,13 +1,13 @@
 import { createImplementation } from "@webiny/di";
 import { GetApp, Serve, UiService } from "@webiny/project/abstractions/index.js";
-import { serveApi } from "./serveApi.js";
-import { serveAdmin } from "./serveAdmin.js";
-import { serveAll } from "./serveAll.js";
+import { runApiServer } from "./runApiServer.js";
+import { runAdminServer } from "./runAdminServer.js";
 
 /**
- * Server-flavour Serve implementation: runs built apps as long-running servers (production).
- * Replaces the base DefaultServe (which refuses). api = HTTP handler; admin = static SPA; no app =
- * both. Build checks are applied separately, as a decorator (serveWithBuildChecks).
+ * Server-flavour Serve implementation: spawns the server process(es) for the requested app(s) and
+ * returns them for the CLI to render + await. Replaces the base DefaultServe (which refuses).
+ * api = HTTP handler; admin = static SPA; no app = both. Build checks run via a decorator
+ * (serveWithBuildChecks); terminal rendering + lifecycle are the CLI's job.
  */
 export class ServerServe implements Serve.Interface {
     constructor(
@@ -15,29 +15,42 @@ export class ServerServe implements Serve.Interface {
         private ui: UiService.Interface
     ) {}
 
-    async execute(params: Serve.Params): Promise<void> {
-        if (!params.app) {
-            await serveAll(this.getApp.execute("api"), this.getApp.execute("admin"), this.ui);
-            return;
+    async execute(params: Serve.Params): Promise<Serve.Result> {
+        const serveApi = !params.app || params.app === "api";
+        const serveAdmin = !params.app || params.app === "admin";
+
+        if (!serveApi && !serveAdmin) {
+            this.ui.warning(
+                `Unknown app %s. Run one of: %s, %s, or %s.`,
+                `"${params.app}"`,
+                "webiny-server serve",
+                "webiny-server serve api",
+                "webiny-server serve admin"
+            );
+            return { processes: [] };
         }
 
-        if (params.app === "api") {
-            await serveApi(this.getApp.execute("api"), this.ui);
-            return;
+        // Serving both in one process: ignore a generic injected PORT so api and admin don't both
+        // grab it — each falls back to its own dedicated port.
+        const both = serveApi && serveAdmin;
+        const processes: Serve.Process[] = [];
+
+        if (serveApi) {
+            const child = await runApiServer(this.getApp.execute("api"), {
+                watch: false,
+                ignoreGenericPort: both
+            });
+            processes.push({ name: "api", child });
         }
 
-        if (params.app === "admin") {
-            await serveAdmin(this.getApp.execute("admin"), this.ui);
-            return;
+        if (serveAdmin) {
+            const child = await runAdminServer(this.getApp.execute("admin"), {
+                ignoreGenericPort: both
+            });
+            processes.push({ name: "admin", child });
         }
 
-        this.ui.warning(
-            `Unknown app %s. Run one of: %s, %s, or %s.`,
-            `"${params.app}"`,
-            "webiny-server serve",
-            "webiny-server serve api",
-            "webiny-server serve admin"
-        );
+        return { processes };
     }
 }
 

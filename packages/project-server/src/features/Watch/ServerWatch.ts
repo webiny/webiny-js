@@ -1,4 +1,4 @@
-import { GetApp, UiService, Watch } from "@webiny/project/abstractions/index.js";
+import { GetApp, Watch } from "@webiny/project/abstractions/index.js";
 import { runApiServer } from "../../serve/runApiServer.js";
 
 /**
@@ -10,7 +10,6 @@ import { runApiServer } from "../../serve/runApiServer.js";
 export class ServerWatch implements Watch.Interface {
     constructor(
         private getApp: GetApp.Interface,
-        private ui: UiService.Interface,
         private decoratee: Watch.Interface
     ) {}
 
@@ -29,7 +28,7 @@ export class ServerWatch implements Watch.Interface {
         }
 
         const app = this.getApp.execute(params.app);
-        await runApiServer(app, this.ui, { watch: true });
+        await runApiServer(app, { watch: true });
 
         return result;
     }
@@ -37,5 +36,5 @@ export class ServerWatch implements Watch.Interface {
 
 export const serverWatch = Watch.createDecorator({
     decorator: ServerWatch,
-    dependencies: [GetApp, UiService]
+    dependencies: [GetApp]
 });
