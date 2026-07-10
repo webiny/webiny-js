@@ -31,14 +31,16 @@ class BuildAppWorkspaceImpl implements BuildAppWorkspaceService.Interface {
 
         const app = this.getApp.execute(appName);
 
-        if (app.paths.workspaceFolder.existsSync()) {
-            if (options.forceRebuild !== true) {
-                this.logger.debug(
-                    { appName },
-                    "App workspace already exists, skipping rebuild (project-aws)."
-                );
-                return;
-            }
+        const pulumiYamlExists = fs.existsSync(
+            path.join(app.paths.workspaceFolder.toString(), "Pulumi.yaml")
+        );
+
+        if (pulumiYamlExists && options.forceRebuild !== true) {
+            this.logger.debug(
+                { appName },
+                "App workspace already exists, skipping rebuild (project-aws)."
+            );
+            return;
         }
 
         this.logger.info({ appName, options }, "Building app workspace (project-aws)...");

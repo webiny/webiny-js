@@ -20,7 +20,7 @@
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "publishConfig": {
     "access": "public"

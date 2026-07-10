@@ -31,7 +31,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "graphql": "^16.14.2",
-    "typescript": "6.0.3"
+    "typescript": "^7.0.2"
   },
   "dependencies": {
     "@webiny/api": "0.0.0",
@@ -40,7 +40,7 @@
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "webiny": {
     "publishFrom": "dist"
