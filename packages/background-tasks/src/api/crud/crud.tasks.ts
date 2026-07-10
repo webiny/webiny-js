@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
+import type { Container } from "@webiny/di";
 import type {
-    Context,
     IListTaskLogParams,
     IListTaskParams,
     ITaskCreateData,
@@ -11,6 +11,7 @@ import type {
     ITaskUpdateData
 } from "~/api/types.js";
 import { TaskDataStatus } from "~/api/types.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
 import { WEBINY_TASK_MODEL_ID } from "./TaskPrivateModel.js";
 import { WEBINY_TASK_LOG_MODEL_ID } from "./TaskLogPrivateModel.js";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
@@ -89,7 +90,6 @@ const convertToLog = (entry: CmsEntry<ITaskLog>): ITaskLog => {
 interface IValidateParams {
     definition: Pick<TaskDefinition.Interface, "createInputValidation">;
     data: Pick<ITaskCreateData, "input">;
-    context: Context;
 }
 
 const getZodSchema = (schema: GenericRecord<string, zod.ZodTypeAny> | zod.ZodTypeAny) => {
@@ -123,13 +123,15 @@ const validateTaskInput = async (params: IValidateParams) => {
     throw createZodError(result.error);
 };
 
-export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
-    const cmsWhereMapper = context.container.resolve(CmsWhereMapper);
+export const createTaskCrud = (container: Container): ITasksContextCrudObject => {
+    // Resolved lazily (inside listTasks/listLogs) rather than at build time — the factory is now
+    // invoked from BackgroundTasksFeature.register, which may run before CmsWhereMapper is registered.
+    const getCmsWhereMapper = () => container.resolve(CmsWhereMapper);
 
     const getTaskModel = async (): Promise<CmsModel> => {
-        const identityContext = context.container.resolve(IdentityContext);
+        const identityContext = container.resolve(IdentityContext);
         return await identityContext.withoutAuthorization(async () => {
-            const getModel = context.container.resolve(GetModelUseCase);
+            const getModel = container.resolve(GetModelUseCase);
             const result = await getModel.execute(WEBINY_TASK_MODEL_ID);
             if (result.isFail()) {
                 throw new WebinyError(`There is no model "${WEBINY_TASK_MODEL_ID}".`);
@@ -139,9 +141,9 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     const getLogModel = async (): Promise<CmsModel> => {
-        const identityContext = context.container.resolve(IdentityContext);
+        const identityContext = container.resolve(IdentityContext);
         return await identityContext.withoutAuthorization(async () => {
-            const getModel = context.container.resolve(GetModelUseCase);
+            const getModel = container.resolve(GetModelUseCase);
             const result = await getModel.execute(WEBINY_TASK_LOG_MODEL_ID);
             if (result.isFail()) {
                 throw new WebinyError(`There is no model "${WEBINY_TASK_LOG_MODEL_ID}".`);
@@ -156,11 +158,11 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     >(
         id: string
     ) => {
-        const identityContext = context.container.resolve(IdentityContext);
+        const identityContext = container.resolve(IdentityContext);
 
         const entry = await identityContext.withoutAuthorization(async () => {
             const model = await getTaskModel();
-            const getEntryById = context.container.resolve(GetEntryByIdUseCase);
+            const getEntryById = container.resolve(GetEntryByIdUseCase);
             const result = await getEntryById.execute(model, createRevisionId(id));
             if (result.isFail()) {
                 return null;
@@ -181,13 +183,13 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     >(
         params?: IListTaskParams
     ) => {
-        const identityContext = context.container.resolve(IdentityContext);
+        const identityContext = container.resolve(IdentityContext);
         const { entries, meta } = await identityContext.withoutAuthorization(async () => {
             const model = await getTaskModel();
-            const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
+            const listLatestEntries = container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<TaskService.Task<T, O>>(model, {
                 ...params,
-                where: cmsWhereMapper.map({
+                where: getCmsWhereMapper().map({
                     input: params?.where,
                     fields: model.fields
                 })
@@ -205,19 +207,18 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     const createTask = async (data: ITaskCreateData) => {
-        const definition = context.tasks.getDefinition(data.definitionId);
+        const definition = container.resolve(TasksCrud).getDefinition(data.definitionId);
         if (!definition) {
             throw new TaskDefinitionNotFoundError(data.definitionId);
         }
 
         await validateTaskInput({
-            context,
             definition,
             data
         });
 
-        const identityContext = context.container.resolve(IdentityContext);
-        const eventPublisher = context.container.resolve(EventPublisher);
+        const identityContext = container.resolve(IdentityContext);
+        const eventPublisher = container.resolve(EventPublisher);
 
         const beforeCreateEvent = new TaskBeforeCreateEvent({
             input: data
@@ -226,7 +227,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
 
         const result = await identityContext.withoutAuthorization(async () => {
             const model = await getTaskModel();
-            const createEntry = context.container.resolve(CreateEntryUseCase);
+            const createEntry = container.resolve(CreateEntryUseCase);
             return createEntry.execute(model, {
                 values: {
                     ...data,
@@ -263,8 +264,8 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             throw new TaskNotFoundError();
         }
 
-        const identityContext = context.container.resolve(IdentityContext);
-        const eventPublisher = context.container.resolve(EventPublisher);
+        const identityContext = container.resolve(IdentityContext);
+        const eventPublisher = container.resolve(EventPublisher);
 
         const beforeUpdateEvent = new TaskBeforeUpdateEvent({
             input: data,
@@ -274,7 +275,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
 
         const result = await identityContext.withoutAuthorization(async () => {
             const model = await getTaskModel();
-            const updateEntry = context.container.resolve(UpdateEntryUseCase);
+            const updateEntry = container.resolve(UpdateEntryUseCase);
             return updateEntry.execute(model, createRevisionId(id), {
                 values: {
                     ...data
@@ -305,8 +306,8 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             throw new TaskNotFoundError();
         }
 
-        const identityContext = context.container.resolve(IdentityContext);
-        const eventPublisher = context.container.resolve(EventPublisher);
+        const identityContext = container.resolve(IdentityContext);
+        const eventPublisher = container.resolve(EventPublisher);
 
         const beforeDeleteEvent = new TaskBeforeDeleteEvent({
             task
@@ -315,7 +316,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
 
         const result = await identityContext.withoutAuthorization(async () => {
             const model = await getTaskModel();
-            const deleteEntry = context.container.resolve(DeleteEntryUseCase);
+            const deleteEntry = container.resolve(DeleteEntryUseCase);
             return deleteEntry.execute(model, createRevisionId(id));
         });
 
@@ -330,10 +331,10 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     const createLog = async (task: Pick<TaskService.Task, "id">, data: ITaskLogCreateInput) => {
-        const identityContext = context.container.resolve(IdentityContext);
+        const identityContext = container.resolve(IdentityContext);
         const result = await identityContext.withoutAuthorization(async () => {
             const model = await getLogModel();
-            const createEntry = context.container.resolve(CreateEntryUseCase);
+            const createEntry = container.resolve(CreateEntryUseCase);
             return createEntry.execute(model, {
                 values: {
                     ...data,
@@ -350,10 +351,10 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     const updateLog = async (id: string, data: ITaskLogUpdateInput) => {
-        const identityContext = context.container.resolve(IdentityContext);
+        const identityContext = container.resolve(IdentityContext);
         const result = await identityContext.withoutAuthorization(async () => {
             const model = await getLogModel();
-            const updateEntry = context.container.resolve(UpdateEntryUseCase);
+            const updateEntry = container.resolve(UpdateEntryUseCase);
             return updateEntry.execute(model, createRevisionId(id), {
                 values: data
             });
@@ -367,10 +368,10 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     const deleteLog = async (id: string) => {
-        const identityContext = context.container.resolve(IdentityContext);
+        const identityContext = container.resolve(IdentityContext);
         const result = await identityContext.withoutAuthorization(async () => {
             const model = await getLogModel();
-            const deleteEntry = context.container.resolve(DeleteEntryUseCase);
+            const deleteEntry = container.resolve(DeleteEntryUseCase);
             return deleteEntry.execute(model, id);
         });
 
@@ -382,11 +383,11 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     const getLog = async (id: string): Promise<ITaskLog | null> => {
-        const identityContext = context.container.resolve(IdentityContext);
+        const identityContext = container.resolve(IdentityContext);
         try {
             const result = await identityContext.withoutAuthorization(async () => {
                 const model = await getLogModel();
-                const getEntryById = context.container.resolve(GetEntryByIdUseCase);
+                const getEntryById = container.resolve(GetEntryByIdUseCase);
                 return getEntryById.execute(model, id);
             });
 
@@ -404,10 +405,10 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     const getLatestLog = async (taskId: string): Promise<ITaskLog> => {
-        const identityContext = context.container.resolve(IdentityContext);
+        const identityContext = container.resolve(IdentityContext);
         const entry = await identityContext.withoutAuthorization(async () => {
             const model = await getLogModel();
-            const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
+            const listLatestEntries = container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<ITaskLog>(model, {
                 where: {
                     values: {
@@ -431,16 +432,16 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         return convertToLog(entry as unknown as CmsEntry<ITaskLog>);
     };
 
-    const cleanupTaskSubtree = createCleanupTaskSubtree(context);
+    const cleanupTaskSubtree = createCleanupTaskSubtree(container);
 
     const listLogs = async (params: IListTaskLogParams) => {
-        const identityContext = context.container.resolve(IdentityContext);
+        const identityContext = container.resolve(IdentityContext);
         const { entries, meta } = await identityContext.withoutAuthorization(async () => {
             const model = await getLogModel();
-            const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
+            const listLatestEntries = container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<ITaskLog>(model, {
                 ...params,
-                where: cmsWhereMapper.map({
+                where: getCmsWhereMapper().map({
                     input: params.where,
                     fields: model.fields
                 })

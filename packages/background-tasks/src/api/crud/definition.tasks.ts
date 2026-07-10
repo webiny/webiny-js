@@ -1,9 +1,10 @@
-import type { Context, ITasksContextDefinitionObject } from "~/api/types.js";
+import type { Container } from "@webiny/di";
+import type { ITasksContextDefinitionObject } from "~/api/types.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { GetTaskDefinitionUseCase } from "~/api/features/GetTaskDefinition/index.js";
 import { ListTaskDefinitionsUseCase } from "~/api/features/ListTaskDefinitions/index.js";
 
-export const createDefinitionCrud = (context: Context): ITasksContextDefinitionObject => {
+export const createDefinitionCrud = (container: Container): ITasksContextDefinitionObject => {
     return {
         getDefinition: <
             I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
@@ -11,7 +12,7 @@ export const createDefinitionCrud = (context: Context): ITasksContextDefinitionO
         >(
             id: string
         ) => {
-            const useCase = context.container.resolve(GetTaskDefinitionUseCase);
+            const useCase = container.resolve(GetTaskDefinitionUseCase);
             const result = useCase.execute<I, O>(id);
 
             if (result.isOk()) {
@@ -21,7 +22,7 @@ export const createDefinitionCrud = (context: Context): ITasksContextDefinitionO
             return null;
         },
         listDefinitions: () => {
-            const useCase = context.container.resolve(ListTaskDefinitionsUseCase);
+            const useCase = container.resolve(ListTaskDefinitionsUseCase);
             return useCase.execute();
         }
     };

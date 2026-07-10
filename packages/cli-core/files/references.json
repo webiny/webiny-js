@@ -267,9 +267,11 @@
       "files": [
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
+        "/packages/background-tasks/package.json",
         "/packages/handler-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
+        "/packages/background-tasks/package.json",
         "/packages/handler-graphql/package.json"
       ]
     },
@@ -285,11 +287,13 @@
         "/packages/api-audit-logs/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
+        "/packages/background-tasks/package.json",
         "/packages/handler-db/package.json",
         "/packages/handler-graphql/package.json",
         "/packages/api-audit-logs/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
+        "/packages/background-tasks/package.json",
         "/packages/handler-db/package.json",
         "/packages/handler-graphql/package.json"
       ]
@@ -5997,6 +6001,7 @@
             { "file": "/packages/api-audit-logs/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
+            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
             { "file": "/packages/handler-db/package.json", "types": ["dependencies"] },
             { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
           ]
@@ -6254,6 +6259,7 @@
           "files": [
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
+            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
             { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
           ]
         }

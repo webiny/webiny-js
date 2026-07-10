@@ -1,10 +1,6 @@
 import { getIntrospectionQuery } from "graphql";
 import { until } from "@webiny/project-utils/testing/helpers/until.js";
-import {
-    createBackgroundTaskContext,
-    createBackgroundTaskGraphQL,
-    TaskService
-} from "@webiny/background-tasks/api";
+import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
 import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
@@ -27,11 +23,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { handler, invoke } = createCmsTestHandler({
         ...params,
         // identity === null → anonymous (handled natively by the shared harness).
-        // Background-task plugins first (they register the "wbyTask" model before WB/Languages init
-        // caches the per-request model set).
         plugins: [
-            createBackgroundTaskContext(),
-            ...createBackgroundTaskGraphQL(),
             createContextPlugin(ctx => {
                 ctx.container.register(InvalidateCloudfrontCacheTaskDefinition);
             }),
@@ -39,6 +31,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             ...[params.plugins].flat(Infinity as 1).filter(Boolean)
         ],
         features: container => {
+            // Background tasks are DI-native — the feature registers the "wbyTask" model at
+            // register() time (before WB/Languages cache the per-request model set). Mock override after.
+            BackgroundTasksFeature.register(container);
             container.register(PageModelPlugin);
             container.register(RedirectModelPlugin);
             LanguagesExtension.register(container);
