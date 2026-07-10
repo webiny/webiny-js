@@ -3910,6 +3910,9 @@
     }
   ],
   "resolutions": [
+    { "name": "@graphql-tools/merge", "version": "9.1.11", "files": ["/package.json"] },
+    { "name": "@graphql-tools/schema", "version": "10.0.35", "files": ["/package.json"] },
+    { "name": "@graphql-tools/utils", "version": "11.2.0", "files": ["/package.json"] },
     { "name": "@types/react", "version": "18.3.31", "files": ["/package.json"] },
     { "name": "@types/react-dom", "version": "18.3.7", "files": ["/package.json"] },
     { "name": "react", "version": "18.3.1", "files": ["/package.json"] },
@@ -5266,6 +5269,50 @@
       ]
     },
     {
+      "name": "@graphql-tools/merge",
+      "versions": [
+        {
+          "version": "9.1.11",
+          "files": [
+            { "file": "/package.json", "types": ["resolutions"] },
+            { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
+            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
+            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "@graphql-tools/schema",
+      "versions": [
+        {
+          "version": "10.0.35",
+          "files": [
+            { "file": "/package.json", "types": ["resolutions"] },
+            { "file": "/packages/api-audit-logs/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
+            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
+            { "file": "/packages/handler-db/package.json", "types": ["dependencies"] },
+            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "@graphql-tools/utils",
+      "versions": [
+        {
+          "version": "11.2.0",
+          "files": [
+            { "file": "/package.json", "types": ["resolutions"] },
+            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
+          ]
+        }
+      ]
+    },
+    {
       "name": "@fortawesome/fontawesome-svg-core",
       "versions": [
         {
@@ -6001,22 +6048,6 @@
       ]
     },
     {
-      "name": "@graphql-tools/schema",
-      "versions": [
-        {
-          "version": "10.0.35",
-          "files": [
-            { "file": "/packages/api-audit-logs/package.json", "types": ["dependencies"] },
-            { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
-            { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
-            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
-            { "file": "/packages/handler-db/package.json", "types": ["dependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
       "name": "@ai-sdk/anthropic",
       "versions": [
         {
@@ -6255,20 +6286,6 @@
           "files": [
             { "file": "/packages/api-file-manager-s3/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-file-manager-server/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "@graphql-tools/merge",
-      "versions": [
-        {
-          "version": "9.1.11",
-          "files": [
-            { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
-            { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
-            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -7735,15 +7752,6 @@
       "versions": [
         {
           "version": "7.0.33",
-          "files": [{ "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "@graphql-tools/utils",
-      "versions": [
-        {
-          "version": "11.2.0",
           "files": [{ "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }]
         }
       ]

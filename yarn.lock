@@ -12473,8 +12473,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/background-tasks@workspace:packages/background-tasks"
   dependencies:
-    "@graphql-tools/merge": "npm:^9.1.10"
-    "@graphql-tools/schema": "npm:^10.0.34"
+    "@graphql-tools/merge": "npm:^9.1.11"
+    "@graphql-tools/schema": "npm:^10.0.35"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
