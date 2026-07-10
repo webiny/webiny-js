@@ -23,9 +23,9 @@ export interface IWatchWithAppParams extends IWatchNoAppParams {
 export type IWatchParams = IWatchNoAppParams | IWatchWithAppParams;
 
 /**
- * A long-running process the CLI should render + await alongside the build watchers (e.g. the api
- * HTTP server booted by the server flavour). Spawned (stdio piped) by the project layer; the CLI
- * owns rendering + lifecycle — same split as the build watcher processes.
+ * A long-running process the caller should render + await alongside the build watchers (e.g. the
+ * api HTTP server booted by the server flavour). Spawned (stdio piped) by the project layer; the
+ * caller (e.g. the CLI) owns rendering + lifecycle — same split as the build watcher processes.
  */
 export interface IWatchProcess {
     name: string;

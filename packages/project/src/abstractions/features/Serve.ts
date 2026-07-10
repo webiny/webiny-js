@@ -11,9 +11,9 @@ export interface IServeParams {
 }
 
 /**
- * A running server process. The project layer creates it (port resolution, runner, env); the CLI
- * owns its terminal rendering (prefixing, piping) and lifecycle (awaiting exit) — mirroring how the
- * watch command consumes PackagesWatcher processes.
+ * A running server process. The project layer creates it (port resolution, runner, env); the caller
+ * (e.g. the CLI) owns its terminal rendering (prefixing, piping) and lifecycle (awaiting exit) —
+ * mirroring how the watch command consumes PackagesWatcher processes.
  */
 export interface IServeProcess {
     name: string;
@@ -26,8 +26,8 @@ export interface IServeResult {
 
 export interface IServe {
     /**
-     * Spawn the server process(es) for one or all built apps (production) and return them for the CLI
-     * to render + await. Implementations assume the apps are already built.
+     * Spawn the server process(es) for one or all built apps (production) and return them for the
+     * caller (e.g. the CLI) to render + await. Implementations assume the apps are already built.
      */
     execute(params: IServeParams): Promise<IServeResult>;
 }

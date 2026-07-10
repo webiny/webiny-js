@@ -5,9 +5,9 @@ import { runAdminServer } from "./runAdminServer.js";
 
 /**
  * Server-flavour Serve implementation: spawns the server process(es) for the requested app(s) and
- * returns them for the CLI to render + await. Replaces the base DefaultServe (which refuses).
- * api = HTTP handler; admin = static SPA; no app = both. Build checks run via a decorator
- * (serveWithBuildChecks); terminal rendering + lifecycle are the CLI's job.
+ * returns them for the caller (e.g. the CLI) to render + await. Replaces the base DefaultServe
+ * (which refuses). api = HTTP handler; admin = static SPA; no app = both. Build checks run via a
+ * decorator (serveWithBuildChecks); terminal rendering + lifecycle are the caller's job.
  */
 export class ServerServe implements Serve.Interface {
     constructor(

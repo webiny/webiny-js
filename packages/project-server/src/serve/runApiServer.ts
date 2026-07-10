@@ -30,8 +30,9 @@ interface IRunApiServerOptions {
  * it in an isolated child process. In watch mode we add `--watch-path <buildDir>` so every rebuild
  * restarts that child (a server crash never kills the watcher).
  *
- * Returns the spawned child (stdio piped). The CLI owns rendering (prefixing, and for watch the
- * `--watch` output filtering) and lifecycle — same split as the build watcher processes.
+ * Returns the spawned child (stdio piped). The caller (e.g. the CLI) owns rendering (prefixing, and
+ * for watch the `--watch` output filtering) and lifecycle — same split as the build watcher
+ * processes.
  */
 export async function runApiServer(
     app: IAppModel,
@@ -83,7 +84,7 @@ export async function runApiServer(
 
     const child = spawn(process.execPath, args, {
         cwd: workspaceApi.toString(),
-        // Piped so the CLI can prefix/filter + render the output.
+        // Piped so the caller can prefix/filter + render the output.
         stdio: ["ignore", "pipe", "pipe"],
         env: { ...runtimeEnv, PORT: port, WEBINY_SQL_FILENAME: sqlFilename }
     });

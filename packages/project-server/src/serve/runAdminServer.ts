@@ -22,7 +22,7 @@ interface IRunAdminServerOptions {
  * is a convenience for zero-infra self-hosting; production deploys can just as well point nginx/CDN
  * at the same `build` folder.
  *
- * Returns the spawned child (stdio piped); the CLI owns rendering + lifecycle.
+ * Returns the spawned child (stdio piped); the caller (e.g. the CLI) owns rendering + lifecycle.
  */
 export async function runAdminServer(
     app: IAppModel,
@@ -46,7 +46,7 @@ export async function runAdminServer(
 
     const child = spawn(process.execPath, [runnerPath], {
         cwd: workspaceAdmin.toString(),
-        // Piped so the CLI can prefix + render the output.
+        // Piped so the caller can prefix + render the output.
         stdio: ["ignore", "pipe", "pipe"],
         env: { ...process.env, PORT: port }
     });
