@@ -7,7 +7,7 @@ import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockT
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
 import type { Context } from "~/types";
-import { createHeadlessCmsEsTasks } from "~/index.js";
+import { HeadlessCmsEsTasksFeature } from "~/index.js";
 
 type Params = Omit<CmsTestHandlerParams, "features"> & { plugins?: any };
 
@@ -22,14 +22,14 @@ export const useHandler = <C extends Context = Context>(params: Params = {}) => 
                 table: process.env.DB_TABLE
             });
 
-            // Background tasks are DI-native (TasksCrud, GraphQL contextual schema, TriggerTaskUseCase).
-            // Register the feature, then override TaskService with a mock transport for triggering.
+            // Background tasks + es-tasks are DI-native. Register the features, then override
+            // TaskService with a mock transport for triggering.
             BackgroundTasksFeature.register(container);
+            HeadlessCmsEsTasksFeature.register(container);
             container.registerInstance(TaskService, createMockTaskService());
 
-            // es-tasks task definitions + any test-supplied plugins (still legacy).
+            // Any test-supplied plugins (still legacy).
             registerLegacyPluginsViaGqlContextualSchema(container, [
-                createHeadlessCmsEsTasks(),
                 ...[plugins].flat(Infinity as 1).filter(Boolean)
             ]);
         }

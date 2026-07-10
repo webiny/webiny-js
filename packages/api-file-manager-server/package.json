@@ -14,7 +14,6 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
