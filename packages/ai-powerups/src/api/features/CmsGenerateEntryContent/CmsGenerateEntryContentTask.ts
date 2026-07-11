@@ -41,17 +41,24 @@ class CmsGenerateEntryContentTaskImpl implements TaskDefinition.Interface<ICmsGe
             return controller.response.aborted();
         }
 
-        const result = await this.generateEntryContent.execute({
-            prompt: input.prompt,
-            modelId: input.modelId,
-            projectId: input.projectId,
-            excludedFileIds: input.excludedFileIds,
-            readerPersonaId: input.readerPersonaId,
-            writerPersonaId: input.writerPersonaId,
-            additionalFileIds: input.additionalFileIds
-        });
-
         const identity = this.identityContext.getIdentity();
+
+        let result;
+        try {
+            result = await this.generateEntryContent.execute({
+                prompt: input.prompt,
+                modelId: input.modelId,
+                projectId: input.projectId,
+                excludedFileIds: input.excludedFileIds,
+                readerPersonaId: input.readerPersonaId,
+                writerPersonaId: input.writerPersonaId,
+                additionalFileIds: input.additionalFileIds
+            });
+        } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            await this.sendErrorToUser(identity.id, message);
+            return controller.response.error({ message });
+        }
 
         if (result.isFail()) {
             await this.sendErrorToUser(identity.id, result.error.message);
