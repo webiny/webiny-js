@@ -1,5 +1,4 @@
 import { getIntrospectionQuery } from "graphql";
-import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { HeadlessCmsContextualSchema } from "@webiny/api-headless-cms/HeadlessCmsContextualSchema.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
 import { until } from "@webiny/project-utils/testing/helpers/until.js";
@@ -8,7 +7,7 @@ import type { IdentityData } from "@webiny/api-core/features/security/IdentityCo
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
-import { createHcmsBulkActions } from "~/index";
+import { HcmsBulkActionsFeature } from "~/index";
 import { createIdentity, createPermissions } from "~tests/context/helpers";
 
 export interface UseGQLHandlerParams {
@@ -33,10 +32,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
     const extraCmsPlugins = ([plugins] as any[]).flat(Infinity as 1).filter(Boolean);
 
-    // createHcmsBulkActions is a legacy gql plugin applied via the contextual-schema path on
-    // /graphql (after the CMS contextual schema). Background tasks are DI-native (feature below).
-    const latePlugins = [createHcmsBulkActions()].flat(Infinity as 1).filter(Boolean);
-
     const { handler, invoke } = createCmsTestHandler({
         identity: params.identity ?? createIdentity(),
         permissions: params.permissions ?? (createPermissions() as SecurityPermission[]),
@@ -44,8 +39,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         extraCmsPlugins,
         features: container => {
             container.register(HeadlessCmsContextualSchema);
+            // Background tasks + bulk actions are DI-native now.
             BackgroundTasksFeature.register(container);
-            registerLegacyPluginsViaGqlContextualSchema(container, latePlugins);
+            HcmsBulkActionsFeature.register(container);
         }
     });
 

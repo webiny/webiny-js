@@ -1,5 +1,5 @@
 import zod from "zod";
-import { ContextPlugin } from "@webiny/api";
+import type { RequestContextInitializer } from "@webiny/event-handler-core";
 import {
     CmsGraphQLSchemaPlugin,
     CmsGraphQLSchemaFactory,
@@ -47,8 +47,10 @@ const getValidation = zod
     })
     .readonly();
 
-export const createDeleteModelGraphQl = <T extends HcmsTasksContext = HcmsTasksContext>() => {
-    const contextPlugin = new ContextPlugin<T>(async inputContext => {
+export const createDeleteModelGraphQl = <
+    T extends HcmsTasksContext = HcmsTasksContext
+>(): RequestContextInitializer.Interface => ({
+    async init(inputContext: T) {
         const ready = await isHeadlessCmsReady(inputContext);
 
         if (!ready || !inputContext.container.resolve(HeadlessCms).MANAGE) {
@@ -202,7 +204,5 @@ export const createDeleteModelGraphQl = <T extends HcmsTasksContext = HcmsTasksC
         inputContext.container.registerInstance(CmsGraphQLSchemaFactory, {
             execute: () => [plugin]
         });
-    });
-    contextPlugin.name = "headless-cms.context.createDeleteModelGraphQl";
-    return contextPlugin;
-};
+    }
+});
