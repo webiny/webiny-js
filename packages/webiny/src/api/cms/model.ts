@@ -4,7 +4,10 @@ export { DataFieldBuilder } from "@webiny/api-headless-cms/features/modelBuilder
 export { LayoutFieldBuilder } from "@webiny/api-headless-cms/features/modelBuilder/fields/FieldBuilder.js";
 export { FieldType } from "@webiny/api-headless-cms/features/modelBuilder/fields/abstractions.js";
 export type { IFieldRendererRegistry } from "@webiny/api-headless-cms/features/modelBuilder/fields/DataFieldBuilder.js";
-export type { IFieldBuilderRegistry } from "@webiny/api-headless-cms/features/modelBuilder/abstractions.js";
+export type {
+    IFieldBuilderRegistry,
+    IModelSettings
+} from "@webiny/api-headless-cms/features/modelBuilder/abstractions.js";
 export { LayoutBuilder } from "@webiny/api-headless-cms/features/modelBuilder/LayoutBuilder.js";
 export type { FieldTypeValidator } from "@webiny/api-headless-cms/features/modelBuilder/fields/fieldTypeValidator.js";
 export type { CmsModel } from "@webiny/api-headless-cms/types/model.js";
