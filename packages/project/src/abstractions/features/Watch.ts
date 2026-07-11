@@ -2,6 +2,10 @@ import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type GetApp } from "~/abstractions/index.js";
 import { type WebinyConfigWatcher } from "~/features/Watch/watchers/WebinyConfigWatcher.js";
 import { type PackagesWatcher } from "~/features/Watch/watchers/PackagesWatcher.js";
+import {
+    type ServersWatcher,
+    type RunnableServerProcess
+} from "~/features/Watch/watchers/ServersWatcher.js";
 
 export interface IWatchNoAppParams {
     package?: string | string[];
@@ -20,9 +24,16 @@ export interface IWatchWithAppParams extends IWatchNoAppParams {
 }
 
 export type IWatchParams = IWatchNoAppParams | IWatchWithAppParams;
+
 export type IWatchResult = {
     packagesWatcher: PackagesWatcher;
     webinyConfigWatcher?: WebinyConfigWatcher;
+    /**
+     * Long-running server process(es) the flavour attached to this watch session (e.g. the api HTTP
+     * server). The serve-side counterpart to `packagesWatcher`; the caller (e.g. the CLI) renders +
+     * awaits them alongside the build watchers.
+     */
+    serversWatcher?: ServersWatcher;
 };
 
 export interface IWatch {
@@ -38,4 +49,5 @@ export namespace Watch {
     export type WatchWithAppParams = IWatchWithAppParams;
     export type Params = IWatchParams;
     export type Result = IWatchResult;
+    export type Process = RunnableServerProcess;
 }

@@ -28,6 +28,7 @@ import {
     ValidateProjectConfig,
     ListDeployedEnvironmentsService,
     Watch,
+    Serve,
     WcpService,
     GetProjectVersionService
 } from "~/abstractions/index.js";
@@ -163,6 +164,10 @@ export class ProjectSdk {
 
     watch(params: Watch.Params) {
         return this.container.resolve(Watch).execute(params);
+    }
+
+    serve(params: Serve.Params) {
+        return this.container.resolve(Serve).execute(params);
     }
 
     get wcp() {
