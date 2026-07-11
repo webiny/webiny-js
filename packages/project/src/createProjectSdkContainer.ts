@@ -26,7 +26,8 @@ import {
     isWcpEnabled,
     isWebinyJsRepo,
     validateProjectConfig,
-    watch
+    watch,
+    serve
 } from "./features/index.js";
 
 import {
@@ -125,6 +126,7 @@ export const createProjectSdkContainer = async (
     container.register(getFeatureFlags).inSingletonScope();
     container.register(validateProjectConfig).inSingletonScope();
     container.register(watch).inSingletonScope();
+    container.register(serve).inSingletonScope();
     container.registerDecorator(getFeatureFlagsWithLicense);
 
     // Hooks (cloud-agnostic: build + watch).

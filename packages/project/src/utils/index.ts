@@ -3,6 +3,7 @@ export * from "./createPathResolver.js";
 export * from "./getRandomColorForString.js";
 export * from "./getStackName.js";
 export * from "./ExtensionSrcResolver.js";
+export * from "./apiRuntimeEnv.js";
 export * from "./isValidRegionName.js";
 export * from "./isValidVariantName.js";
 export * from "./measureDuration.js";

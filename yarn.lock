@@ -11104,6 +11104,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/self-hosted-auth": "npm:0.0.0"
     "@webiny/self-hosted-auth-sql": "npm:0.0.0"
+    better-sqlite3: "npm:12.11.1"
     knex: "npm:^3.3.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
@@ -11530,7 +11531,6 @@ __metadata:
     "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -13482,9 +13482,8 @@ __metadata:
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
-    "@webiny/languages": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
-    "@webiny/tenant-manager": "npm:0.0.0"
+    "@webiny/project-template-base": "npm:0.0.0"
     react: "npm:18.3.1"
   languageName: unknown
   linkType: soft
@@ -13498,7 +13497,6 @@ __metadata:
     "@pulumi/random": "npm:^4.21.0"
     "@types/lodash": "npm:^4.17.24"
     "@types/ncp": "npm:^2.0.8"
-    "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/aws-layers": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -13530,16 +13528,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-server-template@workspace:packages/project-server-template"
   dependencies:
-    "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api-event-handler-server-sql": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/languages": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-server": "npm:0.0.0"
-    "@webiny/tenant-manager": "npm:0.0.0"
-    knex: "npm:^3.3.0"
+    "@webiny/project-template-base": "npm:0.0.0"
     react: "npm:18.3.1"
   languageName: unknown
   linkType: soft
@@ -13549,9 +13544,25 @@ __metadata:
   resolution: "@webiny/project-server@workspace:packages/project-server"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cli-core": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
     "@webiny/project": "npm:0.0.0"
+    react: "npm:18.3.1"
     replace-in-path: "npm:^1.1.0"
+    typescript: "npm:^7.0.2"
+    zod: "npm:4.4.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/project-template-base@npm:0.0.0, @webiny/project-template-base@workspace:packages/project-template-base":
+  version: 0.0.0-use.local
+  resolution: "@webiny/project-template-base@workspace:packages/project-template-base"
+  dependencies:
+    "@webiny/ai-powerups": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/languages": "npm:0.0.0"
+    "@webiny/tenant-manager": "npm:0.0.0"
+    react: "npm:18.3.1"
     typescript: "npm:^7.0.2"
   languageName: unknown
   linkType: soft
@@ -14979,7 +14990,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3@npm:^12.11.1":
+"better-sqlite3@npm:12.11.1, better-sqlite3@npm:^12.11.1":
   version: 12.11.1
   resolution: "better-sqlite3@npm:12.11.1"
   dependencies:
