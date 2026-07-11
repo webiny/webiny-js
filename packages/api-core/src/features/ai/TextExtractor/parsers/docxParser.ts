@@ -5,33 +5,126 @@ export async function extractDocxText(buffer: Buffer): Promise<string> {
     if (!xml) {
         throw new Error("Invalid DOCX: word/document.xml not found.");
     }
-    return extractTextFromWordXml(xml);
+
+    const stylesXml = extractFileFromZip(buffer, "word/styles.xml");
+    const styleMap = stylesXml ? buildStyleMap(stylesXml) : new Map<string, string>();
+
+    return convertToMarkdown(xml, styleMap);
 }
 
-function extractTextFromWordXml(xml: string): string {
+function buildStyleMap(stylesXml: string): Map<string, string> {
+    const map = new Map<string, string>();
+    const styleRegex = /<w:style\s[^>]*w:styleId="([^"]*)"[^>]*>[\s\S]*?<\/w:style>/g;
+    let match: RegExpExecArray | null;
+
+    while ((match = styleRegex.exec(stylesXml)) !== null) {
+        const styleId = match[1];
+        const block = match[0];
+        const nameMatch = block.match(/<w:name\s+w:val="([^"]*)"/);
+        if (nameMatch) {
+            map.set(styleId, nameMatch[1]);
+        }
+    }
+
+    return map;
+}
+
+function getHeadingLevel(paragraphXml: string, styleMap: Map<string, string>): number {
+    const styleMatch = paragraphXml.match(/<w:pStyle\s+w:val="([^"]*)"/);
+    if (!styleMatch) {
+        return 0;
+    }
+
+    const styleId = styleMatch[1];
+
+    const directMatch = styleId.match(/^[Hh]eading(\d)$/);
+    if (directMatch) {
+        return parseInt(directMatch[1], 10);
+    }
+
+    const styleName = styleMap.get(styleId) ?? "";
+    const nameMatch = styleName.match(/^[Hh]eading\s*(\d)$/);
+    if (nameMatch) {
+        return parseInt(nameMatch[1], 10);
+    }
+
+    if (/title/i.test(styleName) || /title/i.test(styleId)) {
+        return 1;
+    }
+
+    return 0;
+}
+
+function isListItem(paragraphXml: string): boolean {
+    return /<w:numId\s/.test(paragraphXml);
+}
+
+function extractRunMarkdown(runXml: string): string {
+    const textRegex = /<w:t(?:\s[^>]*)?>([^<]*)<\/w:t>/g;
+    const texts: string[] = [];
+    let match: RegExpExecArray | null;
+    while ((match = textRegex.exec(runXml)) !== null) {
+        texts.push(match[1]);
+    }
+    if (texts.length === 0) {
+        return "";
+    }
+
+    const text = texts.join("");
+    const isBold = /<w:b[\s/>]/.test(runXml) && !/<w:b\s+w:val="(false|0)"/.test(runXml);
+    const isItalic = /<w:i[\s/>]/.test(runXml) && !/<w:i\s+w:val="(false|0)"/.test(runXml);
+
+    if (isBold && isItalic) {
+        return `***${text}***`;
+    }
+    if (isBold) {
+        return `**${text}**`;
+    }
+    if (isItalic) {
+        return `*${text}*`;
+    }
+    return text;
+}
+
+function convertToMarkdown(xml: string, styleMap: Map<string, string>): string {
     const paragraphs: string[] = [];
     const paragraphRegex = /<w:p[\s>][\s\S]*?<\/w:p>/g;
     let paragraphMatch: RegExpExecArray | null;
 
     while ((paragraphMatch = paragraphRegex.exec(xml)) !== null) {
         const paragraphXml = paragraphMatch[0];
-        const texts: string[] = [];
-        const textRegex = /<w:t(?:\s[^>]*)?>([^<]*)<\/w:t>/g;
-        let textMatch: RegExpExecArray | null;
 
-        while ((textMatch = textRegex.exec(paragraphXml)) !== null) {
-            texts.push(textMatch[1]);
+        const runRegex = /<w:r[\s>][\s\S]*?<\/w:r>/g;
+        const runs: string[] = [];
+        let runMatch: RegExpExecArray | null;
+        while ((runMatch = runRegex.exec(paragraphXml)) !== null) {
+            const md = extractRunMarkdown(runMatch[0]);
+            if (md) {
+                runs.push(md);
+            }
         }
 
-        if (texts.length > 0) {
-            paragraphs.push(texts.join(""));
+        if (runs.length === 0) {
+            continue;
         }
+
+        let line = runs.join("");
+        const headingLevel = getHeadingLevel(paragraphXml, styleMap);
+
+        if (headingLevel > 0 && headingLevel <= 6) {
+            line = `${"#".repeat(headingLevel)} ${line}`;
+        } else if (isListItem(paragraphXml)) {
+            line = `- ${line}`;
+        }
+
+        paragraphs.push(line);
     }
 
-    return paragraphs.join("\n");
+    return paragraphs.join("\n\n");
 }
 
-// Minimal ZIP Central Directory parser — extracts a single file by name.
+// --- ZIP utilities (unchanged) ---
+
 function extractFileFromZip(buffer: Buffer, targetPath: string): string | null {
     const eocdOffset = findEocd(buffer);
     if (eocdOffset === -1) {
@@ -96,7 +189,6 @@ function readLocalFile(
 }
 
 function findEocd(buffer: Buffer): number {
-    // EOCD signature: 0x06054b50
     for (let i = buffer.length - 22; i >= Math.max(0, buffer.length - 65557); i--) {
         if (buffer.readUInt32LE(i) === 0x06054b50) {
             return i;

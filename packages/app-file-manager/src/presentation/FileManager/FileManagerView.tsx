@@ -300,7 +300,7 @@ const FileManagerViewInner = observer(
         }, [overlay, onChange, onClose, multiple, accept]);
 
         useEffect(() => {
-            presenter.init({ scope });
+            presenter.init({ scope, accept: accept ?? undefined });
             return () => presenter.dispose();
         }, [presenter, overlay, scope]);
 

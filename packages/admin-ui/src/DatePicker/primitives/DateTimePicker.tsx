@@ -45,7 +45,9 @@ const DateTimePicker = ({
     onOpenChange,
     className,
     withTimezone,
-    displayFormat
+    displayFormat,
+    minDate,
+    maxDate
 }: DateTimePickerInternalProps) => {
     const [open, setOpen] = useState(false);
 
@@ -74,7 +76,7 @@ const DateTimePicker = ({
         if (withTimezone) {
             onChange(toIsoWithTz(date, tz || timezone));
         } else {
-            onChange(format(date, "yyyy-MM-dd'T'HH:mm:ss"));
+            onChange(format(date, "yyyy-MM-dd'T'HH:mm:ss") + ".000Z");
         }
     };
 
@@ -126,6 +128,10 @@ const DateTimePicker = ({
                             selected={currentDate}
                             onSelect={handleDateSelect}
                             weekStartsOn={weekStartsOn}
+                            disabled={[
+                                ...(minDate ? [{ before: minDate }] : []),
+                                ...(maxDate ? [{ after: maxDate }] : [])
+                            ]}
                         />
                         <div className="flex gap-sm px-md pb-md">
                             <div className="flex-1">

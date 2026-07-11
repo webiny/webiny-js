@@ -5,7 +5,10 @@ import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { ListTagsUseCase } from "@webiny/api-file-manager/features/file/ListTags/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
-import { AiPromptContextBuilder } from "~/api/features/AiPromptContext/index.js";
+import {
+    AiPromptContextBuilder,
+    formatAdditionalFilesContext
+} from "~/api/features/AiPromptContext/index.js";
 import { createReadProjectFileTool } from "~/api/features/AiPromptContext/ReadProjectFileTool.js";
 import { WbGeneratePageContentUseCase } from "./abstractions.js";
 import type {
@@ -95,7 +98,7 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
                 },
                 system,
                 toolChoice: "auto",
-                prompt: params.prompt,
+                prompt: params.prompt + formatAdditionalFilesContext(context.additionalFiles),
                 ...(Object.keys(sdkTools).length > 0
                     ? { tools: sdkTools, stopWhen: stepCountIs(20) }
                     : {})

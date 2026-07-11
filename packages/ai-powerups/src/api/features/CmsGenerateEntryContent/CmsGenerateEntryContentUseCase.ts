@@ -9,7 +9,10 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
 import { CmsModelToJsonSchemaConverter } from "@webiny/api-headless-cms/utils/contentModelToJsonSchema/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
-import { AiPromptContextBuilder } from "~/api/features/AiPromptContext/index.js";
+import {
+    AiPromptContextBuilder,
+    formatAdditionalFilesContext
+} from "~/api/features/AiPromptContext/index.js";
 import { createReadProjectFileTool } from "~/api/features/AiPromptContext/ReadProjectFileTool.js";
 import { CmsGenerateEntryContentUseCase } from "./abstractions.js";
 import type {
@@ -111,7 +114,7 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
                 },
                 system,
                 toolChoice: "auto",
-                prompt: params.prompt,
+                prompt: params.prompt + formatAdditionalFilesContext(context.additionalFiles),
                 ...(Object.keys(sdkTools).length > 0
                     ? { tools: sdkTools, stopWhen: stepCountIs(20) }
                     : {})

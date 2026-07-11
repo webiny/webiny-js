@@ -82,7 +82,6 @@ class AiPromptFormFactoryImpl implements Abstraction.Interface {
                     .list()
                     .accept([
                         "text/*",
-                        "application/pdf",
                         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     ])
                     .label("Additional files")

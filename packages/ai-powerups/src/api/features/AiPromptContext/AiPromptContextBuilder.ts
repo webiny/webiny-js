@@ -66,7 +66,6 @@ function formatContext(ctx: AiPromptContext): string {
             sections.push(projectText);
         }
     }
-
     return sections.length > 0 ? "\n\n" + sections.join("\n\n") : "";
 }
 
@@ -76,6 +75,7 @@ function emptyContext(warnings: string[]): AiPromptContext {
         readerPersona: undefined,
         writerPersona: undefined,
         allProjectFiles: [],
+        additionalFiles: [],
         excludedFileIds: new Set(),
         cacheHit: false,
         warnings,
@@ -148,6 +148,7 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
             readerPersona: reader,
             writerPersona: writer,
             allProjectFiles,
+            additionalFiles,
             excludedFileIds,
             cacheHit,
             warnings,
