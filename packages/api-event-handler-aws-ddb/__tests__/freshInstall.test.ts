@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
-import { createWebinyApiHandler } from "~/createWebinyApiHandler.js";
+import { createAwsDdbApiHandler } from "~/createWebinyApiHandler.js";
 
 /**
  * Integration test for the full DDB API composition root.
  *
- * Boots createWebinyApiHandler against a fresh (empty) dynalite DynamoDB and sends a GraphQL
+ * Boots createAwsDdbApiHandler against a fresh (empty) dynalite DynamoDB and sends a GraphQL
  * request. On a fresh DB the CMS content models don't exist yet, so this exercises the exact path
  * that produced `No registration found for FileModel` in production: the GraphQL schema build
  * derefs a schema contributor whose dependency (FileModel) is only registered conditionally.
@@ -15,7 +15,7 @@ import { createWebinyApiHandler } from "~/createWebinyApiHandler.js";
  */
 describe("api-event-handler-aws-ddb — full handler boot (fresh install)", () => {
     it("builds the GraphQL schema on a fresh DB without a DI wiring failure", async () => {
-        const handler = createWebinyApiHandler({
+        const handler = createAwsDdbApiHandler({
             extensions: () => [],
             documentClient: getDocumentClient(),
             dbTable: process.env.DB_TABLE

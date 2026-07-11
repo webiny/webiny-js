@@ -24,7 +24,7 @@ import { OpenSearchQueryBuilderOperatorFeature } from "@webiny/api-opensearch/fe
 import { OpenSearchFieldFeature } from "@webiny/api-opensearch/features/OpenSearchField/feature.js";
 import { OpenSearchIndexFeature } from "@webiny/api-opensearch/features/OpenSearchIndex/feature.js";
 
-export type CreateWebinyApiHandlerConfig = Pick<
+export type CreateAwsDdbOsApiHandlerConfig = Pick<
     BaseConfig,
     "extensions" | "documentClient" | "dbTable"
 > & {
@@ -53,7 +53,7 @@ const openSearchClientFromEnv = () => {
     return createOpenSearchClient(openSearchClientOptions);
 };
 
-export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
+export function createAwsDdbOsApiHandler(config: CreateAwsDdbOsApiHandlerConfig) {
     const openSearchClient = config.openSearchClient ?? openSearchClientFromEnv();
 
     return createBaseHandler({

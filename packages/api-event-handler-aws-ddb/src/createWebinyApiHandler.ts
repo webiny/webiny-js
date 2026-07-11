@@ -14,12 +14,12 @@ import { AuditLogsDdbFeature } from "@webiny/api-audit-logs-ddb";
 import { AcoDdbFeature } from "@webiny/api-aco-ddb";
 import { WebsocketsDdbFeature } from "@webiny/api-websockets-ddb";
 
-export type CreateWebinyApiHandlerConfig = Pick<
+export type CreateAwsDdbApiHandlerConfig = Pick<
     BaseConfig,
     "extensions" | "documentClient" | "dbTable"
 >;
 
-export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
+export function createAwsDdbApiHandler(config: CreateAwsDdbApiHandlerConfig) {
     return createBaseHandler({
         ...config,
         registerRootStorage: (container, { documentClient }) => {

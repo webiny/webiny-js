@@ -694,7 +694,9 @@
       "name": "better-sqlite3",
       "version": "12.11.1",
       "files": [
+        "/packages/api-event-handler-server-sql/package.json",
         "/packages/project-server-template/template/appTemplates/api/graphql/package.json",
+        "/packages/api-event-handler-server-sql/package.json",
         "/packages/project-server-template/template/appTemplates/api/graphql/package.json"
       ]
     },
@@ -1282,7 +1284,6 @@
         "/packages/api-core-sql/package.json",
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-websockets-sql/package.json",
-        "/packages/project-server-template/package.json",
         "/packages/project-server-template/template/appTemplates/api/graphql/package.json",
         "/packages/self-hosted-auth-sql/package.json",
         "/packages/api-aco-sql/package.json",
@@ -1290,7 +1291,6 @@
         "/packages/api-core-sql/package.json",
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-websockets-sql/package.json",
-        "/packages/project-server-template/package.json",
         "/packages/project-server-template/template/appTemplates/api/graphql/package.json",
         "/packages/self-hosted-auth-sql/package.json"
       ]
@@ -1872,7 +1872,9 @@
         "/packages/project/package.json",
         "/packages/project-aws/package.json",
         "/packages/project-aws-template/package.json",
+        "/packages/project-server/package.json",
         "/packages/project-server-template/package.json",
+        "/packages/project-template-base/package.json",
         "/packages/react-composition/package.json",
         "/packages/react-properties/package.json",
         "/packages/react-rich-text-lexical-renderer/package.json",
@@ -1915,7 +1917,9 @@
         "/packages/project/package.json",
         "/packages/project-aws/package.json",
         "/packages/project-aws-template/package.json",
+        "/packages/project-server/package.json",
         "/packages/project-server-template/package.json",
+        "/packages/project-template-base/package.json",
         "/packages/react-composition/package.json",
         "/packages/react-properties/package.json",
         "/packages/react-rich-text-lexical-renderer/package.json",
@@ -2452,6 +2456,7 @@
         "/packages/okta/package.json",
         "/packages/project/package.json",
         "/packages/project-aws/package.json",
+        "/packages/project-server/package.json",
         "/packages/sdk/package.json",
         "/packages/self-hosted-auth/package.json",
         "/packages/utils/package.json",
@@ -2486,6 +2491,7 @@
         "/packages/okta/package.json",
         "/packages/project/package.json",
         "/packages/project-aws/package.json",
+        "/packages/project-server/package.json",
         "/packages/sdk/package.json",
         "/packages/self-hosted-auth/package.json",
         "/packages/utils/package.json",
@@ -3512,6 +3518,7 @@
         "/packages/project/package.json",
         "/packages/project-aws/package.json",
         "/packages/project-server/package.json",
+        "/packages/project-template-base/package.json",
         "/packages/pulumi/package.json",
         "/packages/pulumi-sdk/package.json",
         "/packages/react-composition/package.json",
@@ -3642,6 +3649,7 @@
         "/packages/project/package.json",
         "/packages/project-aws/package.json",
         "/packages/project-server/package.json",
+        "/packages/project-template-base/package.json",
         "/packages/pulumi/package.json",
         "/packages/pulumi-sdk/package.json",
         "/packages/react-composition/package.json",
@@ -4662,7 +4670,9 @@
             { "file": "/packages/project/package.json", "types": ["dependencies"] },
             { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
             { "file": "/packages/project-aws-template/package.json", "types": ["dependencies"] },
+            { "file": "/packages/project-server/package.json", "types": ["dependencies"] },
             { "file": "/packages/project-server-template/package.json", "types": ["dependencies"] },
+            { "file": "/packages/project-template-base/package.json", "types": ["dependencies"] },
             { "file": "/packages/react-composition/package.json", "types": ["dependencies"] },
             { "file": "/packages/react-properties/package.json", "types": ["dependencies"] },
             {
@@ -5021,6 +5031,10 @@
             { "file": "/packages/project/package.json", "types": ["devDependencies"] },
             { "file": "/packages/project-aws/package.json", "types": ["devDependencies"] },
             { "file": "/packages/project-server/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/project-template-base/package.json",
+              "types": ["devDependencies"]
+            },
             { "file": "/packages/pulumi/package.json", "types": ["devDependencies"] },
             { "file": "/packages/pulumi-sdk/package.json", "types": ["devDependencies"] },
             { "file": "/packages/react-composition/package.json", "types": ["devDependencies"] },
@@ -5992,6 +6006,7 @@
             { "file": "/packages/okta/package.json", "types": ["dependencies"] },
             { "file": "/packages/project/package.json", "types": ["dependencies"] },
             { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
+            { "file": "/packages/project-server/package.json", "types": ["dependencies"] },
             { "file": "/packages/sdk/package.json", "types": ["dependencies"] },
             { "file": "/packages/self-hosted-auth/package.json", "types": ["dependencies"] },
             { "file": "/packages/utils/package.json", "types": ["dependencies"] },
@@ -6015,7 +6030,6 @@
             },
             { "file": "/packages/api-headless-cms-sql/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-websockets-sql/package.json", "types": ["dependencies"] },
-            { "file": "/packages/project-server-template/package.json", "types": ["dependencies"] },
             {
               "file": "/packages/project-server-template/template/appTemplates/api/graphql/package.json",
               "types": ["dependencies"]
@@ -6034,6 +6048,10 @@
             { "file": "/packages/api-aco-sql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-audit-logs-sql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-core-sql/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/api-event-handler-server-sql/package.json",
+              "types": ["dependencies"]
+            },
             { "file": "/packages/api-headless-cms-sql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-websockets-sql/package.json", "types": ["devDependencies"] },
             {

@@ -1,5 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import type { PulumiApp } from "@webiny/pulumi";
+import { pickApiRuntimeEnvVariables } from "@webiny/project";
 
 type EnvVariables = Record<string, string | pulumi.Output<string>>;
 
@@ -11,42 +12,15 @@ if (process.env.DEBUG === "true") {
 
 export let sealEnvVariables: () => void;
 
-const magicPrefixes = [
-    "WEBINY_",
-    "WEBINY_API_",
-    // Added WCP vars separately. We don't need any other `WCP_PROJECT_` variables, apart from these.
-    // WEBINY_PROJECT_API_KEY is the new naming (preferred), WCP_PROJECT_ENVIRONMENT_API_KEY is for backward compatibility.
-    // This will be later removed because we'll be using `Api.BuildParam` extension.
-    "WEBINY_PROJECT_API_KEY",
-    "WCP_PROJECT_ENVIRONMENT",
-    "WCP_PROJECT_ENVIRONMENT_API_KEY",
-    "OKTA_",
-    "AUTH0_"
-];
-
 const variablesPromise = new Promise<EnvVariables>(resolve => {
     sealEnvVariables = () => {
-        // Apart from a couple of basic environment variables like DEBUG,
-        // we also take into consideration variables that have `WEBINY_` and `WCP_` prefix in their names.
-        const baseVariables = Object.keys(process.env).reduce<EnvVariables>(
-            (current, environmentVariableName) => {
-                const hasMagicPrefix = magicPrefixes.some(prefix =>
-                    environmentVariableName.startsWith(prefix)
-                );
-
-                if (hasMagicPrefix && process.env[environmentVariableName] !== undefined) {
-                    current[environmentVariableName] = String(process.env[environmentVariableName]);
-                }
-                return current;
-            },
-            {
-                // Among other things, this determines the amount of information we reveal on runtime errors.
-                // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
-                DEBUG: String(process.env.DEBUG),
-                // This flag means that Lambda was deployed using the new Pulumi Apps architecture.
-                PULUMI_APPS: "true"
-            }
-        );
+        // The api runtime allowlist (WEBINY_/WCP_PROJECT_ENVIRONMENT/OKTA_/AUTH0_ + DEBUG) is shared
+        // with the self-hosted server flavour — see @webiny/project's pickApiRuntimeEnvVariables.
+        const baseVariables: EnvVariables = {
+            ...pickApiRuntimeEnvVariables(),
+            // This flag means that Lambda was deployed using the new Pulumi Apps architecture.
+            PULUMI_APPS: "true"
+        };
 
         resolve(Object.assign({}, baseVariables, variablesRegistry));
     };

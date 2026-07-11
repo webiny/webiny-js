@@ -1,2 +1,2 @@
-export { createWebinyApiHandler } from "./createWebinyApiHandler.js";
-export type { CreateWebinyApiHandlerConfig } from "./createWebinyApiHandler.js";
+export { createAwsDdbOsApiHandler } from "./createWebinyApiHandler.js";
+export type { CreateAwsDdbOsApiHandlerConfig } from "./createWebinyApiHandler.js";
