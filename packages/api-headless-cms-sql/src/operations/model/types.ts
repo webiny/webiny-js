@@ -18,6 +18,7 @@ export interface IModelRow {
     imageFieldId: string | null;
     isPrivate: boolean;
     isPlugin: boolean;
+    settings: string | null;
     authorization: string | null;
     createdBy_id: string | null;
     createdBy_displayName: string | null;
@@ -48,7 +49,8 @@ const MODEL_COLUMN_MAP: Record<keyof StorageCmsModel, true> = {
     isPlugin: true,
     createdOn: true,
     savedOn: true,
-    createdBy: true
+    createdBy: true,
+    settings: true
 };
 
 export const MODEL_COLUMNS = Object.keys(MODEL_COLUMN_MAP) as (keyof StorageCmsModel)[];
