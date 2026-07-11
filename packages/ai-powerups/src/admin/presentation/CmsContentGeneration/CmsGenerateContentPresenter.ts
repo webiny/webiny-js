@@ -37,9 +37,7 @@ class CmsGenerateContentPresenterImpl implements Abstraction.Interface {
 
     async init(): Promise<void> {
         this._form = this.formFactory.createForm({
-            promptDescription: "Describe the content you want to generate for this entry.",
-            promptDefaultValue:
-                "Write an evaluation guide for enterprise, self-hosted CMS platform. Use at least 3 content blocks."
+            promptDescription: "Describe the content you want to generate for this entry."
         });
     }
 
