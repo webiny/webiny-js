@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@babel/code-frame": "^8.0.0",
-    "@commitlint/cli": "^21.2.0",
+    "@commitlint/cli": "^21.2.1",
     "@commitlint/config-conventional": "^21.2.0",
     "@grpc/grpc-js": "^1.14.4",
     "@lexical/code": "^0.46.0",
@@ -40,7 +40,7 @@
     "@lexical/utils": "^0.46.0",
     "@octokit/rest": "^22.0.1",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^24.13.2",
+    "@types/node": "^24.13.3",
     "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
     "@vitest/coverage-v8": "^4.1.10",
