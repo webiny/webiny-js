@@ -1,6 +1,7 @@
 import type { CmsModel, CmsModelLayout } from "./model.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { CmsDynamicZoneTemplate } from "~/types/fields/dynamicZoneField.js";
+import type { IModelSettings } from "~/features/modelBuilder/abstractions.js";
 
 export type FieldRuleAction = "hide" | "disable" | string;
 
@@ -260,6 +261,7 @@ export interface CmsModelUpdateInput {
     titleFieldId?: string | null;
     descriptionFieldId?: string | null;
     imageFieldId?: string | null;
+    settings?: IModelSettings | null;
 }
 
 /**
