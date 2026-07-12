@@ -401,7 +401,8 @@ export class DataFieldBuilder<TType extends string = string> extends BaseFieldBu
                 note: this.config.note || null,
                 renderer: this.config.renderer || null,
                 settings: this.config.settings || {},
-                tags: this.config.tags || []
+                tags: this.config.tags || [],
+                rules: this.config.rules
             }
         };
     }

@@ -6,7 +6,7 @@ import type { IModelSettings } from "~/features/modelBuilder/abstractions.js";
 export type FieldRuleAction = "hide" | "disable" | string;
 
 export interface FieldRule {
-    type: "accessControl" | "entryValue";
+    type: "accessControl" | "condition";
     target: string;
     operator: string;
     value: string | number | boolean | null;
