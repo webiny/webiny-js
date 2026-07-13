@@ -246,8 +246,36 @@ export function createCorePulumiApp() {
             // Setup Cognito
             const cognito = app.addModule(CoreCognito, {
                 protect,
-                useEmailAsUsername: false
+                useEmailAsUsername: false,
+                mfa: process.env.COGNITO_MFA === "true"
             });
+
+            // Cognito custom:id was originally set to maxLength 36 (UUID). Federated OIDC
+            // providers (e.g., Entra ID) can produce sub values longer than 36 chars. Since
+            // Cognito doesn't allow changing custom attribute constraints after pool creation,
+            // we only increase it for new deployments. Existing pools keep their original limit.
+            const isNewDeployment = !coreStackOutput || Object.keys(coreStackOutput).length === 0;
+            if (isNewDeployment) {
+                cognito.userPool.config.schemas(schemas => {
+                    return schemas?.map(schema => {
+                        if (schema.name === "id") {
+                            return {
+                                ...schema,
+                                stringAttributeConstraints: {
+                                    ...schema.stringAttributeConstraints,
+                                    maxLength: "256"
+                                }
+                            };
+                        }
+                        return schema;
+                    });
+                });
+            } else {
+                cognito.userPool.opts.ignoreChanges = [
+                    ...(cognito.userPool.opts.ignoreChanges || []),
+                    "schemas"
+                ];
+            }
 
             // Setup event bus
             const eventBus = app.addModule(CoreEventBus);

@@ -6,7 +6,9 @@
   "sideEffects": false,
   "exports": {
     ".": "./index.js",
-    "./*": "./*"
+    "./*": "./*",
+    "./api": "./api/index.js",
+    "./admin": "./admin/index.js"
   },
   "description": "Security plugins for Cognito",
   "author": "Webiny Ltd.",
@@ -23,6 +25,7 @@
     "@webiny/icons": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
+    "@webiny/react-properties": "0.0.0",
     "@webiny/validation": "0.0.0",
     "aws-amplify": "^6.18.0",
     "graphql": "^16.14.2",

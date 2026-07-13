@@ -64,9 +64,9 @@ export interface PulumiApp<TResources = Record<string, unknown>> {
         name: string;
 
         // Set to `true` if the environment into which the application is being deployed
-        // is considered a production environment. The list of environment names
-        // that are considered production environments is defined via the
-        // `productionEnvironments` parameter. Learn more:
+        // is considered a production environment. The list of environment names that are
+        // considered production environments consists of the built-in defaults merged with
+        // any registered via the `Infra.ProductionEnvironments` extension. Learn more:
         // https://www.webiny.com/docs/infrastructure/basics/modify-cloud-infrastructure#defining-multiple-production-environments
         isProduction: boolean;
     };
