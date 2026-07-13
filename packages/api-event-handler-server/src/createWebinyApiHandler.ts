@@ -71,6 +71,15 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // shared connection manager + adapter from the root. No scheduler hook — that's AWS-only.
             await registerApiRequestStack(container, {
                 extensions: config.extensions,
+                // Why a hook (and not just registering the transport ourselves): `.register()` calls
+                // are otherwise order-independent — you can register Features in any order, because
+                // they only REGISTER, they don't RESOLVE during registration (resolution happens
+                // later, in Initializers / SchemaFactories). The one thing that makes order matter is
+                // a DEFAULT registration: `WebsocketsFeature` registers `NullWebsocketsTransport` so
+                // the abstraction is always resolvable. Overriding it (last-registration-wins) means
+                // our transport MUST be registered AFTER `WebsocketsFeature`. This hook is the seam
+                // `registerApiRequestStack` provides for exactly that — it runs right after the Null
+                // default, so the override is guaranteed without the caller knowing the internal order.
                 registerRealtimeTransport: requestContainer => {
                     requestContainer.register(ServerWebsocketsTransport);
                 }
