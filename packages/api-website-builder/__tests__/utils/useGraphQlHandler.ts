@@ -6,10 +6,8 @@ import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
 import { createContextPlugin } from "@webiny/api";
 import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
-import { createWebsiteBuilder } from "~/index.js";
+import { WebsiteBuilderFeature } from "~/index.js";
 import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
-import { PageModelPlugin } from "~/domain/page/page.model.js";
-import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
 import { createWbSdk } from "~tests/utils/createWbSdk.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
@@ -27,15 +25,13 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createContextPlugin(ctx => {
                 ctx.container.register(InvalidateCloudfrontCacheTaskDefinition);
             }),
-            createWebsiteBuilder(),
             ...[params.plugins].flat(Infinity as 1).filter(Boolean)
         ],
         features: container => {
-            // Background tasks are DI-native — the feature registers the "wbyTask" model at
-            // register() time (before WB/Languages cache the per-request model set). Mock override after.
+            // All DI-native now: background tasks (wbyTask model + TasksCrud + GraphQL) and website
+            // builder (models + features + schema). The mock TaskService override must come after.
             BackgroundTasksFeature.register(container);
-            container.register(PageModelPlugin);
-            container.register(RedirectModelPlugin);
+            WebsiteBuilderFeature.register(container);
             LanguagesExtension.register(container);
             container.registerInstance(TaskService, createMockTaskService());
         }

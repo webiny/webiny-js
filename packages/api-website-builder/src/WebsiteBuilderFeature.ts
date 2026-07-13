@@ -1,5 +1,5 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
 import {
     ModelBuilderFeature,
     ModelsProvider
@@ -11,29 +11,59 @@ import { CmsWhereMapperFeature } from "@webiny/api-headless-cms/features/whereMa
 import { CmsSortMapperFeature } from "@webiny/api-headless-cms/features/sortMapper/feature.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { createWebsiteBuilder } from "./index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { WebsiteBuilderRedirectsRoute } from "./rest/WebsiteBuilderRedirectsRoute.js";
-import { GetActiveRedirectsFeature } from "./features/redirects/GetActiveRedirects/feature.js";
+import { registerWebsiteBuilderGraphQL } from "./graphql/createGraphQL.js";
+// Redirects
+import { GetRedirectByIdFeature } from "./features/redirects/GetRedirectById/feature.js";
 import { ListRedirectsFeature } from "./features/redirects/ListRedirects/feature.js";
+import { GetActiveRedirectsFeature } from "./features/redirects/GetActiveRedirects/feature.js";
+import { CreateRedirectFeature } from "./features/redirects/CreateRedirect/feature.js";
+import { UpdateRedirectFeature } from "./features/redirects/UpdateRedirect/feature.js";
+import { DeleteRedirectFeature } from "./features/redirects/DeleteRedirect/feature.js";
+import { MoveRedirectFeature } from "./features/redirects/MoveRedirect/feature.js";
+import { InvalidateRedirectsCacheFeature } from "./features/redirects/InvalidateRedirectsCache/feature.js";
+// Pages
+import { GetPageByIdFeature } from "./features/pages/GetPageById/feature.js";
+import { GetPageByPathFeature } from "./features/pages/GetPageByPath/feature.js";
+import { GetPageRevisionsFeature } from "./features/pages/GetPageRevisions/feature.js";
+import { GetDeletedPageByIdFeature } from "./features/pages/GetDeletedPageById/feature.js";
+import { GetPageLanguagePathsFeature } from "./features/pages/GetPageLanguagePaths/feature.js";
+import { ListPagesFeature } from "./features/pages/ListPages/feature.js";
+import { ListDeletedPagesFeature } from "./features/pages/ListDeletedPages/feature.js";
+import { CreatePageFeature } from "./features/pages/CreatePage/feature.js";
+import { CreatePageRevisionFromFeature } from "./features/pages/CreatePageRevisionFrom/feature.js";
+import { DeletePageFeature } from "./features/pages/DeletePage/feature.js";
+import { TrashPageFeature } from "./features/pages/TrashPage/feature.js";
+import { RestorePageFeature } from "./features/pages/RestorePage/feature.js";
+import { UpdatePageFeature } from "./features/pages/UpdatePage/feature.js";
+import { UpdatePageRevisionDescriptionFeature } from "./features/pages/UpdatePageRevisionDescription/feature.js";
+import { PublishPageFeature } from "./features/pages/PublishPage/feature.js";
+import { UnpublishPageFeature } from "./features/pages/UnpublishPage/feature.js";
+import { DuplicatePageFeature } from "./features/pages/DuplicatePage/feature.js";
+import { TranslatePageFeature } from "./features/pages/TranslatePage/feature.js";
+import { MovePageFeature } from "./features/pages/MovePage/feature.js";
+// Misc
 import { WbPermissionsFeature } from "./features/permissions/feature.js";
-import { PAGE_MODEL_ID } from "~/domain/page/page.model.js";
-import { REDIRECT_MODEL_ID } from "~/domain/redirect/redirect.model.js";
+import { ApiKeyInstallerFeature } from "./features/installer/feature.js";
+import { NextjsFeature } from "./features/nextjs/feature.js";
+import { NuxtFeature } from "./features/nuxt/feature.js";
+import { WbWebhooksFeature } from "./features/webhooks/feature.js";
+import { NextjsGraphQLSchema } from "./graphql/nextjs/NextjsGraphQLSchema.js";
+import { NuxtGraphQLSchema } from "./graphql/nuxt/NuxtGraphQLSchema.js";
+// Models
+import { PAGE_MODEL_ID, PageModelPlugin } from "~/domain/page/page.model.js";
+import { REDIRECT_MODEL_ID, RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
 import { PageModel } from "~/domain/page/abstractions.js";
 import { RedirectModel } from "~/domain/redirect/abstractions.js";
-import { PageModelPlugin } from "~/domain/page/page.model.js";
-import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
 
 export const WebsiteBuilderFeature = createFeature({
     name: "WebsiteBuilder",
     register(container: Container) {
-        WbPermissionsFeature.register(container);
-        ListRedirectsFeature.register(container);
-        GetActiveRedirectsFeature.register(container);
-        container.register(WebsiteBuilderRedirectsRoute);
-
-        // Register CMS features needed by the redirect REST route (before the CMS schema builds).
-        // When the CMS contextual schema (HeadlessCmsInitializer.build()) runs for GraphQL requests,
-        // it will overwrite StorageOperations/AccessControl with full-context versions (last-wins).
+        // CMS features needed by the redirect REST route (before the CMS schema builds). When the CMS
+        // contextual schema runs for GraphQL requests it overwrites StorageOperations/AccessControl
+        // with full-context versions (last-wins).
         CompressionFeature.register(container);
         StorageFeature.register(container);
         ModelBuilderFeature.register(container);
@@ -42,11 +72,75 @@ export const WebsiteBuilderFeature = createFeature({
         CmsWhereMapperFeature.register(container);
         CmsSortMapperFeature.register(container);
 
-        // Register WB model factories so ModelsProvider can build CmsModel instances.
+        // WB model factories so ModelsProvider can build CmsModel instances.
         container.register(PageModelPlugin);
         container.register(RedirectModelPlugin);
 
-        registerLegacyPluginsViaGqlContextualSchema(container, createWebsiteBuilder());
+        // Permissions.
+        WbPermissionsFeature.register(container);
+
+        // Redirect features + REST route.
+        GetRedirectByIdFeature.register(container);
+        ListRedirectsFeature.register(container);
+        GetActiveRedirectsFeature.register(container);
+        CreateRedirectFeature.register(container);
+        UpdateRedirectFeature.register(container);
+        DeleteRedirectFeature.register(container);
+        MoveRedirectFeature.register(container);
+        InvalidateRedirectsCacheFeature.register(container);
+        container.register(WebsiteBuilderRedirectsRoute);
+
+        // Page features.
+        GetPageByIdFeature.register(container);
+        GetPageByPathFeature.register(container);
+        GetPageRevisionsFeature.register(container);
+        GetDeletedPageByIdFeature.register(container);
+        GetPageLanguagePathsFeature.register(container);
+        ListPagesFeature.register(container);
+        ListDeletedPagesFeature.register(container);
+        CreatePageFeature.register(container);
+        CreatePageRevisionFromFeature.register(container);
+        DeletePageFeature.register(container);
+        TrashPageFeature.register(container);
+        RestorePageFeature.register(container);
+        UpdatePageFeature.register(container);
+        UpdatePageRevisionDescriptionFeature.register(container);
+        PublishPageFeature.register(container);
+        UnpublishPageFeature.register(container);
+        DuplicatePageFeature.register(container);
+        TranslatePageFeature.register(container);
+        MovePageFeature.register(container);
+
+        // Misc features + framework GraphQL (Next.js / Nuxt).
+        ApiKeyInstallerFeature.register(container);
+        NextjsFeature.register(container);
+        NuxtFeature.register(container);
+        WbWebhooksFeature.register(container);
+        container.register(NextjsGraphQLSchema);
+        container.register(NuxtGraphQLSchema);
+
+        // Static WB GraphQL schema (base + pages + redirects).
+        registerWebsiteBuilderGraphQL(container);
+
+        // Per-request resolution of the WB CmsModel instances (Page/Redirect) for the GraphQL path.
+        // The REST route path uses setupWebsiteBuilderModels() (runs for all transports, pre-routing).
+        container.registerInstance(RequestContextInitializer, {
+            async init(ctx: Record<string, any>) {
+                const requestContainer = ctx.container as Container;
+                const identityContext = requestContainer.resolve(IdentityContext);
+                const getModel = requestContainer.resolve(GetModelUseCase);
+
+                await identityContext.withoutAuthorization(async () => {
+                    const [pageModel, redirectModel] = await Promise.all([
+                        getModel.execute(PAGE_MODEL_ID),
+                        getModel.execute(REDIRECT_MODEL_ID)
+                    ]);
+
+                    requestContainer.registerInstance(PageModel, pageModel.value);
+                    requestContainer.registerInstance(RedirectModel, redirectModel.value);
+                });
+            }
+        });
     }
 });
 
@@ -55,12 +149,10 @@ export const WebsiteBuilderFeature = createFeature({
  * exposes them by token for the redirect REST route + page features. Must run in the `request`
  * callback after WebsiteBuilderFeature.register() and HeadlessCmsFeature.register().
  *
- * Storage operations, AccessControl, the entry transforms and SearchableFieldsProvider are now
- * provided by HeadlessCmsFeature.register() for every event, so WB no longer builds its own
- * (which previously meant a permissive AccessControl stub that shadowed the real one).
+ * Storage operations, AccessControl, the entry transforms and SearchableFieldsProvider are provided
+ * by HeadlessCmsFeature.register() for every event, so WB no longer builds its own.
  */
 export async function setupWebsiteBuilderModels(container: Container): Promise<void> {
-    // Build the WB CmsModel instances from the registered ModelFactory plugins.
     const modelsProvider = container.resolve(ModelsProvider);
     const tenantCtx = container.resolve(TenantContext);
     // getTenant() is typed non-null but returns null before the tenant is set during routing;
