@@ -30,14 +30,22 @@ export const createDeleteModelCrud = (): RequestContextInitializer.Interface => 
             });
 
             const result = await cache.getOrSet(cacheKey, async () => {
+                // The delete-model store is backed by DbInstance (DynamoDB). Flavours without it
+                // (e.g. the self-hosted SQL server, which registers no DynamoDB DbInstance) have no
+                // delete-model tracking — treat as "no models being deleted" rather than crashing.
+                let db;
+                try {
+                    db = context.container.resolve(DbInstance);
+                } catch {
+                    return { data: {} } as Awaited<ListStoreKeysResult>;
+                }
+
                 const beginsWith = createStoreNamespace({
                     tenant
                 });
-                return await context.container
-                    .resolve(DbInstance)
-                    .store.listValues<GenericRecord<string, IStoreValue>>({
-                        beginsWith
-                    });
+                return await db.store.listValues<GenericRecord<string, IStoreValue>>({
+                    beginsWith
+                });
             });
 
             if (result.error) {

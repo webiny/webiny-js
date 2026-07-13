@@ -24,8 +24,11 @@ if (!target) {
   }
 }
 
+// The handler is created asynchronously (the server builds its root container + attaches the
+// WebSockets upgrade handler at startup), so await it before listening.
 const { handler } = await import(target.href);
+const server = await handler;
 
-handler.listen(port, () => {
+server.listen(port, () => {
   console.log("listening on http://localhost:" + port);
 });

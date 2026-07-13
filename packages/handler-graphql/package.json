@@ -18,9 +18,9 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@graphql-tools/merge": "9.1.11",
+    "@graphql-tools/merge": "9.2.0",
     "@graphql-tools/resolvers-composition": "7.0.33",
-    "@graphql-tools/schema": "10.0.35",
+    "@graphql-tools/schema": "10.0.36",
     "@graphql-tools/utils": "11.2.0",
     "@webiny/api": "0.0.0",
     "@webiny/di": "^1.0.2",
