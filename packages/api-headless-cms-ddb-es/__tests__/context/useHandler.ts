@@ -11,6 +11,7 @@ import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js"
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { RegisterExtensionPlugin } from "@webiny/handler";
 import { BackgroundTasksFeature, TasksCrud } from "@webiny/background-tasks/api";
+import { ElasticsearchTasksFeature } from "@webiny/api-elasticsearch-tasks";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
@@ -93,8 +94,10 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
         }
 
         // Background tasks are DI-native — the feature registers models, TasksCrud, and the GraphQL
-        // contextual schema (built below alongside the other contextual schemas).
+        // contextual schema (built below alongside the other contextual schemas). The OpenSearch
+        // Elasticsearch task definitions come from ElasticsearchTasksFeature.
         BackgroundTasksFeature.register(container);
+        ElasticsearchTasksFeature.register(container);
 
         const tenantCtx = container.resolve(TenantContext);
         tenantCtx.setTenant({
