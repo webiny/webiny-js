@@ -6,7 +6,7 @@ import { createMemoryCache } from "@webiny/api-headless-cms/utils/index.js";
 import type { IStoreValue } from "~/features/DeleteModelTask/types.js";
 import type { ListStoreKeysResult } from "~/features/DeleteModelTask/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import { ContextPlugin } from "@webiny/api";
+import type { RequestContextInitializer } from "@webiny/event-handler-core";
 import { DisableModelFeature } from "~/features/DisableModel/feature.js";
 import { createStoreNamespace } from "~/helpers/store.js";
 import { fullyDeleteModel } from "~/graphql/deleteModel/fullyDeleteModel.js";
@@ -14,8 +14,8 @@ import { cancelDeleteModel } from "~/graphql/deleteModel/cancelDeleteModel.js";
 import { getDeleteModelProgress } from "~/graphql/deleteModel/getDeleteModelProgress.js";
 import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
 
-export const createDeleteModelCrud = () => {
-    const plugin = new ContextPlugin<HcmsTasksContext>(async context => {
+export const createDeleteModelCrud = (): RequestContextInitializer.Interface => ({
+    async init(context: HcmsTasksContext) {
         const getTenant = (): string => {
             return context.container.resolve(TenantContext).getTenant().id;
         };
@@ -74,9 +74,5 @@ export const createDeleteModelCrud = () => {
         context.container.registerInstance(DeleteModelOperations, operations);
 
         DisableModelFeature.register(context.container);
-    });
-
-    plugin.name = "headlessCms.context.cms.fullyDeleteModel";
-
-    return plugin;
-};
+    }
+});
