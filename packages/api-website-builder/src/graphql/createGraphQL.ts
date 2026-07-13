@@ -1,6 +1,6 @@
+import type { Container } from "@webiny/di";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import { createContextPlugin } from "@webiny/api";
 import { createPagesSchema } from "~/graphql/pages/pages.gql.js";
 import { createRedirectsSchema } from "./redirects/redirects.gql.js";
 
@@ -106,40 +106,33 @@ const baseSchema = new GraphQLSchemaPlugin({
     }
 });
 
-export const createGraphQL = () => {
-    // The WB schema is authored as legacy GraphQLSchemaPlugins, but the DI engine's
-    // GraphQLSchemaComposer builds the schema from CoreGraphQLSchemaFactory registrations — it does
-    // NOT read ctx.plugins. registerLegacyPluginsViaGqlContextualSchema only routes plain schema
-    // plugins into ctx.plugins, so without this bridge they never reach the schema (manifesting as
-    // "Unknown type: WbError" or a missing `websiteBuilder` query field). Register each WB schema
-    // plugin as a CoreGraphQLSchemaFactory at request time via a ContextPlugin (apply runs in the
-    // initializer phase, before the composer builds).
-    const plugin = createContextPlugin(async (ctx: Record<string, any>) => {
-        const schemaPlugins = [baseSchema, createPagesSchema(), createRedirectsSchema()];
-        for (const schemaPlugin of schemaPlugins) {
-            ctx.container.registerInstance(CoreGraphQLSchemaFactory, {
-                async execute(builder: CoreGraphQLSchemaFactory.SchemaBuilder) {
-                    const { schema } = schemaPlugin;
-                    if (schema.typeDefs) {
-                        builder.addTypeDefs(schema.typeDefs as string);
-                    }
-                    if (schema.resolvers) {
-                        builder.addLegacyResolvers(schema.resolvers as Record<string, any>);
-                    }
-                    if (schema.resolverDecorators) {
-                        for (const [path, decorators] of Object.entries(
-                            schema.resolverDecorators
-                        )) {
-                            for (const decorator of decorators as any[]) {
-                                builder.addResolverDecorator(path, decorator);
-                            }
+/**
+ * Registers the WB GraphQL schema (base + pages + redirects) as CoreGraphQLSchemaFactory instances.
+ * The DI engine's GraphQLSchemaComposer builds from CoreGraphQLSchemaFactory registrations (it does
+ * NOT read ctx.plugins), so each legacy WB GraphQLSchemaPlugin is bridged here. The schema is static
+ * (no per-request/model data), so this runs at feature-register time — before the composer builds.
+ */
+export const registerWebsiteBuilderGraphQL = (container: Container) => {
+    const schemaPlugins = [baseSchema, createPagesSchema(), createRedirectsSchema()];
+    for (const schemaPlugin of schemaPlugins) {
+        container.registerInstance(CoreGraphQLSchemaFactory, {
+            async execute(builder: CoreGraphQLSchemaFactory.SchemaBuilder) {
+                const { schema } = schemaPlugin;
+                if (schema.typeDefs) {
+                    builder.addTypeDefs(schema.typeDefs as string);
+                }
+                if (schema.resolvers) {
+                    builder.addLegacyResolvers(schema.resolvers as Record<string, any>);
+                }
+                if (schema.resolverDecorators) {
+                    for (const [path, decorators] of Object.entries(schema.resolverDecorators)) {
+                        for (const decorator of decorators as any[]) {
+                            builder.addResolverDecorator(path, decorator);
                         }
                     }
-                    return builder;
                 }
-            });
-        }
-    });
-    plugin.name = "websiteBuilder.graphql";
-    return [plugin];
+                return builder;
+            }
+        });
+    }
 };
