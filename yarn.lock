@@ -10758,11 +10758,11 @@ __metadata:
     "@webiny/background-tasks-aws": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cognito": "npm:0.0.0"
+    "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
     "@webiny/event-handler-aws": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"
@@ -11043,7 +11043,6 @@ __metadata:
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
@@ -11074,7 +11073,6 @@ __metadata:
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -11095,9 +11093,9 @@ __metadata:
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/testing": "npm:0.0.0"
@@ -11181,7 +11179,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-tasks@workspace:packages/api-headless-cms-tasks"
   dependencies:
-    "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
@@ -11189,12 +11186,10 @@ __metadata:
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
@@ -11249,7 +11244,6 @@ __metadata:
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
@@ -11288,7 +11282,6 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
@@ -11543,7 +11536,6 @@ __metadata:
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -11630,7 +11622,6 @@ __metadata:
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
@@ -12849,24 +12840,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-db@npm:0.0.0, @webiny/handler-db@workspace:packages/handler-db":
-  version: 0.0.0-use.local
-  resolution: "@webiny/handler-db@workspace:packages/handler-db"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/db-utils": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.2"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    rimraf: "npm:^6.1.3"
-    typescript: "npm:^7.0.2"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/handler-graphql@npm:0.0.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-graphql@workspace:packages/handler-graphql"
@@ -13188,7 +13161,6 @@ __metadata:
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-template-base": "npm:0.0.0"

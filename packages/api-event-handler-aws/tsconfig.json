@@ -10,10 +10,10 @@
     { "path": "../aws-sdk" },
     { "path": "../background-tasks-aws" },
     { "path": "../cognito" },
+    { "path": "../db-dynamodb" },
     { "path": "../event-handler-aws" },
     { "path": "../event-handler-core" },
-    { "path": "../handler" },
-    { "path": "../handler-db" }
+    { "path": "../handler" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -38,14 +38,14 @@
       "@webiny/background-tasks-aws": ["../background-tasks-aws/src"],
       "@webiny/cognito/*": ["../cognito/src/*"],
       "@webiny/cognito": ["../cognito/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/event-handler-aws/*": ["../event-handler-aws/src/*"],
       "@webiny/event-handler-aws": ["../event-handler-aws/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"]
+      "@webiny/handler": ["../handler/src"]
     }
   }
 }

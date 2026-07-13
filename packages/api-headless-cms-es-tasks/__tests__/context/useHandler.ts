@@ -1,5 +1,5 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
-import { DbFeature } from "@webiny/handler-db";
+import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { BackgroundTasksFeature, TaskService, TasksCrud } from "@webiny/background-tasks/api";
@@ -17,9 +17,8 @@ export const useHandler = <C extends Context = Context>(params: Params = {}) => 
     const { getContext } = createCmsTestHandler({
         ...rest,
         features: container => {
-            DbFeature.register(container, {
-                documentClient: getDocumentClient(),
-                table: process.env.DB_TABLE
+            DynamoDBCoreFeature.register(container, {
+                documentClient: getDocumentClient()
             });
 
             // Background tasks + es-tasks are DI-native. Register the features, then override
