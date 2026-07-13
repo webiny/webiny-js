@@ -24,7 +24,7 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "type-fest": "^5.7.0",
+    "type-fest": "^5.8.0",
     "zod": "4.4.3"
   },
   "devDependencies": {
@@ -36,9 +36,9 @@
     "@webiny/project-utils": "0.0.0",
     "graphql": "^16.14.2",
     "rimraf": "^6.1.3",
-    "type-fest": "^5.7.0",
+    "type-fest": "^5.8.0",
     "typescript": "6.0.3",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "publishConfig": {
     "access": "public"

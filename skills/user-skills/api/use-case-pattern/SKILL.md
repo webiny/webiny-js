@@ -37,9 +37,7 @@ class MyHandler implements SomeEventHandler.Interface {
   constructor(private someUseCase: SomeUseCase.Interface) {}
 
   async handle(event: SomeEventHandler.Event) {
-    const result = await this.someUseCase.execute({
-      /* input */
-    });
+    const result = await this.someUseCase.execute({/* input */});
 
     if (result.isFail()) {
       console.error(result.error.message);
