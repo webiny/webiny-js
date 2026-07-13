@@ -76,8 +76,8 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             await registerApiRequestStack(container, {
                 extensions: config.extensions,
                 registerRequestStorage: config.registerRequestStorage,
-                registerRealtimeTransport: c => {
-                    c.register(ServerWebsocketsTransport);
+                registerRealtimeTransport: requestContainer => {
+                    requestContainer.register(ServerWebsocketsTransport);
                 }
             });
         },
