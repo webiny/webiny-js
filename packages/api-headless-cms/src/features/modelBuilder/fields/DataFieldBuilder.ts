@@ -132,6 +132,11 @@ export interface IFieldRendererRegistry {
         fieldType: "ref";
         settings: undefined;
     };
+    select: {
+        fieldType: "text" | "number";
+        settings: undefined;
+    };
+    /** @deprecated Use "select" instead. */
     dropdown: {
         fieldType: "text" | "number";
         settings: undefined;
@@ -205,6 +210,7 @@ const rendererNameMap: Record<keyof IFieldRendererRegistry, string> = {
     refAutocompleteMultiple: "ref-inputs",
     refCheckboxes: "ref-simple-multiple",
     refRadioButtons: "ref-simple-single",
+    select: "select-box",
     dropdown: "select-box",
     tags: "tags",
     textInput: "text-input",
@@ -395,7 +401,8 @@ export class DataFieldBuilder<TType extends string = string> extends BaseFieldBu
                 note: this.config.note || null,
                 renderer: this.config.renderer || null,
                 settings: this.config.settings || {},
-                tags: this.config.tags || []
+                tags: this.config.tags || [],
+                rules: this.config.rules
             }
         };
     }

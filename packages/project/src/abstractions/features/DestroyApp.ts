@@ -4,11 +4,11 @@ import { type ExecaChildProcess } from "execa";
 
 type IPulumiProcess = ExecaChildProcess<string>;
 
-interface IDestroyAppParams {
+export interface IDestroyAppParams {
     app: AppName;
 }
 
-interface IDestroyApp {
+export interface IDestroyApp {
     execute(params: IDestroyAppParams): Promise<{ pulumiProcess: IPulumiProcess }>;
 }
 

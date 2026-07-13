@@ -2,7 +2,7 @@ import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { AdvancedSearchConfigs } from "@webiny/app-aco/components/AdvancedSearch/AdvancedSearchConfigs";
 import {
-    ContentEntryEditorConfig,
+    InternalContentEntryEditorConfig,
     InternalContentEntryListConfig
 } from "~/admin/config/contentEntries/index.js";
 
@@ -52,7 +52,7 @@ import { CreateNewRevisionButton } from "~/presentation/contentEntries/views/act
 import { PublishOnlyButton } from "~/presentation/contentEntries/views/actions/PublishOnlyButton.js";
 
 const { Browser } = InternalContentEntryListConfig;
-const { Actions } = ContentEntryEditorConfig;
+const { Actions } = InternalContentEntryEditorConfig;
 
 export const ContentEntriesModule = () => {
     return (
@@ -140,7 +140,7 @@ export const ContentEntriesModule = () => {
                     className={"flex justify-center"}
                 />
             </InternalContentEntryListConfig>
-            <ContentEntryEditorConfig>
+            <InternalContentEntryEditorConfig>
                 <IsModelPublishable>
                     <Actions.ButtonAction
                         name={"revisionSelector"}
@@ -168,7 +168,7 @@ export const ContentEntriesModule = () => {
                         element={<ShowRevisionListMenuItem />}
                     />
                 </IsModelPublishable>
-            </ContentEntryEditorConfig>
+            </InternalContentEntryEditorConfig>
         </>
     );
 };

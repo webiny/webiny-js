@@ -303,6 +303,7 @@ export const createModelsSchema = ({
                 imageFieldId: String
                 tags: [String!]!
                 tenant: String!
+                settings: JSON
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!
                 valuesSelection: String

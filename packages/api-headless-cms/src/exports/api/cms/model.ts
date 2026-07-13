@@ -6,7 +6,10 @@ export { DataFieldBuilder } from "~/features/modelBuilder/fields/FieldBuilder.js
 export { LayoutFieldBuilder } from "~/features/modelBuilder/fields/FieldBuilder.js";
 export { FieldType } from "~/features/modelBuilder/fields/abstractions.js";
 export type { IFieldRendererRegistry } from "~/features/modelBuilder/fields/DataFieldBuilder.js";
-export type { IFieldBuilderRegistry } from "~/features/modelBuilder/abstractions.js";
+export type {
+    IFieldBuilderRegistry,
+    IModelSettings
+} from "~/features/modelBuilder/abstractions.js";
 
 export { LayoutBuilder } from "~/features/modelBuilder/LayoutBuilder.js";
 export type { FieldTypeValidator } from "~/features/modelBuilder/fields/fieldTypeValidator.js";

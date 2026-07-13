@@ -2,6 +2,7 @@ export * from "./Accordion/index.js";
 export * from "./Alert/index.js";
 export * from "./AutoComplete/index.js";
 export * from "./Avatar/index.js";
+export * from "./BetaBadge/BetaBadge.js";
 export * from "./Button/index.js";
 export * from "./Card/index.js";
 export * from "./Checkbox/index.js";

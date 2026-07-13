@@ -26,7 +26,8 @@ class AlertFieldBuilder extends LayoutFieldBuilder<"uiAlert"> implements IUiAler
             layoutCell: {
                 type: "alert",
                 label: this.config.label,
-                alertType: this._alertType
+                alertType: this._alertType,
+                rules: this.config.rules
             }
         };
     }

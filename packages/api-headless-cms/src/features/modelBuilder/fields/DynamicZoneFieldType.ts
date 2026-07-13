@@ -1,7 +1,7 @@
-import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { type FieldBuildResult } from "./BaseFieldBuilder.js";
-import { DataFieldBuilder, type BaseFieldBuilder } from "./FieldBuilder.js";
-import { type IFieldBuilderRegistry } from "../abstractions.js";
+import {FieldType, type IFieldTypeFactory} from "./abstractions.js";
+import {type FieldBuildResult} from "./BaseFieldBuilder.js";
+import {DataFieldBuilder, type BaseFieldBuilder} from "./FieldBuilder.js";
+import {type IFieldBuilderRegistry} from "../abstractions.js";
 import type {
     CmsIcon,
     CmsModelField,
@@ -22,6 +22,7 @@ interface IDynamicZoneTemplate {
 
 export interface IDynamicZoneFieldBuilder extends DataFieldBuilder<"dynamicZone"> {
     required(message?: string): this;
+
     template(
         id: string,
         config: {
@@ -46,8 +47,7 @@ interface IDynamicZoneFieldBuilderTemplateConfig {
 
 class DynamicZoneFieldBuilder
     extends DataFieldBuilder<"dynamicZone">
-    implements IDynamicZoneFieldBuilder
-{
+    implements IDynamicZoneFieldBuilder {
     private readonly templates: IDynamicZoneTemplate[] = [];
 
     public constructor(private registry: IFieldBuilderRegistry) {
@@ -81,9 +81,7 @@ class DynamicZoneFieldBuilder
         }
 
         const rawLayout: string[][] = config.layout || [];
-        const layout = rawLayout.map(row =>
-            row.map(cell => layoutReplacements.get(cell) ?? cell)
-        );
+        const layout = rawLayout.map(row => row.map(cell => layoutReplacements.get(cell) ?? cell));
 
         this.templates.push({
             id,
@@ -103,7 +101,7 @@ class DynamicZoneFieldBuilder
         // Set templates in settings before building
         this.config.settings = this.config.settings || {};
         this.config.settings.templates = this.templates;
-        this.config.listValidation = [{ name: "dynamicZone", message: "" }];
+        this.config.listValidation = [{name: "dynamicZone", message: ""}];
         return super.build();
     }
 }

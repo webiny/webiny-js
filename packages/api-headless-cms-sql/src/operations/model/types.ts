@@ -19,6 +19,7 @@ export interface IModelRow {
     imageFieldId: string | null;
     isPrivate: boolean;
     isPlugin: boolean;
+    settings: string | null;
     authorization: string | null;
     createdBy_id: string | null;
     createdBy_displayName: string | null;

@@ -4,6 +4,7 @@ import { createAppModule, type PulumiApp, type PulumiAppModule } from "@webiny/p
 export interface CoreCognitoParams {
     protect: boolean;
     useEmailAsUsername: boolean;
+    mfa?: boolean;
 }
 
 export type CoreCognito = PulumiAppModule<typeof CoreCognito>;
@@ -35,7 +36,8 @@ export const CoreCognito = createAppModule({
                 usernameAttributes: params.useEmailAsUsername ? ["email"] : undefined,
                 aliasAttributes: params.useEmailAsUsername ? undefined : ["preferred_username"],
                 lambdaConfig: {},
-                mfaConfiguration: "OFF",
+                mfaConfiguration: params.mfa ? "ON" : "OFF",
+                softwareTokenMfaConfiguration: params.mfa ? { enabled: true } : undefined,
                 userPoolAddOns: {
                     advancedSecurityMode: "OFF" /* required */
                 },
