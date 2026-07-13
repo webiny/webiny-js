@@ -13,9 +13,16 @@
  * in `registerRootStorage`, so the RequestIdentityLoader driven by the identity decorator can resolve it.
  */
 import type { Container } from "@webiny/di";
-import { createNodeHandler, NodeHttpFeature } from "@webiny/event-handler-server";
+import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-server";
 import { registerExtensions } from "@webiny/handler";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
+import {
+    ServerConnectionManager,
+    NodeWsAdapter,
+    ServerWebsocketsTransport,
+    WebsocketsConnectionManager,
+    attachWebsocketsServer
+} from "@webiny/api-websockets-server";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
 
@@ -30,14 +37,10 @@ export interface CreateWebinyApiHandlerConfig {
      * IdP assumption — the variant supplies the complete storage + auth wiring.
      */
     registerRootStorage: (container: Container) => void | Promise<void>;
-    /**
-     * Request-phase storage features that must run before HeadlessCmsFeature builds (optional).
-     */
-    registerRequestStorage?: (container: Container) => void | Promise<void>;
 }
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
-    return createNodeHandler({
+    return createServerHandler({
         root: async container => {
             // ── Transport (Node HTTP) ──────────────────────────────────
             // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.
@@ -52,15 +55,45 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
 
             // ── Storage + identity provider (variant-supplied) ─────────
             await config.registerRootStorage(container);
+
+            // ── WebSockets transport (root) ────────────────────────────
+            // Live-socket registry + adapter live in the root as singletons: the connection manager
+            // is shared between the upgrade acceptor (attachWebsocketsServer, below) and the
+            // per-request ServerWebsocketsTransport that sends to those live sockets. The persistent
+            // connection registry (ConnectionRegistry) is the storage variant's job (e.g. sql).
+            container.register(ServerConnectionManager).inSingletonScope();
+            container.register(NodeWsAdapter).inSingletonScope();
         },
 
         request: async container => {
-            // The transport-agnostic per-request stack. No realtime/scheduler hooks: those are
-            // AWS-specific and this transport has no equivalent — validating that they are optional.
+            // The transport-agnostic per-request stack. The realtime hook installs the server
+            // WebSockets transport (overriding the domain's NullWebsocketsTransport); it resolves the
+            // shared connection manager + adapter from the root. No scheduler hook — that's AWS-only.
             await registerApiRequestStack(container, {
                 extensions: config.extensions,
-                registerRequestStorage: config.registerRequestStorage
+                // Why a hook (and not just registering the transport ourselves): `.register()` calls
+                // are otherwise order-independent — you can register Features in any order, because
+                // they only REGISTER, they don't RESOLVE during registration (resolution happens
+                // later, in Initializers / SchemaFactories). The one thing that makes order matter is
+                // a DEFAULT registration: `WebsocketsFeature` registers `NullWebsocketsTransport` so
+                // the abstraction is always resolvable. Overriding it (last-registration-wins) means
+                // our transport MUST be registered AFTER `WebsocketsFeature`. This hook is the seam
+                // `registerApiRequestStack` provides for exactly that — it runs right after the Null
+                // default, so the override is guaranteed without the caller knowing the internal order.
+                registerRealtimeTransport: requestContainer => {
+                    requestContainer.register(ServerWebsocketsTransport);
+                }
             });
+        },
+
+        onServer: async (server, rootContainer) => {
+            // Attach the WebSockets upgrade handler to the running HTTP server, backed by the shared
+            // (root) connection manager so request-time sends reach the live sockets.
+            const websockets = attachWebsocketsServer({
+                server,
+                connectionManager: rootContainer.resolve(WebsocketsConnectionManager)
+            });
+            await websockets.start();
         }
     });
 }
