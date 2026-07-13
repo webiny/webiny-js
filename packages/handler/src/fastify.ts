@@ -1,7 +1,7 @@
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import { PluginsContainer } from "@webiny/plugins/types.js";
 import type { FastifyInstance, FastifyServerOptions as ServerOptions } from "fastify";
-import fastify from "fastify";
+import fastify, { LogController } from "fastify";
 import type { MiddlewareCallable } from "@webiny/utils";
 import { middleware } from "@webiny/utils";
 import type {
@@ -149,7 +149,9 @@ export const createHandler = (params: CreateHandlerParams) => {
      */
     const app = fastify({
         bodyLimit: 536870912, // 512MB
-        disableRequestLogging: true,
+        logController: new LogController({
+            disableRequestLogging: true
+        }),
         allowErrorHandlerOverride: true,
         ...(params.options || {})
     });
