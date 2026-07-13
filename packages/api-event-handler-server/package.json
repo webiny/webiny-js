@@ -20,6 +20,7 @@
   "dependencies": {
     "@webiny/api-core": "0.0.0",
     "@webiny/api-event-handler-core": "0.0.0",
+    "@webiny/api-websockets-server": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/event-handler-server": "0.0.0",
     "@webiny/handler": "0.0.0"

@@ -13,9 +13,16 @@
  * in `registerRootStorage`, so the RequestIdentityLoader driven by the identity decorator can resolve it.
  */
 import type { Container } from "@webiny/di";
-import { createNodeHandler, NodeHttpFeature } from "@webiny/event-handler-server";
+import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-server";
 import { registerExtensions } from "@webiny/handler";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
+import {
+    ServerConnectionManager,
+    NodeWsAdapter,
+    ServerWebsocketsTransport,
+    WebsocketsConnectionManager,
+    attachWebsocketsServer
+} from "@webiny/api-websockets-server";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
 
@@ -37,7 +44,7 @@ export interface CreateWebinyApiHandlerConfig {
 }
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
-    return createNodeHandler({
+    return createServerHandler({
         root: async container => {
             // ── Transport (Node HTTP) ──────────────────────────────────
             // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.
@@ -52,15 +59,37 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
 
             // ── Storage + identity provider (variant-supplied) ─────────
             await config.registerRootStorage(container);
+
+            // ── WebSockets transport (root) ────────────────────────────
+            // Live-socket registry + adapter live in the root as singletons: the connection manager
+            // is shared between the upgrade acceptor (attachWebsocketsServer, below) and the
+            // per-request ServerWebsocketsTransport that sends to those live sockets. The persistent
+            // connection registry (ConnectionRegistry) is the storage variant's job (e.g. sql).
+            container.register(ServerConnectionManager).inSingletonScope();
+            container.register(NodeWsAdapter).inSingletonScope();
         },
 
         request: async container => {
-            // The transport-agnostic per-request stack. No realtime/scheduler hooks: those are
-            // AWS-specific and this transport has no equivalent — validating that they are optional.
+            // The transport-agnostic per-request stack. The realtime hook installs the server
+            // WebSockets transport (overriding the domain's NullWebsocketsTransport); it resolves the
+            // shared connection manager + adapter from the root. No scheduler hook — that's AWS-only.
             await registerApiRequestStack(container, {
                 extensions: config.extensions,
-                registerRequestStorage: config.registerRequestStorage
+                registerRequestStorage: config.registerRequestStorage,
+                registerRealtimeTransport: c => {
+                    c.register(ServerWebsocketsTransport);
+                }
             });
+        },
+
+        onServer: async (server, rootContainer) => {
+            // Attach the WebSockets upgrade handler to the running HTTP server, backed by the shared
+            // (root) connection manager so request-time sends reach the live sockets.
+            const websockets = attachWebsocketsServer({
+                server,
+                connectionManager: rootContainer.resolve(WebsocketsConnectionManager)
+            });
+            await websockets.start();
         }
     });
 }

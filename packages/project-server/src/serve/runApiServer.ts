@@ -24,7 +24,7 @@ interface IRunApiServerOptions {
  * Run the built api handler as a live HTTP server.
  *
  * The api workspace compiles to `<workspace>/apps/api/graphql/build/handler.mjs`, which (for the
- * server flavour) exports the Node `http.Server` from `createNodeHandler`. We copy a tiny runner
+ * server flavour) exports the Node `http.Server` from `createServerHandler`. We copy a tiny runner
  * (`apiServerRunner.mjs`) next to it that imports the handler and calls `.listen(PORT)`, then spawn
  * it in an isolated child process. In watch mode we add `--watch-path <buildDir>` so every rebuild
  * restarts that child (a server crash never kills the watcher).

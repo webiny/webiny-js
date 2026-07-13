@@ -10,6 +10,12 @@ export * from "~/adapter/abstractions.js";
 export * from "~/upgradeHandler/abstractions.js";
 export * from "~/connectionManager/abstractions.js";
 
+// Concrete implementations, exported for custom DI wiring (e.g. splitting the shared connection
+// manager + adapter into the root container and the transport into the per-request stack).
+export { ServerConnectionManager } from "~/connectionManager/ServerConnectionManager.js";
+export { NodeWsAdapter } from "~/adapter/NodeWsAdapter.js";
+export { ServerWebsocketsTransport } from "~/transport/ServerWebsocketsTransport.js";
+
 export const createServerWebsockets = () => {
     const plugin = createRegisterExtensionPlugin(context => {
         context.container.register(ServerWebsocketsTransport).inSingletonScope();

@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-event-handler-core/tsconfig.build.json" },
+    { "path": "../api-websockets-server/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../event-handler-server/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" }
@@ -19,6 +20,8 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-event-handler-core/*": ["../api-event-handler-core/src/*"],
       "@webiny/api-event-handler-core": ["../api-event-handler-core/src"],
+      "@webiny/api-websockets-server/*": ["../api-websockets-server/src/*"],
+      "@webiny/api-websockets-server": ["../api-websockets-server/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/event-handler-server/*": ["../event-handler-server/src/*"],
