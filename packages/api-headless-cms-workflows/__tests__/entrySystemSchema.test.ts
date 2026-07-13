@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import { CmsWorkflowsFeature } from "~/index.js";
 
 const CMS_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `

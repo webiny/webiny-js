@@ -2,7 +2,7 @@ import { getIntrospectionQuery } from "graphql";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { until } from "@webiny/project-utils/testing/helpers/until.js";
-import { createCmsTestHandler, processLegacyPlugins } from "@webiny/api-headless-cms/testing";
+import { createCmsTestHandler, processLegacyPlugins } from "@webiny/api-headless-cms-testing";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";

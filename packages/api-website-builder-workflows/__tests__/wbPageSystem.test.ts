@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import { WebsiteBuilderFeature } from "@webiny/api-website-builder";
 import { WebsiteBuilderWorkflowsFeature } from "~/index.js";
 

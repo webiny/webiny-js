@@ -3,8 +3,8 @@ import { DbFeature } from "@webiny/handler-db";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
 import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
-import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
-import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { HcmsTasksContext } from "~/types";
 import { HcmsTasksFeature } from "~/HcmsTasksFeature.js";
 

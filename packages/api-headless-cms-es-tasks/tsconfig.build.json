@@ -10,6 +10,7 @@
     { "path": "../error/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
+    { "path": "../api-headless-cms-testing/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" }
   ],
@@ -36,6 +37,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
+      "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
+      "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
