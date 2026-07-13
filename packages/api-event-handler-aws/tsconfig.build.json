@@ -10,10 +10,10 @@
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../background-tasks-aws/tsconfig.build.json" },
     { "path": "../cognito/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../event-handler-aws/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-db/tsconfig.build.json" }
+    { "path": "../handler/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -38,14 +38,14 @@
       "@webiny/background-tasks-aws": ["../background-tasks-aws/src"],
       "@webiny/cognito/*": ["../cognito/src/*"],
       "@webiny/cognito": ["../cognito/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/event-handler-aws/*": ["../event-handler-aws/src/*"],
       "@webiny/event-handler-aws": ["../event-handler-aws/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"]
+      "@webiny/handler": ["../handler/src"]
     }
   }
 }

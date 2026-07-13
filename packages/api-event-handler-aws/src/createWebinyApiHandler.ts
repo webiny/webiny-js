@@ -20,7 +20,7 @@ import {
 } from "@webiny/event-handler-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { registerExtensions } from "@webiny/handler";
-import { DbFeature } from "@webiny/handler-db";
+import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
 import { registerSchedulerAwsExtension } from "@webiny/api-scheduler-aws";
@@ -97,7 +97,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             container.register(WebSocketLambdaHandler);
 
             // ── Database ───────────────────────────────────────────────
-            DbFeature.register(container, {
+            DynamoDBCoreFeature.register(container, {
                 documentClient
             });
 

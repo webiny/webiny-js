@@ -14,7 +14,6 @@
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
-    { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../sdk/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
@@ -49,8 +48,6 @@
       "@webiny/validation": ["../validation/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/sdk/*": ["../sdk/src/*"],
       "@webiny/sdk": ["../sdk/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

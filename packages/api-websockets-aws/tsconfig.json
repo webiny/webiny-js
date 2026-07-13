@@ -12,7 +12,6 @@
     { "path": "../api-headless-cms" },
     { "path": "../api-testing" },
     { "path": "../event-handler-core" },
-    { "path": "../handler-db" },
     { "path": "../handler-graphql" },
     { "path": "../wcp" }
   ],
@@ -43,8 +42,6 @@
       "@webiny/api-testing": ["../api-testing/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
