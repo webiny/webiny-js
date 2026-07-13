@@ -15,6 +15,7 @@
     "cypress": "^15.18.1",
     "cypress-image-snapshot": "^4.0.1",
     "cypress-mailosaur": "^5.0.0",
+    "cypress-vite": "^1.10.2",
     "cypress-wait-until": "^3.0.2",
     "del": "^8.0.1",
     "graphql-request": "^7.4.0",
