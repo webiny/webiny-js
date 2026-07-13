@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import path from "path";
 import fs from "fs-extra";
-import yaml from "js-yaml";
+import * as yaml from "js-yaml";
 import os from "os";
 import { SetupYarn } from "~/services/SetupYarn.js";
 import type { CliParams } from "~/types.js";

@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs-extra";
-import yaml from "js-yaml";
+import * as yaml from "js-yaml";
 import { GetProjectRootPath } from "./GetProjectRootPath.js";
 import { GetTemplatesFolderPath } from "./GetTemplatesFolderPath.js";
 import { CliParams } from "../types.js";

@@ -20,15 +20,15 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/website-builder-vue": "0.0.0",
-    "postcss": "^8.5.15",
+    "postcss": "^8.5.16",
     "postcss-import": "^16.1.1"
   },
   "devDependencies": {
     "@types/postcss-import": "^14.0.3",
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3",
-    "vite": "^6.0.0",
-    "vue": "^3.5.0"
+    "vite": "^8.1.4",
+    "vue": "^3.5.39"
   },
   "peerDependencies": {
     "nuxt": ">=3",
