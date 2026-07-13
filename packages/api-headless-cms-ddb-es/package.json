@@ -47,8 +47,8 @@
   "devDependencies": {
     "@types/jsonpack": "^1.1.6",
     "@webiny/api-core": "0.0.0",
+    "@webiny/api-core-testing": "0.0.0",
     "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",
-    "@webiny/api-testing": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^1.0.2",

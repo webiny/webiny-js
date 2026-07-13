@@ -19,8 +19,8 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { CmsContext } from "~/types";
 import { createIndexConfigurationPlugin } from "~tests/graphql/createIndexConfigurationPlugin";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "~tests/helpers/bridgeLegacyPlugins";
 
 interface UseHandlerParams {

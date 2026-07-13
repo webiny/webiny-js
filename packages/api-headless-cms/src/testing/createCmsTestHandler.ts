@@ -17,10 +17,10 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
 import { HeadlessCmsFeature } from "~/HeadlessCmsFeature.js";
 import type { HeadlessCmsStorageOperations } from "~/types/types.js";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
-import { AuthTriggerHandler } from "@webiny/api-testing";
-import { RootTenantInitializer } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
+import { AuthTriggerHandler } from "@webiny/api-core-testing";
+import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./processLegacyPlugins.js";
 
 const DEFAULT_IDENTITY: IdentityData = {

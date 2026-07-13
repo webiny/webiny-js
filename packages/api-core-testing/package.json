@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/api-testing",
+  "name": "@webiny/api-core-testing",
   "version": "0.0.0",
   "type": "module",
   "exports": {
