@@ -268,14 +268,7 @@ Map Cognito groups to Webiny roles/teams:
 
 ```tsx
 // webiny.config.tsx
-<Cognito
-  federation={
-    {
-      /* ... */
-    }
-  }
-  apiConfig={"/extensions/cognito/api.ts"}
-/>
+<Cognito federation={{/* ... */}} apiConfig={"/extensions/cognito/api.ts"} />
 ```
 
 ```ts
@@ -305,14 +298,7 @@ export default CognitoIdpConfig.createImplementation({
 
 ```tsx
 // webiny.config.tsx
-<Cognito
-  federation={
-    {
-      /* ... */
-    }
-  }
-  adminConfig={"/extensions/cognito/admin.tsx"}
-/>
+<Cognito federation={{/* ... */}} adminConfig={"/extensions/cognito/admin.tsx"} />
 ```
 
 ```tsx
@@ -395,9 +381,7 @@ export default CognitoSignInConfig.createImplementation({
 class MyFederationConfig implements CognitoSignInConfig.Interface {
   async getConfig() {
     return {
-      oauth: {
-        /* ... */
-      },
+      oauth: {/* ... */},
       allowCredentialsLogin: false,
       providers: [{ name: "EntraID", label: "Sign In" }],
       title: "Company Portal",
@@ -463,9 +447,7 @@ Or combine with federation:
         name: "EntraID",
         type: "oidc",
         label: "Sign in with Microsoft",
-        providerDetails: {
-          /* ... */
-        }
+        providerDetails: {/* ... */}
       }
     ]
   }}
