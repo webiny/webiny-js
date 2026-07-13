@@ -12377,6 +12377,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     sass: "npm:^1.101.0"
     sass-loader: "npm:^17.0.0"
+    strip-json-comments: "npm:^5.0.3"
     style-loader: "npm:4.0.0"
     ts-morph: "npm:^28.0.0"
     tsx: "npm:4.23.0"
@@ -26192,7 +26193,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strip-json-comments@npm:^5.0.2":
+"strip-json-comments@npm:^5.0.2, strip-json-comments@npm:^5.0.3":
   version: 5.0.3
   resolution: "strip-json-comments@npm:5.0.3"
   checksum: 10/3ccbf26f278220f785e4b71f8a719a6a063d72558cc63cb450924254af258a4f4c008b8c9b055373a680dc7bd525be9e543ad742c177f8a7667e0b726258e0e4

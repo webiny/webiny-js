@@ -42,6 +42,7 @@
     "rimraf": "^6.1.3",
     "sass": "^1.101.0",
     "sass-loader": "^17.0.0",
+    "strip-json-comments": "^5.0.3",
     "style-loader": "4.0.0",
     "ts-morph": "^28.0.0",
     "tsx": "4.23.0",
