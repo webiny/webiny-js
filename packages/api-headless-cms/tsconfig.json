@@ -14,7 +14,6 @@
     { "path": "../utils" },
     { "path": "../validation" },
     { "path": "../db-dynamodb" },
-    { "path": "../handler-db" },
     { "path": "../sdk" },
     { "path": "../wcp" }
   ],
@@ -49,8 +48,6 @@
       "@webiny/validation": ["../validation/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/sdk/*": ["../sdk/src/*"],
       "@webiny/sdk": ["../sdk/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

@@ -13,7 +13,6 @@
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../api-testing/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
-    { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -45,8 +44,6 @@
       "@webiny/api-testing": ["../api-testing/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

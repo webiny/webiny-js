@@ -29,7 +29,6 @@
     "@webiny/build-tools": "latest",
     "@webiny/db-dynamodb": "latest",
     "@webiny/handler-aws": "latest",
-    "@webiny/handler-db": "latest",
     "@webiny/handler-graphql": "latest"
   }
 }

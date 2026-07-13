@@ -13,7 +13,6 @@
     { "path": "../api-headless-cms" },
     { "path": "../api-testing" },
     { "path": "../aws-sdk" },
-    { "path": "../handler-db" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -45,8 +44,6 @@
       "@webiny/api-testing": ["../api-testing/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

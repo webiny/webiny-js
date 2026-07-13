@@ -1,4 +1,4 @@
-import { dbPlugins } from "@webiny/handler-db/testing";
+import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
 import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { createCmsEntryFieldSortingPlugin, registerDynamoDbStorageOperations } from "../../src";
 import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";

@@ -1,5 +1,5 @@
 import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
-import { dbPlugins } from "@webiny/handler-db/testing";
+import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
 import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { registerCmsOpenSearchStorageOperations } from "../../src/index";
