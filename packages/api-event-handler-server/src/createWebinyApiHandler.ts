@@ -37,10 +37,6 @@ export interface CreateWebinyApiHandlerConfig {
      * IdP assumption — the variant supplies the complete storage + auth wiring.
      */
     registerRootStorage: (container: Container) => void | Promise<void>;
-    /**
-     * Request-phase storage features that must run before HeadlessCmsFeature builds (optional).
-     */
-    registerRequestStorage?: (container: Container) => void | Promise<void>;
 }
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
@@ -75,7 +71,6 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // shared connection manager + adapter from the root. No scheduler hook — that's AWS-only.
             await registerApiRequestStack(container, {
                 extensions: config.extensions,
-                registerRequestStorage: config.registerRequestStorage,
                 registerRealtimeTransport: requestContainer => {
                     requestContainer.register(ServerWebsocketsTransport);
                 }
