@@ -1,9 +1,4 @@
-import type { PluginCollection } from "@webiny/plugins/types.js";
-import { createElasticsearchBackgroundTasks } from "@webiny/api-elasticsearch-tasks";
-
-// NOTE: background-tasks + hcms-es-tasks are now registered DI-natively (BackgroundTasksFeature /
-// HeadlessCmsEsTasksFeature), so they are no longer bundled here. This factory only carries the
-// OpenSearch-specific Elasticsearch task plugins (still legacy).
-export const createBackgroundTasks = (): PluginCollection => {
-    return [...createElasticsearchBackgroundTasks()];
-};
+// The OpenSearch background-tasks are DI-native now. background-tasks itself is registered via
+// BackgroundTasksFeature (registerApiRequestStack, all flavours); the OS-specific Elasticsearch
+// tasks are exposed here as a Feature for the OS flavour to register.
+export { ElasticsearchTasksFeature } from "@webiny/api-elasticsearch-tasks";

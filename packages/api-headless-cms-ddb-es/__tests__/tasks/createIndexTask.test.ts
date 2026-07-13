@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "./mocks/models";
-import { createElasticsearchBackgroundTasks } from "@webiny/api-elasticsearch-tasks";
 import type { Context as TasksContext } from "@webiny/background-tasks/api/types";
 import type { CmsContext } from "~/types";
 import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
@@ -112,7 +111,7 @@ describe("Create index task", () => {
 
     it("should create an index for each of the models defined", async () => {
         const { handler, elasticsearch } = useHandler<Context>({
-            plugins: [createElasticsearchBackgroundTasks(), ...createMockModels()]
+            plugins: createMockModels()
         });
 
         const context = await handler({
