@@ -10,10 +10,10 @@ interface DbContext extends Context {
 
 /**
  * @deprecated Test-only storage-preset glue: registers `DbRegistry` and sets the legacy `context.db`
- * bag. Production wires the DB via `DbFeature` (DbInstance + DynamoDBClient DI abstractions) and never
- * reads `context.db`. Used only by the DDB/DDB-ES `setupFile.js` test presets — remove once those
- * move to their own storage-operations factories/drivers (see the setupFile TODO). The `DbRegistry`
- * registration must be preserved (the DDB-ES CMS storage resolves it in `beforeInit`).
+ * bag. Production wires the DB via storage-operations factories/drivers and never reads `context.db`.
+ * Used only by the DDB/DDB-ES `setupFile.js` test presets — remove once those move to their own
+ * storage-operations factories/drivers. The `DbRegistry` registration must be preserved (the DDB-ES
+ * CMS storage resolves it in `beforeInit`).
  */
 export const dbPlugins = <T = unknown>(args: ConstructorArgs<T>) => {
     const plugin = createRegisterExtensionPlugin<DbContext>(async context => {
@@ -25,6 +25,6 @@ export const dbPlugins = <T = unknown>(args: ConstructorArgs<T>) => {
 
         context.db = new Db<T>(args);
     });
-    plugin.name = "handler-db/extension/db";
+    plugin.name = "db-dynamodb/extension/db";
     return [plugin];
 };

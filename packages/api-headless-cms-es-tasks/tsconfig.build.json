@@ -10,8 +10,12 @@
     { "path": "../error/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
+<<<<<<< HEAD
     { "path": "../api-headless-cms-testing/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },
+=======
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+>>>>>>> origin/next
     { "path": "../handler-graphql/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -37,10 +41,15 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
+<<<<<<< HEAD
       "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
+=======
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+>>>>>>> origin/next
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"]
     }
