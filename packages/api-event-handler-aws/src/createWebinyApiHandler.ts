@@ -69,7 +69,6 @@ export interface CreateWebinyApiHandlerConfig {
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     const documentClient = config.documentClient ?? getDocumentClient();
-    const table = config.dbTable ?? process.env.DB_TABLE;
 
     return createLambdaHandler({
         root: async container => {
@@ -99,8 +98,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
 
             // ── Database ───────────────────────────────────────────────
             DbFeature.register(container, {
-                documentClient,
-                table
+                documentClient
             });
 
             // ── Identity providers ─────────────────────────────────────
