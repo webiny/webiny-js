@@ -30,7 +30,7 @@
     "@webiny/build-tools": "0.0.0",
     "execa": "^5.1.1",
     "tsx": "4.23.0",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   },
   "scripts": {
     "prepublishOnly": "bash ./prepublishOnly.sh"
