@@ -8,6 +8,22 @@ Decisions made during brainstorming. Reference for implementation.
 - **Deployment:** Server-based (not serverless/Lambda)
 - **Sync mechanism:** Postgres WAL Logical Replication -> Node.js worker -> OpenSearch
 
+### Why Postgres over SQLite
+
+Current `api-headless-cms-sql` uses SQLite. SQLite + OpenSearch was considered but rejected:
+
+| | SQLite | Postgres |
+|--|--------|----------|
+| **Write locking** | **Database-level.** One write locks the entire database file — all tables, all writes serialize. | **Row-level.** Concurrent writes to different rows/tables. |
+| **Read during write** | Readers not blocked (WAL mode). Writers block all other writers. | Readers and writers never block each other. |
+| **Concurrent writers** | One at a time, entire database. High write concurrency = `SQLITE_BUSY` errors. | Many concurrent writers, row-level granularity. |
+| **Multi-process** | File-based. Multiple server instances writing = file lock contention. Designed for single-process. | Network-accessible. Multiple server instances connect concurrently. |
+| **Horizontal scaling** | Cannot scale beyond single server. | Multiple API servers connect to same Postgres instance. |
+| **Change streaming (for OS sync)** | No built-in change streaming. Would need triggers + change log table + polling. | WAL logical replication — built-in, persistent, ordered change stream. |
+| **Network access** | Embedded, file-only. Separate WAL worker process must run on same machine with file access. | Network protocol. WAL worker can run anywhere with network access to Postgres. |
+
+**SQLite is viable for single-server, low-write-concurrency deployments** (e.g., small self-hosted instances). For production at scale with concurrent users and multiple server instances, Postgres is required.
+
 ## Storage
 
 - **Table-per-model:** Each CMS content model = own Postgres table (`webiny_cms_{modelId}`)
