@@ -10453,9 +10453,10 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
+    "@webiny/api-headless-cms-testing": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
@@ -10603,6 +10604,19 @@ __metadata:
     knex: "npm:^3.3.0"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-core-testing@npm:0.0.0, @webiny/api-core-testing@workspace:packages/api-core-testing":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-core-testing@workspace:packages/api-core-testing"
+  dependencies:
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.0.2"
+    "@webiny/event-handler-core": "npm:0.0.0"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10849,9 +10863,9 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
     "@webiny/error": "npm:0.0.0"
@@ -10932,8 +10946,8 @@ __metadata:
     "@types/object-hash": "npm:^3.0.6"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
@@ -10966,8 +10980,8 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
     "@webiny/event-handler-core": "npm:0.0.0"
@@ -10990,6 +11004,7 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-testing": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -11016,11 +11031,11 @@ __metadata:
     "@types/jsonpack": "npm:^1.1.6"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-dynamodb-to-elasticsearch": "npm:0.0.0"
     "@webiny/api-elasticsearch-tasks": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db": "npm:0.0.0"
@@ -11077,6 +11092,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-ddb-es": "npm:0.0.0"
+    "@webiny/api-headless-cms-testing": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -11099,6 +11115,7 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-testing": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -11170,6 +11187,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-bulk-actions": "npm:0.0.0"
+    "@webiny/api-headless-cms-testing": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -11189,6 +11207,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-headless-cms-testing@npm:0.0.0, @webiny/api-headless-cms-testing@workspace:packages/api-headless-cms-testing":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-headless-cms-testing@workspace:packages/api-headless-cms-testing"
+  dependencies:
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.0.2"
+    "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
+    graphql: "npm:^16.14.2"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:7.0.2"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-headless-cms-workflows@npm:0.0.0, @webiny/api-headless-cms-workflows@workspace:packages/api-headless-cms-workflows":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-workflows@workspace:packages/api-headless-cms-workflows"
@@ -11197,6 +11234,7 @@ __metadata:
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-testing": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -11223,7 +11261,7 @@ __metadata:
     "@types/pluralize": "npm:^0.0.33"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
@@ -11310,8 +11348,8 @@ __metadata:
     "@graphql-tools/schema": "npm:10.0.36"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
@@ -11336,9 +11374,9 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
@@ -11432,19 +11470,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-testing@npm:0.0.0, @webiny/api-testing@workspace:packages/api-testing":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-testing@workspace:packages/api-testing"
-  dependencies:
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.2"
-    "@webiny/event-handler-core": "npm:0.0.0"
-    rimraf: "npm:^6.1.3"
-    typescript: "npm:7.0.2"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-website-builder-scheduler@npm:0.0.0, @webiny/api-website-builder-scheduler@workspace:packages/api-website-builder-scheduler":
   version: 0.0.0-use.local
   resolution: "@webiny/api-website-builder-scheduler@workspace:packages/api-website-builder-scheduler"
@@ -11452,6 +11477,7 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-testing": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
@@ -11474,6 +11500,7 @@ __metadata:
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-testing": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -11498,6 +11525,7 @@ __metadata:
     "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-file-manager-s3": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-testing": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -11527,8 +11555,8 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -11611,8 +11639,8 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
@@ -12456,8 +12484,8 @@ __metadata:
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
@@ -12929,8 +12957,8 @@ __metadata:
   dependencies:
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-headless-cms": "npm:0.0.0"
@@ -13544,13 +13572,13 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-aco": "npm:0.0.0"
     "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/api-record-locking": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
@@ -13620,8 +13648,8 @@ __metadata:
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-testing": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"

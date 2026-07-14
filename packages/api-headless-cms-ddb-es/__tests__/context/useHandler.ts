@@ -20,8 +20,8 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import type { CmsContext } from "~/types";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "~tests/helpers/bridgeLegacyPlugins";
 
 export interface CreateHandlerCoreParams {

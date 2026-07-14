@@ -12,6 +12,7 @@
     { "path": "../handler-graphql" },
     { "path": "../shared-aco" },
     { "path": "../api-headless-cms" },
+    { "path": "../api-headless-cms-testing" },
     { "path": "../plugins" },
     { "path": "../testing" }
   ],
@@ -42,6 +43,8 @@
       "@webiny/shared-aco": ["../shared-aco/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
+      "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/testing/*": ["../testing/src/*"],

@@ -1,8 +1,8 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
 import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
-import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
-import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { createContextPlugin } from "@webiny/api";
 import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";

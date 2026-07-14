@@ -4,8 +4,8 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.
 import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { BackgroundTasksFeature, TaskService, TasksCrud } from "@webiny/background-tasks/api";
 import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
-import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
-import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { Context } from "~/types";
 import { HeadlessCmsEsTasksFeature } from "~/index.js";
 
