@@ -123,7 +123,7 @@ Table name already encodes modelId (`webiny_cms_{modelId}`), but the column exis
 
 Pure Postgres without OpenSearch was evaluated (see `01-pure-postgres.md`) and rejected for Webiny's requirements. Key reasons:
 
-1. **Dynamic zones are unqueryable at scale in pure SQL.** Dynamic zone content has runtime-determined structure. JSONB containment queries (`@>`) handle equality but not range filters or sorting. Expression indexes require one index per nested path — with dynamic zones, paths are unbounded.
+1. **Dynamic zones are unqueryable at scale in pure SQL.** Dynamic zone content has runtime-determined structure. JSONB containment queries (`@>`) handle equality but not range filters or sorting. Expression indexes require one index per nested path — with dynamic zones, paths are unbounded. Note: dynamic zone filtering is not yet exposed in Webiny's GraphQL API, but the data is already indexed in OpenSearch. Enabling it is a GraphQL layer change — OpenSearch already supports it.
 
 2. **Index explosion.** A model with objects + dynamic zones could need 50+ expression indexes on JSONB paths. At 30M rows, each index = hundreds of MB. Every INSERT/UPDATE maintains all indexes — massive write amplification.
 
