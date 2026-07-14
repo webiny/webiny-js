@@ -3,6 +3,7 @@ export * from "@webiny/content-sdk";
 export {
     EntryRenderer,
     useComponents,
+    useModel,
     EntryStoreProvider,
     useEntryStore,
     ConnectToEntryEditor,

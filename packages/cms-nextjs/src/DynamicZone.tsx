@@ -1,22 +1,21 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { ComponentResolver, ComponentRegistry, contentSdk } from "@webiny/cms-sdk";
-import type { ResolvedComponent, CmsModelDefinition } from "@webiny/cms-sdk";
+import { ComponentResolver, ComponentRegistry } from "@webiny/cms-sdk";
+import type { ResolvedComponent } from "@webiny/cms-sdk";
 import { useEntryStore } from "./EntryStoreProvider.js";
-import { useComponents } from "./EntryRenderer.js";
+import { useComponents, useModel } from "./EntryRenderer.js";
 
 interface DynamicZoneProps {
-    modelId: string;
     fieldId: string;
 }
 
-export const DynamicZone = observer(({ modelId, fieldId }: DynamicZoneProps) => {
+export const DynamicZone = observer(({ fieldId }: DynamicZoneProps) => {
     const store = useEntryStore();
     const values = store.getValues();
     const components = useComponents();
-    const [model, setModel] = useState<CmsModelDefinition | null>(null);
+    const model = useModel();
 
     const registry = useMemo(() => {
         const reg = new ComponentRegistry();
@@ -25,10 +24,6 @@ export const DynamicZone = observer(({ modelId, fieldId }: DynamicZoneProps) => 
         }
         return reg;
     }, [components]);
-
-    useEffect(() => {
-        contentSdk.getModel(modelId).then(m => setModel(m));
-    }, [modelId]);
 
     if (!model || !values) {
         return null;

@@ -46,8 +46,15 @@ class InternalContentSdk implements IContentSdk {
 
 export class ContentSdk implements IContentSdk {
     protected sdk?: InternalContentSdk;
+    private lastConfig?: string;
 
     init(config: CmsSdkConfig): void {
+        const configHash = JSON.stringify(config);
+        if (this.lastConfig && this.lastConfig === configHash) {
+            return;
+        }
+        this.lastConfig = configHash;
+
         const liveSdk = new LiveSdk(config);
 
         let editingSdk: EditingSdk | undefined;

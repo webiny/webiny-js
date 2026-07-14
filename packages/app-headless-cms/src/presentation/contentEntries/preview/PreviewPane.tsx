@@ -37,9 +37,11 @@ export const PreviewPane = ({
 
     entryDataRef.current = entryData;
 
-    const displayUrl = buildDisplayUrl(previewPrefix, previewSlug, {
-        values: (entryData as { values?: Record<string, unknown> } | null)?.values
-    });
+    const displayUrl = buildDisplayUrl(
+        previewPrefix,
+        previewSlug,
+        (entryData as Record<string, unknown>) || {}
+    );
 
     const [address, setAddress] = useState(displayUrl);
 

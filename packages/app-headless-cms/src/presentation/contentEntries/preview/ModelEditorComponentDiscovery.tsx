@@ -24,9 +24,7 @@ export const ModelEditorComponentDiscovery = ContentModelEditor.createDecorator(
 
         return (
             <>
-                {previewPrefix ? (
-                    <ComponentDiscoveryIframe previewPrefix={previewPrefix} />
-                ) : null}
+                {previewPrefix ? <ComponentDiscoveryIframe previewPrefix={previewPrefix} /> : null}
                 <Original />
             </>
         );
