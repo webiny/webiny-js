@@ -138,7 +138,7 @@ Each entry is indexed as a flat/nested document. OpenSearch automatically indexe
 
 1. **Arbitrary depth querying:** Filter on `values.metadata.seo.score > 80` — no per-path index needed. OpenSearch indexes every path automatically.
 
-2. **Dynamic zone querying:** Filter on `values.content.heading = 'Welcome'` across all templates in the dynamic zone — OpenSearch handles nested document queries natively.
+2. **Dynamic zone querying:** OpenSearch indexes dynamic zone content at any depth. Currently not exposed in Webiny's GraphQL API — enabling it requires GraphQL schema changes + OpenSearch query builder implementation. The storage/indexing layer already supports it.
 
 3. **Full-text search:** Built-in analyzers, stemming, relevance scoring, field boosting, synonyms, "did you mean" suggestions.
 
@@ -382,7 +382,7 @@ All handled by OpenSearch. Same query building as current DDB-ES implementation:
 }
 ```
 
-No special handling needed. OpenSearch indexes all paths. Dynamic zones, nested objects, arrays — all queryable at any depth without per-path configuration.
+No special handling needed for objects — OpenSearch indexes all paths at any depth without per-path configuration. Dynamic zone filtering is not yet exposed in Webiny's GraphQL API but the data is already indexed in OpenSearch; enabling it requires GraphQL schema changes + OpenSearch query builder implementation for dynamic zone field types.
 
 ## Point Reads (Direct from Postgres)
 
@@ -431,7 +431,7 @@ Same options as pure Postgres:
 | **Cost** | Lower | Higher (OpenSearch infra) |
 | **Top-level field filtering** | Fast (B-tree) | Fast (OpenSearch) |
 | **Nested field filtering** | Needs per-path expression index | Automatic, any depth |
-| **Dynamic zone querying** | Limited, hard to index | Native, fully supported |
+| **Dynamic zone querying** | Limited, hard to index | Data indexed natively; API filtering not yet exposed (requires GraphQL + query builder work) |
 | **Sort on any field** | Needs per-path index | Automatic |
 | **Full-text search quality** | Basic (tsvector) | Excellent (analyzers, relevance, fuzzy) |
 | **Write performance** | 30-50 indexes = slow writes | 3-5 PG indexes + async OS index |
@@ -471,7 +471,7 @@ Same options as pure Postgres:
 | CRUD | Postgres native. Fast. | None |
 | Top-level field filtering | OpenSearch. Fast. | None |
 | Nested field filtering | OpenSearch. Automatic. | None |
-| Dynamic zone querying | OpenSearch nested queries. | None |
+| Dynamic zone querying | Data indexed in OS; API filtering not yet exposed. | Low (requires GraphQL + query builder work) |
 | Full-text search | OpenSearch analyzers/relevance. | None |
 | Fuzzy search | OpenSearch built-in. | None |
 | Sort on any field | OpenSearch. Automatic. | None |

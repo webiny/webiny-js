@@ -442,6 +442,7 @@ Schemas provide better isolation and simpler `SET search_path` switching.
 - Querying "find entries where the 3rd content block's heading contains X" requires knowing the array position or scanning all elements.
 - `jsonb_path_query` (SQL/JSON Path, Postgres 12+) helps but is not indexable for array element searches.
 - Possible workaround: JSONB array containment with GIN, but limited to equality.
+- **Note:** Dynamic zone filtering is not yet exposed in Webiny's GraphQL API. Data is indexed in OpenSearch but enabling filtering requires GraphQL schema changes + OpenSearch query builder implementation for dynamic zone field types. This is a pure Postgres limitation analysis — in the Postgres + OpenSearch architecture (doc 02), the storage layer already supports dynamic zone indexing.
 
 ### 6. Autovacuum and Index Bloat
 - With 30-50 indexes per table and heavy UPDATEs from the versioning pipeline (draft -> published -> new revision), autovacuum will struggle to keep bloat down.
