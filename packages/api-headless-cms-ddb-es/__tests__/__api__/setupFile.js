@@ -1,6 +1,6 @@
 import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
-import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
+import { registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { registerCmsOpenSearchStorageOperations } from "../../src/index";
 import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenSearchBodyModifier/index.js";
@@ -70,12 +70,7 @@ setStorageOps("cms", () => {
     createOrRefreshIndexSubscription.name =
         "headlessCmsDdbEs.context.createOrRefreshIndexSubscription";
 
-    const initializedDbPlugins = dbPlugins({
-        table: process.env.DB_TABLE,
-        driver: new DynamoDbDriver({
-            documentClient
-        })
-    });
+    const initializedDbPlugins = dbPlugins();
 
     createOrRefreshIndexSubscription.name =
         "headlessCmsDdbEs.context.createOrRefreshIndexSubscription";
