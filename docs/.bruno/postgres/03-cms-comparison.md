@@ -218,6 +218,39 @@ What matters is what users can do through the CMS API (REST/GraphQL), not intern
 
 **Webiny's position:** Webiny allows unlimited nesting AND requires filtering/sorting/search on ALL fields at ALL levels via GraphQL API. This is more demanding than any surveyed system. Even Sanity — the only system with comparable API-level nested filtering — imposes a 20-level and 2,000 attribute path limit. OpenSearch is the only proven engine that indexes every field at every depth automatically with no per-path configuration, making it the natural fit for Webiny.
 
+### Nested AND/OR Boolean Logic via API
+
+Webiny supports nested AND/OR conditions in GraphQL queries:
+
+```graphql
+listArticles(where: {
+    createdOn_gt: "2022-01-01",
+    AND: [
+        { OR: [
+            { createdOn_lt: "2022-12-31", createdBy: "abc-user" },
+            { createdOn_lt: "2024-12-31", createdBy: "abc-user-2" }
+        ]},
+        { createdBy: "user-1" }
+    ]
+})
+```
+
+How many CMSes support this level of boolean logic via their public API (GraphQL or REST)?
+
+| System | Nested AND/OR via API? | Details |
+|--------|----------------------|---------|
+| **Strapi v5** | Yes | `$and`, `$or`, `$not` nesting in both REST and GraphQL |
+| **Payload CMS** | Yes | `AND`, `OR` nesting in both REST and GraphQL |
+| **Sanity** | Yes | GROQ native boolean expressions (`&&`, `\|\|`) at any depth |
+| **Directus** | Yes | `_and`, `_or`, `_some`, `_none` nesting in REST and GraphQL |
+| **Contentful** | **No** | Filters implicitly ANDed. No OR, no nesting via API. |
+| **WordPress** | **No** | REST `meta_query` has flat `relation` param, no nesting. |
+| **Drupal** | **No** | JSON:API filter syntax is flat. No nested groups via API. |
+| **TYPO3** | **No** | No dynamic query API exposed. |
+| **AEM** | **No** | GraphQL `_expressions` are flat filters, no boolean grouping. |
+
+Only 4 of 9 surveyed systems support nested AND/OR via API. Webiny is in this group alongside Strapi, Payload, Sanity, and Directus.
+
 ## Key Takeaways for Webiny Postgres Implementation
 
 1. **No CMS solves unlimited dynamic nesting with pure SQL at scale (based on industry patterns).** Systems that support schemaless dynamic content (Strapi dynamic zones, Drupal Paragraphs, AEM components, Sanity) either use a document store or add a dedicated search engine at production scale. Systems like Directus and TYPO3 avoid the problem by design — they use structured schemas with fixed fields, not dynamic zones.
