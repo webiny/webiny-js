@@ -67,8 +67,3 @@ export function createSqlApiHandler(config: CreateSqlApiHandlerConfig) {
         }
     });
 }
-
-/** @deprecated Use `createSqlApiHandler`. */
-export const createSqliteApiHandler = createSqlApiHandler;
-/** @deprecated Use `CreateSqlApiHandlerConfig`. */
-export type CreateSqliteApiHandlerConfig = CreateSqlApiHandlerConfig;

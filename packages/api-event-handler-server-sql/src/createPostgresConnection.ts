@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import knex, { type Knex } from "knex";
 import type { ConnectionOptions } from "node:tls";
+import { toBoolean } from "@webiny/stdlib";
 
 export interface CreatePostgresConnectionOptions {
     host?: string;
@@ -16,11 +17,7 @@ export interface CreatePostgresConnectionOptions {
 }
 
 const envBool = (name: string): boolean | undefined => {
-    const v = process.env[name];
-    if (v === undefined) {
-        return undefined;
-    }
-    return v === "true";
+    return toBoolean(process.env[name]);
 };
 
 const envInt = (name: string): number | undefined => {
@@ -133,6 +130,16 @@ export function createPostgresConnection(options: CreatePostgresConnectionOption
     const idleInTransactionSessionTimeout = envInt("WEBINY_PG_IDLE_IN_TRANSACTION_SESSION_TIMEOUT");
     if (idleInTransactionSessionTimeout !== undefined) {
         connectionConfig.idle_in_transaction_session_timeout = idleInTransactionSessionTimeout;
+    }
+
+    const parseInputDatesAsUTC = envBool("WEBINY_PG_PARSE_INPUT_DATES_AS_UTC");
+    if (parseInputDatesAsUTC !== undefined) {
+        connectionConfig.parseInputDatesAsUTC = parseInputDatesAsUTC;
+    }
+
+    const pgOptions = process.env.WEBINY_PG_OPTIONS;
+    if (pgOptions) {
+        connectionConfig.options = pgOptions;
     }
 
     const keepAlive = envBool("WEBINY_PG_KEEP_ALIVE");
