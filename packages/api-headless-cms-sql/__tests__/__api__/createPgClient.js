@@ -1,32 +1,32 @@
 import knexLib from "knex";
-import { createServer } from "net";
-import { PGlite } from "@electric-sql/pglite";
-import { PGLiteSocketHandler } from "@electric-sql/pglite-socket";
+
+const host = process.env.WEBINY_PG_HOST || "localhost";
+const port = Number(process.env.WEBINY_PG_PORT || 5432);
+const database = process.env.WEBINY_PG_DATABASE || "webiny_test";
+const user = process.env.WEBINY_PG_USER || process.env.USER;
+const password = process.env.WEBINY_PG_PASSWORD || "";
+
+async function ensureDatabase() {
+    const admin = knexLib({
+        client: "pg",
+        connection: { host, port, user, password, database: "postgres" },
+        pool: { min: 1, max: 1 }
+    });
+
+    const result = await admin.raw("SELECT 1 FROM pg_database WHERE datname = ?", [database]);
+    if (result.rows.length === 0) {
+        await admin.raw(`CREATE DATABASE "${database}"`);
+    }
+
+    await admin.destroy();
+}
 
 export async function createKnex() {
-    const db = await PGlite.create();
-    const handler = new PGLiteSocketHandler({ db, closeOnDetach: true });
-
-    const server = createServer(async socket => {
-        await handler.attach(socket);
-    });
-
-    await new Promise(resolve => {
-        server.listen(0, "127.0.0.1", resolve);
-    });
-
-    const { port } = server.address();
-
-    global.__testPglite = db;
-    global.__testPgliteServer = server;
+    await ensureDatabase();
 
     return knexLib({
         client: "pg",
-        connection: {
-            host: "127.0.0.1",
-            port,
-            database: "postgres"
-        },
+        connection: { host, port, database, user, password },
         pool: { min: 1, max: 1 }
     });
 }
@@ -41,16 +41,7 @@ export async function dropAllTables(knex) {
 export async function teardown() {
     const knex = global.__testKnex;
     if (knex) {
+        global.__testKnex = null;
         await knex.destroy();
-    }
-
-    const server = global.__testPgliteServer;
-    if (server) {
-        await new Promise(resolve => server.close(resolve));
-    }
-
-    const db = global.__testPglite;
-    if (db) {
-        await db.close();
     }
 }

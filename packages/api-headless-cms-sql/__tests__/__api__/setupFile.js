@@ -3,9 +3,14 @@ import { registerSqlStorageOperations } from "../../src/index.js";
 import { createCmsEntryFieldSortingPlugin } from "@webiny/api-headless-cms-storage/plugins/CmsEntryFieldSortingPlugin.js";
 import { registerSQLCore } from "@webiny/api-core-sql";
 
-const isPg = process.env.WEBINY_SQL_CLIENT === "pg";
+const sqlClient = process.env.WEBINY_SQL_CLIENT;
 
-const client = isPg ? await import("./createPgClient.js") : await import("./createSqliteClient.js");
+const clientImports = {
+    pg: () => import("./createPgClient.js"),
+    pglite: () => import("./createPgliteClient.js")
+};
+
+const client = await (clientImports[sqlClient] || (() => import("./createSqliteClient.js")))();
 
 const knex = global.__testKnex || (await client.createKnex());
 

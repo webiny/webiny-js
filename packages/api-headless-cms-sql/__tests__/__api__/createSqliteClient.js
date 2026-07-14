@@ -22,6 +22,7 @@ export async function dropAllTables(knex) {
 export async function teardown() {
     const knex = global.__testKnex;
     if (knex) {
+        global.__testKnex = null;
         await knex.destroy();
     }
 }
