@@ -181,6 +181,41 @@ How other CMS systems solve the dynamic content storage problem, and their known
 - Paragraph nesting compounds this — each paragraph level = its own entity + field tables + JOINs.
 - SQL-only search is a known performance bottleneck — **Solr/ES effectively required for production**.
 
+## Deep Nesting: Filtering on Complex Fields
+
+Webiny supports unlimited field nesting: `object[] -> dynamic zone -> (text | number | object | object[] -> dynamic zone -> ...)`. How do other CMSes handle filtering/sorting on these structures?
+
+### Comparison: Nested Field Query Capabilities
+
+| System | Filter on object fields? | Filter inside object arrays? | Filter inside dynamic zones/blocks? | Sort on nested? | Max nesting for queries | How executed |
+|--------|------------------------|----------------------------|-------------------------------------|----------------|------------------------|-------------|
+| **Strapi v5** | Yes (dot notation: `filters[metadata][seo][score][$gt]=80`) | Limited (component arrays need explicit populate) | No direct filtering on dynamic zone content via API. Must populate first, filter client-side. | Top-level fields only | 1-2 levels practical | SQL JOINs via Knex |
+| **Payload CMS** | Yes (dot notation: `where[metadata.seo.score][greater_than]=80`) | Yes (queries into array sub-tables) | Limited. `blocksAsJSON` mode = no SQL filtering on block content. Normalized mode = separate queries per block type. | Top-level fields only | 2-3 levels via JOINs | SQL JOINs via Drizzle |
+| **Contentful** | No — cannot filter on Object or RichText fields in GraphQL/REST | No | N/A (no dynamic zones — uses references) | Top-level only | 0 for objects | Managed search index |
+| **TYPO3** | Yes (real columns) | Via IRRE relations (SQL JOINs) | N/A (no dynamic zones — static schema) | Yes (real columns) | No limit (but no dynamic schema) | SQL direct |
+| **WordPress** | Only via meta_query (EAV JOINs) | No native support | N/A (no dynamic zones) | Via meta_query (slow) | 1 level (meta key/value) | SQL self-JOINs |
+| **AEM** | Yes (JCR property queries) | Via child node traversal | Yes (component nodes are queryable children) | Yes (if indexed) | Unlimited (tree structure) — but requires pre-configured Lucene indexes | Lucene/Solr indexes |
+| **Sanity** | Yes (GROQ: `*[metadata.seo.score > 80]`) | Yes (GROQ: `*[items[].price > 100]`) | Yes (GROQ supports filtering into any nested structure) | Yes (any path) | 20 levels (document limit) | GROQ engine (server-side) |
+| **Directus** | Yes (dot notation in filter API) | Via junction table JOINs | N/A (no dynamic zones — relational only) | Yes (real columns) | 2-3 levels via JOINs | SQL via Knex |
+| **Drupal** | Via Entity Query (JOINs across field tables) | Via Entity Reference + Paragraph JOINs | Paragraph fields are queryable but require multi-table JOINs per nesting level | Limited (JOINs get expensive) | 2-3 levels practical (MySQL 61-table JOIN limit) | SQL JOINs or Solr/ES |
+
+### Key Observations
+
+**No SQL-based CMS supports efficient filtering inside dynamic zones at depth.**
+
+- **Strapi** explicitly cannot filter on dynamic zone content — you must populate and filter client-side.
+- **Payload** offers `blocksAsJSON` which stores blocks as JSON (not queryable in SQL) or normalizes into sub-tables (queryable but via JOINs that degrade at depth).
+- **Contentful** simply doesn't allow filtering on object or rich-text fields.
+- **Drupal** can technically query Paragraphs (their dynamic zone equivalent) but each nesting level adds JOINs across field tables — MySQL's 61-table limit is a hard ceiling.
+
+**Only document-store / search-engine backed systems handle deep nested queries:**
+
+- **Sanity** (GROQ over document store) — filters at any depth up to 20 levels natively.
+- **AEM** (Lucene/Solr over JCR node tree) — queries component nodes at any depth, but requires pre-configured indexes.
+- **OpenSearch/Elasticsearch** — indexes every field at every depth automatically. No per-path configuration.
+
+**Webiny's position:** Webiny allows unlimited nesting AND requires filtering/sorting/search on ALL fields at ALL levels. This combination is uniquely demanding. Among surveyed systems, only Sanity (document store + GROQ) and AEM (JCR + Lucene) support comparable depth — both using non-SQL query engines. OpenSearch is the natural fit for Webiny's SQL-based storage.
+
 ## Key Takeaways for Webiny Postgres Implementation
 
 1. **No CMS solves unlimited dynamic nesting with pure SQL at scale (based on industry patterns).** Systems that support schemaless dynamic content (Strapi dynamic zones, Drupal Paragraphs, AEM components, Sanity) either use a document store or add a dedicated search engine at production scale. Systems like Directus and TYPO3 avoid the problem by design — they use structured schemas with fixed fields, not dynamic zones.
