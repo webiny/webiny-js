@@ -2,7 +2,7 @@
   "dependencies": [
     {
       "name": "@ai-sdk/anthropic",
-      "version": "4.0.11",
+      "version": "4.0.12",
       "files": ["/packages/api-core/package.json", "/packages/api-core/package.json"]
     },
     {
@@ -27,107 +27,107 @@
     },
     {
       "name": "@aws-sdk/client-apigatewaymanagementapi",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cloudfront",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cloudwatch-events",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cloudwatch-logs",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cognito-identity-provider",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-dynamodb",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-dynamodb-streams",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-eventbridge",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-iam",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-iot",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-lambda",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-s3",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-scheduler",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-sfn",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-sqs",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-sts",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/credential-providers",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/lib-dynamodb",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/lib-storage",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/s3-presigned-post",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/s3-request-presigner",
-      "version": "3.1084.0",
+      "version": "3.1085.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
@@ -586,7 +586,7 @@
     },
     {
       "name": "ai",
-      "version": "7.0.19",
+      "version": "7.0.22",
       "files": [
         "/packages/ai-powerups/package.json",
         "/packages/api-core/package.json",
@@ -5953,7 +5953,7 @@
       "name": "ai",
       "versions": [
         {
-          "version": "7.0.19",
+          "version": "7.0.22",
           "files": [
             { "file": "/packages/ai-powerups/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-core/package.json", "types": ["dependencies"] }
@@ -6109,7 +6109,7 @@
       "name": "@ai-sdk/anthropic",
       "versions": [
         {
-          "version": "4.0.11",
+          "version": "4.0.12",
           "files": [{ "file": "/packages/api-core/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7218,7 +7218,7 @@
       "name": "@aws-sdk/client-apigatewaymanagementapi",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7227,7 +7227,7 @@
       "name": "@aws-sdk/client-cloudfront",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7236,7 +7236,7 @@
       "name": "@aws-sdk/client-cloudwatch-events",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7245,7 +7245,7 @@
       "name": "@aws-sdk/client-cloudwatch-logs",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7254,7 +7254,7 @@
       "name": "@aws-sdk/client-cognito-identity-provider",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7263,7 +7263,7 @@
       "name": "@aws-sdk/client-dynamodb",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7272,7 +7272,7 @@
       "name": "@aws-sdk/client-dynamodb-streams",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7281,7 +7281,7 @@
       "name": "@aws-sdk/client-eventbridge",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7290,7 +7290,7 @@
       "name": "@aws-sdk/client-iam",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7299,7 +7299,7 @@
       "name": "@aws-sdk/client-iot",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7308,7 +7308,7 @@
       "name": "@aws-sdk/client-lambda",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7317,7 +7317,7 @@
       "name": "@aws-sdk/client-s3",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7326,7 +7326,7 @@
       "name": "@aws-sdk/client-scheduler",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7335,7 +7335,7 @@
       "name": "@aws-sdk/client-sfn",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7344,7 +7344,7 @@
       "name": "@aws-sdk/client-sqs",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7353,7 +7353,7 @@
       "name": "@aws-sdk/client-sts",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7362,7 +7362,7 @@
       "name": "@aws-sdk/credential-providers",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7371,7 +7371,7 @@
       "name": "@aws-sdk/lib-dynamodb",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7380,7 +7380,7 @@
       "name": "@aws-sdk/lib-storage",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7389,7 +7389,7 @@
       "name": "@aws-sdk/s3-presigned-post",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7398,7 +7398,7 @@
       "name": "@aws-sdk/s3-request-presigner",
       "versions": [
         {
-          "version": "3.1084.0",
+          "version": "3.1085.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
