@@ -195,7 +195,11 @@ Everything else — `list()`, `get()` with filters, `getUniqueFieldValues()`, fu
 
 ### Indexes (minimal — PG only for point lookups)
 
+All indexes are created automatically as part of model table setup (`CREATE TABLE` + indexes). No per-field index management needed — adding/removing/changing model fields requires zero index changes in Postgres.
+
 ```sql
+-- Created once when model table is created:
+
 CREATE INDEX idx_{modelId}_latest
     ON webiny_cms_{modelId} (tenant, locale, entry_id)
     WHERE is_latest = true;
@@ -214,6 +218,25 @@ CREATE INDEX idx_{modelId}_deleted
 CREATE INDEX idx_{modelId}_folder
     ON webiny_cms_{modelId} (tenant, locale, location_folder_id)
     WHERE is_latest = true AND wby_deleted = false;
+```
+
+### Note on GIN indexes for `values` JSONB column
+
+A GIN index on the `values` column is **not created** because all filtering goes through OpenSearch:
+
+```sql
+-- NOT created — would be dead weight since we never query values in PG:
+-- CREATE INDEX idx_{modelId}_values_gin ON webiny_cms_{modelId} USING gin (values jsonb_path_ops);
+```
+
+If GIN were added, it would cover **equality/containment only** (`@>` operator) on any path inside the JSONB — no per-field setup, works automatically for any field at any depth. But it **cannot** help with range queries (`>`, `<`), sorting, or nested array element filtering (see "Why OpenSearch is required" section above). Since OpenSearch handles all of these, the GIN index would add write overhead with no benefit.
+
+If a future use case requires basic Postgres-level value queries (e.g., admin tools, data export filters), a GIN index can be added per model table without DDL changes to the table itself:
+
+```sql
+-- Can be added later if needed, without table lock:
+CREATE INDEX CONCURRENTLY idx_{modelId}_values_gin 
+    ON webiny_cms_{modelId} USING gin (values jsonb_path_ops);
 ```
 
 ## Versioning
