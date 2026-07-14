@@ -1,8 +1,8 @@
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
-import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { NoopFolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import { createModelsPlugins, type ICreateModelsPluginsParams } from "../__cms/models.js";
 import { CmsWorkflowsFeature } from "~/index.js";

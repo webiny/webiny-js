@@ -10,6 +10,7 @@
     { "path": "../error" },
     { "path": "../feature" },
     { "path": "../utils" },
+    { "path": "../api-headless-cms-testing" },
     { "path": "../db-dynamodb" },
     { "path": "../handler-graphql" },
     { "path": "../testing" }
@@ -37,6 +38,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
+      "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
+      "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],

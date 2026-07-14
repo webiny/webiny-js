@@ -7,6 +7,7 @@
     { "path": "../api-scheduler/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../api-headless-cms-testing/tsconfig.build.json" },
     { "path": "../api-opensearch/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -26,6 +27,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
+      "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
       "@webiny/api-opensearch": ["../api-opensearch/src"]
     }
