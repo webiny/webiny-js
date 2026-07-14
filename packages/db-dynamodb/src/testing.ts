@@ -1,29 +1,16 @@
-import type { ConstructorArgs } from "@webiny/db";
-import { Db } from "@webiny/db";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { DbRegistryFeature } from "@webiny/db/exports/api/db.js";
-import type { Context } from "@webiny/api/types.js";
-
-interface DbContext extends Context {
-    db: Db<unknown>;
-}
 
 /**
- * @deprecated Test-only storage-preset glue: registers `DbRegistry` and sets the legacy `context.db`
- * bag. Production wires the DB via storage-operations factories/drivers and never reads `context.db`.
- * Used only by the DDB/DDB-ES `setupFile.js` test presets — remove once those move to their own
- * storage-operations factories/drivers. The `DbRegistry` registration must be preserved (the DDB-ES
- * CMS storage resolves it in `beforeInit`).
+ * @deprecated Test-only storage-preset glue: registers `DbRegistry`, which the DDB-ES CMS storage
+ * resolves in `beforeInit` to stage the entities it syncs to OpenSearch. (It used to also set a
+ * legacy `context.db` bag, but nothing reads `context.db` anymore, so that's gone.) Used only by the
+ * DDB / DDB-ES `setupFile.js` test presets — remove once those register `DbRegistryFeature`
+ * themselves, the way production does via `registerRequestStorage`.
  */
-export const dbPlugins = <T = unknown>(args: ConstructorArgs<T>) => {
-    const plugin = createRegisterExtensionPlugin<DbContext>(async context => {
-        if (context.db) {
-            return;
-        }
-
+export const dbPlugins = () => {
+    const plugin = createRegisterExtensionPlugin(async context => {
         DbRegistryFeature.register(context.container);
-
-        context.db = new Db<T>(args);
     });
     plugin.name = "db-dynamodb/extension/db";
     return [plugin];
