@@ -4,16 +4,13 @@ import React, { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { ComponentResolver, ComponentRegistry } from "@webiny/cms-sdk";
 import type { ResolvedComponent } from "@webiny/cms-sdk";
-import { useEntryStore } from "./EntryStoreProvider.js";
 import { useComponents, useModel } from "./EntryRenderer.js";
 
 interface DynamicZoneProps {
-    fieldId: string;
+    value: unknown;
 }
 
-export const DynamicZone = observer(({ fieldId }: DynamicZoneProps) => {
-    const store = useEntryStore();
-    const values = store.getValues();
+export const DynamicZone = observer(({ value }: DynamicZoneProps) => {
     const components = useComponents();
     const model = useModel();
 
@@ -25,16 +22,11 @@ export const DynamicZone = observer(({ fieldId }: DynamicZoneProps) => {
         return reg;
     }, [components]);
 
-    if (!model || !values) {
+    if (!model || !value) {
         return null;
     }
 
-    const dzValue = values[fieldId];
-    if (!dzValue) {
-        return null;
-    }
-
-    const items = Array.isArray(dzValue) ? dzValue : [dzValue];
+    const items = Array.isArray(value) ? value : [value];
     const resolver = new ComponentResolver(registry);
     const resolved = resolver.resolve(items, model);
 

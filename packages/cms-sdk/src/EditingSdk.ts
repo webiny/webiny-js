@@ -51,9 +51,13 @@ export class EditingSdk implements IContentSdk {
     }
 
     async getEntry<T extends CmsEntryValues = CmsEntryValues>(
-        _params: GetEntryParams
+        params: GetEntryParams
     ): Promise<CmsEntry<T> | null> {
-        return this.entryStore.waitForEntry() as Promise<CmsEntry<T>>;
+        const editingEntryId = this.getEntryId();
+        if (params.entryId === editingEntryId) {
+            return this.entryStore.waitForEntry() as Promise<CmsEntry<T>>;
+        }
+        return this.liveSdk.getEntry<T>(params);
     }
 
     async listEntries<T extends CmsEntryValues = CmsEntryValues>(

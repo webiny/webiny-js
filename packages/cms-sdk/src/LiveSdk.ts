@@ -35,6 +35,7 @@ export class LiveSdk implements IContentSdk {
 
         const result = await this.webiny.cms.getModel({ modelId });
         if (result.isFail()) {
+            console.log("[CMS LiveSdk] getModel FAILED", modelId, result.error);
             return null;
         }
 

@@ -49,6 +49,15 @@ export interface IEnvironment {
     isEditing(): boolean;
 }
 
+export interface CmsRefModelMetadata {
+    valuesSelection: string;
+}
+
+export interface CmsModelMetadata {
+    valuesSelection?: string;
+    refModels?: Record<string, CmsRefModelMetadata>;
+}
+
 export interface CmsModelDefinition {
     name: string;
     modelId: string;
@@ -60,6 +69,7 @@ export interface CmsModelDefinition {
     }>;
     settings?: Record<string, unknown>;
     componentMap?: Record<string, string>;
+    metadata?: CmsModelMetadata;
 }
 
 export interface IContentSdk {

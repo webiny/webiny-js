@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
-import { contentSdk } from "@webiny/cms-sdk";
-import type { CmsEntry, CmsModelDefinition, Component } from "@webiny/cms-sdk";
+import React, { useMemo } from "react";
+import { contentSdk, componentRegistry, refCache } from "@webiny/cms-sdk";
+import type { CmsEntry, CmsModelDefinition, Component, EntryStoreConfig } from "@webiny/cms-sdk";
 import { EntryStoreProvider } from "./EntryStoreProvider.js";
 import { ConnectToEntryEditor } from "./ConnectToEntryEditor.js";
 
@@ -13,26 +13,37 @@ export const useComponents = () => React.useContext(ComponentsContext);
 export const useModel = () => React.useContext(ModelContext);
 
 interface EntryRendererProps {
-    modelId: string;
     entry: CmsEntry | null;
     model: CmsModelDefinition;
     components: Component[];
     children: React.ReactNode;
 }
 
-export const EntryRenderer = ({
-    modelId,
-    entry,
-    model,
-    components,
-    children
-}: EntryRendererProps) => {
+export const EntryRenderer = ({ entry, model, components, children }: EntryRendererProps) => {
+    components.forEach(c => componentRegistry.register(c));
+    refCache.setResolver(contentSdk);
+
+    const storeConfig = useMemo((): EntryStoreConfig => {
+        const refModels = model.metadata?.refModels;
+        if (!refModels || Object.keys(refModels).length === 0) {
+            return {};
+        }
+        return {
+            refModels,
+            refResolver: contentSdk
+        };
+    }, [model]);
+
     if (contentSdk.isEditing()) {
         const entryId = entry ? entry.entryId : getEntryIdFromUrl();
         return (
             <ModelContext.Provider value={model}>
                 <ComponentsContext.Provider value={components}>
-                    <ConnectToEntryEditor modelId={modelId} entryId={entryId}>
+                    <ConnectToEntryEditor
+                        modelId={model.modelId}
+                        entryId={entryId}
+                        storeConfig={storeConfig}
+                    >
                         {children}
                     </ConnectToEntryEditor>
                 </ComponentsContext.Provider>
@@ -47,7 +58,11 @@ export const EntryRenderer = ({
     return (
         <ModelContext.Provider value={model}>
             <ComponentsContext.Provider value={components}>
-                <EntryStoreProvider entryId={entry.entryId} entry={entry}>
+                <EntryStoreProvider
+                    entryId={entry.entryId}
+                    entry={entry}
+                    storeConfig={storeConfig}
+                >
                     {children}
                 </EntryStoreProvider>
             </ComponentsContext.Provider>

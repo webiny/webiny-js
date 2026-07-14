@@ -17,7 +17,6 @@ import type { Component } from "./component/types.js";
 class InternalContentSdk implements IContentSdk {
     private activeSdk: IContentSdk;
     private editingSdk: EditingSdk | undefined;
-
     constructor(liveSdk: IContentSdk, editingSdk?: EditingSdk) {
         this.activeSdk = editingSdk ?? liveSdk;
         this.editingSdk = editingSdk;

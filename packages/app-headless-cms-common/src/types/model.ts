@@ -169,4 +169,7 @@ export interface CmsModel {
     settings: {
         [key: string]: any;
     };
+    metadata: {
+        valuesSelection: string;
+    }
 }

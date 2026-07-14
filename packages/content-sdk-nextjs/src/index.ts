@@ -8,6 +8,8 @@ export {
     useEntryStore,
     ConnectToEntryEditor,
     DynamicZone,
-    useEntryValues
+    useEntry,
+    RefField,
+    createReactiveComponent
 } from "@webiny/cms-nextjs";
 export { DocumentRenderer } from "@webiny/website-builder-nextjs";

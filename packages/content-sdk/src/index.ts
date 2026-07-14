@@ -2,7 +2,7 @@ export { contentSdk, ContentSdk } from "./ContentSdk.js";
 export type { ContentSdkConfig, WbConfig, CmsConfig } from "./types.js";
 
 // Re-export useful values and types from both SDKs
-export { createComponent } from "@webiny/cms-sdk";
+export { createComponent, resolveRefs } from "@webiny/cms-sdk";
 export type {
     CmsSdkConfig,
     CmsEntryValues,
@@ -11,7 +11,9 @@ export type {
     CmsListResult,
     GetEntryParams,
     ListEntriesParams,
-    CmsModelDefinition
+    CmsModelDefinition,
+    CmsModelMetadata,
+    CmsRefModelMetadata
 } from "@webiny/cms-sdk";
 
 export type {

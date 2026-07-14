@@ -29,6 +29,10 @@ export interface CmsModelData {
     tags: string[];
     settings?: Record<string, unknown>;
     componentMap?: Record<string, string>;
+    metadata?: {
+        valuesSelection?: string;
+        refModels?: Record<string, { valuesSelection: string }>;
+    };
 }
 
 export interface GetModelParams {
