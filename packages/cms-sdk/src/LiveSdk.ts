@@ -46,23 +46,41 @@ export class LiveSdk implements IContentSdk {
     async getEntry<T extends CmsEntryValues = CmsEntryValues>(
         params: GetEntryParams
     ): Promise<CmsEntry<T> | null> {
+        console.log("[CMS LiveSdk] getEntry", {
+            modelId: params.modelId,
+            entryId: params.entryId,
+            preview: this.preview
+        });
+
+        const where = params.entryId.includes("#")
+            ? { id: params.entryId }
+            : { entryId: params.entryId };
+
         const result = await this.webiny.cms.getEntry<T>({
             modelId: params.modelId,
-            where: { entryId: params.entryId },
+            where,
             fields: [...SYSTEM_FIELDS, "values.*"],
             preview: this.preview
         });
 
         if (result.isFail()) {
+            console.log("[CMS LiveSdk] getEntry FAILED", result.error);
             return null;
         }
 
+        console.log("[CMS LiveSdk] getEntry OK", { id: (result.value as any)?.id });
         return result.value as CmsEntry<T>;
     }
 
     async listEntries<T extends CmsEntryValues = CmsEntryValues>(
         params: ListEntriesParams
     ): Promise<CmsListResult<T>> {
+        console.log("[CMS LiveSdk] listEntries", {
+            modelId: params.modelId,
+            where: params.where,
+            preview: this.preview
+        });
+
         const result = await this.webiny.cms.listEntries<T>({
             modelId: params.modelId,
             where: params.where,
@@ -74,9 +92,15 @@ export class LiveSdk implements IContentSdk {
         });
 
         if (result.isFail()) {
+            console.log("[CMS LiveSdk] listEntries FAILED", result.error);
             return { data: [], meta: { cursor: null, hasMoreItems: false, totalCount: 0 } };
         }
 
-        return result.value as CmsListResult<T>;
+        const list = result.value as CmsListResult<T>;
+        console.log("[CMS LiveSdk] listEntries OK", {
+            count: list.data.length,
+            total: list.meta.totalCount
+        });
+        return list;
     }
 }

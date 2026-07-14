@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/cms-sdk",
+  "name": "@webiny/content-sdk-nextjs",
   "version": "0.0.0",
   "type": "module",
   "repository": {
@@ -10,20 +10,33 @@
     ".": "./index.js",
     "./*": "./*"
   },
-  "description": "CMS Preview SDK for Webiny Headless CMS.",
+  "description": "Next.js integration for Webiny Content SDK.",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>"
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/sdk": "0.0.0",
-    "fast-json-patch": "^3.1.1",
-    "mobx": "^6.16.1"
+    "@webiny/cms-nextjs": "0.0.0",
+    "@webiny/content-sdk": "0.0.0",
+    "@webiny/website-builder-nextjs": "0.0.0"
+  },
+  "peerDependencies": {
+    "next": ">=15",
+    "react": ">=19"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3",
     "vitest": "^4.1.9"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@webiny/cms-nextjs",
+        "@webiny/content-sdk",
+        "@webiny/website-builder-nextjs"
+      ]
+    }
   },
   "webiny": {
     "publishFrom": "dist"

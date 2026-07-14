@@ -1,60 +1,48 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { ComponentResolver, componentRegistry, contentSdk } from "@webiny/cms-sdk";
-import type { ResolvedComponent, CmsModelDefinition } from "@webiny/cms-sdk";
+import React from "react";
+import { contentSdk } from "@webiny/cms-sdk";
+import type { CmsEntry, Component } from "@webiny/cms-sdk";
+import { EntryStoreProvider } from "./EntryStoreProvider.js";
+import { ConnectToEntryEditor } from "./ConnectToEntryEditor.js";
+
+const ComponentsContext = React.createContext<Component[]>([]);
+
+export const useComponents = () => React.useContext(ComponentsContext);
 
 interface EntryRendererProps {
     modelId: string;
-    values: Record<string, unknown>;
-    fieldId: string;
+    entry: CmsEntry | null;
+    components: Component[];
+    children: React.ReactNode;
 }
 
-export const EntryRenderer = ({ modelId, values, fieldId }: EntryRendererProps) => {
-    const [model, setModel] = useState<CmsModelDefinition | null>(null);
-
-    useEffect(() => {
-        console.log("[EntryRenderer] fetching model:", modelId);
-        contentSdk.getModel(modelId).then(m => {
-            console.log("[EntryRenderer] model loaded, componentMap:", m?.componentMap);
-            setModel(m);
-        });
-    }, [modelId]);
-
-    console.log("[EntryRenderer] fieldId:", fieldId, "value:", values[fieldId]);
-    console.log("[EntryRenderer] registered components:", componentRegistry.getAll().map(c => c.manifest.name));
-
-    if (!model) {
-        return null;
+export const EntryRenderer = ({ modelId, entry, components, children }: EntryRendererProps) => {
+    if (contentSdk.isEditing()) {
+        const entryId = entry ? entry.entryId : getEntryIdFromUrl();
+        return (
+            <ComponentsContext.Provider value={components}>
+                <ConnectToEntryEditor modelId={modelId} entryId={entryId}>
+                    {children}
+                </ConnectToEntryEditor>
+            </ComponentsContext.Provider>
+        );
     }
 
-    const dzValue = values[fieldId];
-    if (!dzValue) {
-        console.log("[EntryRenderer] no DZ value for fieldId:", fieldId);
+    if (!entry) {
         return null;
     }
-
-    const items = Array.isArray(dzValue) ? dzValue : [dzValue];
-    console.log("[EntryRenderer] DZ items:", items.map(i => (i as any)?._templateId));
-
-    const resolver = new ComponentResolver(componentRegistry);
-    const resolved = resolver.resolve(items, model);
-    console.log("[EntryRenderer] resolved:", resolved.length, resolved.map(r => r.componentName));
 
     return (
-        <>
-            {resolved.map((item, index) => (
-                <ResolvedComponentRenderer key={`${item.templateId}-${index}`} resolved={item} />
-            ))}
-        </>
+        <ComponentsContext.Provider value={components}>
+            <EntryStoreProvider entryId={entry.entryId} entry={entry}>
+                {children}
+            </EntryStoreProvider>
+        </ComponentsContext.Provider>
     );
 };
 
-interface ResolvedComponentRendererProps {
-    resolved: ResolvedComponent;
+function getEntryIdFromUrl(): string {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("wb.id") || "";
 }
-
-const ResolvedComponentRenderer = ({ resolved }: ResolvedComponentRendererProps) => {
-    const Component = resolved.component as React.ComponentType<Record<string, unknown>>;
-    return <Component {...resolved.props} />;
-};

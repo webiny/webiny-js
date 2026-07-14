@@ -1,11 +1,13 @@
 export { contentSdk } from "./ContentSdk.js";
 export { environment } from "./Environment.js";
 export { createComponent } from "./component/createComponent.js";
-export { componentRegistry } from "./component/ComponentRegistry.js";
+export { ComponentRegistry, componentRegistry } from "./component/ComponentRegistry.js";
 export { EditorBridge } from "./EditorBridge.js";
-export { useEntry } from "./useEntry.js";
-export type { UseEntryParams, UseEntryResult } from "./useEntry.js";
 export { ComponentResolver } from "./component/ComponentResolver.js";
+export { EntryStore } from "./EntryStore.js";
+export { entryStoreManager } from "./EntryStoreManager.js";
+export { jsonPatch } from "./jsonPatch.js";
+export type { JsonPatchOperation } from "./jsonPatch.js";
 export type { ResolvedComponent } from "./component/ComponentResolver.js";
 export type {
     CmsSdkConfig,

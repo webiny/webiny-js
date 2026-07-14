@@ -83,17 +83,6 @@ export class ContentSdk implements IContentSdk {
         componentRegistry.register(component);
     }
 
-    onEntryUpdate(fn: (entry: Record<string, unknown>) => void): () => void {
-        this.assertInitialized();
-        const editingSdk = this.sdk.getEditingSdk();
-        if (editingSdk) {
-            return editingSdk.onEntryUpdate(fn);
-        }
-        return () => {
-            return;
-        };
-    }
-
     isEditing() {
         return environment.isEditing();
     }

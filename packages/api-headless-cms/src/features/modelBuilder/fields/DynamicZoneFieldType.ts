@@ -1,7 +1,7 @@
-import {FieldType, type IFieldTypeFactory} from "./abstractions.js";
-import {type FieldBuildResult} from "./BaseFieldBuilder.js";
-import {DataFieldBuilder, type BaseFieldBuilder} from "./FieldBuilder.js";
-import {type IFieldBuilderRegistry} from "../abstractions.js";
+import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
+import { type FieldBuildResult } from "./BaseFieldBuilder.js";
+import { DataFieldBuilder, type BaseFieldBuilder } from "./FieldBuilder.js";
+import { type IFieldBuilderRegistry } from "../abstractions.js";
 import type {
     CmsIcon,
     CmsModelField,
@@ -47,7 +47,8 @@ interface IDynamicZoneFieldBuilderTemplateConfig {
 
 class DynamicZoneFieldBuilder
     extends DataFieldBuilder<"dynamicZone">
-    implements IDynamicZoneFieldBuilder {
+    implements IDynamicZoneFieldBuilder
+{
     private readonly templates: IDynamicZoneTemplate[] = [];
 
     public constructor(private registry: IFieldBuilderRegistry) {
@@ -101,7 +102,7 @@ class DynamicZoneFieldBuilder
         // Set templates in settings before building
         this.config.settings = this.config.settings || {};
         this.config.settings.templates = this.templates;
-        this.config.listValidation = [{name: "dynamicZone", message: ""}];
+        this.config.listValidation = [{ name: "dynamicZone", message: "" }];
         return super.build();
     }
 }

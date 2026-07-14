@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/cms-sdk",
+  "name": "@webiny/content-sdk",
   "version": "0.0.0",
   "type": "module",
   "repository": {
@@ -10,15 +10,14 @@
     ".": "./index.js",
     "./*": "./*"
   },
-  "description": "CMS Preview SDK for Webiny Headless CMS.",
+  "description": "Unified content SDK for Webiny CMS and Website Builder.",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>"
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/sdk": "0.0.0",
-    "fast-json-patch": "^3.1.1",
-    "mobx": "^6.16.1"
+    "@webiny/cms-sdk": "0.0.0",
+    "@webiny/website-builder-sdk": "0.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

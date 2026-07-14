@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useCallback, useSyncExternalStore } from "react";
+import React, {
+    createContext,
+    useContext,
+    useState,
+    useCallback,
+    useSyncExternalStore
+} from "react";
 
 export interface PreviewComponent {
     name: string;
@@ -19,13 +25,16 @@ class PreviewComponentsStore {
     addComponent(component: PreviewComponent): void {
         const exists = this.components.some(c => c.name === component.name);
         if (exists) {
-            this.components = this.components.map(c =>
-                c.name === component.name ? component : c
-            );
+            this.components = this.components.map(c => (c.name === component.name ? component : c));
         } else {
             this.components = [...this.components, component];
         }
-        console.log("[PreviewComponentsStore] addComponent:", component.name, "total:", this.components.length);
+        console.log(
+            "[PreviewComponentsStore] addComponent:",
+            component.name,
+            "total:",
+            this.components.length
+        );
         this.notify();
     }
 

@@ -308,7 +308,6 @@ export const createModelsSchema = ({
                 plugin: Boolean!
                 valuesSelection: String
                 componentMap: JSON
-                settings: JSON
             }
 
             type CmsContentModelResponse {

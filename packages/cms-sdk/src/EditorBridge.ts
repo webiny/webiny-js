@@ -11,7 +11,7 @@ export class EditorBridge {
             new URL(iframe.src).origin
         );
 
-        this.messenger = new Messenger(editorOrigin, previewOrigin, "cms.preview.*");
+        this.messenger = new Messenger(editorOrigin, previewOrigin, "wb.editor.*");
     }
 
     onReady(handler: () => void): () => void {
@@ -23,7 +23,11 @@ export class EditorBridge {
     }
 
     sendEntryUpdate(data: Record<string, unknown>): void {
-        this.messenger.send("entry.update", data);
+        this.messenger.send("document.set", data);
+    }
+
+    sendEntryPatch(patch: unknown[]): void {
+        this.messenger.send("document.patch", patch);
     }
 
     dispose(): void {

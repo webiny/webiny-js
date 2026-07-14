@@ -1,5 +1,4 @@
 import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
-import type { GenericRecord } from "@webiny/utils";
 
 /* SQL row representation of StorageCmsModel. */
 export interface IModelRow {
@@ -19,7 +18,6 @@ export interface IModelRow {
     imageFieldId: string | null;
     isPrivate: boolean;
     isPlugin: boolean;
-    settings: string | null;
     authorization: string | null;
     createdBy_id: string | null;
     createdBy_displayName: string | null;

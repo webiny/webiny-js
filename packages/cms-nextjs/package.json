@@ -16,7 +16,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/cms-sdk": "0.0.0"
+    "@webiny/cms-sdk": "0.0.0",
+    "mobx-react-lite": "^4.1.0"
   },
   "peerDependencies": {
     "next": ">=15",
@@ -26,6 +27,14 @@
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3",
     "vitest": "^4.1.9"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@webiny/cms-sdk",
+        "mobx-react-lite"
+      ]
+    }
   },
   "webiny": {
     "publishFrom": "dist"

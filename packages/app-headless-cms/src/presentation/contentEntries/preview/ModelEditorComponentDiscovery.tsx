@@ -8,13 +8,13 @@ export const ModelEditorComponentDiscovery = ContentModelEditor.createDecorator(
     return function ModelEditorWithDiscovery() {
         const { data } = useModelEditor();
         const presenter = useLivePreviewPresenter();
-        const previewUrl = data?.settings?.previewUrl as string | undefined;
+        const previewPrefix = data?.settings?.previewPrefix as string | undefined;
 
         useEffect(() => {
-            if (!previewUrl) {
+            if (!previewPrefix) {
                 presenter.clearComponents();
             }
-        }, [previewUrl, presenter]);
+        }, [previewPrefix, presenter]);
 
         useEffect(() => {
             return () => {
@@ -24,7 +24,9 @@ export const ModelEditorComponentDiscovery = ContentModelEditor.createDecorator(
 
         return (
             <>
-                {previewUrl ? <ComponentDiscoveryIframe previewUrl={previewUrl} /> : null}
+                {previewPrefix ? (
+                    <ComponentDiscoveryIframe previewPrefix={previewPrefix} />
+                ) : null}
                 <Original />
             </>
         );

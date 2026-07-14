@@ -11,28 +11,36 @@ import type {
 } from "./types.js";
 import { Messenger, MessageOrigin } from "./messenger/index.js";
 import { componentRegistry } from "./component/ComponentRegistry.js";
+import { entryStoreManager } from "./EntryStoreManager.js";
+import type { EntryStore } from "./EntryStore.js";
+import type { JsonPatchOperation } from "./jsonPatch.js";
 
 export class EditingSdk implements IContentSdk {
     public readonly messenger: Messenger;
+    public readonly entryStore: EntryStore;
     private liveSdk: IContentSdk;
-    private entry: Record<string, unknown> | null = null;
-    private entryListeners = new Set<(entry: Record<string, unknown>) => void>();
 
     constructor(liveSdk: IContentSdk) {
         this.liveSdk = liveSdk;
 
+        const entryId = this.getEntryId();
+        this.entryStore = entryStoreManager.getStore(entryId);
+
         const source = new MessageOrigin(() => window, window.location.origin);
         const target = new MessageOrigin(() => window.parent, this.getReferrerOrigin());
 
-        this.messenger = new Messenger(source, target, "cms.preview.*");
+        this.messenger = new Messenger(source, target, "wb.editor.*");
 
         componentRegistry.onRegister(component => {
             this.messenger.send("preview.component.register", component.manifest);
         });
 
-        this.messenger.on("entry.update", (data: Record<string, unknown>) => {
-            this.entry = data;
-            this.entryListeners.forEach(fn => fn(data));
+        this.messenger.on("document.set", (data: Record<string, unknown>) => {
+            this.entryStore.setEntry(data as unknown as CmsEntry);
+        });
+
+        this.messenger.on("document.patch", (patch: unknown[]) => {
+            this.entryStore.applyPatch(patch as JsonPatchOperation[]);
         });
 
         this.messenger.send("preview.ready", true);
@@ -45,10 +53,7 @@ export class EditingSdk implements IContentSdk {
     async getEntry<T extends CmsEntryValues = CmsEntryValues>(
         _params: GetEntryParams
     ): Promise<CmsEntry<T> | null> {
-        if (!this.entry) {
-            return null;
-        }
-        return this.entry as unknown as CmsEntry<T>;
+        return this.entryStore.waitForEntry() as Promise<CmsEntry<T>>;
     }
 
     async listEntries<T extends CmsEntryValues = CmsEntryValues>(
@@ -57,18 +62,19 @@ export class EditingSdk implements IContentSdk {
         return this.liveSdk.listEntries<T>(params);
     }
 
-    onEntryUpdate(fn: (entry: Record<string, unknown>) => void): () => void {
-        this.entryListeners.add(fn);
-        if (this.entry) {
-            fn(this.entry);
+    private getEntryId(): string {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            return params.get("wb.id") || "";
+        } catch {
+            return "";
         }
-        return () => this.entryListeners.delete(fn);
     }
 
     private getReferrerOrigin(): string {
         try {
             const params = new URLSearchParams(window.location.search);
-            return params.get("origin") || "";
+            return params.get("wb.referrer") || "";
         } catch {
             return "";
         }
