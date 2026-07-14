@@ -18,6 +18,9 @@ export const Extensions = () => {
             <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
             {/*<Admin.Extension src={"@/extensions/newEntryWizardDemo/index.tsx"} />*/}
 
+            {/* Background Tasks demo: "Apply Discount" bulk action on Products */}
+            <Admin.Extension src={"/extensions/backgroundTasksDemo/index.tsx"} />
+
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
             {/*<Admin.Extension src={"@/extensions/LexicalPlugin.tsx"} />*/}
@@ -44,8 +47,10 @@ export const Extensions = () => {
             {/*/>*/}
             {/*<Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />*/}
             {/*<Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />*/}
-            {/*<Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/ProductModel.ts"} />*/}
+            {/* Background Tasks demo: Products model + the "Apply Discount" bulk action backend */}
+            <Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />
+            <Api.Extension src={"/extensions/models/ProductModel.ts"} />
+            <Api.Extension src={"/extensions/backgroundTasksDemo/ApplyDiscountBulkAction.ts"} />
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionHook.ts"} />*/}
             {/*<Admin.Extension*/}

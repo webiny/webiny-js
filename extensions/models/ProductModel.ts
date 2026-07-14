@@ -51,7 +51,7 @@ class ProductModelImpl implements ModelFactory.Interface {
     }
 }
 
-export const ProductModel = ModelFactory.createImplementation({
+export default ModelFactory.createImplementation({
     implementation: ProductModelImpl,
     dependencies: []
 });
