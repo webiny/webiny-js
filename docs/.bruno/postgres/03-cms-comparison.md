@@ -308,4 +308,4 @@ How much setup do other CMSes require?
 
 5. **Webiny's current DDB-ES architecture is the right pattern** — just replace DDB with Postgres as source of truth, keep OpenSearch for querying. This is what Drupal effectively does (SQL for storage, Solr/ES for search), and it's the industry-proven approach for dynamic CMS at scale.
 
-6. **Choosing between approaches:** Pure Postgres (Doc 01) is viable for models with limited nesting and moderate scale (<10M rows). For Webiny's full feature set (dynamic zones, unlimited nesting, tens of millions of rows), Postgres + OpenSearch (Doc 02) is the recommended path — it mirrors the proven DDB-ES pattern while replacing the AWS-specific storage layer.
+6. **Pure Postgres is not viable for Webiny.** Users can nest fields as deep as they want — the system must handle arbitrary nesting. Pure Postgres cannot efficiently query nested JSONB at scale (see Doc 01 risks, Doc 04 JSONB analysis). Postgres + OpenSearch (Doc 02) is the only viable path — it mirrors the proven DDB-ES pattern while replacing the AWS-specific storage layer.
