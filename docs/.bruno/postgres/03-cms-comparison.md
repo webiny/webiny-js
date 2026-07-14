@@ -274,6 +274,28 @@ How many CMSes support this level of boolean logic via their public API (GraphQL
 
 Only 4 of 10 surveyed systems support nested AND/OR via API. Webiny is in this group alongside Strapi, Payload, Sanity, and Directus.
 
+### Zero-Config Filtering: What Users Must Do to Make Search/Filter/Sort Work
+
+In Webiny, when a user creates a content model and adds fields (including nested objects, dynamic zones, arrays), filtering/sorting/search works immediately via GraphQL. No index creation, no configuration, no infrastructure setup. It just works.
+
+How much setup do other CMSes require?
+
+| System | Works out of the box? | What user must do |
+|--------|----------------------|-------------------|
+| **Webiny** | **Yes.** | Nothing. Create model, add fields (any depth), query via GraphQL. All fields at all levels are automatically filterable, sortable, searchable. |
+| **Strapi v5** | Partially. | Top-level scalar fields work. For relations: must specify `populate` params explicitly in API calls. Dynamic zone content: must populate with `on` fragment syntax per component type, then filter client-side in application code. No automatic deep filtering. |
+| **Payload CMS** | Partially. | Top-level and group fields work. Arrays/blocks: must choose storage mode (`blocksAsJSON` vs normalized) at project config level — trade-off between queryability and performance. Deep `depth` population must be configured carefully to avoid circular reference timeouts. Must configure `listSearchableFields` for admin search performance. |
+| **Contentful** | Partially. | Scalar fields work. Object fields: **cannot be filtered at all** — documented API limitation. Rich text: cannot be filtered. References: must configure which fields are "searchable" (max 2 reference fields). Users must design content models around these limitations. |
+| **TYPO3** | N/A. | Fields are not dynamic — defined in PHP code by developers. Requires code deployment to add fields. No user-facing content modeling. |
+| **WordPress** | No. | Custom fields via ACF/Meta Box work via `meta_query` but performance degrades rapidly. For production search: must install and configure a search plugin (SearchWP, ElasticPress, Relevanssi). Must manage search index rebuilds manually. |
+| **AEM** | No. | Must define Oak index configurations in the repository for every property you want to query. Without indexes, queries fall back to traversal and are capped at 100K nodes. Index definitions are XML files deployed by developers. Reindexing large repositories takes hours. |
+| **Sanity** | **Yes** (for GROQ). | GROQ queries work at any depth with no setup. However: must stay within 2,000 attribute path limit (Free) or 10,000 (Growth). Exceeding this requires restructuring content models. GraphQL API requires explicit schema deployment via CLI. |
+| **Directus** | Partially. | Filtering on collection fields works via API. But: Directus does **not auto-create indexes** on foreign keys. For collections >100K items, must manually create database indexes via SQL or Directus admin. Search uses `LIKE` which forces full table scans — no built-in full-text search configuration. |
+| **Drupal** | No. | Entity Query works for basic field filters, but for production search: must install Search API module, install and configure Solr or Elasticsearch server, configure which fields to index, configure field types and analyzers, run indexing. Views (query builder UI) must be manually configured per query pattern. |
+| **Sitecore** | No. | Must install and configure Solr or Azure Search. Must define computed index fields for custom content types. Must configure which templates/fields are indexed. Must rebuild indexes after content model changes. ContentSearch LINQ queries require developer code — no user-facing query builder. |
+
+**Summary:** Only Webiny and Sanity offer true zero-config filtering at depth. Every other system requires either manual index/search engine setup (AEM, Drupal, Sitecore, WordPress), explicit populate/depth configuration per API call (Strapi, Payload), or simply doesn't support filtering on complex fields (Contentful).
+
 ## Key Takeaways for Webiny Postgres Implementation
 
 1. **No CMS solves unlimited dynamic nesting with pure SQL at scale (based on industry patterns).** Systems that support schemaless dynamic content (Strapi dynamic zones, Drupal Paragraphs, AEM components, Sanity) either use a document store or add a dedicated search engine at production scale. Systems like Directus and TYPO3 avoid the problem by design — they use structured schemas with fixed fields, not dynamic zones.
