@@ -15,6 +15,7 @@ How other CMS systems solve the dynamic content storage problem, and their known
 | **Sanity** | NoSQL document store (Content Lake) | Nested JSON, max 20 levels | GROQ + CDN cache | 2000 attribute path limit per dataset |
 | **Directus** | Table-per-collection, real columns | SQL foreign keys + junction tables | SQL native | No auto-created indexes; degrades >100K items without tuning |
 | **Drupal** | Per-field tables (EAV-like) | Entity references + field tables | Solr/Elasticsearch (Search API) | Table proliferation; JOIN explosion |
+| **Sitecore** | EAV-like (SharedFields/VersionedFields tables) | Item references + content tree | Solr / Azure Search | SQL for storage only; search engine required for queries |
 
 ## Detailed Analysis
 
@@ -181,6 +182,25 @@ How other CMS systems solve the dynamic content storage problem, and their known
 - Paragraph nesting compounds this — each paragraph level = its own entity + field tables + JOINs.
 - SQL-only search is a known performance bottleneck — **Solr/ES effectively required for production**.
 
+### 10. Sitecore
+
+**Storage:** SQL Server as primary store. Content items stored in shared tables: `Items` (item metadata), `SharedFields` (language/version-independent field values), `UnversionedFields` (language-specific, unversioned), `VersionedFields` (language + version-specific). Field values stored as rows keyed by ItemId + FieldId — **EAV pattern** with language and versioning dimensions. Each field value = separate row.
+
+**Databases:** SQL Server (primary). MongoDB for xDB analytics (optional). Solr or Azure Search for content queries.
+
+**Nested Fields:** Content items form a tree hierarchy (like AEM's JCR). Components are child items under page items. Templates define fixed field sets — no dynamic zones. Nesting is via item references and tree hierarchy, not dynamic field composition.
+
+**Search:** All production search goes through **Solr or Azure Search**. ContentSearch API wraps the search engine with a LINQ provider. Content Tree queries via Sitecore Query/Fast Query (XPath-like syntax) exist but are not recommended for production — they traverse the content tree via SQL. Sitecore Experience Edge (headless) uses a managed search index.
+
+**Limitations:**
+- SQL is used **only as source of truth**, never for content querying at scale.
+- EAV storage means field values are rows, not columns — same scaling problems as WordPress at high field counts.
+- Search engine is not optional — without Solr/Azure Search, content queries are impractical beyond small datasets.
+- No dynamic zones or blocks — templates are fixed schemas defined in code.
+- GraphQL (Experience Edge) has limited filtering — no nested AND/OR boolean logic.
+
+---
+
 ## Deep Nesting: Filtering on Complex Fields
 
 Webiny supports unlimited field nesting: `object[] -> dynamic zone -> (text | number | object | object[] -> dynamic zone -> ...)`. How do other CMSes handle filtering/sorting on these structures?
@@ -200,6 +220,7 @@ What matters is what users can do through the CMS API (REST/GraphQL), not intern
 | **Sanity** | GROQ/GraphQL | **Yes** (`*[metadata.seo.score > 80]`) | **Yes** (`*[items[].price > 100]`) | **Yes** — GROQ natively filters into any nested structure regardless of depth | **Yes** (any path) | 20 levels (document limit) |
 | **Directus** | REST/GraphQL | Yes (dot notation: `filter[author][country][name][_eq]=US`) | Via junction table resolution | N/A — no dynamic zones, purely relational. Nesting = following relations. | Yes (on real columns in related tables) | 2-3 relation levels |
 | **Drupal** | JSON:API/REST | Via filter params on entity fields (1 table per field) | **No single API query** filters across Paragraph nesting levels. Must follow entity references manually — each level is a separate API request or Views query. | **No.** Paragraph (dynamic zone equivalent) fields require following references. Views generates JOINs internally but MySQL 61-table limit caps depth. | Limited | 1-2 levels via JSON:API, deeper only via Views (internal, not API) |
+| **Sitecore** | GraphQL (Edge) / REST | Limited — item field filters via GraphQL `_expressions` | **No.** Components are child items in tree — no single query filters across children. | **No.** No dynamic zones — fixed templates. Component content requires separate queries or tree traversal. | Limited | 1 level (item fields only) |
 
 ### Key Observations
 
@@ -211,6 +232,7 @@ What matters is what users can do through the CMS API (REST/GraphQL), not intern
 - **Drupal**: JSON:API can filter entity fields, but Paragraph nesting requires following references — no single query filters across nesting levels. Only Views (server-side query builder) can JOIN across levels, subject to MySQL 61-table limit.
 - **AEM**: Content Fragment GraphQL supports basic property expressions but does not filter across component nesting. Deep queries require JCR-SQL2 with pre-configured Oak indexes — separate from the content delivery API.
 - **WordPress**: REST API `meta_query` is limited to flat key/value pairs. No nested field concept.
+- **Sitecore**: GraphQL (Experience Edge) supports basic item field filters. No filtering across component children or nested content. SQL is source of truth only — all search goes through Solr/Azure Search. Confirms the dual-store pattern.
 
 **Only one surveyed system supports deep nested filtering via API:**
 
@@ -248,8 +270,9 @@ How many CMSes support this level of boolean logic via their public API (GraphQL
 | **Drupal** | **No** | JSON:API filter syntax is flat. No nested groups via API. |
 | **TYPO3** | **No** | No dynamic query API exposed. |
 | **AEM** | **No** | GraphQL `_expressions` are flat filters, no boolean grouping. |
+| **Sitecore** | **No** | GraphQL (Experience Edge) has limited filtering. ContentSearch LINQ supports `&&`/`||` but that's code-level, not API-level. |
 
-Only 4 of 9 surveyed systems support nested AND/OR via API. Webiny is in this group alongside Strapi, Payload, Sanity, and Directus.
+Only 4 of 10 surveyed systems support nested AND/OR via API. Webiny is in this group alongside Strapi, Payload, Sanity, and Directus.
 
 ## Key Takeaways for Webiny Postgres Implementation
 
