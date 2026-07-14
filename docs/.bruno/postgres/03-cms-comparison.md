@@ -203,7 +203,7 @@ How other CMS systems solve the dynamic content storage problem, and their known
 
 ## Deep Nesting: Filtering on Complex Fields
 
-Webiny supports nested object fields with filtering/sorting/search at any depth via GraphQL API (e.g., `object -> object -> text`). Dynamic zone fields are currently **not filterable via API**, but the data is already indexed in OpenSearch — filtering can be enabled once the GraphQL layer exposes it. How do other CMSes handle filtering on nested structures?
+Webiny supports nested object fields with filtering/sorting/search at any depth via GraphQL API (e.g., `object -> object -> text`). Dynamic zone fields are currently **not filterable via API**, but the data is already indexed in OpenSearch — enabling filtering requires GraphQL schema changes + building OpenSearch query generation for dynamic zone field types. How do other CMSes handle filtering on nested structures?
 
 ### Comparison: API-Level Nested Field Query Capabilities
 
@@ -238,7 +238,7 @@ What matters is what users can do through the CMS API (REST/GraphQL), not intern
 
 - **Sanity** (GROQ) — the only system where a user can write `*[content[].blocks[].items[].price > 100]` and get results in a single API call. Backed by a document store, not SQL. Limited to 20 nesting levels and 2,000 attribute paths per dataset.
 
-**Webiny's position:** Webiny supports filtering/sorting/search on nested object fields at any depth via GraphQL API. Dynamic zone filtering is not yet exposed in the API but the data is already indexed in OpenSearch — enabling it is a GraphQL layer change, not a storage change. Among surveyed systems, only Sanity offers comparable depth via API (GROQ), limited to 20 levels and 2,000 attribute paths. OpenSearch indexes every field at every depth automatically with no per-path configuration, making it the natural fit for Webiny — both for current object filtering and future dynamic zone filtering.
+**Webiny's position:** Webiny supports filtering/sorting/search on nested object fields at any depth via GraphQL API. Dynamic zone filtering is not yet exposed in the API but the data is already indexed in OpenSearch — enabling it requires GraphQL schema changes + OpenSearch query builder implementation for dynamic zone fields, not a storage change. Among surveyed systems, only Sanity offers comparable depth via API (GROQ), limited to 20 levels and 2,000 attribute paths. OpenSearch indexes every field at every depth automatically with no per-path configuration, making it the natural fit for Webiny — both for current object filtering and future dynamic zone filtering.
 
 ### Nested AND/OR Boolean Logic via API
 
