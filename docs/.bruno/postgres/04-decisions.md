@@ -131,7 +131,47 @@ Pure Postgres without OpenSearch was evaluated (see `01-pure-postgres.md`) and r
 
 4. **No efficient aggregations.** `getUniqueFieldValues()` in pure PG requires scanning all matching rows. OpenSearch provides native `terms` aggregation.
 
-5. **No CMS in the industry does this.** Survey of 9 CMS systems (see `03-cms-comparison.md`) shows every system at scale either uses a document store or adds a search engine. Drupal requires Solr/ES for production. AEM requires Lucene. Directus degrades at ~100K rows with LIKE-based search.
+5. **No CMS in the industry does this.** Survey of 10 CMS systems (see `03-cms-comparison.md`) shows every system at scale either uses a document store or adds a search engine. Drupal requires Solr/ES for production. AEM requires Lucene. Directus degrades at ~100K rows with LIKE-based search.
+
+6. **Nested JSONB array queries are fundamentally unindexable.** This is a mathematical constraint, not a design choice. Concrete example:
+
+   Query: "find entries where any content block of type `stats` has an item with `value > 3000`"
+
+   ```sql
+   SELECT * FROM webiny_cms_article
+   WHERE EXISTS (
+       SELECT 1 FROM jsonb_array_elements(values->'content') block
+       WHERE block->>'_templateId' = 'stats'
+       AND EXISTS (
+           SELECT 1 FROM jsonb_array_elements(block->'items') item
+           WHERE (item->>'value')::integer > 3000
+       )
+   );
+   ```
+
+   Postgres can **express** this query. It **cannot execute it efficiently** because:
+   - **GIN indexes** only cover containment/equality (`@>`), not range comparisons (`>`, `<`) on nested array elements.
+   - **B-tree expression indexes** require a fixed path. Array element positions are variable — you cannot index "the `value` field of every element in every `items` array in every content block."
+   - **`jsonb_array_elements`** is a set-returning function that unpacks JSONB arrays row-by-row. At millions of rows, this is CPU-bound, not index-bound.
+   - **Sorting** on a nested array field = full scan + in-memory sort. No index can help.
+
+   Approximate performance at scale:
+
+   | Rows | Top-level indexed column | Nested JSONB array filter |
+   |------|------------------------|--------------------------|
+   | 100K | <10ms | ~200-500ms |
+   | 1M | <10ms | ~2-5s |
+   | 5M | <10ms | ~10-25s |
+   | 30M | <10ms | ~60-120s+ |
+
+   Top-level indexed column = constant time. Nested JSONB array scan = **linear with row count**.
+
+   OpenSearch solves this by flattening all nested fields into an inverted index:
+   ```
+   content.items.value: [1000, 5000]  → indexed per document
+   content._templateId: ["hero", "stats"] → indexed per document
+   ```
+   Query `content.items.value > 3000` = index lookup. O(log n). Same speed at 30M as at 100K.
 
 ### Query routing
 
