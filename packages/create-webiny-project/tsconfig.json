@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
+  "exclude": ["src/services/SetupYarn/binaries"],
   "references": [{ "path": "../mcp" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
