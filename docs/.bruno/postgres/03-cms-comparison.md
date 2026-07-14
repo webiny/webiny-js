@@ -185,36 +185,38 @@ How other CMS systems solve the dynamic content storage problem, and their known
 
 Webiny supports unlimited field nesting: `object[] -> dynamic zone -> (text | number | object | object[] -> dynamic zone -> ...)`. How do other CMSes handle filtering/sorting on these structures?
 
-### Comparison: Nested Field Query Capabilities
+### Comparison: API-Level Nested Field Query Capabilities
 
-| System | Filter on object fields? | Filter inside object arrays? | Filter inside dynamic zones/blocks? | Sort on nested? | Max nesting for queries | How executed |
-|--------|------------------------|----------------------------|-------------------------------------|----------------|------------------------|-------------|
-| **Strapi v5** | Yes (dot notation: `filters[metadata][seo][score][$gt]=80`) | Limited (component arrays need explicit populate) | No direct filtering on dynamic zone content via API. Must populate first, filter client-side. | Top-level fields only | 1-2 levels practical | SQL JOINs via Knex |
-| **Payload CMS** | Yes (dot notation: `where[metadata.seo.score][greater_than]=80`) | Yes (queries into array sub-tables) | Limited. `blocksAsJSON` mode = no SQL filtering on block content. Normalized mode = separate queries per block type. | Top-level fields only | 2-3 levels via JOINs | SQL JOINs via Drizzle |
-| **Contentful** | No — cannot filter on Object or RichText fields in GraphQL/REST | No | N/A (no dynamic zones — uses references) | Top-level only | 0 for objects | Managed search index |
-| **TYPO3** | Yes (real columns) | Via IRRE relations (SQL JOINs) | N/A (no dynamic zones — static schema) | Yes (real columns) | No limit (but no dynamic schema) | SQL direct |
-| **WordPress** | Only via meta_query (EAV JOINs) | No native support | N/A (no dynamic zones) | Via meta_query (slow) | 1 level (meta key/value) | SQL self-JOINs |
-| **AEM** | Yes (JCR property queries) | Via child node traversal | Yes (component nodes are queryable children) | Yes (if indexed) | Unlimited (tree structure) — but requires pre-configured Lucene indexes | Lucene/Solr indexes |
-| **Sanity** | Yes (GROQ: `*[metadata.seo.score > 80]`) | Yes (GROQ: `*[items[].price > 100]`) | Yes (GROQ supports filtering into any nested structure) | Yes (any path) | 20 levels (document limit) | GROQ engine (server-side) |
-| **Directus** | Yes (dot notation in filter API) | Via junction table JOINs | N/A (no dynamic zones — relational only) | Yes (real columns) | 2-3 levels via JOINs | SQL via Knex |
-| **Drupal** | Via Entity Query (JOINs across field tables) | Via Entity Reference + Paragraph JOINs | Paragraph fields are queryable but require multi-table JOINs per nesting level | Limited (JOINs get expensive) | 2-3 levels practical (MySQL 61-table JOIN limit) | SQL JOINs or Solr/ES |
+What matters is what users can do through the CMS API (REST/GraphQL), not internal implementation details. Can a user, through a single API call, filter on a field 3-4 levels deep inside nested objects/blocks?
+
+| System | API type | Filter on nested object fields? | Filter inside object arrays? | Filter inside dynamic zones/blocks? | Sort on nested? | Max API query depth |
+|--------|----------|--------------------------------|----------------------------|-------------------------------------|----------------|---------------------|
+| **Strapi v5** | REST/GraphQL | Yes (`filters[metadata][seo][score][$gt]=80`) | No — component arrays need explicit `populate` with `on` fragments, then filter client-side | **No.** Dynamic zone fields not filterable via API. Must populate all data, filter client-side. | Top-level only | 1-2 levels for relations |
+| **Payload CMS** | REST/GraphQL | Yes (`where[metadata.seo.score][greater_than]=80`) | Yes (queries into array sub-tables via Drizzle JOINs) | **Depends.** `blocksAsJSON` mode = not queryable via API. Normalized mode = queryable but separate table per block type, JOINs degrade at depth. | Top-level only | 2-3 levels |
+| **Contentful** | REST/GraphQL | **No.** Documented API limitation: cannot filter on Object or RichText fields. | **No.** | N/A (no dynamic zones — uses Link references instead) | Top-level scalar fields only | 0 for objects, 1 for references (max 2 searchable ref fields) |
+| **TYPO3** | REST/custom | Yes (real columns, direct SQL) | Via IRRE relations | N/A — no dynamic schema, fields defined in PHP code | Yes (real columns) | N/A (static schema) |
+| **WordPress** | REST API | Only via `meta_query` param (1 level: meta_key + meta_value) | **No.** | N/A (no dynamic zones) | Via meta_query (slow, runtime CAST) | 1 level (key/value only) |
+| **AEM** | GraphQL/REST | Limited — Content Fragment GraphQL `_expressions` support basic property filters | **No** deep filtering on components via API — component content requires separate queries or traversal | **No single API query** filters across component nesting. GraphQL returns fragment data; filtering components requires client-side processing or pre-configured Oak indexes queried via JCR-SQL2 (not the content API). | Limited | 1-2 levels via GraphQL |
+| **Sanity** | GROQ/GraphQL | **Yes** (`*[metadata.seo.score > 80]`) | **Yes** (`*[items[].price > 100]`) | **Yes** — GROQ natively filters into any nested structure regardless of depth | **Yes** (any path) | 20 levels (document limit) |
+| **Directus** | REST/GraphQL | Yes (dot notation: `filter[author][country][name][_eq]=US`) | Via junction table resolution | N/A — no dynamic zones, purely relational. Nesting = following relations. | Yes (on real columns in related tables) | 2-3 relation levels |
+| **Drupal** | JSON:API/REST | Via filter params on entity fields (1 table per field) | **No single API query** filters across Paragraph nesting levels. Must follow entity references manually — each level is a separate API request or Views query. | **No.** Paragraph (dynamic zone equivalent) fields require following references. Views generates JOINs internally but MySQL 61-table limit caps depth. | Limited | 1-2 levels via JSON:API, deeper only via Views (internal, not API) |
 
 ### Key Observations
 
-**No SQL-based CMS supports efficient filtering inside dynamic zones at depth.**
+**No SQL-based CMS exposes deep dynamic zone filtering through its API.**
 
-- **Strapi** explicitly cannot filter on dynamic zone content — you must populate and filter client-side.
-- **Payload** offers `blocksAsJSON` which stores blocks as JSON (not queryable in SQL) or normalizes into sub-tables (queryable but via JOINs that degrade at depth).
-- **Contentful** simply doesn't allow filtering on object or rich-text fields.
-- **Drupal** can technically query Paragraphs (their dynamic zone equivalent) but each nesting level adds JOINs across field tables — MySQL's 61-table limit is a hard ceiling.
+- **Strapi**: API explicitly does not support filtering on dynamic zone content. Documentation says populate first, filter client-side.
+- **Payload**: Blocks in `blocksAsJSON` mode = not queryable via API at all. Normalized mode = queryable but JOINs per block type per nesting level.
+- **Contentful**: Documented API limitation — Object and RichText fields cannot be filtered. Reference filtering limited to 1 level deep, max 2 searchable reference fields.
+- **Drupal**: JSON:API can filter entity fields, but Paragraph nesting requires following references — no single query filters across nesting levels. Only Views (server-side query builder) can JOIN across levels, subject to MySQL 61-table limit.
+- **AEM**: Content Fragment GraphQL supports basic property expressions but does not filter across component nesting. Deep queries require JCR-SQL2 with pre-configured Oak indexes — separate from the content delivery API.
+- **WordPress**: REST API `meta_query` is limited to flat key/value pairs. No nested field concept.
 
-**Only document-store / search-engine backed systems handle deep nested queries:**
+**Only one surveyed system supports deep nested filtering via API:**
 
-- **Sanity** (GROQ over document store) — filters at any depth up to 20 levels natively.
-- **AEM** (Lucene/Solr over JCR node tree) — queries component nodes at any depth, but requires pre-configured indexes.
-- **OpenSearch/Elasticsearch** — indexes every field at every depth automatically. No per-path configuration.
+- **Sanity** (GROQ) — the only system where a user can write `*[content[].blocks[].items[].price > 100]` and get results in a single API call. Backed by a document store, not SQL. Limited to 20 nesting levels and 2,000 attribute paths per dataset.
 
-**Webiny's position:** Webiny allows unlimited nesting AND requires filtering/sorting/search on ALL fields at ALL levels. This combination is uniquely demanding. Among surveyed systems, only Sanity (document store + GROQ) and AEM (JCR + Lucene) support comparable depth — both using non-SQL query engines. OpenSearch is the natural fit for Webiny's SQL-based storage.
+**Webiny's position:** Webiny allows unlimited nesting AND requires filtering/sorting/search on ALL fields at ALL levels via GraphQL API. This is more demanding than any surveyed system. Even Sanity — the only system with comparable API-level nested filtering — imposes a 20-level and 2,000 attribute path limit. OpenSearch is the only proven engine that indexes every field at every depth automatically with no per-path configuration, making it the natural fit for Webiny.
 
 ## Key Takeaways for Webiny Postgres Implementation
 
