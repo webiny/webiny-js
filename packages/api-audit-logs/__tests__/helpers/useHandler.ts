@@ -1,6 +1,8 @@
-import { useContextHandler } from "@webiny/testing";
-import type { UseContextHandlerParams } from "@webiny/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
+import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
@@ -25,29 +27,33 @@ export const useHandler = (params: UseHandlerParams = {}) => {
     const testProjectLicense = createTestWcpLicense();
     testProjectLicense.package.features["auditLogs"].enabled = true;
 
-    const innerParams: UseContextHandlerParams = {
+    const handlerParams: CmsTestHandlerParams = {
         permissions,
-        // useContextHandler accepts IdentityData | undefined; convert null → undefined
+        // preserve the legacy behavior: null identity → default admin (this harness has no anon path)
         identity: identity ?? undefined,
         // aco storage plugins are processed during setup (before HeadlessCmsFeature)
         plugins: apiAcoStorage.plugins,
         testProjectLicense,
         features: container => {
-            // CompressionFeature must be registered before the audit logs DDB legacy plugin
-            // runs, because that plugin eagerly resolves CompressionHandler from the container.
+            // Background tasks were registered globally by the retired useContextHandler; keep them
+            // (AcoFeature/AuditLogsFeature rely on the TasksCrud aggregate) with the mock transport.
+            BackgroundTasksFeature.register(container);
+            // CompressionFeature must be registered before the audit logs DDB legacy plugin runs,
+            // because that plugin eagerly resolves CompressionHandler from the container.
             CompressionFeature.register(container);
             processLegacyPlugins(container, auditLogsStorage.plugins);
             container.register(FileModel);
             AcoFeature.register(container);
             AuditLogsFeature.register(container);
+            container.registerInstance(TaskService, createMockTaskService());
         }
     };
 
-    const inner = useContextHandler<AuditLogsContext>(innerParams);
+    const inner = createCmsTestHandler(handlerParams);
 
     return {
         identity: inner.identity,
         tenant: inner.tenant,
-        handler: inner.context
+        handler: () => inner.getContext<AuditLogsContext>()
     };
 };

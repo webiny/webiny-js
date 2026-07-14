@@ -30,10 +30,12 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@webiny/api-core-testing": "0.0.0",
+    "@webiny/api-headless-cms-testing": "0.0.0",
+    "@webiny/background-tasks": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "@webiny/testing": "0.0.0",
     "type-fest": "^5.8.0",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
