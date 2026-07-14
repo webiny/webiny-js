@@ -1823,6 +1823,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@electric-sql/pglite-socket@npm:^0.2.7":
+  version: 0.2.7
+  resolution: "@electric-sql/pglite-socket@npm:0.2.7"
+  peerDependencies:
+    "@electric-sql/pglite": 0.5.4
+    "@electric-sql/pglite-age": 0.0.5
+    "@electric-sql/pglite-pg_hashids": 0.0.5
+    "@electric-sql/pglite-pg_ivm": 0.0.5
+    "@electric-sql/pglite-pg_textsearch": 0.0.6
+    "@electric-sql/pglite-pg_uuidv7": 0.0.5
+    "@electric-sql/pglite-pgtap": 0.0.5
+    "@electric-sql/pglite-pgvector": 0.0.5
+  bin:
+    pglite-server: dist/scripts/server.js
+  checksum: 10/6efac0f2fd4f11fc8662918046285b908c1788a874da7ca307d314a4a72f7b7782b84ec4c0bb1c6db7dee8cd46f1d34b997050926e4cef17e08344318272e39e
+  languageName: node
+  linkType: hard
+
+"@electric-sql/pglite@npm:^0.5.4":
+  version: 0.5.4
+  resolution: "@electric-sql/pglite@npm:0.5.4"
+  checksum: 10/64bc159c8782a4b2aba621e92ebd552a2fda7462cd773a0dfe01483470529d7054ce40a24a2d3edc066e5bfb8c390b9c15b7ea2cbd244d06218a92bd30d7d68f
+  languageName: node
+  linkType: hard
+
 "@emnapi/core@npm:1.10.0":
   version: 1.10.0
   resolution: "@emnapi/core@npm:1.10.0"
@@ -10827,7 +10852,7 @@ __metadata:
     "@webiny/stdlib": "npm:^0.0.8"
     better-sqlite3: "npm:12.11.1"
     knex: "npm:^3.3.0"
-    pg: "npm:^8.16.1"
+    pg: "npm:^8.22.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"
@@ -11129,6 +11154,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-sql@workspace:packages/api-headless-cms-sql"
   dependencies:
+    "@electric-sql/pglite": "npm:^0.5.4"
+    "@electric-sql/pglite-socket": "npm:^0.2.7"
     "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-storage": "npm:0.0.0"
@@ -11141,6 +11168,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     better-sqlite3: "npm:^12.11.1"
     knex: "npm:^3.3.0"
+    pg: "npm:^8.22.0"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"
   languageName: unknown
@@ -23223,7 +23251,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:^8.16.1":
+"pg@npm:^8.22.0":
   version: 8.22.0
   resolution: "pg@npm:8.22.0"
   dependencies:

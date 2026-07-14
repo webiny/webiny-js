@@ -1755,7 +1755,7 @@
     },
     {
       "name": "pg",
-      "version": "8.16.1",
+      "version": "8.22.0",
       "files": [
         "/packages/api-event-handler-server-sql/package.json",
         "/packages/api-event-handler-server-sql/package.json"
@@ -2521,6 +2521,22 @@
     { "name": "@commitlint/cli", "version": "21.2.1", "files": ["/package.json"] },
     { "name": "@commitlint/config-conventional", "version": "21.2.0", "files": ["/package.json"] },
     {
+      "name": "@electric-sql/pglite",
+      "version": "0.5.4",
+      "files": [
+        "/packages/api-headless-cms-sql/package.json",
+        "/packages/api-headless-cms-sql/package.json"
+      ]
+    },
+    {
+      "name": "@electric-sql/pglite-socket",
+      "version": "0.2.7",
+      "files": [
+        "/packages/api-headless-cms-sql/package.json",
+        "/packages/api-headless-cms-sql/package.json"
+      ]
+    },
+    {
       "name": "@emotion/react",
       "version": "11.14.0",
       "files": [
@@ -3153,6 +3169,14 @@
       ]
     },
     { "name": "oxlint", "version": "1.73.0", "files": ["/package.json"] },
+    {
+      "name": "pg",
+      "version": "8.22.0",
+      "files": [
+        "/packages/api-headless-cms-sql/package.json",
+        "/packages/api-headless-cms-sql/package.json"
+      ]
+    },
     {
       "name": "pino",
       "version": "10.3.1",
@@ -6217,12 +6241,13 @@
       "name": "pg",
       "versions": [
         {
-          "version": "8.16.1",
+          "version": "8.22.0",
           "files": [
             {
               "file": "/packages/api-event-handler-server-sql/package.json",
               "types": ["dependencies"]
-            }
+            },
+            { "file": "/packages/api-headless-cms-sql/package.json", "types": ["devDependencies"] }
           ]
         }
       ]
@@ -6424,6 +6449,28 @@
               "file": "/packages/api-headless-cms-ddb-es/package.json",
               "types": ["devDependencies"]
             }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "@electric-sql/pglite",
+      "versions": [
+        {
+          "version": "0.5.4",
+          "files": [
+            { "file": "/packages/api-headless-cms-sql/package.json", "types": ["devDependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "@electric-sql/pglite-socket",
+      "versions": [
+        {
+          "version": "0.2.7",
+          "files": [
+            { "file": "/packages/api-headless-cms-sql/package.json", "types": ["devDependencies"] }
           ]
         }
       ]
