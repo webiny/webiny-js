@@ -1124,7 +1124,6 @@
         "/packages/api-file-manager/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-tasks/package.json",
-        "/packages/api-headless-cms-testing/package.json",
         "/packages/api-scheduler/package.json",
         "/packages/api-workflows/package.json",
         "/packages/app/package.json",
@@ -1142,7 +1141,6 @@
         "/packages/api-file-manager/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-tasks/package.json",
-        "/packages/api-headless-cms-testing/package.json",
         "/packages/api-scheduler/package.json",
         "/packages/api-workflows/package.json",
         "/packages/app/package.json",
@@ -3197,7 +3195,6 @@
         "/packages/api-file-manager-server/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-ddb-es/package.json",
-        "/packages/api-headless-cms-testing/package.json",
         "/packages/api-mailer/package.json",
         "/packages/api-opensearch/package.json",
         "/packages/api-record-locking/package.json",
@@ -3289,7 +3286,6 @@
         "/packages/api-file-manager-server/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-ddb-es/package.json",
-        "/packages/api-headless-cms-testing/package.json",
         "/packages/api-mailer/package.json",
         "/packages/api-opensearch/package.json",
         "/packages/api-record-locking/package.json",
@@ -3452,7 +3448,6 @@
         "/packages/api-headless-cms-storage/package.json",
         "/packages/api-headless-cms-tasks/package.json",
         "/packages/api-headless-cms-tasks-ddb-es/package.json",
-        "/packages/api-headless-cms-testing/package.json",
         "/packages/api-headless-cms-workflows/package.json",
         "/packages/api-mailer/package.json",
         "/packages/api-opensearch/package.json",
@@ -3583,7 +3578,6 @@
         "/packages/api-headless-cms-storage/package.json",
         "/packages/api-headless-cms-tasks/package.json",
         "/packages/api-headless-cms-tasks-ddb-es/package.json",
-        "/packages/api-headless-cms-testing/package.json",
         "/packages/api-headless-cms-workflows/package.json",
         "/packages/api-mailer/package.json",
         "/packages/api-opensearch/package.json",
@@ -4414,10 +4408,6 @@
               "types": ["devDependencies"]
             },
             { "file": "/packages/api-headless-cms-tasks/package.json", "types": ["dependencies"] },
-            {
-              "file": "/packages/api-headless-cms-testing/package.json",
-              "types": ["dependencies"]
-            },
             { "file": "/packages/api-mailer/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-record-locking/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-scheduler/package.json", "types": ["dependencies"] },
@@ -4930,10 +4920,6 @@
             },
             {
               "file": "/packages/api-headless-cms-tasks-ddb-es/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-headless-cms-testing/package.json",
               "types": ["devDependencies"]
             },
             {
@@ -5791,10 +5777,6 @@
             { "file": "/packages/api-headless-cms/package.json", "types": ["devDependencies"] },
             {
               "file": "/packages/api-headless-cms-ddb-es/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-headless-cms-testing/package.json",
               "types": ["devDependencies"]
             },
             { "file": "/packages/api-mailer/package.json", "types": ["devDependencies"] },
