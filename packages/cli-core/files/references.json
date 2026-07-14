@@ -1284,6 +1284,7 @@
         "/packages/api-aco-sql/package.json",
         "/packages/api-audit-logs-sql/package.json",
         "/packages/api-core-sql/package.json",
+        "/packages/api-event-handler-server-sql/package.json",
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-websockets-sql/package.json",
         "/packages/project-server-template/template/appTemplates/api/graphql/package.json",
@@ -1291,6 +1292,7 @@
         "/packages/api-aco-sql/package.json",
         "/packages/api-audit-logs-sql/package.json",
         "/packages/api-core-sql/package.json",
+        "/packages/api-event-handler-server-sql/package.json",
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-websockets-sql/package.json",
         "/packages/project-server-template/template/appTemplates/api/graphql/package.json",
@@ -1749,6 +1751,14 @@
         "/packages/sdk/package.json",
         "/packages/utils/package.json",
         "/scripts/release/package.json"
+      ]
+    },
+    {
+      "name": "pg",
+      "version": "8.16.1",
+      "files": [
+        "/packages/api-event-handler-server-sql/package.json",
+        "/packages/api-event-handler-server-sql/package.json"
       ]
     },
     {
@@ -3090,14 +3100,6 @@
       "files": [
         "/packages/lexical-converter/package.json",
         "/packages/lexical-converter/package.json"
-      ]
-    },
-    {
-      "name": "knex",
-      "version": "3.3.0",
-      "files": [
-        "/packages/api-event-handler-server-sql/package.json",
-        "/packages/api-event-handler-server-sql/package.json"
       ]
     },
     { "name": "lexical", "version": "0.47.0", "files": ["/package.json"] },
@@ -6043,7 +6045,7 @@
             { "file": "/packages/api-core-sql/package.json", "types": ["dependencies"] },
             {
               "file": "/packages/api-event-handler-server-sql/package.json",
-              "types": ["devDependencies"]
+              "types": ["dependencies"]
             },
             { "file": "/packages/api-headless-cms-sql/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-websockets-sql/package.json", "types": ["dependencies"] },
@@ -6207,6 +6209,20 @@
             { "file": "/packages/sdk/package.json", "types": ["dependencies"] },
             { "file": "/packages/utils/package.json", "types": ["dependencies"] },
             { "file": "/scripts/release/package.json", "types": ["dependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pg",
+      "versions": [
+        {
+          "version": "8.16.1",
+          "files": [
+            {
+              "file": "/packages/api-event-handler-server-sql/package.json",
+              "types": ["dependencies"]
+            }
           ]
         }
       ]
