@@ -9,7 +9,7 @@ import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
 import { ContextPlugin } from "@webiny/api";
 import { AcoFeature } from "~/index";
-import { createIdentity } from "@webiny/api-testing";
+import { createIdentity } from "@webiny/api-core-testing";
 import { createAcoSdk } from "~tests/utils/createAcoSdk.js";
 
 import {
