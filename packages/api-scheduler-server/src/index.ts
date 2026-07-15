@@ -1,2 +1,2 @@
-export { registerSchedulerServerExtension } from "./context.js";
-export { SchedulerServerFeature } from "./SchedulerServerFeature.js";
+export { BreeSchedulerService } from "./BreeSchedulerService.js";
+export type { IPendingAction, IBreeSchedulerServiceParams } from "./BreeSchedulerService.js";

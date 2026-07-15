@@ -5,11 +5,12 @@
  * plus the auth/tenant loader decorators (extract token / x-tenant from the IncomingMessage → shared
  * RequestIdentityLoader / RequestTenantLoader). The per-request feature stack is the transport-agnostic
  * `registerApiRequestStack` from `@webiny/api-event-handler-core` — the SAME stack the AWS handler uses.
- * Both interleave hooks are supplied with SINGLE-PROCESS, in-process equivalents of the AWS transports:
- * the realtime hook installs the server WebSockets transport (vs AWS's API Gateway Management API), and
- * the scheduler hook installs the Bree/in-process scheduler (vs AWS's EventBridge Scheduler). Background
- * tasks are wired in the ROOT container (below), mirroring how the AWS handler registers its background-
- * task transport at root. The storage variant (and its identity provider) is injected via `registerRootStorage`.
+ * The realtime transport hook installs the server WebSockets transport (vs AWS's API Gateway Management
+ * API) with a SINGLE-PROCESS, in-process implementation. Background tasks and the Bree scheduler are
+ * ROOT-container singletons (below) — mirroring how the AWS handler registers background tasks at root,
+ * and the WebSockets connection manager — rather than per-request transports; the scheduler fires timers
+ * in-process (vs AWS's EventBridge). The storage variant (and identity provider) is injected via
+ * `registerRootStorage`.
  *
  * The identity provider (e.g. `@webiny/self-hosted-auth`'s JWT IdP) must be registered by the variant
  * in `registerRootStorage`, so the RequestIdentityLoader driven by the identity decorator can resolve it.
@@ -26,8 +27,8 @@ import {
     attachWebsocketsServer
 } from "@webiny/api-websockets-server";
 import { BackgroundTasksServerFeature } from "@webiny/background-tasks-server";
-import { SchedulerServerFeature } from "@webiny/api-scheduler-server";
 import { FileManagerServerFeature } from "@webiny/api-file-manager-server";
+import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
 
@@ -80,13 +81,22 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // token — a per-request registration would mint a fresh token per request and always 403.
             // The route is an HttpRoute; the per-request HttpRouter collects it via the parent chain.
             BackgroundTasksServerFeature.register(container);
+
+            // ── Scheduler (root) ───────────────────────────────────────
+            // The Bree scheduler is a single long-lived instance for ALL tenants, started once at boot
+            // (onServer, below) — the counterpart of the WebSockets connection manager, NOT a per-request
+            // transport. Registered here as SchedulerService (per-request create/update/delete during
+            // mutations manipulate this one live timer set) plus the run/recover HTTP routes + internal
+            // token. When a timer fires (outside any request) it POSTs `/scheduled-action-run`, which
+            // rebuilds the tenant's request context and executes the action.
+            registerSchedulerServer(container);
         },
 
         request: async container => {
             // The transport-agnostic per-request stack. The realtime hook installs the server
             // WebSockets transport (overriding the domain's NullWebsocketsTransport); it resolves the
-            // shared connection manager + adapter from the root. The scheduler hook installs the
-            // Bree/in-process scheduler transport (the single-process equivalent of EventBridge).
+            // shared connection manager + adapter from the root. Scheduler is NOT a per-request
+            // transport here — it's a root singleton wired in `root` + `onServer` (see above).
             await registerApiRequestStack(container, {
                 extensions: config.extensions,
                 // Why hooks (and not just registering the transports ourselves): `.register()` calls
@@ -103,12 +113,6 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                     // from the root (registered as singletons above).
                     realtime: requestContainer => {
                         WebsocketsServerFeature.register(requestContainer);
-                    },
-                    // Scheduler transport: the Bree/in-process extension. Where AWS bridges EventBridge
-                    // Scheduler, the single-process server drives delayed/scheduled action triggers with
-                    // in-process timers (Bree).
-                    scheduler: requestContainer => {
-                        SchedulerServerFeature.register(requestContainer);
                     },
                     // File-manager storage transport: local disk. Where AWS uses S3 (+ a separate asset-
                     // delivery Lambda), the single-process server stores files on disk and serves them
@@ -129,6 +133,10 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                 connectionManager: rootContainer.resolve(WebsocketsConnectionManager)
             });
             await websockets.start();
+
+            // Start the in-process scheduler timers, then re-arm persisted schedules (deferred until
+            // the server is listening — see startSchedulerServer).
+            await startSchedulerServer(rootContainer);
         }
     });
 }
