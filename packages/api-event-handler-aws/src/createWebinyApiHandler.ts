@@ -48,10 +48,6 @@ export interface CreateWebinyApiHandlerConfig {
      */
     documentClient?: ReturnType<typeof getDocumentClient>;
     /**
-     * DynamoDB table name. Defaults to `process.env.DB_TABLE`. Injectable for tests.
-     */
-    dbTable?: string;
-    /**
      * Register the storage-variant features in the ROOT container: the CMS storage operations, the
      * DDB storage registries, and (for the OpenSearch variant) the OpenSearch core. Supplied by the
      * variant package.
