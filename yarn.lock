@@ -10777,6 +10777,7 @@ __metadata:
   dependencies:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-event-handler-core": "npm:0.0.0"
+    "@webiny/api-file-manager-s3": "npm:0.0.0"
     "@webiny/api-scheduler-aws": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-websockets-aws": "npm:0.0.0"
@@ -10806,7 +10807,6 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-file-manager-aco": "npm:0.0.0"
-    "@webiny/api-file-manager-s3": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-aco": "npm:0.0.0"
     "@webiny/api-headless-cms-scheduler": "npm:0.0.0"
@@ -10865,7 +10865,10 @@ __metadata:
   dependencies:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-event-handler-core": "npm:0.0.0"
+    "@webiny/api-file-manager-server": "npm:0.0.0"
+    "@webiny/api-scheduler-server": "npm:0.0.0"
     "@webiny/api-websockets-server": "npm:0.0.0"
+    "@webiny/background-tasks-server": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
     "@webiny/event-handler-core": "npm:0.0.0"
@@ -10940,7 +10943,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-file-manager-server@workspace:packages/api-file-manager-server":
+"@webiny/api-file-manager-server@npm:0.0.0, @webiny/api-file-manager-server@workspace:packages/api-file-manager-server":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-server@workspace:packages/api-file-manager-server"
   dependencies:
@@ -10951,10 +10954,12 @@ __metadata:
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     exifreader: "npm:^4.41.0"
+    p-map: "npm:^7.0.5"
     rimraf: "npm:^6.1.3"
     sharp: "npm:^0.35.3"
     typescript: "npm:^7.0.2"
@@ -12478,7 +12483,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/background-tasks-server@workspace:packages/background-tasks-server":
+"@webiny/background-tasks-server@npm:0.0.0, @webiny/background-tasks-server@workspace:packages/background-tasks-server":
   version: 0.0.0-use.local
   resolution: "@webiny/background-tasks-server@workspace:packages/background-tasks-server"
   dependencies:

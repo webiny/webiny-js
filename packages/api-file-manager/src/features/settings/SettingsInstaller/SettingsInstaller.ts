@@ -21,7 +21,11 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
 
         // If no records in the database, `manifest` object is empty POJO.
         // That's why the heavy `?.` usage.
-        const domain = manifest?.api?.cloudfront.domain;
+        //
+        // The AWS flavour serves files from a CloudFront domain (in the manifest). The self-hosted
+        // (server) flavour has no CloudFront — files are served by the api's own `/files/*` route — so
+        // fall back to the configured API origin (WEBINY_API_URL), the same origin the client uses.
+        const domain = manifest?.api?.cloudfront?.domain ?? process.env.WEBINY_API_URL ?? "";
 
         await this.updateSettings.execute({
             srcPrefix: `${domain}/files`

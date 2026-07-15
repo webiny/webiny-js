@@ -9,6 +9,7 @@ import { getBuildOutputFolder } from "./getBuildOutputFolder";
 import { getPackageSourceHash } from "./getPackageSourceHash";
 import { getBuildMeta } from "./getBuildMeta";
 import { getPackageCacheFolderPath } from "./getPackageCacheFolderPath";
+import { distBuildHashMatches, writeDistBuildHash } from "./distBuildHash";
 
 const { green } = chalk;
 
@@ -23,6 +24,9 @@ export async function getBatches(options: GetBatchesOptions = {}) {
 
     const packagesNoCache: Package[] = [];
     const packagesUseCache: Package[] = [];
+    // Source hash of each cache-hit package, reused below to skip the cache→dist
+    // copy when the existing dist was already built from that same hash.
+    const cacheHitHashes = new Map<string, string>();
 
     let workspacesPackages = (
         getPackages({
@@ -62,6 +66,7 @@ export async function getBatches(options: GetBatchesOptions = {}) {
 
             if (packageMeta.sourceHash === sourceHash) {
                 packagesUseCache.push(workspacePackage);
+                cacheHitHashes.set(workspacePackage.name, sourceHash);
             } else {
                 packagesNoCache.push(workspacePackage);
             }
@@ -114,10 +119,26 @@ export async function getBatches(options: GetBatchesOptions = {}) {
             }
         }
 
+        let copied = 0;
         for (let i = 0; i < packagesUseCache.length; i++) {
             const workspacePackage = packagesUseCache[i];
+            const sourceHash = cacheHitHashes.get(workspacePackage.name)!;
+
+            // Skip the copy when dist was already built/restored from this exact
+            // source hash — the bytes on disk are already identical. This is the
+            // common local-dev case (dist persists between builds).
+            if (distBuildHashMatches(workspacePackage, sourceHash)) {
+                continue;
+            }
+
             const cacheFolderPath = path.join(CACHE_FOLDER_PATH, workspacePackage.packageJson.name);
             fs.copySync(cacheFolderPath, getBuildOutputFolder(workspacePackage));
+            writeDistBuildHash(workspacePackage, sourceHash);
+            copied++;
+        }
+
+        if (copied > 0) {
+            console.log(`Restored ${green(copied)} package(s) from cache into dist.`);
         }
     } else {
         if (useCache) {
