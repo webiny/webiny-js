@@ -9,6 +9,7 @@ import type {
     ListEntriesParams,
     IContentSdk
 } from "./types.js";
+import { collectRefs, setAtPath } from "./refUtils.js";
 
 const SYSTEM_FIELDS = ["id", "entryId", "createdOn", "modifiedOn", "savedOn"];
 
@@ -35,7 +36,6 @@ export class LiveSdk implements IContentSdk {
 
         const result = await this.webiny.cms.getModel({ modelId });
         if (result.isFail()) {
-            console.log("[CMS LiveSdk] getModel FAILED", modelId, result.error);
             return null;
         }
 
@@ -62,7 +62,9 @@ export class LiveSdk implements IContentSdk {
             return null;
         }
 
-        return result.value as CmsEntry<T>;
+        const entry = result.value as CmsEntry<T>;
+
+        return this.resolveEntryRefs(entry, params.modelId);
     }
 
     async listEntries<T extends CmsEntryValues = CmsEntryValues>(
@@ -83,5 +85,52 @@ export class LiveSdk implements IContentSdk {
         }
 
         return result.value as CmsListResult<T>;
+    }
+
+    private async resolveEntryRefs<T extends CmsEntryValues>(
+        entry: CmsEntry<T>,
+        modelId: string
+    ): Promise<CmsEntry<T>> {
+        const model = this.modelCache.get(modelId);
+        if (!model) {
+            return entry;
+        }
+
+        const refModels = model.metadata?.refModels;
+        if (!refModels || Object.keys(refModels).length === 0) {
+            return entry;
+        }
+
+        const refs = collectRefs(entry.values, refModels);
+        if (refs.length === 0) {
+            return entry;
+        }
+
+        const uniqueRefs = new Map<string, { id: string; modelId: string }>();
+        for (const ref of refs) {
+            uniqueRefs.set(ref.id, ref);
+        }
+
+        const fetchPromises = Array.from(uniqueRefs.values()).map(async ref => {
+            const resolved = await this.getEntry({ modelId: ref.modelId, entryId: ref.id });
+            return { id: ref.id, modelId: ref.modelId, resolved };
+        });
+
+        const results = await Promise.all(fetchPromises);
+        const resolvedMap = new Map<string, CmsEntry | null>();
+        for (const { id, resolved } of results) {
+            resolvedMap.set(id, resolved);
+        }
+
+        const resolvedValues = JSON.parse(JSON.stringify(entry.values)) as Record<string, unknown>;
+
+        for (const ref of refs) {
+            const resolved = resolvedMap.get(ref.id);
+            if (resolved) {
+                setAtPath(resolvedValues, ref.path, { ...resolved, modelId: ref.modelId });
+            }
+        }
+
+        return { ...entry, values: resolvedValues as T };
     }
 }

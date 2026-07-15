@@ -10,7 +10,7 @@ interface DynamicZoneProps {
     value: unknown;
 }
 
-export const DynamicZone = observer(({ value }: DynamicZoneProps) => {
+export const DynamicZoneField = observer(({ value }: DynamicZoneProps) => {
     const components = useComponents();
     const model = useModel();
 

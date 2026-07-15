@@ -7,7 +7,7 @@ export {
     EntryStoreProvider,
     useEntryStore,
     ConnectToEntryEditor,
-    DynamicZone,
+    DynamicZoneField,
     useEntry,
     RefField,
     createReactiveComponent

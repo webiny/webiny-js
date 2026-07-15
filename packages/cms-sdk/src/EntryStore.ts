@@ -56,22 +56,26 @@ export class EntryStore<T extends CmsEntryValues = CmsEntryValues> {
     }
 
     applyPatch(patch: JsonPatchOperation[]) {
-        console.log("[EntryStore] applyPatch, patch:", JSON.stringify(patch));
-
         runInAction(() => {
             jsonPatch.applyPatch(this.entry!, patch, false, true);
-        });
 
-        const valuesAfter = toJS(this.entry!.values);
-        const content = (valuesAfter as Record<string, unknown>).content;
-        if (Array.isArray(content)) {
-            for (const item of content) {
-                const rec = item as Record<string, unknown>;
-                if (rec.author) {
-                    console.log("[EntryStore] author after patch:", rec.author);
+            const touchedKeys = new Set<string>();
+            for (const op of patch) {
+                const segments = op.path.split("/").filter(Boolean);
+                if (segments[0] === "values" && segments.length > 1) {
+                    touchedKeys.add(segments[1]);
                 }
             }
-        }
+
+            for (const key of touchedKeys) {
+                const current = (this.entry!.values as Record<string, unknown>)[key];
+                mobxSet(
+                    this.entry!.values as Record<string, unknown>,
+                    key,
+                    observable(toJS(current) as object)
+                );
+            }
+        });
 
         this.resolveRefsLazy(true);
     }
