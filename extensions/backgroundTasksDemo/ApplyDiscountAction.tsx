@@ -1,54 +1,62 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { ReactComponent as DiscountIcon } from "@webiny/icons/discount.svg";
-import { ContentEntryListConfig } from "webiny/admin/cms/entry/list";
+import { ReactComponent as DiscountIcon } from "webiny/admin/icons/discount.svg";
+import { BulkActionButton, useBulkActionDialog, useFeature } from "webiny/admin";
+import { useModel } from "webiny/admin/cms";
+import { BulkActionFeature, useContentEntriesPresenter } from "webiny/admin/cms/entry/list";
 
 /**
  * The "Apply Discount" bulk action button, shown in the Products content entry list
  * whenever one or more entries are selected.
  *
- * `worker.processInBulk({ action, where, data })` fires the GraphQL mutation that
- * triggers the background task Webiny generated from our `ApplyDiscountBulkAction`.
- * The browser does NOT loop over entries — it hands the whole selection to the API and
- * the work happens server-side, in the background. The user can navigate away while it
- * runs, and follow progress in the Background Tasks screen.
+ * `BulkActionFeature` resolves the `BulkActionUseCase`, whose `execute()` fires the
+ * GraphQL mutation that triggers the background task Webiny generated from our
+ * `ApplyDiscountBulkAction` (API side). The browser does NOT loop over entries — the
+ * whole selection is handed to the API and processed server-side, in the background.
+ * The user can navigate away while it runs and follow progress in the Background Tasks
+ * screen.
  */
 const DISCOUNT_PERCENT = 10;
 
 export const ApplyDiscountAction = observer(() => {
-    const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
-    const { ButtonDefault } = useButtons();
-    const worker = useWorker();
-    const { showConfirmationDialog } = useDialog();
+    const { model } = useModel();
+    const presenter = useContentEntriesPresenter();
+    const { showConfirmationDialog } = useBulkActionDialog();
+    const { useCase: bulkAction } = useFeature(BulkActionFeature);
 
-    const count = worker.items.length;
+    const selection = presenter.list.vm.selection;
+    const selectedItems = presenter.list.vm.rows.filter(row => selection.selectedIds.has(row.id));
 
     const openDialog = () =>
         showConfirmationDialog({
             title: "Apply discount",
-            message: `Apply a ${DISCOUNT_PERCENT}% discount to ${count} selected product(s)? This runs as a background task, so you can keep working while it processes.`,
-            loadingLabel: "Starting background task…",
+            message: `Apply a ${DISCOUNT_PERCENT}% discount to ${selection.label}? This runs as a background task, so you can keep working while it processes.`,
+            loadingLabel: `Processing ${selection.label}`,
             execute: async () => {
-                // Scope the task to exactly the selected entries. When "select all"
-                // (across pages) is active, we omit the filter and let the task process
-                // everything matching the current view.
-                const where = worker.isSelectedAll
+                // Scope the task to the selected entries. When "select all" (across
+                // pages) is active, omit the filter so the task processes everything
+                // matching the current view.
+                const where = selection.allSelected
                     ? undefined
-                    : { entryId_in: worker.items.map(item => item.entryId) };
+                    : { id_in: selectedItems.map(item => item.id) };
 
-                await worker.processInBulk({
+                await bulkAction.execute({
+                    model,
                     action: "ApplyDiscount",
                     where,
                     data: { percent: DISCOUNT_PERCENT }
                 });
 
-                worker.resetItems();
+                presenter.list.actions.selection.deselectAll();
             }
         });
 
     return (
-        <ButtonDefault icon={<DiscountIcon />} onAction={openDialog} size={"sm"}>
-            {`Apply -${DISCOUNT_PERCENT}%`}
-        </ButtonDefault>
+        <BulkActionButton
+            text={`Apply -${DISCOUNT_PERCENT}%`}
+            tooltipContent={`Apply ${DISCOUNT_PERCENT}% discount to ${selection.label}`}
+            icon={<DiscountIcon />}
+            onClick={openDialog}
+        />
     );
 });

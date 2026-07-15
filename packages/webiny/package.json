@@ -93,13 +93,13 @@
     "./api/file-manager/file": "./api/file-manager/file.js",
     "./api/file-manager/permissions": "./api/file-manager/permissions.js",
     "./api/file-manager/settings": "./api/file-manager/settings.js",
-    "./api/cms/bulk-actions": "./api/cms/bulk-actions.js",
     "./api/cms/entry": "./api/cms/entry.js",
     "./api/cms/graphql": "./api/cms/graphql.js",
     "./api/cms/group": "./api/cms/group.js",
     "./api/cms/model": "./api/cms/model.js",
     "./api/cms/storage": "./api/cms/storage.js",
     "./api/cms/validation": "./api/cms/validation.js",
+    "./api/cms/bulk-actions": "./api/cms/bulk-actions.js",
     "./api/cms/opensearch": "./api/cms/opensearch.js",
     "./api/cms/scheduler": "./api/cms/scheduler.js",
     "./api/mailer": "./api/mailer.js",
@@ -147,7 +147,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "3ebdd1be657f1616d8d088f0ff1530859903ceb34e8f6c6e1699b9be73343643",
+  "exportGenerationHash": "5644c776aa4299f78bfb454b6233a023692e77dd4c989bd8e56fb6eb72e5150d",
   "webiny": {
     "publishFrom": "dist"
   }
