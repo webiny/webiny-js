@@ -5,7 +5,7 @@ export {
     type IModifyOperationParams,
     type IDeleteOperationParams
 } from "./features/Operations/abstraction.js";
-export { OperationsImpl, OperationType } from "./features/Operations/implementation.js";
+export { OperationsImpl, OperationType } from "./features/Operations/Operations.js";
 export { OperationsFactory, type IOperationsFactory } from "./features/Operations/abstraction.js";
 export { OperationsFactoryFeature } from "./features/Operations/feature.js";
 export {

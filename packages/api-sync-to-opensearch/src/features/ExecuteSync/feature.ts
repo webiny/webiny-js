@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { ExecuteSyncImplementation } from "./implementation.js";
+import { ExecuteSyncImplementation } from "./ExecuteSync.js";
 
 export const ExecuteSyncFeature = createFeature({
     name: "sync.executeSync",

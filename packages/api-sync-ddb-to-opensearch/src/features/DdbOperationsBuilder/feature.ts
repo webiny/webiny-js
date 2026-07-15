@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { DdbOperationsBuilderImplementation } from "./implementation.js";
+import { DdbOperationsBuilderImplementation } from "./DdbOperationsBuilder.js";
 
 export const DdbOperationsBuilderFeature = createFeature({
     name: "sync.ddb.operationsBuilder",

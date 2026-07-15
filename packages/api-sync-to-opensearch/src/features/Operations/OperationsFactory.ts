@@ -1,6 +1,6 @@
 import type { IOperationsFactory } from "./abstraction.js";
 import { OperationsFactory } from "./abstraction.js";
-import { OperationsImpl } from "./implementation.js";
+import { OperationsImpl } from "./Operations.js";
 
 class OperationsFactoryImpl implements IOperationsFactory {
     public create() {

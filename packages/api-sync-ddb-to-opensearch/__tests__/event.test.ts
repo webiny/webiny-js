@@ -9,7 +9,7 @@ import { ExecuteSyncWithRetryFeature } from "@webiny/api-sync-to-opensearch/feat
 import { OperationsFactoryFeature } from "@webiny/api-sync-to-opensearch/features/Operations/feature.js";
 import { marshall as baseMarshall } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { DdbOperationsBuilderFeature } from "~/features/DdbOperationsBuilder/feature";
-import { DdbToOpenSearchHandler } from "~/features/DdbToOpenSearchHandler/implementation";
+import { DdbToOpenSearchHandler } from "~/features/DdbToOpenSearchHandler/DdbToOpenSearchHandler";
 import { DynamoDBEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/DynamoDBEventHandler.js";
 
 const marshall = (item: Record<string, any>): any => {

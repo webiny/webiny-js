@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { OperationsFactoryImplementation } from "./factory.js";
+import { OperationsFactoryImplementation } from "./OperationsFactory.js";
 
 export const OperationsFactoryFeature = createFeature({
     name: "sync.operationsFactory",

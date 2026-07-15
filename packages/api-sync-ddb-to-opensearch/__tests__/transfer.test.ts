@@ -8,9 +8,9 @@ import { ExecuteSyncFeature } from "@webiny/api-sync-to-opensearch/features/Exec
 import { ExecuteSyncWithRetryFeature } from "@webiny/api-sync-to-opensearch/features/ExecuteSyncWithRetry/feature.js";
 import { OperationsFactoryFeature } from "@webiny/api-sync-to-opensearch/features/Operations/feature.js";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
-import { OperationType } from "@webiny/api-sync-to-opensearch/features/Operations/implementation.js";
+import { OperationType } from "@webiny/api-sync-to-opensearch/features/Operations/Operations.js";
 import { DdbOperationsBuilderFeature } from "~/features/DdbOperationsBuilder/feature";
-import { DdbToOpenSearchHandler } from "~/features/DdbToOpenSearchHandler/implementation";
+import { DdbToOpenSearchHandler } from "~/features/DdbToOpenSearchHandler/DdbToOpenSearchHandler";
 import { DynamoDBEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/DynamoDBEventHandler.js";
 import { marshall } from "@webiny/aws-sdk/client-dynamodb/index.js";
 

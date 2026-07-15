@@ -3,7 +3,7 @@ import {
     OperationsBuilder,
     type IOperationsBuilder
 } from "@webiny/api-sync-to-opensearch/features/OperationsBuilder/abstraction.js";
-import { OperationType } from "@webiny/api-sync-to-opensearch/features/Operations/implementation.js";
+import { OperationType } from "@webiny/api-sync-to-opensearch/features/Operations/Operations.js";
 import type { Operations } from "@webiny/api-sync-to-opensearch/features/Operations/abstraction.js";
 import { OperationsFactory } from "@webiny/api-sync-to-opensearch/features/Operations/abstraction.js";
 import { unmarshall } from "~/marshall.js";

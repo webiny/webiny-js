@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { Container } from "@webiny/feature/api";
 import type { DynamoDBRecord } from "@webiny/aws-sdk/types/index.js";
 import { marshall } from "~/marshall.js";
-import { OperationType } from "@webiny/api-sync-to-opensearch/features/Operations/implementation.js";
+import { OperationType } from "@webiny/api-sync-to-opensearch/features/Operations/Operations.js";
 import { OperationsBuilder } from "@webiny/api-sync-to-opensearch/features/OperationsBuilder/abstraction.js";
 import { OperationsFactoryFeature } from "@webiny/api-sync-to-opensearch/features/Operations/feature.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";

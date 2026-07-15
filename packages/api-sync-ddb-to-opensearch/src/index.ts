@@ -7,4 +7,4 @@ export {
     createDdbToOpenSearchStreamHandler,
     type DdbToOpenSearchStreamHandler
 } from "./createDdbToOpenSearchStreamHandler.js";
-export { DdbToOpenSearchHandler } from "./features/DdbToOpenSearchHandler/implementation.js";
+export { DdbToOpenSearchHandler } from "./features/DdbToOpenSearchHandler/DdbToOpenSearchHandler.js";

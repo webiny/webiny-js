@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { DdbToOpenSearchHandler } from "./implementation.js";
+import { DdbToOpenSearchHandler } from "./DdbToOpenSearchHandler.js";
 
 export const DdbToOpenSearchHandlerFeature = createFeature({
     name: "sync.ddb.handler",
