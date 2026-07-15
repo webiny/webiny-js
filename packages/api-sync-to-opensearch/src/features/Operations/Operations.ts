@@ -7,7 +7,7 @@ export enum OperationType {
     REMOVE = "REMOVE"
 }
 
-export class OperationsImpl implements OperationsAbstraction.Interface {
+export class Operations implements OperationsAbstraction.Interface {
     private _items: GenericRecord[] = [];
     private _count = 0;
 

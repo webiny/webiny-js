@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { OperationsImpl as Operations } from "~/features/Operations/Operations.js";
+import { Operations } from "~/features/Operations/Operations.js";
 
 describe("Operations", () => {
     it("should insert an item", async () => {

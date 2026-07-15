@@ -1,9 +1,9 @@
 import { OperationsFactory as OperationsFactoryAbstraction } from "./abstractions/OperationsFactory.js";
-import { OperationsImpl } from "./Operations.js";
+import { Operations } from "./Operations.js";
 
 class OperationsFactoryImpl implements OperationsFactoryAbstraction.Interface {
     public create() {
-        return new OperationsImpl();
+        return new Operations();
     }
 }
 
