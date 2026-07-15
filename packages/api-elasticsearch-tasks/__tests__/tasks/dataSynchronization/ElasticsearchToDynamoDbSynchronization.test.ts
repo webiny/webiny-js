@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/helpers/useHandler";
 import { DATA_SYNCHRONIZATION_TASK } from "~/tasks";
-import { SynchronizationBuilder } from "@webiny/api-sync-to-opensearch";
+import { Container } from "@webiny/feature/api";
+import {
+    SynchronizationBuilder,
+    SynchronizationBuilderFeature,
+    ExecuteSyncFeature,
+    ExecuteSyncWithRetryFeature,
+    OperationsFactoryFeature
+} from "@webiny/api-sync-to-opensearch";
+import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
 import type { ITimer } from "@webiny/handler-aws";
 import type { IIndexManager } from "~/settings/types";
 import { timerFactory } from "@webiny/handler-aws/utils";
@@ -32,10 +40,16 @@ interface ICreateSyncBuilderParams {
 
 const createRecordsFactory = (params: ICreateSyncBuilderParams) => {
     const { timer, opensearch, index, records } = params;
-    const syncBuilder = new SynchronizationBuilder({
-        timer,
-        openSearchClient: opensearch
-    });
+
+    const container = new Container();
+    TimerFeature.register(container, timer);
+    OperationsFactoryFeature.register(container);
+    ExecuteSyncFeature.register(container);
+    ExecuteSyncWithRetryFeature.register(container);
+    SynchronizationBuilderFeature.register(container);
+    container.registerInstance(OpenSearchClient, { use: () => opensearch });
+
+    const syncBuilder = container.resolve(SynchronizationBuilder);
 
     for (let i = 0; i < records; i++) {
         syncBuilder.insert({

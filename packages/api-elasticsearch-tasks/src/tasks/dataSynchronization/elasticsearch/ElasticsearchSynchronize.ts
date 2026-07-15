@@ -1,5 +1,5 @@
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batch/batchRead.js";
-import { createSynchronizationBuilder } from "@webiny/api-sync-to-opensearch";
+import { SynchronizationBuilder } from "@webiny/api-sync-to-opensearch/features/SynchronizationBuilder/abstraction.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import {
     ElasticsearchSynchronize as Abstraction,
@@ -42,7 +42,8 @@ class ElasticsearchSynchronizeImpl implements Abstraction.Interface {
     public constructor(
         private readonly controller: TaskController.Interface,
         private readonly dbRegistry: DbRegistry.Interface,
-        private readonly openSearchClient: OpenSearchClient.Interface
+        private readonly openSearchClient: OpenSearchClient.Interface,
+        private readonly syncBuilder: SynchronizationBuilder.Interface
     ) {}
 
     public async execute(
@@ -70,10 +71,7 @@ class ElasticsearchSynchronizeImpl implements Abstraction.Interface {
             table
         });
 
-        const elasticsearchSyncBuilder = createSynchronizationBuilder({
-            openSearchClient: this.openSearchClient.use(),
-            timer: this.controller.runtime
-        });
+        const elasticsearchSyncBuilder = this.syncBuilder;
         /* We need to find the items we have in the Elasticsearch but not in the DynamoDB-Elasticsearch table. */
         for (const item of items) {
             const exists = tableItems.some(ddbItem => {
@@ -136,5 +134,5 @@ class ElasticsearchSynchronizeImpl implements Abstraction.Interface {
 
 export const ElasticsearchSynchronize = Abstraction.createImplementation({
     implementation: ElasticsearchSynchronizeImpl,
-    dependencies: [TaskController, DbRegistry, OpenSearchClient]
+    dependencies: [TaskController, DbRegistry, OpenSearchClient, SynchronizationBuilder]
 });

@@ -14,7 +14,7 @@ import {
 import { getBaseConfiguration } from "@webiny/api-opensearch";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
-import { createDdbToEsStreamHandler } from "@webiny/api-sync-to-opensearch";
+import { createDdbToOpenSearchStreamHandler } from "@webiny/api-sync-ddb-to-opensearch";
 
 if (typeof registerCmsOpenSearchStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -28,7 +28,7 @@ if (!prefix.includes("api-")) {
 const documentClient = getDocumentClient();
 const opensearchClient = getTestOpenSearchClient();
 
-simulateStream(documentClient, createDdbToEsStreamHandler(opensearchClient));
+simulateStream(documentClient, createDdbToOpenSearchStreamHandler(opensearchClient));
 
 setStorageOps("cms", () => {
     const createIndexName = model => {
