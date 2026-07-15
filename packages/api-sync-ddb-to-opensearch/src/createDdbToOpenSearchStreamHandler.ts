@@ -2,6 +2,7 @@ import { Container } from "@webiny/feature/api";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { DynamoDBEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/DynamoDBEventHandler.js";
 import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
+import { ProcessEnvFeature } from "@webiny/stdlib/node";
 import { DdbToOpenSearchFeature } from "./features/DdbToOpenSearchFeature.js";
 import type { Client } from "@webiny/api-opensearch/client.js";
 import type { DynamoDBStreamEvent } from "@webiny/aws-sdk/types/index.js";
@@ -17,6 +18,7 @@ export const createDdbToOpenSearchStreamHandler = (
     // Existing behavior: MAX_RUNNING_TIME = 900 hardcoded.
     // In real Lambda deployments, the handler bootstrap should register a Timer
     // that wraps context.getRemainingTimeInMillis(). This factory matches current behavior.
+    ProcessEnvFeature.register(container);
     TimerFeature.register(container, { getRemainingSeconds: () => 900 });
 
     DdbToOpenSearchFeature.register(container, { client });

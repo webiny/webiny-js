@@ -13,6 +13,7 @@ import { DdbOperationsBuilderFeature } from "~/features/DdbOperationsBuilder/fea
 import { DdbToOpenSearchHandler } from "~/features/DdbToOpenSearchHandler/DdbToOpenSearchHandler";
 import { DynamoDBEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/DynamoDBEventHandler.js";
 import { marshall } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { ProcessEnvFeature } from "@webiny/stdlib/node";
 
 describe("transfer data", () => {
     it("should transfer data from event to opensearch", async () => {
@@ -20,6 +21,7 @@ describe("transfer data", () => {
 
         const container = new Container();
         container.registerInstance(RequestContainer, container);
+        ProcessEnvFeature.register(container);
         CompressionFeature.register(container);
         TimerFeature.register(container, { getRemainingSeconds: () => 900 });
         ExecuteSyncFeature.register(container);

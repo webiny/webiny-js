@@ -6,8 +6,10 @@ import {
 } from "@webiny/api-opensearch";
 import type { ApiResponse } from "@webiny/api-opensearch/types.js";
 import { WebinyError } from "@webiny/error";
-import { shouldShowLogs } from "~/helpers/shouldShowLogs.js";
 import { ExecuteSync as ExecuteSyncAbstraction } from "./abstraction.js";
+import { Env } from "@webiny/stdlib";
+import { Timer } from "@webiny/utils/features/Timer/abstraction.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 
 interface BulkOperationsResponseBodyItemIndexError {
     reason?: string;
@@ -53,24 +55,30 @@ const checkErrors = (result?: ApiResponse): void => {
 };
 
 class ExecuteSyncImpl implements ExecuteSyncAbstraction.Interface {
+    public constructor(
+        private readonly env: Env.Interface,
+        private readonly timer: Timer.Interface,
+        private readonly openSearchClient: OpenSearchClient.Interface
+    ) {}
+
     public async execute(params: ExecuteSyncAbstraction.Params): Promise<void> {
-        const { openSearchClient, timer, maxRunningTime, maxProcessorPercent, operations } = params;
+        const { maxProcessorPercent, maxRunningTime, operations } = params;
 
         if (operations.total === 0) {
             return;
         }
 
-        const remainingTime = timer.getRemainingSeconds();
+        const remainingTime = this.timer.getRemainingSeconds();
         const runningTime = maxRunningTime - remainingTime;
         const maxWaitingTime = remainingTime - 90;
 
-        if (shouldShowLogs()) {
+        if (this.shouldShowLogs()) {
             console.debug(
                 `The Lambda is already running for ${runningTime}s. Setting Health Check max waiting time: ${maxWaitingTime}s`
             );
         }
 
-        const healthCheck = createWaitUntilHealthy(openSearchClient, {
+        const healthCheck = createWaitUntilHealthy(this.openSearchClient.use(), {
             minClusterHealthStatus: OpenSearchCatClusterHealthStatus.Yellow,
             waitingTimeStep: 30,
             maxProcessorPercent,
@@ -108,27 +116,37 @@ class ExecuteSyncImpl implements ExecuteSyncAbstraction.Interface {
         }
 
         try {
-            const res = await openSearchClient.bulk({
+            const res = await this.openSearchClient.use().bulk({
                 body: operations.items
             });
             checkErrors(res);
         } catch (error) {
             console.error(error, { tenant: "root" });
 
-            if (shouldShowLogs()) {
+            if (this.shouldShowLogs()) {
                 const meta = error?.meta || {};
                 delete meta["meta"];
                 console.error("Bulk error", JSON.stringify(error, null, 2));
             }
             throw error;
         }
-        if (shouldShowLogs()) {
+        if (this.shouldShowLogs()) {
             console.info(`Transferred ${operations.total} record operations to OpenSearch.`);
         }
+    }
+
+    private shouldShowLogs(): boolean {
+        /**
+         * Don't show logs during tests, really no point.
+         */
+        if (this.env.getBoolean("TESTING")) {
+            return false;
+        }
+        return this.env.getBoolean("DEBUG", false);
     }
 }
 
 export const ExecuteSync = ExecuteSyncAbstraction.createImplementation({
     implementation: ExecuteSyncImpl,
-    dependencies: []
+    dependencies: [Env, Timer, OpenSearchClient]
 });

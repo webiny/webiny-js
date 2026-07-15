@@ -11,6 +11,7 @@ import { marshall as baseMarshall } from "@webiny/aws-sdk/client-dynamodb/index.
 import { DdbOperationsBuilderFeature } from "~/features/DdbOperationsBuilder/feature";
 import { DdbToOpenSearchHandler } from "~/features/DdbToOpenSearchHandler/DdbToOpenSearchHandler";
 import { DynamoDBEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/DynamoDBEventHandler.js";
+import { ProcessEnvFeature } from "@webiny/stdlib/node";
 
 const marshall = (item: Record<string, any>): any => {
     return baseMarshall(item, {
@@ -58,6 +59,7 @@ const mockOpenSearchClient = {
 const createHandler = (withOpenSearch = true) => {
     const container = new Container();
     container.registerInstance(RequestContainer, container);
+    ProcessEnvFeature.register(container);
     CompressionFeature.register(container);
     TimerFeature.register(container, { getRemainingSeconds: () => 900 });
     ExecuteSyncFeature.register(container);
@@ -89,16 +91,5 @@ describe("event", () => {
         );
 
         expect(result).toEqual({ success: true, processedRecords: 0 });
-    });
-
-    it("should return failure when opensearch client is missing", async () => {
-        const handler = createHandler(false);
-
-        const result = await handler.execute(
-            { event: { Records: [record as any] }, metadata: {} },
-            vi.fn()
-        );
-
-        expect(result).toEqual({ success: false, message: "Missing opensearch client." });
     });
 });

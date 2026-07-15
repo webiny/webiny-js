@@ -1,7 +1,6 @@
 import { Operations } from "../Operations/abstractions/Operations.js";
 import { OperationsFactory } from "../Operations/abstractions/OperationsFactory.js";
 import { Timer } from "@webiny/utils/features/Timer/abstraction.js";
-import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { ExecuteSyncWithRetry } from "../ExecuteSyncWithRetry/abstraction.js";
 import { SynchronizationBuilder as SynchronizationBuilderAbstraction } from "./abstraction.js";
 
@@ -10,11 +9,10 @@ class SynchronizationBuilderImpl implements SynchronizationBuilderAbstraction.In
 
     public constructor(
         private readonly timer: Timer.Interface,
-        private readonly openSearchClient: OpenSearchClient.Interface,
         private readonly executeSyncWithRetry: ExecuteSyncWithRetry.Interface,
-        operationsFactory: OperationsFactory.Interface
+        private readonly operationsFactory: OperationsFactory.Interface
     ) {
-        this.operations = operationsFactory.create();
+        this.operations = this.operationsFactory.create();
     }
 
     public insert(params: Operations.InsertParams): void {
@@ -37,8 +35,6 @@ class SynchronizationBuilderImpl implements SynchronizationBuilderAbstraction.In
             await this.executeSyncWithRetry.execute({
                 ...params,
                 maxRunningTime: this.timer.getRemainingSeconds(),
-                timer: this.timer,
-                openSearchClient: this.openSearchClient.use(),
                 operations: this.operations
             });
             this.operations.clear();
@@ -48,5 +44,5 @@ class SynchronizationBuilderImpl implements SynchronizationBuilderAbstraction.In
 
 export const SynchronizationBuilder = SynchronizationBuilderAbstraction.createImplementation({
     implementation: SynchronizationBuilderImpl,
-    dependencies: [Timer, OpenSearchClient, ExecuteSyncWithRetry, OperationsFactory]
+    dependencies: [Timer, ExecuteSyncWithRetry, OperationsFactory]
 });
