@@ -16,7 +16,6 @@ import { AcoFeature } from "@webiny/api-aco";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { FileManagerAppFeature } from "@webiny/api-file-manager";
 import { FileManagerAcoFeature } from "@webiny/api-file-manager-aco";
-import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
 import { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "@webiny/api-website-builder";
 import { WebsiteBuilderWorkflowsFeature } from "@webiny/api-website-builder-workflows";
 import { WebsiteBuilderSchedulerFeature } from "@webiny/api-website-builder-scheduler";
@@ -48,6 +47,14 @@ export interface RegisterApiRequestStackConfig {
      * On AWS this bridges the scheduler-aws extension (EventBridge Scheduler). Optional.
      */
     registerSchedulerTransport?: (container: Container) => void | Promise<void>;
+    /**
+     * Register the file-manager storage transport, run AFTER the transport-agnostic
+     * `FileManagerAppFeature` (which registers the AssetDeliveryRoute + NULL asset-delivery impls). The
+     * transport overrides those null impls with real ones and adds its file-operation features: on AWS
+     * `FileManagerS3Feature` (S3), on the server `FileManagerServerFeature` (local disk). Optional —
+     * omit for a deployment with no file storage.
+     */
+    registerFileManagerTransport?: (container: Container) => void | Promise<void>;
 }
 
 /**
@@ -86,10 +93,10 @@ export async function registerApiRequestStack(
     AcoHcmsFeature.register(container);
     HcmsTasksFeature.register(container);
 
-    // ── File Manager ───────────────────────────────────────────
+    // ── File Manager (domain) + storage transport ──────────────
     FileManagerAppFeature.register(container);
     FileManagerAcoFeature.register(container);
-    FileManagerS3Feature.register(container, {});
+    await config.registerFileManagerTransport?.(container);
 
     // ── Website Builder ────────────────────────────────────────
     WebsiteBuilderFeature.register(container);

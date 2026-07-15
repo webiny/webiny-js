@@ -24,6 +24,7 @@ import { DbFeature } from "@webiny/handler-db";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
 import { registerSchedulerAwsExtension } from "@webiny/api-scheduler-aws";
+import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
 import { WebSocketLambdaHandler } from "@webiny/api-websockets";
 // CognitoIdpFeature must be in the root container so the request auth step
 // (ApiGatewayIdentityLoaderDecorator → RequestIdentityLoader) sees CognitoIdentityProvider
@@ -128,6 +129,10 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                     registerSchedulerAwsExtension(c, {
                         getClient: schedulerConfig => createSchedulerClient(schedulerConfig)
                     });
+                },
+                // File-manager storage transport: S3 (asset delivery + S3 file operations + schema).
+                registerFileManagerTransport: c => {
+                    FileManagerS3Feature.register(c, {});
                 }
             });
         }

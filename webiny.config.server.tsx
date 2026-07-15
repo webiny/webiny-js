@@ -16,6 +16,13 @@ export const ServerExtensions = () => {
                 workspace), so data persists across builds/watch restarts. */}
             <Infra.Sqlite filename={process.env.WEBINY_SQL_FILENAME || "./.webiny/server.sqlite"} />
 
+            {/* Local file storage (uploaded files) + upload signing secret. Storage path resolves like
+                the SQLite file — against the project root — so uploads persist across rebuilds. */}
+            <Infra.FileStorage
+                path={process.env.WEBINY_LOCAL_STORAGE_PATH || "./.webiny/storage"}
+                uploadSecret={process.env.WEBINY_UPLOAD_SECRET || "dev-only-insecure-upload-secret"}
+            />
+
             {/* Hand the admin app the API URL (AWS derives this from stack output; server has none). */}
             <Admin.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
 

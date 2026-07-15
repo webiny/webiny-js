@@ -27,6 +27,7 @@ import {
 } from "@webiny/api-websockets-server";
 import { BackgroundTasksServerFeature } from "@webiny/background-tasks-server";
 import { registerSchedulerServerExtension } from "@webiny/api-scheduler-server";
+import { FileManagerServerFeature } from "@webiny/api-file-manager-server";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
 
@@ -106,6 +107,13 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                 // overrides the domain default, same seam as the realtime hook above.
                 registerSchedulerTransport: requestContainer => {
                     registerSchedulerServerExtension(requestContainer);
+                },
+                // File-manager storage transport: local disk. Where AWS uses S3 (+ a separate asset-
+                // delivery Lambda), the single-process server stores files on disk and serves them
+                // in-process — FileManagerServerFeature registers local asset delivery (overriding the
+                // domain's null impls), the upload/multipart HTTP routes, and disk file operations.
+                registerFileManagerTransport: requestContainer => {
+                    FileManagerServerFeature.register(requestContainer, {});
                 }
             });
         },
