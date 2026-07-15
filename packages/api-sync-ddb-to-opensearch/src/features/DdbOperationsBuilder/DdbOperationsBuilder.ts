@@ -1,11 +1,8 @@
 import type { DynamoDBRecord } from "@webiny/aws-sdk/types/index.js";
-import {
-    OperationsBuilder,
-    type IOperationsBuilder
-} from "@webiny/api-sync-to-opensearch/features/OperationsBuilder/abstraction.js";
+import { OperationsBuilder } from "@webiny/api-sync-to-opensearch/features/OperationsBuilder/abstraction.js";
 import { OperationType } from "@webiny/api-sync-to-opensearch/features/Operations/Operations.js";
-import type { Operations } from "@webiny/api-sync-to-opensearch/features/Operations/abstraction.js";
-import { OperationsFactory } from "@webiny/api-sync-to-opensearch/features/Operations/abstraction.js";
+import type { Operations } from "@webiny/api-sync-to-opensearch/features/Operations/abstractions/Operations.js";
+import { OperationsFactory } from "@webiny/api-sync-to-opensearch/features/Operations/abstractions/OperationsFactory.js";
 import { unmarshall } from "~/marshall.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 
@@ -23,7 +20,7 @@ interface RecordDynamoDbKeys {
     SK: string;
 }
 
-class DdbOperationsBuilderImpl implements IOperationsBuilder<DynamoDBRecord> {
+class DdbOperationsBuilderImpl implements OperationsBuilder.Interface<DynamoDBRecord> {
     public constructor(
         private readonly compressor: CompressionHandler.Interface,
         private readonly operationsFactory: OperationsFactory.Interface
@@ -99,7 +96,7 @@ class DdbOperationsBuilderImpl implements IOperationsBuilder<DynamoDBRecord> {
     }
 }
 
-export const DdbOperationsBuilderImplementation = OperationsBuilder.createImplementation({
+export const DdbOperationsBuilder = OperationsBuilder.createImplementation({
     implementation: DdbOperationsBuilderImpl,
     dependencies: [CompressionHandler, OperationsFactory]
 });

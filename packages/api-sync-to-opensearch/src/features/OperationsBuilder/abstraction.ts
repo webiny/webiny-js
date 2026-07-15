@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { Operations } from "../Operations/abstraction.js";
+import type { Operations } from "../Operations/abstractions/Operations.js";
 
 export interface IOperationsBuilderBuildParams<TRecord = unknown> {
     records: TRecord[];

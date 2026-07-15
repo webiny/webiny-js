@@ -28,14 +28,7 @@ export const Operations = createAbstraction<IOperations>("Sync/Operations");
 
 export namespace Operations {
     export type Interface = IOperations;
-}
-
-export interface IOperationsFactory {
-    create(): IOperations;
-}
-
-export const OperationsFactory = createAbstraction<IOperationsFactory>("Sync/OperationsFactory");
-
-export namespace OperationsFactory {
-    export type Interface = IOperationsFactory;
+    export type InsertParams = IInsertOperationParams;
+    export type ModifyParams = IModifyOperationParams;
+    export type DeleteParams = IDeleteOperationParams;
 }

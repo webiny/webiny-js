@@ -1,20 +1,11 @@
-import {
-    OperationsFactory,
-    type IInsertOperationParams,
-    type IModifyOperationParams,
-    type IDeleteOperationParams,
-    type Operations
-} from "../Operations/abstraction.js";
+import { Operations } from "../Operations/abstractions/Operations.js";
+import { OperationsFactory } from "../Operations/abstractions/OperationsFactory.js";
 import { Timer } from "@webiny/utils/features/Timer/abstraction.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import {
-    ExecuteSyncWithRetry,
-    type IExecuteSyncWithRetryParams
-} from "../ExecuteSyncWithRetry/abstraction.js";
-import type { ISynchronizationBuilder } from "./abstraction.js";
-import { SynchronizationBuilder } from "./abstraction.js";
+import { ExecuteSyncWithRetry } from "../ExecuteSyncWithRetry/abstraction.js";
+import { SynchronizationBuilder as SynchronizationBuilderAbstraction } from "./abstraction.js";
 
-class SynchronizationBuilderImpl implements ISynchronizationBuilder {
+class SynchronizationBuilderImpl implements SynchronizationBuilderAbstraction.Interface {
     private readonly operations: Operations.Interface;
 
     public constructor(
@@ -26,20 +17,20 @@ class SynchronizationBuilderImpl implements ISynchronizationBuilder {
         this.operations = operationsFactory.create();
     }
 
-    public insert(params: IInsertOperationParams): void {
+    public insert(params: Operations.InsertParams): void {
         this.operations.insert(params);
     }
 
-    public modify(params: IModifyOperationParams): void {
+    public modify(params: Operations.ModifyParams): void {
         this.operations.modify(params);
     }
 
-    public delete(params: IDeleteOperationParams): void {
+    public delete(params: Operations.DeleteParams): void {
         this.operations.delete(params);
     }
 
     public build() {
-        return async (params?: Partial<IExecuteSyncWithRetryParams>) => {
+        return async (params?: Partial<ExecuteSyncWithRetry.Params>) => {
             if (this.operations.total === 0) {
                 return;
             }
@@ -55,7 +46,7 @@ class SynchronizationBuilderImpl implements ISynchronizationBuilder {
     }
 }
 
-export const SynchronizationBuilderImplementation = SynchronizationBuilder.createImplementation({
+export const SynchronizationBuilder = SynchronizationBuilderAbstraction.createImplementation({
     implementation: SynchronizationBuilderImpl,
     dependencies: [Timer, OpenSearchClient, ExecuteSyncWithRetry, OperationsFactory]
 });

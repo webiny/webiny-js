@@ -1,10 +1,5 @@
 import type { GenericRecord } from "@webiny/api/types.js";
-import type {
-    IDeleteOperationParams,
-    IInsertOperationParams,
-    IModifyOperationParams,
-    IOperations
-} from "./abstraction.js";
+import { Operations as OperationsAbstraction } from "./abstractions/Operations.js";
 
 export enum OperationType {
     INSERT = "INSERT",
@@ -12,7 +7,7 @@ export enum OperationType {
     REMOVE = "REMOVE"
 }
 
-export class OperationsImpl implements IOperations {
+export class OperationsImpl implements OperationsAbstraction.Interface {
     private _items: GenericRecord[] = [];
     private _count = 0;
 
@@ -33,7 +28,7 @@ export class OperationsImpl implements IOperations {
         this._count = 0;
     }
 
-    public insert(params: IInsertOperationParams): void {
+    public insert(params: OperationsAbstraction.InsertParams): void {
         this._count++;
         this.items.push(
             {
@@ -46,11 +41,11 @@ export class OperationsImpl implements IOperations {
         );
     }
 
-    public modify(params: IModifyOperationParams): void {
+    public modify(params: OperationsAbstraction.ModifyParams): void {
         this.insert(params);
     }
 
-    public delete(params: IDeleteOperationParams): void {
+    public delete(params: OperationsAbstraction.DeleteParams): void {
         this._count++;
         this.items.push({
             delete: {

@@ -1,14 +1,13 @@
-import type { IOperationsFactory } from "./abstraction.js";
-import { OperationsFactory } from "./abstraction.js";
+import { OperationsFactory as OperationsFactoryAbstraction } from "./abstractions/OperationsFactory.js";
 import { OperationsImpl } from "./Operations.js";
 
-class OperationsFactoryImpl implements IOperationsFactory {
+class OperationsFactoryImpl implements OperationsFactoryAbstraction.Interface {
     public create() {
         return new OperationsImpl();
     }
 }
 
-export const OperationsFactoryImplementation = OperationsFactory.createImplementation({
+export const OperationsFactory = OperationsFactoryAbstraction.createImplementation({
     implementation: OperationsFactoryImpl,
     dependencies: []
 });

@@ -1,15 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type {
-    IInsertOperationParams,
-    IDeleteOperationParams,
-    IModifyOperationParams
-} from "../Operations/abstraction.js";
+import type { Operations } from "../Operations/abstractions/Operations.js";
 import type { ExecuteSyncWithRetry } from "../ExecuteSyncWithRetry/abstraction.js";
 
 export interface ISynchronizationBuilder {
-    insert(params: IInsertOperationParams): void;
-    modify(params: IModifyOperationParams): void;
-    delete(params: IDeleteOperationParams): void;
+    insert(params: Operations.InsertParams): void;
+    modify(params: Operations.ModifyParams): void;
+    delete(params: Operations.DeleteParams): void;
     build(): (params?: Partial<ExecuteSyncWithRetry.Params>) => Promise<void>;
 }
 

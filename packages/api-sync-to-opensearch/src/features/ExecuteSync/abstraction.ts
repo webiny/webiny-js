@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Timer } from "@webiny/utils/features/Timer/abstraction.js";
 import type { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import type { Operations } from "../Operations/abstraction.js";
+import type { Operations } from "../Operations/abstractions/Operations.js";
 
 export interface IExecuteSyncParams {
     timer: Timer.Interface;
