@@ -8,8 +8,7 @@
     { "path": "../feature" },
     { "path": "../api-core" },
     { "path": "../api-headless-cms-testing" },
-    { "path": "../api-opensearch" },
-    { "path": "../testing" }
+    { "path": "../api-opensearch" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -31,9 +30,7 @@
       "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
-      "@webiny/api-opensearch": ["../api-opensearch/src"],
-      "@webiny/testing/*": ["../testing/src/*"],
-      "@webiny/testing": ["../testing/src"]
+      "@webiny/api-opensearch": ["../api-opensearch/src"]
     }
   }
 }

@@ -1718,9 +1718,11 @@
       "version": "7.0.5",
       "files": [
         "/packages/api-file-manager-s3/package.json",
+        "/packages/api-file-manager-server/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/sdk/package.json",
         "/packages/api-file-manager-s3/package.json",
+        "/packages/api-file-manager-server/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/sdk/package.json"
       ]
@@ -3068,7 +3070,6 @@
         "/packages/api-website-builder/package.json",
         "/packages/api-websockets/package.json",
         "/packages/api-websockets-aws/package.json",
-        "/packages/testing/package.json",
         "/packages/api-aco/package.json",
         "/packages/api-audit-logs/package.json",
         "/packages/api-file-manager-aco/package.json",
@@ -3080,8 +3081,7 @@
         "/packages/api-scheduler-aws/package.json",
         "/packages/api-website-builder/package.json",
         "/packages/api-websockets/package.json",
-        "/packages/api-websockets-aws/package.json",
-        "/packages/testing/package.json"
+        "/packages/api-websockets-aws/package.json"
       ]
     },
     {
@@ -3284,7 +3284,6 @@
         "/packages/pulumi/package.json",
         "/packages/pulumi-sdk/package.json",
         "/packages/tenant-manager/package.json",
-        "/packages/testing/package.json",
         "/packages/utils/package.json",
         "/packages/validation/package.json",
         "/packages/wcp/package.json",
@@ -3376,7 +3375,6 @@
         "/packages/pulumi/package.json",
         "/packages/pulumi-sdk/package.json",
         "/packages/tenant-manager/package.json",
-        "/packages/testing/package.json",
         "/packages/utils/package.json",
         "/packages/validation/package.json",
         "/packages/wcp/package.json",
@@ -3558,7 +3556,6 @@
         "/packages/sdk/package.json",
         "/packages/shared-aco/package.json",
         "/packages/tenant-manager/package.json",
-        "/packages/testing/package.json",
         "/packages/utils/package.json",
         "/packages/validation/package.json",
         "/packages/wcp/package.json",
@@ -3689,7 +3686,6 @@
         "/packages/sdk/package.json",
         "/packages/shared-aco/package.json",
         "/packages/tenant-manager/package.json",
-        "/packages/testing/package.json",
         "/packages/utils/package.json",
         "/packages/validation/package.json",
         "/packages/wcp/package.json",
@@ -4462,7 +4458,6 @@
             { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] },
             { "file": "/packages/languages/package.json", "types": ["dependencies"] },
             { "file": "/packages/self-hosted-auth/package.json", "types": ["dependencies"] },
-            { "file": "/packages/testing/package.json", "types": ["devDependencies"] },
             { "file": "/packages/webhooks/package.json", "types": ["dependencies"] }
           ]
         }
@@ -5081,7 +5076,6 @@
             { "file": "/packages/sdk/package.json", "types": ["devDependencies"] },
             { "file": "/packages/shared-aco/package.json", "types": ["devDependencies"] },
             { "file": "/packages/tenant-manager/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/testing/package.json", "types": ["devDependencies"] },
             { "file": "/packages/utils/package.json", "types": ["devDependencies"] },
             { "file": "/packages/validation/package.json", "types": ["devDependencies"] },
             { "file": "/packages/wcp/package.json", "types": ["devDependencies"] },
@@ -5909,7 +5903,6 @@
             { "file": "/packages/pulumi/package.json", "types": ["devDependencies"] },
             { "file": "/packages/pulumi-sdk/package.json", "types": ["devDependencies"] },
             { "file": "/packages/tenant-manager/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/testing/package.json", "types": ["devDependencies"] },
             { "file": "/packages/utils/package.json", "types": ["devDependencies"] },
             { "file": "/packages/validation/package.json", "types": ["devDependencies"] },
             { "file": "/packages/wcp/package.json", "types": ["devDependencies"] },
@@ -6345,6 +6338,7 @@
           "version": "7.0.5",
           "files": [
             { "file": "/packages/api-file-manager-s3/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-file-manager-server/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
             { "file": "/packages/sdk/package.json", "types": ["dependencies"] }
           ]

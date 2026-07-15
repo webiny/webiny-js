@@ -9,7 +9,7 @@ import {
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import { buildSchema } from "graphql";
+import { buildSchema, getIntrospectionQuery } from "graphql";
 import type { GraphQLSchema } from "graphql";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -189,5 +189,36 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
         return captured.value as C;
     };
 
-    return { handler, invoke, invokeCms, getContext };
+    // Convenience wrappers mirroring the retired `useGraphQLHandler` — thin builders over `invoke`
+    // (the main `/graphql` endpoint) so consumers can issue typed queries/mutations directly.
+    const createQuery = <T extends Record<string, any> = Record<string, any>>(query: string) => {
+        return (variables?: Record<string, any>, headers: Record<string, string> = {}) =>
+            invoke({ body: { query, variables: variables || undefined }, headers }) as Promise<
+                readonly [T, any]
+            >;
+    };
+
+    const createMutation = <T extends Record<string, any> = Record<string, any>>(
+        mutation: string
+    ) => {
+        return (variables?: Record<string, any>, headers: Record<string, string> = {}) =>
+            invoke({
+                body: { query: mutation, variables: variables || undefined },
+                headers
+            }) as Promise<readonly [T, any]>;
+    };
+
+    const introspect = () => invoke({ body: { query: getIntrospectionQuery() } });
+
+    return {
+        handler,
+        invoke,
+        invokeCms,
+        getContext,
+        createQuery,
+        createMutation,
+        introspect,
+        identity,
+        tenant: { id: "root", name: "Root", parent: null }
+    };
 };
