@@ -2,8 +2,8 @@ import { IdentityData } from "@webiny/api-core/features/security/IdentityContext
 
 /**
  * Shared test tenancy/security constants (the default admin identity + full-access role/team ids).
- * Runtime tenancy/security setup lives in the heavier @webiny/testing harness (TenancyAndSecurity-
- * Feature); these plain constants live here in the base test-utils package.
+ * Runtime tenancy/security setup is DI-native (TestAuthenticator/TestAuthorizer + the CMS test
+ * handler); these plain constants live here in the base test-utils package.
  */
 export const defaultIdentity: IdentityData = {
     id: "id-12345678",

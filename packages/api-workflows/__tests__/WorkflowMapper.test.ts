@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
-import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
+import { FULL_ACCESS_TEAM_ID } from "@webiny/api-core-testing";
 import { WorkflowMapper } from "~/domain/workflow/WorkflowMapper.js";
 import type { IWorkflow } from "~/domain/workflow/abstractions.js";
 

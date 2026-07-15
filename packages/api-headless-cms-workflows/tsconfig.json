@@ -10,11 +10,11 @@
     { "path": "../error" },
     { "path": "../feature" },
     { "path": "../shared-aco" },
+    { "path": "../api-core-testing" },
     { "path": "../api-headless-cms-testing" },
     { "path": "../api-opensearch" },
     { "path": "../handler" },
     { "path": "../plugins" },
-    { "path": "../testing" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -40,6 +40,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/shared-aco/*": ["../shared-aco/src/*"],
       "@webiny/shared-aco": ["../shared-aco/src"],
+      "@webiny/api-core-testing/*": ["../api-core-testing/src/*"],
+      "@webiny/api-core-testing": ["../api-core-testing/src"],
       "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
@@ -48,8 +50,6 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/testing/*": ["../testing/src/*"],
-      "@webiny/testing": ["../testing/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

@@ -26,13 +26,13 @@ const TSCONFIG = {
     BUILD: "tsconfig.build.json"
 };
 
-// `tsconfig.build.json` compiles only `src`, never `__tests__`. Test-only packages (e.g.
-// `@webiny/testing`) are never imported from `src`, and because they depend back on the very
-// packages that consume them, including them as build references creates a circular project
-// reference that breaks the `composite` build with TS6305. They are therefore intentionally
-// excluded from the build config (see `scripts/generateTsConfigsInPackages.js`), so the check
-// must not require them in `tsconfig.build.json` "references".
-const BUILD_EXCLUDED_PACKAGES = ["@webiny/testing"];
+// `tsconfig.build.json` compiles only `src`, never `__tests__`. Test-only packages that are never
+// imported from `src` — and that depend back on the very packages consuming them — would create a
+// circular project reference that breaks the `composite` build with TS6305, so they are excluded
+// from the build config (see `scripts/generateTsConfigsInPackages.js`) and the check must not
+// require them in `tsconfig.build.json` "references". (Currently none; the former `@webiny/testing`
+// harness has been retired in favor of `@webiny/api-core-testing` / `@webiny/api-headless-cms-testing`.)
+const BUILD_EXCLUDED_PACKAGES = [];
 
 /**
  * This is a small tool that checks if all TS configs in all packages in order. In other words,

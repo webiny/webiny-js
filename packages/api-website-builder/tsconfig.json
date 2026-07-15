@@ -18,7 +18,6 @@
     { "path": "../api-opensearch" },
     { "path": "../background-tasks" },
     { "path": "../plugins" },
-    { "path": "../testing" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -60,8 +59,6 @@
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/testing/*": ["../testing/src/*"],
-      "@webiny/testing": ["../testing/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

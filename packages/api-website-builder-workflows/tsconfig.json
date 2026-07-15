@@ -13,8 +13,7 @@
     { "path": "../shared-aco" },
     { "path": "../api-headless-cms" },
     { "path": "../api-headless-cms-testing" },
-    { "path": "../plugins" },
-    { "path": "../testing" }
+    { "path": "../plugins" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -46,9 +45,7 @@
       "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
-      "@webiny/testing/*": ["../testing/src/*"],
-      "@webiny/testing": ["../testing/src"]
+      "@webiny/plugins": ["../plugins/src"]
     }
   }
 }
