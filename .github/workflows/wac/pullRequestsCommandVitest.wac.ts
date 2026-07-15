@@ -18,12 +18,14 @@ import {
     DdbStorageOps,
     DdbOsStorageOps,
     SqlStorageOps,
+    PgliteStorageOps,
     type AbstractStorageOps
 } from "./storageOps/index.js";
 
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
 const sqlStorageOps = new SqlStorageOps();
+const pgliteStorageOps = new PgliteStorageOps();
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ needs.baseBranch.outputs.base-branch }}";
@@ -46,7 +48,7 @@ const createCheckoutPrSteps = () =>
 // Live status table shown in the PR comment. Rows are updated in place as each
 // group progresses (Queued -> Running -> Passed/Failed) by the per-group jobs,
 // and the final `vitestStatusSummary` job mirrors the result into the PR body.
-const STATUS_GROUPS = ["No storage", "DDB", "DDB+OS", "SQL"];
+const STATUS_GROUPS = ["No storage", "DDB", "DDB+OS", "SQL", "PGlite"];
 
 const COMMENT_INTRO =
     "Vitest tests have been initiated (for more information, click " +
@@ -127,6 +129,10 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             env["OPENSEARCH_USERNAME"] = "${{ secrets.OPENSEARCH_USERNAME }}";
             env["OPENSEARCH_PASSWORD"] = "${{ secrets.OPENSEARCH_PASSWORD }}";
             env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
+        }
+
+        if (storageOps instanceof PgliteStorageOps) {
+            env["WEBINY_SQL_CLIENT"] = "pglite";
         }
     }
 
@@ -283,6 +289,7 @@ export const pullRequestsCommandVitest = createWorkflow({
         ...createVitestTestsJobs(ddbStorageOps),
         ...createVitestTestsJobs(ddbOsStorageOps),
         ...createVitestTestsJobs(sqlStorageOps),
+        ...createVitestTestsJobs(pgliteStorageOps),
 
         // Once all groups are done, write the authoritative final status: it
         // heals the PR comment (in case a concurrent row update was lost) and
@@ -294,7 +301,8 @@ export const pullRequestsCommandVitest = createWorkflow({
                 "vitest-run",
                 "vitest-ddb-run",
                 "vitest-ddb-os-run",
-                "vitest-sql-run"
+                "vitest-sql-run",
+                "vitest-pglite-run"
             ],
             if: "always() && needs.checkComment.result == 'success'",
             checkout: false,
@@ -306,7 +314,8 @@ export const pullRequestsCommandVitest = createWorkflow({
                 R_NONE: "${{ needs.vitest-run.result }}",
                 R_DDB: "${{ needs.vitest-ddb-run.result }}",
                 R_DDB_OS: "${{ needs.vitest-ddb-os-run.result }}",
-                R_SQL: "${{ needs.vitest-sql-run.result }}"
+                R_SQL: "${{ needs.vitest-sql-run.result }}",
+                R_PGLITE: "${{ needs.vitest-pglite-run.result }}"
             },
             steps: [
                 {
@@ -345,11 +354,13 @@ export const pullRequestsCommandVitest = createWorkflow({
                         `add_failed "DDB / " "DDB"`,
                         `add_failed "DDB+OS / " "DDB+OS"`,
                         `add_failed "SQL / " "SQL"`,
+                        `add_failed "PGlite / " "PGlite"`,
                         ``,
                         `S_NONE=$(status_for "No storage / " "$R_NONE")`,
                         `S_DDB=$(status_for "DDB / " "$R_DDB")`,
                         `S_DDB_OS=$(status_for "DDB+OS / " "$R_DDB_OS")`,
                         `S_SQL=$(status_for "SQL / " "$R_SQL")`,
+                        `S_PGLITE=$(status_for "PGlite / " "$R_PGLITE")`,
                         ``,
                         `render_table() {`,
                         `  echo "| Group | Status |"`,
@@ -358,6 +369,7 @@ export const pullRequestsCommandVitest = createWorkflow({
                         `  echo "| DDB | $S_DDB |"`,
                         `  echo "| DDB+OS | $S_DDB_OS |"`,
                         `  echo "| SQL | $S_SQL |"`,
+                        `  echo "| PGlite | $S_PGLITE |"`,
                         `  if [ -s /tmp/failed.txt ]; then`,
                         `    echo ""`,
                         `    echo "<details><summary>❌ Failed packages</summary>"`,

@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api-core" },
     { "path": "../api-event-handler-core" },
+    { "path": "../api-file-manager-s3" },
     { "path": "../api-scheduler-aws" },
     { "path": "../api-websockets" },
     { "path": "../api-websockets-aws" },
@@ -26,6 +27,8 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-event-handler-core/*": ["../api-event-handler-core/src/*"],
       "@webiny/api-event-handler-core": ["../api-event-handler-core/src"],
+      "@webiny/api-file-manager-s3/*": ["../api-file-manager-s3/src/*"],
+      "@webiny/api-file-manager-s3": ["../api-file-manager-s3/src"],
       "@webiny/api-scheduler-aws/*": ["../api-scheduler-aws/src/*"],
       "@webiny/api-scheduler-aws": ["../api-scheduler-aws/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],

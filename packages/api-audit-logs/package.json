@@ -23,7 +23,6 @@
   },
   "devDependencies": {
     "@webiny/api-headless-cms-testing": "0.0.0",
-    "@webiny/background-tasks": "0.0.0",
     "@webiny/di": "^1.0.2",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/handler": "0.0.0",
