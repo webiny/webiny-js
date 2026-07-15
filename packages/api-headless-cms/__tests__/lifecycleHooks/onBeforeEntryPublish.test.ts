@@ -1,9 +1,7 @@
 import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { describe, expect, it } from "vitest";
-import { ContextPlugin } from "@webiny/handler";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { articleModel } from "./mocks/article.model";
-import type { CmsContext } from "~/types";
 import { EntryBeforePublishEventHandler } from "~/features/contentEntry/PublishEntry/index.js";
 
 describe("onEntryBeforePublish", () => {
@@ -11,8 +9,8 @@ describe("onEntryBeforePublish", () => {
         const { handler, tenant } = useHandler({
             plugins: [
                 articleModel,
-                new ContextPlugin<CmsContext>(context => {
-                    context.container.registerFactory(EntryBeforePublishEventHandler, () => ({
+                container => {
+                    container.registerFactory(EntryBeforePublishEventHandler, () => ({
                         async handle(event) {
                             const { model, entry } = event.payload;
 
@@ -26,7 +24,7 @@ describe("onEntryBeforePublish", () => {
                             }
                         }
                     }));
-                })
+                }
             ]
         });
 

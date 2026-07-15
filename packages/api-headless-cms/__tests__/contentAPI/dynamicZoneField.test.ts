@@ -5,8 +5,8 @@ import { usePageManageHandler } from "../testHelpers/usePageManageHandler";
 import { usePageReadHandler } from "../testHelpers/usePageReadHandler";
 import { useAuthorManageHandler } from "~tests/testHelpers/useAuthorManageHandler";
 import type { TestCmsModel } from "~tests/types";
-import { ContextPlugin } from "@webiny/api";
-import type { CmsContext, CmsEntry } from "~/types";
+import type { Container } from "@webiny/di";
+import type { CmsEntry } from "~/types";
 import {
     EntryAfterCreateEventHandler,
     EntryBeforeCreateEventHandler
@@ -326,8 +326,8 @@ describe("dynamicZone field", () => {
         afterUpdate: undefined
     };
 
-    const lifecycleEvents = new ContextPlugin<CmsContext>(async (context: CmsContext) => {
-        context.container.registerFactory(EntryBeforeCreateEventHandler, () => ({
+    const lifecycleEvents = async (container: Container) => {
+        container.registerFactory(EntryBeforeCreateEventHandler, () => ({
             async handle(event) {
                 eventEntryContent.beforeCreate = structuredClone(
                     event.payload.entry
@@ -335,7 +335,7 @@ describe("dynamicZone field", () => {
             }
         }));
 
-        context.container.registerFactory(EntryAfterCreateEventHandler, () => ({
+        container.registerFactory(EntryAfterCreateEventHandler, () => ({
             async handle(event) {
                 eventEntryContent.afterCreate = structuredClone(
                     event.payload.entry
@@ -343,7 +343,7 @@ describe("dynamicZone field", () => {
             }
         }));
 
-        context.container.registerFactory(EntryBeforeUpdateEventHandler, () => ({
+        container.registerFactory(EntryBeforeUpdateEventHandler, () => ({
             async handle(event) {
                 eventEntryContent.beforeUpdate = structuredClone(
                     event.payload.entry
@@ -351,14 +351,14 @@ describe("dynamicZone field", () => {
             }
         }));
 
-        context.container.registerFactory(EntryAfterUpdateEventHandler, () => ({
+        container.registerFactory(EntryAfterUpdateEventHandler, () => ({
             async handle(event) {
                 eventEntryContent.afterUpdate = structuredClone(
                     event.payload.entry
                 ) as CmsEntry<Values>;
             }
         }));
-    });
+    };
 
     const manage = usePageManageHandler({ ...manageOpts, bottomPlugins: [lifecycleEvents] });
 
