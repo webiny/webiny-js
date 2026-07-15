@@ -1743,12 +1743,12 @@
       "name": "p-retry",
       "version": "8.0.0",
       "files": [
-        "/packages/api-dynamodb-to-elasticsearch/package.json",
+        "/packages/api-sync-to-opensearch/package.json",
         "/packages/project-aws/package.json",
         "/packages/sdk/package.json",
         "/packages/utils/package.json",
         "/scripts/release/package.json",
-        "/packages/api-dynamodb-to-elasticsearch/package.json",
+        "/packages/api-sync-to-opensearch/package.json",
         "/packages/project-aws/package.json",
         "/packages/sdk/package.json",
         "/packages/utils/package.json",
@@ -3453,7 +3453,7 @@
         "/packages/api-core-ddb/package.json",
         "/packages/api-core-sql/package.json",
         "/packages/api-core-testing/package.json",
-        "/packages/api-dynamodb-to-elasticsearch/package.json",
+        "/packages/api-sync-to-opensearch/package.json",
         "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-event-handler-aws/package.json",
         "/packages/api-event-handler-aws-ddb/package.json",
@@ -3583,7 +3583,7 @@
         "/packages/api-core-ddb/package.json",
         "/packages/api-core-sql/package.json",
         "/packages/api-core-testing/package.json",
-        "/packages/api-dynamodb-to-elasticsearch/package.json",
+        "/packages/api-sync-to-opensearch/package.json",
         "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-event-handler-aws/package.json",
         "/packages/api-event-handler-aws-ddb/package.json",
@@ -4883,7 +4883,7 @@
             { "file": "/packages/api-core-sql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-core-testing/package.json", "types": ["devDependencies"] },
             {
-              "file": "/packages/api-dynamodb-to-elasticsearch/package.json",
+              "file": "/packages/api-sync-to-opensearch/package.json",
               "types": ["devDependencies"]
             },
             {
@@ -6219,7 +6219,7 @@
           "version": "8.0.0",
           "files": [
             {
-              "file": "/packages/api-dynamodb-to-elasticsearch/package.json",
+              "file": "/packages/api-sync-to-opensearch/package.json",
               "types": ["dependencies"]
             },
             { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },

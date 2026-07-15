@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/helpers/useHandler";
 import { DATA_SYNCHRONIZATION_TASK } from "~/tasks";
-import { SynchronizationBuilder } from "@webiny/api-dynamodb-to-elasticsearch";
+import { SynchronizationBuilder } from "@webiny/api-sync-to-opensearch";
 import type { ITimer } from "@webiny/handler-aws";
 import type { IIndexManager } from "~/settings/types";
 import { timerFactory } from "@webiny/handler-aws/utils";

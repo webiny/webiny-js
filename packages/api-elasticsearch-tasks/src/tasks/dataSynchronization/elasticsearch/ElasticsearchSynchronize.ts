@@ -1,5 +1,5 @@
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batch/batchRead.js";
-import { createSynchronizationBuilder } from "@webiny/api-dynamodb-to-elasticsearch";
+import { createSynchronizationBuilder } from "@webiny/api-sync-to-opensearch";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import {
     ElasticsearchSynchronize as Abstraction,

@@ -6,7 +6,7 @@
  * compression in its own DI container, so this entry only builds the OpenSearch client.
  */
 import { createOpenSearchClient, type OpenSearchClientOptions } from "@webiny/api-opensearch";
-import { createDdbToEsStreamHandler } from "@webiny/api-dynamodb-to-elasticsearch";
+import { createDdbToEsStreamHandler } from "@webiny/api-sync-to-opensearch";
 
 const osUsername = process.env.OPENSEARCH_USERNAME;
 const osPassword = process.env.OPENSEARCH_PASSWORD;

@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/api-dynamodb-to-elasticsearch",
+  "name": "@webiny/api-sync-to-opensearch",
   "version": "0.0.0",
   "type": "module",
   "exports": {

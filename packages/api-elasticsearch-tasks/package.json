@@ -18,8 +18,8 @@
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
-    "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",
     "@webiny/api-opensearch": "0.0.0",
+    "@webiny/api-sync-to-opensearch": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/db": "0.0.0",
