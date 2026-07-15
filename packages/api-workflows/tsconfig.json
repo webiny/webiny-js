@@ -12,7 +12,6 @@
     { "path": "../utils" },
     { "path": "../api-core-testing" },
     { "path": "../api-headless-cms-testing" },
-    { "path": "../background-tasks" },
     { "path": "../plugins" }
   ],
   "compilerOptions": {
@@ -42,8 +41,6 @@
       "@webiny/api-core-testing": ["../api-core-testing/src"],
       "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
-      "@webiny/background-tasks/*": ["../background-tasks/src/*"],
-      "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     }

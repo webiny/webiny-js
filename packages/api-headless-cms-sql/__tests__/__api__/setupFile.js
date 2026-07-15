@@ -1,22 +1,21 @@
 import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { registerSqlStorageOperations } from "../../src/index.js";
 import { createCmsEntryFieldSortingPlugin } from "@webiny/api-headless-cms-storage/plugins/CmsEntryFieldSortingPlugin.js";
-import knexLib from "knex";
-
 import { registerSQLCore } from "@webiny/api-core-sql";
 
-/* Reuse existing knex instance so all SQL presets share the same in-memory database. */
-const knex =
-    global.__testKnex ||
-    knexLib({
-        client: "better-sqlite3",
-        connection: {
-            filename: ":memory:"
-        },
-        useNullAsDefault: true
-    });
+const sqlClient = process.env.WEBINY_SQL_CLIENT;
+
+const clientImports = {
+    pg: () => import("./createPgClient.js"),
+    pglite: () => import("./createPgliteClient.js")
+};
+
+const client = await (clientImports[sqlClient] || (() => import("./createSqliteClient.js")))();
+
+const knex = global.__testKnex || (await client.createKnex());
 
 global.__testKnex = knex;
+global.__testClient = client;
 
 const tableNamePrefix = process.env.SQL_TABLE_PREFIX || process.env.WEBINY_SQL_TABLE_PREFIX || "";
 

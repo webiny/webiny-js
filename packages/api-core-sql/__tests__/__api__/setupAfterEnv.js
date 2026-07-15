@@ -1,20 +1,24 @@
 import { beforeEach, afterAll } from "vitest";
 
-const getKnex = () => {
-    return global.__testKnex;
-};
-
-beforeEach(async () => {
-    const knex = getKnex();
-    if (!knex) {
-        return;
-    }
-
+async function dropAllTablesSqlite(knex) {
     const tables = await knex.raw(
         "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
     );
     for (const { name } of tables) {
         await knex.schema.dropTableIfExists(name);
+    }
+}
+
+beforeEach(async () => {
+    const knex = global.__testKnex;
+    if (!knex) {
+        return;
+    }
+
+    if (global.__testClient) {
+        await global.__testClient.dropAllTables(knex);
+    } else {
+        await dropAllTablesSqlite(knex);
     }
 
     const managers = globalThis.__sqlTableManagers || [];
@@ -24,8 +28,12 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-    const knex = getKnex();
-    if (knex) {
-        await knex.destroy();
+    if (global.__testClient) {
+        await global.__testClient.teardown();
+    } else {
+        const knex = global.__testKnex;
+        if (knex) {
+            await knex.destroy();
+        }
     }
 });

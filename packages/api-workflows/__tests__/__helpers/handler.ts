@@ -1,8 +1,6 @@
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { FULL_ACCESS_TEAM_ID } from "@webiny/api-core-testing";
-import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
-import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { WorkflowsFeature } from "~/WorkflowsFeature.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
@@ -88,8 +86,6 @@ export const createContextHandler = async (params: CmsTestHandlerParams = {}) =>
     const handler = createCmsTestHandler({
         ...params,
         features: container => {
-            // Background tasks were registered globally by the retired useContextHandler.
-            BackgroundTasksFeature.register(container);
             WorkflowsFeature.register(container);
             // GetUserTeamsUseCase is registered inside WorkflowsInitializer.init() (post-auth), so
             // the mock decorator must be applied AFTER that runs. This RequestContextInitializer is
@@ -100,7 +96,6 @@ export const createContextHandler = async (params: CmsTestHandlerParams = {}) =>
                     ctx.container.registerDecorator(GetUserTeamsTestMock);
                 }
             });
-            container.registerInstance(TaskService, createMockTaskService());
         },
         permissions: [
             {
@@ -129,8 +124,6 @@ export const createGraphQLHandler = (params: CmsTestHandlerParams = {}) => {
     const handler = createCmsTestHandler({
         ...params,
         features: container => {
-            // Background tasks were registered globally by the retired useGraphQLHandler.
-            BackgroundTasksFeature.register(container);
             WorkflowsFeature.register(container);
             // GetUserTeamsUseCase is registered inside WorkflowsInitializer.init() (post-auth), so
             // the mock decorator must be applied AFTER that runs. This RequestContextInitializer is
@@ -141,7 +134,6 @@ export const createGraphQLHandler = (params: CmsTestHandlerParams = {}) => {
                     ctx.container.registerDecorator(GetUserTeamsTestMock);
                 }
             });
-            container.registerInstance(TaskService, createMockTaskService());
         },
         permissions: [
             {

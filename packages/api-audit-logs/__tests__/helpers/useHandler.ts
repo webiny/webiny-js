@@ -1,8 +1,6 @@
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
-import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
@@ -35,9 +33,6 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         plugins: apiAcoStorage.plugins,
         testProjectLicense,
         features: container => {
-            // Background tasks were registered globally by the retired useContextHandler; keep them
-            // (AcoFeature/AuditLogsFeature rely on the TasksCrud aggregate) with the mock transport.
-            BackgroundTasksFeature.register(container);
             // CompressionFeature must be registered before the audit logs DDB legacy plugin runs,
             // because that plugin eagerly resolves CompressionHandler from the container.
             CompressionFeature.register(container);
@@ -45,7 +40,6 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             container.register(FileModel);
             AcoFeature.register(container);
             AuditLogsFeature.register(container);
-            container.registerInstance(TaskService, createMockTaskService());
         }
     };
 
