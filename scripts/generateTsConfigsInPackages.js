@@ -70,11 +70,13 @@ function readExistingExclude(target) {
             .filter(name => workspaces.find(pkg => pkg.packageJson.name === name).isTs)
             .map(name => workspaces.find(pkg => pkg.packageJson.name === name));
 
-        // `tsconfig.build.json` compiles only `src`, never `__tests__`. Test-only packages (e.g.
-        // `@webiny/testing`) are never imported from `src`, and because they depend back on the very
-        // packages that consume them, including them as build references creates a circular project
-        // reference that breaks the `composite` build with TS6305. Exclude them from the build config.
-        const buildExcludedPackages = ["@webiny/testing"];
+        // `tsconfig.build.json` compiles only `src`, never `__tests__`. Test-only packages that are
+        // never imported from `src` — and that depend back on the very packages consuming them —
+        // would create a circular project reference that breaks the `composite` build with TS6305, so
+        // they are excluded from the build config. (Currently none; the former `@webiny/testing`
+        // harness has been retired in favor of the `@webiny/api-core-testing` /
+        // `@webiny/api-headless-cms-testing` packages.)
+        const buildExcludedPackages = [];
         const buildDependencies = dependencies.filter(
             dep => !buildExcludedPackages.includes(dep.name)
         );

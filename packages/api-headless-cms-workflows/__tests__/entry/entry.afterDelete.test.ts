@@ -7,7 +7,7 @@ import { CreateWorkflowStateUseCase } from "@webiny/api-workflows/features/workf
 import { model as modelDefinition } from "~tests/__cms/models.js";
 import { StartWorkflowStateStepUseCase } from "@webiny/api-workflows/features/workflowState/StartWorkflowStateStep/index.js";
 import { ApproveWorkflowStateStepUseCase } from "@webiny/api-workflows/features/workflowState/ApproveWorkflowStateStep/index.js";
-import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
+import { FULL_ACCESS_TEAM_ID } from "@webiny/api-core-testing";
 import { GetUserTeamsUseCase } from "@webiny/api-workflows/features/internal/GetUserTeams/index.js";
 import { Result } from "@webiny/feature/api/index.js";
 import { WorkflowStateRecordState } from "@webiny/api-workflows/domain/workflowState/abstractions.js";
