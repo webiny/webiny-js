@@ -39,8 +39,7 @@ class ExecuteSyncWithRetryImpl implements IExecuteSyncWithRetry {
                     await this.executeSync.execute({
                         timer: params.timer,
                         maxRunningTime: params.maxRunningTime,
-                        maxProcessorPercent:
-                            params.maxProcessorPercent || MAX_PROCESSOR_PERCENT,
+                        maxProcessorPercent: params.maxProcessorPercent || MAX_PROCESSOR_PERCENT,
                         openSearchClient: params.openSearchClient,
                         operations: params.operations
                     });

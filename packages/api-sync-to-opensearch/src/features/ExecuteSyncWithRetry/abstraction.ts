@@ -1,8 +1,10 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { ExecuteSync } from "../ExecuteSync/abstraction.js";
 
-export interface IExecuteSyncWithRetryParams
-    extends Omit<ExecuteSync.Params, "maxProcessorPercent"> {
+export interface IExecuteSyncWithRetryParams extends Omit<
+    ExecuteSync.Params,
+    "maxProcessorPercent"
+> {
     maxRetryTime?: number;
     retries?: number;
     minTimeout?: number;
