@@ -1806,7 +1806,7 @@
     },
     {
       "name": "postcss",
-      "version": "8.5.16",
+      "version": "8.5.17",
       "files": [
         "/packages/website-builder-nextjs/package.json",
         "/packages/website-builder-nuxt/package.json",
@@ -2244,7 +2244,7 @@
     },
     {
       "name": "tar",
-      "version": "7.5.19",
+      "version": "7.5.20",
       "files": ["/packages/pulumi-sdk/package.json", "/packages/pulumi-sdk/package.json"]
     },
     {
@@ -8146,7 +8146,7 @@
       "name": "tar",
       "versions": [
         {
-          "version": "7.5.19",
+          "version": "7.5.20",
           "files": [{ "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -8235,7 +8235,7 @@
       "name": "postcss",
       "versions": [
         {
-          "version": "8.5.16",
+          "version": "8.5.17",
           "files": [
             { "file": "/packages/website-builder-nextjs/package.json", "types": ["dependencies"] },
             { "file": "/packages/website-builder-nuxt/package.json", "types": ["dependencies"] }
