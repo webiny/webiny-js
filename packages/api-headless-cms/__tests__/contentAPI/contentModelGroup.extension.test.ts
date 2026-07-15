@@ -1,5 +1,4 @@
 import { describe, expect, test } from "vitest";
-import { createContextPlugin } from "@webiny/api";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { ModelGroupFactory } from "~/features/contentModelGroup/shared/abstractions.js";
 
@@ -28,9 +27,9 @@ describe("ModelGroupFactory test", () => {
         const { listContentModelGroupsQuery } = useGraphQLHandler({
             path: "manage",
             plugins: [
-                createContextPlugin(context => {
-                    context.container.register(MyGroupsFactory);
-                })
+                container => {
+                    container.register(MyGroupsFactory);
+                }
             ]
         });
 
