@@ -4,6 +4,7 @@ import { AppInstaller } from "@webiny/api-core/features/tenancy/InstallTenant/in
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 
 class SettingsInstallerImpl implements AppInstaller.Interface {
     readonly alwaysRun = true;
@@ -12,7 +13,8 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
 
     constructor(
         private updateSettings: UpdateSettingsUseCase.Interface,
-        private keyValueStore: KeyValueStore.Interface
+        private keyValueStore: KeyValueStore.Interface,
+        private buildParams: BuildParams.Interface
     ) {}
 
     async install(): Promise<void> {
@@ -24,8 +26,12 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
         //
         // The AWS flavour serves files from a CloudFront domain (in the manifest). The self-hosted
         // (server) flavour has no CloudFront — files are served by the api's own `/files/*` route — so
-        // fall back to the configured API origin (WEBINY_API_URL), the same origin the client uses.
-        const domain = manifest?.api?.cloudfront?.domain ?? process.env.WEBINY_API_URL ?? "";
+        // fall back to the configured API origin, read from the WEBINY_API_URL build param (baked by
+        // Infra.ApiUrl), not a process.env read.
+        const domain =
+            manifest?.api?.cloudfront?.domain ??
+            this.buildParams.get<string>("WEBINY_API_URL") ??
+            "";
 
         await this.updateSettings.execute({
             srcPrefix: `${domain}/files`
@@ -40,5 +46,5 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
 export const SettingsInstaller = createImplementation({
     abstraction: AppInstaller,
     implementation: SettingsInstallerImpl,
-    dependencies: [UpdateSettingsUseCase, KeyValueStore]
+    dependencies: [UpdateSettingsUseCase, KeyValueStore, BuildParams]
 });
