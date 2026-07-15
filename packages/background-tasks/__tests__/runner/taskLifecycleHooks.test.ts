@@ -5,7 +5,7 @@ import { createLiveContextFactory } from "~tests/live";
 import { timerFactory } from "@webiny/handler-aws/utils";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { createContextPlugin } from "@webiny/api";
+import type { Container } from "@webiny/di";
 import { TaskDataStatus } from "~/api/types.js";
 
 describe("task lifecycle hooks", () => {
@@ -31,9 +31,9 @@ describe("task lifecycle hooks", () => {
 
             const contextFactory = createLiveContextFactory({
                 plugins: [
-                    createContextPlugin(context => {
-                        context.container.register(TestTaskDefinition);
-                    })
+                    (container: Container) => {
+                        container.register(TestTaskDefinition);
+                    }
                 ]
             });
 
@@ -82,9 +82,9 @@ describe("task lifecycle hooks", () => {
 
             const contextFactory = createLiveContextFactory({
                 plugins: [
-                    createContextPlugin(context => {
-                        context.container.register(TestTaskDefinition);
-                    })
+                    (container: Container) => {
+                        container.register(TestTaskDefinition);
+                    }
                 ]
             });
 
@@ -144,9 +144,9 @@ describe("task lifecycle hooks", () => {
 
             const contextFactory = createLiveContextFactory({
                 plugins: [
-                    createContextPlugin(context => {
-                        context.container.register(TestTaskDefinition);
-                    })
+                    (container: Container) => {
+                        container.register(TestTaskDefinition);
+                    }
                 ]
             });
 
@@ -200,9 +200,9 @@ describe("task lifecycle hooks", () => {
 
             const contextFactory = createLiveContextFactory({
                 plugins: [
-                    createContextPlugin(context => {
-                        context.container.register(TestTaskDefinition);
-                    })
+                    (container: Container) => {
+                        container.register(TestTaskDefinition);
+                    }
                 ]
             });
 
@@ -256,9 +256,9 @@ describe("task lifecycle hooks", () => {
 
             const contextFactory = createLiveContextFactory({
                 plugins: [
-                    createContextPlugin(context => {
-                        context.container.register(TestTaskDefinition);
-                    })
+                    (container: Container) => {
+                        container.register(TestTaskDefinition);
+                    }
                 ]
             });
 
@@ -336,9 +336,9 @@ describe("task lifecycle hooks", () => {
 
             const contextFactory = createLiveContextFactory({
                 plugins: [
-                    createContextPlugin(context => {
-                        context.container.register(TestTaskDefinition);
-                    })
+                    (container: Container) => {
+                        container.register(TestTaskDefinition);
+                    }
                 ]
             });
 
