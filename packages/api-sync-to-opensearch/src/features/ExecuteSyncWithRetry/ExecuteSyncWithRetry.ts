@@ -2,8 +2,7 @@ import pRetry from "p-retry";
 import { ExecuteSync } from "../ExecuteSync/abstraction.js";
 import { NotEnoughRemainingTimeError } from "~/NotEnoughRemainingTimeError.js";
 import { getNumberEnvVariable } from "~/helpers/getNumberEnvVariable.js";
-import type { IExecuteSyncWithRetry, IExecuteSyncWithRetryParams } from "./abstraction.js";
-import { ExecuteSyncWithRetry } from "./abstraction.js";
+import { ExecuteSyncWithRetry as ExecuteSyncWithRetryAbstraction } from "./abstraction.js";
 
 const minRemainingSecondsToTimeout = 120;
 
@@ -12,10 +11,10 @@ const MAX_PROCESSOR_PERCENT = getNumberEnvVariable(
     process.env.NODE_ENV === "test" ? 101 : 98
 );
 
-class ExecuteSyncWithRetryImpl implements IExecuteSyncWithRetry {
+class ExecuteSyncWithRetryImpl implements ExecuteSyncWithRetryAbstraction.Interface {
     public constructor(private readonly executeSync: ExecuteSync.Interface) {}
 
-    public async execute(params: IExecuteSyncWithRetryParams): Promise<void> {
+    public async execute(params: ExecuteSyncWithRetryAbstraction.Params): Promise<void> {
         const maxRetryTime = getNumberEnvVariable(
             "WEBINY_DYNAMODB_TO_OPENSEARCH_MAX_RETRY_TIME",
             params.maxRetryTime || 300000
@@ -67,7 +66,7 @@ class ExecuteSyncWithRetryImpl implements IExecuteSyncWithRetry {
     }
 }
 
-export const ExecuteSyncWithRetryImplementation = ExecuteSyncWithRetry.createImplementation({
+export const ExecuteSyncWithRetry = ExecuteSyncWithRetryAbstraction.createImplementation({
     implementation: ExecuteSyncWithRetryImpl,
     dependencies: [ExecuteSync]
 });

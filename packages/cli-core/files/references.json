@@ -3453,7 +3453,6 @@
         "/packages/api-core-ddb/package.json",
         "/packages/api-core-sql/package.json",
         "/packages/api-core-testing/package.json",
-        "/packages/api-sync-to-opensearch/package.json",
         "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-event-handler-aws/package.json",
         "/packages/api-event-handler-aws-ddb/package.json",
@@ -3484,7 +3483,9 @@
         "/packages/api-scheduler/package.json",
         "/packages/api-scheduler-aws/package.json",
         "/packages/api-scheduler-server/package.json",
+        "/packages/api-sync-ddb-to-opensearch/package.json",
         "/packages/api-sync-system/package.json",
+        "/packages/api-sync-to-opensearch/package.json",
         "/packages/api-website-builder/package.json",
         "/packages/api-website-builder-scheduler/package.json",
         "/packages/api-website-builder-workflows/package.json",
@@ -3583,7 +3584,6 @@
         "/packages/api-core-ddb/package.json",
         "/packages/api-core-sql/package.json",
         "/packages/api-core-testing/package.json",
-        "/packages/api-sync-to-opensearch/package.json",
         "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-event-handler-aws/package.json",
         "/packages/api-event-handler-aws-ddb/package.json",
@@ -3614,7 +3614,9 @@
         "/packages/api-scheduler/package.json",
         "/packages/api-scheduler-aws/package.json",
         "/packages/api-scheduler-server/package.json",
+        "/packages/api-sync-ddb-to-opensearch/package.json",
         "/packages/api-sync-system/package.json",
+        "/packages/api-sync-to-opensearch/package.json",
         "/packages/api-website-builder/package.json",
         "/packages/api-website-builder-scheduler/package.json",
         "/packages/api-website-builder-workflows/package.json",
@@ -4883,10 +4885,6 @@
             { "file": "/packages/api-core-sql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-core-testing/package.json", "types": ["devDependencies"] },
             {
-              "file": "/packages/api-sync-to-opensearch/package.json",
-              "types": ["devDependencies"]
-            },
-            {
               "file": "/packages/api-elasticsearch-tasks/package.json",
               "types": ["devDependencies"]
             },
@@ -4967,7 +4965,15 @@
             { "file": "/packages/api-scheduler/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-scheduler-aws/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-scheduler-server/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/api-sync-ddb-to-opensearch/package.json",
+              "types": ["devDependencies"]
+            },
             { "file": "/packages/api-sync-system/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/api-sync-to-opensearch/package.json",
+              "types": ["devDependencies"]
+            },
             { "file": "/packages/api-website-builder/package.json", "types": ["devDependencies"] },
             {
               "file": "/packages/api-website-builder-scheduler/package.json",
@@ -6213,24 +6219,6 @@
       ]
     },
     {
-      "name": "p-retry",
-      "versions": [
-        {
-          "version": "8.0.0",
-          "files": [
-            {
-              "file": "/packages/api-sync-to-opensearch/package.json",
-              "types": ["dependencies"]
-            },
-            { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
-            { "file": "/packages/sdk/package.json", "types": ["dependencies"] },
-            { "file": "/packages/utils/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/release/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
       "name": "pg",
       "versions": [
         {
@@ -6574,6 +6562,21 @@
             { "file": "/packages/pulumi/package.json", "types": ["devDependencies"] },
             { "file": "/packages/pulumi-sdk/package.json", "types": ["devDependencies"] },
             { "file": "/packages/validation/package.json", "types": ["devDependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "p-retry",
+      "versions": [
+        {
+          "version": "8.0.0",
+          "files": [
+            { "file": "/packages/api-sync-to-opensearch/package.json", "types": ["dependencies"] },
+            { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
+            { "file": "/packages/sdk/package.json", "types": ["dependencies"] },
+            { "file": "/packages/utils/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/release/package.json", "types": ["dependencies"] }
           ]
         }
       ]

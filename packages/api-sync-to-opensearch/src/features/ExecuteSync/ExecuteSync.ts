@@ -7,8 +7,7 @@ import {
 import type { ApiResponse } from "@webiny/api-opensearch/types.js";
 import { WebinyError } from "@webiny/error";
 import { shouldShowLogs } from "~/helpers/shouldShowLogs.js";
-import type { IExecuteSync, IExecuteSyncParams } from "./abstraction.js";
-import { ExecuteSync } from "./abstraction.js";
+import { ExecuteSync as ExecuteSyncAbstraction } from "./abstraction.js";
 
 interface BulkOperationsResponseBodyItemIndexError {
     reason?: string;
@@ -53,8 +52,8 @@ const checkErrors = (result?: ApiResponse): void => {
     }
 };
 
-class ExecuteSyncImpl implements IExecuteSync {
-    public async execute(params: IExecuteSyncParams): Promise<void> {
+class ExecuteSyncImpl implements ExecuteSyncAbstraction.Interface {
+    public async execute(params: ExecuteSyncAbstraction.Params): Promise<void> {
         const { openSearchClient, timer, maxRunningTime, maxProcessorPercent, operations } = params;
 
         if (operations.total === 0) {
@@ -129,7 +128,7 @@ class ExecuteSyncImpl implements IExecuteSync {
     }
 }
 
-export const ExecuteSyncImplementation = ExecuteSync.createImplementation({
+export const ExecuteSync = ExecuteSyncAbstraction.createImplementation({
     implementation: ExecuteSyncImpl,
     dependencies: []
 });
