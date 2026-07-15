@@ -11439,6 +11439,7 @@ __metadata:
     "@webiny/di": "npm:^1.0.2"
     "@webiny/error": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     bree: "npm:^9.2.9"
     typescript: "npm:^7.0.2"

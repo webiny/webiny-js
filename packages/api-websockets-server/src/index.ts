@@ -9,3 +9,4 @@ export * from "~/connectionManager/abstractions.js";
 export { ServerConnectionManager } from "~/connectionManager/ServerConnectionManager.js";
 export { NodeWsAdapter } from "~/adapter/NodeWsAdapter.js";
 export { ServerWebsocketsTransport } from "~/transport/ServerWebsocketsTransport.js";
+export { WebsocketsServerFeature } from "~/WebsocketsServerFeature.js";

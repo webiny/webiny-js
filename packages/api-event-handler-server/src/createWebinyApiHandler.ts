@@ -21,12 +21,12 @@ import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import {
     ServerConnectionManager,
     NodeWsAdapter,
-    ServerWebsocketsTransport,
+    WebsocketsServerFeature,
     WebsocketsConnectionManager,
     attachWebsocketsServer
 } from "@webiny/api-websockets-server";
 import { BackgroundTasksServerFeature } from "@webiny/background-tasks-server";
-import { registerSchedulerServerExtension } from "@webiny/api-scheduler-server";
+import { SchedulerServerFeature } from "@webiny/api-scheduler-server";
 import { FileManagerServerFeature } from "@webiny/api-file-manager-server";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
@@ -102,13 +102,13 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                     // Server WebSockets transport; resolves the shared connection manager + adapter
                     // from the root (registered as singletons above).
                     realtime: requestContainer => {
-                        requestContainer.register(ServerWebsocketsTransport);
+                        WebsocketsServerFeature.register(requestContainer);
                     },
                     // Scheduler transport: the Bree/in-process extension. Where AWS bridges EventBridge
                     // Scheduler, the single-process server drives delayed/scheduled action triggers with
                     // in-process timers (Bree).
                     scheduler: requestContainer => {
-                        registerSchedulerServerExtension(requestContainer);
+                        SchedulerServerFeature.register(requestContainer);
                     },
                     // File-manager storage transport: local disk. Where AWS uses S3 (+ a separate asset-
                     // delivery Lambda), the single-process server stores files on disk and serves them
