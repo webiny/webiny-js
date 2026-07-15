@@ -39,14 +39,23 @@ class ApplyDiscountBulkActionImpl implements EntriesBulkAction.Interface {
 
     /**
      * Collect the entries the task will operate on. `params.where` already contains the
-     * selection scope sent from the Admin UI (see the frontend button), so we just pass
-     * it through to the standard "list latest entries" use case.
+     * selection scope sent from the Admin UI (see the frontend button).
+     *
+     * IMPORTANT: the tasks engine calls `loadData` repeatedly until it returns zero
+     * entries — after each processing round it re-lists to check for more work. So the
+     * filter MUST exclude already-processed entries, otherwise the task never converges
+     * (it would re-discount the same products forever and eventually hit maxIterations).
+     * We exclude anything already `onSale`; `processData` flips that flag.
      */
     public async loadData(
         model: EntriesBulkAction.Model,
         params: EntriesBulkAction.LoadDataParams
     ): Promise<EntriesBulkAction.LoadDataResult> {
-        const result = await this.listLatestEntries.execute(model, params);
+        // Custom-field filters (e.g. `onSale_not`) aren't in the typed `CmsEntryListWhere`,
+        // so build the where object as a plain record to merge the selection scope with
+        // our "not yet processed" filter.
+        const where: Record<string, unknown> = { ...params.where, onSale_not: true };
+        const result = await this.listLatestEntries.execute(model, { ...params, where });
         return result.value;
     }
 
@@ -74,8 +83,10 @@ class ApplyDiscountBulkActionImpl implements EntriesBulkAction.Interface {
         // Discount and round to 2 decimals.
         const newPrice = Math.round(currentPrice * (1 - percent / 100) * 100) / 100;
 
+        // Flip `onSale` so the entry is excluded from the next `loadData` round — this is
+        // what lets the background task converge and finish.
         const updated = await this.updateEntry.execute(model, entry.id, {
-            values: { price: newPrice }
+            values: { price: newPrice, onSale: true }
         });
         if (updated.isFail()) {
             throw updated.error;

@@ -28,6 +28,18 @@ write scheduling, batching, retry, or timeout-resume code. For every registered
 The action name `applyDiscount` is PascalCased into those ids/enum values, which is why
 the frontend triggers it with `action: "ApplyDiscount"`.
 
+### Convergence (important)
+
+The tasks engine calls `loadData` **repeatedly** until it returns zero entries — after
+each processing round it re-lists to check for more work. So `loadData` must exclude
+entries it has already processed, or the task never finishes (it re-processes the same
+entries until it hits `maxIterations` and fails). Built-in actions do this naturally
+(e.g. Publish filters `status_not: "published"`).
+
+This demo uses an `onSale` boolean on the Product model: `loadData` filters
+`onSale_not: true`, and `processData` sets `onSale: true`. To re-run the discount on a
+product, turn its **On sale** switch back off.
+
 Flow:
 
 ```

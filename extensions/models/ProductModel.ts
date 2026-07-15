@@ -37,13 +37,20 @@ class ProductModelImpl implements ModelFactory.Interface {
                         .label("Price")
                         .required("Price is required")
                         .gte(0, "Price must be greater than or equal to 0"),
+                    onSale: fields
+                        .boolean()
+                        .renderer("switch")
+                        .label("On sale")
+                        .help(
+                            'Set by the "Apply Discount" bulk action. Turn off to make the product eligible for a discount again.'
+                        ),
                     category: fields
                         .ref()
                         .renderer("refDialogSingle")
                         .label("Category")
                         .models([{ modelId: "productCategory" }])
                 }))
-                .layout([["name"], ["sku"], ["category"], ["description"], ["price"]])
+                .layout([["name"], ["sku"], ["category"], ["description"], ["price", "onSale"]])
                 .titleFieldId("name")
                 .singularApiName("Product")
                 .pluralApiName("Products")
