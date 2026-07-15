@@ -2,7 +2,6 @@ import path from "node:path";
 import { mkdir } from "node:fs/promises";
 import { mdbid } from "@webiny/utils";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { Request } from "@webiny/handler/abstractions/Request.js";
 import { CreateMultiPartUploadUseCase as CreateMultiPartUploadUseCaseAbstraction } from "@webiny/api-file-manager/features/upload/CreateMultiPartUpload/index.js";
 import type { CreateMultiPartUploadResult } from "@webiny/api-file-manager/features/upload/types.js";
 import { createUploadToken } from "~/utils/uploadToken.js";
@@ -14,7 +13,6 @@ class CreateMultiPartUploadUseCaseImpl
 {
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
-        private readonly request: Request.Interface,
         private readonly config: FileManagerServerConfig.Interface
     ) {}
 
@@ -24,7 +22,7 @@ class CreateMultiPartUploadUseCaseImpl
         const { file, numberOfParts } = params;
         const storagePath = this.config.storagePath;
         const tenant = this.tenantContext.getTenant();
-        const serverUrl = await resolveServerUrl(this.request);
+        const serverUrl = resolveServerUrl();
 
         const uploadId = mdbid();
 
@@ -60,5 +58,5 @@ class CreateMultiPartUploadUseCaseImpl
 export const CreateMultiPartUploadUseCase =
     CreateMultiPartUploadUseCaseAbstraction.createImplementation({
         implementation: CreateMultiPartUploadUseCaseImpl,
-        dependencies: [TenantContext, Request, FileManagerServerConfig]
+        dependencies: [TenantContext, FileManagerServerConfig]
     });

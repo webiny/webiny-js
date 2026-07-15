@@ -16,13 +16,15 @@ import { AcoFeature } from "@webiny/api-aco";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { FileManagerAppFeature } from "@webiny/api-file-manager";
 import { FileManagerAcoFeature } from "@webiny/api-file-manager-aco";
-import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
 import { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "@webiny/api-website-builder";
 import { WebsiteBuilderWorkflowsFeature } from "@webiny/api-website-builder-workflows";
 import { WebsiteBuilderSchedulerFeature } from "@webiny/api-website-builder-scheduler";
 import { WebsocketsFeature } from "@webiny/api-websockets";
 import { WorkflowsFeature } from "@webiny/api-workflows";
 import { SchedulerFeature } from "@webiny/api-scheduler";
+
+/** Installs a flavour-specific transport adapter into the per-request container at its interleave point. */
+export type TransportRegistrar = (container: Container) => void | Promise<void>;
 
 export interface RegisterApiRequestStackConfig {
     /**
@@ -36,18 +38,30 @@ export interface RegisterApiRequestStackConfig {
      */
     registerRequestStorage?: (container: Container) => void | Promise<void>;
     /**
-     * Register the real-time (websockets) transport, run immediately AFTER the transport-agnostic
-     * `WebsocketsFeature`. On AWS this is `WebsocketsAwsFeature` (API Gateway Management API); it
-     * MUST register after WebsocketsFeature so it overrides the NullWebsocketsTransport
-     * (nearest-container-last-wins), otherwise every server→client send() is a silent no-op.
-     * Optional — omit for transports with no real-time push.
+     * Flavour-specific transport adapters, each installed at its exact interleave point in the stack.
+     * Every entry follows the same shape: it runs immediately AFTER the transport-agnostic domain
+     * Feature has registered its NULL default, and overrides that default (nearest-container-last-wins)
+     * with the real adapter. Each is optional — omit one for a deployment/transport that lacks that
+     * capability. AWS supplies AWS adapters (API Gateway Management API / EventBridge / S3); the
+     * self-hosted server supplies in-process adapters (server WebSockets / Bree / local disk).
      */
-    registerRealtimeTransport?: (container: Container) => void | Promise<void>;
-    /**
-     * Register the scheduler transport, run AFTER `SchedulerFeature` and BEFORE `CmsSchedulerFeature`.
-     * On AWS this bridges the scheduler-aws extension (EventBridge Scheduler). Optional.
-     */
-    registerSchedulerTransport?: (container: Container) => void | Promise<void>;
+    transports?: {
+        /**
+         * Real-time (WebSockets) transport, run right after `WebsocketsFeature`. Overrides the
+         * NullWebsocketsTransport, otherwise every server→client send() is a silent no-op.
+         */
+        realtime?: TransportRegistrar;
+        /**
+         * Scheduler transport, run AFTER `SchedulerFeature` and BEFORE `CmsSchedulerFeature`.
+         */
+        scheduler?: TransportRegistrar;
+        /**
+         * File-manager storage transport, run AFTER `FileManagerAppFeature` (which registers the
+         * AssetDeliveryRoute + NULL asset-delivery impls). Overrides those nulls with real impls and
+         * adds the file-operation features.
+         */
+        fileManager?: TransportRegistrar;
+    };
 }
 
 /**
@@ -86,10 +100,10 @@ export async function registerApiRequestStack(
     AcoHcmsFeature.register(container);
     HcmsTasksFeature.register(container);
 
-    // ── File Manager ───────────────────────────────────────────
+    // ── File Manager (domain) + storage transport ──────────────
     FileManagerAppFeature.register(container);
     FileManagerAcoFeature.register(container);
-    FileManagerS3Feature.register(container, {});
+    await config.transports?.fileManager?.(container);
 
     // ── Website Builder ────────────────────────────────────────
     WebsiteBuilderFeature.register(container);
@@ -99,7 +113,7 @@ export async function registerApiRequestStack(
 
     // ── Websockets (domain) + real-time transport ──────────────
     WebsocketsFeature.register(container);
-    await config.registerRealtimeTransport?.(container);
+    await config.transports?.realtime?.(container);
 
     // ── Supporting services ────────────────────────────────────
     MailerFeature.register(container);
@@ -114,7 +128,7 @@ export async function registerApiRequestStack(
 
     // ── Scheduler + scheduler transport ────────────────────────
     SchedulerFeature.register(container);
-    await config.registerSchedulerTransport?.(container);
+    await config.transports?.scheduler?.(container);
     CmsSchedulerFeature.register(container);
 
     // ── Extensions ─────────────────────────────────────────────

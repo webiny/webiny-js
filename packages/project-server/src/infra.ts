@@ -12,6 +12,7 @@ import {
 import { CiIs, CiIsNot } from "@webiny/project/extensions/infra/index.js";
 import { Sqlite } from "./extensions/Sqlite.js";
 import { Postgres } from "./extensions/Postgres.js";
+import { FileStorage } from "./extensions/FileStorage.js";
 
 /**
  * Server-flavour counterpart to project-aws's `Infra`, limited to what applies off-AWS. Omits the
@@ -32,6 +33,8 @@ export const Infra = {
     // Server-flavour SQL storage (engine-named, like Infra.OpenSearch on AWS).
     Sqlite,
     Postgres,
+    // Server-flavour local file storage (counterpart to the AWS S3 bucket).
+    FileStorage,
     Ci: {
         Is: CiIs,
         IsNot: CiIsNot
