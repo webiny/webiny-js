@@ -33,9 +33,12 @@
     "knex": "^3.3.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.4",
+    "@electric-sql/pglite-socket": "^0.2.7",
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "better-sqlite3": "^12.11.1",
+    "pg": "^8.22.0",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
   },
