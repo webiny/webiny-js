@@ -37,6 +37,12 @@ export async function createServerHandler(
                 res.end();
             } else if (typeof body === "string") {
                 res.end(body);
+            } else if (Buffer.isBuffer(body) || body instanceof Uint8Array) {
+                // Binary response (e.g. asset delivery returns an image Buffer). Write the raw bytes —
+                // JSON.stringify(buffer) would serialize it to `{"type":"Buffer","data":[...]}`, which
+                // the browser rejects (ERR_BLOCKED_BY_ORB) since it isn't the declared image content.
+                // The route's own Content-Type header (set via res.writeHead above) is preserved.
+                res.end(body);
             } else {
                 res.end(JSON.stringify(body));
             }

@@ -1718,9 +1718,11 @@
       "version": "7.0.5",
       "files": [
         "/packages/api-file-manager-s3/package.json",
+        "/packages/api-file-manager-server/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/sdk/package.json",
         "/packages/api-file-manager-s3/package.json",
+        "/packages/api-file-manager-server/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/sdk/package.json"
       ]
@@ -6345,6 +6347,7 @@
           "version": "7.0.5",
           "files": [
             { "file": "/packages/api-file-manager-s3/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-file-manager-server/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
             { "file": "/packages/sdk/package.json", "types": ["dependencies"] }
           ]
