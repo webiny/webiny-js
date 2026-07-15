@@ -283,6 +283,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@atlaskit/pragmatic-drag-and-drop-hitbox@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@atlaskit/pragmatic-drag-and-drop-hitbox@npm:2.0.0"
+  dependencies:
+    "@atlaskit/pragmatic-drag-and-drop": "npm:^2.0.0"
+    "@babel/runtime": "npm:^7.0.0"
+  checksum: 10/6627299f1ff218237693bd5fb9cd278f19921a9510e04893aeee8fce8e97cbb0e3c3e72a0dcd8b7f7784b273c6de9c23fdef13937bc972e5d8e89073f3bd4aa2
+  languageName: node
+  linkType: hard
+
+"@atlaskit/pragmatic-drag-and-drop@npm:^2.0.0, @atlaskit/pragmatic-drag-and-drop@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@atlaskit/pragmatic-drag-and-drop@npm:2.0.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.0.0"
+    bind-event-listener: "npm:^3.0.0"
+    raf-schd: "npm:^4.0.3"
+  checksum: 10/2429890a5257591f7cc6ef643203b7d8c69cf4b47b097e5d8dfcbcf33cf556c8ef903d35ba32ef226ff511aa69b9473f90a0229976c7ed483f41cf58ac716fed
+  languageName: node
+  linkType: hard
+
 "@auth0/auth0-auth-js@npm:^1.10.0":
   version: 1.11.0
   resolution: "@auth0/auth0-auth-js@npm:1.11.0"
@@ -1404,7 +1425,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.28.6, @babel/runtime@npm:^7.29.2, @babel/runtime@npm:^7.29.7, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.28.6, @babel/runtime@npm:^7.29.2, @babel/runtime@npm:^7.29.7, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
   version: 7.29.7
   resolution: "@babel/runtime@npm:7.29.7"
   checksum: 10/9883b4951787779fd382b121f22f92966d85f19434841f65fb00b2dfec232107e139683f47c6f252891826ad8ee18317b46c3a0e4819116a9885f47b46d7126a
@@ -12165,6 +12186,8 @@ __metadata:
   dependencies:
     "@apollo/react-components": "npm:^3.1.5"
     "@apollo/react-hooks": "npm:^3.1.5"
+    "@atlaskit/pragmatic-drag-and-drop": "npm:^2.0.1"
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "npm:^2.0.0"
     "@emotion/css": "npm:^11.13.5"
     "@emotion/react": "npm:11.14.0"
     "@emotion/styled": "npm:11.14.1"
@@ -15164,6 +15187,13 @@ __metadata:
   version: 2.3.0
   resolution: "binary-extensions@npm:2.3.0"
   checksum: 10/bcad01494e8a9283abf18c1b967af65ee79b0c6a9e6fcfafebfe91dbe6e0fc7272bafb73389e198b310516ae04f7ad17d79aacf6cb4c0d5d5202a7e2e52c7d98
+  languageName: node
+  linkType: hard
+
+"bind-event-listener@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "bind-event-listener@npm:3.0.0"
+  checksum: 10/3d442307ee906b79f041433b065e7b259bd1e5231a74519271cc5beb485f7c469609da9c7f20fdd0b3ab340e4691fee826b76d003c71cf5ad955186aba5c256e
   languageName: node
   linkType: hard
 
@@ -21546,7 +21576,6 @@ __metadata:
     "@types/react-dom": "npm:^19"
     eslint: "npm:^9"
     eslint-config-next: "npm:15.5.14"
-    mobx-react-lite: "npm:^4.1.0"
     next: "npm:15.5.14"
     react: "npm:19.2.3"
     react-dom: "npm:19.2.3"
@@ -25235,6 +25264,13 @@ __metadata:
     "@types/react-dom":
       optional: true
   checksum: 10/8cbf1ab070cd676c185ffb3de4f6963f971b197369daefebb1c43c2aa0ae19647773b8730a1b0cca957296b7d88bf2ba9212ea8651eaf635cb6dbfbd81118c2f
+  languageName: node
+  linkType: hard
+
+"raf-schd@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "raf-schd@npm:4.0.3"
+  checksum: 10/45514041c5ad31fa96aef3bb3c572a843b92da2f2cd1cb4a47c9ad58e48761d3a4126e18daa32b2bfa0bc2551a42d8f324a0e40e536cb656969929602b4e8b58
   languageName: node
   linkType: hard
 

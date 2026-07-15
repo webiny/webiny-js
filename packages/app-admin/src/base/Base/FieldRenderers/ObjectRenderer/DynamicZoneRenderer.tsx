@@ -1,7 +1,7 @@
 import React from "react";
 import { createObjectFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 import { SingleValueDynamicZone } from "./SingleValueDynamicZone.js";
-import { MultiValueDynamicZone } from "./MultiValueDynamicZone.js";
+import { MultiValueDynamicZone } from "./MultiValueDynamicZone/index.js";
 
 declare module "../../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {

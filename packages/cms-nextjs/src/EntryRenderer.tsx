@@ -58,11 +58,7 @@ export const EntryRenderer = ({ entry, model, components, children }: EntryRende
     return (
         <ModelContext.Provider value={model}>
             <ComponentsContext.Provider value={components}>
-                <EntryStoreProvider
-                    entryId={entry.entryId}
-                    entry={entry}
-                    storeConfig={storeConfig}
-                >
+                <EntryStoreProvider entryId={entry.entryId} entry={entry} storeConfig={storeConfig}>
                     {children}
                 </EntryStoreProvider>
             </ComponentsContext.Provider>

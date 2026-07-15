@@ -171,5 +171,5 @@ export interface CmsModel {
     };
     metadata: {
         valuesSelection: string;
-    }
+    };
 }

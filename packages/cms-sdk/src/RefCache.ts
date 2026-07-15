@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction, observable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import type { CmsEntry, GetEntryParams } from "./types.js";
 
 export interface RefCacheResolver {
