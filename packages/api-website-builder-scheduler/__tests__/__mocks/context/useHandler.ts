@@ -1,6 +1,6 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
-import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
-import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { WebsiteBuilderSchedulerFeature } from "~/WebsiteBuilderSchedulerFeature.js";
 import { SchedulerFeature, SchedulerService } from "@webiny/api-scheduler";

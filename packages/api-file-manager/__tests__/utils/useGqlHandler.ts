@@ -11,10 +11,10 @@ import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.j
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { FileManagerAppFeature } from "~/FileManagerAppFeature";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
-import { AuthTriggerHandler } from "@webiny/api-testing";
-import { RootTenantInitializer } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
+import { AuthTriggerHandler } from "@webiny/api-core-testing";
+import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { createFileManagerSdk } from "./createFileManagerSdk";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";

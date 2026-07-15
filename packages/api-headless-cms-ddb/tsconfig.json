@@ -11,7 +11,6 @@
     { "path": "../error" },
     { "path": "../feature" },
     { "path": "../handler" },
-    { "path": "../handler-db" },
     { "path": "../plugins" },
     { "path": "../utils" }
   ],
@@ -40,8 +39,6 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],

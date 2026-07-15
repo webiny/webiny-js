@@ -1,10 +1,8 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
-import { DbFeature } from "@webiny/handler-db";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
 import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
-import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
-import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { HcmsTasksContext } from "~/types";
 import { HcmsTasksFeature } from "~/HcmsTasksFeature.js";
 
@@ -23,12 +21,8 @@ export const useHandler = <C extends HcmsTasksContext = HcmsTasksContext>(params
         identity,
         ...params,
         features: container => {
-            // cms-tasks resolves the DI DbInstance (key-value store). The shared cms-ddb storage
-            // preset only sets the legacy ctx.db via dbPlugins, so register DbFeature here.
-            DbFeature.register(container, {
-                documentClient: getDocumentClient(),
-                table: process.env.DB_TABLE
-            });
+            // The delete-model store is backed by the api-core key-value store, which the shared
+            // cms-ddb preset already registers — no extra storage wiring needed here.
             HcmsTasksFeature.register(container);
 
             // Background tasks are DI-native (TriggerTaskUseCase etc.); a mock trigger transport (DI)

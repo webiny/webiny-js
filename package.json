@@ -132,6 +132,8 @@
     "test:es": "WEBINY_STORAGE=ddb-es,ddb vitest --config testing/vitest.config.ts --run",
     "test:os": "WEBINY_STORAGE=ddb-os,ddb vitest --config testing/vitest.config.ts --run",
     "test:sql": "WEBINY_STORAGE=sql,ddb vitest --config testing/vitest.config.ts --run",
+    "test:pg": "WEBINY_STORAGE=sql,ddb WEBINY_SQL_CLIENT=pg vitest --config testing/vitest.config.ts --run",
+    "test:pglite": "WEBINY_STORAGE=sql,ddb WEBINY_SQL_CLIENT=pglite vitest --config testing/vitest.config.ts --run",
     "trigger-release": "node ./scripts/release/triggerRelease.js",
     "tsc": "tsc",
     "update-packages": "tsx ./scripts/updatePackages.ts",

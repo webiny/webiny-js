@@ -15,10 +15,10 @@ import { WebsocketsTransport } from "~/transport/index.js";
 import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport.js";
 import { WebsocketsRouteHandler } from "~/features/Routes/abstractions.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
-import { AuthTriggerHandler } from "@webiny/api-testing";
-import { RootTenantInitializer } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
+import { AuthTriggerHandler } from "@webiny/api-core-testing";
+import { RootTenantInitializer } from "@webiny/api-core-testing";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 

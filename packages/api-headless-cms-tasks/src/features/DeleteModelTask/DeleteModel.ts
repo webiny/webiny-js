@@ -9,11 +9,11 @@ import {
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { DeleteModelUseCase } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/index.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
-import { DbInstance } from "@webiny/handler-db/abstractions.js";
+import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { IDeleteModelTaskInput } from "./types.js";
 import type { IDeleteModelTaskOutput } from "./types.js";
-import { createStoreKey } from "~/helpers/store.js";
+import { createDeleteModelStore } from "~/helpers/store.js";
 
 type IRunParams = TaskDefinition.RunParams<IDeleteModelTaskInput, IDeleteModelTaskOutput>;
 
@@ -164,7 +164,10 @@ export class DeleteModel implements IDeleteModel {
     }
 
     private async removeBeingDeleted(model: Pick<CmsModel, "modelId" | "tenant">): Promise<void> {
-        const key = createStoreKey(model);
-        await this.context.container.resolve(DbInstance).store.removeValue(key);
+        const store = createDeleteModelStore(
+            this.context.container.resolve(GlobalKeyValueStore),
+            model.tenant
+        );
+        await store.remove(model.modelId);
     }
 }
