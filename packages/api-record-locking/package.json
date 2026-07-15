@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@webiny/api-core": "0.0.0",
-    "@webiny/api-testing": "0.0.0",
+    "@webiny/api-core-testing": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^1.0.2",
     "@webiny/event-handler-core": "0.0.0",

@@ -9,10 +9,10 @@ import { SchedulerFeature } from "@webiny/api-scheduler";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { buildSchema } from "graphql";
 import type { GraphQLSchema } from "graphql";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
-import { AuthTriggerHandler } from "@webiny/api-testing";
-import { RootTenantInitializer } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
+import { AuthTriggerHandler } from "@webiny/api-core-testing";
+import { RootTenantInitializer } from "@webiny/api-core-testing";
 import type {
     SchedulerClient,
     SchedulerClientConfig

@@ -26,10 +26,10 @@ import {
     RESTORE_ENTRY
 } from "~tests/graphql/cms.gql";
 import { CREATE_FOLDER, DELETE_FOLDER, GET_FOLDER } from "~tests/graphql/folder.gql";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
-import { RootTenantInitializer } from "@webiny/api-testing";
-import { AuthTriggerHandler } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
+import { RootTenantInitializer } from "@webiny/api-core-testing";
+import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 
 export interface UseGQLHandlerParams {

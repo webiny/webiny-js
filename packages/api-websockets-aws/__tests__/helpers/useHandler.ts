@@ -13,10 +13,10 @@ import { WebsocketsFeature } from "@webiny/api-websockets/features/feature.js";
 import { WebsocketsGraphQLFactoryFeature } from "@webiny/api-websockets/graphql/feature.js";
 import { WebsocketsRouteHandler } from "@webiny/api-websockets/features/Routes/abstractions.js";
 import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
-import { AuthTriggerHandler } from "@webiny/api-testing";
-import { RootTenantInitializer } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
+import { AuthTriggerHandler } from "@webiny/api-core-testing";
+import { RootTenantInitializer } from "@webiny/api-core-testing";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
