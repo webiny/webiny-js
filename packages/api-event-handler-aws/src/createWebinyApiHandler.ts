@@ -114,25 +114,27 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
         },
 
         request: async container => {
-            // The per-request feature stack is transport-agnostic (shared with the future server
-            // transport). The two AWS-specific interleave points are supplied as hooks.
+            // The per-request feature stack is transport-agnostic (shared with the server transport).
+            // The AWS-specific interleave points are supplied as the `transports` adapters.
             await registerApiRequestStack(container, {
                 extensions: config.extensions,
                 registerRequestStorage: config.registerRequestStorage,
-                // Real AWS WebSocket transport (API Gateway Management API), registered right after
-                // WebsocketsFeature so it overrides the NullWebsocketsTransport.
-                registerRealtimeTransport: c => {
-                    WebsocketsAwsFeature.register(c);
-                },
-                // Scheduler transport: the scheduler-aws extension (EventBridge Scheduler).
-                registerSchedulerTransport: c => {
-                    registerSchedulerAwsExtension(c, {
-                        getClient: schedulerConfig => createSchedulerClient(schedulerConfig)
-                    });
-                },
-                // File-manager storage transport: S3 (asset delivery + S3 file operations + schema).
-                registerFileManagerTransport: c => {
-                    FileManagerS3Feature.register(c, {});
+                transports: {
+                    // Real AWS WebSocket transport (API Gateway Management API), registered right after
+                    // WebsocketsFeature so it overrides the NullWebsocketsTransport.
+                    realtime: c => {
+                        WebsocketsAwsFeature.register(c);
+                    },
+                    // Scheduler transport: the scheduler-aws extension (EventBridge Scheduler).
+                    scheduler: c => {
+                        registerSchedulerAwsExtension(c, {
+                            getClient: schedulerConfig => createSchedulerClient(schedulerConfig)
+                        });
+                    },
+                    // File-manager storage transport: S3 (asset delivery + S3 file operations + schema).
+                    fileManager: c => {
+                        FileManagerS3Feature.register(c, {});
+                    }
                 }
             });
         }
