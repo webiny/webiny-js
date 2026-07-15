@@ -1,5 +1,7 @@
 .idea
 .caveman.json
+.claude/skills/handoff
+.claude/skills/review-fix-loop
 .nx
 .webpack
 .webiny

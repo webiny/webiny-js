@@ -1,3 +1,4 @@
+import { existsSync, mkdirSync } from "node:fs";
 import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { FileManagerServerConfig as FileManagerServerConfigAbstraction } from "./abstractions.js";
 
@@ -22,6 +23,15 @@ class FileManagerServerConfigImpl implements FileManagerServerConfigAbstraction.
 
         this.storagePath = storagePath;
         this.uploadSecret = uploadSecret;
+
+        // Ensure the storage directory exists. Done here (on first resolve, at request time) rather
+        // than in FileManagerServerFeature.register(): build params like WEBINY_LOCAL_STORAGE_PATH are
+        // only registered once project extensions are applied, which happens LATER in the request
+        // stack than the file-manager transport hook — so resolving this config at register() time
+        // would read the param before it exists and throw.
+        if (!existsSync(this.storagePath)) {
+            mkdirSync(this.storagePath, { recursive: true });
+        }
     }
 }
 

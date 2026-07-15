@@ -23,7 +23,6 @@
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-file-manager-aco": "0.0.0",
-    "@webiny/api-file-manager-s3": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-aco": "0.0.0",
     "@webiny/api-headless-cms-scheduler": "0.0.0",

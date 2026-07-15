@@ -5,7 +5,14 @@ import { addMatchImageSnapshotPlugin } from "cypress-image-snapshot/plugin.js";
 import vitePreprocessor from "cypress-vite";
 
 export default (on, config) => {
-    on("file:preprocessor", vitePreprocessor());
+    on(
+        "file:preprocessor",
+        vitePreprocessor({
+            define: {
+                global: "window"
+            }
+        })
+    );
     config.env.TEST_RUN_ID = uniqid();
     /*
      * Only keep video recording file for failed Spec.
