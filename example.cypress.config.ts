@@ -1,4 +1,5 @@
 import { defineConfig } from "cypress";
+import setupPlugins from "./cypress/plugins/index.js";
 
 export default defineConfig({
     viewportWidth: 1600,
@@ -26,6 +27,9 @@ export default defineConfig({
         failOnSnapshotDiff: false
     },
     e2e: {
-        baseUrl: "{ADMIN_URL}"
+        baseUrl: "{ADMIN_URL}",
+        setupNodeEvents(on, config) {
+            return setupPlugins(on, config);
+        }
     }
 });
