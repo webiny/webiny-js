@@ -115,7 +115,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                     // in-process — FileManagerServerFeature registers local asset delivery (overriding
                     // the domain's null impls), the upload/multipart HTTP routes, and disk file ops.
                     fileManager: requestContainer => {
-                        FileManagerServerFeature.register(requestContainer, {});
+                        FileManagerServerFeature.register(requestContainer);
                     }
                 }
             });

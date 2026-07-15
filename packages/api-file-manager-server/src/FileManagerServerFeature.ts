@@ -3,7 +3,6 @@ import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstra
 import { ReadFileMetadataFeature } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/feature.js";
 import { WriteFileMetadataFeature } from "@webiny/api-file-manager/features/upload/WriteFileMetadata/feature.js";
 import { createLocalAssetDeliveryFeature } from "~/assetDelivery/feature.js";
-import type { AssetDeliveryParams } from "~/assetDelivery/types.js";
 import { createServerFileManagerGraphQLSchema } from "~/graphql/schema.js";
 import { FileManagerServerConfigFeature } from "~/features/FileManagerServerConfig/feature.js";
 import { UploadSingleFileRouteFeature } from "~/routes/UploadSingleFileRoute/feature.js";
@@ -18,13 +17,9 @@ import { GetUploadPayloadFeature } from "~/features/GetUploadPayload/feature.js"
 import { CreateMultiPartUploadFeature } from "~/features/CreateMultiPartUpload/feature.js";
 import { CompleteMultiPartUploadFeature } from "~/features/CompleteMultiPartUpload/feature.js";
 
-export interface FileManagerServerFeatureConfig {
-    assetDelivery?: AssetDeliveryParams;
-}
-
 export const FileManagerServerFeature = createFeature({
     name: "FileManagerServer",
-    register(container: Container, config: FileManagerServerFeatureConfig = {}) {
+    register(container: Container) {
         // NOTE: do NOT resolve FileManagerServerConfig here. This runs at the file-manager transport
         // hook, BEFORE project extensions (which register the WEBINY_LOCAL_STORAGE_PATH /
         // WEBINY_UPLOAD_SECRET build params) are applied later in the request stack. Config is resolved
@@ -36,7 +31,7 @@ export const FileManagerServerFeature = createFeature({
         // override the null delivery registered by AssetDeliveryFeature in FileManagerAppFeature — the
         // same seam FileManagerS3Feature uses with createS3AssetDeliveryFeature. Without this the domain
         // AssetDeliveryRoute resolves the null impls and serves nothing.
-        createLocalAssetDeliveryFeature(config.assetDelivery).register(container);
+        createLocalAssetDeliveryFeature().register(container);
 
         // Metadata reader (FileManager/Upload/MetadataReader) — the generic domain impl backed by the
         // GlobalKeyValueStore. Required by the server's ExtractMetadata task + GetFileContentsById use
