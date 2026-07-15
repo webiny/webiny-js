@@ -31,6 +31,7 @@
     "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-headless-cms-common": "0.0.0",
     "@webiny/app-website-builder": "0.0.0",
+    "@webiny/app-websockets": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/cli-core": "0.0.0",
     "@webiny/db": "0.0.0",
@@ -135,6 +136,7 @@
     "./admin/website-builder/page/list": "./admin/website-builder/page/list.js",
     "./admin/website-builder/redirect/list": "./admin/website-builder/redirect/list.js",
     "./admin/website-builder": "./admin/website-builder.js",
+    "./admin/websockets": "./admin/websockets.js",
     "./cli/command": "./cli/command.js",
     "./cli": "./cli.js",
     "./api/db": "./api/db.js",
@@ -147,7 +149,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "5644c776aa4299f78bfb454b6233a023692e77dd4c989bd8e56fb6eb72e5150d",
+  "exportGenerationHash": "4331b1e66eab123223ede857ba9a207c8a7e3e74b115c46a77bb34bef2c16782",
   "webiny": {
     "publishFrom": "dist"
   }

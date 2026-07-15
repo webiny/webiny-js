@@ -4,6 +4,8 @@ import {
     ListLatestEntriesUseCase,
     UpdateEntryUseCase
 } from "webiny/api/cms/entry";
+import { WebsocketsSendToIdentityUseCase } from "webiny/api";
+import { IdentityContext } from "webiny/api/security";
 
 /**
  * "Apply Discount" bulk action.
@@ -34,7 +36,9 @@ class ApplyDiscountBulkActionImpl implements EntriesBulkAction.Interface {
     public constructor(
         private readonly listLatestEntries: ListLatestEntriesUseCase.Interface,
         private readonly getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
-        private readonly updateEntry: UpdateEntryUseCase.Interface
+        private readonly updateEntry: UpdateEntryUseCase.Interface,
+        private readonly identityContext: IdentityContext.Interface,
+        private readonly sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
     ) {}
 
     /**
@@ -51,10 +55,12 @@ class ApplyDiscountBulkActionImpl implements EntriesBulkAction.Interface {
         model: EntriesBulkAction.Model,
         params: EntriesBulkAction.LoadDataParams
     ): Promise<EntriesBulkAction.LoadDataResult> {
-        // Custom-field filters (e.g. `onSale_not`) aren't in the typed `CmsEntryListWhere`,
-        // so build the where object as a plain record to merge the selection scope with
-        // our "not yet processed" filter.
-        const where: Record<string, unknown> = { ...params.where, onSale_not: true };
+        // The bulk-action list path talks to storage directly, bypassing the GraphQL
+        // where-transform. At the storage layer, custom fields are namespaced under
+        // `values.` (system fields like `id` stay top-level), so we must write the filter
+        // as `values.onSale_not` — a bare `onSale_not` can't be resolved and throws
+        // "There is no field with the fieldId onSale".
+        const where: Record<string, unknown> = { ...params.where, "values.onSale_not": true };
         const result = await this.listLatestEntries.execute(model, { ...params, where });
         return result.value;
     }
@@ -85,16 +91,52 @@ class ApplyDiscountBulkActionImpl implements EntriesBulkAction.Interface {
 
         // Flip `onSale` so the entry is excluded from the next `loadData` round — this is
         // what lets the background task converge and finish.
-        const updated = await this.updateEntry.execute(model, entry.id, {
-            values: { price: newPrice, onSale: true }
-        });
+        //
+        // `skipValidation` because this is a targeted, system-driven field update: we only
+        // touch `price`/`onSale`, and it shouldn't fail just because some unrelated field
+        // on the entry is empty/invalid. Full validation still runs when a human edits the
+        // entry in the Admin app.
+        const updated = await this.updateEntry.execute(
+            model,
+            entry.id,
+            { values: { price: newPrice, onSale: true } },
+            { skipValidation: true }
+        );
         if (updated.isFail()) {
             throw updated.error;
+        }
+
+        // Notify the user who triggered the action, in real time. Best-effort: a websocket
+        // failure must never fail the discount itself, so we swallow errors here.
+        try {
+            const identity = this.identityContext.getIdentity();
+            if (identity) {
+                await this.sendToIdentity.execute(
+                    { id: identity.id },
+                    {
+                        action: "cms.product.discountApplied",
+                        data: {
+                            id: entry.entryId,
+                            price: newPrice,
+                            percent
+                        }
+                    }
+                );
+            }
+        } catch (ex) {
+            const message = ex instanceof Error ? ex.message : String(ex);
+            console.warn(`[ApplyDiscount] websocket notification failed: ${message}`);
         }
     }
 }
 
 export default EntriesBulkAction.createImplementation({
     implementation: ApplyDiscountBulkActionImpl,
-    dependencies: [ListLatestEntriesUseCase, GetLatestRevisionByEntryIdUseCase, UpdateEntryUseCase]
+    dependencies: [
+        ListLatestEntriesUseCase,
+        GetLatestRevisionByEntryIdUseCase,
+        UpdateEntryUseCase,
+        IdentityContext,
+        WebsocketsSendToIdentityUseCase
+    ]
 });

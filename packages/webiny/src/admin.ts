@@ -23,4 +23,5 @@ export {
     BulkActionButton,
     useBulkActionDialog
 } from "@webiny/app-admin/components/BulkActions/index.js";
+export { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 export { createFeature, createAbstraction, BaseError } from "@webiny/feature/admin/index.js";

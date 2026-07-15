@@ -2,6 +2,7 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as DiscountIcon } from "webiny/admin/icons/discount.svg";
 import { BulkActionButton, useBulkActionDialog, useFeature } from "webiny/admin";
+import { useToast } from "webiny/admin/ui";
 import { useModel } from "webiny/admin/cms";
 import { BulkActionFeature, useContentEntriesPresenter } from "webiny/admin/cms/entry/list";
 
@@ -22,6 +23,7 @@ export const ApplyDiscountAction = observer(() => {
     const { model } = useModel();
     const presenter = useContentEntriesPresenter();
     const { showConfirmationDialog } = useBulkActionDialog();
+    const { showSuccessToast } = useToast();
     const { useCase: bulkAction } = useFeature(BulkActionFeature);
 
     const selection = presenter.list.vm.selection;
@@ -48,6 +50,13 @@ export const ApplyDiscountAction = observer(() => {
                 });
 
                 presenter.list.actions.selection.deselectAll();
+
+                // Confirm the task was kicked off. Per-product "Discount applied" toasts
+                // then arrive over websockets as the background task processes the batch.
+                showSuccessToast({
+                    title: "Discount task started",
+                    description: `Applying -${DISCOUNT_PERCENT}% in the background. You can keep working.`
+                });
             }
         });
 

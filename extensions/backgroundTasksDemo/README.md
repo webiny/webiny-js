@@ -5,13 +5,14 @@ One artifact spans all three posts.
 
 ## What's here
 
-| File                                | Role                                                                                        |
-| ----------------------------------- | ------------------------------------------------------------------------------------------- |
-| `../models/ProductModel.ts`         | The demo CMS model (`product`, has a `price` number field).                                 |
-| `../models/ProductCategoryModel.ts` | Referenced by Product; registered so the category picker isn't dangling.                    |
-| `ApplyDiscountBulkAction.ts`        | **Backend.** A custom `EntriesBulkAction`. Webiny auto-generates a background task from it. |
-| `ApplyDiscountAction.tsx`           | **Frontend.** The bulk-action button that triggers the task.                                |
-| `index.tsx`                         | Registers the button into the Products content-entry list.                                  |
+| File                                | Role                                                                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `../models/ProductModel.ts`         | The demo CMS model (`product`, has a `price` number field).                                                                                |
+| `../models/ProductCategoryModel.ts` | Referenced by Product; registered so the category picker isn't dangling.                                                                   |
+| `ApplyDiscountBulkAction.ts`        | **Backend.** A custom `EntriesBulkAction`. Webiny auto-generates a background task from it. Emits a websocket message per processed entry. |
+| `ApplyDiscountAction.tsx`           | **Frontend.** The bulk-action button that triggers the task.                                                                               |
+| `DiscountAppliedEventHandler.ts`    | **Frontend.** Websocket listener that toasts when a discount is applied.                                                                   |
+| `index.tsx`                         | Registers the button + the websocket listener.                                                                                             |
 
 All registered in `webiny.config.tsx`.
 
@@ -37,8 +38,13 @@ entries until it hits `maxIterations` and fails). Built-in actions do this natur
 (e.g. Publish filters `status_not: "published"`).
 
 This demo uses an `onSale` boolean on the Product model: `loadData` filters
-`onSale_not: true`, and `processData` sets `onSale: true`. To re-run the discount on a
-product, turn its **On sale** switch back off.
+`values.onSale_not: true`, and `processData` sets `onSale: true`. To re-run the discount
+on a product, turn its **On sale** switch back off.
+
+> Note the `values.` prefix in the filter. The bulk-action list path calls storage
+> directly (bypassing the GraphQL where-transform), and at the storage layer custom
+> fields live under `values.` while system fields (`id`, `status`, …) are top-level. A
+> bare `onSale_not` throws `There is no field with the fieldId "onSale"`.
 
 Flow:
 
@@ -52,6 +58,20 @@ Flow:
      ▼
 [Result]  each product's price reduced by 10%, progress visible in the Background Tasks screen
 ```
+
+## Real-time notification
+
+Once a product is discounted, the backend sends a websocket message to the user who
+triggered the action (`WebsocketsSendToIdentityUseCase`), and the admin toasts it:
+
+```
+[processData] → sendToIdentity({ action: "cms.product.discountApplied", data: { id, price, percent } })
+     ▼
+[DiscountAppliedEventHandler] (WebsocketEventHandler) → notifications.success(...)
+```
+
+Mirrors the File Manager AI-enrichment pattern. Fires per processed entry, so toasts pop
+live as the background task works through the batch.
 
 ## Post mapping
 
