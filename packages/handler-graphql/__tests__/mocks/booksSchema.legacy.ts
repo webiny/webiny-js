@@ -1,4 +1,5 @@
-import { createContextPlugin } from "@webiny/handler";
+import type { Container } from "@webiny/di";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
 import type { Book, Context } from "~tests/types";
 import { createGraphQLSchemaPlugin } from "~/plugins";
 
@@ -11,14 +12,19 @@ export const books: Book[] = [
     }
 ];
 
-export const booksCrudPlugin = createContextPlugin<Context>(async context => {
-    context.getBooks = async () => {
-        console.log("getBooks");
-        console.table(books);
-        console.warn("Your store is quite empty!");
-        return books;
-    };
-});
+// Augments the request context with `getBooks` post-auth (the Query.books resolver reads it).
+export const booksCrudPlugin = (container: Container) => {
+    container.registerInstance(RequestContextInitializer, {
+        async init(context: Record<string, any>) {
+            context.getBooks = async () => {
+                console.log("getBooks");
+                console.table(books);
+                console.warn("Your store is quite empty!");
+                return books;
+            };
+        }
+    });
+};
 
 export const booksSchema = createGraphQLSchemaPlugin<Context>({
     typeDefs: /* GraphQL */ `

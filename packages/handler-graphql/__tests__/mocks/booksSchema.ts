@@ -1,5 +1,6 @@
-import { createContextPlugin } from "@webiny/handler";
-import type { Book, Context } from "~tests/types";
+import type { Container } from "@webiny/di";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
+import type { Book } from "~tests/types";
 import { CoreGraphQLSchemaFactory } from "~/graphql/abstractions.js";
 import type { GraphQLSchemaBuilder } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 
@@ -90,15 +91,20 @@ export const BooksSchemaImpl = CoreGraphQLSchemaFactory.createImplementation({
     dependencies: []
 });
 
-export const booksCrudPlugin = createContextPlugin<Context>(async context => {
-    context.getBooks = async () => {
-        console.log("getBooks");
-        console.table(books);
-        console.warn("Your store is quite empty!");
-        return books;
-    };
-});
+// Augments the request context with `getBooks` post-auth (the Query.books resolver reads it).
+export const booksCrudPlugin = (container: Container) => {
+    container.registerInstance(RequestContextInitializer, {
+        async init(context: Record<string, any>) {
+            context.getBooks = async () => {
+                console.log("getBooks");
+                console.table(books);
+                console.warn("Your store is quite empty!");
+                return books;
+            };
+        }
+    });
+};
 
-export const booksSchemaPlugin = createContextPlugin<Context>(context => {
-    context.container.register(BooksSchemaImpl);
-});
+export const booksSchemaPlugin = (container: Container) => {
+    container.register(BooksSchemaImpl);
+};
