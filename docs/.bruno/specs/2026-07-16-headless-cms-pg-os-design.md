@@ -16,7 +16,7 @@ Three new packages, built in order:
 2. **`@webiny/api-sync-pg-to-opensearch`** — WAL-based sync adapter. Receives pre-formatted OS documents from a PG sync table, pushes to OpenSearch. Follows the same pattern as `api-sync-ddb-to-opensearch`.
 3. **`@webiny/api-headless-cms-pg-os`** — CMS storage using PostgreSQL for primary storage (writes + point reads) and OpenSearch for list/search. Dual-writes to a PG sync table with OS-ready documents.
 
-After extraction, `ddb-es` is refactored to depend on `utils-os` (no behavior change, all 110 tests stay green).
+After extraction, `ddb-es` is refactored to depend on `utils-os` (no behavior change, all existing tests stay green).
 
 ## Architecture Decisions
 
@@ -47,6 +47,16 @@ Passthrough to `api-headless-cms-sql`. Models and groups are small lists — no 
 
 Entry write operations extend the sql package's operations to add the sync table dual-write.
 
+### Dual-Write Error Handling and Transactions
+
+Unlike ddb-es (where DDB main write and ES sync write are separate non-transactional batch calls), pg-os uses a single PostgreSQL transaction wrapping both the main table write and sync table write. If either fails, both roll back. This is a significant improvement over the ddb-es pattern where a failed ES sync write leaves DDB with committed data but no sync record.
+
+The WAL sync adapter is eventually consistent by design — if the adapter fails to process a sync table change, the WAL position is retained and retried. The sync table is append-only from the application's perspective; processed records are cleaned up by the sync adapter after successful push to OpenSearch.
+
+### Sync Table Lifecycle
+
+Sync table rows are consumed by the WAL-based sync adapter. After the adapter successfully pushes a batch to OpenSearch, it deletes the processed rows from the sync table. This prevents unbounded growth. Rows that fail to sync are retried based on WAL position tracking.
+
 ---
 
 ## Package 1: `@webiny/api-headless-cms-utils-os`
@@ -61,7 +71,7 @@ Shared OpenSearch query and indexing infrastructure. Used by both `ddb-es` and `
 packages/api-headless-cms-utils-os/
   src/
     features/
-      CmsEntryOpenSearchFieldIndex/       # 8 field indexers + registry
+      CmsEntryOpenSearchFieldIndex/       # 9 field indexers + registry
         abstractions/
           CmsEntryOpenSearchFieldIndex.ts
           CmsEntryOpenSearchFieldIndexRegistry.ts
@@ -117,7 +127,7 @@ packages/api-headless-cms-utils-os/
           body.ts                         # query body builder
           fields.ts                       # field mapping
           fields/                         # system fields (state, live, location)
-          filtering/                      # filter application (5 files)
+          filtering/                      # filter application (6 files)
           fullTextSearch.ts               # FTS
           sort.ts                         # sort builder
           plugins/operator.ts             # operators
@@ -129,12 +139,11 @@ packages/api-headless-cms-utils-os/
           types.ts                        # query types
     transformations/
       transformEntryToIndex.ts            # entry -> OS document (strips storage keys)
-      compressEntryData.ts               # compress latest/published entry data
     elasticsearch/
       createElasticsearchIndex.ts         # index lifecycle
       deleteElasticsearchIndex.ts
     helpers/
-      entryIndexHelpers.ts                # prepareEntryToIndex, extractFromIndex
+      entryIndexHelpers.ts                # prepareEntryToIndex, extractEntriesFromIndex
       fieldIdentifier.ts                  # field ID resolution
     values/
       NoValueContainer.ts                 # missing value marker
@@ -287,7 +296,7 @@ CREATE INDEX idx_sync_tenant ON cms_os_sync(tenant);
 Each write operation (create, update, publish, unpublish, delete, move, etc.):
 
 1. **PG main table write** — Delegates to sql package's entry operations (`entryToRow` + knex insert/update/delete).
-2. **Prepare OS document** — Uses `prepareEntryToIndex()` and `compressEntryData()` from `utils-os` to create the OS-ready document.
+2. **Prepare OS document** — Uses `prepareEntryToIndex()` from `utils-os` and compresses via `CompressionHandler` to create the OS-ready document.
 3. **Sync table write** — Writes the compressed document to `cms_os_sync` with the appropriate operation type.
 
 For operations that affect multiple records (e.g., publish changes both latest and published):
@@ -384,7 +393,7 @@ After `utils-os` extraction:
 
 ### Validation
 
-All 110 existing tests must pass unchanged. Behavior is identical — only import sources change.
+All existing tests must pass unchanged. Behavior is identical — only import sources change.
 
 New dependency added:
 ```json
@@ -404,7 +413,7 @@ New dependency added:
 
 ### `api-headless-cms-ddb-es` (post-refactor)
 
-- Run existing 110 tests with `yarn test:os`. All must pass.
+- Run all existing tests with `yarn test:os`. All must pass.
 - No new tests — behavior unchanged.
 
 ### `api-sync-pg-to-opensearch`
@@ -428,7 +437,7 @@ New dependency added:
 ## Build Order
 
 1. **`api-headless-cms-utils-os`** — extract from ddb-es, validate with ddb-es tests
-2. **Refactor `ddb-es`** — depend on utils-os, validate 110 tests green
+2. **Refactor `ddb-es`** — depend on utils-os, validate all existing tests green
 3. **`api-sync-pg-to-opensearch`** — WAL sync adapter with tests
 4. **`api-headless-cms-pg-os`** — PG+OS storage with full test suite
 
