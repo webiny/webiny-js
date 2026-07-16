@@ -1,10 +1,1 @@
-interface ITimer {
-    /* Return value must be in milliseconds. */
-    getRemainingMilliseconds(): number;
-    /* Return value must be in seconds. */
-    getRemainingSeconds(): number;
-}
-
-export namespace Timer {
-    export type Interface = ITimer;
-}
+export type { Timer } from "@webiny/utils/features/Timer/abstraction.js";

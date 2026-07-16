@@ -1,6 +1,5 @@
 import type { IDataSynchronizationInput, ISynchronizationRunResult } from "../types.js";
 import type { IIndexManager } from "~/settings/types.js";
-import type { NonEmptyArray } from "@webiny/api/types.js";
 import { Manager } from "~/abstractions/Manager.js";
 import { ElasticsearchSynchronize } from "./abstractions/ElasticsearchSynchronize.js";
 import { ElasticsearchFetcher } from "./abstractions/ElasticsearchFetcher.js";
@@ -19,7 +18,16 @@ class ElasticsearchToDynamoDbSynchronizationImpl implements Abstraction.Interfac
     ): Promise<ISynchronizationRunResult> {
         const lastIndex = input.elasticsearchToDynamoDb?.index;
         let cursor = input.elasticsearchToDynamoDb?.cursor;
-        const indexes = await this.fetchAllIndexes(indexManager);
+        const indexes = await indexManager.list();
+
+        if (indexes.length === 0) {
+            return this.manager.controller.response.continue({
+                ...input,
+                elasticsearchToDynamoDb: {
+                    finished: true
+                }
+            }) as ISynchronizationRunResult;
+        }
 
         let next = 0;
         if (lastIndex) {
@@ -70,14 +78,6 @@ class ElasticsearchToDynamoDbSynchronizationImpl implements Abstraction.Interfac
                 finished: true
             }
         }) as ISynchronizationRunResult;
-    }
-
-    private async fetchAllIndexes(indexManager: IIndexManager): Promise<NonEmptyArray<string>> {
-        const result = await indexManager.list();
-        if (result.length > 0) {
-            return result as NonEmptyArray<string>;
-        }
-        throw new Error("No Elasticsearch / OpenSearch indexes found.");
     }
 }
 

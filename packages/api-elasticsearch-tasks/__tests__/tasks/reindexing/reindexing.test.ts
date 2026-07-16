@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
  */
 import { useHandler } from "~tests/helpers/useHandler";
 import { TaskDataStatus } from "@webiny/background-tasks/api/types";
-import { createRunner } from "@webiny/project-utils/testing/tasks";
+import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition";
 
 const createContextAndTask = async (handler: ReturnType<typeof useHandler>) => {

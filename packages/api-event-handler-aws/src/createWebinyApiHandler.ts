@@ -11,7 +11,6 @@
  */
 import type { Container } from "@webiny/di";
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 import {
     createLambdaHandler,
     ApiGatewayFeature,
@@ -23,7 +22,7 @@ import { registerExtensions } from "@webiny/handler";
 import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
-import { registerSchedulerAwsExtension } from "@webiny/api-scheduler-aws";
+import { SchedulerAwsFeature } from "@webiny/api-scheduler-aws";
 import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
 import { WebSocketLambdaHandler } from "@webiny/api-websockets";
 // CognitoIdpFeature must be in the root container so the request auth step
@@ -121,9 +120,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                     },
                     // Scheduler transport: the scheduler-aws extension (EventBridge Scheduler).
                     scheduler: c => {
-                        registerSchedulerAwsExtension(c, {
-                            getClient: schedulerConfig => createSchedulerClient(schedulerConfig)
-                        });
+                        SchedulerAwsFeature.register(c);
                     },
                     // File-manager storage transport: S3 (asset delivery + S3 file operations + schema).
                     fileManager: c => {

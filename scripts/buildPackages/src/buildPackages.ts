@@ -15,7 +15,6 @@ import path from "path";
 import { hideBin } from "yargs/helpers";
 import { PackageBuildError } from "./PackageBuildError";
 import { queueMetaWrite } from "./writeMetaQueue";
-import { writeDistBuildHash } from "./distBuildHash";
 
 const argv = yargs(hideBin(process.argv)).parse();
 
@@ -90,10 +89,10 @@ export const buildPackages = async () => {
         try {
             await buildPackage(pkg, options.buildOverrides, "inherit", options.safeReplace);
 
-            // Record the source hash (in dist as a marker and in build meta) so
-            // a later build treats this package as a cache hit and skips the copy.
+            // Record the source hash in build meta so a later build treats this
+            // package as a cache hit (the cache→dist copy is then skipped when
+            // dist already matches — content hash).
             const sourceHash = await getPackageSourceHash(pkg);
-            writeDistBuildHash(pkg, sourceHash);
             const meta = getBuildMeta();
             meta.packages[pkg.packageJson.name] = { sourceHash };
             writeJsonFileSync(META_FILE_PATH, meta);
@@ -140,9 +139,6 @@ export const buildPackages = async () => {
 
                                         // Store package hash
                                         const sourceHash = await getPackageSourceHash(pkg);
-                                        // Stamp dist so a later no-op build can
-                                        // skip the cache→dist copy for this package.
-                                        writeDistBuildHash(pkg, sourceHash);
                                         await queueMetaWrite(async () => {
                                             const currentMeta = getBuildMeta();
                                             currentMeta.packages[pkg.packageJson.name] = {

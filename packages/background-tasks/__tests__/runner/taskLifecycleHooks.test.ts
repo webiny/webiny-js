@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { TaskRunner } from "~/api/runner";
 import { createMockEvent } from "~tests/mocks";
 import { createLiveContextFactory } from "~tests/live";
-import { timerFactory } from "@webiny/handler-aws/utils";
+import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { Container } from "@webiny/di";

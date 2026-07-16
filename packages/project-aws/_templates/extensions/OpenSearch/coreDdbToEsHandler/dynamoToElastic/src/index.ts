@@ -2,11 +2,11 @@
  * DI-native DynamoDB -> OpenSearch stream handler (core app, OpenSearch setup).
  *
  * Triggered by the core table's DynamoDB stream (EventSourceMapping) and syncs records into
- * OpenSearch. `createDdbToEsStreamHandler` wires DdbToEsLambdaHandler + OpenSearchClient +
+ * OpenSearch. `createDdbToOpenSearchStreamHandler` wires DdbToOpenSearchHandler + OpenSearchClient +
  * compression in its own DI container, so this entry only builds the OpenSearch client.
  */
 import { createOpenSearchClient, type OpenSearchClientOptions } from "@webiny/api-opensearch";
-import { createDdbToEsStreamHandler } from "@webiny/api-dynamodb-to-elasticsearch";
+import { createDdbToOpenSearchStreamHandler } from "@webiny/api-sync-ddb-to-opensearch";
 
 const osUsername = process.env.OPENSEARCH_USERNAME;
 const osPassword = process.env.OPENSEARCH_PASSWORD;
@@ -25,4 +25,4 @@ if (osUsername && osPassword) {
 
 const client = createOpenSearchClient(clientOptions);
 
-export const handler = createDdbToEsStreamHandler(client);
+export const handler = createDdbToOpenSearchStreamHandler(client);
