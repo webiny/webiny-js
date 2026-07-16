@@ -39,12 +39,23 @@ export function registerSchedulerServer(container: Container): void {
     const service = new BreeSchedulerService({
         logger: consoleLogger,
         onTrigger: async (id, namespace, tenant) => {
+            console.log(
+                `[scheduler] timer fired for "${id}" (namespace=${namespace}, tenant=${tenant}); calling run route`
+            );
             try {
-                await fetch(`${serverBase()}/scheduled-action-run`, {
+                const res = await fetch(`${serverBase()}/scheduled-action-run`, {
                     method: "POST",
                     headers: { "content-type": "application/json", [SCHEDULER_HEADER]: token },
                     body: JSON.stringify({ id, namespace, tenant })
                 });
+                // fetch only rejects on network errors — a 403/500 comes back as a non-ok response,
+                // so surface it explicitly (otherwise a failed run is invisible).
+                if (!res.ok) {
+                    const body = await res.text().catch(() => "");
+                    console.error(
+                        `[scheduler] run route returned HTTP ${res.status} for "${id}": ${body}`
+                    );
+                }
             } catch (err) {
                 const message = err instanceof Error ? err.message : String(err);
                 console.error(
@@ -78,14 +89,29 @@ export async function startSchedulerServer(rootContainer: Container): Promise<vo
     const token = rootContainer.resolve(SchedulerInternalToken).value;
 
     // Deferred: give the runner a moment to bind the listener before we call back into it.
-    setTimeout(() => {
-        fetch(`${serverBase()}/scheduled-action-recover`, {
-            method: "POST",
-            headers: { "content-type": "application/json", [SCHEDULER_HEADER]: token },
-            body: JSON.stringify({})
-        }).catch(err => {
+    console.log(`[scheduler] boot: re-arming persisted schedules via ${serverBase()} ...`);
+    setTimeout(async () => {
+        try {
+            const res = await fetch(`${serverBase()}/scheduled-action-recover`, {
+                method: "POST",
+                headers: { "content-type": "application/json", [SCHEDULER_HEADER]: token },
+                body: JSON.stringify({})
+            });
+            const body = await res.json().catch(() => ({}) as Record<string, unknown>);
+            // fetch only rejects on network errors — a 403/500 comes back as a non-ok response, so
+            // surface it (a silent 403 on a token mismatch was invisible before).
+            if (!res.ok) {
+                console.error(`[scheduler] boot recovery failed: HTTP ${res.status}`, body);
+                return;
+            }
+            console.log(
+                `[scheduler] boot recovery: re-armed ${body.recovered ?? "?"} pending action(s)`
+            );
+        } catch (err) {
             const message = err instanceof Error ? err.message : String(err);
-            console.error(`Scheduler boot recovery failed: ${message}`);
-        });
+            console.error(
+                `[scheduler] boot recovery failed to reach the recover route: ${message}`
+            );
+        }
     }, 1000);
 }

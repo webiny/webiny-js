@@ -10,6 +10,7 @@ import {
     RequestTenantLoader
 } from "@webiny/api-core/features/requestContext/index.js";
 import { GetRootTenantUseCase } from "@webiny/api-core/features/tenancy/GetRootTenant/index.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
 import type { Container } from "@webiny/feature/api";
 import { SchedulerInternalToken } from "./InternalToken.js";
@@ -63,9 +64,16 @@ class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
                 await schema.build(ctx);
             }
 
+            // Boot recovery runs with no identity (no request), so bypass authorization for the list —
+            // the same escape hatch ExecuteScheduledActionUseCase uses on the run route. Without this,
+            // ListScheduledActions' permission check against the anonymous identity fails "Not authorized!".
             const listResult = await this.container
-                .resolve(ListScheduledActionsUseCase)
-                .execute({ where: {}, limit: 1000 });
+                .resolve(IdentityContext)
+                .withoutAuthorization(() =>
+                    this.container
+                        .resolve(ListScheduledActionsUseCase)
+                        .execute({ where: {}, limit: 1000 })
+                );
 
             if (listResult.isFail()) {
                 return {
