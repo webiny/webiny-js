@@ -105,10 +105,16 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
         processLegacyPlugins(container, cmsStorage.plugins);
         registerLegacyPluginsViaGqlContextualSchema(container, cmsStorage.plugins);
 
-        // User-supplied legacy plugins (dual-dispatched, mirroring useContextHandler).
         const userPlugins = [params.plugins].flat(Infinity as 1).filter(Boolean);
-        processLegacyPlugins(container, userPlugins);
-        const staticUserPlugins = userPlugins.filter(
+        // DI-native plugins are plain `container => {}` functions; everything else keeps the legacy
+        // dual-dispatch. Check for a function via `!p.prototype` — a plain function also has
+        // `Function.prototype.apply`, which the legacy bridge would otherwise invoke with no args.
+        const isFn = (p: any) => typeof p === "function" && !p.prototype;
+
+        // User-supplied legacy plugins (dual-dispatched, mirroring useContextHandler).
+        const legacyUserPlugins = userPlugins.filter(p => !isFn(p));
+        processLegacyPlugins(container, legacyUserPlugins);
+        const staticUserPlugins = legacyUserPlugins.filter(
             p => typeof (p as any).apply !== "function" && typeof p !== "function"
         );
         HeadlessCmsFeature.register(container, {
@@ -116,9 +122,16 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
             extraPlugins: [...(params.extraCmsPlugins ?? []), ...staticUserPlugins]
         });
 
-        registerLegacyPluginsViaGqlContextualSchema(container, userPlugins);
+        registerLegacyPluginsViaGqlContextualSchema(container, legacyUserPlugins);
 
         await params.features?.(container);
+
+        // DI-native function plugins run LAST — after the consuming package's own features — so they
+        // can override defaults those features registered (last-wins), mirroring the legacy bridge's
+        // post-features timing.
+        for (const plugin of userPlugins.filter(isFn)) {
+            (plugin as (container: any) => void)(container);
+        }
     };
 
     const handler = createTestHttpHandler({

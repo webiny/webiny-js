@@ -57,13 +57,19 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             processLegacyPlugins(container, apiAcoStorage.plugins);
 
             if (params.plugins) {
-                const extraPlugins = [params.plugins].flat(Infinity as 1);
-                for (const plugin of extraPlugins) {
+                const extraPlugins = [params.plugins].flat(Infinity as 1).filter(Boolean);
+                // DI-native plugins are plain `container => {}` functions; call them directly.
+                const isFn = (p: any) => typeof p === "function" && !p.prototype;
+                for (const plugin of extraPlugins.filter(isFn)) {
+                    (plugin as (c: any) => void)(container);
+                }
+                const rest = extraPlugins.filter(p => !isFn(p));
+                for (const plugin of rest) {
                     if (plugin instanceof ContextPlugin) {
                         await plugin.apply({ container } as any);
                     }
                 }
-                processLegacyPlugins(container, extraPlugins);
+                processLegacyPlugins(container, rest);
             }
 
             container.register(FileModel);

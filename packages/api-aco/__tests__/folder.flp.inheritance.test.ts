@@ -1,9 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { ContextPlugin } from "@webiny/api";
+import type { Container } from "@webiny/di";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext";
-import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 const FOLDER_TYPE = "test-folders";
 
@@ -32,9 +31,9 @@ describe("Folder Level Permissions - Inheritance", () => {
     const { aco } = useGraphQlHandler({
         identity: identityA,
         plugins: [
-            new ContextPlugin<ApiCoreContext>(async context => {
-                context.container.registerInstance(TeamFactory, new TestTeamFactory());
-            })
+            (container: Container) => {
+                container.registerInstance(TeamFactory, new TestTeamFactory());
+            }
         ]
     });
 

@@ -4,7 +4,7 @@ import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/ap
 import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
-import { createContextPlugin } from "@webiny/api";
+import type { Container } from "@webiny/di";
 import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
 import { WebsiteBuilderFeature } from "~/index.js";
 import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
@@ -22,9 +22,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         ...params,
         // identity === null → anonymous (handled natively by the shared harness).
         plugins: [
-            createContextPlugin(ctx => {
-                ctx.container.register(InvalidateCloudfrontCacheTaskDefinition);
-            }),
+            (container: Container) => {
+                container.register(InvalidateCloudfrontCacheTaskDefinition);
+            },
             ...[params.plugins].flat(Infinity as 1).filter(Boolean)
         ],
         features: container => {
