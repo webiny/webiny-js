@@ -1,1 +1,25 @@
-// Barrel export — populated after all features are moved.
+export {
+    CmsEntryOpenSearchIndex,
+    CmsEntryOpenSearchIndexFeature,
+    BaseOpenSearchIndex
+} from "./features/CmsEntryOpenSearchIndex/index.js";
+export { CmsEntryOpenSearchBodyModifier } from "./features/CmsEntryOpenSearchBodyModifier/index.js";
+export { CmsEntryOpenSearchSortModifier } from "./features/CmsEntryOpenSearchSortModifier/index.js";
+export { CmsEntryOpenSearchQueryModifier } from "./features/CmsEntryOpenSearchQueryModifier/index.js";
+export { CmsEntryOpenSearchFullTextSearch } from "./features/CmsEntryOpenSearchFullTextSearch/index.js";
+export { CmsEntryOpenSearchValuesModifier } from "./features/CmsEntryOpenSearchValuesModifier/index.js";
+export {
+    CmsEntryOpenSearchFieldIndex,
+    CmsEntryOpenSearchFieldIndexRegistry,
+    CmsEntryOpenSearchFieldIndexFeature
+} from "./features/CmsEntryOpenSearchFieldIndex/index.js";
+export {
+    CmsEntryOpenSearchFilter,
+    CmsEntryOpenSearchFilterRegistry,
+    CmsEntryOpenSearchFilterFeature
+} from "./features/CmsEntryOpenSearchFilter/index.js";
+export {
+    CmsEntryOpenSearchValueSearch,
+    CmsEntryOpenSearchValueSearchRegistry,
+    CmsEntryOpenSearchValueSearchFeature
+} from "./features/CmsEntryOpenSearchValueSearch/index.js";
