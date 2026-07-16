@@ -5,9 +5,7 @@ One artifact spans all three posts.
 
 ## What's here
 
-| File                                                                      | Role |
-| ------------------------------------------------------------------------- | ---- |
-| Organized by side (`api/` + `admin/`), with a full-stack entry component: |
+Organized by side (`api/` + `admin/`), with a full-stack entry component:
 
 | File                                   | Role                                                                                                                                   |
 | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |

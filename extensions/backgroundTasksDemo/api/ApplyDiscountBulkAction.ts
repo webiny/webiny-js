@@ -4,7 +4,7 @@ import {
     ListLatestEntriesUseCase,
     UpdateEntryUseCase
 } from "webiny/api/cms/entry";
-import { WebsocketsSendToIdentityUseCase } from "webiny/api";
+import { Logger, WebsocketsSendToIdentityUseCase } from "webiny/api";
 import { IdentityContext } from "webiny/api/security";
 
 /**
@@ -38,7 +38,8 @@ class ApplyDiscountBulkActionImpl implements EntriesBulkAction.Interface {
         private readonly getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
         private readonly updateEntry: UpdateEntryUseCase.Interface,
         private readonly identityContext: IdentityContext.Interface,
-        private readonly sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
+        private readonly sendToIdentity: WebsocketsSendToIdentityUseCase.Interface,
+        private readonly logger: Logger.Interface
     ) {}
 
     /**
@@ -125,7 +126,7 @@ class ApplyDiscountBulkActionImpl implements EntriesBulkAction.Interface {
             }
         } catch (ex) {
             const message = ex instanceof Error ? ex.message : String(ex);
-            console.warn(`[ApplyDiscount] websocket notification failed: ${message}`);
+            this.logger.warn(`[ApplyDiscount] websocket notification failed: ${message}`);
         }
     }
 }
@@ -137,6 +138,7 @@ export default EntriesBulkAction.createImplementation({
         GetLatestRevisionByEntryIdUseCase,
         UpdateEntryUseCase,
         IdentityContext,
-        WebsocketsSendToIdentityUseCase
+        WebsocketsSendToIdentityUseCase,
+        Logger
     ]
 });
