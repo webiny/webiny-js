@@ -11481,6 +11481,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-sync-pg-to-opensearch@workspace:packages/api-sync-pg-to-opensearch":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-sync-pg-to-opensearch@workspace:packages/api-sync-pg-to-opensearch"
+  dependencies:
+    "@webiny/api-opensearch": "npm:0.0.0"
+    "@webiny/api-sync-to-opensearch": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/stdlib": "npm:^0.0.9"
+    "@webiny/utils": "npm:0.0.0"
+    typescript: "npm:^7.0.2"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-sync-system@workspace:packages/api-sync-system":
   version: 0.0.0-use.local
   resolution: "@webiny/api-sync-system@workspace:packages/api-sync-system"
