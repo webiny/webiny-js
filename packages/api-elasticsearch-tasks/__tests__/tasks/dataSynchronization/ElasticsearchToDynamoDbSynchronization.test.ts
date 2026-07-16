@@ -16,6 +16,7 @@ import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch";
+import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 
 const queryAllRecords = (index: string) => {
     return {
@@ -68,7 +69,7 @@ const createRecordsFactory = (params: ICreateSyncBuilderParams) => {
     };
 };
 
-const TEST_INDEX = "wbytask-root-headless-cms-sync-test";
+const TEST_INDEX = `${getOpenSearchIndexPrefix()}wbytask-root-headless-cms-sync-test`;
 
 describe("ElasticsearchToDynamoDbSynchronization", () => {
     it("should run a sync without any indexes and finish gracefully", async () => {

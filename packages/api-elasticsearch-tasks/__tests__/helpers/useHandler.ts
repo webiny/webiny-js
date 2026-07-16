@@ -45,11 +45,13 @@ export const useHandler = <C extends Context = Context>(params: Params = {}) => 
             const ctx = await inner.getContext<C>();
 
             const dbRegistry = ctx.container.resolve(DbRegistry);
-            dbRegistry.register({
-                item: esEntity,
-                app: "cms",
-                tags: ["es", esEntity.name]
-            });
+            if (!dbRegistry.getItem(i => i.app === "cms" && i.tags.includes("es"))) {
+                dbRegistry.register({
+                    item: esEntity,
+                    app: "cms",
+                    tags: ["es", esEntity.name]
+                });
+            }
 
             const [tasksCrud] = ctx.container.resolveAll(TasksCrud);
             if (tasksCrud) {
