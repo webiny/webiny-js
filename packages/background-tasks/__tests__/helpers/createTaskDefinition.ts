@@ -1,5 +1,5 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { createContextPlugin } from "@webiny/api";
+import type { Container } from "@webiny/di";
 import type { ISelfCleanup } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 interface TaskParams<T> {
@@ -44,7 +44,7 @@ export function createTaskDefinition<T extends TaskDefinition.Result>(params: Ta
         dependencies: []
     });
 
-    return createContextPlugin(context => {
-        context.container.register(TestTaskDefinition);
-    });
+    return (container: Container) => {
+        container.register(TestTaskDefinition);
+    };
 }

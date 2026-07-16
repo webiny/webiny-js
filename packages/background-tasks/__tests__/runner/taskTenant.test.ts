@@ -6,7 +6,7 @@ import { useTaskHandler } from "~tests/helpers/useTaskHandler";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { createContextPlugin } from "@webiny/api";
+import type { Container } from "@webiny/di";
 
 const TASK_ID = "taskRunnerTask";
 
@@ -38,9 +38,9 @@ describe("task tenant", () => {
     it("should properly set the tenant", async () => {
         const contextFactory = createLiveContextFactory({
             plugins: [
-                createContextPlugin(context => {
-                    context.container.register(TestingRunTaskDefinition);
-                })
+                (container: Container) => {
+                    container.register(TestingRunTaskDefinition);
+                }
             ]
         });
 
@@ -59,9 +59,9 @@ describe("task tenant", () => {
 
         const { handle } = useTaskHandler({
             plugins: [
-                createContextPlugin(context => {
-                    context.container.register(TestingRunTaskDefinition);
-                })
+                (container: Container) => {
+                    container.register(TestingRunTaskDefinition);
+                }
             ]
         });
 
