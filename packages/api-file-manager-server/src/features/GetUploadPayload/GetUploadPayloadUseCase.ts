@@ -5,7 +5,6 @@ import type { FileData } from "@webiny/api-file-manager/features/upload/types.js
 import type { UploadPayloadResponse } from "@webiny/api-file-manager/features/upload/types.js";
 import type { FileManagerSettings } from "@webiny/api-file-manager/domain/settings/types.js";
 import { createUploadToken } from "~/utils/uploadToken.js";
-import { resolveServerUrl } from "~/utils/resolveServerUrl.js";
 import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 
 const UPLOAD_MAX_FILE_SIZE_DEFAULT = 1099511627776; /* 1TB */
@@ -51,7 +50,7 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCaseAbstraction.
             secret
         );
 
-        const serverUrl = resolveServerUrl();
+        const serverUrl = this.config.apiUrl;
 
         const data = {
             url: `${serverUrl}/webiny-file-upload`,
