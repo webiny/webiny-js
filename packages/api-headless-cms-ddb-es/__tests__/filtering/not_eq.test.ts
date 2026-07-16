@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types";
 import { createQuery, Query } from "./mocks";
-import { CreateExecFilteringResponse } from "~/operations/entry/elasticsearch/filtering";
+import { CreateExecFilteringResponse } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/filtering";
 import { createExecFiltering } from "./mocks/filtering";
 
 describe("not equals filter", () => {

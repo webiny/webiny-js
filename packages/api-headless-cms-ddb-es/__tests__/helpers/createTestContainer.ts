@@ -3,10 +3,10 @@ import {
     GraphQLFeature,
     CmsModelFieldToGraphQLRegistry
 } from "@webiny/api-headless-cms/features/graphql/index.js";
-import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
-import { CmsEntryOpenSearchFieldIndexFeature } from "~/features/CmsEntryOpenSearchFieldIndex/feature.js";
-import { CmsEntryOpenSearchValueSearchFeature } from "~/features/CmsEntryOpenSearchValueSearch/feature.js";
-import { CmsEntryOpenSearchFilterFeature } from "~/features/CmsEntryOpenSearchFilter/feature.js";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
+import { CmsEntryOpenSearchFieldIndexFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/feature.js";
+import { CmsEntryOpenSearchValueSearchFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueSearch/feature.js";
+import { CmsEntryOpenSearchFilterFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFilter/feature.js";
 import { OpenSearchQueryBuilderOperatorFeature } from "@webiny/api-opensearch/features/OpenSearchQueryBuilderOperator/feature.js";
 
 export const createTestContainer = () => {

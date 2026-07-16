@@ -1,4 +1,7 @@
-import type { ModelField, ModelFields } from "~/operations/entry/elasticsearch/types.js";
+import type {
+    ModelField,
+    ModelFields
+} from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
 
 export interface Fields extends ModelFields {

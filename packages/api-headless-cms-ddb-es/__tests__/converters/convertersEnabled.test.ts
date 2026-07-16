@@ -7,7 +7,7 @@ import {
     createEntryExpectedTransformedDatesData,
     createEntryRawData
 } from "./mocks/data";
-import { configurations } from "~/configurations";
+import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
 import { createPartitionKey } from "~/operations/entry/keys";
 import lodashMerge from "lodash/merge";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";

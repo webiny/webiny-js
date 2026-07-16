@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { CmsEntryOpenSearchFieldIndex } from "~/features/CmsEntryOpenSearchFieldIndex";
+import type { CmsEntryOpenSearchFieldIndex } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex";
 import { createTestContainer } from "~tests/helpers/createTestContainer";
-import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex";
 
 const container = createTestContainer();
 const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);

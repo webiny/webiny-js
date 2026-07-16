@@ -1,11 +1,11 @@
 import {
     createExecFiltering as baseCreateExecFiltering,
     type CreateExecFilteringResponse
-} from "~/operations/entry/elasticsearch/filtering";
+} from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/filtering";
 import { createFields, createModel } from "./fields";
 import { createTestContainer } from "~tests/helpers/createTestContainer";
-import { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch";
-import { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter";
+import { CmsEntryOpenSearchValueSearchRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueSearch";
+import { CmsEntryOpenSearchFilterRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFilter";
 import { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch";
 
 export type { CreateExecFilteringResponse };

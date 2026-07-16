@@ -11044,6 +11044,7 @@ __metadata:
     "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-elasticsearch-tasks": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-utils-os": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/api-sync-ddb-to-opensearch": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
@@ -11237,7 +11238,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms-utils-os@workspace:packages/api-headless-cms-utils-os":
+"@webiny/api-headless-cms-utils-os@npm:0.0.0, @webiny/api-headless-cms-utils-os@workspace:packages/api-headless-cms-utils-os":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-utils-os@workspace:packages/api-headless-cms-utils-os"
   dependencies:
