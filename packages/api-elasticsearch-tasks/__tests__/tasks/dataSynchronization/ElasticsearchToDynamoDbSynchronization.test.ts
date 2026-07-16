@@ -12,7 +12,7 @@ import {
 import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
 import { ProcessEnvFeature } from "@webiny/stdlib/node";
 import type { ITimer } from "@webiny/utils/features/Timer/abstraction.js";
-import { timerFactory } from "@webiny/handler-aws/utils";
+import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch";
@@ -99,8 +99,7 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
         expect(result.webinyTaskId).toBe(task.id);
     });
 
-    // Requires DDB-ES/DDB-OS storage preset (DbRegistry populated with CMS entities).
-    it.skip("should run a sync with indexes and finish", async () => {
+    it("should run a sync with indexes and finish", async () => {
         const handler = useHandler({});
 
         const context = await handler.rawHandle();
@@ -146,6 +145,6 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
         expect(result.webinyTaskId).toBe(task.id);
 
         const afterRunResponse = await client.search(queryAllRecords(TEST_INDEX));
-        expect(afterRunResponse.body.hits.hits).toHaveLength(1);
+        expect(afterRunResponse.body.hits.hits).toHaveLength(0);
     });
 });

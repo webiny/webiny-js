@@ -4,7 +4,7 @@ import { TaskRunner } from "~/api/runner";
 import type { Context as LambdaContext } from "@webiny/aws-sdk/types";
 import type { Context } from "~tests/types";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation";
-import { timerFactory } from "@webiny/handler-aws";
+import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 
 const defaultLambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis"> = {
     getRemainingTimeInMillis: () => {
