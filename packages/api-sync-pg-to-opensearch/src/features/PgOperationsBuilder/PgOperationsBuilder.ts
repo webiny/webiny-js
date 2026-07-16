@@ -23,16 +23,13 @@ class PgOperationsBuilderImpl implements OperationsBuilder.Interface<PgWalChange
                 record.operation === OperationType.INSERT ||
                 record.operation === OperationType.MODIFY
             ) {
-                if (!record.data) {
+                if (!record.data?.value) {
                     console.error(
                         `Missing data for ${record.operation} operation, ID ${record.id}. Skipping.`
                     );
                     continue;
                 }
-                const data = await this.compressor.decompress({
-                    compression: "jsonpack",
-                    value: record.data
-                });
+                const data = await this.compressor.decompress(record.data);
                 if (data === undefined || data === null) {
                     console.error(
                         `Could not decompress data for operation "${record.operation}", ID ${record.id}. Skipping.`

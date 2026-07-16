@@ -3,17 +3,13 @@ import { Container } from "@webiny/feature/api";
 import { OperationsBuilder } from "@webiny/api-sync-to-opensearch/features/OperationsBuilder/abstraction.js";
 import { OperationsFactoryFeature } from "@webiny/api-sync-to-opensearch/features/Operations/feature.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
-import { createJsonpackCompression } from "@webiny/utils/features/compression/legacy/index.js";
+import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { PgOperationsBuilderFeature } from "~/features/PgOperationsBuilder/feature";
-import type { PgWalChangeRecord } from "~/types";
-
-// The PG sync table stores only the compressed value string (no self-describing
-// compression envelope), so fixtures here are compressed with the same "jsonpack"
-// algorithm PgOperationsBuilder assumes when it calls `compressor.decompress()`.
-const jsonpack = createJsonpackCompression();
+import type { PgWalChangeRecord, PgWalChangeRecordData } from "~/types";
 
 describe("PgOperationsBuilder", () => {
     let builder: OperationsBuilder.Interface;
+    let compressor: CompressionHandler.Interface;
 
     beforeEach(() => {
         const container = new Container();
@@ -21,16 +17,22 @@ describe("PgOperationsBuilder", () => {
         OperationsFactoryFeature.register(container);
         PgOperationsBuilderFeature.register(container);
         builder = container.resolve(OperationsBuilder);
+        compressor = container.resolve(CompressionHandler);
     });
+
+    const compress = async (rawData: Record<string, unknown>): Promise<PgWalChangeRecordData> => {
+        return compressor.compress(rawData);
+    };
+
+    const emptyData: PgWalChangeRecordData = { compression: "", value: "" };
 
     const createRecord = async (
         overrides: Partial<PgWalChangeRecord> & { rawData?: Record<string, unknown> }
     ): Promise<PgWalChangeRecord> => {
         const { rawData, ...rest } = overrides;
-        let data = rest.data ?? "";
+        let data: PgWalChangeRecordData = rest.data ?? emptyData;
         if (rawData) {
-            const compressed = await jsonpack.compress(rawData);
-            data = compressed.value;
+            data = await compress(rawData);
         }
         return {
             id: "entry-1:L",
@@ -57,8 +59,7 @@ describe("PgOperationsBuilder", () => {
 
     it("should build a delete operation", async () => {
         const record = await createRecord({
-            operation: "REMOVE",
-            data: ""
+            operation: "REMOVE"
         });
         const operations = await builder.build({ records: [record] });
         expect(operations.total).toBe(1);
@@ -78,7 +79,7 @@ describe("PgOperationsBuilder", () => {
     });
 
     it("should skip INSERT record if missing data", async () => {
-        const record = await createRecord({ data: "" });
+        const record = await createRecord({});
         const operations = await builder.build({ records: [record] });
         expect(operations.total).toBe(0);
     });

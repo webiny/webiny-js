@@ -1,4 +1,4 @@
-export type { PgWalChangeRecord } from "./types.js";
+export type { PgWalChangeRecord, PgWalChangeRecordData } from "./types.js";
 export {
     createPgToOpenSearchHandler,
     type PgToOpenSearchHandler
