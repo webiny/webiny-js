@@ -20,14 +20,16 @@ import {
     type IMultiValueDynamicZonePresenter
 } from "./abstractions.js";
 import type { ISortableItemProps } from "~/presentation/sortable/index.js";
+import { Separator } from "@webiny/admin-ui";
 
 interface MultiValueDynamicZoneProps {
     field: IObjectFieldVM;
+    addItemLabel: string;
     showContainer?: boolean;
 }
 
 export const MultiValueDynamicZone = observer(
-    ({ field, showContainer = true }: MultiValueDynamicZoneProps) => {
+    ({ field, addItemLabel, showContainer = true }: MultiValueDynamicZoneProps) => {
         const toast = useToast();
         const { clipboard } = useFeature(ClipboardFeature);
         const container = useContainer();
@@ -75,6 +77,7 @@ export const MultiValueDynamicZone = observer(
                 {!field.disabled && (
                     <div className={"flex gap-sm items-center"}>
                         <AddTemplateButton
+                            label={addItemLabel}
                             templates={field.availableTemplates}
                             onSelect={template => field.addItem(template.id)}
                         />
@@ -101,7 +104,16 @@ export const MultiValueDynamicZone = observer(
         );
 
         if (!showContainer) {
-            return content;
+            return (
+                <>
+                    <Separator labelPosition={"start"} variant={"accent"}>
+                        <span className={"text-accent-primary text-lg font-semibold"}>
+                            {field.label ?? ""} ({itemCount})
+                        </span>
+                    </Separator>
+                    <div className={"mt-md"}>{content}</div>
+                </>
+            );
         }
 
         const label = `${field.label || ""}${itemCount ? ` (${itemCount})` : ""}`;

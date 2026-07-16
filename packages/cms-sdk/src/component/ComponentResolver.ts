@@ -12,7 +12,7 @@ export class ComponentResolver {
     constructor(private registry: ComponentRegistry) {}
 
     resolve(items: unknown[], model: CmsModelDefinition): ResolvedComponent[] {
-        const componentMap = model.componentMap || {};
+        const componentMap = model.metadata?.componentMap || {};
         const resolved: ResolvedComponent[] = [];
 
         for (const item of items) {

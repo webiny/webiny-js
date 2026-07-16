@@ -36,9 +36,9 @@ export const createGetModelResolver = () => {
                     layout: model.layout,
                     tags: model.tags,
                     settings: model.settings,
-                    componentMap,
                     metadata: {
                         valuesSelection,
+                        componentMap,
                         refModels
                     }
                 },

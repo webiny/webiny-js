@@ -55,6 +55,7 @@ export interface CmsRefModelMetadata {
 
 export interface CmsModelMetadata {
     valuesSelection?: string;
+    componentMap?: Record<string, string>;
     refModels?: Record<string, CmsRefModelMetadata>;
 }
 
@@ -68,7 +69,6 @@ export interface CmsModelDefinition {
         settings?: Record<string, unknown>;
     }>;
     settings?: Record<string, unknown>;
-    componentMap?: Record<string, string>;
     metadata?: CmsModelMetadata;
 }
 

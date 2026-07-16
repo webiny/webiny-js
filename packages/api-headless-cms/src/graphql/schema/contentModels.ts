@@ -62,6 +62,10 @@ export const createModelsSchema = ({
                 const generator = ctx.container.resolve(ValuesSelectionGenerator);
                 return generator.generate(model);
             },
+            componentMap: (model: CmsModel, _: unknown, ctx: CmsContext) => {
+                const generator = ctx.container.resolve(ComponentMapGenerator);
+                return generator.generate(model);
+            },
             refModels: async (model: CmsModel, _: unknown, ctx: CmsContext) => {
                 const generator = ctx.container.resolve(RefModelsGenerator);
                 return generator.generate(model);
@@ -80,10 +84,6 @@ export const createModelsSchema = ({
             },
             valuesSelection: (model: CmsModel, _: unknown, ctx: CmsContext) => {
                 const generator = ctx.container.resolve(ValuesSelectionGenerator);
-                return generator.generate(model);
-            },
-            componentMap: (model: CmsModel, _: unknown, ctx: CmsContext) => {
-                const generator = ctx.container.resolve(ComponentMapGenerator);
                 return generator.generate(model);
             }
         }
@@ -303,6 +303,7 @@ export const createModelsSchema = ({
 
             type CmsContentModelMetadata {
                 valuesSelection: String
+                componentMap: JSON
                 refModels: JSON
             }
 
@@ -328,7 +329,6 @@ export const createModelsSchema = ({
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!
                 valuesSelection: String
-                componentMap: JSON
                 metadata: CmsContentModelMetadata
             }
 

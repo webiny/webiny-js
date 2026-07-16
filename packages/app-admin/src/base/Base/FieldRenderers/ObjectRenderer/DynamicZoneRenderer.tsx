@@ -8,18 +8,23 @@ declare module "../../../../features/formModel/abstractions.js" {
         dynamicZone: {
             fieldType: "object";
             settings?: {
+                open?: boolean;
                 container?: boolean;
+                addItemLabel?: string;
             };
         };
     }
 }
 
 export const DynamicZoneRenderer = createObjectFieldRenderer<"dynamicZone">(({ field }) => {
+    const settings = field.rendererSettings ?? {};
+
     if (field.isList) {
         return (
             <MultiValueDynamicZone
                 field={field}
-                showContainer={field.rendererSettings?.container !== false}
+                addItemLabel={settings.addItemLabel ?? "Add Item"}
+                showContainer={settings.container !== false}
             />
         );
     }
@@ -27,6 +32,7 @@ export const DynamicZoneRenderer = createObjectFieldRenderer<"dynamicZone">(({ f
     return (
         <SingleValueDynamicZone
             field={field}
+            addItemLabel={settings.addItemLabel ?? "Add Item"}
             showContainer={field.rendererSettings?.container !== false}
         />
     );

@@ -161,8 +161,7 @@ interface SdkModelData {
     layout: string[][];
     tags: string[];
     settings?: Record<string, unknown>;
-    /** Flat map of template ID to component name for all dynamic zone templates. */
-    componentMap?: Record<string, string>;
+    metadata?: Record<string, unknown>;
 }
 
 interface SdkGetModelParams {
