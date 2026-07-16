@@ -3,8 +3,7 @@ import useGqlHandler from "./useGqlHandler";
 import { booksSchemaPlugin, booksCrudPlugin } from "~tests/mocks/booksSchema";
 import { CoreGraphQLSchemaFactory } from "~/graphql/abstractions";
 import type { GraphQLSchemaBuilder } from "~/features/GraphQLSchemaBuilder/abstractions";
-import { createContextPlugin } from "@webiny/handler";
-import type { Context } from "./types";
+import type { Container } from "@webiny/di";
 
 describe("GraphQL Handler", () => {
     test("should return errors if schema doesn't exist", async () => {
@@ -62,9 +61,9 @@ describe("GraphQL Handler", () => {
             dependencies: []
         });
 
-        const decoratorsPlugin = createContextPlugin<Context>(context => {
-            context.container.register(DecoratorsSchemaImpl);
-        });
+        const decoratorsPlugin = (container: Container) => {
+            container.register(DecoratorsSchemaImpl);
+        };
 
         const { invoke } = useGqlHandler({
             plugins: [booksCrudPlugin, booksSchemaPlugin, decoratorsPlugin]
