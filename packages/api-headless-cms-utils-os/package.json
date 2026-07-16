@@ -1,0 +1,33 @@
+{
+  "name": "@webiny/api-headless-cms-utils-os",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-headless-cms-utils-os"
+  },
+  "description": "Shared OpenSearch query infrastructure for Headless CMS storage packages.",
+  "license": "MIT",
+  "author": "Webiny Ltd.",
+  "dependencies": {
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-opensearch": "0.0.0",
+    "@webiny/error": "0.0.0",
+    "@webiny/feature": "0.0.0"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "^7.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

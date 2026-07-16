@@ -11237,6 +11237,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-headless-cms-utils-os@workspace:packages/api-headless-cms-utils-os":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-headless-cms-utils-os@workspace:packages/api-headless-cms-utils-os"
+  dependencies:
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-opensearch": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    typescript: "npm:^7.0.2"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-headless-cms-workflows@npm:0.0.0, @webiny/api-headless-cms-workflows@workspace:packages/api-headless-cms-workflows":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-workflows@workspace:packages/api-headless-cms-workflows"
