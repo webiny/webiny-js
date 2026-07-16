@@ -69,6 +69,8 @@ class WorkerServiceImpl implements TaskService.Interface {
                 handle.status = "done";
             } else if (msg.type === "error") {
                 handle.status = "error";
+                // Surface the worker's error — otherwise a failed task shows only as a stuck record.
+                console.error(`Background task "${task.id}" (${task.definitionId}) failed:`, msg.error);
             }
         });
 
@@ -94,7 +96,13 @@ class WorkerServiceImpl implements TaskService.Interface {
                 webinyTaskId: task.id,
                 webinyTaskDefinitionId: task.definitionId,
                 tenant: tenant.id,
-                delay
+                delay,
+                // Satisfy the shared runner's AWS-Step-Functions-shaped validation. No SFN in a single
+                // process: executionName is a stable run id (the task id); endpoint/stateMachineId are
+                // validate-only off-AWS.
+                endpoint: this.serverUrl,
+                executionName: task.id,
+                stateMachineId: ""
             },
             serverUrl: this.serverUrl,
             maxDurationMs: DEFAULT_MAX_DURATION_MS,
