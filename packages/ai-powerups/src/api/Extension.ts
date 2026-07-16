@@ -14,6 +14,7 @@ import { AiPromptContextFeature } from "./features/AiPromptContext/feature.js";
 import { AiImageEnrichmentFeature } from "./features/AiImageEnrichment/feature.js";
 import { ExtractFrontmatterFeature } from "./features/ExtractFrontmatter/feature.js";
 import { CmsGenerateEntryContentFeature } from "./features/CmsGenerateEntryContent/feature.js";
+import { CmsResolveImageToolFeature } from "./features/CmsResolveImageTool/feature.js";
 
 export const Extension = createFeature({
     name: "AiPowerUps",
@@ -29,6 +30,7 @@ export const Extension = createFeature({
         AiPromptContextFeature.register(container);
         WbGeneratePageContentFeature.register(container);
         CmsGenerateEntryContentFeature.register(container);
+        CmsResolveImageToolFeature.register(container);
         ExtractFrontmatterFeature.register(container);
 
         const wcp = container.resolve(WcpContext);

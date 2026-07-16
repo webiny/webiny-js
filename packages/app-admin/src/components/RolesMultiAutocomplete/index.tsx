@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { MultiAutoComplete } from "@webiny/admin-ui";
 import { LIST_ROLES } from "./graphql.js";
 import { useQuery } from "@apollo/react-hooks";
@@ -10,11 +10,7 @@ type RolesMultiAutocompleteProps = Omit<
     onChange?: (values: string[]) => void;
 };
 
-export const RolesMultiAutocomplete = ({
-    onChange,
-    values,
-    ...props
-}: RolesMultiAutocompleteProps) => {
+export const RolesMultiAutocomplete = ({ onChange, ...props }: RolesMultiAutocompleteProps) => {
     const { data, loading } = useQuery(LIST_ROLES);
     const rawOptions = loading || !data ? [] : data.security.roles.data;
 
@@ -24,6 +20,29 @@ export const RolesMultiAutocomplete = ({
     );
 
     const onValuesChange = useCallback((ids: string[]) => onChange?.(ids), [onChange]);
+
+    /**
+     * This is required because the Bind, which currently wraps this component passes "values" as "value" prop, not "values".
+     * "values" is added to safeguard for future changes. When we move to new forms, remove this part.
+     */
+    const values = useMemo(() => {
+        const selected = Array.isArray(props.values)
+            ? props.values
+            : Array.isArray(props.value)
+              ? props.value
+              : [];
+
+        return selected
+            .map(s => {
+                if (typeof s === "string") {
+                    return s;
+                } else if (typeof s === "object") {
+                    return s?.id;
+                }
+                return null;
+            })
+            .filter((s): s is string => !!s);
+    }, [props.values, props.value]);
 
     return (
         <MultiAutoComplete

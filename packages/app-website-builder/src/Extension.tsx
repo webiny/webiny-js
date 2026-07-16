@@ -42,6 +42,10 @@ import { ExperimentFormPresenterFeature } from "~/presentation/experiments/Exper
 import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
 import { PageSettingsFeature } from "~/presentation/pages/PageEditor/PageSettings/feature.js";
 import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/index.js";
+import { UpdateSettingsFeature } from "~/features/settings/updateSettings/index.js";
+import { GetSettingsFeature } from "~/features/settings/getSettings/index.js";
+import { GetEcommerceSettingsFeature } from "~/features/ecommerce/settings/getSettings/index.js";
+import { UpdateEcommerceSettingsFeature } from "~/features/ecommerce/settings/updateSettings/index.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -73,6 +77,10 @@ export const Extension = () => {
             <RegisterFeature feature={GetPageRevisionsFeature} />
             <RegisterFeature feature={CreatePageFeature} />
             <RegisterFeature feature={PageSettingsFeature} />
+            <RegisterFeature feature={GetSettingsFeature} />
+            <RegisterFeature feature={GetEcommerceSettingsFeature} />
+            <RegisterFeature feature={UpdateSettingsFeature} />
+            <RegisterFeature feature={UpdateEcommerceSettingsFeature} />
             <AdminConfig>
                 <Security.Permissions
                     name="website-builder"

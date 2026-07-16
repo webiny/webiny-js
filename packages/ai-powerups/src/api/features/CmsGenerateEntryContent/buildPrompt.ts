@@ -32,12 +32,14 @@ The File Manager currently has images tagged with: ${tagListing}.
 When a field needs an image:
 1. Pick the tag from the list above that best matches the content topic.
 2. Call \`listImagesByTag\` with that tag.
-3. If results are non-empty, use the image ID directly as the field value.
+3. If results are non-empty, wrap the image reference in a tool envelope:
+   \`{ "tool": "cmsResolveImage", "params": { "id": "<image_id_from_search>" } }\`
 4. If results are empty, try one more tag. If still nothing, leave the field empty.
 
 ### File Fields
 
-File fields expect a file identifier (URL or file ID). Use \`listImagesByTag\` to find available images when the field expects an image.
+For file/image fields, always use the \`cmsResolveImage\` tool envelope with an ID obtained from \`listImagesByTag\`:
+\`{ "tool": "cmsResolveImage", "params": { "id": "<file_id>" } }\`
 
 ### Reference Fields
 

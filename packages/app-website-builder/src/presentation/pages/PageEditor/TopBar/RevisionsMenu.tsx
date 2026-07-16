@@ -79,20 +79,17 @@ export const RevisionsMenu = () => {
                     text={<Text size={"sm"}>{revision.getLabel()}</Text>}
                 />
             ))}
-            {revisions.length > 5 ? (
-                <>
-                    <DropdownMenu.Separator />
-                    <DropdownMenu.Item
-                        key={"revisions-all"}
-                        onClick={onOpenRevisionList}
-                        text={
-                            <>
-                                <Text size={"sm"}>Show All Revisions</Text>
-                            </>
-                        }
-                    />
-                </>
-            ) : null}
+
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item
+                key={"revisions-all"}
+                onClick={onOpenRevisionList}
+                text={
+                    <>
+                        <Text size={"sm"}>Show All Revisions</Text>
+                    </>
+                }
+            />
         </DropdownMenu>
     );
 };

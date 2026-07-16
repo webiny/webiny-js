@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@types/yargs": "^17.0.35",
-    "type-fest": "^5.7.0",
-    "vitest": "^4.1.9"
+    "type-fest": "^5.8.0",
+    "vitest": "^4.1.10"
   }
 }

@@ -42,8 +42,8 @@
     "@webiny/wcp": "0.0.0",
     "graphql": "^16.14.2",
     "rimraf": "^6.1.3",
-    "typescript": "6.0.3",
-    "vitest": "^4.1.9"
+    "typescript": "7.0.2",
+    "vitest": "^4.1.10"
   },
   "webiny": {
     "publishFrom": "dist"

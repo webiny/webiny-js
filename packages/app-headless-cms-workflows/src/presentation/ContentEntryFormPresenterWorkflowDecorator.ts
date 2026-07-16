@@ -71,8 +71,8 @@ class ContentEntryFormPresenterWithWorkflow implements IContentEntryFormPresente
         this.original.setFolderId(folderId);
     }
 
-    newEntry(): void {
-        return this.original.newEntry();
+    newEntry(initialValues?: Record<string, unknown>): void {
+        return this.original.newEntry(initialValues);
     }
 
     reset(): void {

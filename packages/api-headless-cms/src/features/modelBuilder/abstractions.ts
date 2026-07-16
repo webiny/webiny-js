@@ -4,6 +4,15 @@ import type { PublicModelBuilder } from "./models/PublicModelBuilder.js";
 import type { IModelBuilderPrivateInput, IModelBuilderPublicInput } from "./models/ModelBuilder.js";
 
 /**
+ * Augmentable model settings interface.
+ * External packages can extend this via module augmentation.
+ */
+export interface IModelSettings {
+    aiEntryWizard?: boolean;
+    [key: string]: any;
+}
+
+/**
  * Augmentable field builder registry. Provides access to all registered field types.
  */
 export interface IFieldBuilderRegistry {

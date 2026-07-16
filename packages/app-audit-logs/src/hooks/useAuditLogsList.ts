@@ -1,15 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useQuery } from "@apollo/react-hooks";
-import {
-    type IListAuditLogsResponse,
-    type IListAuditLogsVariablesPartial,
-    type IListAuditLogsVariablesWhere,
-    LIST_AUDIT_LOGS
-} from "~/hooks/graphql.js";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useFeature } from "@webiny/app";
+import { ListAuditLogsFeature } from "~/features/listAuditLogs/index.js";
+import type { IListAuditLogsVariablesWhere } from "~/hooks/graphql.js";
 import type { IAuditLog, IAuditLogsMeta } from "~/types.js";
 import type { OnDataTableSortingChange, DataTableSorting } from "@webiny/admin-ui";
-import { transformRawAuditLog } from "~/utils/transformRawAuditLog.js";
-import { listAuditLogsSchema } from "~/hooks/schema.js";
 
 export interface UseAuditLogs {
     isListLoading: boolean;
@@ -22,13 +16,19 @@ export interface UseAuditLogs {
     after?: string;
     sorting: DataTableSorting;
     setSorting: OnDataTableSortingChange;
-    showingFilters: boolean;
-    showFilters: () => void;
-    hideFilters: () => void;
+}
+
+interface ListVariables {
+    where: Record<string, unknown>;
+    after: string | undefined;
+    sort: "ASC" | "DESC";
+    limit: number;
 }
 
 export const useAuditLogsList = (): UseAuditLogs => {
-    const [variables, setVariables] = useState<IListAuditLogsVariablesPartial>({
+    const { useCase } = useFeature(ListAuditLogsFeature);
+
+    const [variables, setVariables] = useState<ListVariables>({
         where: {},
         after: undefined,
         sort: "DESC",
@@ -36,15 +36,25 @@ export const useAuditLogsList = (): UseAuditLogs => {
     });
 
     const [accumulatedRecords, setAccumulatedRecords] = useState<IAuditLog[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [meta, setMeta] = useState<IAuditLogsMeta>({
+        hasMoreItems: false,
+        cursor: null
+    });
+
+    const resetPagination = useCallback(() => {
+        setAccumulatedRecords([]);
+        setMeta({ hasMoreItems: false, cursor: null });
+    }, []);
 
     const setWhere = useCallback((where: Partial<IListAuditLogsVariablesWhere>) => {
         setVariables(prev => ({ ...prev, where, after: undefined }));
-        setAccumulatedRecords([]);
+        resetPagination();
     }, []);
 
     const setSort = useCallback((sort: "ASC" | "DESC") => {
         setVariables(prev => ({ ...prev, sort, after: undefined }));
-        setAccumulatedRecords([]);
+        resetPagination();
     }, []);
 
     const setAfter = useCallback((after?: string) => {
@@ -55,7 +65,6 @@ export const useAuditLogsList = (): UseAuditLogs => {
         setVariables(prev => ({ ...prev, limit }));
     }, []);
 
-    const [showingFilters, setShowingFilters] = useState(false);
     const [acoSorting, setAcoSorting] = useState<DataTableSorting>([]);
 
     useEffect(() => {
@@ -66,37 +75,27 @@ export const useAuditLogsList = (): UseAuditLogs => {
         setSort(sort.desc ? "DESC" : "ASC");
     }, [acoSorting]);
 
-    const logs = useQuery<IListAuditLogsResponse, IListAuditLogsVariablesPartial>(LIST_AUDIT_LOGS, {
-        variables,
-        fetchPolicy: "network-only"
-    });
+    const requestIdRef = useRef(0);
 
     useEffect(() => {
-        if (!logs.data?.auditLogs.listAuditLogs.data) {
-            return;
-        }
-        const items = listAuditLogsSchema.safeParse(logs.data.auditLogs.listAuditLogs.data);
-        if (!items.success) {
-            console.error(items.error);
-            return;
-        }
-        const newRecords = items.data.map(auditLog => transformRawAuditLog({ auditLog }));
-        if (variables.after) {
-            setAccumulatedRecords(prev => [...prev, ...newRecords]);
-        } else {
-            setAccumulatedRecords(newRecords);
-        }
-    }, [logs.data?.auditLogs]);
+        setLoading(true);
+        const requestId = ++requestIdRef.current;
 
-    const meta = useMemo(() => {
-        if (!logs.data?.auditLogs.listAuditLogs.meta) {
-            return {
-                hasMoreItems: false,
-                cursor: null
-            };
-        }
-        return logs.data.auditLogs.listAuditLogs.meta;
-    }, [logs.data?.auditLogs]);
+        useCase.execute(variables).then(result => {
+            if (requestId !== requestIdRef.current) {
+                return;
+            }
+
+            if (variables.after) {
+                setAccumulatedRecords(prev => [...prev, ...result.records]);
+            } else {
+                setAccumulatedRecords(result.records);
+            }
+
+            setMeta(result.meta);
+            setLoading(false);
+        });
+    }, [variables]);
 
     const sorting = useMemo((): DataTableSorting => {
         return [
@@ -108,23 +107,18 @@ export const useAuditLogsList = (): UseAuditLogs => {
     }, [variables.sort]);
 
     return {
-        isListLoading: logs.loading,
+        isListLoading: loading,
         records: accumulatedRecords,
         meta,
         listMoreRecords: () => {
-            setAfter(meta.cursor || undefined);
+            if (!loading && meta.cursor) {
+                setAfter(meta.cursor);
+            }
         },
         setWhere,
         sorting,
         setSorting: setAcoSorting,
         setLimit,
-        isListLoadingMore: logs.loading && !!variables.after,
-        showingFilters,
-        showFilters: () => {
-            setShowingFilters(true);
-        },
-        hideFilters: () => {
-            setShowingFilters(false);
-        }
+        isListLoadingMore: loading && !!variables.after
     };
 };

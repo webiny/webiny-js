@@ -1,5 +1,6 @@
 export { FormModelFactory } from "~/features/formModel/abstractions.js";
 export { DevToolsSection } from "~/components/index.js";
+export { createReactiveComponent } from "~/index.js";
 export { RegisterFeature } from "~/components/RegisterFeature.js";
 export { BuildParam, BuildParams } from "~/features/buildParams/index.js";
 export { useBuildParams } from "~/presentation/buildParams/useBuildParams.js";

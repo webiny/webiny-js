@@ -21,6 +21,8 @@ export * from "./base/ui/CenteredView.js";
 export * from "./base/ui/Dashboard.js";
 export * from "./base/ui/NotFound.js";
 
+export { observer as createReactiveComponent } from "mobx-react-lite";
+
 // Base admin app
 export { Admin } from "./base/Admin.js";
 export * from "./config/AdminConfig.js";
@@ -139,6 +141,7 @@ export { useLayoutRenderers } from "./features/formModel/useLayoutRenderers.js";
 // Import all field renderers to ensure their module augmentations are applied.
 import "./base/Base/FieldRenderers/InputRenderer.js";
 import "./base/Base/FieldRenderers/SelectRenderer.js";
+import "./base/Base/FieldRenderers/MultiSelectRenderer.js";
 import "./base/Base/FieldRenderers/TextareaRenderer.js";
 import "./base/Base/FieldRenderers/SwitchRenderer.js";
 import "./base/Base/FieldRenderers/NumberInputRenderer.js";

@@ -819,6 +819,11 @@
               }
             },
             {
+              "name": "settings",
+              "description": null,
+              "type": { "kind": "SCALAR", "name": "JSON", "ofType": null }
+            },
+            {
               "name": "plugin",
               "description": null,
               "type": {

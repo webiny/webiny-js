@@ -69,7 +69,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
         );
     }
 
-    const isSelf = userForm.user.id === identity.id;
+    const isSelf = userForm.user?.id === identity.id;
     const isDisabled = isExternal || isSelf;
 
     return (
@@ -176,11 +176,16 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                 <Grid>
                                     <Grid.Column span={12}>
                                         <Bind name={"roles"} validators={groupValidators}>
-                                            <RolesMultiAutocomplete
-                                                label={"Roles"}
-                                                data-testid="roles-autocomplete"
-                                                disabled={isDisabled}
-                                            />
+                                            {({ value, onChange, validation }) => (
+                                                <RolesMultiAutocomplete
+                                                    values={value}
+                                                    onChange={onChange}
+                                                    validation={validation}
+                                                    label={"Roles"}
+                                                    data-testid="roles-autocomplete"
+                                                    disabled={isDisabled}
+                                                />
+                                            )}
                                         </Bind>
                                     </Grid.Column>
                                 </Grid>
@@ -194,11 +199,16 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                     <Grid>
                                         <Grid.Column span={12}>
                                             <Bind name={"teams"}>
-                                                <TeamsMultiAutocomplete
-                                                    label={"Teams"}
-                                                    data-testid="teams-autocomplete"
-                                                    disabled={isDisabled}
-                                                />
+                                                {({ value, onChange, validation }) => (
+                                                    <TeamsMultiAutocomplete
+                                                        values={value}
+                                                        onChange={onChange}
+                                                        validation={validation}
+                                                        label={"Teams"}
+                                                        data-testid="teams-autocomplete"
+                                                        disabled={isDisabled}
+                                                    />
+                                                )}
                                             </Bind>
                                         </Grid.Column>
                                     </Grid>

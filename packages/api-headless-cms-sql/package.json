@@ -30,14 +30,14 @@
     "@webiny/handler": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "knex": "^3.2.10"
+    "knex": "^3.3.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "better-sqlite3": "^12.11.1",
-    "typescript": "6.0.3",
-    "vitest": "^4.1.9"
+    "typescript": "7.0.2",
+    "vitest": "^4.1.10"
   },
   "publishConfig": {
     "access": "public"

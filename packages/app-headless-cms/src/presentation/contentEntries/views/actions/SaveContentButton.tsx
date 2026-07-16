@@ -12,6 +12,7 @@ export const SaveContentButton = observer(() => {
     const { showSuccessToast } = useToast();
 
     if (
+        presenter.vm.canCreateNewRevision ||
         !presenter.vm.canSave ||
         (presenter.vm.entry && !canEdit(presenter.vm.entry, "cms.contentEntry"))
     ) {

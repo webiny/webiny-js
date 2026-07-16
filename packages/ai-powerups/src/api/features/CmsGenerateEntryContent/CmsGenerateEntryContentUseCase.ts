@@ -2,13 +2,17 @@ import { stepCountIs } from "ai";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
+import { AiToolPipelineRunner } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { ListTagsUseCase } from "@webiny/api-file-manager/features/file/ListTags/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
 import { CmsModelToJsonSchemaConverter } from "@webiny/api-headless-cms/utils/contentModelToJsonSchema/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
-import { AiPromptContextBuilder } from "~/api/features/AiPromptContext/index.js";
+import {
+    AiPromptContextBuilder,
+    formatAdditionalFilesContext
+} from "~/api/features/AiPromptContext/index.js";
 import { createReadProjectFileTool } from "~/api/features/AiPromptContext/ReadProjectFileTool.js";
 import { CmsGenerateEntryContentUseCase } from "./abstractions.js";
 import type {
@@ -18,6 +22,7 @@ import type {
 } from "./abstractions.js";
 import { buildEntryPrompt } from "./buildPrompt.js";
 import { LlmJsonResponse } from "../WbGeneratePageContent/LlmJsonResponse.js";
+import { injectDynamicZoneTypenames } from "./injectDynamicZoneTypenames.js";
 
 class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCase.Interface {
     constructor(
@@ -28,7 +33,8 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
         private encryption: Encryption.Interface,
         private listTags: ListTagsUseCase.Interface,
         private getModel: GetModelUseCase.Interface,
-        private modelToAst: ModelToAstConverter.Interface
+        private modelToAst: ModelToAstConverter.Interface,
+        private toolPipelineRunner: AiToolPipelineRunner.Interface
     ) {}
 
     async execute(
@@ -68,7 +74,8 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
             projectId: params.projectId,
             readerPersonaId: params.readerPersonaId,
             writerPersonaId: params.writerPersonaId,
-            excludedFileIds: params.excludedFileIds
+            excludedFileIds: params.excludedFileIds,
+            additionalFileIds: params.additionalFileIds
         });
 
         if (context.allProjectFiles.length > 0) {
@@ -107,7 +114,7 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
                 },
                 system,
                 toolChoice: "auto",
-                prompt: params.prompt,
+                prompt: params.prompt + formatAdditionalFilesContext(context.additionalFiles),
                 ...(Object.keys(sdkTools).length > 0
                     ? { tools: sdkTools, stopWhen: stepCountIs(20) }
                     : {})
@@ -118,7 +125,15 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
                 (aiResult.steps.filter(step => step.text.length > 0).pop()?.text ?? "");
 
             const entry = LlmJsonResponse.fromRawText(text).toArray().pop();
-            const output = JSON.stringify(entry);
+
+            let resolved: Record<string, any> | undefined;
+
+            if (entry) {
+                resolved = (await this.toolPipelineRunner.resolve(entry)) as Record<string, any>;
+                await injectDynamicZoneTypenames(resolved, modelAst, model.singularApiName);
+            }
+
+            const output = JSON.stringify(resolved);
 
             const filesRead = new Set<string>();
             let toolCallsMade = 0;
@@ -165,6 +180,7 @@ export const CmsGenerateEntryContentUseCaseImplementation =
             Encryption,
             ListTagsUseCase,
             GetModelUseCase,
-            ModelToAstConverter
+            ModelToAstConverter,
+            AiToolPipelineRunner
         ]
     });
