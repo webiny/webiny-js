@@ -71,7 +71,7 @@ const createRecordsFactory = (params: ICreateSyncBuilderParams) => {
 const TEST_INDEX = "wbytask-root-headless-cms-sync-test";
 
 describe("ElasticsearchToDynamoDbSynchronization", () => {
-    it("should run a sync without any indexes and throw an error", async () => {
+    it("should run a sync without any indexes and finish gracefully", async () => {
         const handler = useHandler({});
 
         const context = await handler.rawHandle();

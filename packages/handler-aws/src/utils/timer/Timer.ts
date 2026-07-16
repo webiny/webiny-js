@@ -1,10 +1,10 @@
-import type { ITimer } from "./abstractions/ITimer.js";
+import type { Timer as TimerAbstraction } from "@webiny/utils/features/Timer/abstraction.js";
 
 export interface ITimerCb {
     (): number;
 }
 
-export class Timer implements ITimer {
+export class Timer implements TimerAbstraction.Interface {
     private readonly cb: ITimerCb;
 
     public constructor(cb: ITimerCb) {

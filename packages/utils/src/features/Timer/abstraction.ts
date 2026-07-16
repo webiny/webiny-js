@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 
 export interface ITimer {
+    getRemainingMilliseconds(): number;
     getRemainingSeconds(): number;
 }
 

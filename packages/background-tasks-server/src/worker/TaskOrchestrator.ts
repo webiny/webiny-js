@@ -1,5 +1,5 @@
 import http from "node:http";
-import type { Timer } from "@webiny/background-tasks/api";
+import type { Timer } from "@webiny/utils/features/Timer/abstraction.js";
 import type { StartMessage, WorkerToParentMessage } from "./TaskOrchestratorMessage.js";
 import { ProcessTimer } from "~/timer/ProcessTimer.js";
 
