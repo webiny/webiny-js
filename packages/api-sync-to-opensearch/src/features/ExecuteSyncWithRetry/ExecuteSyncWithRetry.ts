@@ -21,19 +21,16 @@ class ExecuteSyncWithRetryImpl implements ExecuteSyncWithRetryAbstraction.Interf
         );
 
         const maxRetryTime = this.env.getNumber(
-            "WEBINY_DYNAMODB_TO_OPENSEARCH_MAX_RETRY_TIME",
+            "WEBINY_TO_OPENSEARCH_MAX_RETRY_TIME",
             params.maxRetryTime || 300000
         );
-        const retries = this.env.getNumber(
-            "WEBINY_DYNAMODB_TO_OPENSEARCH_RETRIES",
-            params.retries || 20
-        );
+        const retries = this.env.getNumber("WEBINY_TO_OPENSEARCH_RETRIES", params.retries || 20);
         const minTimeout = this.env.getNumber(
-            "WEBINY_DYNAMODB_TO_OPENSEARCH_MIN_TIMEOUT",
+            "WEBINY_TO_OPENSEARCH_MIN_TIMEOUT",
             params.minTimeout || 1500
         );
         const maxTimeout = this.env.getNumber(
-            "WEBINY_DYNAMODB_TO_OPENSEARCH_MAX_TIMEOUT",
+            "WEBINY_TO_OPENSEARCH_MAX_TIMEOUT",
             params.maxTimeout || 30000
         );
 

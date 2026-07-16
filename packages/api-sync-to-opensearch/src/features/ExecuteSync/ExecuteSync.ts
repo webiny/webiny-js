@@ -50,7 +50,7 @@ const checkErrors = (result?: ApiResponse): void => {
             continue;
         }
         console.error("Body item with error", item);
-        throw new WebinyError(err, "DYNAMODB_TO_OPENSEARCH_ERROR", item);
+        throw new WebinyError(err, "TO_OPENSEARCH_ERROR", item);
     }
 };
 
