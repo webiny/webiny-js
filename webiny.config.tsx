@@ -2,6 +2,7 @@ import React from "react";
 import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
+import { BackgroundTasksDemo } from "@/extensions/backgroundTasksDemo/BackgroundTasksDemo.js";
 // import { CognitoFederation } from "@/extensions/idp/entraid/Extension.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
@@ -18,8 +19,8 @@ export const Extensions = () => {
             <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
             {/*<Admin.Extension src={"@/extensions/newEntryWizardDemo/index.tsx"} />*/}
 
-            {/* Background Tasks demo: "Apply Discount" bulk action on Products */}
-            <Admin.Extension src={"/extensions/backgroundTasksDemo/index.tsx"} />
+            {/* Background Tasks demo: "Apply Discount" bulk action on Products (API + Admin) */}
+            <BackgroundTasksDemo />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
@@ -47,10 +48,10 @@ export const Extensions = () => {
             {/*/>*/}
             {/*<Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />*/}
             {/*<Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />*/}
-            {/* Background Tasks demo: Products model + the "Apply Discount" bulk action backend */}
+            {/* Background Tasks demo: Products model (the bulk action itself is registered
+                by the <BackgroundTasksDemo /> component above) */}
             <Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />
             <Api.Extension src={"/extensions/models/ProductModel.ts"} />
-            <Api.Extension src={"/extensions/backgroundTasksDemo/ApplyDiscountBulkAction.ts"} />
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionHook.ts"} />*/}
             {/*<Admin.Extension*/}

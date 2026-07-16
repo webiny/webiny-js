@@ -5,16 +5,22 @@ One artifact spans all three posts.
 
 ## What's here
 
-| File                                | Role                                                                                                                                       |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `../models/ProductModel.ts`         | The demo CMS model (`product`, has a `price` number field).                                                                                |
-| `../models/ProductCategoryModel.ts` | Referenced by Product; registered so the category picker isn't dangling.                                                                   |
-| `ApplyDiscountBulkAction.ts`        | **Backend.** A custom `EntriesBulkAction`. Webiny auto-generates a background task from it. Emits a websocket message per processed entry. |
-| `ApplyDiscountAction.tsx`           | **Frontend.** The bulk-action button that triggers the task.                                                                               |
-| `DiscountAppliedEventHandler.ts`    | **Frontend.** Websocket listener that toasts when a discount is applied.                                                                   |
-| `index.tsx`                         | Registers the button + the websocket listener.                                                                                             |
+| File                                                                      | Role |
+| ------------------------------------------------------------------------- | ---- |
+| Organized by side (`api/` + `admin/`), with a full-stack entry component: |
 
-All registered in `webiny.config.tsx`.
+| File                                   | Role                                                                                                                                   |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `BackgroundTasksDemo.tsx`              | **Entry.** Full-stack component — wires up the API and Admin extensions below.                                                         |
+| `api/ApplyDiscountBulkAction.ts`       | **API.** A custom `EntriesBulkAction`. Webiny auto-generates a background task from it. Emits a websocket message per processed entry. |
+| `admin/Extension.tsx`                  | **Admin entry.** Registers the bulk-action button + the websocket listener.                                                            |
+| `admin/ApplyDiscountAction.tsx`        | **Admin.** The bulk-action button that triggers the task.                                                                              |
+| `admin/DiscountAppliedEventHandler.ts` | **Admin.** Websocket listener that toasts when a discount is applied.                                                                  |
+| `../models/ProductModel.ts`            | The demo CMS model (`product`, with `price` + `onSale`).                                                                               |
+| `../models/ProductCategoryModel.ts`    | Referenced by Product; registered so the category picker isn't dangling.                                                               |
+
+Registered in `webiny.config.tsx` as `<BackgroundTasksDemo />` (plus the two model
+`<Api.Extension>` entries under `extensions/models/`).
 
 ## The key idea
 
