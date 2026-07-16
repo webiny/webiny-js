@@ -19,7 +19,10 @@ export const createDdbToOpenSearchStreamHandler = (
     // In real Lambda deployments, the handler bootstrap should register a Timer
     // that wraps context.getRemainingTimeInMillis(). This factory matches current behavior.
     ProcessEnvFeature.register(container);
-    TimerFeature.register(container, { getRemainingSeconds: () => 900 });
+    TimerFeature.register(container, {
+        getRemainingSeconds: () => 900,
+        getRemainingMilliseconds: () => 900 * 1000
+    });
 
     DdbToOpenSearchFeature.register(container, { client });
 
