@@ -8,7 +8,7 @@ import {
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { useHandler } from "~tests/__mocks/handler/useHandler.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
-import { ContextPlugin } from "@webiny/api";
+import type { Container } from "@webiny/di";
 import { SCHEDULED_ACTION_PUBLISH } from "@webiny/api-scheduler/constants.js";
 
 describe("Scheduler GraphQL", () => {
@@ -19,10 +19,10 @@ describe("Scheduler GraphQL", () => {
             return createMockScheduleClient();
         },
         plugins: [
-            new ContextPlugin(async context => {
-                context.container.register(NamespaceHandler);
-                context.container.register(PublishTestEntryActionHandler);
-            })
+            (container: Container) => {
+                container.register(NamespaceHandler);
+                container.register(PublishTestEntryActionHandler);
+            }
         ]
     });
 
