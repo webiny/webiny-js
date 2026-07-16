@@ -11,9 +11,10 @@ exports.matchRedirect = (request, redirects) => {
 
     const fullUrl = `${protocol}://${hostname}${uri}${querystring}`;
     const fullUrlNoQuery = `${protocol}://${hostname}${uri}`;
+    const uriWithQuery = `${uri}${querystring}`;
 
     // Try to find a match (priority: with query > without query > path only)
-    let redirectConfig = redirects[fullUrl] || redirects[fullUrlNoQuery] || redirects[uri];
+    let redirectConfig = redirects[fullUrl] || redirects[fullUrlNoQuery] || redirects[uriWithQuery] || redirects[uri];
 
     // If no match found, return null
     if (!redirectConfig) {
