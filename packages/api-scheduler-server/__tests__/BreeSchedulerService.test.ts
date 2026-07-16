@@ -161,6 +161,13 @@ describe("BreeSchedulerService", () => {
     });
 
     describe("safeRemove logging", () => {
+        // safeRemove() swallows bree.stop()/remove() errors and logs them at debug level — a guard for
+        // the race where a job fires (bree drops it) between us deciding to delete it and actually
+        // telling bree to. That guard only runs when our `jobs` map still holds an id that bree no
+        // longer knows about. NO public API produces that divergence: create/delete/fire all keep the
+        // `jobs` map and bree in lockstep. So this is necessarily a WHITE-BOX test — it fabricates the
+        // divergence by writing the private `jobs` map directly, which is the only way to exercise the
+        // swallow-and-log branch short of making bree injectable (not worth it for defensive logging).
         it("should log debug when stop/remove fail silently", async () => {
             await service.create({
                 id: "schedule-1",
@@ -169,10 +176,13 @@ describe("BreeSchedulerService", () => {
                 scheduleFor: futureDate(60_000)
             });
 
-            /* Delete once to remove the bree job. */
+            // Delete once: removes the job from BOTH the `jobs` map and bree.
             await service.delete({ id: "schedule-1", namespace, tenant });
 
-            /* Manually re-add the job so delete doesn't throw "does not exist". */
+            // Re-add ONLY to the private `jobs` map — bree still doesn't have it. This is the
+            // fabricated divergence: exists() (which reads `jobs`) now returns true, so the next
+            // delete() gets past its "does not exist" guard and reaches safeRemove(), where
+            // bree.stop()/remove() throw (unknown job) and get swallowed + logged at debug.
             (service as any).jobs.set("schedule-1", { namespace, tenant });
             await service.delete({ id: "schedule-1", namespace, tenant });
 
