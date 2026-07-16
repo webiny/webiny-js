@@ -1,0 +1,30 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api/tsconfig.build.json" },
+    { "path": "../api-opensearch/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
+      "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
+      "@webiny/api-opensearch": ["../api-opensearch/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
+    }
+  }
+}

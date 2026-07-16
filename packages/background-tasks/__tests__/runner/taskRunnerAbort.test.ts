@@ -4,7 +4,7 @@ import { createMockEvent } from "~tests/mocks";
 import { ResponseAbortedResult } from "~/api/response";
 import { createLiveContextFactory } from "~tests/live";
 import { testDefinitionPlugin, TASK_ID } from "~tests/runner/taskDefinition";
-import { timerFactory } from "@webiny/handler-aws/utils";
+import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation";
 
 describe("task runner abort", () => {
