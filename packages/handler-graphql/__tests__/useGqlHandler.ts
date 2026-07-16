@@ -12,7 +12,17 @@ export default ({ plugins = [] }: Params = {}) => {
         root: () => {},
         request: async container => {
             const flat = [plugins].flat(Infinity as 1).filter(Boolean);
-            registerLegacyPluginsViaGqlContextualSchema(container, flat);
+            // DI-native plugins are plain `container => {}` functions (they register features /
+            // request-context initializers directly). Call them here; everything else (legacy
+            // `graphql-schema` plugins) still goes through the bridge until #39 removes it.
+            const isFn = (p: any) => typeof p === "function" && !p.prototype;
+            for (const plugin of flat.filter(isFn)) {
+                (plugin as (container: any) => void)(container);
+            }
+            registerLegacyPluginsViaGqlContextualSchema(
+                container,
+                flat.filter(p => !isFn(p))
+            );
 
             GraphQLEngineFeature.register(container);
         }
