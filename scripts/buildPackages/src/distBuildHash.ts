@@ -8,6 +8,19 @@ import type { Package } from "./types";
 // dist into place when the existing dist is already up to date.
 const MARKER = ".webiny-build-hash";
 
+/**
+ * Whether the experimental "skip cache→dist copy when dist is already fresh"
+ * optimization is enabled. OFF by default: the optimization trusts a dist
+ * marker, which can go stale if something writes dist out of band (e.g.
+ * `webiny watch`), so it is opt-in until that class of issues is fully solved.
+ *
+ * Enable with `WEBINY_EXPERIMENTAL_BUILD_CACHE=true` (or `1`).
+ */
+export function isExperimentalBuildCacheEnabled(): boolean {
+    const value = process.env.WEBINY_EXPERIMENTAL_BUILD_CACHE;
+    return value === "true" || value === "1";
+}
+
 const markerPath = (pkg: Package) => path.join(getBuildOutputFolder(pkg), MARKER);
 
 export function readDistBuildHash(pkg: Package): string | null {
