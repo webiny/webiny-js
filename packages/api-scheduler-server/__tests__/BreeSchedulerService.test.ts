@@ -172,8 +172,8 @@ describe("BreeSchedulerService", () => {
             /* Delete once to remove the bree job. */
             await service.delete({ id: "schedule-1", namespace, tenant });
 
-            /* Manually re-add namespace so delete doesn't throw "does not exist". */
-            (service as any).namespaces.set("schedule-1", namespace);
+            /* Manually re-add the job so delete doesn't throw "does not exist". */
+            (service as any).jobs.set("schedule-1", { namespace, tenant });
             await service.delete({ id: "schedule-1", namespace, tenant });
 
             expect(logger.debug).toHaveBeenCalled();

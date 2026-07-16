@@ -54,12 +54,18 @@ describe("ServerConnectionManager", () => {
             });
         });
 
-        it("does NOT call registry.register()", async () => {
+        it("registers the connection in the registry (so targeted sends can find it)", async () => {
             const params = createAddParams("conn-2");
 
             await manager.add(params);
 
-            expect(registry.register).not.toHaveBeenCalled();
+            expect(registry.register).toHaveBeenCalledWith({
+                connectionId: "conn-2",
+                identity: params.identity,
+                tenant: params.tenant,
+                endpoint: params.endpoint,
+                connectedOn: new Date(params.connectedAt).toISOString()
+            });
         });
     });
 
