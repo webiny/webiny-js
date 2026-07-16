@@ -6,10 +6,10 @@ import { WorkspaceGraph } from "../../utils/WorkspaceGraph.js";
 import { Package } from "./types";
 import { CACHE_FOLDER_PATH } from "./constants";
 import { getBuildOutputFolder } from "./getBuildOutputFolder";
-import { getPackageSourceHash } from "./getPackageSourceHash";
 import { getBuildMeta } from "./getBuildMeta";
 import { getPackageCacheFolderPath } from "./getPackageCacheFolderPath";
 import { distMatchesCache, recordCacheHash } from "./distContentHash";
+import { getEffectiveHashes } from "./getEffectiveHashes";
 
 const { green } = chalk;
 
@@ -25,11 +25,11 @@ export async function getBatches(options: GetBatchesOptions = {}) {
     const packagesNoCache: Package[] = [];
     const packagesUseCache: Package[] = [];
 
-    let workspacesPackages = (
-        getPackages({
-            includes: ["/packages/"]
-        }) as Package[]
-    ).filter(pkg => pkg.mustBuild);
+    const allWorkspacePackages = getPackages({
+        includes: ["/packages/"]
+    }) as Package[];
+
+    let workspacesPackages = allWorkspacePackages.filter(pkg => pkg.mustBuild);
 
     const packagesWhitelist = options.packagesWhitelist;
     if (Array.isArray(packagesWhitelist) && packagesWhitelist.length) {
@@ -46,6 +46,11 @@ export async function getBatches(options: GetBatchesOptions = {}) {
         ignore: ["@webiny/project-utils"]
     });
 
+    // Dependency-aware build key per package: changes when the package's own
+    // source OR any (transitive) workspace dependency changes. Computed over the
+    // full workspace so dependents of a changed package are detected as misses.
+    const effectiveKeys = await getEffectiveHashes(allWorkspacePackages);
+
     // 1. Determine for which packages we can use the cached built code, and for which we need to execute build.
     if (!useCache) {
         workspacesPackages.forEach(pkg => packagesNoCache.push(pkg));
@@ -57,11 +62,11 @@ export async function getBatches(options: GetBatchesOptions = {}) {
                 continue;
             }
 
-            const sourceHash = await getPackageSourceHash(workspacePackage);
+            const key = effectiveKeys.get(workspacePackage.name) ?? "";
 
             const packageMeta = metaJson.packages[workspacePackage.packageJson.name] || {};
 
-            if (packageMeta.sourceHash === sourceHash) {
+            if (packageMeta.sourceHash === key) {
                 packagesUseCache.push(workspacePackage);
             } else {
                 packagesNoCache.push(workspacePackage);
@@ -150,7 +155,7 @@ export async function getBatches(options: GetBatchesOptions = {}) {
 
     // 3. Where needed, let's build and update the cache.
     if (packagesNoCache.length === 0) {
-        return { batches: [], packagesNoCache, allPackages: workspacesPackages };
+        return { batches: [], packagesNoCache, allPackages: workspacesPackages, effectiveKeys };
     }
 
     const rawPackagesList = workspaceGraph.toposort();
@@ -186,6 +191,7 @@ export async function getBatches(options: GetBatchesOptions = {}) {
     return {
         batches,
         packagesNoCache,
-        allPackages: workspacesPackages
+        allPackages: workspacesPackages,
+        effectiveKeys
     };
 }
