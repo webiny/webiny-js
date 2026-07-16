@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { createContextPlugin } from "@webiny/api";
+import type { Container } from "@webiny/di";
 import { createContextHandler } from "./contextHandler";
 import {
     SaveSettingsUseCase,
@@ -41,10 +41,10 @@ const AfterCaptureImpl = MailerSettingsAfterSaveEventHandler.createImplementatio
     dependencies: []
 });
 
-const registerCapturePlugin = createContextPlugin(ctx => {
-    ctx.container.register(BeforeCaptureImpl);
-    ctx.container.register(AfterCaptureImpl);
-});
+const registerCapturePlugin = (container: Container) => {
+    container.register(BeforeCaptureImpl);
+    container.register(AfterCaptureImpl);
+};
 
 const input = {
     host: "dummy.webiny",

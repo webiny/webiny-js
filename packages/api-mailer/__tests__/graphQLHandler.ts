@@ -62,11 +62,16 @@ export const createGraphQLHandler = (params?: CreateHandlerParams) => {
             GraphQLEngineFeature.register(container);
             MailerFeature.register(container);
 
-            // Apply additional plugins (e.g. registerCodeSmtpSettings)
+            // Apply additional plugins (e.g. registerCodeSmtpSettings). DI-native plugins are plain
+            // `container => {}` functions; legacy ContextPlugins expose a custom `apply(ctx)`. Check
+            // for a function FIRST — a plain function also has `Function.prototype.apply`, which would
+            // otherwise be invoked with no args (container undefined).
             const additionalPlugins = [params?.plugins ?? []].flat(Infinity as 1).filter(Boolean);
             const ctx: Record<string, any> = { container };
             for (const plugin of additionalPlugins as any[]) {
-                if (typeof plugin.apply === "function") {
+                if (typeof plugin === "function" && !plugin.prototype) {
+                    plugin(container);
+                } else if (typeof plugin.apply === "function") {
                     await plugin.apply(ctx);
                 }
             }
