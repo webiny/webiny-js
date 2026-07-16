@@ -9,11 +9,7 @@ import { getBuildOutputFolder } from "./getBuildOutputFolder";
 import { getPackageSourceHash } from "./getPackageSourceHash";
 import { getBuildMeta } from "./getBuildMeta";
 import { getPackageCacheFolderPath } from "./getPackageCacheFolderPath";
-import {
-    distBuildHashMatches,
-    writeDistBuildHash,
-    isExperimentalBuildCacheEnabled
-} from "./distBuildHash";
+import { distMatchesCache, recordCacheHash } from "./distContentHash";
 
 const { green } = chalk;
 
@@ -28,9 +24,6 @@ export async function getBatches(options: GetBatchesOptions = {}) {
 
     const packagesNoCache: Package[] = [];
     const packagesUseCache: Package[] = [];
-    // Source hash of each cache-hit package, reused below to skip the cache→dist
-    // copy when the existing dist was already built from that same hash.
-    const cacheHitHashes = new Map<string, string>();
 
     let workspacesPackages = (
         getPackages({
@@ -70,7 +63,6 @@ export async function getBatches(options: GetBatchesOptions = {}) {
 
             if (packageMeta.sourceHash === sourceHash) {
                 packagesUseCache.push(workspacePackage);
-                cacheHitHashes.set(workspacePackage.name, sourceHash);
             } else {
                 packagesNoCache.push(workspacePackage);
             }
@@ -123,31 +115,30 @@ export async function getBatches(options: GetBatchesOptions = {}) {
             }
         }
 
-        const experimentalCache = isExperimentalBuildCacheEnabled();
+        // Skip the cache→dist copy for packages whose dist already matches the
+        // cache byte-for-byte (content hash). Reads actual bytes in parallel, so
+        // it can't go stale from out-of-band dist writes (`webiny watch`, manual
+        // edits) — those change the hash and force a copy.
+        const fresh = await Promise.all(packagesUseCache.map(pkg => distMatchesCache(pkg)));
 
-        let copied = 0;
+        const restored: Package[] = [];
         for (let i = 0; i < packagesUseCache.length; i++) {
             const workspacePackage = packagesUseCache[i];
-            const sourceHash = cacheHitHashes.get(workspacePackage.name)!;
 
-            // EXPERIMENTAL (opt-in): skip the copy when dist was already
-            // built/restored from this exact source hash — the bytes on disk are
-            // already identical. Off by default; the marker can go stale if
-            // something writes dist out of band (e.g. `webiny watch`).
-            if (experimentalCache && distBuildHashMatches(workspacePackage, sourceHash)) {
+            if (fresh[i]) {
                 continue;
             }
 
             const cacheFolderPath = path.join(CACHE_FOLDER_PATH, workspacePackage.packageJson.name);
             fs.copySync(cacheFolderPath, getBuildOutputFolder(workspacePackage));
-            if (experimentalCache) {
-                writeDistBuildHash(workspacePackage, sourceHash);
-            }
-            copied++;
+            restored.push(workspacePackage);
         }
 
-        if (experimentalCache && copied > 0) {
-            console.log(`Restored ${green(copied)} package(s) from cache into dist.`);
+        if (restored.length) {
+            // dist now equals the cache — record the hash so the next build can
+            // verify freshness by hashing dist alone.
+            await Promise.all(restored.map(pkg => recordCacheHash(pkg)));
+            console.log(`Restored ${green(restored.length)} package(s) from cache into dist.`);
         }
     } else {
         if (useCache) {
