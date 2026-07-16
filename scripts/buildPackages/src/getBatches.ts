@@ -9,7 +9,11 @@ import { getBuildOutputFolder } from "./getBuildOutputFolder";
 import { getPackageSourceHash } from "./getPackageSourceHash";
 import { getBuildMeta } from "./getBuildMeta";
 import { getPackageCacheFolderPath } from "./getPackageCacheFolderPath";
-import { distBuildHashMatches, writeDistBuildHash } from "./distBuildHash";
+import {
+    distBuildHashMatches,
+    writeDistBuildHash,
+    isExperimentalBuildCacheEnabled
+} from "./distBuildHash";
 
 const { green } = chalk;
 
@@ -119,25 +123,30 @@ export async function getBatches(options: GetBatchesOptions = {}) {
             }
         }
 
+        const experimentalCache = isExperimentalBuildCacheEnabled();
+
         let copied = 0;
         for (let i = 0; i < packagesUseCache.length; i++) {
             const workspacePackage = packagesUseCache[i];
             const sourceHash = cacheHitHashes.get(workspacePackage.name)!;
 
-            // Skip the copy when dist was already built/restored from this exact
-            // source hash — the bytes on disk are already identical. This is the
-            // common local-dev case (dist persists between builds).
-            if (distBuildHashMatches(workspacePackage, sourceHash)) {
+            // EXPERIMENTAL (opt-in): skip the copy when dist was already
+            // built/restored from this exact source hash — the bytes on disk are
+            // already identical. Off by default; the marker can go stale if
+            // something writes dist out of band (e.g. `webiny watch`).
+            if (experimentalCache && distBuildHashMatches(workspacePackage, sourceHash)) {
                 continue;
             }
 
             const cacheFolderPath = path.join(CACHE_FOLDER_PATH, workspacePackage.packageJson.name);
             fs.copySync(cacheFolderPath, getBuildOutputFolder(workspacePackage));
-            writeDistBuildHash(workspacePackage, sourceHash);
+            if (experimentalCache) {
+                writeDistBuildHash(workspacePackage, sourceHash);
+            }
             copied++;
         }
 
-        if (copied > 0) {
+        if (experimentalCache && copied > 0) {
             console.log(`Restored ${green(copied)} package(s) from cache into dist.`);
         }
     } else {
