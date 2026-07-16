@@ -7,38 +7,38 @@ import { createFeature } from "@webiny/feature/api/index.js";
 import {
     CmsEntryOpenSearchValueSearchFeature,
     CmsEntryOpenSearchValueSearchRegistry
-} from "~/features/CmsEntryOpenSearchValueSearch/index.js";
+} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueSearch/index.js";
 import {
     CmsEntryOpenSearchIndex,
     CmsEntryOpenSearchIndexFeature
-} from "~/features/CmsEntryOpenSearchIndex/index.js";
+} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndex/index.js";
 import { createModelsStorageOperations } from "./operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
 import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
-import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex.js";
+import { createElasticsearchIndex } from "@webiny/api-headless-cms-utils-os/elasticsearch/createElasticsearchIndex.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch";
-import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex.js";
+import { deleteElasticsearchIndex } from "@webiny/api-headless-cms-utils-os/elasticsearch/deleteElasticsearchIndex.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
-import { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
-import { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
-import { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
-import { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
-import { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
+import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
+import { CmsEntryOpenSearchSortModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchSortModifier/index.js";
+import { CmsEntryOpenSearchQueryModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchQueryModifier/index.js";
+import { CmsEntryOpenSearchFullTextSearch } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFullTextSearch/index.js";
+import { CmsEntryOpenSearchValuesModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValuesModifier/index.js";
 import {
     CmsEntryOpenSearchFieldIndexFeature,
     CmsEntryOpenSearchFieldIndexRegistry
-} from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
+} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
 import {
     CmsEntryOpenSearchFilterFeature,
     CmsEntryOpenSearchFilterRegistry
-} from "~/features/CmsEntryOpenSearchFilter/index.js";
+} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFilter/index.js";
 import { DbRegistry } from "@webiny/db/exports/api/db.js";
 import {
     OpenSearchClient,

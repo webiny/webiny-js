@@ -1,8 +1,8 @@
 import { OpenSearchTenantIndexFactory } from "@webiny/api-elasticsearch-tasks";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
-import { configurations } from "~/configurations.js";
-import { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex/index.js";
+import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndex/index.js";
 
 class CreateElasticsearchIndexTaskImpl implements OpenSearchTenantIndexFactory.Interface {
     constructor(

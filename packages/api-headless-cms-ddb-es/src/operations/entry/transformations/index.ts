@@ -5,9 +5,9 @@ import type {
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import { transformEntryKeys } from "./transformEntryKeys.js";
-import type { CmsIndexEntry } from "~/types.js";
-import { transformEntryToIndex } from "~/operations/entry/transformations/transformEntryToIndex.js";
-import type { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
+import type { CmsIndexEntry } from "@webiny/api-headless-cms-utils-os/types.js";
+import { transformEntryToIndex } from "@webiny/api-headless-cms-utils-os/operations/entry/transformations/transformEntryToIndex.js";
+import type { CmsEntryOpenSearchValuesModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValuesModifier/index.js";
 import { modifyEntryValues as modifyEntryValuesCallable } from "~/operations/entry/transformations/modifyEntryValues.js";
 import {
     createLatestRecordType,
@@ -15,7 +15,7 @@ import {
 } from "~/operations/entry/recordType.js";
 import WebinyError from "@webiny/error";
 import { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
-import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 interface BaseTransformerParams<T extends CmsEntryValues = CmsEntryValues> {
     model: StorageOperationsCmsModel<T>;
