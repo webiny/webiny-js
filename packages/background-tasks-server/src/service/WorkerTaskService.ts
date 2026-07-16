@@ -1,3 +1,5 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { Worker } from "node:worker_threads";
 import type { WorkerToParentMessage } from "~/worker/TaskOrchestratorMessage.js";
 import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js";
@@ -38,7 +40,18 @@ class WorkerServiceImpl implements TaskService.Interface {
             return null;
         }
 
-        const workerPath = new URL("../worker/workerEntry.js", import.meta.url);
+        // Resolve the worker entry from this module's own dist directory via `path.join`.
+        // We deliberately AVOID `new URL("../worker/workerEntry.js", import.meta.url)`: the app
+        // bundler rewrites that expression to a publicPath-based asset URL
+        // ("/static/assets/workerEntry.<hash>.js") that `new Worker()` can't load as a filesystem
+        // path. `path.join` off `import.meta.url` (which resolves to this file inside dist) is left
+        // untouched by the bundler and points at the real, node-resolvable dist worker.
+        const workerPath = path.join(
+            path.dirname(fileURLToPath(import.meta.url)),
+            "..",
+            "worker",
+            "workerEntry.js"
+        );
         const worker = new Worker(workerPath);
 
         const handle: WorkerHandle = {
@@ -56,6 +69,8 @@ class WorkerServiceImpl implements TaskService.Interface {
                 handle.status = "done";
             } else if (msg.type === "error") {
                 handle.status = "error";
+                // Surface the worker's error — otherwise a failed task shows only as a stuck record.
+                console.error(`Background task "${task.id}" (${task.definitionId}) failed:`, msg.error);
             }
         });
 
@@ -81,7 +96,13 @@ class WorkerServiceImpl implements TaskService.Interface {
                 webinyTaskId: task.id,
                 webinyTaskDefinitionId: task.definitionId,
                 tenant: tenant.id,
-                delay
+                delay,
+                // Satisfy the shared runner's AWS-Step-Functions-shaped validation. No SFN in a single
+                // process: executionName is a stable run id (the task id); endpoint/stateMachineId are
+                // validate-only off-AWS.
+                endpoint: this.serverUrl,
+                executionName: task.id,
+                stateMachineId: ""
             },
             serverUrl: this.serverUrl,
             maxDurationMs: DEFAULT_MAX_DURATION_MS,
