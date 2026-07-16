@@ -16,6 +16,20 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
             host: params.host,
             headers: params.headers
         });
+
+        // Persist the connection to the shared registry. This is what makes the live socket
+        // addressable: `SendToIdentity`/`ListConnections` query the registry by identity id, then
+        // resolve the in-memory socket here by connection id. Without this row the socket exists but
+        // no identity→connectionId mapping does, so targeted server→client sends reach nothing.
+        // `connectedOn` is an ISO string (the registry filters connections lexicographically against
+        // a recency cutoff), so the epoch ms `connectedAt` is converted here.
+        await this.registry.register({
+            connectionId: params.connectionId,
+            identity: params.identity,
+            tenant: params.tenant,
+            endpoint: params.endpoint,
+            connectedOn: new Date(params.connectedAt).toISOString()
+        });
     }
 
     public async remove(connectionId: string): Promise<void> {

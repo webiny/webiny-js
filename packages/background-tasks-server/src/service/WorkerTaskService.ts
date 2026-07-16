@@ -70,7 +70,10 @@ class WorkerServiceImpl implements TaskService.Interface {
             } else if (msg.type === "error") {
                 handle.status = "error";
                 // Surface the worker's error — otherwise a failed task shows only as a stuck record.
-                console.error(`Background task "${task.id}" (${task.definitionId}) failed:`, msg.error);
+                console.error(
+                    `Background task "${task.id}" (${task.definitionId}) failed:`,
+                    msg.error
+                );
             }
         });
 
