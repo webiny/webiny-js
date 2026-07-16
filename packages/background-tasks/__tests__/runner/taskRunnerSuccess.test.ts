@@ -6,7 +6,7 @@ import { TaskDataStatus } from "~/api/types";
 import { createLiveContextFactory } from "~tests/live";
 import { testDefinitionPlugin, TASK_ID } from "~tests/runner/taskDefinition";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation";
-import { timerFactory } from "@webiny/handler-aws/utils";
+import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 
 describe("task runner trigger and end successfully", () => {
     const contextFactory = createLiveContextFactory({

@@ -1,4 +1,4 @@
-import type { Timer } from "@webiny/background-tasks/api";
+import type { Timer } from "@webiny/utils/features/Timer/abstraction.js";
 
 interface LambdaTimerFactory {
     getRemainingTimeInMillis(): number;
