@@ -5,7 +5,8 @@ import {
     UpdateEntryUseCase
 } from "webiny/api/cms/entry";
 import { CmsGenerateEntryContentUseCase } from "webiny/api/ai-powerups";
-import { Logger } from "webiny/api";
+import { Logger, WebsocketsSendToIdentityUseCase } from "webiny/api";
+import { IdentityContext } from "webiny/api/security";
 
 /**
  * "Generate AI summary" bulk action.
@@ -28,7 +29,9 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
         private readonly getRevision: GetLatestRevisionByEntryIdUseCase.Interface,
         private readonly updateEntry: UpdateEntryUseCase.Interface,
         private readonly generateContent: CmsGenerateEntryContentUseCase.Interface,
-        private readonly logger: Logger.Interface
+        private readonly logger: Logger.Interface,
+        private readonly identityContext: IdentityContext.Interface,
+        private readonly sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
     ) {}
 
     // Only entries not yet summarized — so the task converges (see backgroundTasksDemo README).
@@ -93,6 +96,24 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
         if (updated.isFail()) {
             throw updated.error;
         }
+
+        // Notify the triggering user in real time (best-effort — never fail the task on a
+        // websocket error).
+        try {
+            const identity = this.identityContext.getIdentity();
+            if (identity) {
+                await this.sendToIdentity.execute(
+                    { id: identity.id },
+                    {
+                        action: "cms.product.aiSummaryGenerated",
+                        data: { id: entry.entryId, name: entry.values.name, aiSummary }
+                    }
+                );
+            }
+        } catch (ex) {
+            const message = ex instanceof Error ? ex.message : String(ex);
+            this.logger.warn(`[GenerateAiSummary] websocket notification failed: ${message}`);
+        }
     }
 }
 
@@ -103,6 +124,8 @@ export default EntriesBulkAction.createImplementation({
         GetLatestRevisionByEntryIdUseCase,
         UpdateEntryUseCase,
         CmsGenerateEntryContentUseCase,
-        Logger
+        Logger,
+        IdentityContext,
+        WebsocketsSendToIdentityUseCase
     ]
 });
