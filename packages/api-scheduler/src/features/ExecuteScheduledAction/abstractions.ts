@@ -9,7 +9,7 @@ import {
 /**
  * ExecuteScheduledActionUseCase - Execute a scheduled action
  *
- * This is triggered by EventBridge when a schedule fires.
+ * This is triggered by the scheduler when a schedule fires.
  * Finds the appropriate handler based on namespace + actionType and executes it.
  *
  * Flow:

@@ -58,7 +58,7 @@ export class InvalidScheduleDateError extends BaseError<{ scheduleFor: string }>
 }
 
 /**
- * Scheduler service error (EventBridge/cloud provider errors)
+ * Scheduler service error (scheduler backend / provider errors)
  */
 export class SchedulerServiceError extends BaseError<{ originalError: Error }> {
     override readonly code = "Scheduler/Service/Error" as const;
