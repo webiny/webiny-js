@@ -4,8 +4,7 @@
   "type": "module",
   "exports": {
     ".": "./index.js",
-    "./*": "./*",
-    "./exports/api/opensearchAws.js": "./exports/api/opensearchAws.js"
+    "./*": "./*"
   },
   "repository": {
     "type": "git",
