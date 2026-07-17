@@ -8,7 +8,6 @@ import { NotFound } from "./NotFound.js";
 import { Dashboard } from "./Dashboard.js";
 import { Logo } from "./Logo.js";
 import { AssistanceWidget, CommunityWidget } from "./Dashboard/components/index.js";
-import { CommandPalette } from "./CommandPalette/CommandPalette.js";
 
 export const AdminUI = () => {
     return (
@@ -31,7 +30,6 @@ export const AdminUI = () => {
             <Dialog />
             <Layout />
             <Navigation />
-            <CommandPalette />
             <NotFound />
             <UserMenu />
             <Logo />

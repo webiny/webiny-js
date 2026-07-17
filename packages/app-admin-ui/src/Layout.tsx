@@ -4,6 +4,7 @@ import type { LayoutProps } from "@webiny/app-admin";
 import { LayoutRenderer, Navigation, TenantSelector, UserMenu } from "@webiny/app-admin";
 import { HeaderBar, SidebarProvider, cn, useSidebar } from "@webiny/admin-ui";
 import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
+import { CommandPalette } from "./CommandPalette/CommandPalette.js";
 
 const SIDEBAR_STATE_KEY = "navigation/state";
 
@@ -43,6 +44,7 @@ const LayoutContent = ({
     return (
         <>
             {title ? <Helmet title={title} /> : null}
+            <CommandPalette />
             {hideNavigation ? null : <Navigation />}
             <div
                 className={cn(

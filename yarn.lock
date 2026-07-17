@@ -11620,6 +11620,7 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    cmdk: "npm:^1.1.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     react-helmet: "npm:^6.1.0"
