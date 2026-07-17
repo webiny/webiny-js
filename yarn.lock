@@ -27890,6 +27890,7 @@ __metadata:
   resolution: "webiny@workspace:packages/webiny"
   dependencies:
     "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"

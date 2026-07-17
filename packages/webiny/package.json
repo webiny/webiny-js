@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/admin-ui": "0.0.0",
+    "@webiny/ai-powerups": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
@@ -73,6 +74,8 @@
     "./global.d.ts": "./global.d.ts",
     "./admin/icons/*": "./admin/icons/*",
     "./admin/ui": "./admin/ui.js",
+    "./admin/ai-powerups": "./admin/ai-powerups.js",
+    "./api/ai-powerups": "./api/ai-powerups.js",
     "./api/aco/flp": "./api/aco/flp.js",
     "./api/aco/folder": "./api/aco/folder.js",
     "./api/build-params": "./api/build-params.js",
@@ -149,7 +152,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "4331b1e66eab123223ede857ba9a207c8a7e3e74b115c46a77bb34bef2c16782",
+  "exportGenerationHash": "f12183e1d4999ca659cde997f75334721e66fa58df4f57a3dc334127e3b0ed74",
   "webiny": {
     "publishFrom": "dist"
   }

@@ -1,0 +1,103 @@
+import { EntriesBulkAction } from "webiny/api/cms/bulk-actions";
+import {
+    GetLatestRevisionByEntryIdUseCase,
+    ListLatestEntriesUseCase,
+    UpdateEntryUseCase
+} from "webiny/api/cms/entry";
+import { CmsGenerateEntryContentUseCase } from "webiny/api/ai-powerups";
+import { Logger } from "webiny/api";
+
+/**
+ * "Generate AI summary" bulk action.
+ *
+ * Same shape as any bulk action (two methods → Webiny runs it as a background task), but
+ * `processData` delegates the actual generation to AI Power Ups' `CmsGenerateEntryContentUseCase`.
+ * That use case uses the provider the user configured in AI Power Ups settings and applies
+ * an optional Writer Persona (the user's own instructions/tone) — so we don't pick models,
+ * decrypt keys, or hardcode a persona here. We just say "summarize this product" and write
+ * the result back.
+ *
+ * AI-per-entry is a natural background-task workload: slow, batched, resumable.
+ */
+class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
+    name = "generateAiSummary";
+    modelIds = ["product"];
+
+    constructor(
+        private readonly listEntries: ListLatestEntriesUseCase.Interface,
+        private readonly getRevision: GetLatestRevisionByEntryIdUseCase.Interface,
+        private readonly updateEntry: UpdateEntryUseCase.Interface,
+        private readonly generateContent: CmsGenerateEntryContentUseCase.Interface,
+        private readonly logger: Logger.Interface
+    ) {}
+
+    // Only entries not yet summarized — so the task converges (see backgroundTasksDemo README).
+    async loadData(
+        model: EntriesBulkAction.Model,
+        params: EntriesBulkAction.LoadDataParams
+    ): Promise<EntriesBulkAction.LoadDataResult> {
+        const where: Record<string, unknown> = { ...params.where, "values.aiSummarized_not": true };
+        return (await this.listEntries.execute(model, { ...params, where })).value;
+    }
+
+    async processData(
+        model: EntriesBulkAction.Model,
+        params: EntriesBulkAction.ProcessParams
+    ): Promise<void> {
+        const entryId = params.id.split("#")[0];
+        const revision = await this.getRevision.execute(model, { id: entryId });
+        if (revision.isFail()) {
+            throw revision.error;
+        }
+        const entry = revision.value;
+
+        // Optional: pass a Writer Persona id (configured in AI Power Ups) to apply the
+        // user's tone/instructions. Forwarded from the Admin action's `data`.
+        const writerPersonaId = (params.data?.writerPersonaId as string) || undefined;
+
+        const result = await this.generateContent.execute({
+            modelId: model.modelId,
+            prompt: `Write a concise, single-sentence marketing summary for the product "${entry.values.name}". Fill only the "aiSummary" field.`,
+            writerPersonaId
+        });
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        // The use case returns AI-generated entry values as JSON; take our target field.
+        let aiSummary = "";
+        try {
+            const resolved = JSON.parse(result.value.output || "{}") ?? {};
+            aiSummary = typeof resolved.aiSummary === "string" ? resolved.aiSummary : "";
+        } catch {
+            aiSummary = "";
+        }
+
+        if (!aiSummary) {
+            this.logger.warn(
+                `[GenerateAiSummary] empty summary for entry ${entry.id}; marking as done to converge.`
+            );
+        }
+
+        const updated = await this.updateEntry.execute(
+            model,
+            entry.id,
+            { values: { aiSummary, aiSummarized: true } },
+            { skipValidation: true }
+        );
+        if (updated.isFail()) {
+            throw updated.error;
+        }
+    }
+}
+
+export default EntriesBulkAction.createImplementation({
+    implementation: GenerateAiSummaryBulkAction,
+    dependencies: [
+        ListLatestEntriesUseCase,
+        GetLatestRevisionByEntryIdUseCase,
+        UpdateEntryUseCase,
+        CmsGenerateEntryContentUseCase,
+        Logger
+    ]
+});

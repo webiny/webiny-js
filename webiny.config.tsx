@@ -3,6 +3,7 @@ import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { BackgroundTasksDemo } from "@/extensions/backgroundTasksDemo/BackgroundTasksDemo.js";
+import { AiContentDemo } from "@/extensions/aiContentDemo/AiContentDemo.js";
 // import { CognitoFederation } from "@/extensions/idp/entraid/Extension.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
@@ -21,6 +22,8 @@ export const Extensions = () => {
 
             {/* Background Tasks demo: "Apply Discount" bulk action on Products (API + Admin) */}
             <BackgroundTasksDemo />
+            {/* AI content demo: "Generate AI summary" bulk action on Products (API + Admin) */}
+            <AiContentDemo />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
