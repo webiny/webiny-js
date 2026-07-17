@@ -13,9 +13,10 @@ class ObjectAccordionRendererImpl implements CmsFieldRenderer.Interface {
 
     buildSettingsForm(form: CmsFieldRenderer.FormBuilder) {
         form.fields(fields => ({
+            container: fields.boolean().label("Show container").defaultValue(true),
             open: fields.boolean().label("Expand Accordion").defaultValue(false)
         }));
-        form.layout(layout => [layout.row("open")]);
+        form.layout(layout => [layout.row("container"), layout.row("open")]);
     }
 }
 

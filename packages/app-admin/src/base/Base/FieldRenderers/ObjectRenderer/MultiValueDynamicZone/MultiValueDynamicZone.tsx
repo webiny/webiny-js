@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { Accordion, Button, Tooltip, useToast } from "@webiny/admin-ui";
-import { useFeature } from "@webiny/app";
+import { useFeature, useContainer } from "@webiny/app";
 import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
 import { ReactComponent as PasteIcon } from "@webiny/icons/content_paste.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
@@ -13,18 +13,37 @@ import type { IObjectFieldItemVM, IObjectFieldVM } from "~/features/formModel/in
 import { TEMPLATE_DISCRIMINATOR } from "~/features/formModel/ObjectField.js";
 import { ClipboardFeature } from "~/features/clipboard/feature.js";
 import { useConfirmationDialog } from "~/hooks/useConfirmationDialog.js";
-import { NestedLayout } from "./ObjectFieldComponents.js";
-import { AddTemplateButton } from "./TemplatePicker.js";
+import { NestedLayout } from "../ObjectFieldComponents.js";
+import { AddTemplateButton } from "../TemplatePicker.js";
+import {
+    MultiValueDynamicZonePresenter,
+    type IMultiValueDynamicZonePresenter
+} from "./abstractions.js";
+import type { ISortableItemProps } from "~/presentation/sortable/index.js";
+import { Separator } from "@webiny/admin-ui";
 
 interface MultiValueDynamicZoneProps {
     field: IObjectFieldVM;
+    addItemLabel: string;
     showContainer?: boolean;
 }
 
 export const MultiValueDynamicZone = observer(
-    ({ field, showContainer = true }: MultiValueDynamicZoneProps) => {
+    ({ field, addItemLabel, showContainer = true }: MultiValueDynamicZoneProps) => {
         const toast = useToast();
         const { clipboard } = useFeature(ClipboardFeature);
+        const container = useContainer();
+
+        const presenter = useMemo<IMultiValueDynamicZonePresenter>(() => {
+            const p = container.resolve(MultiValueDynamicZonePresenter);
+            p.init({ type: `dz:${field.name}`, onReorder: (from, to) => field.moveItem(from, to) });
+            return p;
+        }, []);
+
+        useEffect(() => {
+            return () => presenter.dispose();
+        }, [presenter]);
+
         const itemCount = field.items.length;
 
         const clipboardItem = clipboard.item;
@@ -50,6 +69,7 @@ export const MultiValueDynamicZone = observer(
                                 total={itemCount}
                                 templates={field.availableTemplates}
                                 disabled={field.disabled}
+                                sortable={presenter.getItemProps(index)}
                             />
                         ))}
                     </Accordion>
@@ -57,6 +77,7 @@ export const MultiValueDynamicZone = observer(
                 {!field.disabled && (
                     <div className={"flex gap-sm items-center"}>
                         <AddTemplateButton
+                            label={addItemLabel}
                             templates={field.availableTemplates}
                             onSelect={template => field.addItem(template.id)}
                         />
@@ -83,7 +104,16 @@ export const MultiValueDynamicZone = observer(
         );
 
         if (!showContainer) {
-            return content;
+            return (
+                <>
+                    <Separator labelPosition={"start"} variant={"accent"}>
+                        <span className={"text-accent-primary text-lg font-semibold"}>
+                            {field.label ?? ""} ({itemCount})
+                        </span>
+                    </Separator>
+                    <div className={"mt-md"}>{content}</div>
+                </>
+            );
         }
 
         const label = `${field.label || ""}${itemCount ? ` (${itemCount})` : ""}`;
@@ -114,10 +144,11 @@ interface TemplatedListItemProps {
     total: number;
     templates: { id: string; label: string }[];
     disabled: boolean;
+    sortable: ISortableItemProps;
 }
 
 const TemplatedListItem = observer(
-    ({ item, index, total, templates, disabled }: TemplatedListItemProps) => {
+    ({ item, index, total, templates, disabled, sortable }: TemplatedListItemProps) => {
         const toast = useToast();
         const { clipboard } = useFeature(ClipboardFeature);
         const { showConfirmation } = useConfirmationDialog({
@@ -168,9 +199,58 @@ const TemplatedListItem = observer(
         );
 
         return (
-            <Accordion.Item title={title} actions={disabled ? null : actions} defaultOpen={false}>
-                <NestedLayout layout={item.layout} />
-            </Accordion.Item>
+            <div
+                ref={sortable.ref}
+                data-sortable-item=""
+                className={"relative"}
+                style={{ opacity: sortable.isDragging ? 0.4 : 1 }}
+            >
+                {sortable.closestEdge === "top" && (
+                    <DropIndicator position={"top"} isFirst={index === 0} />
+                )}
+                <Accordion.Item
+                    title={title}
+                    actions={disabled ? null : actions}
+                    defaultOpen={false}
+                    draggable={!disabled}
+                    dragHandleRef={sortable.handleRef}
+                >
+                    <NestedLayout layout={item.layout} />
+                </Accordion.Item>
+                {sortable.closestEdge === "bottom" && (
+                    <DropIndicator position={"bottom"} isLast={index === total - 1} />
+                )}
+            </div>
         );
     }
 );
+
+const DropIndicator = ({
+    position,
+    isFirst = false,
+    isLast = false
+}: {
+    position: "top" | "bottom";
+    isFirst?: boolean;
+    isLast?: boolean;
+}) => {
+    let offset = "calc(var(--spacing-md) / -2)";
+    if (position === "top" && isFirst) {
+        offset = "0px";
+    }
+    if (position === "bottom" && isLast) {
+        offset = "0px";
+    }
+
+    return (
+        <div
+            className={"absolute left-0 right-0 z-10"}
+            style={{
+                [position]: offset,
+                transform: position === "top" ? "translateY(-50%)" : "translateY(50%)"
+            }}
+        >
+            <div className={"w-full h-[2px] bg-primary rounded-full"} />
+        </div>
+    );
+};

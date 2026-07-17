@@ -26,6 +26,8 @@ const MoveElement = createCommand<{
     index: number;
 }>("MOVE_ELEMENT");
 
+const CloneElement = createCommand<{ id: string }>("CLONE_ELEMENT");
+
 const DeleteElement = createCommand<{
     id: string;
 }>("DELETE_ELEMENT");
@@ -47,6 +49,7 @@ const PreviewPatchElement = createCommand<{ elementId: string; patch: any[] }>(
 const SendPreviewMessage = createCommand<{ type: string; payload?: any }>("SEND_PREVIEW_MESSAGE");
 
 export const Commands = {
+    CloneElement,
     CreateElement,
     DeleteElement,
     MoveElement,

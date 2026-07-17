@@ -22,6 +22,7 @@ interface IDynamicZoneTemplate {
 
 export interface IDynamicZoneFieldBuilder extends DataFieldBuilder<"dynamicZone"> {
     required(message?: string): this;
+
     template(
         id: string,
         config: {

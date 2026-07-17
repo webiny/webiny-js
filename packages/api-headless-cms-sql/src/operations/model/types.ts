@@ -18,7 +18,6 @@ export interface IModelRow {
     imageFieldId: string | null;
     isPrivate: boolean;
     isPlugin: boolean;
-    settings: string | null;
     authorization: string | null;
     createdBy_id: string | null;
     createdBy_displayName: string | null;
@@ -26,6 +25,7 @@ export interface IModelRow {
     createdBy: string | null;
     createdOn: string | null;
     savedOn: string | null;
+    settings: string | null;
 }
 
 /* Validated against StorageCmsModel — TypeScript errors if StorageCmsModel gains a new field. */
