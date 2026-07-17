@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { CreateExecFilteringResponse } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/filtering";
+import { CreateExecFilteringResponse } from "~tests/filtering/mocks/filtering";
 import { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types";
 import { createQuery, Query } from "./mocks";
 import { createExecFiltering } from "./mocks/filtering";

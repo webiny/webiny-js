@@ -1,4 +1,7 @@
-import type { QueryDslBoolQuery as BoolQueryConfig, SearchBody } from "@webiny/api-opensearch/types.js";
+import type {
+    QueryDslBoolQuery as BoolQueryConfig,
+    SearchBody
+} from "@webiny/api-opensearch/types.js";
 import { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
