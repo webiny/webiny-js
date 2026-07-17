@@ -29,7 +29,11 @@ a background task", rather than re-implementing AI plumbing per feature. Compare
 | `admin/GenerateAiSummaryAction.tsx`  | The bulk-action button.                                            |
 
 Model fields (on `../models/ProductModel.ts`): `aiSummary` (the generated text) and
-`aiSummarized` (boolean convergence flag — `loadData` filters `values.aiSummarized_not: true`).
+`aiSummarizedRun` (a per-run token). Convergence uses the token instead of a permanent
+flag: each click generates a fresh `runId`, the Admin action filters
+`values.aiSummarizedRun_not: <runId>` in `where`, and `processData` stamps the entry with
+it. So a run ends once every targeted entry is stamped — but the next click uses a new
+token, so the same entries can be re-summarized (no toggle to reset).
 
 ## Requirements
 
@@ -53,4 +57,5 @@ line in `GenerateAiSummaryAction.tsx`.
 
 The use case returns AI-generated entry values as a JSON string; we parse it and take the
 `aiSummary` field. If the model returns nothing usable, the entry is still marked
-`aiSummarized` (and logged) so the task converges instead of looping.
+`aiSummarizedRun` with the current run token (and logged) so the task converges instead
+of looping.
