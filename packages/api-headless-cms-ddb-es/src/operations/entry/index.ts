@@ -58,7 +58,11 @@ import {
 } from "@webiny/api-opensearch/types.js";
 import type { CmsEntryStorageOperations } from "~/types.js";
 import type { CmsIndexEntry } from "@webiny/api-headless-cms-utils-os/types.js";
-import { CmsEntryOpenSearchBodyBuilder } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyBuilder/index.js";
+import {
+    CmsEntryOpenSearchBodyBuilder,
+    type CmsEntryOpenSearchValuesModifier,
+    type CmsEntryOpenSearchFieldIndexRegistry
+} from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { shouldIgnoreEsResponseError } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/shouldIgnoreEsResponseError.js";
 import { createTransformer } from "./transformations/index.js";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys.js";
@@ -71,8 +75,6 @@ import {
 import type { IEntryEntity, IEntryEntityAttributes } from "~/definitions/types.js";
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
-import type { CmsEntryOpenSearchValuesModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValuesModifier/index.js";
-import type { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;

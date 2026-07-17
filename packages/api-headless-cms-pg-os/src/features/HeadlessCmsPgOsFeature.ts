@@ -5,9 +5,11 @@ import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from 
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { KnexClient } from "@webiny/api-core-sql";
 import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os";
-import { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
-import { CmsEntryOpenSearchIndexCreate } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexCreate/index.js";
-import { CmsEntryOpenSearchIndexDelete } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexDelete/index.js";
+import {
+    CmsEntryOpenSearchFieldIndexRegistry,
+    CmsEntryOpenSearchIndexCreate,
+    CmsEntryOpenSearchIndexDelete
+} from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";

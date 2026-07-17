@@ -12,7 +12,7 @@ import {
 } from "@webiny/api-headless-cms-utils-os/operations/entry/recordType.js";
 import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import { OperationType } from "@webiny/api-sync-to-opensearch/features/Operations/Operations.js";
-import type { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
+import type { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import type { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
 import type { ISyncRow } from "~/types.js";
 import type { SyncTableManager } from "~/features/syncTableManager/abstractions.js";

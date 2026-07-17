@@ -1,3 +1,4 @@
+export { CmsEntryOpenSearchUtilsFeature } from "~/features/CmsEntryOpenSearchUtilsFeature.js";
 export {
     CmsEntryOpenSearchFieldIndexRegistry,
     CmsEntryOpenSearchFieldIndex
@@ -14,5 +15,15 @@ export {
     CmsEntryOpenSearchValueSearchRegistry
 } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 export { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
-export { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex/index.js";
+export {
+    CmsEntryOpenSearchIndex,
+    BaseOpenSearchIndex
+} from "~/features/CmsEntryOpenSearchIndex/index.js";
 export { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
+export { CmsEntryOpenSearchIndexCreate } from "~/features/CmsEntryOpenSearchIndexCreate/index.js";
+export { CmsEntryOpenSearchIndexDelete } from "~/features/CmsEntryOpenSearchIndexDelete/index.js";
+export { CmsEntryOpenSearchBodyBuilder } from "~/features/CmsEntryOpenSearchBodyBuilder/index.js";
+export { CmsEntryOpenSearchExecFiltering } from "~/features/CmsEntryOpenSearchExecFiltering/index.js";
+export { CmsEntryOpenSearchFieldPathFactory } from "~/features/CmsEntryOpenSearchFieldPathFactory/index.js";
+export { CmsEntryOpenSearchValueTransformer } from "~/features/CmsEntryOpenSearchValueTransformer/index.js";
+export { CmsEntryOpenSearchOperatorList } from "~/features/CmsEntryOpenSearchOperatorList/index.js";

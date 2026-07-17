@@ -30,12 +30,14 @@ import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/ex
 import { createEntriesStorageOperations as createSqlEntriesStorageOperations } from "@webiny/api-headless-cms-sql/operations/entry/index.js";
 import type { EntryTableManager } from "@webiny/api-headless-cms-sql/features/entryTableManager/abstractions.js";
 import { createStorageModelAccessor } from "@webiny/api-headless-cms-storage";
-import { CmsEntryOpenSearchBodyBuilder } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyBuilder/index.js";
+import {
+    CmsEntryOpenSearchBodyBuilder,
+    type CmsEntryOpenSearchFieldIndexRegistry
+} from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { shouldIgnoreEsResponseError } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/shouldIgnoreEsResponseError.js";
 import { extractEntriesFromIndex } from "@webiny/api-headless-cms-utils-os/helpers/entryIndexHelpers.js";
 import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import type { CmsIndexEntry } from "@webiny/api-headless-cms-utils-os/types.js";
-import type { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
 import type { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
 import type { SyncTableManager } from "~/features/syncTableManager/abstractions.js";
 import { createSyncWriter } from "./syncWriter.js";
