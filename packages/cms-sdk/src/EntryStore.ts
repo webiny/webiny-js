@@ -69,11 +69,10 @@ export class EntryStore<T extends CmsEntryValues = CmsEntryValues> {
 
             for (const key of touchedKeys) {
                 const current = (this.entry!.values as Record<string, unknown>)[key];
-                mobxSet(
-                    this.entry!.values as Record<string, unknown>,
-                    key,
-                    observable(toJS(current) as object)
-                );
+                const plain = toJS(current);
+                const value =
+                    plain !== null && typeof plain === "object" ? observable(plain) : plain;
+                mobxSet(this.entry!.values as Record<string, unknown>, key, value);
             }
         });
 

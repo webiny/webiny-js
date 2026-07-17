@@ -292,14 +292,46 @@ export async function startMcpServer(params: IMcpServerParams = {}): Promise<voi
     const server = new McpServer({ name: "webiny", version: getVersion() });
 
     server.registerTool(
+        "get_started",
+        {
+            title: "Get Started with Webiny",
+            description:
+                "Returns the Webiny routing guide — a decision tree that maps your task " +
+                "to the right specialist agent and skills. Call this first before any " +
+                "Webiny-related work.",
+            inputSchema: {},
+            annotations: { readOnlyHint: true }
+        },
+        async () => {
+            const agents = getAgents();
+            const rootAgent = agents.get("webiny");
+            if (!rootAgent) {
+                return {
+                    content: [
+                        {
+                            type: "text",
+                            text:
+                                "No root routing agent found. " +
+                                "Use `list_webiny_agents` or `list_webiny_skills` to browse available resources."
+                        }
+                    ]
+                };
+            }
+            return {
+                content: [{ type: "text", text: readAgentContent(rootAgent, getSkills()) }]
+            };
+        }
+    );
+
+    server.registerTool(
         "list_webiny_skills",
         {
             title: "List Webiny Skills",
             description:
                 "Returns a catalog of all available Webiny skills with names and descriptions. " +
-                "Always call this first when working on anything Webiny-related, then call " +
-                "get_webiny_skill to load the specific skill you need. " +
-                "Also check list_webiny_agents for task-oriented agent blueprints.",
+                "Prefer calling get_started() first to get routed to the right specialist " +
+                "agent. Use this tool for direct skill lookups or when the task doesn't " +
+                "fit any specialist agent.",
             inputSchema: {},
             annotations: { readOnlyHint: true }
         },
