@@ -28,4 +28,5 @@ export * from "./InputBindingsProcessor.js";
 export * from "./StylesBindingsProcessor.js";
 export * from "./ElementFactory.js";
 export * from "./ConstraintEvaluator.js";
+export * from "./generateElementId.js";
 export { StyleSettings } from "./constants.js";
