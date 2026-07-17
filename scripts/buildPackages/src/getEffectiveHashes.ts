@@ -8,6 +8,33 @@ import { getPackageSourceHash } from "./getPackageSourceHash";
 import type { Package } from "./types";
 
 /**
+ * Whether the experimental dependency-aware build key is enabled. OFF by
+ * default: the build key is each package's own-source hash (original behavior),
+ * and `--rebuild-dependents` remains the mechanism for rebuilding dependents.
+ *
+ * Enable with `WEBINY_EXPERIMENTAL_DEP_AWARE_CACHE=true` (or `1`) to make a
+ * plain `yarn build` rebuild dependents of any changed package automatically.
+ */
+export function isDepAwareKeyEnabled(): boolean {
+    const value = process.env.WEBINY_EXPERIMENTAL_DEP_AWARE_CACHE;
+    return value === "true" || value === "1";
+}
+
+/**
+ * Own-source hash per package (no dependency folding) — the original,
+ * non-dependency-aware build key. Used when the experimental key is disabled.
+ */
+export async function getOwnHashes(allPackages: Package[]): Promise<Map<string, string>> {
+    const map = new Map<string, string>();
+    await Promise.all(
+        allPackages.map(async pkg => {
+            map.set(pkg.name, await getPackageSourceHash(pkg));
+        })
+    );
+    return map;
+}
+
+/**
  * Parses `yarn.lock` into a map of dependency descriptor → a token that changes
  * whenever the *resolved* package changes (its checksum, falling back to
  * resolution/version). Lets a package's key reflect not just the declared

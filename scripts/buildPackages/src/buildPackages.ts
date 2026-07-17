@@ -62,7 +62,7 @@ export const buildPackages = async () => {
         }
     }
 
-    const { batches, packagesNoCache, allPackages, effectiveKeys } = await getBatches({
+    const { batches, packagesNoCache, allPackages, buildKeys } = await getBatches({
         cache: options.cache ?? true,
         packagesWhitelist,
         rebuildDependents: options.rebuildDependents
@@ -93,7 +93,7 @@ export const buildPackages = async () => {
             // dist already matches — content hash).
             const meta = getBuildMeta();
             meta.packages[pkg.packageJson.name] = {
-                sourceHash: effectiveKeys.get(pkg.name) ?? ""
+                sourceHash: buildKeys.get(pkg.name) ?? ""
             };
             writeJsonFileSync(META_FILE_PATH, meta);
 
@@ -138,7 +138,7 @@ export const buildPackages = async () => {
                                         );
 
                                         // Store the dependency-aware build key.
-                                        const key = effectiveKeys.get(pkg.name) ?? "";
+                                        const key = buildKeys.get(pkg.name) ?? "";
                                         await queueMetaWrite(async () => {
                                             const currentMeta = getBuildMeta();
                                             currentMeta.packages[pkg.packageJson.name] = {
