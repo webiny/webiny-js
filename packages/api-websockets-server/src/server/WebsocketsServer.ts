@@ -152,11 +152,12 @@ class WebsocketsServer implements IWebsocketsServer {
             const host = request.headers.host || "localhost";
             const headers = toHeaders(request.headers);
 
-            // Register the connection with its real identity (decoded from the `?token` JWT). This
-            // is async — authentication + the registry write both are — but the socket handlers
-            // below are wired synchronously so no early close/message is lost during the gap. A
-            // message arriving before registration completes is simply dropped by the
-            // `getMetadata` guard (harmless; the client re-sends nothing at connect time).
+            // Register the connection under its real identity, decoded from the `?token` JWT. Both
+            // the authentication and the registry write are async, so we kick this off without
+            // awaiting it and wire the socket handlers below synchronously — that way we don't miss a
+            // close or message that arrives during the gap. If a message does arrive before
+            // registration finishes, the `getMetadata` guard below just drops it, which is fine since
+            // the client doesn't send anything meaningful right at connect time.
             void this.registerConnection({
                 connectionId,
                 socket,
@@ -199,12 +200,12 @@ class WebsocketsServer implements IWebsocketsServer {
     }
 
     /**
-     * Authenticate the upgrade (from its `?token`/`?tenant` query, set by the app-websockets client)
-     * and register the live socket in the shared connection manager under the resolved identity +
-     * tenant. Both the identity AND the registry row are load-bearing for targeted server→client
-     * sends: `SendToIdentity` looks up connections by identity id in the registry, so a connection
-     * registered anonymously (or never registered) can't be reached. Fully guarded — a failure here
-     * must never crash the server or the upgrade; the connection just stays unaddressable.
+     * Authenticates the upgrade using the `?token`/`?tenant` query the app-websockets client sends,
+     * then registers the live socket in the shared connection manager under the resolved identity and
+     * tenant. Getting both right matters for targeted server→client sends: `SendToIdentity` finds
+     * connections by identity id in the registry, so a connection that's anonymous (or never made it
+     * into the registry) can't be reached. Everything here is guarded — if something goes wrong we
+     * don't crash the server or the upgrade, the connection just ends up unaddressable.
      */
     private async registerConnection(params: {
         connectionId: string;

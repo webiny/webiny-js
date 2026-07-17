@@ -48,8 +48,8 @@ export function registerSchedulerServer(container: Container): void {
                     headers: { "content-type": "application/json", [SCHEDULER_HEADER]: token },
                     body: JSON.stringify({ id, namespace, tenant })
                 });
-                // fetch only rejects on network errors — a 403/500 comes back as a non-ok response,
-                // so surface it explicitly (otherwise a failed run is invisible).
+                // fetch only throws on network errors; a 403 or 500 comes back as a normal non-ok
+                // response, so we check for that explicitly — otherwise a failed run would be silent.
                 if (!res.ok) {
                     const body = await res.text().catch(() => "");
                     console.error(
@@ -98,8 +98,8 @@ export async function startSchedulerServer(rootContainer: Container): Promise<vo
                 body: JSON.stringify({})
             });
             const body = await res.json().catch(() => ({}) as Record<string, unknown>);
-            // fetch only rejects on network errors — a 403/500 comes back as a non-ok response, so
-            // surface it (a silent 403 on a token mismatch was invisible before).
+            // fetch only throws on network errors; a 403 or 500 comes back as a normal non-ok
+            // response, so we check for it here (a token-mismatch 403 used to fail silently).
             if (!res.ok) {
                 console.error(`[scheduler] boot recovery failed: HTTP ${res.status}`, body);
                 return;

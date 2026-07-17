@@ -64,9 +64,10 @@ class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
                 await schema.build(ctx);
             }
 
-            // Boot recovery runs with no identity (no request), so bypass authorization for the list —
-            // the same escape hatch ExecuteScheduledActionUseCase uses on the run route. Without this,
-            // ListScheduledActions' permission check against the anonymous identity fails "Not authorized!".
+            // At boot there's no request and no identity, so we skip authorization for the list — the
+            // same thing ExecuteScheduledActionUseCase does on the run route. Without it, the
+            // permission check in ListScheduledActions sees the anonymous identity and fails with
+            // "Not authorized!".
             const listResult = await this.container
                 .resolve(IdentityContext)
                 .withoutAuthorization(() =>

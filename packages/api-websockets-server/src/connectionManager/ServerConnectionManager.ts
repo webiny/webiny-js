@@ -17,12 +17,12 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
             headers: params.headers
         });
 
-        // Persist the connection to the shared registry. This is what makes the live socket
-        // addressable: `SendToIdentity`/`ListConnections` query the registry by identity id, then
-        // resolve the in-memory socket here by connection id. Without this row the socket exists but
-        // no identity→connectionId mapping does, so targeted server→client sends reach nothing.
-        // `connectedOn` is an ISO string (the registry filters connections lexicographically against
-        // a recency cutoff), so the epoch ms `connectedAt` is converted here.
+        // Save the connection to the shared registry — this is what lets us actually reach the
+        // socket later. SendToIdentity and ListConnections look connections up in the registry by
+        // identity id and then come back here to find the in-memory socket by connection id. If we
+        // skip this, the socket is in memory but nothing maps an identity to it, so targeted
+        // server→client sends find nobody. The registry stores `connectedOn` as an ISO string (it
+        // compares connections against a recency cutoff), so we convert the epoch-ms `connectedAt`.
         await this.registry.register({
             connectionId: params.connectionId,
             identity: params.identity,

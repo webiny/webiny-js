@@ -131,16 +131,17 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // Attach the WebSockets upgrade handler to the running HTTP server, backed by the shared
             // (root) connection manager so request-time sends reach the live sockets.
             //
-            // Authenticate each WebSocket upgrade from its `?token` JWT so the connection is
-            // registered under the real identity — required for targeted server→client sends
-            // (SendToIdentity matches connections by identity id). AuthenticationContext lives in the
-            // PER-REQUEST stack (registered by ApiCoreFeature, not registerRootStorage), so it isn't
-            // resolvable from the root container. We build a throwaway request-scoped child container
-            // (the same way createHandler builds one per HTTP request) and resolve it there. Only the
-            // CORE stack is needed — no transports — since this is purely the token→identity step
-            // (the SAME one the HTTP stack runs via RequestIdentityLoader), and it's tenant-independent
-            // (the HTTP stack establishes identity BEFORE tenant), so it needs no request/tenant state.
-            // Connections are infrequent (one per admin session), so the per-connection child is cheap.
+            // Each upgrade is authenticated from its `?token` JWT so the connection is registered
+            // under the real identity — targeted server→client sends need this, since SendToIdentity
+            // matches connections by identity id. The catch is that AuthenticationContext lives in the
+            // per-request stack (registered by ApiCoreFeature, not registerRootStorage), so we can't
+            // resolve it from the root container. Instead we spin up a short-lived request-scoped
+            // child container, the same way createHandler does for each HTTP request, and resolve it
+            // there. We only need the core stack, not the transports, because this is just the
+            // token→identity step the HTTP stack already runs via RequestIdentityLoader — and that step
+            // doesn't depend on the tenant (the HTTP stack resolves identity before tenant), so there's
+            // no request or tenant state to set up. Connections are rare (one per admin session), so a
+            // fresh child per connection is cheap enough.
             const authenticate = async (token: string) => {
                 const child = rootContainer.createChildContainer();
                 child.registerInstance(RequestContainer, child);
