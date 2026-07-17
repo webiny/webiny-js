@@ -1,8 +1,8 @@
 import type { Client } from "@webiny/api-opensearch";
 import { WebinyError } from "@webiny/error";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import { configurations } from "@webiny/api-headless-cms-ddb-es/configurations.js";
-import type { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-ddb-es/exports/api/cms/opensearch.js";
+import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import type { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 
 export interface ICreateIndexParams {
     client: Client;
