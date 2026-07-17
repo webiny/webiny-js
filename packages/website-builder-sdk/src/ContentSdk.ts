@@ -1,12 +1,19 @@
 import type {
     Component,
     IContentSdk,
+    IDataProvider,
     ListPagesOptions,
     ListPagesResult,
     PublicPage,
     PublicRedirect,
     ResolvedComponent
 } from "~/types.js";
+import type { ActiveExperiment, VariantContent } from "~/experiments/types.js";
+import {
+    getPageWithExperiment,
+    type ExperimentRenderResult,
+    type GetPageWithExperimentOptions
+} from "~/experiments/render.js";
 import { environment } from "./Environment.js";
 import { LiveSdk } from "./LiveSdk.js";
 import { EditingSdk } from "./EditingSdk.js";
@@ -69,6 +76,7 @@ export class ContentSdk implements IContentSdk, IRedirects {
     protected sdk?: InternalContentSdk;
     private isPreview = false;
     private lastConfig: any;
+    private dataProvider?: IDataProvider;
 
     public init(config: ContentSDKConfig, afterInit?: () => void): void {
         const configHash = JSON.stringify(config);
@@ -85,6 +93,7 @@ export class ContentSdk implements IContentSdk, IRedirects {
         });
 
         const dataProvider = new DefaultDataProvider({ apiClient });
+        this.dataProvider = dataProvider;
 
         let liveSdk: IContentSdk = new LiveSdk(dataProvider);
 
@@ -123,6 +132,41 @@ export class ContentSdk implements IContentSdk, IRedirects {
     public getPage(path: string) {
         this.assertInitialized();
         return this.sdk.getPage(path);
+    }
+
+    public getPageExperiment(path: string): Promise<ActiveExperiment | null> {
+        return this.requireDataProvider().getPageExperiment(path);
+    }
+
+    public getVariantContent(variantId: string): Promise<VariantContent | null> {
+        return this.requireDataProvider().getVariantContent(variantId);
+    }
+
+    public getExperimentPaused(experimentId: string): Promise<boolean> {
+        return this.requireDataProvider().getExperimentPaused(experimentId);
+    }
+
+    /**
+     * Resolve and render the right page for the current visitor (control or a variant),
+     * server-side. Bucketing, targeting, exposure emission, and cache-key handling are all
+     * encapsulated here so projects do not reimplement them. See {@link getPageWithExperiment}.
+     */
+    public getPageWithExperiment(
+        path: string,
+        options?: GetPageWithExperimentOptions
+    ): Promise<ExperimentRenderResult> {
+        this.assertInitialized();
+        this.requireDataProvider();
+        return getPageWithExperiment(
+            {
+                getPage: p => this.getPage(p),
+                getPageExperiment: p => this.getPageExperiment(p),
+                getVariantContent: id => this.getVariantContent(id),
+                getExperimentPaused: id => this.getExperimentPaused(id)
+            },
+            path,
+            options
+        );
     }
 
     public listPages(options?: ListPagesOptions) {
@@ -164,6 +208,13 @@ export class ContentSdk implements IContentSdk, IRedirects {
         if (!this.sdk) {
             throw new Error(`ContentSdk has not been initialized!`);
         }
+    }
+
+    private requireDataProvider(): IDataProvider {
+        if (!this.dataProvider) {
+            throw new Error(`ContentSdk has not been initialized!`);
+        }
+        return this.dataProvider;
     }
 }
 

@@ -16700,6 +16700,7 @@ __metadata:
     cypress: "npm:^15.18.1"
     cypress-image-snapshot: "npm:^4.0.1"
     cypress-mailosaur: "npm:^5.0.0"
+    cypress-vite: "npm:^1.10.2"
     cypress-wait-until: "npm:^3.0.2"
     del: "npm:^8.0.1"
     graphql-request: "npm:^7.4.0"
@@ -16709,6 +16710,17 @@ __metadata:
     uniqid: "npm:^5.4.0"
   languageName: unknown
   linkType: soft
+
+"cypress-vite@npm:^1.10.2":
+  version: 1.10.2
+  resolution: "cypress-vite@npm:1.10.2"
+  peerDependencies:
+    chokidar: ^2 || ^3 || ^4 || ^5
+    debug: ^2 || ^3 || ^4
+    vite: ^2.9 || ^3 || ^4 || ^5 || ^6 || ^7 || ^8
+  checksum: 10/b220b63a3dba983a2c60b2f3ffec879b0e1c23268a79571cb2d21a8fd535a7c171b9678645dfa4351812c59229868bb7c84a4f86d88c478ffa81bdc30f68c95d
+  languageName: node
+  linkType: hard
 
 "cypress-wait-until@npm:^3.0.2":
   version: 3.0.2
