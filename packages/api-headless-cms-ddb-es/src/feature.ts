@@ -4,39 +4,23 @@ import type { CmsContext, StorageOperationsFactory as IStorageOperationsFactory 
 import { ENTITIES } from "~/types.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
-import { CmsEntryOpenSearchValueSearchFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueSearch/index.js";
-import { CmsEntryOpenSearchIndexFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndex/index.js";
+import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os";
 import { createModelsStorageOperations } from "./operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
 import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
-import {
-    CmsEntryOpenSearchIndexCreate,
-    CmsEntryOpenSearchIndexCreateFeature
-} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexCreate/index.js";
+import { CmsEntryOpenSearchIndexCreate } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexCreate/index.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch";
-import {
-    CmsEntryOpenSearchIndexDelete,
-    CmsEntryOpenSearchIndexDeleteFeature
-} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexDelete/index.js";
-import { CmsEntryOpenSearchBodyBuilderFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyBuilder/index.js";
-import { CmsEntryOpenSearchExecFilteringFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchExecFiltering/index.js";
-import { CmsEntryOpenSearchFieldPathFactoryFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldPathFactory/index.js";
-import { CmsEntryOpenSearchValueTransformerFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueTransformer/index.js";
-import { CmsEntryOpenSearchOperatorListFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchOperatorList/index.js";
+import { CmsEntryOpenSearchIndexDelete } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexDelete/index.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { CmsEntryOpenSearchValuesModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValuesModifier/index.js";
-import {
-    CmsEntryOpenSearchFieldIndexFeature,
-    CmsEntryOpenSearchFieldIndexRegistry
-} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
-import { CmsEntryOpenSearchFilterFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFilter/index.js";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
 import { DbRegistry } from "@webiny/db/exports/api/db.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { CreateElasticsearchIndexTask } from "~/tasks/CreateElasticsearchIndexTask.js";
@@ -178,17 +162,7 @@ const OpenSearchStorageOperationsFactory = StorageOperationsFactoryAbstraction.c
 export const HeadlessCmsDdbEsFeature = createFeature({
     name: "cms.storageOperations.openSearch",
     register: container => {
-        CmsEntryOpenSearchFieldIndexFeature.register(container);
-        CmsEntryOpenSearchFilterFeature.register(container);
-        CmsEntryOpenSearchIndexFeature.register(container);
-        CmsEntryOpenSearchIndexCreateFeature.register(container);
-        CmsEntryOpenSearchIndexDeleteFeature.register(container);
-        CmsEntryOpenSearchFieldPathFactoryFeature.register(container);
-        CmsEntryOpenSearchValueTransformerFeature.register(container);
-        CmsEntryOpenSearchOperatorListFeature.register(container);
-        CmsEntryOpenSearchExecFilteringFeature.register(container);
-        CmsEntryOpenSearchBodyBuilderFeature.register(container);
-        CmsEntryOpenSearchValueSearchFeature.register(container);
+        CmsEntryOpenSearchUtilsFeature.register(container);
         container.register(CreateElasticsearchIndexTask);
         container.register(OpenSearchStorageOperationsFactory).inSingletonScope();
     }

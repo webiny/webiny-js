@@ -1,6 +1,6 @@
+export { CmsEntryOpenSearchUtilsFeature } from "./features/CmsEntryOpenSearchUtilsFeature.js";
 export {
     CmsEntryOpenSearchIndex,
-    CmsEntryOpenSearchIndexFeature,
     BaseOpenSearchIndex
 } from "./features/CmsEntryOpenSearchIndex/index.js";
 export { CmsEntryOpenSearchBodyModifier } from "./features/CmsEntryOpenSearchBodyModifier/index.js";
@@ -10,51 +10,20 @@ export { CmsEntryOpenSearchFullTextSearch } from "./features/CmsEntryOpenSearchF
 export { CmsEntryOpenSearchValuesModifier } from "./features/CmsEntryOpenSearchValuesModifier/index.js";
 export {
     CmsEntryOpenSearchFieldIndex,
-    CmsEntryOpenSearchFieldIndexRegistry,
-    CmsEntryOpenSearchFieldIndexFeature
+    CmsEntryOpenSearchFieldIndexRegistry
 } from "./features/CmsEntryOpenSearchFieldIndex/index.js";
 export {
     CmsEntryOpenSearchFilter,
-    CmsEntryOpenSearchFilterRegistry,
-    CmsEntryOpenSearchFilterFeature
+    CmsEntryOpenSearchFilterRegistry
 } from "./features/CmsEntryOpenSearchFilter/index.js";
 export {
     CmsEntryOpenSearchValueSearch,
-    CmsEntryOpenSearchValueSearchRegistry,
-    CmsEntryOpenSearchValueSearchFeature
+    CmsEntryOpenSearchValueSearchRegistry
 } from "./features/CmsEntryOpenSearchValueSearch/index.js";
-export {
-    CmsEntryOpenSearchIndexCreate,
-    CmsEntryOpenSearchIndexCreateFeature,
-    CmsEntryOpenSearchIndexCreateImpl
-} from "./features/CmsEntryOpenSearchIndexCreate/index.js";
-export {
-    CmsEntryOpenSearchIndexDelete,
-    CmsEntryOpenSearchIndexDeleteFeature,
-    CmsEntryOpenSearchIndexDeleteImpl
-} from "./features/CmsEntryOpenSearchIndexDelete/index.js";
-export {
-    CmsEntryOpenSearchBodyBuilder,
-    CmsEntryOpenSearchBodyBuilderFeature,
-    CmsEntryOpenSearchBodyBuilderImpl
-} from "./features/CmsEntryOpenSearchBodyBuilder/index.js";
-export {
-    CmsEntryOpenSearchExecFiltering,
-    CmsEntryOpenSearchExecFilteringFeature,
-    CmsEntryOpenSearchExecFilteringImpl
-} from "./features/CmsEntryOpenSearchExecFiltering/index.js";
-export {
-    CmsEntryOpenSearchFieldPathFactory,
-    CmsEntryOpenSearchFieldPathFactoryFeature,
-    CmsEntryOpenSearchFieldPathFactoryImpl
-} from "./features/CmsEntryOpenSearchFieldPathFactory/index.js";
-export {
-    CmsEntryOpenSearchValueTransformer,
-    CmsEntryOpenSearchValueTransformerFeature,
-    CmsEntryOpenSearchValueTransformerImpl
-} from "./features/CmsEntryOpenSearchValueTransformer/index.js";
-export {
-    CmsEntryOpenSearchOperatorList,
-    CmsEntryOpenSearchOperatorListFeature,
-    CmsEntryOpenSearchOperatorListImpl
-} from "./features/CmsEntryOpenSearchOperatorList/index.js";
+export { CmsEntryOpenSearchIndexCreate } from "./features/CmsEntryOpenSearchIndexCreate/index.js";
+export { CmsEntryOpenSearchIndexDelete } from "./features/CmsEntryOpenSearchIndexDelete/index.js";
+export { CmsEntryOpenSearchBodyBuilder } from "./features/CmsEntryOpenSearchBodyBuilder/index.js";
+export { CmsEntryOpenSearchExecFiltering } from "./features/CmsEntryOpenSearchExecFiltering/index.js";
+export { CmsEntryOpenSearchFieldPathFactory } from "./features/CmsEntryOpenSearchFieldPathFactory/index.js";
+export { CmsEntryOpenSearchValueTransformer } from "./features/CmsEntryOpenSearchValueTransformer/index.js";
+export { CmsEntryOpenSearchOperatorList } from "./features/CmsEntryOpenSearchOperatorList/index.js";
