@@ -5,6 +5,9 @@ import { LayoutRenderer, Navigation, TenantSelector, UserMenu } from "@webiny/ap
 import { HeaderBar, SidebarProvider, cn, useSidebar } from "@webiny/admin-ui";
 import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
 import { CommandPalette } from "./CommandPalette/CommandPalette.js";
+import { CommandPaletteProvider } from "./CommandPalette/CommandPaletteContext.js";
+import { CommandPaletteTrigger } from "./CommandPalette/CommandPaletteTrigger.js";
+import { GlobalCommands } from "./CommandPalette/GlobalCommands.js";
 
 const SIDEBAR_STATE_KEY = "navigation/state";
 
@@ -45,6 +48,7 @@ const LayoutContent = ({
         <>
             {title ? <Helmet title={title} /> : null}
             <CommandPalette />
+            <GlobalCommands />
             {hideNavigation ? null : <Navigation />}
             <div
                 className={cn(
@@ -53,7 +57,12 @@ const LayoutContent = ({
                 )}
             >
                 <HeaderBar
-                    start={startElement}
+                    start={
+                        <div className="flex items-center gap-sm">
+                            {startElement}
+                            <CommandPaletteTrigger />
+                        </div>
+                    }
                     end={
                         <div className={"flex gap-x-sm items-center justify-end"}>
                             <TenantSelector />
@@ -81,9 +90,11 @@ export const Layout = LayoutRenderer.createDecorator(() => {
         }, []);
 
         return (
-            <SidebarProvider state={cachedState} onChangeState={onChangeState}>
-                <LayoutContent {...props} />
-            </SidebarProvider>
+            <CommandPaletteProvider>
+                <SidebarProvider state={cachedState} onChangeState={onChangeState}>
+                    <LayoutContent {...props} />
+                </SidebarProvider>
+            </CommandPaletteProvider>
         );
     };
 });

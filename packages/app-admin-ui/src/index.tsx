@@ -1,7 +1,5 @@
 import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
-import { Icon } from "@webiny/admin-ui";
-import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
 import { Layout } from "./Layout.js";
 import { Navigation } from "./Navigation/Navigation.js";
 import { UserMenu } from "~/UserMenu.js";
@@ -26,16 +24,6 @@ export const AdminUI = () => {
                     pin="last"
                     column="right"
                     element={<CommunityWidget />}
-                />
-                <AdminConfig.CommandPalette.Command
-                    name="admin.copyCurrentUrl"
-                    label="Copy current URL"
-                    description="Copy this page's link to the clipboard"
-                    keywords="clipboard share link"
-                    icon={<Icon icon={<CopyIcon />} size="sm" color="neutral-strong" label="" />}
-                    onSelect={() => {
-                        void navigator.clipboard?.writeText(window.location.href);
-                    }}
                 />
             </AdminConfig>
             <Dashboard />

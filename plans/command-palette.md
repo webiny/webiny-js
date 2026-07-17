@@ -86,6 +86,19 @@ Reuse notifications feature. Default message: "Navigating to X" for nav, action 
 
 Recent deferred to a later phase (route-visit history + recently-edited entries).
 
+## Status (implemented)
+
+- **P1–P3 done, P4–P5 done** on branch `command-palette`.
+- P4 scope note: the registry ships plus two real global actions ("Copy current URL",
+  "Sign out"). Rich per-module create/mutate actions (new entry, publish, upload, invite)
+  are a **follow-up owned by each module** — they need module create flows, not the
+  param-free routes the access-management/file-manager menus expose.
+- P5: header trigger ("Search or jump to… ⌘K") wired via a `CommandPaletteProvider`
+  (shared open state for hotkey + button). Empty state keeps the `search_off` icon;
+  wiring the DS "Blank state" illustration asset is a later polish.
+- Still open: **Recent** group; automated tests; zIndex-layering caveat when another
+  high-zIndex hotkey layer is open.
+
 ## Risks / verify in phase 1
 
 - **`props.text` is `ReactNode`, not `string`** — cmdk search needs a string. Likely need an optional `searchLabel` on the menu config, or coerce ReactNode → text. Biggest unknown; resolve before phase 2.

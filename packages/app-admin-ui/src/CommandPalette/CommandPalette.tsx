@@ -14,17 +14,18 @@ import { NAVIGATION_GROUP, PALETTE_HOTKEY_ZINDEX } from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { deriveCommandGroups, deriveNavigationRows } from "./deriveRows.js";
 import { CommandItemRow, GroupHeading, HintIcon, Kbd } from "./components/index.js";
+import { useCommandPalette } from "./CommandPaletteContext.js";
 
 export const CommandPalette = () => {
-    const [open, setOpen] = useState(false);
     const [query, setQuery] = useState("");
+    const { open, closePalette, togglePalette } = useCommandPalette();
     const { menus, commands } = useAdminConfig();
     const container = useContainer();
 
     const close = useCallback(() => {
-        setOpen(false);
+        closePalette();
         setQuery("");
-    }, []);
+    }, [closePalette]);
 
     const navigateTo = useCallback(
         (to: string) => {
@@ -57,7 +58,7 @@ export const CommandPalette = () => {
         keys: {
             "mod+k": e => {
                 e.preventDefault();
-                setOpen(prev => !prev);
+                togglePalette();
                 setQuery("");
             }
         }
