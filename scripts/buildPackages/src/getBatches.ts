@@ -16,7 +16,6 @@ const { green } = chalk;
 interface GetBatchesOptions {
     cache?: boolean;
     packagesWhitelist?: string[];
-    rebuildDependents?: boolean;
 }
 
 export async function getBatches(options: GetBatchesOptions = {}) {
@@ -74,36 +73,9 @@ export async function getBatches(options: GetBatchesOptions = {}) {
         }
     }
 
-    // 1.5 When using cache and --rebuild-dependents, also rebuild any package that depends on a changed package.
-    if (options.rebuildDependents && packagesNoCache.length > 0 && useCache) {
-        const dependents = workspaceGraph.getDependents();
-
-        const tainted = new Set(packagesNoCache.map(p => p.packageJson.name));
-        const queue = [...tainted];
-        while (queue.length > 0) {
-            const name = queue.pop()!;
-            for (const dependent of dependents.get(name) || []) {
-                if (!tainted.has(dependent)) {
-                    tainted.add(dependent);
-                    queue.push(dependent);
-                }
-            }
-        }
-
-        for (const name of tainted) {
-            if (packagesNoCache.some(p => p.packageJson.name === name)) continue;
-            const pkg = workspacesPackages.find(p => p.packageJson.name === name);
-            if (pkg) {
-                packagesNoCache.push(pkg);
-            }
-        }
-
-        for (let i = packagesUseCache.length - 1; i >= 0; i--) {
-            if (tainted.has(packagesUseCache[i].packageJson.name)) {
-                packagesUseCache.splice(i, 1);
-            }
-        }
-    }
+    // Dependents of a changed package no longer need explicit tainting: the
+    // effective key folds in dependency keys, so any dependent of a changed
+    // package is already a cache miss above.
 
     // 2. Let's use cached built code where possible.
     if (packagesUseCache.length) {

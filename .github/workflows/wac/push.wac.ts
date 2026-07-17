@@ -21,8 +21,7 @@ const DIR_WEBINY_JS = "v6";
 const DIR_TEST_PROJECT = "new-webiny-project";
 
 const installBuildSteps = createInstallBuildSteps({
-    workingDirectory: DIR_WEBINY_JS,
-    rebuildDependents: true
+    workingDirectory: DIR_WEBINY_JS
 });
 const yarnCacheSteps = createYarnCacheSteps({
     workingDirectory: DIR_WEBINY_JS
