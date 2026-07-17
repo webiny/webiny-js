@@ -1,4 +1,4 @@
-import { createContextPlugin } from "@webiny/api";
+import type { Container } from "@webiny/di";
 import { BuildParam } from "@webiny/api-core/features/buildParams/index.js";
 import type { TransportSettings } from "~/types.js";
 
@@ -13,7 +13,7 @@ export const registerCodeSmtpSettings = (settings: TransportSettings) => {
         dependencies: []
     });
 
-    return createContextPlugin(context => {
-        context.container.register(implementation);
-    });
+    return (container: Container) => {
+        container.register(implementation);
+    };
 };

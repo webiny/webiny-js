@@ -17,9 +17,9 @@ import { SchedulerPermissions } from "~/features/permissions/abstractions.js";
  *
  * Flow:
  * 1. Check if schedule exists
- * 2. Delete EventBridge schedule
+ * 2. Delete scheduler timer
  * 3. Delete CMS entry
- * 4. If EventBridge delete fails, continue anyway (schedule might already be executed/deleted)
+ * 4. If the scheduler delete fails, continue anyway (schedule might already be executed/deleted)
  */
 class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -53,19 +53,19 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const scheduleId = ScheduledActionIdWithVersion.from(id);
 
-        // Delete EventBridge schedule
+        // Delete the scheduler timer
         // Note: We continue even if this fails, as the schedule might already be executed/deleted
         try {
-            const eventBridgeSchedule = await this.schedulerService.exists(params);
+            const scheduleExists = await this.schedulerService.exists(params);
             /**
              * No point to even try deleting if it doesn't exist.
              */
-            if (eventBridgeSchedule) {
+            if (scheduleExists) {
                 await this.schedulerService.delete(params);
             }
         } catch (error) {
             console.warn(
-                `Failed to delete EventBridge schedule: ${scheduleId}, tenant "${params.tenant}". Continuing with CMS entry deletion.`,
+                `Failed to delete the schedule: ${scheduleId}, tenant "${params.tenant}". Continuing with CMS entry deletion.`,
                 error
             );
         }

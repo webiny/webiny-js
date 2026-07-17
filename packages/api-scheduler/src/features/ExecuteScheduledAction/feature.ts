@@ -5,7 +5,7 @@ import { ScheduledActionHandlerComposite } from "~/features/ExecuteScheduledActi
 /**
  * ExecuteScheduledAction Feature
  *
- * Provides the ability to execute a scheduled action when triggered by EventBridge.
+ * Provides the ability to execute a scheduled action when the scheduler fires.
  * Finds the appropriate handler and executes it, then cleans up the schedule entry.
  */
 export const ExecuteScheduledActionFeature = createFeature({

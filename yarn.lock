@@ -11308,7 +11308,6 @@ __metadata:
   resolution: "@webiny/api-mailer@workspace:packages/api-mailer"
   dependencies:
     "@types/nodemailer": "npm:^8.0.1"
-    "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
