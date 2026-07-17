@@ -90,8 +90,15 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams) => {
 
             SchedulerFeature.register(container);
             container.registerInstance(SchedulerService, new VoidSchedulerService());
-            if (extraPlugins.length > 0) {
-                registerLegacyPluginsViaGqlContextualSchema(container, extraPlugins);
+            // DI-native plugins are plain `container => {}` functions; call them directly. Any
+            // remaining legacy plugins still go through the bridge until #39 removes it.
+            const isFn = (p: any) => typeof p === "function" && !p.prototype;
+            for (const plugin of extraPlugins.filter(isFn)) {
+                (plugin as (container: any) => void)(container);
+            }
+            const legacyPlugins = extraPlugins.filter((p: any) => !isFn(p));
+            if (legacyPlugins.length > 0) {
+                registerLegacyPluginsViaGqlContextualSchema(container, legacyPlugins);
             }
 
             GraphQLEngineFeature.register(container);

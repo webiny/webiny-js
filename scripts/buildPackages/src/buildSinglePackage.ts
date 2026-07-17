@@ -5,6 +5,7 @@ import { CACHE_FOLDER_PATH } from "./constants";
 import { fork, type StdioOptions } from "child_process";
 import path from "path";
 import { deserializeError } from "serialize-error";
+import { recordCacheHash } from "./distContentHash";
 
 export const buildPackage = async (
     pkg: Package,
@@ -42,4 +43,8 @@ export const buildPackage = async (
     // Delete previous cache!
     await fs.emptyDir(cacheFolderPath);
     await fs.copy(buildFolder, cacheFolderPath);
+
+    // Record the cache's content hash so a later build can skip the cache→dist
+    // copy by hashing dist alone.
+    await recordCacheHash(pkg);
 };
