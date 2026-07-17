@@ -34,16 +34,18 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
         private readonly sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
     ) {}
 
-    // Only entries not yet summarized — so the task converges (see backgroundTasksDemo README).
+    // Pass-through. Convergence is handled by the run-token filter the Admin action puts
+    // in `where` (`values.aiSummarizedRun_not: <runId>`): once an entry is stamped with the
+    // current run it drops out of the list, so the task ends — but a NEW run uses a new
+    // token, so the same entries qualify again and get re-summarized.
     async loadData(
         model: EntriesBulkAction.Model,
         params: EntriesBulkAction.LoadDataParams
     ): Promise<EntriesBulkAction.LoadDataResult> {
-        const where: Record<string, unknown> = { ...params.where, "values.aiSummarized_not": true };
-        const value = (await this.listEntries.execute(model, { ...params, where })).value;
+        const value = (await this.listEntries.execute(model, params)).value;
         // TEMP DIAGNOSTIC — remove after debugging.
         this.logger.info(
-            `[GenerateAiSummary] loadData: ${value.entries.length} entrie(s) | where: ${JSON.stringify(where)} | total: ${value.meta?.totalCount}`
+            `[GenerateAiSummary] loadData: ${value.entries.length} entrie(s) | where: ${JSON.stringify(params.where)} | total: ${value.meta?.totalCount}`
         );
         return value;
     }
@@ -67,6 +69,10 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
         const writerPersonaId = (params.data?.writerPersonaId as string) || undefined;
         const readerPersonaId = (params.data?.readerPersonaId as string) || undefined;
         const projectId = (params.data?.projectId as string) || undefined;
+
+        // The per-run token — we stamp it onto the entry so this run converges. The next
+        // run uses a different token, so the entry becomes eligible again.
+        const runId = (params.data?.runId as string) || "";
 
         const result = await this.generateContent.execute({
             modelId: model.modelId,
@@ -103,7 +109,7 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
         const updated = await this.updateEntry.execute(
             model,
             entry.id,
-            { values: { aiSummary, aiSummarized: true } },
+            { values: { aiSummary, aiSummarizedRun: runId } },
             { skipValidation: true }
         );
         if (updated.isFail()) {

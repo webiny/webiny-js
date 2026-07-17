@@ -72,15 +72,24 @@ export const GenerateAiSummaryAction = observer(() => {
             message: `Generate an AI summary for ${selection.label} (${label})? This runs as a background task, so you can keep working while it processes.`,
             loadingLabel: "Starting background task…",
             execute: async () => {
-                const where = selection.allSelected
-                    ? undefined
+                // A fresh token per click. The task converges once every targeted entry is
+                // stamped with it (`values.aiSummarizedRun_not: runId`), but the next click
+                // uses a new token, so the same entries can be summarized again.
+                const runId =
+                    typeof crypto !== "undefined" && crypto.randomUUID
+                        ? crypto.randomUUID()
+                        : String(Date.now());
+
+                const scope = selection.allSelected
+                    ? {}
                     : { id_in: selectedItems.map(item => item.id) };
+                const where = { ...scope, "values.aiSummarizedRun_not": runId };
 
                 await bulkAction.execute({
                     model,
                     action: "GenerateAiSummary",
                     where,
-                    data: choice
+                    data: { ...(choice ?? {}), runId }
                 });
 
                 presenter.list.actions.selection.deselectAll();
