@@ -99,6 +99,46 @@ Recent deferred to a later phase (route-visit history + recently-edited entries)
 - Still open: **Recent** group; automated tests; zIndex-layering caveat when another
   high-zIndex hotkey layer is open.
 
+## Integration of PR #5065 (Pavel) — DI pivot
+
+Grafted the strong ideas from the parallel PR onto our UI. Registration/state moved
+from React config to **dependency injection** (React-independent, more flexible).
+
+- **Backend (from #5065, in `@webiny/app-admin`)**: `Command` DI abstraction (`ICommand`
+  with execute/detailView/shortcut/category), MobX `CommandPalettePresenter`
+  (open/active/shortcutKeys/vm via `container.resolveAll(Command)`), `CommandPaletteFeature`.
+  Registered in `Admin.tsx`; exported from the barrel.
+- **UI (ours, `@webiny/app-admin-ui`)**: kept — DS visuals, header trigger, breadcrumb
+  sections, ancestor icon inheritance. Now driven by the presenter (MobX `observer`);
+  Navigation still derived from menus in the UI, merged with DI command groups.
+- **detailView**: a command can render a React form inside the palette; submit →
+  `execute(data)`. Back returns to the list, Esc closes.
+- **Real shortcuts**: `command.shortcut` (is-hotkey syntax) registers a working global
+  hotkey via `useHotkeys` (which gained a `[keys]` dep for dynamic re-registration).
+- **Removed** the earlier React-config registry (`AdminConfig.CommandPalette.Command`)
+  in favour of DI. Migrated Copy URL / Sign out to DI commands; added a demo
+  `SendMessage` detail-view command (cmd+shift+m) — flagged, safe to remove.
+
+New registration API (replaces the old React-config one):
+
+```tsx
+class MyCommand implements Command.Interface {
+  name = "myapp.deploy";
+  label = "Deploy";
+  category = "Actions";
+  shortcut = "cmd+shift+d"; // optional global hotkey
+  execute() {
+    /* ... */
+  }
+  // detailView?: React component rendered inside the palette
+}
+export const MyCommandImpl = Command.createImplementation({
+  implementation: MyCommand,
+  dependencies: [/* DI tokens */]
+});
+// register: container.register(MyCommandImpl) (usually inside a feature)
+```
+
 ## Risks / verify in phase 1
 
 - **`props.text` is `ReactNode`, not `string`** — cmdk search needs a string. Likely need an optional `searchLabel` on the menu config, or coerce ReactNode → text. Biggest unknown; resolve before phase 2.

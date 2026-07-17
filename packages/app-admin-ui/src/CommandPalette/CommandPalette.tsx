@@ -1,10 +1,14 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Command } from "cmdk";
-import { useAdminConfig, useHotkeys } from "@webiny/app-admin";
-import { useContainer } from "@webiny/app";
+import {
+    CommandPaletteFeature,
+    createReactiveComponent,
+    useAdminConfig,
+    useHotkeys
+} from "@webiny/app-admin";
+import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
 import { Icon, Text } from "@webiny/admin-ui";
-import type { CommandConfig } from "@webiny/app-admin/config/AdminConfig/CommandPalette.js";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as SearchOffIcon } from "@webiny/icons/search_off.svg";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
@@ -12,20 +16,24 @@ import { ReactComponent as ArrowUpIcon } from "@webiny/icons/keyboard_arrow_up.s
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 import { NAVIGATION_GROUP, PALETTE_HOTKEY_ZINDEX } from "./constants.js";
 import type { CommandGroup } from "./types.js";
-import { deriveCommandGroups, deriveNavigationRows } from "./deriveRows.js";
-import { CommandItemRow, GroupHeading, HintIcon, Kbd } from "./components/index.js";
-import { useCommandPalette } from "./CommandPaletteContext.js";
+import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
+import { CommandDetail, CommandItemRow, GroupHeading, HintIcon, Kbd } from "./components/index.js";
 
-export const CommandPalette = () => {
+const CommandPaletteBase = () => {
     const [query, setQuery] = useState("");
-    const { open, closePalette, togglePalette } = useCommandPalette();
-    const { menus, commands } = useAdminConfig();
+    const { presenter } = useFeature(CommandPaletteFeature);
+    const { menus } = useAdminConfig();
     const container = useContainer();
+    const { vm } = presenter;
+
+    useEffect(() => {
+        presenter.init();
+    }, [presenter]);
 
     const close = useCallback(() => {
-        closePalette();
+        presenter.close();
         setQuery("");
-    }, [closePalette]);
+    }, [presenter]);
 
     const navigateTo = useCallback(
         (to: string) => {
@@ -35,13 +43,29 @@ export const CommandPalette = () => {
         [container, close]
     );
 
-    const runCommand = useCallback(
-        (command: CommandConfig) => {
-            command.onSelect();
-            close();
-        },
-        [close]
+    const runCommand = useCallback((name: string) => presenter.useCommand(name), [presenter]);
+
+    // mod+k toggles; backspace backs out of a detail view; command shortcuts run directly.
+    const keys = useMemo(
+        () => ({
+            "mod+k": (e: KeyboardEvent) => {
+                e.preventDefault();
+                presenter.toggle();
+                setQuery("");
+            },
+            backspace: (e: KeyboardEvent) => {
+                if (e.target instanceof HTMLInputElement) {
+                    return;
+                }
+                e.preventDefault();
+                presenter.cancelCommand();
+            },
+            ...presenter.shortcutKeys
+        }),
+        [presenter, presenter.shortcutKeys]
     );
+
+    useHotkeys({ zIndex: PALETTE_HOTKEY_ZINDEX, keys });
 
     const groups = useMemo<CommandGroup[]>(() => {
         const result: CommandGroup[] = [];
@@ -49,24 +73,26 @@ export const CommandPalette = () => {
         if (navigationRows.length > 0) {
             result.push({ title: NAVIGATION_GROUP, rows: navigationRows });
         }
-        result.push(...deriveCommandGroups(commands, runCommand));
+        result.push(...commandVmsToGroups(vm.commands, runCommand));
         return result;
-    }, [menus, commands, navigateTo, runCommand]);
+    }, [menus, vm.commands, navigateTo, runCommand]);
 
-    useHotkeys({
-        zIndex: PALETTE_HOTKEY_ZINDEX,
-        keys: {
-            "mod+k": e => {
-                e.preventDefault();
-                togglePalette();
-                setQuery("");
-            }
-        }
-    });
-
-    if (!open) {
+    if (!vm.isOpen) {
         return null;
     }
+
+    const active = vm.activeCommand;
+
+    const onKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Escape") {
+            e.preventDefault();
+            if (active) {
+                presenter.cancelCommand();
+            } else {
+                close();
+            }
+        }
+    };
 
     return (
         <div
@@ -77,69 +103,72 @@ export const CommandPalette = () => {
         >
             <div
                 onClick={e => e.stopPropagation()}
+                onKeyDown={onKeyDown}
                 className="flex w-full flex-col overflow-hidden rounded-lg border border-neutral-dimmed bg-neutral-base shadow-xxl"
-                style={{ maxWidth: 660, maxHeight: "64vh" }}
+                style={{ maxWidth: 660, maxHeight: "45vh" }}
             >
-                <Command
-                    label="Command palette"
-                    style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
-                    onKeyDown={e => {
-                        if (e.key === "Escape") {
-                            e.preventDefault();
-                            close();
-                        }
-                    }}
-                >
-                    <div className="flex items-center gap-sm border-b border-neutral-subtle px-md py-sm-plus">
-                        <Icon
-                            icon={<SearchIcon />}
-                            color={"neutral-light"}
-                            size={"md"}
-                            label={"Search"}
-                        />
-                        <Command.Input
-                            autoFocus
-                            value={query}
-                            onValueChange={setQuery}
-                            spellCheck={false}
-                            placeholder="Search for pages and actions…"
-                            className="min-w-0 flex-1 border-0 bg-transparent text-lg text-neutral-primary outline-none"
-                        />
-                        <Kbd>esc</Kbd>
-                    </div>
-
-                    <Command.List
-                        className="p-xs-plus"
-                        style={{ flex: 1, minHeight: 0, overflowY: "auto" }}
+                {active ? (
+                    <CommandDetail
+                        active={active}
+                        onBack={() => presenter.cancelCommand()}
+                        onClose={close}
+                    />
+                ) : (
+                    <Command
+                        label="Command palette"
+                        style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
                     >
-                        <Command.Empty>
-                            <div className="flex flex-col items-center gap-md p-xl text-center text-neutral-muted">
-                                <HintIcon element={<SearchOffIcon />} />
-                                <Text
-                                    as="div"
-                                    size="lg"
-                                    className="font-semibold text-neutral-strong"
-                                >
-                                    {`No results for “${query}”`}
-                                </Text>
-                                <Text as="div" size="sm">
-                                    Try a page name, or an action like “new entry”.
-                                </Text>
-                            </div>
-                        </Command.Empty>
+                        <div className="flex items-center gap-sm border-b border-neutral-subtle px-md py-sm-plus">
+                            <Icon
+                                icon={<SearchIcon />}
+                                color={"neutral-light"}
+                                size={"md"}
+                                label={"Search"}
+                            />
+                            <Command.Input
+                                autoFocus
+                                value={query}
+                                onValueChange={setQuery}
+                                spellCheck={false}
+                                placeholder="Search for pages and actions…"
+                                className="min-w-0 flex-1 border-0 bg-transparent text-lg text-neutral-primary outline-none"
+                            />
+                            <Kbd>esc</Kbd>
+                        </div>
 
-                        {groups.map(group => (
-                            <Command.Group
-                                key={group.title}
-                                heading={<GroupHeading title={group.title} />}
-                            >
-                                {group.rows.map(row => (
-                                    <CommandItemRow key={row.key} row={row} />
-                                ))}
-                            </Command.Group>
-                        ))}
-                    </Command.List>
-                </Command>
+                        <Command.List
+                            className="p-xs-plus"
+                            style={{ flex: 1, minHeight: 0, overflowY: "auto" }}
+                        >
+                            <Command.Empty>
+                                <div className="flex flex-col items-center gap-md p-xl text-center text-neutral-muted">
+                                    <HintIcon element={<SearchOffIcon />} />
+                                    <Text
+                                        as="div"
+                                        size="lg"
+                                        className="font-semibold text-neutral-strong"
+                                    >
+                                        {`No results for “${query}”`}
+                                    </Text>
+                                    <Text as="div" size="sm">
+                                        Try a page name, or an action like “new entry”.
+                                    </Text>
+                                </div>
+                            </Command.Empty>
+
+                            {groups.map(group => (
+                                <Command.Group
+                                    key={group.title}
+                                    heading={<GroupHeading title={group.title} />}
+                                >
+                                    {group.rows.map(row => (
+                                        <CommandItemRow key={row.key} row={row} />
+                                    ))}
+                                </Command.Group>
+                            ))}
+                        </Command.List>
+                    </Command>
+                )}
 
                 <div className="flex items-center justify-between gap-sm border-t border-neutral-subtle bg-neutral-subtle px-sm py-xs-plus text-neutral-muted">
                     <Text size="sm">Webiny command palette</Text>
@@ -163,3 +192,5 @@ export const CommandPalette = () => {
         </div>
     );
 };
+
+export const CommandPalette = createReactiveComponent(CommandPaletteBase);

@@ -1,7 +1,8 @@
 import React from "react";
+import { CommandPaletteFeature } from "@webiny/app-admin";
+import { useFeature } from "@webiny/app";
 import { Icon, Text } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
-import { useCommandPalette } from "./CommandPaletteContext.js";
 import { Kbd } from "./components/index.js";
 
 /**
@@ -9,12 +10,12 @@ import { Kbd } from "./components/index.js";
  * control in the design. The palette is also reachable via the ⌘K / Ctrl+K hotkey.
  */
 export const CommandPaletteTrigger = () => {
-    const { openPalette } = useCommandPalette();
+    const { presenter } = useFeature(CommandPaletteFeature);
 
     return (
         <button
             type="button"
-            onClick={openPalette}
+            onClick={() => presenter.open()}
             className="inline-flex items-center gap-sm rounded-md border border-neutral-dimmed bg-neutral-base px-sm py-xs text-neutral-muted"
             style={{ minWidth: 240 }}
         >
