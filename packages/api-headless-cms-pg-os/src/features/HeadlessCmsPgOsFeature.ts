@@ -17,12 +17,14 @@ import {
     CmsEntryOpenSearchValueSearchFeature,
     CmsEntryOpenSearchValueSearchRegistry
 } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueSearch/index.js";
-import { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndex/index.js";
 import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { CmsEntryOpenSearchSortModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchSortModifier/index.js";
 import { CmsEntryOpenSearchQueryModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchQueryModifier/index.js";
 import { CmsEntryOpenSearchFullTextSearch } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFullTextSearch/index.js";
-import { createElasticsearchIndex } from "@webiny/api-headless-cms-utils-os/elasticsearch/createElasticsearchIndex.js";
+import {
+    CmsEntryOpenSearchIndexCreate,
+    CmsEntryOpenSearchIndexCreateFeature
+} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexCreate/index.js";
 import { deleteElasticsearchIndex } from "@webiny/api-headless-cms-utils-os/elasticsearch/deleteElasticsearchIndex.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
@@ -95,25 +97,19 @@ const createPgOsStorageOperations = (
         createDatetimeTransformValuePlugin()
     ]);
 
+    const indexCreate = container.resolve(CmsEntryOpenSearchIndexCreate);
+
     container.registerFactory(ModelAfterCreateEventHandler, () => ({
         async handle(event) {
             const { model } = event.payload;
-            await createElasticsearchIndex({
-                client: elasticsearch,
-                model,
-                indexConfigs: container.resolveAll(CmsEntryOpenSearchIndex)
-            });
+            await indexCreate.execute({ model });
         }
     }));
 
     container.registerFactory(ModelAfterCreateFromEventHandler, () => ({
         async handle(event) {
             const { model } = event.payload;
-            await createElasticsearchIndex({
-                client: elasticsearch,
-                model,
-                indexConfigs: container.resolveAll(CmsEntryOpenSearchIndex)
-            });
+            await indexCreate.execute({ model });
         }
     }));
 
@@ -195,6 +191,7 @@ export const HeadlessCmsPgOsFeature = createFeature({
         CmsEntryOpenSearchFieldIndexFeature.register(container);
         CmsEntryOpenSearchFilterFeature.register(container);
         CmsEntryOpenSearchIndexFeature.register(container);
+        CmsEntryOpenSearchIndexCreateFeature.register(container);
         CmsEntryOpenSearchValueSearchFeature.register(container);
         container.register(PgOsStorageOperationsFactory).inSingletonScope();
     }

@@ -23,3 +23,8 @@ export {
     CmsEntryOpenSearchValueSearchRegistry,
     CmsEntryOpenSearchValueSearchFeature
 } from "./features/CmsEntryOpenSearchValueSearch/index.js";
+export {
+    CmsEntryOpenSearchIndexCreate,
+    CmsEntryOpenSearchIndexCreateFeature,
+    CmsEntryOpenSearchIndexCreateImpl
+} from "./features/CmsEntryOpenSearchIndexCreate/index.js";
