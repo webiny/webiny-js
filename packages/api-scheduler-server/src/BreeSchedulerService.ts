@@ -9,6 +9,9 @@ import {
 } from "@webiny/api-scheduler/shared/abstractions.js";
 import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 
+// bree loads this worker file at runtime, resolved relative to this module's own dist. Works in
+// `webiny watch`; shipping a standalone server build requires externalizing this package so the
+// worker travels in node_modules — tracked in https://github.com/webiny/webiny-js/issues/5429.
 const jobsDir = join(dirname(fileURLToPath(import.meta.url)), "jobs");
 const workerPath = join(jobsDir, "pollWorker.js");
 

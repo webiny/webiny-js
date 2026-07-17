@@ -46,12 +46,12 @@ class WorkerServiceImpl implements TaskService.Interface {
         // ("/static/assets/workerEntry.<hash>.js") that `new Worker()` can't load as a filesystem
         // path. `path.join` off `import.meta.url` (which resolves to this file inside dist) is left
         // untouched by the bundler and points at the real, node-resolvable dist worker.
-        const workerPath = path.join(
-            path.dirname(fileURLToPath(import.meta.url)),
-            "..",
-            "worker",
-            "workerEntry.js"
-        );
+        //
+        // NOTE: this works in `webiny watch` (dist resolves via the monorepo). Shipping a standalone
+        // server build requires this package to be externalized so the worker file travels in
+        // node_modules — tracked in https://github.com/webiny/webiny-js/issues/5429.
+        const currentDir = path.dirname(fileURLToPath(import.meta.url));
+        const workerPath = path.join(currentDir, "..", "worker", "workerEntry.js");
         const worker = new Worker(workerPath);
 
         const handle: WorkerHandle = {
