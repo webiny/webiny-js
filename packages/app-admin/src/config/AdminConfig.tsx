@@ -16,6 +16,8 @@ import { Title } from "./AdminConfig/Title.js";
 import { Logo } from "./AdminConfig/Logo.js";
 import { Dialog } from "./AdminConfig/Dialog.js";
 import type { DialogConfig } from "./AdminConfig/Dialog.js";
+import { CommandPalette } from "./AdminConfig/CommandPalette.js";
+import type { CommandConfig } from "./AdminConfig/CommandPalette.js";
 import { Form } from "./AdminConfig/Form.js";
 import type { FieldRendererConfig } from "./AdminConfig/FieldRenderer.js";
 import type { LayoutRendererConfig } from "./AdminConfig/LayoutRenderer.js";
@@ -43,6 +45,7 @@ interface AdminConfig {
     dialogs: DialogConfig[];
     fieldRenderers: FieldRendererConfig[];
     layoutRenderers: LayoutRendererConfig[];
+    commands: CommandConfig[];
 }
 
 /* Once the app fully renders (after the LoginScreen), apply protected configs. */
@@ -85,7 +88,8 @@ export const useAdminConfig = () => {
         lexicalTheme,
         dialogs: baseConfig.dialogs ?? [],
         fieldRenderers: baseConfig.fieldRenderers ?? [],
-        layoutRenderers: baseConfig.layoutRenderers ?? []
+        layoutRenderers: baseConfig.layoutRenderers ?? [],
+        commands: baseConfig.commands ?? []
     };
 };
 
@@ -118,5 +122,6 @@ export const AdminConfig = Object.assign(Private, {
     LexicalTheme,
     Dialog,
     Form,
+    CommandPalette,
     useAdminConfig
 });
