@@ -1,1 +1,5 @@
-export { SyncTableManager } from "./features/syncTableManager/abstractions.js";
+export {
+    HeadlessCmsPgOsFeature,
+    registerPgOsStorageOperations,
+    type IPgOsStorageOperationsConfig
+} from "./features/HeadlessCmsPgOsFeature.js";
