@@ -161,13 +161,13 @@ describe("BreeSchedulerService", () => {
     });
 
     describe("safeRemove logging", () => {
-        // safeRemove() swallows bree.stop()/remove() errors and logs them at debug level — a guard for
-        // the race where a job fires (bree drops it) between us deciding to delete it and actually
-        // telling bree to. That guard only runs when our `jobs` map still holds an id that bree no
-        // longer knows about. NO public API produces that divergence: create/delete/fire all keep the
-        // `jobs` map and bree in lockstep. So this is necessarily a WHITE-BOX test — it fabricates the
-        // divergence by writing the private `jobs` map directly, which is the only way to exercise the
-        // swallow-and-log branch short of making bree injectable (not worth it for defensive logging).
+        // safeRemove() ignores errors from bree.stop()/remove() and just logs them at debug level.
+        // It's there for the case where a job fires on its own (so bree forgets it) right before we
+        // try to delete it. To reach that branch, our `jobs` map has to still contain an id that bree
+        // no longer knows about — but in normal use create, delete, and firing all keep the two in
+        // sync, so there's no way to set that up through the public API. That's why this test reaches
+        // into the private `jobs` map directly: it's the only way to recreate the mismatch without
+        // making bree injectable, which felt like too much for a bit of defensive logging.
         it("should log debug when stop/remove fail silently", async () => {
             await service.create({
                 id: "schedule-1",
@@ -176,13 +176,12 @@ describe("BreeSchedulerService", () => {
                 scheduleFor: futureDate(60_000)
             });
 
-            // Delete once: removes the job from BOTH the `jobs` map and bree.
+            // First delete removes the job from both the `jobs` map and bree.
             await service.delete({ id: "schedule-1", namespace, tenant });
 
-            // Re-add ONLY to the private `jobs` map — bree still doesn't have it. This is the
-            // fabricated divergence: exists() (which reads `jobs`) now returns true, so the next
-            // delete() gets past its "does not exist" guard and reaches safeRemove(), where
-            // bree.stop()/remove() throw (unknown job) and get swallowed + logged at debug.
+            // Now add it back to the `jobs` map only, so bree no longer has it. exists() reads the
+            // `jobs` map, so the next delete gets past its "does not exist" check and calls
+            // safeRemove(), where bree throws for the unknown job and we log it at debug.
             (service as any).jobs.set("schedule-1", { namespace, tenant });
             await service.delete({ id: "schedule-1", namespace, tenant });
 
