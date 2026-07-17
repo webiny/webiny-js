@@ -1242,7 +1242,9 @@
       "version": "5.2.1",
       "files": [
         "/packages/create-webiny-project/package.json",
-        "/packages/create-webiny-project/package.json"
+        "/scripts/buildPackages/package.json",
+        "/packages/create-webiny-project/package.json",
+        "/scripts/buildPackages/package.json"
       ]
     },
     {
@@ -2700,7 +2702,9 @@
       "version": "4.0.9",
       "files": [
         "/packages/create-webiny-project/package.json",
-        "/packages/create-webiny-project/package.json"
+        "/scripts/buildPackages/package.json",
+        "/packages/create-webiny-project/package.json",
+        "/scripts/buildPackages/package.json"
       ]
     },
     {
@@ -7709,7 +7713,8 @@
         {
           "version": "5.2.1",
           "files": [
-            { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] }
+            { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -7766,7 +7771,11 @@
         {
           "version": "4.0.9",
           "files": [
-            { "file": "/packages/create-webiny-project/package.json", "types": ["devDependencies"] }
+            {
+              "file": "/packages/create-webiny-project/package.json",
+              "types": ["devDependencies"]
+            },
+            { "file": "/scripts/buildPackages/package.json", "types": ["devDependencies"] }
           ]
         }
       ]
