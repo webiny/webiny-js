@@ -5,7 +5,6 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 import { CreateMultiPartUploadUseCase as CreateMultiPartUploadUseCaseAbstraction } from "@webiny/api-file-manager/features/upload/CreateMultiPartUpload/index.js";
 import type { CreateMultiPartUploadResult } from "@webiny/api-file-manager/features/upload/types.js";
 import { createUploadToken } from "~/utils/uploadToken.js";
-import { resolveServerUrl } from "~/utils/resolveServerUrl.js";
 import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 
 class CreateMultiPartUploadUseCaseImpl
@@ -22,7 +21,7 @@ class CreateMultiPartUploadUseCaseImpl
         const { file, numberOfParts } = params;
         const storagePath = this.config.storagePath;
         const tenant = this.tenantContext.getTenant();
-        const serverUrl = resolveServerUrl();
+        const serverUrl = this.config.apiUrl;
 
         const uploadId = mdbid();
 
