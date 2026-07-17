@@ -1,4 +1,3 @@
-import type { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type {
     CmsEntryListParams,
@@ -20,14 +19,15 @@ import type {
     QueryDslBoolQuery as BoolQueryConfig,
     SearchBody
 } from "@webiny/api-opensearch/types.js";
-import { createExecFiltering } from "./filtering/index.js";
 import { assignMinimumShouldMatchToQuery } from "./assignMinimumShouldMatchToQuery.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
-import type { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter/index.js";
+import type { CmsEntryOpenSearchExecFiltering } from "~/features/CmsEntryOpenSearchExecFiltering/index.js";
+import type { CmsEntryOpenSearchFieldPathFactory } from "~/features/CmsEntryOpenSearchFieldPathFactory/index.js";
 
 interface ICreateElasticsearchBodyParams {
-    operatorRegistry: OpenSearchQueryBuilderOperatorRegistry.Interface;
+    execFiltering: CmsEntryOpenSearchExecFiltering.Interface;
+    fieldPathFactory: CmsEntryOpenSearchFieldPathFactory.Interface;
     model: CmsModel;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
@@ -36,7 +36,6 @@ interface ICreateElasticsearchBodyParams {
     queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
     valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
     fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
-    filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
     fieldFactory: OpenSearchFieldFactory.Interface;
     params: Omit<CmsEntryListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
@@ -44,7 +43,8 @@ interface ICreateElasticsearchBodyParams {
     };
 }
 export const createElasticsearchBody = ({
-    operatorRegistry,
+    execFiltering,
+    fieldPathFactory,
     model,
     params,
     fieldRegistry,
@@ -54,56 +54,37 @@ export const createElasticsearchBody = ({
     queryModifiers,
     valueSearchRegistry,
     fullTextSearches,
-    filterRegistry,
     fieldFactory
 }: ICreateElasticsearchBodyParams): SearchBody => {
     const { fields, search: term, where, sort: initialSort, after, limit } = params;
-    /**
-     * We need the model fields constructed as a key -> field value, so we do not need to iterate through array when we require some field.
-     */
+
     const modelFields = createModelFields({
         model,
         fieldRegistry,
         fieldIndexRegistry
     });
 
-    /**
-     * Filter query modifiers applicable to this model.
-     */
     const applicableQueryModifiers = queryModifiers.filter(m => {
         return !m.modelId || m.modelId === model.modelId;
     });
-    /**
-     * Filter sort modifiers applicable to this model.
-     */
     const applicableSortModifiers = sortModifiers.filter(
         m => !m.modelId || m.modelId === model.modelId
     );
-    /**
-     * Filter body modifiers applicable to this model.
-     */
     const applicableBodyModifiers = bodyModifiers.filter(m => {
         return !m.modelId || m.modelId === model.modelId;
     });
-    /**
-     * We need the fields which we can search through via the full text search.
-     *
-     */
+
     const fullTextSearchFields = createFullTextSearchFields({
         fields: modelFields,
         term,
         targets: fields
     });
-    /**
-     * The initial elasticsearch query where we attach some default conditions we always need.
-     */
+
     const query = createInitialQuery({
         where,
         model
     });
-    /**
-     * Apply the full text search, if term is set.
-     */
+
     applyFullTextSearch({
         model,
         fullTextSearches,
@@ -112,15 +93,9 @@ export const createElasticsearchBody = ({
         fields: fullTextSearchFields
     });
 
-    const execFiltering = createExecFiltering({
+    execFiltering.execute({
         model,
         fields: modelFields,
-        operatorRegistry,
-        valueSearchRegistry,
-        filterRegistry
-    });
-
-    execFiltering({
         where,
         query
     });
@@ -133,6 +108,7 @@ export const createElasticsearchBody = ({
         sort: initialSort,
         modelFields,
         model,
+        fieldPathFactory,
         valueSearchRegistry,
         fieldFactory
     });

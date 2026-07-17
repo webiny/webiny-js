@@ -38,3 +38,13 @@ export {
     CmsEntryOpenSearchBodyBuilderFeature,
     CmsEntryOpenSearchBodyBuilderImpl
 } from "./features/CmsEntryOpenSearchBodyBuilder/index.js";
+export {
+    CmsEntryOpenSearchExecFiltering,
+    CmsEntryOpenSearchExecFilteringFeature,
+    CmsEntryOpenSearchExecFilteringImpl
+} from "./features/CmsEntryOpenSearchExecFiltering/index.js";
+export {
+    CmsEntryOpenSearchFieldPathFactory,
+    CmsEntryOpenSearchFieldPathFactoryFeature,
+    CmsEntryOpenSearchFieldPathFactoryImpl
+} from "./features/CmsEntryOpenSearchFieldPathFactory/index.js";

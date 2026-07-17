@@ -22,6 +22,8 @@ import {
     CmsEntryOpenSearchIndexDeleteFeature
 } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexDelete/index.js";
 import { CmsEntryOpenSearchBodyBuilderFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyBuilder/index.js";
+import { CmsEntryOpenSearchExecFilteringFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchExecFiltering/index.js";
+import { CmsEntryOpenSearchFieldPathFactoryFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldPathFactory/index.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
@@ -179,6 +181,8 @@ export const HeadlessCmsDdbEsFeature = createFeature({
         CmsEntryOpenSearchIndexFeature.register(container);
         CmsEntryOpenSearchIndexCreateFeature.register(container);
         CmsEntryOpenSearchIndexDeleteFeature.register(container);
+        CmsEntryOpenSearchFieldPathFactoryFeature.register(container);
+        CmsEntryOpenSearchExecFilteringFeature.register(container);
         CmsEntryOpenSearchBodyBuilderFeature.register(container);
         CmsEntryOpenSearchValueSearchFeature.register(container);
         container.register(CreateElasticsearchIndexTask);
