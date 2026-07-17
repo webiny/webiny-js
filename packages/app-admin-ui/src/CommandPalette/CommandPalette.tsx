@@ -3,7 +3,7 @@ import { Command, useCommandState } from "cmdk";
 import { useAdminConfig, useHotkeys } from "@webiny/app-admin";
 import { useContainer } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
-import { Icon } from "@webiny/admin-ui";
+import { Icon, Text } from "@webiny/admin-ui";
 import type { MenuConfig } from "@webiny/app-admin/config/AdminConfig/Menu.js";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as SearchOffIcon } from "@webiny/icons/search_off.svg";
@@ -46,12 +46,16 @@ const isNavigable = (
  */
 const deriveNavigationCommands = (menus: MenuConfig[]): NavigationCommand[] => {
     const labelByName = new Map<string, string>();
+    const iconByName = new Map<string, React.ReactNode>();
     for (const menu of menus) {
         const element = menu.element;
         if (React.isValidElement(element)) {
-            const text = (element.props as { text?: unknown }).text;
-            if (typeof text === "string") {
-                labelByName.set(menu.name, text);
+            const props = element.props as { text?: unknown; icon?: React.ReactNode };
+            if (typeof props.text === "string") {
+                labelByName.set(menu.name, props.text);
+            }
+            if (props.icon) {
+                iconByName.set(menu.name, props.icon);
             }
         }
     }
@@ -62,12 +66,14 @@ const deriveNavigationCommands = (menus: MenuConfig[]): NavigationCommand[] => {
             continue;
         }
         const { to, text, icon } = menu.element.props;
+        // Leaf items often carry no icon of their own — inherit the parent section's.
+        const parentIcon = menu.parent ? iconByName.get(menu.parent) : undefined;
         commands.push({
             name: menu.name,
             label: text,
             section: menu.parent ? labelByName.get(menu.parent) : undefined,
             to,
-            icon
+            icon: icon ?? parentIcon
         });
     }
     return commands;
@@ -75,8 +81,14 @@ const deriveNavigationCommands = (menus: MenuConfig[]): NavigationCommand[] => {
 
 const Kbd = ({ children }: { children: React.ReactNode }) => (
     <span
-        className="inline-flex items-center justify-center rounded border border-neutral-dimmed bg-neutral-base text-neutral-muted"
-        style={{ minWidth: 20, height: 20, padding: "0 6px", fontSize: 11, gap: 2 }}
+        className="inline-flex items-center justify-center rounded-sm border border-neutral-dimmed bg-neutral-base text-xs text-neutral-muted"
+        style={{
+            minWidth: 20,
+            height: 20,
+            padding: "0 6px",
+            gap: 2,
+            fontFamily: "var(--font-family-mono, monospace)"
+        }}
     >
         {children}
     </span>
@@ -99,65 +111,30 @@ const CommandRow = ({ command, onRun }: CommandRowProps) => {
         <Command.Item
             value={value}
             onSelect={onRun}
-            className="data-[selected=true]:bg-neutral-dimmed"
-            style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                padding: "9px 12px",
-                borderRadius: 8,
-                cursor: "pointer"
-            }}
+            className="flex cursor-pointer items-center gap-sm rounded-md px-sm py-xs-plus data-[selected=true]:bg-neutral-dimmed"
         >
             <div
                 className={
-                    selected
-                        ? "bg-primary-subtle border border-primary"
-                        : "bg-neutral-subtle border border-neutral-dimmed"
+                    "grid size-xl shrink-0 place-items-center rounded-md border " +
+                    (selected
+                        ? "border-primary bg-primary-subtle"
+                        : "border-neutral-dimmed bg-neutral-subtle")
                 }
-                style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: 8,
-                    display: "grid",
-                    placeItems: "center",
-                    flex: "none"
-                }}
             >
-                {command.icon ?? <HintIcon element={<SearchIcon />} />}
+                {command.icon ?? null}
             </div>
-            <div style={{ minWidth: 0, flex: 1 }}>
-                <div
-                    className="text-neutral-primary truncate"
-                    style={{ fontSize: 14, fontWeight: 500 }}
-                >
+            <div className="min-w-0 flex-1">
+                <Text as="div" size="md" className="truncate font-medium text-neutral-primary">
                     {command.label}
-                </div>
+                </Text>
                 {command.section ? (
-                    <div
-                        className="text-neutral-muted truncate"
-                        style={{ fontSize: 12.5, marginTop: 1 }}
-                    >
+                    <Text as="div" size="sm" className="truncate text-neutral-muted">
                         {command.section}
-                    </div>
+                    </Text>
                 ) : null}
             </div>
             {selected ? (
-                <span
-                    className="bg-primary text-neutral-base"
-                    style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 5,
-                        height: 22,
-                        padding: "0 9px",
-                        borderRadius: 5,
-                        fontSize: 12,
-                        fontWeight: 500,
-                        marginLeft: "auto",
-                        flex: "none"
-                    }}
-                >
+                <span className="ml-auto inline-flex shrink-0 items-center gap-xs rounded-sm bg-primary px-xs py-xs text-sm font-medium text-neutral-base">
                     Open
                     <Icon icon={<ReturnIcon />} color={"neutral-base"} size={"xs"} label={""} />
                 </span>
@@ -206,13 +183,13 @@ export const CommandPalette = () => {
         <div
             role="presentation"
             onClick={close}
-            className="fixed inset-0 z-overlay flex items-start justify-center bg-neutral-dark/40"
+            className="fixed inset-0 z-overlay flex items-start justify-center bg-neutral-dark/50"
             style={{ padding: "13vh 16px 16px", backdropFilter: "blur(2px)" }}
         >
             <div
                 onClick={e => e.stopPropagation()}
-                className="flex w-full flex-col overflow-hidden border border-neutral-dimmed bg-neutral-base shadow-xxl"
-                style={{ maxWidth: 660, maxHeight: "64vh", borderRadius: 14 }}
+                className="flex w-full flex-col overflow-hidden rounded-lg border border-neutral-dimmed bg-neutral-base shadow-xxl"
+                style={{ maxWidth: 660, maxHeight: "64vh" }}
             >
                 <Command
                     label="Command palette"
@@ -224,15 +201,7 @@ export const CommandPalette = () => {
                         }
                     }}
                 >
-                    <div
-                        className="border-b border-neutral-subtle"
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 13,
-                            padding: "15px 18px"
-                        }}
-                    >
+                    <div className="flex items-center gap-sm border-b border-neutral-subtle px-md py-sm-plus">
                         <Icon
                             icon={<SearchIcon />}
                             color={"neutral-light"}
@@ -245,48 +214,28 @@ export const CommandPalette = () => {
                             onValueChange={setQuery}
                             spellCheck={false}
                             placeholder="Search for pages and actions…"
-                            className="text-neutral-primary"
-                            style={{
-                                flex: 1,
-                                minWidth: 0,
-                                border: 0,
-                                outline: 0,
-                                background: "transparent",
-                                fontSize: 18,
-                                lineHeight: "24px",
-                                padding: 0
-                            }}
+                            className="min-w-0 flex-1 border-0 bg-transparent text-lg text-neutral-primary outline-none"
                         />
                         <Kbd>esc</Kbd>
                     </div>
 
-                    <Command.List style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 6 }}>
+                    <Command.List
+                        className="p-xs-plus"
+                        style={{ flex: 1, minHeight: 0, overflowY: "auto" }}
+                    >
                         <Command.Empty>
-                            <div
-                                className="text-neutral-muted"
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    textAlign: "center",
-                                    padding: "46px 20px 50px"
-                                }}
-                            >
+                            <div className="flex flex-col items-center gap-md p-xl text-center text-neutral-muted">
                                 <HintIcon element={<SearchOffIcon />} />
-                                <div
-                                    className="text-neutral-strong"
-                                    style={{
-                                        fontSize: 15,
-                                        fontWeight: 600,
-                                        marginTop: 10,
-                                        marginBottom: 4
-                                    }}
+                                <Text
+                                    as="div"
+                                    size="lg"
+                                    className="font-semibold text-neutral-strong"
                                 >
                                     {`No results for “${query}”`}
-                                </div>
-                                <div style={{ fontSize: 13 }}>
+                                </Text>
+                                <Text as="div" size="sm">
                                     Try a page name, or an action like “new entry”.
-                                </div>
+                                </Text>
                             </div>
                         </Command.Empty>
 
@@ -294,15 +243,8 @@ export const CommandPalette = () => {
                             <Command.Group
                                 heading={
                                     <span
-                                        className="text-neutral-muted"
-                                        style={{
-                                            display: "block",
-                                            fontSize: 11,
-                                            fontWeight: 600,
-                                            letterSpacing: ".06em",
-                                            textTransform: "uppercase",
-                                            padding: "13px 12px 5px"
-                                        }}
+                                        className="block px-sm pb-xs pt-sm text-xs font-semibold uppercase text-neutral-muted"
+                                        style={{ letterSpacing: ".06em" }}
                                     >
                                         Navigation
                                     </span>
@@ -320,56 +262,22 @@ export const CommandPalette = () => {
                     </Command.List>
                 </Command>
 
-                <div
-                    className="border-t border-neutral-subtle bg-neutral-subtle text-neutral-muted"
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: 12,
-                        padding: "9px 14px"
-                    }}
-                >
-                    <span style={{ fontSize: 12 }}>Webiny command palette</span>
-                    <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                        <span
-                            style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: 5,
-                                fontSize: 11.5
-                            }}
-                        >
+                <div className="flex items-center justify-between gap-sm border-t border-neutral-subtle bg-neutral-subtle px-sm py-xs-plus text-neutral-muted">
+                    <Text size="sm">Webiny command palette</Text>
+                    <div className="flex items-center gap-md">
+                        <Text size="sm" className="inline-flex items-center gap-xs">
                             <Kbd>
                                 <HintIcon element={<ArrowUpIcon />} />
                                 <HintIcon element={<ArrowDownIcon />} />
                             </Kbd>
                             Navigate
-                        </span>
-                        <span
-                            style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: 5,
-                                fontSize: 11.5
-                            }}
-                        >
+                        </Text>
+                        <Text size="sm" className="inline-flex items-center gap-xs">
                             <Kbd>
                                 <HintIcon element={<ReturnIcon />} />
                             </Kbd>
                             Select
-                        </span>
-                        <span
-                            style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: 5,
-                                fontSize: 11.5
-                            }}
-                        >
-                            <Kbd>⌘K</Kbd>
-                            Actions
-                        </span>
+                        </Text>
                     </div>
                 </div>
             </div>
