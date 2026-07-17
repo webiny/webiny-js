@@ -5,7 +5,7 @@ import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockT
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { Container } from "@webiny/di";
-import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
+import { NoopCloudfrontInvalidateCacheTaskDefinition } from "./noopCloudfrontInvalidateCacheTask.js";
 import { WebsiteBuilderFeature } from "~/index.js";
 import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
 import { createWbSdk } from "~tests/utils/createWbSdk.js";
@@ -23,7 +23,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         // identity === null → anonymous (handled natively by the shared harness).
         plugins: [
             (container: Container) => {
-                container.register(InvalidateCloudfrontCacheTaskDefinition);
+                container.register(NoopCloudfrontInvalidateCacheTaskDefinition);
             },
             ...[params.plugins].flat(Infinity as 1).filter(Boolean)
         ],
