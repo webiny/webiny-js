@@ -11,6 +11,7 @@
     "storage-operations",
     "postgresql",
     "opensearch",
+    "pg-os",
     "cms:pg-os"
   ],
   "repository": {

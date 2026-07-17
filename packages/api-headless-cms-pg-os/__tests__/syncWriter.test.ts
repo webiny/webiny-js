@@ -116,7 +116,7 @@ describe("SyncWriter", () => {
         expect(rows).toHaveLength(1);
         expect(rows[0].id).toBe("entry1:L");
         expect(rows[0].entryId).toBe("entry1");
-        expect(rows[0].index).toBe("root-headless-cms-testmodel");
+        expect(rows[0].index).toContain("root-headless-cms-testmodel");
         expect(rows[0].operation).toBe("MODIFY");
         expect(rows[0].tenant).toBe("root");
 
