@@ -33,3 +33,8 @@ export {
     CmsEntryOpenSearchIndexDeleteFeature,
     CmsEntryOpenSearchIndexDeleteImpl
 } from "./features/CmsEntryOpenSearchIndexDelete/index.js";
+export {
+    CmsEntryOpenSearchBodyBuilder,
+    CmsEntryOpenSearchBodyBuilderFeature,
+    CmsEntryOpenSearchBodyBuilderImpl
+} from "./features/CmsEntryOpenSearchBodyBuilder/index.js";

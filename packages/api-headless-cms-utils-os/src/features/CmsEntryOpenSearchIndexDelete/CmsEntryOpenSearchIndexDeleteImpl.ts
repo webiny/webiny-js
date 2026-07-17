@@ -22,16 +22,15 @@ class CmsEntryOpenSearchIndexDeleteClass implements CmsEntryOpenSearchIndexDelet
                 ignore_unavailable: true
             });
         } catch (ex) {
-            console.log(
-                `Could not delete Elasticsearch index "${index}". Please do it manually.`
-            );
+            console.log(`Could not delete Elasticsearch index "${index}". Please do it manually.`);
             console.log(ex.message);
         }
     }
 }
 
-export const CmsEntryOpenSearchIndexDeleteImpl =
-    CmsEntryOpenSearchIndexDelete.createImplementation({
+export const CmsEntryOpenSearchIndexDeleteImpl = CmsEntryOpenSearchIndexDelete.createImplementation(
+    {
         implementation: CmsEntryOpenSearchIndexDeleteClass,
         dependencies: [OpenSearchClient]
-    });
+    }
+);

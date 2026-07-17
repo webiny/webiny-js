@@ -88,8 +88,9 @@ class CmsEntryOpenSearchIndexCreateClass implements CmsEntryOpenSearchIndexCreat
     }
 }
 
-export const CmsEntryOpenSearchIndexCreateImpl =
-    CmsEntryOpenSearchIndexCreate.createImplementation({
+export const CmsEntryOpenSearchIndexCreateImpl = CmsEntryOpenSearchIndexCreate.createImplementation(
+    {
         implementation: CmsEntryOpenSearchIndexCreateClass,
         dependencies: [OpenSearchClient, [CmsEntryOpenSearchIndex, { multiple: true }]]
-    });
+    }
+);

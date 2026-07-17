@@ -26,24 +26,16 @@ import {
     getTotalCount,
     type OpenSearchSearchResponse
 } from "@webiny/api-opensearch";
-import type { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import type { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { createEntriesStorageOperations as createSqlEntriesStorageOperations } from "@webiny/api-headless-cms-sql/operations/entry/index.js";
 import type { EntryTableManager } from "@webiny/api-headless-cms-sql/features/entryTableManager/abstractions.js";
 import { createStorageModelAccessor } from "@webiny/api-headless-cms-storage";
-import { createElasticsearchBody } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/body.js";
+import { CmsEntryOpenSearchBodyBuilder } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyBuilder/index.js";
 import { shouldIgnoreEsResponseError } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/shouldIgnoreEsResponseError.js";
 import { extractEntriesFromIndex } from "@webiny/api-headless-cms-utils-os/helpers/entryIndexHelpers.js";
 import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import type { CmsIndexEntry } from "@webiny/api-headless-cms-utils-os/types.js";
 import type { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
-import type { CmsEntryOpenSearchFilterRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFilter/index.js";
-import type { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
-import type { CmsEntryOpenSearchSortModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchSortModifier/index.js";
-import type { CmsEntryOpenSearchQueryModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchQueryModifier/index.js";
-import type { CmsEntryOpenSearchValueSearchRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueSearch/index.js";
-import type { CmsEntryOpenSearchFullTextSearch } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFullTextSearch/index.js";
 import type { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
 import type { SyncTableManager } from "~/features/syncTableManager/abstractions.js";
 import { createSyncWriter } from "./syncWriter.js";
@@ -57,15 +49,7 @@ interface CreateEntriesStorageOperationsParams {
     syncTableManager: SyncTableManager.Interface;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
-    filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
     compressionHandler: CompressionHandler.Interface;
-    bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
-    sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
-    queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
-    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
-    fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
-    operatorRegistry: OpenSearchQueryBuilderOperatorRegistry.Interface;
-    fieldFactory: OpenSearchFieldFactory.Interface;
 }
 
 /*
@@ -92,16 +76,10 @@ export const createEntriesStorageOperations = (
         syncTableManager,
         fieldRegistry,
         fieldIndexRegistry,
-        filterRegistry,
-        compressionHandler,
-        bodyModifiers,
-        sortModifiers,
-        queryModifiers,
-        valueSearchRegistry,
-        fullTextSearches,
-        operatorRegistry,
-        fieldFactory
+        compressionHandler
     } = params;
+
+    const bodyBuilder = container.resolve(CmsEntryOpenSearchBodyBuilder);
 
     const sqlOps = createSqlEntriesStorageOperations({
         knex: { client: knex },
@@ -322,23 +300,13 @@ export const createEntriesStorageOperations = (
 
         const { index } = configurations.es({ model });
 
-        const body = createElasticsearchBody({
+        const body = bodyBuilder.build({
             model,
-            fieldRegistry,
-            fieldIndexRegistry,
-            bodyModifiers,
-            sortModifiers,
-            queryModifiers,
-            valueSearchRegistry,
-            fullTextSearches,
-            filterRegistry,
-            fieldFactory,
             params: {
                 ...listParams,
                 limit,
                 after: decodeCursor(listParams.after)
-            },
-            operatorRegistry
+            }
         });
 
         let response: OpenSearchSearchResponse;
@@ -401,19 +369,9 @@ export const createEntriesStorageOperations = (
             return [];
         }
 
-        const initialBody = createElasticsearchBody({
+        const initialBody = bodyBuilder.build({
             model,
-            fieldRegistry,
-            fieldIndexRegistry,
-            bodyModifiers,
-            sortModifiers,
-            queryModifiers,
-            valueSearchRegistry,
-            fullTextSearches,
-            filterRegistry,
-            fieldFactory,
-            params: { limit: 1, where },
-            operatorRegistry
+            params: { limit: 1, where }
         });
 
         const body = {

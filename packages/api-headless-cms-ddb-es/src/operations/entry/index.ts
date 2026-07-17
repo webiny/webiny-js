@@ -40,8 +40,6 @@ import {
 } from "@webiny/api-opensearch";
 import type { Container } from "@webiny/di";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
-import type { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import type { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
 import { DataLoadersHandler } from "./dataLoaders.js";
 import {
@@ -60,7 +58,7 @@ import {
 } from "@webiny/api-opensearch/types.js";
 import type { CmsEntryStorageOperations } from "~/types.js";
 import type { CmsIndexEntry } from "@webiny/api-headless-cms-utils-os/types.js";
-import { createElasticsearchBody } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/body.js";
+import { CmsEntryOpenSearchBodyBuilder } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyBuilder/index.js";
 import { shouldIgnoreEsResponseError } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/shouldIgnoreEsResponseError.js";
 import { createTransformer } from "./transformations/index.js";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys.js";
@@ -73,32 +71,18 @@ import {
 import type { IEntryEntity, IEntryEntityAttributes } from "~/definitions/types.js";
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
-import type { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
-import type { CmsEntryOpenSearchSortModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchSortModifier/index.js";
 import type { CmsEntryOpenSearchValuesModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValuesModifier/index.js";
-import type { CmsEntryOpenSearchQueryModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchQueryModifier/index.js";
-import type { CmsEntryOpenSearchValueSearchRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueSearch/index.js";
-import type { CmsEntryOpenSearchFullTextSearch } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFullTextSearch/index.js";
 import type { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
-import type { CmsEntryOpenSearchFilterRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFilter/index.js";
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
     esEntity: IElasticsearchEntity;
     elasticsearch: Client;
     container: Container;
-    operatorRegistry: OpenSearchQueryBuilderOperatorRegistry.Interface;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
     compressionHandler: CompressionHandler.Interface;
-    bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
-    sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
-    queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
-    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
-    fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
     valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
-    filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
-    fieldFactory: OpenSearchFieldFactory.Interface;
 }
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
@@ -129,19 +113,13 @@ export const createEntriesStorageOperations = (
         esEntity,
         elasticsearch,
         container,
-        operatorRegistry,
         fieldRegistry,
         fieldIndexRegistry,
         compressionHandler,
-        bodyModifiers,
-        sortModifiers,
-        queryModifiers,
-        valueSearchRegistry,
-        fullTextSearches,
-        valuesModifiers,
-        filterRegistry,
-        fieldFactory
+        valuesModifiers
     } = params;
+
+    const bodyBuilder = container.resolve(CmsEntryOpenSearchBodyBuilder);
 
     let storageModelProvider: CmsStorageModelProvider.Interface | undefined;
     const getStorageModelProvider = () => {
@@ -1361,23 +1339,13 @@ export const createEntriesStorageOperations = (
             model
         });
 
-        const body = createElasticsearchBody({
+        const body = bodyBuilder.build({
             model,
-            fieldRegistry,
-            fieldIndexRegistry,
-            bodyModifiers,
-            sortModifiers,
-            queryModifiers,
-            valueSearchRegistry,
-            fullTextSearches,
-            filterRegistry,
-            fieldFactory,
             params: {
                 ...params,
                 limit,
                 after: decodeCursor(params.after)
-            },
-            operatorRegistry
+            }
         });
 
         let response: OpenSearchSearchResponse;
@@ -2078,22 +2046,12 @@ export const createEntriesStorageOperations = (
             model
         });
 
-        const initialBody = createElasticsearchBody({
+        const initialBody = bodyBuilder.build({
             model,
-            fieldRegistry,
-            fieldIndexRegistry,
-            bodyModifiers,
-            sortModifiers,
-            queryModifiers,
-            valueSearchRegistry,
-            fullTextSearches,
-            filterRegistry,
-            fieldFactory,
             params: {
                 limit: 1,
                 where
-            },
-            operatorRegistry
+            }
         });
 
         const field = model.fields.find(f => f.fieldId === fieldId);

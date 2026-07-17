@@ -8,19 +8,9 @@ import {
     CmsEntryOpenSearchFieldIndexFeature,
     CmsEntryOpenSearchFieldIndexRegistry
 } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
-import {
-    CmsEntryOpenSearchFilterFeature,
-    CmsEntryOpenSearchFilterRegistry
-} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFilter/index.js";
+import { CmsEntryOpenSearchFilterFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFilter/index.js";
 import { CmsEntryOpenSearchIndexFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndex/index.js";
-import {
-    CmsEntryOpenSearchValueSearchFeature,
-    CmsEntryOpenSearchValueSearchRegistry
-} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueSearch/index.js";
-import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
-import { CmsEntryOpenSearchSortModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchSortModifier/index.js";
-import { CmsEntryOpenSearchQueryModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchQueryModifier/index.js";
-import { CmsEntryOpenSearchFullTextSearch } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFullTextSearch/index.js";
+import { CmsEntryOpenSearchValueSearchFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueSearch/index.js";
 import {
     CmsEntryOpenSearchIndexCreate,
     CmsEntryOpenSearchIndexCreateFeature
@@ -29,16 +19,13 @@ import {
     CmsEntryOpenSearchIndexDelete,
     CmsEntryOpenSearchIndexDeleteFeature
 } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexDelete/index.js";
+import { CmsEntryOpenSearchBodyBuilderFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyBuilder/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
-import {
-    OpenSearchClient,
-    OpenSearchFieldFactory,
-    OpenSearchQueryBuilderOperatorRegistry
-} from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import {
     TableNameResolverConfig,
     TableNameResolver
@@ -84,14 +71,6 @@ const createPgOsStorageOperations = (
     const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
     const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
     const compressionHandler = container.resolve(CompressionHandler);
-    const bodyModifiers = container.resolveAll(CmsEntryOpenSearchBodyModifier);
-    const sortModifiers = container.resolveAll(CmsEntryOpenSearchSortModifier);
-    const queryModifiers = container.resolveAll(CmsEntryOpenSearchQueryModifier);
-    const valueSearchRegistry = container.resolve(CmsEntryOpenSearchValueSearchRegistry);
-    const fullTextSearches = container.resolveAll(CmsEntryOpenSearchFullTextSearch);
-    const filterRegistry = container.resolve(CmsEntryOpenSearchFilterRegistry);
-    const operatorRegistry = container.resolve(OpenSearchQueryBuilderOperatorRegistry);
-    const fieldFactory = container.resolve(OpenSearchFieldFactory);
 
     plugins.register([
         createFilterCreatePlugins(),
@@ -144,15 +123,7 @@ const createPgOsStorageOperations = (
         syncTableManager,
         fieldRegistry,
         fieldIndexRegistry,
-        filterRegistry,
-        compressionHandler,
-        bodyModifiers,
-        sortModifiers,
-        queryModifiers,
-        valueSearchRegistry,
-        fullTextSearches,
-        operatorRegistry,
-        fieldFactory
+        compressionHandler
     });
 
     return {
@@ -195,6 +166,7 @@ export const HeadlessCmsPgOsFeature = createFeature({
         CmsEntryOpenSearchIndexFeature.register(container);
         CmsEntryOpenSearchIndexCreateFeature.register(container);
         CmsEntryOpenSearchIndexDeleteFeature.register(container);
+        CmsEntryOpenSearchBodyBuilderFeature.register(container);
         CmsEntryOpenSearchValueSearchFeature.register(container);
         container.register(PgOsStorageOperationsFactory).inSingletonScope();
     }
