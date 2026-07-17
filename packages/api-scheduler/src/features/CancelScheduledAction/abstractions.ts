@@ -9,7 +9,7 @@ import {
 /**
  * CancelScheduledActionUseCase - Cancel a scheduled action
  *
- * Cancels both the CMS entry and the EventBridge schedule.
+ * Cancels both the CMS entry and the scheduler timer.
  * Used when a user manually cancels a scheduled action or when business logic
  * determines the action should no longer execute.
  */

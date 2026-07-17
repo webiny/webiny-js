@@ -40,9 +40,9 @@ interface ICreateScheduleParams<T extends GenericRecord> {
  * Flow:
  * 1. Generate unique schedule ID from namespace+actionType+targetId
  * 2. Check if schedule already exists (for rescheduling logic)
- * 3. If exists: UPDATE schedule entry + EventBridge schedule
- * 4. If new: CREATE schedule entry + EventBridge schedule
- * 5. Rollback schedule entry if EventBridge fails
+ * 3. If exists: UPDATE schedule entry + scheduler timer
+ * 4. If new: CREATE schedule entry + scheduler timer
+ * 5. Rollback schedule entry if the scheduler fails
  */
 class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -70,7 +70,8 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         } else if (params.immediately) {
             // If the action should be executed immediately, we set the scheduleFor to the current date.
             // Calculate the soonest possible execution time.
-            // Add at least 90 seconds of buffer to ensure EventBridge can process the schedule.
+            // Add at least 90 seconds of buffer to give the scheduler backend time to process the
+            // schedule (e.g. AWS EventBridge has a minimum lead time).
             scheduleFor = new Date(Date.now() + 90000);
         }
 
@@ -190,7 +191,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
             error: undefined
         };
 
-        // Create EventBridge schedule
+        // Create the scheduler timer
         try {
             await this.schedulerService.create({
                 id: scheduleId,
@@ -199,8 +200,8 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
                 scheduleFor: new Date(scheduleFor)
             });
         } catch (error) {
-            // Rollback - delete CMS entry if EventBridge fails
-            console.error(`Failed to create EventBridge schedule: ${scheduleId}. Rolling back...`);
+            // Rollback - delete CMS entry if the scheduler fails
+            console.error(`Failed to create the schedule: ${scheduleId}. Rolling back...`);
 
             await this.deleteEntryUseCase.execute(this.model, scheduleId, {
                 force: true,
@@ -251,7 +252,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
             );
         }
 
-        // Update EventBridge schedule
+        // Update the scheduler timer
         try {
             await this.schedulerService.update({
                 id: existing.id,

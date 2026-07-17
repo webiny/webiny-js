@@ -1,8 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { ContextPlugin } from "@webiny/api";
-import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { runRequestContextInitializers } from "@webiny/event-handler-core";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -112,22 +110,18 @@ describe("WriteFileMetadata (asset-delivery metadata write)", () => {
         expect(entry!.value.bucketKey).toBe(`tenants/acme/files/${file.key}`);
     });
 
-    // Reproduces the DEPLOYED wiring: WriteFileMetadataFeature is registered by a legacy
-    // ContextPlugin bridged as a RequestContextInitializer (via
-    // registerLegacyPluginsViaGqlContextualSchema), which the HTTP layer runs before the resolver.
-    // If this path fails to register/run the handler, uploads succeed but delivery 404s.
-    it("writes when the handler is wired via the ContextPlugin → RequestContextInitializer bridge", async () => {
+    // Reproduces the DEPLOYED wiring: FileManagerS3Feature registers WriteFileMetadataFeature, which
+    // contributes a RequestContextInitializer that the HTTP layer runs before the resolver. If this
+    // path fails to register/run the handler, uploads succeed but delivery 404s.
+    it("writes when the handler is wired via WriteFileMetadataFeature's RequestContextInitializer", async () => {
         captured.length = 0;
         const container = new Container();
         container.registerInstance(GlobalKeyValueStore, createFakeKeyValueStore());
         container.registerInstance(TenantContext, createFakeTenantContext("root"));
         EventPublisherFeature.register(container);
 
-        // Mimic FileManagerS3Feature's contextPlugin registering the write feature.
-        const contextPlugin = new ContextPlugin((ctx: any) => {
-            WriteFileMetadataFeature.register(ctx.container);
-        });
-        registerLegacyPluginsViaGqlContextualSchema(container, [contextPlugin]);
+        // Mimic FileManagerS3Feature registering the write feature (DI-native, direct).
+        WriteFileMetadataFeature.register(container);
 
         // The HTTP layer runs post-auth initializers before dispatching to the resolver.
         await runRequestContextInitializers(container);
