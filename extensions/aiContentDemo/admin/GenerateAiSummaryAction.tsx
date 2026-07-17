@@ -7,17 +7,29 @@ import { useModel } from "webiny/admin/cms";
 import { BulkActionFeature, useContentEntriesPresenter } from "webiny/admin/cms/entry/list";
 import { GetSettingsFeature } from "webiny/admin/ai-powerups";
 
-interface Persona {
+interface Preset {
     id: string;
     name: string;
 }
 
+interface AiContext {
+    readers: Preset[];
+    writers: Preset[];
+    projects: Preset[];
+}
+
+// One of these ids is forwarded to the backend as the AI Power Ups context.
+type ContextChoice =
+    | { projectId: string }
+    | { writerPersonaId: string }
+    | { readerPersonaId: string }
+    | undefined;
+
 /**
- * "Generate AI summary" bulk-action button, as a dropdown of Writer Personas.
- *
- * Personas come from AI Power Ups settings (GetSettingsFeature). Picking one triggers the
- * background task with that persona's id, so the AI follows the user's configured
- * instructions/tone. "Default" runs with no persona.
+ * "Generate AI summary" bulk-action button, as a dropdown of AI Power Ups contexts:
+ * Projects (bundled instructions + default personas), Writer Personas (tone) and Reader
+ * Personas (audience). Picking one triggers the background task with that context, so the
+ * AI follows the user's configured setup. "Default" runs with none.
  */
 export const GenerateAiSummaryAction = observer(() => {
     const { model } = useModel();
@@ -27,16 +39,21 @@ export const GenerateAiSummaryAction = observer(() => {
     const { useCase: bulkAction } = useFeature(BulkActionFeature);
     const { useCase: getSettings } = useFeature(GetSettingsFeature);
 
-    const [personas, setPersonas] = useState<Persona[]>([]);
+    const [ctx, setCtx] = useState<AiContext>({ readers: [], writers: [], projects: [] });
 
     useEffect(() => {
         let active = true;
         getSettings
             .execute()
             .then(settings => {
-                if (active) {
-                    setPersonas(settings.writerPersonas?.presets ?? []);
+                if (!active) {
+                    return;
                 }
+                setCtx({
+                    readers: settings.readerPersonas?.presets ?? [],
+                    writers: settings.writerPersonas?.presets ?? [],
+                    projects: settings.projects?.presets ?? []
+                });
             })
             .catch(() => {
                 // AI Power Ups may not be configured — just show "Default".
@@ -49,10 +66,10 @@ export const GenerateAiSummaryAction = observer(() => {
     const selection = presenter.list.vm.selection;
     const selectedItems = presenter.list.vm.rows.filter(row => selection.selectedIds.has(row.id));
 
-    const run = (writerPersonaId?: string) =>
+    const run = (choice: ContextChoice, label: string) =>
         showConfirmationDialog({
             title: "Generate AI summary",
-            message: `Generate an AI summary for ${selection.label}${writerPersonaId ? " using the selected persona" : ""}? This runs as a background task, so you can keep working while it processes.`,
+            message: `Generate an AI summary for ${selection.label} (${label})? This runs as a background task, so you can keep working while it processes.`,
             loadingLabel: "Starting background task…",
             execute: async () => {
                 const where = selection.allSelected
@@ -63,7 +80,7 @@ export const GenerateAiSummaryAction = observer(() => {
                     model,
                     action: "GenerateAiSummary",
                     where,
-                    data: writerPersonaId ? { writerPersonaId } : undefined
+                    data: choice
                 });
 
                 presenter.list.actions.selection.deselectAll();
@@ -85,14 +102,52 @@ export const GenerateAiSummaryAction = observer(() => {
                 />
             }
         >
-            <DropdownMenu.Item text={"Default (no persona)"} onClick={() => run()} />
-            {personas.map(persona => (
-                <DropdownMenu.Item
-                    key={persona.id}
-                    text={persona.name}
-                    onClick={() => run(persona.id)}
-                />
-            ))}
+            <DropdownMenu.Item
+                text={"Default (no context)"}
+                onClick={() => run(undefined, "default")}
+            />
+
+            {ctx.projects.length > 0 ? (
+                <>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Label text={"Projects"} />
+                    {ctx.projects.map(p => (
+                        <DropdownMenu.Item
+                            key={p.id}
+                            text={p.name}
+                            onClick={() => run({ projectId: p.id }, `project: ${p.name}`)}
+                        />
+                    ))}
+                </>
+            ) : null}
+
+            {ctx.writers.length > 0 ? (
+                <>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Label text={"Writer personas"} />
+                    {ctx.writers.map(p => (
+                        <DropdownMenu.Item
+                            key={p.id}
+                            text={p.name}
+                            onClick={() => run({ writerPersonaId: p.id }, `writer: ${p.name}`)}
+                        />
+                    ))}
+                </>
+            ) : null}
+
+            {ctx.readers.length > 0 ? (
+                <>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Label text={"Reader personas"} />
+                    {ctx.readers.map(p => (
+                        <DropdownMenu.Item
+                            key={p.id}
+                            text={p.name}
+                            onClick={() => run({ readerPersonaId: p.id }, `reader: ${p.name}`)}
+                        />
+                    ))}
+                </>
+            ) : null}
         </DropdownMenu>
     );
 });

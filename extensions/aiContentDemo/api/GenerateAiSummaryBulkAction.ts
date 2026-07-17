@@ -51,14 +51,19 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
         }
         const entry = revision.value;
 
-        // Optional: pass a Writer Persona id (configured in AI Power Ups) to apply the
-        // user's tone/instructions. Forwarded from the Admin action's `data`.
+        // Optional AI Power Ups context, forwarded from the Admin action's `data`:
+        // a Writer Persona (tone), a Reader Persona (audience), or a Project (a bundled
+        // prompting context with its own instructions + default personas).
         const writerPersonaId = (params.data?.writerPersonaId as string) || undefined;
+        const readerPersonaId = (params.data?.readerPersonaId as string) || undefined;
+        const projectId = (params.data?.projectId as string) || undefined;
 
         const result = await this.generateContent.execute({
             modelId: model.modelId,
             prompt: `Write a concise, single-sentence marketing summary for the product "${entry.values.name}". Fill only the "aiSummary" field.`,
-            writerPersonaId
+            writerPersonaId,
+            readerPersonaId,
+            projectId
         });
         if (result.isFail()) {
             throw result.error;

@@ -33,10 +33,16 @@ Model fields (on `../models/ProductModel.ts`): `aiSummary` (the generated text) 
 
 ## Requirements
 
-The button is a dropdown of the Writer Personas configured in AI Power Ups (fetched via
-`GetSettingsFeature`, exposed at `webiny/admin/ai-powerups`). Pick one to apply the user's
-configured tone/instructions, or "Default" for none. The chosen `writerPersonaId` is
-passed through the action `data` to the backend.
+The button is a dropdown of the AI Power Ups contexts configured in settings, fetched via
+`GetSettingsFeature` (exposed at `webiny/admin/ai-powerups`), grouped into:
+
+- **Projects** — a bundled prompting context (its own instructions + default personas + files)
+- **Writer Personas** — how the text should be written (tone)
+- **Reader Personas** — who it's written for (audience)
+
+Pick one (or "Default" for none); the chosen `projectId` / `writerPersonaId` /
+`readerPersonaId` is forwarded through the action `data` to the backend, which passes it
+to `CmsGenerateEntryContentUseCase`.
 
 AI Power Ups must be configured in the target environment (a provider added in its
 settings). Without it, generation fails with: "No AI provider configured…". To apply a
