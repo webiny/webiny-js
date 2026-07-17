@@ -20,7 +20,10 @@ import {
 } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexCreate/index.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch";
-import { deleteElasticsearchIndex } from "@webiny/api-headless-cms-utils-os/elasticsearch/deleteElasticsearchIndex.js";
+import {
+    CmsEntryOpenSearchIndexDelete,
+    CmsEntryOpenSearchIndexDeleteFeature
+} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexDelete/index.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
@@ -110,13 +113,12 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         }
     }));
 
+    const indexDelete = container.resolve(CmsEntryOpenSearchIndexDelete);
+
     container.registerFactory(ModelAfterDeleteEventHandler, () => ({
         async handle(event) {
             const { model } = event.payload;
-            await deleteElasticsearchIndex({
-                client: elasticsearch,
-                model
-            });
+            await indexDelete.execute({ model });
         }
     }));
 
@@ -205,6 +207,7 @@ export const HeadlessCmsDdbEsFeature = createFeature({
         CmsEntryOpenSearchFilterFeature.register(container);
         CmsEntryOpenSearchIndexFeature.register(container);
         CmsEntryOpenSearchIndexCreateFeature.register(container);
+        CmsEntryOpenSearchIndexDeleteFeature.register(container);
         CmsEntryOpenSearchValueSearchFeature.register(container);
         container.register(CreateElasticsearchIndexTask);
         container.register(OpenSearchStorageOperationsFactory).inSingletonScope();

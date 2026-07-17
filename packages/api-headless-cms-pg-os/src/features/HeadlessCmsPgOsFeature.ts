@@ -25,7 +25,10 @@ import {
     CmsEntryOpenSearchIndexCreate,
     CmsEntryOpenSearchIndexCreateFeature
 } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexCreate/index.js";
-import { deleteElasticsearchIndex } from "@webiny/api-headless-cms-utils-os/elasticsearch/deleteElasticsearchIndex.js";
+import {
+    CmsEntryOpenSearchIndexDelete,
+    CmsEntryOpenSearchIndexDeleteFeature
+} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexDelete/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
@@ -113,13 +116,12 @@ const createPgOsStorageOperations = (
         }
     }));
 
+    const indexDelete = container.resolve(CmsEntryOpenSearchIndexDelete);
+
     container.registerFactory(ModelAfterDeleteEventHandler, () => ({
         async handle(event) {
             const { model } = event.payload;
-            await deleteElasticsearchIndex({
-                client: elasticsearch,
-                model
-            });
+            await indexDelete.execute({ model });
         }
     }));
 
@@ -192,6 +194,7 @@ export const HeadlessCmsPgOsFeature = createFeature({
         CmsEntryOpenSearchFilterFeature.register(container);
         CmsEntryOpenSearchIndexFeature.register(container);
         CmsEntryOpenSearchIndexCreateFeature.register(container);
+        CmsEntryOpenSearchIndexDeleteFeature.register(container);
         CmsEntryOpenSearchValueSearchFeature.register(container);
         container.register(PgOsStorageOperationsFactory).inSingletonScope();
     }
