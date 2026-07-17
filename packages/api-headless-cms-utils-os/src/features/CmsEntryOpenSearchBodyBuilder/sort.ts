@@ -4,7 +4,7 @@ import type { OpenSearchField } from "@webiny/api-opensearch/exports/api/opensea
 import type { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import type { ModelFields } from "./types.js";
+import type { ModelFields } from "~/operations/entry/elasticsearch/types.js";
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword.js";
 import { NoValueContainer } from "~/values/NoValueContainer.js";
 import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
