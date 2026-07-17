@@ -40,7 +40,12 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
         params: EntriesBulkAction.LoadDataParams
     ): Promise<EntriesBulkAction.LoadDataResult> {
         const where: Record<string, unknown> = { ...params.where, "values.aiSummarized_not": true };
-        return (await this.listEntries.execute(model, { ...params, where })).value;
+        const value = (await this.listEntries.execute(model, { ...params, where })).value;
+        // TEMP DIAGNOSTIC — remove after debugging.
+        this.logger.info(
+            `[GenerateAiSummary] loadData: ${value.entries.length} entrie(s) | where: ${JSON.stringify(where)} | total: ${value.meta?.totalCount}`
+        );
+        return value;
     }
 
     async processData(
@@ -48,6 +53,8 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
         params: EntriesBulkAction.ProcessParams
     ): Promise<void> {
         const entryId = params.id.split("#")[0];
+        // TEMP DIAGNOSTIC — remove after debugging.
+        this.logger.info(`[GenerateAiSummary] processData start: ${params.id}`);
         const revision = await this.getRevision.execute(model, { id: entryId });
         if (revision.isFail()) {
             throw revision.error;
@@ -68,6 +75,12 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
             readerPersonaId,
             projectId
         });
+        // TEMP DIAGNOSTIC — remove after debugging.
+        this.logger.info(
+            `[GenerateAiSummary] generate ${result.isFail() ? "FAILED" : "ok"}${
+                result.isFail() ? ": " + (result.error as Error).message : ""
+            } | output: ${result.isOk() ? JSON.stringify(result.value.output).slice(0, 300) : "-"}`
+        );
         if (result.isFail()) {
             throw result.error;
         }
