@@ -19,7 +19,7 @@ import { ToolsFeature } from "~/features/tools/feature.js";
 import { TextToLexicalToolFeature } from "~/presentation/textToLexicalTool/feature.js";
 import { ConfirmationFeature } from "~/features/confirmation/feature.js";
 import { ClipboardFeature } from "~/features/clipboard/feature.js";
-import { resolveApiUrl, resolveGraphqlUrl } from "./resolveApiUrl.js";
+import { resolveApiUrl, resolveGraphqlUrl, resolveWebsocketUrl } from "./resolveApiUrl.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 
@@ -40,7 +40,7 @@ export function createRootContainer() {
         trashBinRetentionPeriodDays: trashBinRetention,
         wcpProjectId:
             process.env.REACT_APP_WEBINY_PROJECT_ID || process.env.REACT_APP_WCP_PROJECT_ID,
-        websocketUrl: String(process.env.REACT_APP_WEBSOCKET_URL)
+        websocketUrl: resolveWebsocketUrl()
     });
 
     // Router
