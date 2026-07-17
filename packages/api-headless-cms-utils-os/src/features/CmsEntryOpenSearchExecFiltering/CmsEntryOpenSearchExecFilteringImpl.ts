@@ -1,13 +1,15 @@
-import { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 import { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter/index.js";
+import { CmsEntryOpenSearchOperatorList } from "~/features/CmsEntryOpenSearchOperatorList/index.js";
+import { CmsEntryOpenSearchValueTransformer } from "~/features/CmsEntryOpenSearchValueTransformer/index.js";
+import { CmsEntryOpenSearchFieldPathFactory } from "~/features/CmsEntryOpenSearchFieldPathFactory/index.js";
 import { createExecFiltering } from "~/operations/entry/elasticsearch/filtering/index.js";
 import { CmsEntryOpenSearchExecFiltering } from "./abstractions.js";
 
 class CmsEntryOpenSearchExecFilteringClass implements CmsEntryOpenSearchExecFiltering.Interface {
     public constructor(
-        private readonly operatorRegistry: OpenSearchQueryBuilderOperatorRegistry.Interface,
-        private readonly valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface,
+        private readonly operatorList: CmsEntryOpenSearchOperatorList.Interface,
+        private readonly valueTransformer: CmsEntryOpenSearchValueTransformer.Interface,
+        private readonly fieldPathFactory: CmsEntryOpenSearchFieldPathFactory.Interface,
         private readonly filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface
     ) {}
 
@@ -17,8 +19,9 @@ class CmsEntryOpenSearchExecFilteringClass implements CmsEntryOpenSearchExecFilt
         const execFiltering = createExecFiltering({
             model,
             fields,
-            operatorRegistry: this.operatorRegistry,
-            valueSearchRegistry: this.valueSearchRegistry,
+            operatorList: this.operatorList,
+            valueTransformer: this.valueTransformer,
+            fieldPathFactory: this.fieldPathFactory,
             filterRegistry: this.filterRegistry
         });
 
@@ -30,8 +33,9 @@ export const CmsEntryOpenSearchExecFilteringImpl =
     CmsEntryOpenSearchExecFiltering.createImplementation({
         implementation: CmsEntryOpenSearchExecFilteringClass,
         dependencies: [
-            OpenSearchQueryBuilderOperatorRegistry,
-            CmsEntryOpenSearchValueSearchRegistry,
+            CmsEntryOpenSearchOperatorList,
+            CmsEntryOpenSearchValueTransformer,
+            CmsEntryOpenSearchFieldPathFactory,
             CmsEntryOpenSearchFilterRegistry
         ]
     });

@@ -1,24 +1,21 @@
 import WebinyError from "@webiny/error";
-import { transformValueForSearch } from "~/operations/entry/elasticsearch/transformValueForSearch.js";
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword.js";
 import type { OpenSearchQueryBuilderOperators } from "~/operations/entry/elasticsearch/types.js";
-import { createFieldPathFactory } from "~/operations/entry/elasticsearch/filtering/path.js";
 import type { CmsEntryOpenSearchFilter } from "~/features/CmsEntryOpenSearchFilter/index.js";
-import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
+import type { CmsEntryOpenSearchValueTransformer } from "~/features/CmsEntryOpenSearchValueTransformer/index.js";
+import type { CmsEntryOpenSearchFieldPathFactory } from "~/features/CmsEntryOpenSearchFieldPathFactory/index.js";
 
 interface CreateParams {
     operators: OpenSearchQueryBuilderOperators;
-    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
+    valueTransformer: CmsEntryOpenSearchValueTransformer.Interface;
+    fieldPathFactory: CmsEntryOpenSearchFieldPathFactory.Interface;
 }
 
 export const createApplyFiltering = ({
     operators,
-    valueSearchRegistry
+    valueTransformer,
+    fieldPathFactory
 }: CreateParams): CmsEntryOpenSearchFilter.ApplyFiltering => {
-    const createFieldPath = createFieldPathFactory({
-        valueSearchRegistry
-    });
-
     return params => {
         const { key, value: initialValue, query, operator, field } = params;
 
@@ -33,15 +30,14 @@ export const createApplyFiltering = ({
             );
         }
 
-        const value = transformValueForSearch({
-            valueSearchRegistry,
+        const value = valueTransformer.transform({
             field: field.field,
             value: initialValue
         });
 
         const keyword = hasKeyword(field);
 
-        const { basePath, path } = createFieldPath({
+        const { basePath, path } = fieldPathFactory.create({
             field,
             value,
             originalValue: initialValue,

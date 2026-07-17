@@ -22,6 +22,8 @@ import {
 import { CmsEntryOpenSearchBodyBuilderFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyBuilder/index.js";
 import { CmsEntryOpenSearchExecFilteringFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchExecFiltering/index.js";
 import { CmsEntryOpenSearchFieldPathFactoryFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldPathFactory/index.js";
+import { CmsEntryOpenSearchValueTransformerFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueTransformer/index.js";
+import { CmsEntryOpenSearchOperatorListFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchOperatorList/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
@@ -169,6 +171,8 @@ export const HeadlessCmsPgOsFeature = createFeature({
         CmsEntryOpenSearchIndexCreateFeature.register(container);
         CmsEntryOpenSearchIndexDeleteFeature.register(container);
         CmsEntryOpenSearchFieldPathFactoryFeature.register(container);
+        CmsEntryOpenSearchValueTransformerFeature.register(container);
+        CmsEntryOpenSearchOperatorListFeature.register(container);
         CmsEntryOpenSearchExecFilteringFeature.register(container);
         CmsEntryOpenSearchBodyBuilderFeature.register(container);
         CmsEntryOpenSearchValueSearchFeature.register(container);

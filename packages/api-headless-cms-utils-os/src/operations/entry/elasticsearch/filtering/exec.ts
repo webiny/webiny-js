@@ -5,22 +5,23 @@ import type {
     OpenSearchBoolQueryConfig,
     QueryDslQueryContainer as Query
 } from "@webiny/api-opensearch/types.js";
-import type { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import { createOperatorPluginList } from "~/operations/entry/elasticsearch/plugins/operator.js";
 import { createBaseQuery } from "~/operations/entry/elasticsearch/initialQuery.js";
 import { parseWhereKey } from "@webiny/api-opensearch";
 import { getWhereValues } from "./values.js";
 import { getPopulated } from "./populated.js";
 import { createApplyFiltering } from "./applyFiltering.js";
 import { assignMinimumShouldMatchToQuery } from "~/operations/entry/elasticsearch/assignMinimumShouldMatchToQuery.js";
-import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 import type { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter/index.js";
+import type { CmsEntryOpenSearchOperatorList } from "~/features/CmsEntryOpenSearchOperatorList/index.js";
+import type { CmsEntryOpenSearchValueTransformer } from "~/features/CmsEntryOpenSearchValueTransformer/index.js";
+import type { CmsEntryOpenSearchFieldPathFactory } from "~/features/CmsEntryOpenSearchFieldPathFactory/index.js";
 
 export interface CreateExecParams {
     model: CmsModel;
     fields: ModelFields;
-    operatorRegistry: OpenSearchQueryBuilderOperatorRegistry.Interface;
-    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
+    operatorList: CmsEntryOpenSearchOperatorList.Interface;
+    valueTransformer: CmsEntryOpenSearchValueTransformer.Interface;
+    fieldPathFactory: CmsEntryOpenSearchFieldPathFactory.Interface;
     filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
 }
 export interface IExecParams {
@@ -32,15 +33,15 @@ export interface CreateExecFilteringResponse {
     (params: IExecParams): void;
 }
 export const createExecFiltering = (params: CreateExecParams): CreateExecFilteringResponse => {
-    const { fields, operatorRegistry, model, valueSearchRegistry, filterRegistry } = params;
+    const { fields, operatorList, valueTransformer, fieldPathFactory, model, filterRegistry } =
+        params;
 
-    const operators = createOperatorPluginList({
-        registry: operatorRegistry
-    });
+    const operators = operatorList.getAll();
 
     const applyFiltering = createApplyFiltering({
         operators,
-        valueSearchRegistry
+        valueTransformer,
+        fieldPathFactory
     });
 
     const getFilter = (type: string) => {

@@ -48,3 +48,13 @@ export {
     CmsEntryOpenSearchFieldPathFactoryFeature,
     CmsEntryOpenSearchFieldPathFactoryImpl
 } from "./features/CmsEntryOpenSearchFieldPathFactory/index.js";
+export {
+    CmsEntryOpenSearchValueTransformer,
+    CmsEntryOpenSearchValueTransformerFeature,
+    CmsEntryOpenSearchValueTransformerImpl
+} from "./features/CmsEntryOpenSearchValueTransformer/index.js";
+export {
+    CmsEntryOpenSearchOperatorList,
+    CmsEntryOpenSearchOperatorListFeature,
+    CmsEntryOpenSearchOperatorListImpl
+} from "./features/CmsEntryOpenSearchOperatorList/index.js";

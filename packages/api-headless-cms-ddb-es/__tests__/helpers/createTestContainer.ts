@@ -8,6 +8,9 @@ import { CmsEntryOpenSearchFieldIndexFeature } from "@webiny/api-headless-cms-ut
 import { CmsEntryOpenSearchValueSearchFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueSearch/feature.js";
 import { CmsEntryOpenSearchFilterFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFilter/feature.js";
 import { OpenSearchQueryBuilderOperatorFeature } from "@webiny/api-opensearch/features/OpenSearchQueryBuilderOperator/feature.js";
+import { CmsEntryOpenSearchFieldPathFactoryFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldPathFactory/feature.js";
+import { CmsEntryOpenSearchValueTransformerFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueTransformer/feature.js";
+import { CmsEntryOpenSearchOperatorListFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchOperatorList/feature.js";
 
 export const createTestContainer = () => {
     const container = new Container();
@@ -16,6 +19,9 @@ export const createTestContainer = () => {
     CmsEntryOpenSearchFilterFeature.register(container);
     CmsEntryOpenSearchValueSearchFeature.register(container);
     OpenSearchQueryBuilderOperatorFeature.register(container);
+    CmsEntryOpenSearchFieldPathFactoryFeature.register(container);
+    CmsEntryOpenSearchValueTransformerFeature.register(container);
+    CmsEntryOpenSearchOperatorListFeature.register(container);
     return container;
 };
 
