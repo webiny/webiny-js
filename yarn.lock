@@ -11119,6 +11119,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-headless-cms-pg-os@workspace:packages/api-headless-cms-pg-os":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-headless-cms-pg-os@workspace:packages/api-headless-cms-pg-os"
+  dependencies:
+    "@electric-sql/pglite": "npm:^0.5.4"
+    "@electric-sql/pglite-socket": "npm:^0.2.7"
+    "@webiny/api-core-sql": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-sql": "npm:0.0.0"
+    "@webiny/api-headless-cms-storage": "npm:0.0.0"
+    "@webiny/api-headless-cms-utils-os": "npm:0.0.0"
+    "@webiny/api-opensearch": "npm:0.0.0"
+    "@webiny/api-sync-pg-to-opensearch": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/db-utils": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    knex: "npm:^3.3.0"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.10"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-headless-cms-scheduler@npm:0.0.0, @webiny/api-headless-cms-scheduler@workspace:packages/api-headless-cms-scheduler":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-scheduler@workspace:packages/api-headless-cms-scheduler"
@@ -11481,7 +11508,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-sync-pg-to-opensearch@workspace:packages/api-sync-pg-to-opensearch":
+"@webiny/api-sync-pg-to-opensearch@npm:0.0.0, @webiny/api-sync-pg-to-opensearch@workspace:packages/api-sync-pg-to-opensearch":
   version: 0.0.0-use.local
   resolution: "@webiny/api-sync-pg-to-opensearch@workspace:packages/api-sync-pg-to-opensearch"
   dependencies:
