@@ -30,10 +30,12 @@ a background task", rather than re-implementing AI plumbing per feature. Compare
 
 Model fields (on `../models/ProductModel.ts`): `aiSummary` (the generated text) and
 `aiSummarizedRun` (a per-run token). Convergence uses the token instead of a permanent
-flag: each click generates a fresh `runId`, the Admin action filters
-`values.aiSummarizedRun_not: <runId>` in `where`, and `processData` stamps the entry with
-it. So a run ends once every targeted entry is stamped — but the next click uses a new
-token, so the same entries can be re-summarized (no toggle to reset).
+flag: each click generates a fresh `runId`, the Admin action nests
+`values: { aiSummarizedRun_not: <runId> }` in `where` (custom-field filters go under
+`values` in the GraphQL input; `loadData` flattens them to the storage form), and
+`processData` stamps the entry with it. So a run ends once every targeted entry is stamped
+— but the next click uses a new token, so the same entries can be re-summarized (no toggle
+to reset).
 
 ## Requirements
 

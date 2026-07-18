@@ -80,10 +80,13 @@ export const GenerateAiSummaryAction = observer(() => {
                         ? crypto.randomUUID()
                         : String(Date.now());
 
+                // Custom-field filters go NESTED under `values` in the GraphQL where input
+                // (a dotted "values.x" key is rejected by the typed input). The backend
+                // flattens this to the storage form.
                 const scope = selection.allSelected
                     ? {}
                     : { id_in: selectedItems.map(item => item.id) };
-                const where = { ...scope, "values.aiSummarizedRun_not": runId };
+                const where = { ...scope, values: { aiSummarizedRun_not: runId } };
 
                 await bulkAction.execute({
                     model,

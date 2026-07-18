@@ -34,15 +34,25 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
         private readonly sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
     ) {}
 
-    // Pass-through. Convergence is handled by the run-token filter the Admin action puts
-    // in `where` (`values.aiSummarizedRun_not: <runId>`): once an entry is stamped with the
-    // current run it drops out of the list, so the task ends — but a NEW run uses a new
-    // token, so the same entries qualify again and get re-summarized.
+    // Convergence is handled by the run-token filter the Admin action puts in `where`
+    // (`values: { aiSummarizedRun_not: <runId> }`): once an entry is stamped with the
+    // current run it drops out, so the task ends — but a NEW run uses a new token, so the
+    // same entries qualify again and get re-summarized.
+    //
+    // The GraphQL where arrives with custom-field filters nested under `values`, but the
+    // storage layer wants flat dotted keys (`values.<field>`), so we flatten here.
     async loadData(
         model: EntriesBulkAction.Model,
         params: EntriesBulkAction.LoadDataParams
     ): Promise<EntriesBulkAction.LoadDataResult> {
-        return (await this.listEntries.execute(model, params)).value;
+        const where: Record<string, unknown> = { ...params.where };
+        if (where.values && typeof where.values === "object") {
+            for (const [key, value] of Object.entries(where.values as Record<string, unknown>)) {
+                where[`values.${key}`] = value;
+            }
+            delete where.values;
+        }
+        return (await this.listEntries.execute(model, { ...params, where })).value;
     }
 
     async processData(
