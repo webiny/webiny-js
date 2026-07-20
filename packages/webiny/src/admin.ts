@@ -20,3 +20,8 @@ export { ToolsFeature } from "@webiny/app-admin/features/tools/index.js";
 export { AdminConfig } from "@webiny/app-admin/config/AdminConfig.js";
 export { Routes } from "@webiny/app-admin/routes.js";
 export { createFeature, createAbstraction, BaseError } from "@webiny/feature/admin/index.js";
+export { Command } from "@webiny/app-admin/presentation/commandPalette/index.js";
+export type {
+    ICommand,
+    CommandDetailProps
+} from "@webiny/app-admin/presentation/commandPalette/index.js";

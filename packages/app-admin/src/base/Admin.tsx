@@ -23,6 +23,8 @@ import { WebinySdkFeature } from "~/features/webinySdk/feature.js";
 import { ListPresenterFeature } from "~/presentation/listPresenter/index.js";
 import { SortableFeature } from "~/presentation/sortable/index.js";
 import { NotificationsRenderer } from "~/features/notifications/NotificationsRenderer.js";
+import { CommandPaletteFeature } from "~/presentation/commandPalette/index.js";
+import { AdminCommandsFeature } from "~/presentation/commandPalette/commands/feature.js";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
@@ -43,6 +45,8 @@ export const Admin = ({ children, createApolloClient, createLegacyPlugins }: Adm
     FormModelFeature.register(container);
     WebinySdkFeature.register(container);
     ListPresenterFeature.register(container);
+    CommandPaletteFeature.register(container);
+    AdminCommandsFeature.register(container);
     SortableFeature.register(container);
 
     const ApolloProvider = createApolloProvider(apolloClient);

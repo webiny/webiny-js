@@ -72,6 +72,20 @@ export { useIdentity } from "./presentation/security/hooks/useIdentity.js";
 export { useAuthentication } from "./presentation/security/hooks/useAuthentication.js";
 export { useBuildParams } from "./presentation/buildParams/useBuildParams.js";
 
+// Command palette (DI-based command registration)
+export {
+    Command,
+    CommandPaletteFeature,
+    CommandPalettePresenter
+} from "./presentation/commandPalette/index.js";
+export type {
+    ICommand,
+    CommandDetailProps,
+    CommandItemVm,
+    ActiveCommandVm,
+    CommandPaletteViewModel
+} from "./presentation/commandPalette/index.js";
+
 // Legacy hook for easier migration
 export { useSecurity } from "./presentation/security/hooks/useSecurity.js";
 
