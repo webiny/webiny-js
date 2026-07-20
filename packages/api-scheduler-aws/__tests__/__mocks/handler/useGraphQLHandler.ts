@@ -17,14 +17,16 @@ import {
     LIST_SCHEDULED_ACTION,
     SCHEDULE_ACTION
 } from "./graphql.js";
-import { createScheduler } from "~/createScheduler.js";
+import { registerSchedulerExtension } from "@webiny/api-scheduler";
+import { registerSchedulerAwsExtension } from "~/context.js";
 
 export const useGraphQLHandler = (params: CreateHandlerCoreParams) => {
     const plugins = new PluginsContainer(params.plugins || []);
 
+    plugins.register(registerSchedulerExtension());
     plugins.register(
-        createScheduler({
-            getClient: params.getScheduleClient
+        registerSchedulerAwsExtension({
+            getClient: config => params.getScheduleClient(config)
         })
     );
 
