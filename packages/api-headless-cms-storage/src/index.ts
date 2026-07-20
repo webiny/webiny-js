@@ -33,3 +33,10 @@ export {
 /* Types. */
 export type { Field } from "./filtering/fields/types.js";
 export type { FilterItemFromStorage } from "./filtering/fields/types.js";
+
+/* DI registries. */
+export { FieldFilterPathRegistry } from "./abstractions/FieldFilterPathRegistry.js";
+export { FieldFilterValueTransformRegistry } from "./abstractions/FieldFilterValueTransformRegistry.js";
+export { FieldFilterCreateRegistry } from "./abstractions/FieldFilterCreateRegistry.js";
+export { FieldSortingRegistry } from "./abstractions/FieldSortingRegistry.js";
+export { FilterRegistriesFeature } from "./features/FilterRegistriesFeature.js";
