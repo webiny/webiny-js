@@ -14,5 +14,5 @@ export {
     CmsEntryOpenSearchValueSearchRegistry
 } from "@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchValueSearch/index.js";
 export { CmsEntryOpenSearchFullTextSearch } from "@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchFullTextSearch/index.js";
-export { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchIndex/index.js";
+export { CmsModelOpenSearchIndex } from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/index.js";
 export { CmsEntryOpenSearchValuesModifier } from "@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchValuesModifier/index.js";

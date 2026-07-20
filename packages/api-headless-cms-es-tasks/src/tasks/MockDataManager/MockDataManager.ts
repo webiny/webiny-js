@@ -9,6 +9,7 @@ import { calculateSeconds, WAIT_MAX_SECONDS } from "./calculateSeconds.js";
 import { createModelAndGroup } from "~/tasks/MockDataManager/createModelAndGroup.js";
 import type { Context } from "~/types.js";
 import { disableIndexing, enableIndexing } from "~/utils/index.js";
+import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { MOCK_DATA_CREATOR_TASK_ID } from "~/tasks/MockDataCreatorTask.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
@@ -28,9 +29,6 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
         } else if (input.seconds) {
             const items = await this.listChildTasksNotDone(this.context, taskId);
 
-            /**
-             * If there are still running creator tasks, we need to wait a bit more.
-             */
             if (items.length > 0) {
                 return controller.response.continue(
                     {
@@ -41,16 +39,17 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
                     }
                 );
             }
-            /**
-             * If there are no running tasks, we can enable indexing and finish the manager task.
-             */
-            await enableIndexing({
-                client: this.context.opensearch,
-                model: {
-                    modelId: input.modelId,
-                    tenant: "root"
-                }
-            });
+
+            const model = (await this.context.cms.listModels()).find(
+                m => m.modelId === input.modelId
+            );
+            if (model) {
+                await enableIndexing({
+                    client: this.context.opensearch,
+                    model,
+                    indexProvider: this.context.container.resolve(CmsModelOpenSearchIndexProvider)
+                });
+            }
             return controller.response.done();
         }
 
@@ -65,7 +64,8 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
 
         await disableIndexing({
             model: result.model,
-            client: this.context.opensearch
+            client: this.context.opensearch,
+            indexProvider: this.context.container.resolve(CmsModelOpenSearchIndexProvider)
         });
 
         const { amountOfTasks, amountOfRecords } = calculateAmounts(input.amount);
