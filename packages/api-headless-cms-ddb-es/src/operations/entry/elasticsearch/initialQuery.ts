@@ -2,7 +2,6 @@ import WebinyError from "@webiny/error";
 import type { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
 import type { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { createLatestRecordType, createPublishedRecordType } from "../recordType.js";
-import { isSharedOpenSearchIndex as isSharedElasticsearchIndex } from "@webiny/api-opensearch";
 
 export const createBaseQuery = (): OpenSearchBoolQueryConfig => {
     return {
@@ -16,6 +15,7 @@ export const createBaseQuery = (): OpenSearchBoolQueryConfig => {
 interface Params {
     model: CmsModel;
     where: CmsEntryListWhere;
+    shared: boolean;
 }
 /**
  * Latest and published are specific in Elasticsearch to that extend that they are tagged in the __type property.
@@ -26,30 +26,19 @@ interface Params {
  * We add the query.filter terms because we do not need scored search here and it is a bit faster.
  */
 export const createInitialQuery = (params: Params): OpenSearchBoolQueryConfig => {
-    const { model, where } = params;
+    const { model, where, shared } = params;
 
     const query = createBaseQuery();
 
     /**
-     * When ES index is shared between tenants, we need to filter records by tenant ID
-     *
-     * TODO determine if we want to search across tenants in shared index?
+     * When ES index is shared between tenants, we need to filter records by tenant ID.
      */
-    const sharedIndex = isSharedElasticsearchIndex();
-    if (sharedIndex) {
-        /**
-         * Tenant for the filtering is taken from the model.
-         *
-         * TODO determine if we want to send it in the "where" parameter?
-         */
+    if (shared) {
         query.filter.push({
             term: {
                 "tenant.keyword": model.tenant
             }
         });
-        /**
-         * Also, we must search only in selected model.
-         */
         query.filter.push({
             term: {
                 "modelId.keyword": model.modelId

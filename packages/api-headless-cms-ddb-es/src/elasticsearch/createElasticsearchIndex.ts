@@ -1,51 +1,18 @@
 import type { Client } from "@webiny/api-opensearch";
 import WebinyError from "@webiny/error";
-import { configurations } from "~/configurations.js";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import type { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex/index.js";
+import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { Configurations } from "~/configurations.js";
 
 export interface CreateElasticsearchIndexParams {
     client: Client;
-    indexConfigs: CmsEntryOpenSearchIndex.Interface[];
-    model: CmsModel;
+    configurations: Configurations;
+    model: StorageCmsModel;
 }
-
-interface IGetLastUsableParams {
-    configs: CmsEntryOpenSearchIndex.Interface[];
-    model: CmsModel;
-}
-
-const getLastUsable = (params: IGetLastUsableParams): CmsEntryOpenSearchIndex.Interface => {
-    const { configs } = params;
-    const usable = configs.filter(c => c.canUse(params));
-    if (usable.length === 0) {
-        throw new WebinyError(
-            "Could not find a single usable CmsEntryOpenSearchIndex.",
-            "OPENSEARCH_INDEX_TEMPLATE_ERROR"
-        );
-    }
-    return usable[usable.length - 1];
-};
 
 export const createElasticsearchIndex = async (params: CreateElasticsearchIndexParams) => {
-    const { client, indexConfigs, model } = params;
+    const { client, configurations, model } = params;
 
-    const { index } = configurations.es({
-        model
-    });
-
-    const config = getLastUsable({
-        configs: indexConfigs,
-        model
-    });
-    if (!config) {
-        /**
-         * This can happen only while development as we have a base index setting that is always usable.
-         */
-        throw new Error(
-            `Could not find a usable CmsEntryOpenSearchIndex for the CMS model "${model.name}".`
-        );
-    }
+    const { index, settings } = await configurations.es({ model });
 
     try {
         const response = await client.indices.exists({
@@ -70,7 +37,7 @@ export const createElasticsearchIndex = async (params: CreateElasticsearchIndexP
         await client.indices.create({
             index,
             body: {
-                ...config.body
+                ...settings
             }
         });
     } catch (ex) {
@@ -90,7 +57,7 @@ export const createElasticsearchIndex = async (params: CreateElasticsearchIndexP
                 },
                 tenant: model.tenant,
                 index,
-                body: config.body
+                body: settings
             }
         );
     }

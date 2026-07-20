@@ -28,6 +28,7 @@ import type { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSe
 interface ICreateElasticsearchBodyParams {
     plugins: PluginsContainer;
     model: CmsModel;
+    shared: boolean;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
     bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
@@ -44,6 +45,7 @@ interface ICreateElasticsearchBodyParams {
 export const createElasticsearchBody = ({
     plugins,
     model,
+    shared,
     params,
     fieldRegistry,
     fieldIndexRegistry,
@@ -96,7 +98,8 @@ export const createElasticsearchBody = ({
      */
     const query = createInitialQuery({
         where,
-        model
+        model,
+        shared
     });
     /**
      * Apply the full text search, if term is set.
