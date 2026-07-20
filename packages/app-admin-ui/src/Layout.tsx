@@ -5,7 +5,6 @@ import { LayoutRenderer, Navigation, TenantSelector, UserMenu } from "@webiny/ap
 import { HeaderBar, SidebarProvider, cn, useSidebar } from "@webiny/admin-ui";
 import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
 import { CommandPalette } from "./CommandPalette/CommandPalette.js";
-import { CommandPaletteTrigger } from "./CommandPalette/CommandPaletteTrigger.js";
 
 const SIDEBAR_STATE_KEY = "navigation/state";
 
@@ -54,12 +53,7 @@ const LayoutContent = ({
                 )}
             >
                 <HeaderBar
-                    start={
-                        <div className="flex items-center gap-sm">
-                            {startElement}
-                            <CommandPaletteTrigger />
-                        </div>
-                    }
+                    start={<div className="flex items-center gap-sm">{startElement}</div>}
                     end={
                         <div className={"flex gap-x-sm items-center justify-end"}>
                             <TenantSelector />

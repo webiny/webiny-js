@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon, Text } from "@webiny/admin-ui";
+import { IconButton, Text } from "@webiny/admin-ui";
 import type { ActiveCommandVm } from "@webiny/app-admin";
 import { ReactComponent as BackIcon } from "@webiny/icons/arrow_back.svg";
 import { Kbd } from "./Kbd.js";
@@ -20,14 +20,13 @@ export const CommandDetail = ({ active, onBack, onClose }: CommandDetailProps) =
     return (
         <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
             <div className="flex items-center gap-sm border-b border-neutral-subtle px-md py-sm-plus">
-                <button
-                    type="button"
+                <IconButton
+                    variant={"ghost"}
+                    size={"sm"}
+                    icon={<BackIcon />}
                     onClick={onBack}
                     aria-label="Back"
-                    className="inline-flex items-center justify-center rounded-sm text-neutral-muted"
-                >
-                    <Icon icon={<BackIcon />} color={"neutral-light"} size={"sm"} label={"Back"} />
-                </button>
+                />
                 {command.icon}
                 <Text size="md" className="flex-1 font-medium text-neutral-primary">
                     {command.label}

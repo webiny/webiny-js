@@ -105,7 +105,7 @@ const CommandPaletteBase = () => {
                 onClick={e => e.stopPropagation()}
                 onKeyDown={onKeyDown}
                 className="flex w-full flex-col overflow-hidden rounded-lg border border-neutral-dimmed bg-neutral-base shadow-xxl"
-                style={{ maxWidth: 660, maxHeight: "45vh" }}
+                style={{ maxWidth: 660, height: "45vh" }}
             >
                 {active ? (
                     <CommandDetail
