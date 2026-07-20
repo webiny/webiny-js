@@ -7,24 +7,26 @@ import { createHandler } from "~/features/events/createHandler.js";
 
 describe("EventType dispatch", () => {
     it("should route to correct handler based on canHandle", async () => {
+        class HttpEventType implements EventType.Interface {
+            canHandle(e: any): e is any {
+                return !!e.method;
+            }
+            getHandlerAbstraction() {
+                return EventHandler;
+            }
+        }
         const httpType = EventType.createImplementation({
-            implementation: class {
-                canHandle(e: any): e is any {
-                    return !!e.method;
-                }
-                getHandlerAbstraction() {
-                    return EventHandler;
-                }
-            },
+            implementation: HttpEventType,
             dependencies: []
         });
 
+        class HttpHandler implements IEventHandler {
+            async execute(ctx: EventContext, _next: NextFunction) {
+                return { handled: true, event: ctx.event };
+            }
+        }
         const handler = EventHandler.createImplementation({
-            implementation: class implements IEventHandler {
-                async execute(ctx: EventContext, _next: NextFunction) {
-                    return { handled: true, event: ctx.event };
-                }
-            },
+            implementation: HttpHandler,
             dependencies: []
         });
 
@@ -47,15 +49,16 @@ describe("EventType dispatch", () => {
     });
 
     it("should throw when no event type matches", async () => {
+        class HttpEventType implements EventType.Interface {
+            canHandle(e: any): e is any {
+                return !!e.method;
+            }
+            getHandlerAbstraction() {
+                return EventHandler;
+            }
+        }
         const httpType = EventType.createImplementation({
-            implementation: class {
-                canHandle(e: any): e is any {
-                    return !!e.method;
-                }
-                getHandlerAbstraction() {
-                    return EventHandler;
-                }
-            },
+            implementation: HttpEventType,
             dependencies: []
         });
 
@@ -74,45 +77,49 @@ describe("EventType dispatch", () => {
         const { Abstraction } = await import("@webiny/di");
         const OtherHandler = new Abstraction<IEventHandler>("OtherHandler");
 
+        class HttpEventType implements EventType.Interface {
+            canHandle(e: any): e is any {
+                return !!e.method;
+            }
+            getHandlerAbstraction() {
+                return EventHandler;
+            }
+        }
         const httpType = EventType.createImplementation({
-            implementation: class {
-                canHandle(e: any): e is any {
-                    return !!e.method;
-                }
-                getHandlerAbstraction() {
-                    return EventHandler;
-                }
-            },
+            implementation: HttpEventType,
             dependencies: []
         });
 
+        class OtherEventType implements EventType.Interface {
+            canHandle(e: any): e is any {
+                return !!e.Records;
+            }
+            getHandlerAbstraction() {
+                return OtherHandler;
+            }
+        }
         const otherType = EventType.createImplementation({
-            implementation: class {
-                canHandle(e: any): e is any {
-                    return !!e.Records;
-                }
-                getHandlerAbstraction() {
-                    return OtherHandler;
-                }
-            },
+            implementation: OtherEventType,
             dependencies: []
         });
 
+        class HttpEventHandler implements IEventHandler {
+            async execute(_ctx: EventContext, _next: NextFunction) {
+                return "http";
+            }
+        }
         const httpHandler = EventHandler.createImplementation({
-            implementation: class implements IEventHandler {
-                async execute(_ctx: EventContext, _next: NextFunction) {
-                    return "http";
-                }
-            },
+            implementation: HttpEventHandler,
             dependencies: []
         });
 
+        class OtherEventHandler implements IEventHandler {
+            async execute(_ctx: EventContext, _next: NextFunction) {
+                return "other";
+            }
+        }
         const otherHandler = OtherHandler.createImplementation({
-            implementation: class implements IEventHandler {
-                async execute(_ctx: EventContext, _next: NextFunction) {
-                    return "other";
-                }
-            },
+            implementation: OtherEventHandler,
             dependencies: []
         });
 

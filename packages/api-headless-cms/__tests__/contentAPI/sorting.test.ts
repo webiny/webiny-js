@@ -249,16 +249,18 @@ describe("sorting + cursor", () => {
     it("should sort via custom sort", async () => {
         const { apple, graham, banana, strawberry } = await setupFruits();
 
-        const testSorter = CmsGraphQLSchemaSorter.createImplementation({
-            implementation: class TestSorter implements CmsGraphQLSchemaSorter.Interface {
-                public execute(params: CmsGraphQLSchemaSorter.Params): string[] {
-                    const { model, sorters } = params;
-                    if (model.modelId !== "fruit") {
-                        return sorters;
-                    }
-                    return [...sorters, "customSorter_ASC", "customSorter_DESC"];
+        class TestSorter implements CmsGraphQLSchemaSorter.Interface {
+            public execute(params: CmsGraphQLSchemaSorter.Params): string[] {
+                const { model, sorters } = params;
+                if (model.modelId !== "fruit") {
+                    return sorters;
                 }
-            },
+                return [...sorters, "customSorter_ASC", "customSorter_DESC"];
+            }
+        }
+
+        const testSorter = CmsGraphQLSchemaSorter.createImplementation({
+            implementation: TestSorter,
             dependencies: []
         });
 

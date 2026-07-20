@@ -5,7 +5,7 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { GetActiveRedirectsUseCase } from "~/features/redirects/GetActiveRedirects/index.js";
 import { ActiveRedirectRestMapper } from "./ActiveRedirectRestMapper.js";
 
-class WebsiteBuilderRedirectsRouteImpl {
+class WebsiteBuilderRedirectsRouteImpl implements HttpRoute.Interface {
     readonly method = "GET";
     readonly path = "/wb/redirects";
 

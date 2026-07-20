@@ -13,22 +13,23 @@ import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 const createDummySync = () => {
     return createRegisterExtensionPlugin(({ container }) => {
-        const DummySync = ElasticsearchToDynamoDbSynchronization.createImplementation({
-            implementation: class {
-                constructor(private readonly manager: Manager.Interface) {}
+        class DummySyncImplementation implements ElasticsearchToDynamoDbSynchronization.Interface {
+            constructor(private readonly manager: Manager.Interface) {}
 
-                async run(
-                    input: ElasticsearchToDynamoDbSynchronization.Input,
-                    _indexManager: ElasticsearchToDynamoDbSynchronization.IndexManager
-                ): Promise<ElasticsearchToDynamoDbSynchronization.Result> {
-                    return this.manager.controller.response.continue({
-                        ...input,
-                        elasticsearchToDynamoDb: {
-                            finished: true
-                        }
-                    });
-                }
-            },
+            async run(
+                input: ElasticsearchToDynamoDbSynchronization.Input,
+                _indexManager: ElasticsearchToDynamoDbSynchronization.IndexManager
+            ): Promise<ElasticsearchToDynamoDbSynchronization.Result> {
+                return this.manager.controller.response.continue({
+                    ...input,
+                    elasticsearchToDynamoDb: {
+                        finished: true
+                    }
+                });
+            }
+        }
+        const DummySync = ElasticsearchToDynamoDbSynchronization.createImplementation({
+            implementation: DummySyncImplementation,
             dependencies: [Manager]
         });
         container.register(DummySync);

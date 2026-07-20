@@ -81,23 +81,25 @@ setStorageOps("cms", () => {
         "headlessCmsDdbEs.context.createOrRefreshIndexSubscription";
 
     const fruitModifierPlugin = createRegisterExtensionPlugin(({ container }) => {
-        const FruitBodyModifier = CmsEntryOpenSearchBodyModifier.createImplementation({
-            implementation: class {
-                modelId = "fruit";
-                modifyBody({ body }) {
-                    if (!body.sort.customSorter) {
-                        return;
-                    }
-                    const order = body.sort.customSorter.order;
-                    delete body.sort.customSorter;
-                    body.sort = {
-                        createdOn: {
-                            order,
-                            unmapped_type: "date"
-                        }
-                    };
+        // eslint-disable-next-line webiny/require-implements-on-create-implementation -- plain JS file: TypeScript `implements` is invalid syntax here.
+        class FruitBodyModifierImplementation {
+            modelId = "fruit";
+            modifyBody({ body }) {
+                if (!body.sort.customSorter) {
+                    return;
                 }
-            },
+                const order = body.sort.customSorter.order;
+                delete body.sort.customSorter;
+                body.sort = {
+                    createdOn: {
+                        order,
+                        unmapped_type: "date"
+                    }
+                };
+            }
+        }
+        const FruitBodyModifier = CmsEntryOpenSearchBodyModifier.createImplementation({
+            implementation: FruitBodyModifierImplementation,
             dependencies: []
         });
         container.register(FruitBodyModifier);
