@@ -122,3 +122,74 @@ export const getPreviewStyles = (
         }
     };
 };
+
+export interface CroppedImageRenderStyles {
+    wrapper: React.CSSProperties;
+    image: React.CSSProperties;
+}
+
+/**
+ * Styles to render an already-cropped image inside a measured box, honoring the
+ * crop (and, for `cover`, the hotspot). Use when you know the box's pixel size:
+ *  - `cover`: fills the box, cover-cropping the crop region toward the hotspot;
+ *  - `contain`: fits the whole crop region inside the box (centered by the parent).
+ */
+export const getCroppedImageRenderStyles = (
+    imageWidth: number,
+    imageHeight: number,
+    crop: ImageEditorCrop | undefined,
+    hotspot: ImageEditorHotspot | undefined,
+    opts: { boxWidth: number; boxHeight: number; fit: "cover" | "contain" }
+): CroppedImageRenderStyles => {
+    const imageStyle = (rect: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    }): React.CSSProperties => {
+        const safeW = rect.width > 0 ? rect.width : 1;
+        const safeH = rect.height > 0 ? rect.height : 1;
+        return {
+            position: "absolute",
+            width: `${round(100 / safeW)}%`,
+            height: `${round(100 / safeH)}%`,
+            left: `${round(-(rect.x / safeW) * 100)}%`,
+            top: `${round(-(rect.y / safeH) * 100)}%`,
+            maxWidth: "none"
+        };
+    };
+
+    if (opts.fit === "cover") {
+        const targetAspect = opts.boxHeight > 0 ? opts.boxWidth / opts.boxHeight : 1;
+        const rect = getVisibleRect(imageWidth, imageHeight, crop, hotspot, targetAspect);
+        return {
+            wrapper: { position: "relative", width: "100%", height: "100%", overflow: "hidden" },
+            image: imageStyle(rect)
+        };
+    }
+
+    // contain: fit the whole crop region within the box, preserving its aspect.
+    const cropRect = getCropRect(crop);
+    const iw = imageWidth > 0 ? imageWidth : 1;
+    const ih = imageHeight > 0 ? imageHeight : 1;
+    const cropWpx = (cropRect.width > 0 ? cropRect.width : 1) * iw;
+    const cropHpx = (cropRect.height > 0 ? cropRect.height : 1) * ih;
+    const cropAspect = cropWpx / cropHpx;
+
+    let width = opts.boxWidth;
+    let height = opts.boxWidth / cropAspect;
+    if (height > opts.boxHeight) {
+        height = opts.boxHeight;
+        width = opts.boxHeight * cropAspect;
+    }
+
+    return {
+        wrapper: {
+            position: "relative",
+            width: `${round(width)}px`,
+            height: `${round(height)}px`,
+            overflow: "hidden"
+        },
+        image: imageStyle(cropRect)
+    };
+};
