@@ -5,14 +5,20 @@ import type { ImageEditorValue } from "@webiny/admin-ui";
 import { UpdateFileUseCase } from "~/features/updateFile/abstractions.js";
 import type { FileItem } from "~/domain/types.js";
 
+interface UseEditImageOptions {
+    /** Called with the updated file after a successful save (e.g. to refresh the UI). */
+    onSaved?: (file: FileItem) => void;
+}
+
 /**
  * Reads/writes the asset-level image edit (crop, hotspot, alt, caption) stored on
  * `file.metadata.imageEdit`, and manages the editor dialog's open state.
  */
-export function useEditImage(file: FileItem) {
+export function useEditImage(file: FileItem, options: UseEditImageOptions = {}) {
     const { showSnackbar } = useSnackbar();
     const container = useContainer();
     const updateFileUseCase = container.resolve(UpdateFileUseCase);
+    const { onSaved } = options;
 
     const [open, setOpen] = useState(false);
 
@@ -35,11 +41,13 @@ export function useEditImage(file: FileItem) {
 
             if (result.success) {
                 showSnackbar(`Image settings saved.`);
+                // Surface the updated file so the drawer/list previews refresh in place.
+                onSaved?.(result.file);
             } else {
                 showSnackbar(result.error.message);
             }
         },
-        [file.id, file.metadata, updateFileUseCase, showSnackbar]
+        [file.id, file.metadata, updateFileUseCase, showSnackbar, onSaved]
     );
 
     return { open, openEditor, closeEditor, value, save };
