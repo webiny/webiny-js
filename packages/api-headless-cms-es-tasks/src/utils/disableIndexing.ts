@@ -1,11 +1,11 @@
 import type { Client } from "@webiny/api-opensearch";
+import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
-import type { ICmsModelOpenSearchIndexModel } from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/abstractions.js";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 
 export interface IDisableIndexingParams {
     client: Client;
-    model: ICmsModelOpenSearchIndexModel;
+    model: StorageCmsModel;
     indexProvider: CmsModelOpenSearchIndexProvider.Interface;
 }
 

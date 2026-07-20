@@ -1,14 +1,10 @@
 import { createAbstraction } from "@webiny/feature/api/index.js";
 import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-
-export type ICmsModelOpenSearchIndexModel = Pick<
-    CmsModel,
-    "tenant" | "modelId" | "tags" | "group" | "name"
->;
+import { type StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
+export { type StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 export interface ICmsModelOpenSearchIndexParams {
-    model: ICmsModelOpenSearchIndexModel;
+    model: StorageCmsModel;
 }
 
 export interface ICmsModelOpenSearchIndexResult {
@@ -28,5 +24,5 @@ export namespace CmsModelOpenSearchIndex {
     export type Interface = ICmsModelOpenSearchIndex;
     export type Params = ICmsModelOpenSearchIndexParams;
     export type Result = ICmsModelOpenSearchIndexResult;
-    export type Model = ICmsModelOpenSearchIndexModel;
+    export type Model = StorageCmsModel;
 }

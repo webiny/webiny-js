@@ -1,12 +1,12 @@
 import type { Client } from "@webiny/api-opensearch";
 import WebinyError from "@webiny/error";
+import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { Configurations } from "~/configurations.js";
-import type { ICmsModelOpenSearchIndexModel } from "~/features/CmsModelOpenSearchIndex/abstractions.js";
 
 export interface CreateElasticsearchIndexParams {
     client: Client;
     configurations: Configurations;
-    model: ICmsModelOpenSearchIndexModel;
+    model: StorageCmsModel;
 }
 
 export const createElasticsearchIndex = async (params: CreateElasticsearchIndexParams) => {

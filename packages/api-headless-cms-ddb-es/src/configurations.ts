@@ -4,15 +4,14 @@ import {
     getOpenSearchIndexPrefix,
     isSharedOpenSearchIndex
 } from "@webiny/api-opensearch";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type {
     CmsModelOpenSearchIndexProvider,
     ICmsModelOpenSearchIndexProviderResult
 } from "~/features/CmsModelOpenSearchIndex/index.js";
-import type { ICmsModelOpenSearchIndexModel } from "~/features/CmsModelOpenSearchIndex/abstractions.js";
 
 export interface CmsElasticsearchParams {
-    model: ICmsModelOpenSearchIndexModel;
+    model: StorageCmsModel;
 }
 
 export interface Configurations {
@@ -42,7 +41,7 @@ export const createConfigurations = (
  * Used by tests and code that does not need DI-based customization.
  */
 export const configurations = {
-    es(params: { model: Pick<CmsModel, "modelId" | "tenant"> }) {
+    es(params: { model: StorageCmsModel }) {
         const { model } = params;
         const { tenant } = model;
 
