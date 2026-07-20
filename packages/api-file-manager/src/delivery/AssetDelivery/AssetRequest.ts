@@ -1,8 +1,13 @@
 import type { GenericRecord } from "@webiny/api/types.js";
+import type { ImageFormat } from "~/features/assetDelivery/transformation/imageFormat.js";
 
 export interface AssetRequestOptions {
     original?: boolean;
     width?: number;
+    /** Encoder quality (1–100). */
+    quality?: number;
+    /** Concrete output format (already resolved from any "auto" request). */
+    format?: ImageFormat;
 }
 
 export type AssetRequestContext<T extends GenericRecord = GenericRecord> = T & {
