@@ -19,7 +19,6 @@ import type { Container } from "@webiny/di";
 import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-server";
 import { registerExtensions } from "@webiny/handler";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
-import { RequestContainer } from "@webiny/event-handler-core";
 import {
     ServerConnectionManager,
     NodeWsAdapter,
@@ -32,7 +31,7 @@ import { FileManagerServerFeature } from "@webiny/api-file-manager-server";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
-import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
+import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
@@ -131,41 +130,15 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // Attach the WebSockets upgrade handler to the running HTTP server, backed by the shared
             // (root) connection manager so request-time sends reach the live sockets.
             //
-            // Each new WebSocket connection (the HTTP upgrade handshake) is authenticated from its
-            // `?token` JWT so the connection is registered under the real identity — targeted
-            // server→client sends need this, since SendToIdentity matches connections by identity id. The catch is that AuthenticationContext lives in the
-            // per-request stack (registered by ApiCoreFeature, not registerRootStorage), so we can't
-            // resolve it from the root container. Instead we spin up a short-lived request-scoped
-            // child container, the same way createHandler does for each HTTP request, and resolve it
-            // there. We only need the core stack, not the transports, because this is just the
-            // token→identity step the HTTP stack already runs via RequestIdentityLoader — and that step
-            // doesn't depend on the tenant (the HTTP stack resolves identity before tenant), so there's
-            // no request or tenant state to set up. Connections are rare (one per admin session), so a
-            // fresh child per connection is cheap enough.
-            //
-            // This is also why the WebSocket server takes `authenticate` as a plain callback instead
-            // of resolving auth itself: AuthenticationContext isn't reachable from the root container
-            // (it's per-request), so only the handler — which can build a request-scoped child — can
-            // supply it. So authenticate has to be a callback the handler builds, regardless of DI.
-            const authenticate = async (token: string) => {
-                const child = rootContainer.createChildContainer();
-                child.registerInstance(RequestContainer, child);
-                await registerApiRequestStack(child, { extensions: config.extensions });
-                const identity = await child.resolve(AuthenticationContext).authenticate(token);
-                if (!identity?.id) {
-                    return null;
-                }
-                return {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                };
-            };
-
+            // Authenticate each WebSocket connection from its `?token` JWT so it's registered under
+            // the real identity (targeted server→client sends match by identity id). It's a callback
+            // the handler supplies rather than something the WS server resolves itself — see
+            // createWebsocketsAuthenticator for why (AuthenticationContext is per-request, unreachable
+            // from the root container the WS server is attached to).
             const websockets = attachWebsocketsServer({
                 server,
                 connectionManager: rootContainer.resolve(WebsocketsConnectionManager),
-                authenticate
+                authenticate: createWebsocketsAuthenticator(rootContainer, config.extensions)
             });
             await websockets.start();
 
