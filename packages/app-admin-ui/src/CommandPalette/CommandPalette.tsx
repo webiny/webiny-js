@@ -8,9 +8,8 @@ import {
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
-import { Icon, Text } from "@webiny/admin-ui";
+import { EmptyState, Icon, Text } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
-import { ReactComponent as SearchOffIcon } from "@webiny/icons/search_off.svg";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
@@ -141,19 +140,11 @@ const CommandPaletteBase = () => {
                             style={{ flex: 1, minHeight: 0, overflowY: "auto" }}
                         >
                             <Command.Empty>
-                                <div className="flex flex-col items-center gap-md p-xl text-center text-neutral-muted">
-                                    <HintIcon element={<SearchOffIcon />} />
-                                    <Text
-                                        as="div"
-                                        size="lg"
-                                        className="font-semibold text-neutral-strong"
-                                    >
-                                        {`No results for “${query}”`}
-                                    </Text>
-                                    <Text as="div" size="sm">
-                                        Try a page name, or an action like “new entry”.
-                                    </Text>
-                                </div>
+                                <EmptyState
+                                    type="select"
+                                    title={`No results for “${query}”`}
+                                    description="Try a page name, or an action like “new entry”."
+                                />
                             </Command.Empty>
 
                             {groups.map(group => (
