@@ -5,22 +5,18 @@ import {
     isSharedOpenSearchIndex
 } from "@webiny/api-opensearch";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import type { CmsModelOpenSearchIndexProvider } from "~/features/CmsModelOpenSearchIndex/index.js";
 import type {
-    ICmsModelOpenSearchIndexModel,
-    ICmsModelOpenSearchIndexResult
-} from "~/features/CmsModelOpenSearchIndex/abstractions.js";
+    CmsModelOpenSearchIndexProvider,
+    ICmsModelOpenSearchIndexProviderResult
+} from "~/features/CmsModelOpenSearchIndex/index.js";
+import type { ICmsModelOpenSearchIndexModel } from "~/features/CmsModelOpenSearchIndex/abstractions.js";
 
 export interface CmsElasticsearchParams {
     model: ICmsModelOpenSearchIndexModel;
 }
 
-export interface ConfigurationsElasticsearchResult extends ICmsModelOpenSearchIndexResult {
-    index: string;
-}
-
 export interface Configurations {
-    es: (params: CmsElasticsearchParams) => Promise<ConfigurationsElasticsearchResult>;
+    es: (params: CmsElasticsearchParams) => Promise<ICmsModelOpenSearchIndexProviderResult>;
 }
 
 export const createConfigurations = (

@@ -12,7 +12,6 @@ export interface ICmsModelOpenSearchIndexParams {
 }
 
 export interface ICmsModelOpenSearchIndexResult {
-    index: string;
     settings: OpenSearchIndexRequestBody;
     shared: boolean;
 }

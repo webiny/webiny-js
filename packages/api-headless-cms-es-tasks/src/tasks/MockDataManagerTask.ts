@@ -5,7 +5,7 @@ import type {
 } from "~/tasks/MockDataManager/types.js";
 import { CARS_MODEL_ID } from "~/tasks/MockDataManager/constants.js";
 import { enableIndexing } from "~/utils/index.js";
-import { CmsModelOpenSearchIndex } from "@webiny/api-headless-cms-ddb-es/exports/api/cms/opensearch.js";
+import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { CmsContext } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 
@@ -59,7 +59,7 @@ class MockDataManagerTask implements TaskDefinition.Interface<
             await enableIndexing({
                 client: this.context.opensearch,
                 model,
-                indexConfig: this.context.container.resolve(CmsModelOpenSearchIndex)
+                indexProvider: this.context.container.resolve(CmsModelOpenSearchIndexProvider)
             });
         }
     }
@@ -70,7 +70,7 @@ class MockDataManagerTask implements TaskDefinition.Interface<
             await enableIndexing({
                 client: this.context.opensearch,
                 model,
-                indexConfig: this.context.container.resolve(CmsModelOpenSearchIndex)
+                indexProvider: this.context.container.resolve(CmsModelOpenSearchIndexProvider)
             });
         }
     }

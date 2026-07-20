@@ -9,7 +9,7 @@ import { calculateSeconds, WAIT_MAX_SECONDS } from "./calculateSeconds.js";
 import { createModelAndGroup } from "~/tasks/MockDataManager/createModelAndGroup.js";
 import type { Context } from "~/types.js";
 import { disableIndexing, enableIndexing } from "~/utils/index.js";
-import { CmsModelOpenSearchIndex } from "@webiny/api-headless-cms-ddb-es/exports/api/cms/opensearch.js";
+import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { MOCK_DATA_CREATOR_TASK_ID } from "~/tasks/MockDataCreatorTask.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
@@ -47,7 +47,7 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
                 await enableIndexing({
                     client: this.context.opensearch,
                     model,
-                    indexConfig: this.context.container.resolve(CmsModelOpenSearchIndex)
+                    indexProvider: this.context.container.resolve(CmsModelOpenSearchIndexProvider)
                 });
             }
             return controller.response.done();
@@ -65,7 +65,7 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
         await disableIndexing({
             model: result.model,
             client: this.context.opensearch,
-            indexConfig: this.context.container.resolve(CmsModelOpenSearchIndex)
+            indexProvider: this.context.container.resolve(CmsModelOpenSearchIndexProvider)
         });
 
         const { amountOfTasks, amountOfRecords } = calculateAmounts(input.amount);

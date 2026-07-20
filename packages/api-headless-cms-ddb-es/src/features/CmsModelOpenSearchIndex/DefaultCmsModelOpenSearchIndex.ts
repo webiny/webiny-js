@@ -2,19 +2,10 @@ import { getBaseConfiguration, isSharedOpenSearchIndex } from "@webiny/api-opens
 import { CmsModelOpenSearchIndex } from "./abstractions.js";
 
 class DefaultCmsModelOpenSearchIndexImpl implements CmsModelOpenSearchIndex.Interface {
-    public async execute(
-        params: CmsModelOpenSearchIndex.Params
-    ): Promise<CmsModelOpenSearchIndex.Result> {
-        const { model } = params;
-        const shared = isSharedOpenSearchIndex();
-        const index = [shared ? "root" : model.tenant, "headless-cms", model.modelId]
-            .join("-")
-            .toLowerCase();
-
+    public async execute(): Promise<CmsModelOpenSearchIndex.Result> {
         return {
-            index,
             settings: getBaseConfiguration(),
-            shared
+            shared: isSharedOpenSearchIndex()
         };
     }
 }
