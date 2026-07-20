@@ -1,4 +1,4 @@
-import { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
+import { CmsEntryOpenSearchValuesModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValuesModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 interface ModifierParams {

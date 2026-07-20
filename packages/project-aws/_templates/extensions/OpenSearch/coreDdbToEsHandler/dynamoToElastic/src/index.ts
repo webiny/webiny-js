@@ -5,7 +5,8 @@
  * OpenSearch. `createDdbToOpenSearchStreamHandler` wires DdbToOpenSearchHandler + OpenSearchClient +
  * compression in its own DI container, so this entry only builds the OpenSearch client.
  */
-import { createOpenSearchClient, type OpenSearchClientOptions } from "@webiny/api-opensearch";
+import { type OpenSearchClientOptions } from "@webiny/api-opensearch";
+import { createAwsOpenSearchClient } from "@webiny/api-opensearch-aws";
 import { createDdbToOpenSearchStreamHandler } from "@webiny/api-sync-ddb-to-opensearch";
 
 const osUsername = process.env.OPENSEARCH_USERNAME;
@@ -23,6 +24,6 @@ if (osUsername && osPassword) {
     };
 }
 
-const client = createOpenSearchClient(clientOptions);
+const client = createAwsOpenSearchClient(clientOptions);
 
 export const handler = createDdbToOpenSearchStreamHandler(client);

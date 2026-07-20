@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../api-opensearch" },
+    { "path": "../api-sync-to-opensearch" },
+    { "path": "../feature" },
+    { "path": "../utils" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
+      "@webiny/api-opensearch": ["../api-opensearch/src"],
+      "@webiny/api-sync-to-opensearch/*": ["../api-sync-to-opensearch/src/*"],
+      "@webiny/api-sync-to-opensearch": ["../api-sync-to-opensearch/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
+    }
+  }
+}

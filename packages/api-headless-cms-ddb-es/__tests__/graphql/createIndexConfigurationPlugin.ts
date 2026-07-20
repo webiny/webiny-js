@@ -1,6 +1,6 @@
 import { getBaseConfiguration } from "@webiny/api-opensearch";
 import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
-import { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex";
+import { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndex";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 class CustomOpenSearchIndex implements CmsEntryOpenSearchIndex.Interface {

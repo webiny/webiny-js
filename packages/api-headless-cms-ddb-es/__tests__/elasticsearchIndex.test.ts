@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { configurations } from "~/configurations";
+import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 
 describe("Elasticsearch index", () => {

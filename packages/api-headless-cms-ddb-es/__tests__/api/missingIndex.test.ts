@@ -3,7 +3,7 @@ import { useHandler } from "~tests/graphql/handler";
 import { createMockPlugins } from "~tests/converters/mocks";
 import { createGlobalModifierPlugin } from "~tests/api/mocks/plugins";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
-import { configurations } from "~/configurations";
+import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
