@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { Drawer, OverlayLoader } from "@webiny/admin-ui";
+import { Drawer, OverlayLoader, useToast } from "@webiny/admin-ui";
 import { DialogsProvider } from "@webiny/app-admin";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { ContentEntryFeature } from "~/features/contentEntry/feature.js";
@@ -74,6 +74,7 @@ interface EditEntryDrawerContentProps {
 const EditEntryDrawerContent = observer(
     ({ model, entryId, onClose, onSaved }: EditEntryDrawerContentProps) => {
         const { presenter } = useFeature(EditEntryPresenterFeature);
+        const { showSuccessToast } = useToast();
 
         useEffect(() => {
             presenter.init(entryId);
@@ -89,8 +90,9 @@ const EditEntryDrawerContent = observer(
                 // overlay flash behind the still-open drawer. The drawer stays open so the
                 // editor can keep editing.
                 onSaved(toReferenceEntryPatch(savedEntry));
+                showSuccessToast({ title: `"${savedEntry.meta.title}" saved successfully.` });
             }
-        }, [onSaved]);
+        }, [onSaved, showSuccessToast]);
 
         const vm = presenter.form.vm;
 
@@ -103,7 +105,7 @@ const EditEntryDrawerContent = observer(
                 headerSeparator={true}
                 footerSeparator={true}
                 bodyPadding={false}
-                title={`Edit ${model.name} Entry`}
+                title={vm.entry?.meta?.title || `Edit ${model.name} Entry`}
                 actions={
                     <>
                         <Drawer.CancelButton />
