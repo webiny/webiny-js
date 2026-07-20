@@ -65,9 +65,20 @@ export function registerSchedulerServer(rootContainer: Container): void {
         }
     });
 
-    // Register the one instance under both the concrete class (for the recover route) and the
-    // SchedulerService abstraction (for per-request create/update/delete). Root registration is visible
-    // to request containers via the parent chain, and nothing registers a per-request default to shadow it.
+    // Register the ONE Bree instance under TWO tokens — two views of the same object:
+    //
+    //   - SchedulerService: the flavour-agnostic contract (create/update/delete/exists) that AWS
+    //     implements too. This is what per-request GraphQL mutations resolve to schedule/reschedule.
+    //   - SchedulerSingleton: typed as the CONCRETE BreeSchedulerService, so it also exposes the
+    //     methods that aren't on that contract — start() and recover(). Those are Bree-only: AWS's
+    //     EventBridge is managed infra (nothing to start) and persists its own schedules (nothing to
+    //     recover), so they don't belong on the shared interface. The boot step + recover route resolve
+    //     this token precisely because they need start()/recover().
+    //
+    // registerInstance (not register) because it's a single live object holding all tenants' timers —
+    // every caller must get the SAME instance, not a per-scope construction. Registered at root, so
+    // per-request child containers inherit it via the parent chain; nothing registers a per-request
+    // SchedulerService default that would shadow it (unlike e.g. the WS transport's Null default).
     rootContainer.registerInstance(SchedulerSingleton, service);
     rootContainer.registerInstance(SchedulerService, service);
 
