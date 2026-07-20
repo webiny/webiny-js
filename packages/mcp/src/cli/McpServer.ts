@@ -32,9 +32,9 @@ interface Skill {
 }
 
 /**
- * Recursively find all SKILL.md files under `dir`.
+ * Recursively find all files matching `fileName` under `dir`.
  */
-function findSkillFiles(dir: string): string[] {
+function findFiles(dir: string, fileName: string): string[] {
     if (!existsSync(dir)) {
         return [];
     }
@@ -42,8 +42,8 @@ function findSkillFiles(dir: string): string[] {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
         const fullPath = join(dir, entry.name);
         if (entry.isDirectory()) {
-            results.push(...findSkillFiles(fullPath));
-        } else if (entry.isFile() && entry.name === "SKILL.md") {
+            results.push(...findFiles(fullPath, fileName));
+        } else if (entry.isFile() && entry.name === fileName) {
             results.push(fullPath);
         }
     }
@@ -57,7 +57,7 @@ function discoverSkills(skillsDirs: string[]): Map<string, Skill> {
     const skills = new Map<string, Skill>();
 
     for (const dir of skillsDirs) {
-        for (const filePath of findSkillFiles(dir)) {
+        for (const filePath of findFiles(dir, "SKILL.md")) {
             try {
                 const raw = readFileSync(filePath, "utf8");
                 const parsed = fm<SkillAttributes>(raw);
@@ -79,6 +79,55 @@ function discoverSkills(skillsDirs: string[]): Map<string, Skill> {
     }
 
     return skills;
+}
+
+// ---------------------------------------------------------------------------
+// Agent discovery
+// ---------------------------------------------------------------------------
+
+interface AgentAttributes {
+    name: string;
+    description: string;
+    skills?: string[];
+}
+
+interface Agent {
+    name: string;
+    description: string;
+    skills: string[];
+    filePath: string;
+}
+
+function discoverAgents(skillsDirs: string[]): Map<string, Agent> {
+    const agents = new Map<string, Agent>();
+
+    for (const dir of skillsDirs) {
+        for (const filePath of findFiles(dir, "AGENT.md")) {
+            try {
+                const raw = readFileSync(filePath, "utf8");
+                const parsed = fm<AgentAttributes>(raw);
+                const { name, description } = parsed.attributes;
+
+                if (!name || !description) {
+                    console.error(`[webiny-mcp] skipping ${filePath}: missing name or description`);
+                    continue;
+                }
+
+                if (!agents.has(name)) {
+                    agents.set(name, {
+                        name,
+                        description,
+                        skills: parsed.attributes.skills || [],
+                        filePath
+                    });
+                }
+            } catch (err) {
+                console.error(`[webiny-mcp] error reading ${filePath}:`, err);
+            }
+        }
+    }
+
+    return agents;
 }
 
 // ---------------------------------------------------------------------------
@@ -143,6 +192,57 @@ function readSkillContent(skill: Skill): string {
     return fm(raw).body;
 }
 
+function buildAgentCatalog(agents: Map<string, Agent>): string {
+    const lines: string[] = [`# Webiny Agents  (v${getVersion()})`, ""];
+
+    if (agents.size === 0) {
+        lines.push(
+            "_(No agents found. Add AGENT.md files with front-matter to a skills/agents directory.)_"
+        );
+        return lines.join("\n");
+    }
+
+    lines.push(
+        "Agents bundle related skills into task-oriented workflows. " +
+            "Use `get_webiny_agent` to load the full agent blueprint, " +
+            "then `get_webiny_skill` to load each skill it references.",
+        ""
+    );
+    lines.push("| Agent | Description | Skills |");
+    lines.push("|---|---|---|");
+    for (const agent of [...agents.values()].sort((a, b) => a.name.localeCompare(b.name))) {
+        const desc = agent.description.replace(/\n/g, " ").trim();
+        const skills = agent.skills.map(s => `\`${s}\``).join(", ") || "_(none)_";
+        lines.push(`| \`${agent.name}\` | ${desc} | ${skills} |`);
+    }
+    lines.push("");
+
+    return lines.join("\n");
+}
+
+function readAgentContent(agent: Agent, skills: Map<string, Skill>): string {
+    const raw = readFileSync(agent.filePath, "utf8");
+    const body = fm(raw).body;
+
+    const lines: string[] = [body, "", "---", "", "## Skills"];
+
+    if (agent.skills.length === 0) {
+        lines.push("", "This agent has no linked skills.");
+    } else {
+        lines.push("", "Load these skills with `get_webiny_skill` to get full documentation:", "");
+        for (const skillName of agent.skills) {
+            const skill = skills.get(skillName);
+            if (skill) {
+                lines.push(`- \`${skillName}\` — ${skill.description.replace(/\n/g, " ").trim()}`);
+            } else {
+                lines.push(`- \`${skillName}\` — ⚠ not found in skill catalog`);
+            }
+        }
+    }
+
+    return lines.join("\n");
+}
+
 // ---------------------------------------------------------------------------
 // Standalone entry point
 // ---------------------------------------------------------------------------
@@ -165,8 +265,9 @@ export async function startMcpServer(params: IMcpServerParams = {}): Promise<voi
         console.error(`[webiny-mcp] additional skills: ${resolve(cwd, d)}`);
     }
 
-    // In-memory cache: populated on first list, reused by get.
+    // In-memory caches: populated on first list, reused by get.
     let skillsCache: Map<string, Skill> | null = null;
+    let agentsCache: Map<string, Agent> | null = null;
 
     function getSkills(): Map<string, Skill> {
         if (!skillsCache) {
@@ -176,6 +277,14 @@ export async function startMcpServer(params: IMcpServerParams = {}): Promise<voi
         return skillsCache;
     }
 
+    function getAgents(): Map<string, Agent> {
+        if (!agentsCache) {
+            agentsCache = discoverAgents(skillsDirs);
+            console.error(`[webiny-mcp] discovered ${agentsCache.size} agent(s)`);
+        }
+        return agentsCache;
+    }
+
     // ---------------------------------------------------------------
     // MCP server
     // ---------------------------------------------------------------
@@ -183,13 +292,46 @@ export async function startMcpServer(params: IMcpServerParams = {}): Promise<voi
     const server = new McpServer({ name: "webiny", version: getVersion() });
 
     server.registerTool(
+        "get_started",
+        {
+            title: "Get Started with Webiny",
+            description:
+                "Returns the Webiny routing guide — a decision tree that maps your task " +
+                "to the right specialist agent and skills. Call this first before any " +
+                "Webiny-related work.",
+            inputSchema: {},
+            annotations: { readOnlyHint: true }
+        },
+        async () => {
+            const agents = getAgents();
+            const rootAgent = agents.get("webiny");
+            if (!rootAgent) {
+                return {
+                    content: [
+                        {
+                            type: "text",
+                            text:
+                                "No root routing agent found. " +
+                                "Use `list_webiny_agents` or `list_webiny_skills` to browse available resources."
+                        }
+                    ]
+                };
+            }
+            return {
+                content: [{ type: "text", text: readAgentContent(rootAgent, getSkills()) }]
+            };
+        }
+    );
+
+    server.registerTool(
         "list_webiny_skills",
         {
             title: "List Webiny Skills",
             description:
                 "Returns a catalog of all available Webiny skills with names and descriptions. " +
-                "Always call this first when working on anything Webiny-related, then call " +
-                "get_webiny_skill to load the specific skill you need.",
+                "Prefer calling get_started() first to get routed to the right specialist " +
+                "agent. Use this tool for direct skill lookups or when the task doesn't " +
+                "fit any specialist agent.",
             inputSchema: {},
             annotations: { readOnlyHint: true }
         },
@@ -229,6 +371,60 @@ export async function startMcpServer(params: IMcpServerParams = {}): Promise<voi
             }
             return {
                 content: [{ type: "text", text: readSkillContent(skill) }]
+            };
+        }
+    );
+
+    server.registerTool(
+        "list_webiny_agents",
+        {
+            title: "List Webiny Agents",
+            description:
+                "Returns a catalog of all available Webiny agents. " +
+                "Agents are task-oriented blueprints that bundle related skills " +
+                "into workflows. Use get_webiny_agent to load the full blueprint, " +
+                "then get_webiny_skill to load each skill it references.",
+            inputSchema: {},
+            annotations: { readOnlyHint: true }
+        },
+        async () => ({
+            content: [{ type: "text", text: buildAgentCatalog(getAgents()) }]
+        })
+    );
+
+    server.registerTool(
+        "get_webiny_agent",
+        {
+            title: "Get Webiny Agent",
+            description:
+                "Loads the full blueprint for a Webiny agent. " +
+                "The blueprint includes the agent's system prompt and a list of " +
+                "skills to load with get_webiny_skill. " +
+                "Call list_webiny_agents first to see available agent names.",
+            inputSchema: {
+                name: z.string().describe("Agent name — use exact names from list_webiny_agents")
+            },
+            annotations: { readOnlyHint: true }
+        },
+        async ({ name }) => {
+            const agents = getAgents();
+            const agent = agents.get(name);
+            if (!agent) {
+                const available = [...agents.keys()].sort();
+                return {
+                    content: [
+                        {
+                            type: "text",
+                            text:
+                                `Agent not found: "${name}".\n\n` +
+                                `Available agents: ${available.join(", ") || "(none)"}.`
+                        }
+                    ],
+                    isError: true
+                };
+            }
+            return {
+                content: [{ type: "text", text: readAgentContent(agent, getSkills()) }]
             };
         }
     );

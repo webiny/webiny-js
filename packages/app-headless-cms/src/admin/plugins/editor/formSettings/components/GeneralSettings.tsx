@@ -66,6 +66,26 @@ const GeneralSettings = ({ Bind }: GeneralSettingsProps) => {
                         />
                     </Bind>
                 </Grid.Column>
+                <Grid.Column span={6}>
+                    <Bind name={"settings.previewPrefix"}>
+                        <Input
+                            label={"Preview URL Prefix"}
+                            placeholder={"http://localhost:3000/articles"}
+                            description={"Base URL for live preview."}
+                        />
+                    </Bind>
+                </Grid.Column>
+                <Grid.Column span={6}>
+                    <Bind name={"settings.previewSlug"}>
+                        <Input
+                            label={"Preview Slug"}
+                            placeholder={"{values.slug}"}
+                            description={
+                                "Entry field pattern for the URL slug. Use {values.<fieldId>}."
+                            }
+                        />
+                    </Bind>
+                </Grid.Column>
             </Grid>
         </React.Fragment>
     );

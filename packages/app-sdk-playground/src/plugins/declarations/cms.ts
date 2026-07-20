@@ -139,7 +139,42 @@ interface SdkUnpublishEntryRevisionParams {
     fields: string[];
 }
 
+interface SdkModelField {
+    id: string;
+    fieldId: string;
+    type: string;
+    label: string;
+    list?: boolean;
+    settings?: Record<string, unknown>;
+}
+
+interface SdkModelData {
+    name: string;
+    modelId: string;
+    singularApiName: string;
+    pluralApiName: string;
+    description?: string;
+    titleFieldId?: string;
+    descriptionFieldId?: string;
+    imageFieldId?: string;
+    fields: SdkModelField[];
+    layout: string[][];
+    tags: string[];
+    settings?: Record<string, unknown>;
+    metadata?: Record<string, unknown>;
+}
+
+interface SdkGetModelParams {
+    /** The model ID to retrieve. */
+    modelId: string;
+}
+
 interface SdkCms {
+    /** Get a content model definition by model ID. */
+    getModel(
+        params: SdkGetModelParams
+    ): Promise<SdkResult<SdkModelData, SdkError>>;
+
     /** Get a single entry by ID or field values. */
     getEntry<TValues extends SdkEntryValues = SdkEntryValues>(
         params: SdkGetEntryParams

@@ -11,6 +11,7 @@ export interface CmsDynamicZoneTemplate {
     layout: CmsModelLayoutCell[][];
     validation: CmsModelFieldValidation[];
     tags?: string[];
+    componentName?: string;
 }
 
 /**
