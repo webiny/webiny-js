@@ -35,7 +35,11 @@ class FilePrivateModelImpl implements ModelFactory.Interface {
                     // Store complete raw EXIF as JSON
                     exif: fields.searchableJson().label("EXIF Data"),
                     // Store complete raw IPTC as JSON
-                    iptc: fields.searchableJson().label("IPTC Data")
+                    iptc: fields.searchableJson().label("IPTC Data"),
+                    // Non-destructive image edit (crop / hotspot / alt / caption).
+                    // Stored as free-form JSON so the shape can evolve without
+                    // schema changes; not indexed.
+                    imageEdit: fields.json().label("Image edit")
                 })),
             tags: fields
                 .text()
