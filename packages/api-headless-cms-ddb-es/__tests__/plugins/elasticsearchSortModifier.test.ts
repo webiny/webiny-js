@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Sort } from "@webiny/api-opensearch/types";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
-import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
+import type { CmsEntryOpenSearchSortModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchSortModifier/index.js";
 
 const model = {} as unknown as CmsModel;
 

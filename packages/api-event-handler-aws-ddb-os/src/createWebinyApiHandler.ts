@@ -17,9 +17,12 @@ import { AuditLogsDdbFeature } from "@webiny/api-audit-logs-ddb";
 import { AcoDdbFeature } from "@webiny/api-aco-ddb";
 import { WebsocketsDdbFeature } from "@webiny/api-websockets-ddb";
 import { DbRegistryFeature } from "@webiny/db/exports/api/db.js";
-import { createOpenSearchClient, type OpenSearchClientOptions } from "@webiny/api-opensearch";
+import { type OpenSearchClientOptions } from "@webiny/api-opensearch";
+import {
+    createAwsOpenSearchClient,
+    AwsOpenSearchClientFactoryFeature
+} from "@webiny/api-opensearch-aws";
 import { OpenSearchClientFeature } from "@webiny/api-opensearch/features/OpenSearchClient/feature.js";
-import { OpenSearchClientFactoryFeature } from "@webiny/api-opensearch/features/OpenSearchClientFactory/feature.js";
 import { OpenSearchQueryBuilderOperatorFeature } from "@webiny/api-opensearch/features/OpenSearchQueryBuilderOperator/feature.js";
 import { OpenSearchFieldFeature } from "@webiny/api-opensearch/features/OpenSearchField/feature.js";
 import { OpenSearchIndexFeature } from "@webiny/api-opensearch/features/OpenSearchIndex/feature.js";
@@ -29,7 +32,7 @@ export type CreateAwsDdbOsApiHandlerConfig = Pick<BaseConfig, "extensions" | "do
      * OpenSearch client. Defaults to one built from `OPENSEARCH_*` env vars. Injectable so
      * integration tests can point the handler at a local OpenSearch.
      */
-    openSearchClient?: ReturnType<typeof createOpenSearchClient>;
+    openSearchClient?: ReturnType<typeof createAwsOpenSearchClient>;
 };
 
 const openSearchClientFromEnv = () => {
@@ -47,7 +50,7 @@ const openSearchClientFromEnv = () => {
         };
     }
 
-    return createOpenSearchClient(openSearchClientOptions);
+    return createAwsOpenSearchClient(openSearchClientOptions);
 };
 
 export function createAwsDdbOsApiHandler(config: CreateAwsDdbOsApiHandlerConfig) {
@@ -60,7 +63,7 @@ export function createAwsDdbOsApiHandler(config: CreateAwsDdbOsApiHandlerConfig)
             // ── OpenSearch core (client + query-builder operators + fields + index registries) ──
             // The DDB+ES CMS storage factory resolves all of these.
             OpenSearchClientFeature.register(container, openSearchClient);
-            OpenSearchClientFactoryFeature.register(container);
+            AwsOpenSearchClientFactoryFeature.register(container);
             OpenSearchQueryBuilderOperatorFeature.register(container);
             OpenSearchFieldFeature.register(container);
             OpenSearchIndexFeature.register(container);

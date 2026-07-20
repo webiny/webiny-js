@@ -3,7 +3,7 @@ import type { CmsEntry, CmsIdentity, CmsModel } from "@webiny/api-headless-cms/t
 import type {
     CmsEntryOpenSearchValuesModifier,
     ModifyValuesParams
-} from "~/features/CmsEntryOpenSearchValuesModifier/abstractions.js";
+} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValuesModifier/abstractions.js";
 
 const createModifier = <T>(
     params:

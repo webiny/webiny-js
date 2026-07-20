@@ -3,7 +3,7 @@ import type {
     CmsEntryValues,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import type { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
+import type { CmsEntryOpenSearchValuesModifier } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 
 interface Params<T extends CmsEntryValues = CmsEntryValues> {
     model: StorageOperationsCmsModel<T>;

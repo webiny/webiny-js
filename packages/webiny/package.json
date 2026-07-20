@@ -14,8 +14,8 @@
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
-    "@webiny/api-headless-cms-ddb-es": "0.0.0",
     "@webiny/api-headless-cms-scheduler": "0.0.0",
+    "@webiny/api-headless-cms-utils-os": "0.0.0",
     "@webiny/api-mailer": "0.0.0",
     "@webiny/api-opensearch": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
@@ -96,8 +96,8 @@
     "./api/cms/model": "./api/cms/model.js",
     "./api/cms/storage": "./api/cms/storage.js",
     "./api/cms/validation": "./api/cms/validation.js",
-    "./api/cms/opensearch": "./api/cms/opensearch.js",
     "./api/cms/scheduler": "./api/cms/scheduler.js",
+    "./api/cms/opensearch": "./api/cms/opensearch.js",
     "./api/mailer": "./api/mailer.js",
     "./api/opensearch": "./api/opensearch.js",
     "./api/scheduler": "./api/scheduler.js",
@@ -142,7 +142,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "d7899dcc69c102fedaff61d0582909be5f528a17f9ac71580f34fe704bb29d6b",
+  "exportGenerationHash": "8fa018ec0b67cbcc73aa6a616591cf0cf41a1f7ed271a445f1bae23a70b22527",
   "webiny": {
     "publishFrom": "dist"
   }

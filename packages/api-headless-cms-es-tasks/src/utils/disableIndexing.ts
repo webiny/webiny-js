@@ -1,5 +1,5 @@
 import type { Client } from "@webiny/api-opensearch";
-import { configurations } from "@webiny/api-headless-cms-ddb-es/configurations.js";
+import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 export interface IDisableIndexingParams {

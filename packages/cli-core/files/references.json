@@ -455,7 +455,12 @@
     {
       "name": "@opensearch-project/opensearch",
       "version": "3.6.0",
-      "files": ["/packages/api-opensearch/package.json", "/packages/api-opensearch/package.json"]
+      "files": [
+        "/packages/api-opensearch/package.json",
+        "/packages/api-opensearch-aws/package.json",
+        "/packages/api-opensearch/package.json",
+        "/packages/api-opensearch-aws/package.json"
+      ]
     },
     {
       "name": "@pulumi/aws",
@@ -1287,6 +1292,7 @@
         "/packages/api-audit-logs-sql/package.json",
         "/packages/api-core-sql/package.json",
         "/packages/api-event-handler-server-sql/package.json",
+        "/packages/api-headless-cms-pg-os/package.json",
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-websockets-sql/package.json",
         "/packages/project-server-template/template/appTemplates/api/graphql/package.json",
@@ -1295,6 +1301,7 @@
         "/packages/api-audit-logs-sql/package.json",
         "/packages/api-core-sql/package.json",
         "/packages/api-event-handler-server-sql/package.json",
+        "/packages/api-headless-cms-pg-os/package.json",
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-websockets-sql/package.json",
         "/packages/project-server-template/template/appTemplates/api/graphql/package.json",
@@ -2528,7 +2535,9 @@
       "name": "@electric-sql/pglite",
       "version": "0.5.4",
       "files": [
+        "/packages/api-headless-cms-pg-os/package.json",
         "/packages/api-headless-cms-sql/package.json",
+        "/packages/api-headless-cms-pg-os/package.json",
         "/packages/api-headless-cms-sql/package.json"
       ]
     },
@@ -2536,7 +2545,9 @@
       "name": "@electric-sql/pglite-socket",
       "version": "0.2.7",
       "files": [
+        "/packages/api-headless-cms-pg-os/package.json",
         "/packages/api-headless-cms-sql/package.json",
+        "/packages/api-headless-cms-pg-os/package.json",
         "/packages/api-headless-cms-sql/package.json"
       ]
     },
@@ -3230,6 +3241,7 @@
         "/packages/api-headless-cms-testing/package.json",
         "/packages/api-mailer/package.json",
         "/packages/api-opensearch/package.json",
+        "/packages/api-opensearch-aws/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/api-scheduler/package.json",
         "/packages/api-sync-system/package.json",
@@ -3321,6 +3333,7 @@
         "/packages/api-headless-cms-testing/package.json",
         "/packages/api-mailer/package.json",
         "/packages/api-opensearch/package.json",
+        "/packages/api-opensearch-aws/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/api-scheduler/package.json",
         "/packages/api-sync-system/package.json",
@@ -3474,20 +3487,24 @@
         "/packages/api-headless-cms-ddb/package.json",
         "/packages/api-headless-cms-ddb-es/package.json",
         "/packages/api-headless-cms-es-tasks/package.json",
+        "/packages/api-headless-cms-pg-os/package.json",
         "/packages/api-headless-cms-scheduler/package.json",
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-headless-cms-storage/package.json",
         "/packages/api-headless-cms-tasks/package.json",
         "/packages/api-headless-cms-tasks-ddb-es/package.json",
         "/packages/api-headless-cms-testing/package.json",
+        "/packages/api-headless-cms-utils-os/package.json",
         "/packages/api-headless-cms-workflows/package.json",
         "/packages/api-mailer/package.json",
         "/packages/api-opensearch/package.json",
+        "/packages/api-opensearch-aws/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/api-scheduler/package.json",
         "/packages/api-scheduler-aws/package.json",
         "/packages/api-scheduler-server/package.json",
         "/packages/api-sync-ddb-to-opensearch/package.json",
+        "/packages/api-sync-pg-to-opensearch/package.json",
         "/packages/api-sync-system/package.json",
         "/packages/api-sync-to-opensearch/package.json",
         "/packages/api-website-builder/package.json",
@@ -3605,20 +3622,24 @@
         "/packages/api-headless-cms-ddb/package.json",
         "/packages/api-headless-cms-ddb-es/package.json",
         "/packages/api-headless-cms-es-tasks/package.json",
+        "/packages/api-headless-cms-pg-os/package.json",
         "/packages/api-headless-cms-scheduler/package.json",
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-headless-cms-storage/package.json",
         "/packages/api-headless-cms-tasks/package.json",
         "/packages/api-headless-cms-tasks-ddb-es/package.json",
         "/packages/api-headless-cms-testing/package.json",
+        "/packages/api-headless-cms-utils-os/package.json",
         "/packages/api-headless-cms-workflows/package.json",
         "/packages/api-mailer/package.json",
         "/packages/api-opensearch/package.json",
+        "/packages/api-opensearch-aws/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/api-scheduler/package.json",
         "/packages/api-scheduler-aws/package.json",
         "/packages/api-scheduler-server/package.json",
         "/packages/api-sync-ddb-to-opensearch/package.json",
+        "/packages/api-sync-pg-to-opensearch/package.json",
         "/packages/api-sync-system/package.json",
         "/packages/api-sync-to-opensearch/package.json",
         "/packages/api-website-builder/package.json",
@@ -3749,6 +3770,7 @@
         "/packages/api-headless-cms-ddb/package.json",
         "/packages/api-headless-cms-ddb-es/package.json",
         "/packages/api-headless-cms-es-tasks/package.json",
+        "/packages/api-headless-cms-pg-os/package.json",
         "/packages/api-headless-cms-scheduler/package.json",
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-headless-cms-storage/package.json",
@@ -3756,6 +3778,7 @@
         "/packages/api-headless-cms-workflows/package.json",
         "/packages/api-mailer/package.json",
         "/packages/api-opensearch/package.json",
+        "/packages/api-opensearch-aws/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/api-scheduler/package.json",
         "/packages/api-scheduler-aws/package.json",
@@ -3832,6 +3855,7 @@
         "/packages/api-headless-cms-ddb/package.json",
         "/packages/api-headless-cms-ddb-es/package.json",
         "/packages/api-headless-cms-es-tasks/package.json",
+        "/packages/api-headless-cms-pg-os/package.json",
         "/packages/api-headless-cms-scheduler/package.json",
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-headless-cms-storage/package.json",
@@ -3839,6 +3863,7 @@
         "/packages/api-headless-cms-workflows/package.json",
         "/packages/api-mailer/package.json",
         "/packages/api-opensearch/package.json",
+        "/packages/api-opensearch-aws/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/api-scheduler/package.json",
         "/packages/api-scheduler-aws/package.json",
@@ -4939,6 +4964,10 @@
               "types": ["devDependencies"]
             },
             {
+              "file": "/packages/api-headless-cms-pg-os/package.json",
+              "types": ["devDependencies"]
+            },
+            {
               "file": "/packages/api-headless-cms-scheduler/package.json",
               "types": ["devDependencies"]
             },
@@ -4960,17 +4989,26 @@
               "types": ["devDependencies"]
             },
             {
+              "file": "/packages/api-headless-cms-utils-os/package.json",
+              "types": ["devDependencies"]
+            },
+            {
               "file": "/packages/api-headless-cms-workflows/package.json",
               "types": ["devDependencies"]
             },
             { "file": "/packages/api-mailer/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-opensearch/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-opensearch-aws/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-record-locking/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-scheduler/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-scheduler-aws/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-scheduler-server/package.json", "types": ["devDependencies"] },
             {
               "file": "/packages/api-sync-ddb-to-opensearch/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-sync-pg-to-opensearch/package.json",
               "types": ["devDependencies"]
             },
             { "file": "/packages/api-sync-system/package.json", "types": ["devDependencies"] },
@@ -5188,6 +5226,10 @@
               "types": ["devDependencies"]
             },
             {
+              "file": "/packages/api-headless-cms-pg-os/package.json",
+              "types": ["devDependencies"]
+            },
+            {
               "file": "/packages/api-headless-cms-scheduler/package.json",
               "types": ["devDependencies"]
             },
@@ -5206,6 +5248,7 @@
             },
             { "file": "/packages/api-mailer/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-opensearch/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-opensearch-aws/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-record-locking/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-scheduler/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-scheduler-aws/package.json", "types": ["devDependencies"] },
@@ -5829,6 +5872,7 @@
             },
             { "file": "/packages/api-mailer/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-opensearch/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-opensearch-aws/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-record-locking/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-scheduler/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-sync-system/package.json", "types": ["devDependencies"] },
@@ -6074,6 +6118,7 @@
               "file": "/packages/api-event-handler-server-sql/package.json",
               "types": ["dependencies"]
             },
+            { "file": "/packages/api-headless-cms-pg-os/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-headless-cms-sql/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-websockets-sql/package.json", "types": ["dependencies"] },
             {
@@ -6445,6 +6490,10 @@
         {
           "version": "0.5.4",
           "files": [
+            {
+              "file": "/packages/api-headless-cms-pg-os/package.json",
+              "types": ["devDependencies"]
+            },
             { "file": "/packages/api-headless-cms-sql/package.json", "types": ["devDependencies"] }
           ]
         }
@@ -6456,6 +6505,10 @@
         {
           "version": "0.2.7",
           "files": [
+            {
+              "file": "/packages/api-headless-cms-pg-os/package.json",
+              "types": ["devDependencies"]
+            },
             { "file": "/packages/api-headless-cms-sql/package.json", "types": ["devDependencies"] }
           ]
         }
@@ -6511,7 +6564,10 @@
       "versions": [
         {
           "version": "3.6.0",
-          "files": [{ "file": "/packages/api-opensearch/package.json", "types": ["dependencies"] }]
+          "files": [
+            { "file": "/packages/api-opensearch/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-opensearch-aws/package.json", "types": ["dependencies"] }
+          ]
         }
       ]
     },

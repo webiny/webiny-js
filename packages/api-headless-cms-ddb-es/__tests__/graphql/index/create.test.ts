@@ -2,7 +2,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { useHandler } from "~tests/graphql/handler";
 import type { CmsContext } from "~/types";
 import type { CmsGroup, CmsModelCreateInput } from "@webiny/api-headless-cms/types";
-import { configurations } from "~/configurations";
+import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
 import { createMappingsSnapshot } from "./mocks/mappingsSnapshot";
 import { CreateGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/index.js";
 import { CreateModelUseCase } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";

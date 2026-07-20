@@ -3,9 +3,9 @@ import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
 import { registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { registerCmsOpenSearchStorageOperations } from "../../src/index";
-import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenSearchBodyModifier/index.js";
+import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { configurations } from "../../src/configurations";
+import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
 import {
     getTestOpenSearchClient,
