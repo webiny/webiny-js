@@ -16,10 +16,16 @@ export interface CreateHandlerOptions {
      * event to pass straight through — the plain server/HTTP behavior.
      */
     transport?: Transport;
+    /**
+     * A pre-built, already root-initialized container. When provided, `root` is NOT called again —
+     * used by transports that must build the root eagerly at startup (e.g. the Node server, which
+     * needs the root container ready to attach a WebSockets upgrade handler before the first request).
+     */
+    rootContainer?: Container;
 }
 
 export function createHandler(options: CreateHandlerOptions) {
-    let rootContainer: Container | null = null;
+    let rootContainer: Container | null = options.rootContainer ?? null;
     const transport = options.transport ?? noopTransport;
 
     return async (...rawArgs: any[]): Promise<any> => {

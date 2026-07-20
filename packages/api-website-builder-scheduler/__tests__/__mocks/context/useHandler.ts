@@ -1,13 +1,11 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
-import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
-import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { WebsiteBuilderSchedulerFeature } from "~/WebsiteBuilderSchedulerFeature.js";
 import { SchedulerFeature, SchedulerService } from "@webiny/api-scheduler";
 import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
-import { PageModelPlugin } from "@webiny/api-website-builder/domain/page/page.model.js";
-import { RedirectModelPlugin } from "@webiny/api-website-builder/domain/redirect/redirect.model.js";
-import { createWebsiteBuilder } from "@webiny/api-website-builder";
+import { WebsiteBuilderFeature } from "@webiny/api-website-builder";
 import { registerMockBackgroundTasks } from "../mockBackgroundTasks.js";
 
 type Params = Omit<CmsTestHandlerParams, "features">;
@@ -15,11 +13,10 @@ type Params = Omit<CmsTestHandlerParams, "features">;
 export const useHandler = <C extends ApiCoreContext = ApiCoreContext>(params: Params = {}) => {
     const { getContext } = createCmsTestHandler({
         ...params,
-        plugins: [createWebsiteBuilder(), ...[params.plugins].flat(Infinity as 1).filter(Boolean)],
+        plugins: [...[params.plugins].flat(Infinity as 1).filter(Boolean)],
         features: container => {
             registerMockBackgroundTasks(container);
-            container.register(PageModelPlugin);
-            container.register(RedirectModelPlugin);
+            WebsiteBuilderFeature.register(container);
             SchedulerFeature.register(container);
             WebsiteBuilderSchedulerFeature.register(container);
             container.registerInstance(SchedulerService, new VoidSchedulerService());

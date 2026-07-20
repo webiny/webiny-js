@@ -2,14 +2,14 @@ import { getIntrospectionQuery } from "graphql";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { until } from "@webiny/project-utils/testing/helpers/until.js";
-import { createCmsTestHandler, processLegacyPlugins } from "@webiny/api-headless-cms/testing";
+import { createCmsTestHandler, processLegacyPlugins } from "@webiny/api-headless-cms-testing";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
 import { ContextPlugin } from "@webiny/api";
 import { AcoFeature } from "~/index";
-import { createIdentity } from "@webiny/api-testing";
+import { createIdentity } from "@webiny/api-core-testing";
 import { createAcoSdk } from "~tests/utils/createAcoSdk.js";
 
 import {
@@ -57,13 +57,19 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             processLegacyPlugins(container, apiAcoStorage.plugins);
 
             if (params.plugins) {
-                const extraPlugins = [params.plugins].flat(Infinity as 1);
-                for (const plugin of extraPlugins) {
+                const extraPlugins = [params.plugins].flat(Infinity as 1).filter(Boolean);
+                // DI-native plugins are plain `container => {}` functions; call them directly.
+                const isFn = (p: any) => typeof p === "function" && !p.prototype;
+                for (const plugin of extraPlugins.filter(isFn)) {
+                    (plugin as (c: any) => void)(container);
+                }
+                const rest = extraPlugins.filter(p => !isFn(p));
+                for (const plugin of rest) {
                     if (plugin instanceof ContextPlugin) {
                         await plugin.apply({ container } as any);
                     }
                 }
-                processLegacyPlugins(container, extraPlugins);
+                processLegacyPlugins(container, rest);
             }
 
             container.register(FileModel);

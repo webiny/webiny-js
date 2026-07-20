@@ -62,10 +62,13 @@ export const createContextHandler = (params?: CreateHandlerParams) => {
 
             const ctx: Record<string, any> = { container: child };
 
-            // Apply additional plugins (e.g. registerCodeSmtpSettings)
+            // Apply additional plugins (e.g. registerCodeSmtpSettings). DI-native plugins are plain
+            // `container => {}` functions; legacy ContextPlugins expose `apply(ctx)`.
             const additionalPlugins = [params?.plugins ?? []].flat(Infinity as 1).filter(Boolean);
             for (const plugin of additionalPlugins as any[]) {
-                if (typeof plugin.apply === "function") {
+                if (typeof plugin === "function" && !plugin.prototype) {
+                    plugin(child);
+                } else if (typeof plugin.apply === "function") {
                     await plugin.apply(ctx);
                 }
             }

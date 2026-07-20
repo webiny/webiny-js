@@ -1,5 +1,5 @@
-import { dbPlugins } from "@webiny/handler-db/testing";
-import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
+import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
+import { registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { createCmsEntryFieldSortingPlugin, registerDynamoDbStorageOperations } from "../../src";
 import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
@@ -15,12 +15,7 @@ setStorageOps("cms", () => {
         /**
          * TODO remove when all apps are created with their own storage operations factory and drivers.
          */
-        dbPlugins({
-            table: process.env.DB_TABLE,
-            driver: new DynamoDbDriver({
-                documentClient
-            })
-        }),
+        dbPlugins(),
         createCmsEntryFieldSortingPlugin({
             canUse: params => {
                 const { fieldId } = params;

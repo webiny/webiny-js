@@ -4,16 +4,17 @@
   "references": [
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-event-handler-core/tsconfig.build.json" },
+    { "path": "../api-file-manager-s3/tsconfig.build.json" },
     { "path": "../api-scheduler-aws/tsconfig.build.json" },
     { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../api-websockets-aws/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../background-tasks-aws/tsconfig.build.json" },
     { "path": "../cognito/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../event-handler-aws/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-db/tsconfig.build.json" }
+    { "path": "../handler/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -26,6 +27,8 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-event-handler-core/*": ["../api-event-handler-core/src/*"],
       "@webiny/api-event-handler-core": ["../api-event-handler-core/src"],
+      "@webiny/api-file-manager-s3/*": ["../api-file-manager-s3/src/*"],
+      "@webiny/api-file-manager-s3": ["../api-file-manager-s3/src"],
       "@webiny/api-scheduler-aws/*": ["../api-scheduler-aws/src/*"],
       "@webiny/api-scheduler-aws": ["../api-scheduler-aws/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
@@ -38,14 +41,14 @@
       "@webiny/background-tasks-aws": ["../background-tasks-aws/src"],
       "@webiny/cognito/*": ["../cognito/src/*"],
       "@webiny/cognito": ["../cognito/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/event-handler-aws/*": ["../event-handler-aws/src/*"],
       "@webiny/event-handler-aws": ["../event-handler-aws/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"]
+      "@webiny/handler": ["../handler/src"]
     }
   }
 }

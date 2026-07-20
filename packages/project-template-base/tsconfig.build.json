@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../ai-powerups/tsconfig.build.json" },
+    { "path": "../languages/tsconfig.build.json" },
+    { "path": "../tenant-manager/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/ai-powerups/*": ["../ai-powerups/src/*"],
+      "@webiny/ai-powerups": ["../ai-powerups/src"],
+      "@webiny/languages/*": ["../languages/src/*"],
+      "@webiny/languages": ["../languages/src"],
+      "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
+      "@webiny/tenant-manager": ["../tenant-manager/src"]
+    }
+  }
+}

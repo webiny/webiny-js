@@ -2,16 +2,15 @@ import type { HcmsTasksContext } from "~/types.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type {
     IDeleteCmsModelTask,
-    IDeleteModelTaskInput,
-    IStoreValue
+    IDeleteModelTaskInput
 } from "~/features/DeleteModelTask/types.js";
-import { createStoreKey, createStoreValue } from "~/helpers/store.js";
+import { createDeleteModelStore, createStoreValue } from "~/helpers/store.js";
 import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
 import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { DbInstance } from "@webiny/handler-db/abstractions.js";
+import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import { TriggerTaskUseCase } from "@webiny/background-tasks/api";
 
 export interface IFullyDeleteModelParams {
@@ -48,12 +47,15 @@ export const fullyDeleteModel = async (
     if (!model) {
         throw new Error(`Model "${modelId}" not found.`);
     }
-    const storeKey = createStoreKey(model);
-    const db = context.container.resolve(DbInstance);
-    const result = await db.store.getValue<IStoreValue>(storeKey);
-    const taskId = result.data?.task;
-    if (taskId) {
-        throw new Error(`Model "${modelId}" is already getting deleted. Task id: ${taskId}.`);
+    const store = createDeleteModelStore(
+        context.container.resolve(GlobalKeyValueStore),
+        model.tenant
+    );
+    const existing = await store.get(model.modelId);
+    if (existing?.task) {
+        throw new Error(
+            `Model "${modelId}" is already getting deleted. Task id: ${existing.task}.`
+        );
     }
 
     const triggerResult = await context.container
@@ -70,8 +72,7 @@ export const fullyDeleteModel = async (
 
     const identity = context.container.resolve(IdentityContext).getIdentity();
 
-    await db.store.storeValue(
-        storeKey,
+    await store.set(
         createStoreValue({
             ...model,
             identity: {

@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
-import { BenchmarkAbstraction, ContextPlugin } from "@webiny/api";
+import { BenchmarkAbstraction } from "@webiny/api";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
+import type { Container } from "@webiny/di";
 import { createIcon } from "~tests/__helpers/icon.js";
 
 describe("benchmark points", () => {
@@ -9,16 +11,22 @@ describe("benchmark points", () => {
     const { createContentModelGroupMutation } = useGraphQLHandler({
         path: "manage",
         topPlugins: [
-            new ContextPlugin(async context => {
-                // Benchmark moved from `context.benchmark` to the DI container during the
-                // DI migration; resolve the same instance createCmsRoute flushes per request.
-                const benchmark = context.container.resolve(BenchmarkAbstraction);
-                benchmark.enable();
+            (container: Container) => {
+                // Benchmark moved from `context.benchmark` to the DI container during the DI
+                // migration; resolve the same instance createCmsRoute flushes per request. It's
+                // registered by HeadlessCmsFeature (after the plugins loop), so enable it from a
+                // post-auth initializer where the abstraction is resolvable.
+                container.registerInstance(RequestContextInitializer, {
+                    async init(ctx: Record<string, any>) {
+                        const benchmark = ctx.container.resolve(BenchmarkAbstraction);
+                        benchmark.enable();
 
-                benchmark.onOutput(async ({ benchmark }) => {
-                    elapsed = benchmark.elapsed;
+                        benchmark.onOutput(async ({ benchmark }: any) => {
+                            elapsed = benchmark.elapsed;
+                        });
+                    }
                 });
-            })
+            }
         ]
     });
     beforeEach(async () => {

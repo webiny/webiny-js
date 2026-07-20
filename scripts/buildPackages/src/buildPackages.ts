@@ -4,7 +4,6 @@ import { writeJsonFileSync } from "write-json-file";
 import { Listr, ListrTask } from "listr2";
 import { getBatches } from "./getBatches";
 import { META_FILE_PATH } from "./constants";
-import { getPackageSourceHash } from "./getPackageSourceHash";
 import { getBuildMeta } from "./getBuildMeta";
 import { buildPackage } from "./buildSinglePackage";
 import { getHardwareInfo } from "./getHardwareInfo";
@@ -63,7 +62,7 @@ export const buildPackages = async () => {
         }
     }
 
-    const { batches, packagesNoCache, allPackages } = await getBatches({
+    const { batches, packagesNoCache, allPackages, buildKeys } = await getBatches({
         cache: options.cache ?? true,
         packagesWhitelist,
         rebuildDependents: options.rebuildDependents
@@ -88,6 +87,16 @@ export const buildPackages = async () => {
         const [pkg] = allPackages;
         try {
             await buildPackage(pkg, options.buildOverrides, "inherit", options.safeReplace);
+
+            // Record the dependency-aware build key so a later build treats this
+            // package as a cache hit (the cache→dist copy is then skipped when
+            // dist already matches — content hash).
+            const meta = getBuildMeta();
+            meta.packages[pkg.packageJson.name] = {
+                sourceHash: buildKeys.get(pkg.name) ?? ""
+            };
+            writeJsonFileSync(META_FILE_PATH, meta);
+
             sendNotification(`Webiny Build (${projectFolder})`, "Build completed successfully");
         } catch (err) {
             sendNotification(`Webiny Build (${projectFolder})`, "Build failed");
@@ -128,12 +137,12 @@ export const buildPackages = async () => {
                                             options.safeReplace
                                         );
 
-                                        // Store package hash
-                                        const sourceHash = await getPackageSourceHash(pkg);
+                                        // Store the dependency-aware build key.
+                                        const key = buildKeys.get(pkg.name) ?? "";
                                         await queueMetaWrite(async () => {
                                             const currentMeta = getBuildMeta();
                                             currentMeta.packages[pkg.packageJson.name] = {
-                                                sourceHash
+                                                sourceHash: key
                                             };
                                             return writeJsonFileSync(META_FILE_PATH, currentMeta);
                                         });

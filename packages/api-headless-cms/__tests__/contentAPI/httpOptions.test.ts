@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { ContextPlugin } from "@webiny/api";
-import type { CmsContext } from "~/types/index.js";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
+import type { Container } from "@webiny/di";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler.js";
 
 /**
@@ -15,9 +15,15 @@ describe("HTTP Options request", () => {
     const manageOpts = {
         path: "manage",
         plugins: [
-            new ContextPlugin<CmsContext>(async () => {
-                throw new Error("This should not register.");
-            })
+            // A post-auth initializer that must NOT run for an OPTIONS preflight (which short-
+            // circuits before the request context is initialized). If it runs, the test fails.
+            (container: Container) => {
+                container.registerInstance(RequestContextInitializer, {
+                    async init() {
+                        throw new Error("This should not register.");
+                    }
+                });
+            }
         ]
     };
 

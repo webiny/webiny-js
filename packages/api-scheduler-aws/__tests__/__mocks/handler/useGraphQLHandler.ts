@@ -12,10 +12,10 @@ import { SchedulerFeature } from "@webiny/api-scheduler";
 import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
-import { AuthTriggerHandler } from "@webiny/api-testing";
-import { RootTenantInitializer } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
+import { AuthTriggerHandler } from "@webiny/api-core-testing";
+import { RootTenantInitializer } from "@webiny/api-core-testing";
 import {
     CANCEL_SCHEDULED_ACTION,
     GET_SCHEDULED_ACTION,
@@ -90,8 +90,15 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams) => {
 
             SchedulerFeature.register(container);
             container.registerInstance(SchedulerService, new VoidSchedulerService());
-            if (extraPlugins.length > 0) {
-                registerLegacyPluginsViaGqlContextualSchema(container, extraPlugins);
+            // DI-native plugins are plain `container => {}` functions; call them directly. Any
+            // remaining legacy plugins still go through the bridge until #39 removes it.
+            const isFn = (p: any) => typeof p === "function" && !p.prototype;
+            for (const plugin of extraPlugins.filter(isFn)) {
+                (plugin as (container: any) => void)(container);
+            }
+            const legacyPlugins = extraPlugins.filter((p: any) => !isFn(p));
+            if (legacyPlugins.length > 0) {
+                registerLegacyPluginsViaGqlContextualSchema(container, legacyPlugins);
             }
 
             GraphQLEngineFeature.register(container);

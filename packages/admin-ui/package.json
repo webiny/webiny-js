@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.3.0",
-    "@fortawesome/react-fontawesome": "^3.3.1",
+    "@fortawesome/react-fontawesome": "^3.4.0",
     "@minoru/react-dnd-treeview": "^3.5.4",
     "@monaco-editor/react": "^4.7.0",
     "@radix-ui/react-scroll-area": "^1.2.14",
@@ -46,11 +46,11 @@
   },
   "devDependencies": {
     "@fortawesome/free-solid-svg-icons": "^7.3.0",
-    "@rsbuild/core": "^2.1.4",
+    "@rsbuild/core": "^2.1.5",
     "@rsbuild/plugin-svgr": "^2.0.5",
-    "@storybook/addon-a11y": "^10.4.6",
-    "@storybook/addon-docs": "^10.4.6",
-    "@storybook/react": "^10.4.6",
+    "@storybook/addon-a11y": "^10.5.0",
+    "@storybook/addon-docs": "^10.5.0",
+    "@storybook/react": "^10.5.0",
     "@tailwindcss/postcss": "^4.3.2",
     "@types/react": "18.3.31",
     "@types/react-color": "^3.0.13",
@@ -62,7 +62,7 @@
     "oxfmt": "^0.58.0",
     "rimraf": "^6.1.3",
     "sass": "^1.101.0",
-    "storybook": "^10.4.6",
+    "storybook": "^10.5.0",
     "storybook-react-rsbuild": "^3.3.4",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"

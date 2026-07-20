@@ -26,10 +26,10 @@ import {
     RESTORE_ENTRY
 } from "~tests/graphql/cms.gql";
 import { CREATE_FOLDER, DELETE_FOLDER, GET_FOLDER } from "~tests/graphql/folder.gql";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
-import { RootTenantInitializer } from "@webiny/api-testing";
-import { AuthTriggerHandler } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
+import { RootTenantInitializer } from "@webiny/api-core-testing";
+import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 
 export interface UseGQLHandlerParams {
@@ -65,7 +65,12 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const resolvedIdentity = identity ?? defaultIdentity;
     const resolvedPermissions = permissions ?? ([{ name: "*" }] as SecurityPermission[]);
 
-    const extraCmsPlugins = ([plugins] as any[]).flat(Infinity as 1).filter(Boolean);
+    const allPlugins = ([plugins] as any[]).flat(Infinity as 1).filter(Boolean);
+    // DI-native plugins are plain `container => {}` functions; call them after features (below).
+    // Everything else (static CMS plugins) is forwarded to HeadlessCmsFeature.extraPlugins.
+    const isFn = (p: any) => typeof p === "function" && !p.prototype;
+    const fnPlugins = allPlugins.filter(isFn);
+    const extraCmsPlugins = allPlugins.filter(p => !isFn(p));
 
     const handler = createTestHttpHandler({
         root: container => {
@@ -91,6 +96,11 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             container.register(HeadlessCmsContextualSchema);
             AcoFeature.register(container);
             AcoHcmsFeature.register(container);
+            // DI-native function plugins run after the package's features so they can override
+            // defaults (last-wins), mirroring the legacy ContextPlugin timing.
+            for (const plugin of fnPlugins) {
+                (plugin as (c: any) => void)(container);
+            }
             GraphQLEngineFeature.register(container);
         }
     });

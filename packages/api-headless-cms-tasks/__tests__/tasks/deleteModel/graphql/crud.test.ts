@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/context/useHandler";
 import type { IStoreValue } from "~/features/DeleteModelTask/types.js";
-import { createStoreKey } from "~/helpers/store.js";
+import { createDeleteModelStore } from "~/helpers/store.js";
 import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
 import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
-import { DbInstance } from "@webiny/handler-db/abstractions.js";
+import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 
 describe("headless cms tasks crud", () => {
     it("should list models being deleted", async () => {
@@ -23,7 +23,9 @@ describe("headless cms tasks crud", () => {
             tenant: tenant.id
         };
 
-        await context.container.resolve(DbInstance).store.storeValue(createStoreKey(value), value);
+        await createDeleteModelStore(context.container.resolve(GlobalKeyValueStore), tenant.id).set(
+            value
+        );
 
         const secondaryContext = await handler();
 
@@ -33,7 +35,10 @@ describe("headless cms tasks crud", () => {
         expect(resultsPopulated).toHaveLength(1);
         expect(resultsPopulated).toEqual([value]);
 
-        await context.container.resolve(DbInstance).store.removeValue(createStoreKey(value));
+        await createDeleteModelStore(
+            context.container.resolve(GlobalKeyValueStore),
+            tenant.id
+        ).remove(value.modelId);
 
         const tertiaryContext = await handler();
 

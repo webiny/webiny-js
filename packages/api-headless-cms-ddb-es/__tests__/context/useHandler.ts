@@ -11,6 +11,10 @@ import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js"
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { RegisterExtensionPlugin } from "@webiny/handler";
 import { BackgroundTasksFeature, TasksCrud } from "@webiny/background-tasks/api";
+import { ElasticsearchTasksFeature } from "@webiny/api-elasticsearch-tasks";
+import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
+import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
+import { ProcessEnvFeature } from "@webiny/stdlib/node";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
@@ -19,8 +23,8 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import type { CmsContext } from "~/types";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "~tests/helpers/bridgeLegacyPlugins";
 
 export interface CreateHandlerCoreParams {
@@ -93,8 +97,12 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
         }
 
         // Background tasks are DI-native — the feature registers models, TasksCrud, and the GraphQL
-        // contextual schema (built below alongside the other contextual schemas).
+        // contextual schema (built below alongside the other contextual schemas). The OpenSearch
+        // Elasticsearch task definitions come from ElasticsearchTasksFeature.
+        ProcessEnvFeature.register(container);
         BackgroundTasksFeature.register(container);
+        TimerFeature.register(container, timerFactory());
+        ElasticsearchTasksFeature.register(container);
 
         const tenantCtx = container.resolve(TenantContext);
         tenantCtx.setTenant({

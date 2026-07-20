@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
-import { createWebsiteBuilder } from "@webiny/api-website-builder";
-import { PageModelPlugin } from "@webiny/api-website-builder/domain/page/page.model.js";
-import { RedirectModelPlugin } from "@webiny/api-website-builder/domain/redirect/redirect.model.js";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
+import { WebsiteBuilderFeature } from "@webiny/api-website-builder";
 import { WebsiteBuilderWorkflowsFeature } from "~/index.js";
 
 const WB_PAGE_FIELDS = /* GraphQL */ `
@@ -18,11 +16,9 @@ const WB_PAGE_FIELDS = /* GraphQL */ `
 describe("WbPage.system workflow extension", () => {
     it("exposes `system` on WbPage when the workflows license is active", async () => {
         const { invoke } = createCmsTestHandler({
-            // createWebsiteBuilder defines WbPage + CmsEntrySystem on the base /graphql schema.
-            plugins: [createWebsiteBuilder()],
+            // WebsiteBuilderFeature defines WbPage + CmsEntrySystem on the base /graphql schema.
             features: container => {
-                container.register(PageModelPlugin);
-                container.register(RedirectModelPlugin);
+                WebsiteBuilderFeature.register(container);
                 WebsiteBuilderWorkflowsFeature.register(container);
             }
         });

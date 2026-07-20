@@ -1,6 +1,6 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
-import { createContextPlugin } from "@webiny/api";
+import type { Container } from "@webiny/di";
 
 export const TASK_ID = "taskRunnerTask";
 
@@ -31,6 +31,6 @@ export const TestTaskDefinition = TaskDefinition.createImplementation({
     dependencies: [TaskController]
 });
 
-export const testDefinitionPlugin = createContextPlugin(context => {
-    context.container.register(TestTaskDefinition);
-});
+export const testDefinitionPlugin = (container: Container) => {
+    container.register(TestTaskDefinition);
+};

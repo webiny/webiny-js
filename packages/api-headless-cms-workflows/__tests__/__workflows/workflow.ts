@@ -1,5 +1,5 @@
 import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
-import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
+import { FULL_ACCESS_TEAM_ID } from "@webiny/api-core-testing";
 import { model } from "~tests/__cms/models.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 

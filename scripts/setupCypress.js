@@ -1,9 +1,9 @@
-import path from "path";
-import fs from "fs";
+import path from "node:path";
+import fs from "node:fs";
 import chalk from "chalk";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { execSync } from "child_process";
+import { execSync } from "node:child_process";
 
 const { green, red } = chalk;
 const argv = yargs(hideBin(process.argv)).argv;

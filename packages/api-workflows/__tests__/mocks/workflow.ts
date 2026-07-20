@@ -1,4 +1,4 @@
-import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
+import { FULL_ACCESS_TEAM_ID } from "@webiny/api-core-testing";
 import type { IWorkflow } from "~/domain/workflow/abstractions.js";
 
 export const createMockWorkflow = (input: Partial<IWorkflow> = {}): IWorkflow => {

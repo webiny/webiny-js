@@ -3,7 +3,7 @@ import { TaskRunner } from "~/api/runner";
 import { createMockEvent } from "~tests/mocks";
 import { createLiveContextFactory } from "~tests/live";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation";
-import { timerFactory } from "@webiny/handler-aws/utils";
+import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { createTaskDefinition } from "~tests/helpers/createTaskDefinition";
 
 const runTask = async (

@@ -5,17 +5,29 @@
  * plus the auth/tenant loader decorators (extract token / x-tenant from the IncomingMessage → shared
  * RequestIdentityLoader / RequestTenantLoader). The per-request feature stack is the transport-agnostic
  * `registerApiRequestStack` from `@webiny/api-event-handler-core` — the SAME stack the AWS handler uses.
- * It is called with NEITHER the realtime nor the scheduler hook: those are AWS-specific (API Gateway
- * WebSockets / EventBridge Scheduler) and this transport has no equivalent — the hooks being optional
- * is the point. The storage variant (and its identity provider) is injected via `registerRootStorage`.
+ * Both interleave hooks are supplied with SINGLE-PROCESS, in-process equivalents of the AWS transports:
+ * the realtime hook installs the server WebSockets transport (vs AWS's API Gateway Management API), and
+ * the scheduler hook installs the Bree/in-process scheduler (vs AWS's EventBridge Scheduler). Background
+ * tasks are wired in the ROOT container (below), mirroring how the AWS handler registers its background-
+ * task transport at root. The storage variant (and its identity provider) is injected via `registerRootStorage`.
  *
  * The identity provider (e.g. `@webiny/self-hosted-auth`'s JWT IdP) must be registered by the variant
  * in `registerRootStorage`, so the RequestIdentityLoader driven by the identity decorator can resolve it.
  */
 import type { Container } from "@webiny/di";
-import { createNodeHandler, NodeHttpFeature } from "@webiny/event-handler-server";
+import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-server";
 import { registerExtensions } from "@webiny/handler";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
+import {
+    ServerConnectionManager,
+    NodeWsAdapter,
+    WebsocketsServerFeature,
+    WebsocketsConnectionManager,
+    attachWebsocketsServer
+} from "@webiny/api-websockets-server";
+import { BackgroundTasksServerFeature } from "@webiny/background-tasks-server";
+import { SchedulerServerFeature } from "@webiny/api-scheduler-server";
+import { FileManagerServerFeature } from "@webiny/api-file-manager-server";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
 
@@ -30,14 +42,10 @@ export interface CreateWebinyApiHandlerConfig {
      * IdP assumption — the variant supplies the complete storage + auth wiring.
      */
     registerRootStorage: (container: Container) => void | Promise<void>;
-    /**
-     * Request-phase storage features that must run before HeadlessCmsFeature builds (optional).
-     */
-    registerRequestStorage?: (container: Container) => void | Promise<void>;
 }
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
-    return createNodeHandler({
+    return createServerHandler({
         root: async container => {
             // ── Transport (Node HTTP) ──────────────────────────────────
             // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.
@@ -52,15 +60,75 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
 
             // ── Storage + identity provider (variant-supplied) ─────────
             await config.registerRootStorage(container);
+
+            // ── WebSockets transport (root) ────────────────────────────
+            // Live-socket registry + adapter live in the root as singletons: the connection manager
+            // is shared between the upgrade acceptor (attachWebsocketsServer, below) and the
+            // per-request ServerWebsocketsTransport that sends to those live sockets. The persistent
+            // connection registry (ConnectionRegistry) is the storage variant's job (e.g. sql).
+            container.register(ServerConnectionManager).inSingletonScope();
+            container.register(NodeWsAdapter).inSingletonScope();
+
+            // ── Background tasks (root) ────────────────────────────────
+            // Mirrors the AWS handler registering its background-task transport at root. There is no
+            // Step Functions / Lambda re-invocation in a single process, so the transport is in-process:
+            // WorkerService (the BackgroundTasks/TaskService dispatch abstraction) runs each triggered
+            // task in a Node worker_thread that POSTs back to this server's `/background-task` HTTP route
+            // (BackgroundTaskRoute), which runs the task loop (continue/timeout/abort) in-process. Root,
+            // not per-request, is load-bearing: the shared InternalToken (registered here as a singleton)
+            // gates the route against the worker's callback, so dispatcher and route MUST see the SAME
+            // token — a per-request registration would mint a fresh token per request and always 403.
+            // The route is an HttpRoute; the per-request HttpRouter collects it via the parent chain.
+            BackgroundTasksServerFeature.register(container);
         },
 
         request: async container => {
-            // The transport-agnostic per-request stack. No realtime/scheduler hooks: those are
-            // AWS-specific and this transport has no equivalent — validating that they are optional.
+            // The transport-agnostic per-request stack. The realtime hook installs the server
+            // WebSockets transport (overriding the domain's NullWebsocketsTransport); it resolves the
+            // shared connection manager + adapter from the root. The scheduler hook installs the
+            // Bree/in-process scheduler transport (the single-process equivalent of EventBridge).
             await registerApiRequestStack(container, {
                 extensions: config.extensions,
-                registerRequestStorage: config.registerRequestStorage
+                // Why hooks (and not just registering the transports ourselves): `.register()` calls
+                // are otherwise order-independent — you can register Features in any order, because
+                // they only REGISTER, they don't RESOLVE during registration (resolution happens
+                // later, in Initializers / SchemaFactories). The one thing that makes order matter is
+                // a DEFAULT registration: e.g. `WebsocketsFeature` registers `NullWebsocketsTransport`
+                // so the abstraction is always resolvable. Overriding it (last-registration-wins) means
+                // our transport MUST be registered AFTER that Feature. These hooks are the seams
+                // `registerApiRequestStack` provides for exactly that — each runs right after its Null
+                // default, so the override is guaranteed without the caller knowing the internal order.
+                transports: {
+                    // Server WebSockets transport; resolves the shared connection manager + adapter
+                    // from the root (registered as singletons above).
+                    realtime: requestContainer => {
+                        WebsocketsServerFeature.register(requestContainer);
+                    },
+                    // Scheduler transport: the Bree/in-process extension. Where AWS bridges EventBridge
+                    // Scheduler, the single-process server drives delayed/scheduled action triggers with
+                    // in-process timers (Bree).
+                    scheduler: requestContainer => {
+                        SchedulerServerFeature.register(requestContainer);
+                    },
+                    // File-manager storage transport: local disk. Where AWS uses S3 (+ a separate asset-
+                    // delivery Lambda), the single-process server stores files on disk and serves them
+                    // in-process — FileManagerServerFeature registers local asset delivery (overriding
+                    // the domain's null impls), the upload/multipart HTTP routes, and disk file ops.
+                    fileManager: requestContainer => {
+                        FileManagerServerFeature.register(requestContainer);
+                    }
+                }
             });
+        },
+
+        onServer: async (server, rootContainer) => {
+            // Attach the WebSockets upgrade handler to the running HTTP server, backed by the shared
+            // (root) connection manager so request-time sends reach the live sockets.
+            const websockets = attachWebsocketsServer({
+                server,
+                connectionManager: rootContainer.resolve(WebsocketsConnectionManager)
+            });
+            await websockets.start();
         }
     });
 }

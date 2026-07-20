@@ -1,32 +1,58 @@
-import { useContextHandler } from "@webiny/testing";
-import type { UseContextHandlerParams } from "@webiny/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
-import { TasksCrud } from "@webiny/background-tasks/api";
-import { createElasticsearchBackgroundTasks } from "~/index";
+import { OpenSearchClientFeature } from "@webiny/api-opensearch/features/OpenSearchClient/feature.js";
+import { BackgroundTasksFeature, TaskService, TasksCrud } from "@webiny/background-tasks/api";
+import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
+import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
+import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
+import { ProcessEnvFeature } from "@webiny/stdlib/node";
+import { ElasticsearchTasksFeature } from "~/index";
+import { DbRegistry } from "@webiny/db/exports/api/db.js";
+import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { createOpenSearchTable, createOpenSearchEntity } from "@webiny/api-opensearch";
 import type { Context } from "~/types";
 
-type Params = Omit<UseContextHandlerParams, "plugins">;
+type Params = Omit<CmsTestHandlerParams, "plugins" | "features">;
+
+const documentClient = getDocumentClient();
+const esTable = createOpenSearchTable({ documentClient });
+const esEntity = createOpenSearchEntity({ entityName: "CmsEntriesElasticsearch", table: esTable });
 
 export const useHandler = <C extends Context = Context>(params: Params = {}) => {
-    const inner = useContextHandler<C>({
+    const opensearchClient = createTestOpenSearchClient();
+
+    const inner = createCmsTestHandler({
         ...params,
-        // OpenSearch core is already registered by useContextHandler's cmsStorage (DDB-OS preset);
-        // registering it again here throws "OpenSearch core must not be loaded more than once".
-        plugins: [
-            createElasticsearchBackgroundTasks(),
-            ...[params.plugins].flat(Infinity as 1).filter(Boolean)
-        ]
+        features: container => {
+            ProcessEnvFeature.register(container);
+            OpenSearchClientFeature.register(container, opensearchClient);
+            TimerFeature.register(container, timerFactory());
+            BackgroundTasksFeature.register(container);
+            ElasticsearchTasksFeature.register(container);
+            container.registerInstance(TaskService, createMockTaskService());
+        }
     });
 
     return {
         identity: inner.identity,
         tenant: inner.tenant,
-        elasticsearch: createTestOpenSearchClient(),
+        elasticsearch: opensearchClient,
         // DI-native source for the legacy `context.tasks` service-locator: resolve the CRUD
         // aggregate from the container and expose it on the captured context. See the "full-DI
         // tasks" cleanup note to retire this bridge.
-        rawHandle: async (input?: Parameters<typeof inner.context>[0]) => {
-            const ctx = await inner.context(input);
+        rawHandle: async () => {
+            const ctx = await inner.getContext<C>();
+
+            const dbRegistry = ctx.container.resolve(DbRegistry);
+            if (!dbRegistry.getItem(i => i.app === "cms" && i.tags.includes("es"))) {
+                dbRegistry.register({
+                    item: esEntity,
+                    app: "cms",
+                    tags: ["es", esEntity.name]
+                });
+            }
+
             const [tasksCrud] = ctx.container.resolveAll(TasksCrud);
             if (tasksCrud) {
                 ctx.tasks = tasksCrud;

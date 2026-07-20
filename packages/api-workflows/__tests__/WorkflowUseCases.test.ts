@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import type { IWorkflow } from "~/domain/workflow/abstractions.js";
-import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
+import { FULL_ACCESS_TEAM_ID } from "@webiny/api-core-testing";
 import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
 import { ListWorkflowsUseCase } from "~/features/workflow/ListWorkflows/index.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";

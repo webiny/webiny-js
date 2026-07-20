@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    { "path": "../api" },
     { "path": "../api-core" },
     { "path": "../api-headless-cms" },
     { "path": "../event-handler-core" },
@@ -14,10 +13,10 @@
     { "path": "../utils" },
     { "path": "../api-core-ddb" },
     { "path": "../api-file-manager-s3" },
+    { "path": "../api-headless-cms-testing" },
     { "path": "../api-opensearch" },
     { "path": "../background-tasks" },
     { "path": "../plugins" },
-    { "path": "../testing" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -27,8 +26,6 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api/*": ["../api/src/*"],
-      "@webiny/api": ["../api/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
@@ -51,14 +48,14 @@
       "@webiny/api-core-ddb": ["../api-core-ddb/src"],
       "@webiny/api-file-manager-s3/*": ["../api-file-manager-s3/src/*"],
       "@webiny/api-file-manager-s3": ["../api-file-manager-s3/src"],
+      "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
+      "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
       "@webiny/api-opensearch": ["../api-opensearch/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/testing/*": ["../testing/src/*"],
-      "@webiny/testing": ["../testing/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }
