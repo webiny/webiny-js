@@ -8,11 +8,12 @@ import type { SearchOperationDeps } from "./types.js";
 export const createGetUniqueFieldValuesOperation = (
     deps: SearchOperationDeps
 ): CmsEntryStorageOperations["getUniqueFieldValues"] => {
-    return async (model, uniqueFieldValuesParams) => {
+    return async (initialModel, uniqueFieldValuesParams) => {
         const { where, fieldId } = uniqueFieldValuesParams;
+        const model = deps.getStorageOperationsModel(initialModel);
         const { index } = configurations.es({ model });
 
-        const field = model.fields.find(f => f.fieldId === fieldId);
+        const field = initialModel.fields.find(f => f.fieldId === fieldId);
         if (!field) {
             return [];
         }

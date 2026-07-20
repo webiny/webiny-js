@@ -8,7 +8,7 @@ export interface SearchOperationDeps {
     elasticsearch: OpenSearchClient;
     bodyBuilder: {
         build(params: {
-            model: StorageOperationsCmsModel;
+            model: StorageOperationsCmsModel<any>;
             params: Record<string, any>;
         }): Record<string, any>;
     };
