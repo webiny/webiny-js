@@ -18,30 +18,23 @@ import { createSearchableJsonFilterCreateHandler } from "../handlers/searchableJ
 export const FilterRegistriesFeature = createFeature({
     name: "cms.storage.filterRegistries",
     register: container => {
-        container.registerFactory(FieldFilterPathRegistry, () => {
-            const registry = new FieldFilterPathRegistryImpl();
-            registry.register("plainObject", createPlainObjectPathHandler());
-            registry.register("text", createLocationFolderIdPathHandler());
-            return registry;
-        });
+        const pathRegistry = new FieldFilterPathRegistryImpl();
+        pathRegistry.register("plainObject", createPlainObjectPathHandler());
+        pathRegistry.register("text", createLocationFolderIdPathHandler());
+        container.registerInstance(FieldFilterPathRegistry, pathRegistry);
 
-        container.registerFactory(FieldFilterValueTransformRegistry, () => {
-            const registry = new FieldFilterValueTransformRegistryImpl();
-            registry.register("datetime", createDatetimeTransformHandler());
-            return registry;
-        });
+        const transformRegistry = new FieldFilterValueTransformRegistryImpl();
+        transformRegistry.register("datetime", createDatetimeTransformHandler());
+        container.registerInstance(FieldFilterValueTransformRegistry, transformRegistry);
 
-        container.registerFactory(FieldFilterCreateRegistry, () => {
-            const registry = new FieldFilterCreateRegistryImpl();
-            registry.register("*", createDefaultFilterCreateHandler());
-            registry.register("ref", createRefFilterCreateHandler());
-            registry.register("object", createObjectFilterCreateHandler());
-            registry.register("searchable-json", createSearchableJsonFilterCreateHandler());
-            return registry;
-        });
+        const filterCreateRegistry = new FieldFilterCreateRegistryImpl();
+        filterCreateRegistry.register("*", createDefaultFilterCreateHandler());
+        filterCreateRegistry.register("ref", createRefFilterCreateHandler());
+        filterCreateRegistry.register("object", createObjectFilterCreateHandler());
+        filterCreateRegistry.register("searchable-json", createSearchableJsonFilterCreateHandler());
+        container.registerInstance(FieldFilterCreateRegistry, filterCreateRegistry);
 
-        container.registerFactory(FieldSortingRegistry, () => {
-            return new FieldSortingRegistryImpl();
-        });
+        const sortingRegistry = new FieldSortingRegistryImpl();
+        container.registerInstance(FieldSortingRegistry, sortingRegistry);
     }
 });
