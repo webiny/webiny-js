@@ -1,5 +1,5 @@
 import { Abstraction } from "@webiny/di";
-import type { CmsFieldFilterValueTransformParams } from "../plugins/CmsFieldFilterValueTransformPlugin.js";
+import type { CmsFieldFilterValueTransformParams } from "../../plugins/CmsFieldFilterValueTransformPlugin.js";
 
 export interface IFieldFilterValueTransformHandler {
     transform(params: CmsFieldFilterValueTransformParams): any;

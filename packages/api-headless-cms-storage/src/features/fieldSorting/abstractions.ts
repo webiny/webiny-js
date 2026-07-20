@@ -1,5 +1,5 @@
 import { Abstraction } from "@webiny/di";
-import type { Field } from "../filtering/fields/types.js";
+import type { Field } from "../../filtering/fields/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 export interface IFieldSortingCanUseParams {

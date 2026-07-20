@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import type { FieldFilterCreateRegistry } from "../abstractions/FieldFilterCreateRegistry.js";
+import type { FieldFilterCreateRegistry } from "../features/fieldFilterCreate/abstractions.js";
 import { extractWhereParams } from "../filtering/where.js";
 import { transformValue } from "../filtering/transform.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";

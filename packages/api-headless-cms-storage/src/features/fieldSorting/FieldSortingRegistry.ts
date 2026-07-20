@@ -1,4 +1,4 @@
-import type { FieldSortingRegistry } from "../abstractions/FieldSortingRegistry.js";
+import type { FieldSortingRegistry } from "./abstractions.js";
 
 export class FieldSortingRegistryImpl implements FieldSortingRegistry.Interface {
     private readonly handlers: FieldSortingRegistry.Handler[] = [];

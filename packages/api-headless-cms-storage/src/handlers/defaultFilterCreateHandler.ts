@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import type { FieldFilterCreateRegistry } from "../abstractions/FieldFilterCreateRegistry.js";
+import type { FieldFilterCreateRegistry } from "../features/fieldFilterCreate/abstractions.js";
 
 export const createDefaultFilterCreateHandler = (): FieldFilterCreateRegistry.Handler => {
     return {

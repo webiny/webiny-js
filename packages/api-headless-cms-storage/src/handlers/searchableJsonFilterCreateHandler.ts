@@ -1,4 +1,4 @@
-import type { FieldFilterCreateRegistry } from "../abstractions/FieldFilterCreateRegistry.js";
+import type { FieldFilterCreateRegistry } from "../features/fieldFilterCreate/abstractions.js";
 import { extractWhereParams } from "../filtering/where.js";
 
 function dotFlatten(obj: Record<string, any>, prefix = ""): Record<string, any> {

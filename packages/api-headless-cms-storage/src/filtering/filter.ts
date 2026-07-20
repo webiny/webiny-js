@@ -11,8 +11,8 @@ import { createExpressions } from "./expressions/createExpressions.js";
 import { transformValue } from "./transform.js";
 import { getValue } from "./getValue.js";
 import { ValueFilterRegistry } from "@webiny/db-utils";
-import type { FieldFilterCreateRegistry } from "../abstractions/FieldFilterCreateRegistry.js";
-import type { FieldFilterValueTransformRegistry } from "../abstractions/FieldFilterValueTransformRegistry.js";
+import type { FieldFilterCreateRegistry } from "../features/fieldFilterCreate/abstractions.js";
+import type { FieldFilterValueTransformRegistry } from "../features/fieldFilterValueTransform/abstractions.js";
 
 interface ExecuteFilterParams {
     value: any;

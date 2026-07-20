@@ -4,7 +4,7 @@ import * as dotProp from "dot-prop";
 import lodashSortBy from "lodash/sortBy.js";
 import { extractSort } from "./fields/extractSort.js";
 import type { Field } from "./fields/types.js";
-import type { FieldSortingRegistry } from "../abstractions/FieldSortingRegistry.js";
+import type { FieldSortingRegistry } from "../features/fieldSorting/abstractions.js";
 
 interface Params<T extends CmsEntryValues = CmsEntryValues> {
     model: CmsModel;

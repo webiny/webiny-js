@@ -1,5 +1,5 @@
 import { parseISO } from "date-fns";
-import type { FieldFilterValueTransformRegistry } from "../abstractions/FieldFilterValueTransformRegistry.js";
+import type { FieldFilterValueTransformRegistry } from "../features/fieldFilterValueTransform/abstractions.js";
 
 const transformTime = (value: any): number => {
     if (value === undefined || value === null) {

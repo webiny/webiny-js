@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import type { FieldFilterPathRegistry } from "../abstractions/FieldFilterPathRegistry.js";
+import type { FieldFilterPathRegistry } from "../features/fieldFilterPath/abstractions.js";
 
 export const createPlainObjectPathHandler = (): FieldFilterPathRegistry.Handler => {
     return {

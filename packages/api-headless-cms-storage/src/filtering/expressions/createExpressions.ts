@@ -5,8 +5,8 @@ import { extractWhereParams } from "../where.js";
 import { transformValue } from "../transform.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 import { ValueFilter, ValueFilterRegistry } from "@webiny/db-utils";
-import type { FieldFilterCreateRegistry } from "../../abstractions/FieldFilterCreateRegistry.js";
-import type { FieldFilterValueTransformRegistry } from "../../abstractions/FieldFilterValueTransformRegistry.js";
+import type { FieldFilterCreateRegistry } from "../../features/fieldFilterCreate/abstractions.js";
+import type { FieldFilterValueTransformRegistry } from "../../features/fieldFilterValueTransform/abstractions.js";
 import { getWhereValues } from "../values.js";
 
 interface CreateExpressionParams {

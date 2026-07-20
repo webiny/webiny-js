@@ -1,6 +1,6 @@
 import { Abstraction } from "@webiny/di";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import type { CreatePathCallableParams } from "../plugins/CmsEntryFieldFilterPathPlugin.js";
+import type { CreatePathCallableParams } from "../../plugins/CmsEntryFieldFilterPathPlugin.js";
 
 export interface IFieldFilterPathHandler {
     canUse(field: Pick<CmsModelField, "fieldId" | "type">, parents: string[]): boolean;

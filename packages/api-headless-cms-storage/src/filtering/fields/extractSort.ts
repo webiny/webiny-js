@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
 import type { Field } from "./types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import type { FieldSortingRegistry } from "../../abstractions/FieldSortingRegistry.js";
+import type { FieldSortingRegistry } from "../../features/fieldSorting/abstractions.js";
 
 const extractSortInfo = (sortBy: string) => {
     const rootSorting = sortBy.match(/^([a-zA-Z]+)_(ASC|DESC)$/);

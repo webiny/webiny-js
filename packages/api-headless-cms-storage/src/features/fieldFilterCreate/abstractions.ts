@@ -1,7 +1,7 @@
 import { Abstraction } from "@webiny/di";
-import type { Field } from "../filtering/fields/types.js";
+import type { Field } from "../../filtering/fields/types.js";
 import type { ValueFilterRegistry } from "@webiny/db-utils";
-import type { FieldFilterValueTransformRegistry } from "./FieldFilterValueTransformRegistry.js";
+import type { FieldFilterValueTransformRegistry } from "../fieldFilterValueTransform/abstractions.js";
 
 export interface IFieldFilterCreateResult {
     field: Field;

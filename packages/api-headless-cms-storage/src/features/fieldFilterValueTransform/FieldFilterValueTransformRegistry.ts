@@ -1,4 +1,4 @@
-import type { FieldFilterValueTransformRegistry } from "../abstractions/FieldFilterValueTransformRegistry.js";
+import type { FieldFilterValueTransformRegistry } from "./abstractions.js";
 
 export class FieldFilterValueTransformRegistryImpl
     implements FieldFilterValueTransformRegistry.Interface

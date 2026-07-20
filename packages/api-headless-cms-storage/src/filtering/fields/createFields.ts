@@ -1,8 +1,8 @@
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import { createSystemFields } from "./systemFields.js";
 import type { Field, FieldParent } from "./types.js";
-import type { FieldFilterPathRegistry } from "../../abstractions/FieldFilterPathRegistry.js";
-import type { FieldFilterValueTransformRegistry } from "../../abstractions/FieldFilterValueTransformRegistry.js";
+import type { FieldFilterPathRegistry } from "../../features/fieldFilterPath/abstractions.js";
+import type { FieldFilterValueTransformRegistry } from "../../features/fieldFilterValueTransform/abstractions.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 interface Params {

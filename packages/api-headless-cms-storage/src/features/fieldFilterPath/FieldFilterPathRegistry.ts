@@ -1,4 +1,4 @@
-import type { FieldFilterPathRegistry } from "../abstractions/FieldFilterPathRegistry.js";
+import type { FieldFilterPathRegistry } from "./abstractions.js";
 
 export class FieldFilterPathRegistryImpl implements FieldFilterPathRegistry.Interface {
     private readonly handlers = new Map<string, FieldFilterPathRegistry.Handler>();

@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import type { FieldFilterCreateRegistry } from "../abstractions/FieldFilterCreateRegistry.js";
+import type { FieldFilterCreateRegistry } from "./abstractions.js";
 
 export class FieldFilterCreateRegistryImpl implements FieldFilterCreateRegistry.Interface {
     private readonly handlers = new Map<string, FieldFilterCreateRegistry.Handler>();
