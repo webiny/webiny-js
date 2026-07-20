@@ -15,8 +15,7 @@ class WebsiteBuilderPageSchemaFactoryImpl implements IGraphQLSchemaFactory {
         // WCP-gated, per-tenant: `system` is only exposed on WbPage when the workflows license
         // allows it. The base /graphql schema is rebuilt per request (post-auth), so the gate is
         // evaluated per tenant. (Previously this was a GraphQLSchemaPlugin with `isApplicable`,
-        // routed through registerLegacyPluginsViaGqlContextualSchema into ctx.plugins — which the
-        // engine ignores, so it never actually reached the schema.)
+        // routed into the no-longer-read ctx.plugins bag, so it never actually reached the schema.)
         if (!this.wcpContext.canUseWorkflows()) {
             return builder;
         }

@@ -14,8 +14,7 @@ import { ScheduleUnpublishRedirectUseCase } from "~/features/ScheduleUnpublishRe
 export const WebsiteBuilderSchedulerFeature = createFeature({
     name: "WebsiteBuilderScheduler",
     register(container: Container) {
-        // Pure DI registration (was a request-time ContextPlugin bridged via
-        // registerLegacyPluginsViaGqlContextualSchema — none of it needs ctx/post-auth).
+        // Pure DI registration (was a request-time ContextPlugin — none of it needs ctx/post-auth).
         container.register(PageNamespaceHandler);
         container.register(RedirectNamespaceHandler);
         container.register(PublishPageActionHandler);

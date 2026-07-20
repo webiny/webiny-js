@@ -1,11 +1,7 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import type { Container } from "@webiny/di";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import {
-    GraphQLEngineFeature,
-    GraphQLContextualSchema,
-    registerLegacyPluginsViaGqlContextualSchema
-} from "@webiny/handler-graphql";
+import { GraphQLEngineFeature, GraphQLContextualSchema } from "@webiny/handler-graphql";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
@@ -98,20 +94,17 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
         ApiCoreFeature.register(container, { wcpLicense });
 
-        // CMS storage preset. RegisterExtensionPlugins must be applied before HeadlessCmsFeature
-        // builds storage; the preset's ContextPlugins (e.g. the ddb-es OpenSearchClient registration
-        // and dbPlugins → ctx.db) run as a per-request initializer, mirroring the real app's storage
-        // features and what the legacy useContextHandler does.
+        // CMS storage preset. All storage presets are RegisterExtensionPlugins (registerDynamoDBCore,
+        // registerCmsOpenSearchStorageOperations, dbPlugins, ...); processLegacyPlugins runs them at
+        // register() time — before HeadlessCmsFeature builds storage, mirroring the real app's
+        // registerExtensions.
         processLegacyPlugins(container, cmsStorage.plugins);
-        registerLegacyPluginsViaGqlContextualSchema(container, cmsStorage.plugins);
 
+        // DI-native plugins are plain `container => {}` functions (called last, after features);
+        // legacy plugins are RegisterExtensionPlugins (register-time) or static Plugins (extraPlugins).
         const userPlugins = [params.plugins].flat(Infinity as 1).filter(Boolean);
-        // DI-native plugins are plain `container => {}` functions; everything else keeps the legacy
-        // dual-dispatch. Check for a function via `!p.prototype` — a plain function also has
-        // `Function.prototype.apply`, which the legacy bridge would otherwise invoke with no args.
         const isFn = (p: any) => typeof p === "function" && !p.prototype;
 
-        // User-supplied legacy plugins (dual-dispatched, mirroring useContextHandler).
         const legacyUserPlugins = userPlugins.filter(p => !isFn(p));
         processLegacyPlugins(container, legacyUserPlugins);
         const staticUserPlugins = legacyUserPlugins.filter(
@@ -122,13 +115,10 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
             extraPlugins: [...(params.extraCmsPlugins ?? []), ...staticUserPlugins]
         });
 
-        registerLegacyPluginsViaGqlContextualSchema(container, legacyUserPlugins);
-
         await params.features?.(container);
 
         // DI-native function plugins run LAST — after the consuming package's own features — so they
-        // can override defaults those features registered (last-wins), mirroring the legacy bridge's
-        // post-features timing.
+        // can override defaults those features registered (last-wins).
         for (const plugin of userPlugins.filter(isFn)) {
             (plugin as (container: any) => void)(container);
         }

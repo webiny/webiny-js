@@ -4,11 +4,7 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { HeadlessCmsEndpointConfig } from "./HeadlessCmsEndpointConfig.js";
 import { createCmsRoute } from "./createCmsRoute.js";
-import {
-    createRequestBody,
-    processRequestBody,
-    registerLegacyPluginsViaGqlContextualSchema
-} from "@webiny/handler-graphql";
+import { createRequestBody, processRequestBody } from "@webiny/handler-graphql";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { Benchmark } from "@webiny/api/Benchmark.js";
 import { PluginsContainer } from "@webiny/plugins";
@@ -177,14 +173,14 @@ export const HeadlessCmsFeature = createFeature({
             });
         }
 
-        // ContextPlugin instances supplied via extraPlugins (test infra) run their async apply()
-        // before resolvers. Route them through the standard post-auth writer rather than the CMS
-        // initializer, so the initializer carries no request-time responsibility.
-        const extraContextPlugins = (config.extraPlugins ?? []).filter(
-            (plugin: any) => plugin && typeof plugin.apply === "function"
-        );
-        if (extraContextPlugins.length > 0) {
-            registerLegacyPluginsViaGqlContextualSchema(container, extraContextPlugins);
+        // RegisterExtensionPlugins supplied via extraPlugins (test infra) only do DI registration
+        // via their apply(). Apply them here at register() time — matching the app's registerExtensions
+        // and the storage presets above — so code-defined models are present before per-request model
+        // listing runs.
+        for (const plugin of config.extraPlugins ?? []) {
+            if (plugin && typeof (plugin as any).apply === "function") {
+                (plugin as any).apply({ container });
+            }
         }
 
         const benchmark = new Benchmark();
