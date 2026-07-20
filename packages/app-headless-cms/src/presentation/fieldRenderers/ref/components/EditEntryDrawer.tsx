@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { Drawer, OverlayLoader } from "@webiny/admin-ui";
@@ -75,11 +75,6 @@ const EditEntryDrawerContent = observer(
     ({ model, entryId, onClose, onSaved }: EditEntryDrawerContentProps) => {
         const { presenter } = useFeature(EditEntryPresenterFeature);
 
-        // Tracks whether at least one save happened, so we can refresh the parent card
-        // once, on close. Refreshing while the drawer is open would flip the parent
-        // renderer's loading state and flash its overlay *behind* the drawer.
-        const savedRef = useRef(false);
-
         useEffect(() => {
             presenter.init(entryId);
             return () => presenter.dispose();
@@ -87,29 +82,22 @@ const EditEntryDrawerContent = observer(
 
         const onSave = useCallback(async () => {
             const saved = await presenter.form.saveRevision({ skipValidation: false });
-            if (saved) {
-                // Keep the drawer open after saving so the editor can continue editing.
-                savedRef.current = true;
-            }
-        }, []);
-
-        const handleClose = useCallback(() => {
-            // If anything was saved, patch the parent card in memory from the saved entry
-            // (no refetch, no loading overlay). Runs on close since the card is hidden
-            // behind the drawer while it's open.
             const savedEntry = presenter.form.vm.entry;
-            if (savedRef.current && savedEntry) {
+            if (saved && savedEntry) {
+                // Patch the parent card in memory from the saved entry (no refetch). This is a
+                // pure MobX state update — it does not flip any loading flag, so there is no
+                // overlay flash behind the still-open drawer. The drawer stays open so the
+                // editor can keep editing.
                 onSaved(toReferenceEntryPatch(savedEntry));
             }
-            onClose();
-        }, [onSaved, onClose]);
+        }, [onSaved]);
 
         const vm = presenter.form.vm;
 
         return (
             <Drawer
                 open={true}
-                onClose={handleClose}
+                onClose={onClose}
                 width={1000}
                 modal={true}
                 headerSeparator={true}
