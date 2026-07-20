@@ -25,5 +25,6 @@ export const FILE_FIELDS = [
     "metadata.image.format",
     "metadata.image.orientation",
     "metadata.exif",
-    "metadata.iptc"
+    "metadata.iptc",
+    "metadata.imageEdit"
 ];
