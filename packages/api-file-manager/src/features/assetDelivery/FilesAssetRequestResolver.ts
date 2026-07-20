@@ -1,6 +1,7 @@
 import type { AssetRequestOptions } from "~/delivery/AssetDelivery/AssetRequest.js";
 import { AssetRequestResolver } from "./abstractions/AssetRequestResolver.js";
 import { AssetRequestFactory } from "./AssetRequest/abstractions.js";
+import { normalizeImageOptions } from "./normalizeImageOptions.js";
 
 class FilesAssetRequestResolverImpl implements AssetRequestResolver.Interface {
     private readonly assetRequestFactory: AssetRequestFactory.Interface;
@@ -26,9 +27,7 @@ class FilesAssetRequestResolverImpl implements AssetRequestResolver.Interface {
             original: "original" in query
         };
 
-        if (query.width) {
-            options.width = parseInt(query.width);
-        }
+        normalizeImageOptions(options, query, request.headers?.accept as string | undefined);
 
         return this.assetRequestFactory.create({
             key: decodeURI(path).replace("/files/", ""),
