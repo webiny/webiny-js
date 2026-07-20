@@ -51,10 +51,7 @@ export const createSyncHelpers = (params: CreateSyncHelpersParams): SyncHelpers 
         entry: CmsEntry<T>,
         storageEntry: CmsStorageEntry<T>
     ): Promise<void> => {
-        await syncWriter.writeLatest({ model, entry, storageEntry });
-        if (entry.status === "published") {
-            await syncWriter.writePublished({ model, entry, storageEntry });
-        }
+        await syncWriter.writeEntry({ model, entry, storageEntry });
     };
 
     const resyncLatestAndPublishedFromPg = async <T extends CmsEntryValues = CmsEntryValues>(

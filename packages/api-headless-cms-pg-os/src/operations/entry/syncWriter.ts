@@ -36,12 +36,16 @@ interface RemoveEntryParams {
 }
 
 export interface SyncWriter {
+    writeEntry<T extends CmsEntryValues = CmsEntryValues>(
+        params: WriteEntryParams<T>
+    ): Promise<void>;
     writeLatest<T extends CmsEntryValues = CmsEntryValues>(
         params: WriteEntryParams<T>
     ): Promise<void>;
     writePublished<T extends CmsEntryValues = CmsEntryValues>(
         params: WriteEntryParams<T>
     ): Promise<void>;
+    removeEntry(params: RemoveEntryParams): Promise<void>;
     removeLatest(params: RemoveEntryParams): Promise<void>;
     removePublished(params: RemoveEntryParams): Promise<void>;
 }
@@ -59,10 +63,20 @@ export const createSyncWriter = (params: SyncWriterParams): SyncWriter => {
         await query().insert(row).onConflict("id").merge();
     };
 
-    const writeRecord = async <T extends CmsEntryValues>(
+    const upsertBatch = async (rows: ISyncRow[]): Promise<void> => {
+        if (rows.length === 0) {
+            return;
+        }
+        if (rows.length === 1) {
+            return upsert(rows[0]);
+        }
+        await query().insert(rows).onConflict("id").merge();
+    };
+
+    const buildRecord = async <T extends CmsEntryValues>(
         writeParams: WriteEntryParams<T>,
         kind: RecordKind
-    ): Promise<void> => {
+    ): Promise<ISyncRow> => {
         const { model, entry, storageEntry } = writeParams;
 
         const indexEntry = transformEntryToIndex({
@@ -85,46 +99,56 @@ export const createSyncWriter = (params: SyncWriterParams): SyncWriter => {
         const compressed = await compressionHandler.compress(document);
         const { index } = configurations.es({ model });
 
-        await upsert({
+        return {
             id: `${entry.entryId}:${isLatest ? "L" : "P"}`,
             entryId: entry.entryId,
             index,
             operation: OperationType.MODIFY,
             data: JSON.stringify(compressed),
             tenant: entry.tenant
-        });
+        };
     };
 
-    const removeRecord = async (
-        removeParams: RemoveEntryParams,
-        kind: RecordKind
-    ): Promise<void> => {
+    const buildRemoveRecord = (removeParams: RemoveEntryParams, kind: RecordKind): ISyncRow => {
         const { model, entryId } = removeParams;
         const { index } = configurations.es({ model });
         const isLatest = kind === "latest";
 
-        await upsert({
+        return {
             id: `${entryId}:${isLatest ? "L" : "P"}`,
             entryId,
             index,
             operation: OperationType.REMOVE,
             data: JSON.stringify({}),
             tenant: model.tenant
-        });
+        };
     };
 
     return {
-        writeLatest(writeParams) {
-            return writeRecord(writeParams, "latest");
+        async writeEntry(writeParams) {
+            const rows: ISyncRow[] = [await buildRecord(writeParams, "latest")];
+            if (writeParams.entry.status === "published") {
+                rows.push(await buildRecord(writeParams, "published"));
+            }
+            await upsertBatch(rows);
         },
-        writePublished(writeParams) {
-            return writeRecord(writeParams, "published");
+        async writeLatest(writeParams) {
+            await upsert(await buildRecord(writeParams, "latest"));
+        },
+        async writePublished(writeParams) {
+            await upsert(await buildRecord(writeParams, "published"));
+        },
+        async removeEntry(removeParams) {
+            await upsertBatch([
+                buildRemoveRecord(removeParams, "latest"),
+                buildRemoveRecord(removeParams, "published")
+            ]);
         },
         removeLatest(removeParams) {
-            return removeRecord(removeParams, "latest");
+            return upsert(buildRemoveRecord(removeParams, "latest"));
         },
         removePublished(removeParams) {
-            return removeRecord(removeParams, "published");
+            return upsert(buildRemoveRecord(removeParams, "published"));
         }
     };
 };

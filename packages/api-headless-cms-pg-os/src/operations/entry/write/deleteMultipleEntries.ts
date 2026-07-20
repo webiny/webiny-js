@@ -18,8 +18,7 @@ export const createDeleteMultipleEntriesOperation = (
 
         for (const id of deleteMultipleParams.entries) {
             const entryId = extractEntryId(id);
-            await deps.syncWriter.removeLatest({ model, entryId });
-            await deps.syncWriter.removePublished({ model, entryId });
+            await deps.syncWriter.removeEntry({ model, entryId });
         }
     };
 };

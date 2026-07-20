@@ -12,7 +12,6 @@ export const createDeleteEntryOperation = (
         const model = deps.getStorageOperationsModel(initialModel);
         const { entryId } = deleteParams.entry;
         await deps.sqlOps.delete(initialModel, deleteParams);
-        await deps.syncWriter.removeLatest({ model, entryId });
-        await deps.syncWriter.removePublished({ model, entryId });
+        await deps.syncWriter.removeEntry({ model, entryId });
     };
 };
