@@ -1,55 +1,47 @@
 import React from "react";
-import Image from "next/image";
-import type { CssProperties } from "@webiny/website-builder-react";
-import type { ComponentProps } from "@webiny/website-builder-react";
+import type {
+    ComponentProps,
+    CssProperties,
+    WebinyImageValue
+} from "@webiny/website-builder-react";
+import { WebinyImage } from "@webiny/website-builder-react";
 
 type ImageProps = ComponentProps<{
     title: string;
     altText: string;
     highPriority: boolean;
-    image: {
-        id: string;
-        name: string;
-        size: number;
-        mimeType: string;
-        src: string;
-        width: number;
-        height: number;
-    };
+    image: WebinyImageValue;
 }>;
 
 export const ImageComponent = (props: ImageProps) => {
-    const image = useImage(props);
+    const { title = "", altText, image, highPriority } = props.inputs;
 
-    if (!image.src) {
+    if (!image?.src) {
         return <ImagePlaceholder style={props.styles} />;
     }
 
-    if (image.tag === "object") {
-        return <object style={image.styles} title={image.title} data={image.src} />;
+    // Explicit alt input wins; otherwise fall back to the alt stored with the image.
+    const alt = altText || image.edit?.alt || "";
+
+    // SVGs are vector — there's no raster crop/hotspot to apply.
+    if (image.src.endsWith(".svg")) {
+        return (
+            <object style={{ maxWidth: "100%", ...props.styles }} title={title} data={image.src} />
+        );
     }
 
+    // Renders honoring the crop + hotspot (pure CSS), at the crop's own aspect
+    // ratio. The Webiny CDN width parameter drives a responsive srcSet.
     return (
-        <div
-            style={{
-                position: "relative",
-                ...props.styles
-            }}
-        >
-            {/* <ImagePlaceholder style={image.styles} /> */}
-            <Image
-                alt={image.altText}
-                title={image.title}
-                src={image.src}
-                width={props.inputs.image.width}
-                height={props.inputs.image.height}
-                style={image.styles}
-                priority={props.inputs.highPriority}
-                loading={props.inputs.highPriority ? "eager" : "lazy"}
-                sizes={"100vw"}
-                loader={({ src, width }) => `${src}?width=${width}`}
-            />
-        </div>
+        <WebinyImage
+            image={image}
+            alt={alt}
+            title={title}
+            style={props.styles}
+            sizes={"100vw"}
+            loading={highPriority ? "eager" : "lazy"}
+            loader={({ src, width }) => `${src}?width=${width}`}
+        />
     );
 };
 
@@ -81,24 +73,4 @@ const ImagePlaceholder = ({ style }: { style: CssProperties }) => {
             </svg>
         </div>
     );
-};
-
-const useImage = ({ inputs, styles }: ImageProps) => {
-    const { title = "", altText, image } = inputs;
-    const src = image?.src;
-
-    const tag = src && src.endsWith(".svg") ? "object" : "img";
-
-    const imageStyles = {
-        maxWidth: "100%",
-        ...styles
-    };
-
-    return {
-        altText,
-        src: inputs.image?.src,
-        styles: imageStyles,
-        tag,
-        title
-    };
 };

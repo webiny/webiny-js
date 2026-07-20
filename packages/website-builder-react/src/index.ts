@@ -1,5 +1,6 @@
 export * from "./components/index.js";
 export * from "./createComponent.js";
+export * from "./image/index.js";
 
 export {
     createTextInput,
@@ -30,6 +31,12 @@ export {
     forcedAssignment,
     registerAnalyticsProvider,
     getAnalyticsProvider,
+    // Image crop + hotspot geometry.
+    getImageRenderData,
+    getVisibleRect,
+    getCropRect,
+    resolveImageEdit,
+    ASPECT_RATIO_PRESETS,
     FORCED_VARIANT_PARAM,
     DEFAULT_VISITOR_COOKIE,
     CONTROL_VARIANT_ID,
@@ -56,6 +63,14 @@ export {
     type ComponentInput,
     type ComponentConstraint,
     type WebsiteBuilderThemeInput,
+    type WebinyImageValue,
+    type WebinyImageEdit,
+    type WebinyImageCrop,
+    type WebinyImageHotspot,
+    type AspectRatioInput,
+    type AspectRatioPreset,
+    type NormalizedRect,
+    type ImageRenderData,
     StyleSettings
 } from "@webiny/website-builder-sdk";
 
