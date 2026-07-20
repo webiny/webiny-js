@@ -2,7 +2,7 @@
 name: webiny-admin-ui-catalog
 context: webiny-api
 description: >
-  admin/ui — 99 abstractions.
+  admin/ui — 124 abstractions.
 ---
 
 # admin/ui
@@ -155,6 +155,12 @@ description: >
 
 ---
 
+**Name:** `Divider`
+**Import:** `import { Divider } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/ui/Divider.tsx`
+
+---
+
 **Name:** `DownloadIcon`
 **Import:** `import { DownloadIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
@@ -164,6 +170,18 @@ description: >
 **Name:** `Drawer`
 **Import:** `import { Drawer } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Drawer/index.ts`
+
+---
+
+**Name:** `DropDown`
+**Import:** `import { DropDown } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/ui/DropDown.tsx`
+
+---
+
+**Name:** `DropDownItem`
+**Import:** `import { DropDownItem } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/ui/DropDown.tsx`
 
 ---
 
@@ -185,9 +203,53 @@ description: >
 
 ---
 
+**Name:** `FileManager`
+**Import:** `import { FileManager } from "webiny/admin/ui/file-manager"`
+**Source:** `@webiny/app-admin/base/ui/FileManager.tsx`
+
+---
+
+**Name:** `FileManagerFileItem`
+**Kind:** type
+**Import:** `import type { FileManagerFileItem } from "webiny/admin/ui/file-manager"`
+**Source:** `@webiny/app-admin/base/ui/FileManager.tsx`
+**Description:** Represents a file object managed by the File Manager.
+
+---
+
+**Name:** `FileManagerViewConfig`
+**Import:** `import { FileManagerViewConfig } from "webiny/admin/ui/file-manager"`
+**Source:** `@webiny/app-file-manager/presentation/config/FileManagerViewConfig.tsx`
+
+---
+
 **Name:** `FilePicker`
 **Import:** `import { FilePicker } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/FilePicker/index.ts`
+
+---
+
+**Name:** `FileUrlFormatter`
+**Import:** `import { FileUrlFormatter } from "webiny/admin/ui/file-manager"`
+**Source:** `@webiny/app-admin/features/fileUrlFormatter/abstractions.ts`
+
+---
+
+**Name:** `FillViewport`
+**Import:** `import { FillViewport } from "webiny/admin/ui"`
+**Source:** `@webiny/admin-ui/FillViewport/index.ts`
+
+---
+
+**Name:** `FillViewportHeight`
+**Import:** `import { FillViewportHeight } from "webiny/admin/ui"`
+**Source:** `@webiny/admin-ui/FillViewport/index.ts`
+
+---
+
+**Name:** `FillViewportWidth`
+**Import:** `import { FillViewportWidth } from "webiny/admin/ui"`
+**Source:** `@webiny/admin-ui/FillViewport/index.ts`
 
 ---
 
@@ -239,6 +301,12 @@ description: >
 
 ---
 
+**Name:** `getNodeFromSelection`
+**Import:** `import { getNodeFromSelection } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/hooks/index.ts`
+
+---
+
 **Name:** `Grid`
 **Import:** `import { Grid } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Grid/index.ts`
@@ -287,6 +355,13 @@ description: >
 
 ---
 
+**Name:** `Klass`
+**Kind:** type
+**Import:** `import type { Klass } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/types.ts`
+
+---
+
 **Name:** `Label`
 **Import:** `import { Label } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Label/index.ts`
@@ -294,8 +369,27 @@ description: >
 ---
 
 **Name:** `LexicalEditor`
-**Import:** `import { LexicalEditor } from "webiny/admin/ui"`
+**Import:** `import { LexicalEditor } from "webiny/admin/ui/lexical"`
 **Source:** `@webiny/app-admin/components/LexicalEditor/LexicalEditor.tsx`
+
+---
+
+**Name:** `LexicalEditorConfig`
+**Import:** `import { LexicalEditorConfig } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/components/LexicalEditorConfig/LexicalEditorConfig.tsx`
+
+---
+
+**Name:** `LexicalHtmlRenderer`
+**Import:** `import { LexicalHtmlRenderer } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/components/LexicalHtmlRenderer.tsx`
+
+---
+
+**Name:** `LexicalNode`
+**Kind:** type
+**Import:** `import type { LexicalNode } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/types.ts`
 
 ---
 
@@ -563,6 +657,24 @@ description: >
 
 ---
 
+**Name:** `useCurrentElement`
+**Import:** `import { useCurrentElement } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/hooks/index.ts`
+
+---
+
+**Name:** `useCurrentSelection`
+**Import:** `import { useCurrentSelection } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/hooks/index.ts`
+
+---
+
+**Name:** `useDeriveValueFromSelection`
+**Import:** `import { useDeriveValueFromSelection } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/hooks/index.ts`
+
+---
+
 **Name:** `useDialog`
 **Import:** `import { useDialog } from "webiny/admin/ui"`
 **Source:** `@webiny/app-admin/hooks/index.ts`
@@ -581,9 +693,33 @@ description: >
 
 ---
 
+**Name:** `useFileManagerConfig`
+**Import:** `import { useFileManagerConfig } from "webiny/admin/ui/file-manager"`
+**Source:** `@webiny/app-file-manager/presentation/config/FileManagerViewConfig.tsx`
+
+---
+
+**Name:** `useFontColorPicker`
+**Import:** `import { useFontColorPicker } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/hooks/index.ts`
+
+---
+
 **Name:** `useHotkeys`
 **Import:** `import { useHotkeys } from "webiny/admin/ui"`
 **Source:** `@webiny/app-admin/hooks/useHotkeys.ts`
+
+---
+
+**Name:** `useIsMounted`
+**Import:** `import { useIsMounted } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/hooks/index.ts`
+
+---
+
+**Name:** `useLexicalEditorConfig`
+**Import:** `import { useLexicalEditorConfig } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/components/LexicalEditorConfig/LexicalEditorConfig.tsx`
 
 ---
 
@@ -593,15 +729,33 @@ description: >
 
 ---
 
+**Name:** `useRichTextEditor`
+**Import:** `import { useRichTextEditor } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/hooks/index.ts`
+
+---
+
 **Name:** `useSidebar`
 **Import:** `import { useSidebar } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Sidebar/index.ts`
 
 ---
 
+**Name:** `useTextAlignmentAction`
+**Import:** `import { useTextAlignmentAction } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/hooks/index.ts`
+
+---
+
 **Name:** `useToast`
 **Import:** `import { useToast } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Toast/index.ts`
+
+---
+
+**Name:** `useTypographyAction`
+**Import:** `import { useTypographyAction } from "webiny/admin/ui/lexical"`
+**Source:** `@webiny/lexical-editor/hooks/index.ts`
 
 ---
 
