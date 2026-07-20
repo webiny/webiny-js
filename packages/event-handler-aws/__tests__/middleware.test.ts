@@ -99,15 +99,13 @@ describe("Middleware Pattern — ApiGatewayEventHandler decorators", () => {
     });
 
     it("should route SNS events to SNS handlers only", async () => {
+        class SnsHandlerImplementation implements SnsEventHandler.Interface {
+            async execute(ctx: EventContext<SNSEvent>, _next: NextFunction): Promise<SnsResult> {
+                return { success: true, processedRecords: ctx.event.Records.length };
+            }
+        }
         const SnsHandler = SnsEventHandler.createImplementation({
-            implementation: class implements SnsEventHandler.Interface {
-                async execute(
-                    ctx: EventContext<SNSEvent>,
-                    _next: NextFunction
-                ): Promise<SnsResult> {
-                    return { success: true, processedRecords: ctx.event.Records.length };
-                }
-            },
+            implementation: SnsHandlerImplementation,
             dependencies: []
         });
 

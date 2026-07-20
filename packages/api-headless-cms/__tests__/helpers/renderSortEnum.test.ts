@@ -8,12 +8,14 @@ import {
     CmsModelFieldToGraphQLRegistry
 } from "~/features/graphql/index.js";
 
+class TestSorter implements CmsGraphQLSchemaSorter.Interface {
+    execute({ sorters }: CmsGraphQLSchemaSorter.Params) {
+        return [...sorters, `testSorter_ASC`, `testSorter_DESC`];
+    }
+}
+
 const testSorter = CmsGraphQLSchemaSorter.createImplementation({
-    implementation: class TestSorter implements CmsGraphQLSchemaSorter.Interface {
-        execute({ sorters }: CmsGraphQLSchemaSorter.Params) {
-            return [...sorters, `testSorter_ASC`, `testSorter_DESC`];
-        }
-    },
+    implementation: TestSorter,
     dependencies: []
 });
 

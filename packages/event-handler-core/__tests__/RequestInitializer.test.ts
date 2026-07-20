@@ -1,21 +1,24 @@
 import { describe, it, expect } from "vitest";
 import { EventHandler } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
+import type { IEventType } from "~/features/events/EventType.js";
 import { RequestInitializer } from "~/features/events/RequestInitializer.js";
 import type { IEventHandler, EventContext } from "~/features/events/EventHandler.js";
 import type { NextFunction } from "~/features/events/types.js";
 import { createHandler } from "~/features/events/createHandler.js";
 
 describe("RequestInitializer", () => {
+    class HttpEventType implements IEventType {
+        canHandle(e: any): e is any {
+            return !!e.method;
+        }
+        getHandlerAbstraction() {
+            return EventHandler;
+        }
+    }
+
     const httpType = EventType.createImplementation({
-        implementation: class {
-            canHandle(e: any): e is any {
-                return !!e.method;
-            }
-            getHandlerAbstraction() {
-                return EventHandler;
-            }
-        },
+        implementation: HttpEventType,
         dependencies: []
     });
 
@@ -31,32 +34,38 @@ describe("RequestInitializer", () => {
     it("runs initializers (awaited, in registration order) before the handler", async () => {
         const order: string[] = [];
 
+        class OrderTrackingHandler implements IEventHandler {
+            async execute(_ctx: EventContext, _next: NextFunction) {
+                order.push("handler");
+                return "ok";
+            }
+        }
+
         const handler = EventHandler.createImplementation({
-            implementation: class implements IEventHandler {
-                async execute(_ctx: EventContext, _next: NextFunction) {
-                    order.push("handler");
-                    return "ok";
-                }
-            },
+            implementation: OrderTrackingHandler,
             dependencies: []
         });
+
+        class InitializerA implements RequestInitializer.Interface {
+            async init() {
+                await Promise.resolve();
+                order.push("a");
+            }
+        }
 
         const initA = RequestInitializer.createImplementation({
-            implementation: class implements RequestInitializer.Interface {
-                async init() {
-                    await Promise.resolve();
-                    order.push("a");
-                }
-            },
+            implementation: InitializerA,
             dependencies: []
         });
 
+        class InitializerB implements RequestInitializer.Interface {
+            async init() {
+                order.push("b");
+            }
+        }
+
         const initB = RequestInitializer.createImplementation({
-            implementation: class implements RequestInitializer.Interface {
-                async init() {
-                    order.push("b");
-                }
-            },
+            implementation: InitializerB,
             dependencies: []
         });
 
@@ -75,12 +84,14 @@ describe("RequestInitializer", () => {
     });
 
     it("works with no initializers registered", async () => {
+        class OkHandler implements IEventHandler {
+            async execute() {
+                return "ok";
+            }
+        }
+
         const handler = EventHandler.createImplementation({
-            implementation: class implements IEventHandler {
-                async execute() {
-                    return "ok";
-                }
-            },
+            implementation: OkHandler,
             dependencies: []
         });
 

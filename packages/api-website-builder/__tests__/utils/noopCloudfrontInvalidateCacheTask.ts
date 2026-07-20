@@ -11,15 +11,17 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
  * register this local no-op instead of importing the real prod def to keep the WB test decoupled
  * from api-file-manager-s3 internals.
  */
-export const NoopCloudfrontInvalidateCacheTaskDefinition = TaskDefinition.createImplementation({
-    implementation: class implements TaskDefinition.Interface {
-        id = "cloudfrontInvalidateCache";
-        title = "Invalidate CloudFront Cache (test no-op)";
-        isPrivate = true;
+class NoopCloudfrontInvalidateCacheTaskImplementation implements TaskDefinition.Interface {
+    id = "cloudfrontInvalidateCache";
+    title = "Invalidate CloudFront Cache (test no-op)";
+    isPrivate = true;
 
-        async run({ controller }: TaskDefinition.RunParams) {
-            return controller.response.done();
-        }
-    },
+    async run({ controller }: TaskDefinition.RunParams) {
+        return controller.response.done();
+    }
+}
+
+export const NoopCloudfrontInvalidateCacheTaskDefinition = TaskDefinition.createImplementation({
+    implementation: NoopCloudfrontInvalidateCacheTaskImplementation,
     dependencies: []
 });

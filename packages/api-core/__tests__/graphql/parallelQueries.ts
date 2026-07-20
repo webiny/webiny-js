@@ -20,7 +20,7 @@ export const PARALLEL_QUERY = /* GraphQL */ `
     }
 `;
 
-class ParallelQueriesSchemaFactoryImpl {
+class ParallelQueriesSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
         builder.addTypeDefs(/* GraphQL */ `
             extend type Query {
