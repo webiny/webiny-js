@@ -142,6 +142,11 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // doesn't depend on the tenant (the HTTP stack resolves identity before tenant), so there's
             // no request or tenant state to set up. Connections are rare (one per admin session), so a
             // fresh child per connection is cheap enough.
+            //
+            // This is also why the WebSocket server takes `authenticate` as a plain callback instead
+            // of resolving auth itself: AuthenticationContext isn't reachable from the root container
+            // (it's per-request), so only the handler — which can build a request-scoped child — can
+            // supply it. So authenticate has to be a callback the handler builds, regardless of DI.
             const authenticate = async (token: string) => {
                 const child = rootContainer.createChildContainer();
                 child.registerInstance(RequestContainer, child);
