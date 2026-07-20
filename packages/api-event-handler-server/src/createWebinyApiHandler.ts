@@ -48,28 +48,28 @@ export interface CreateWebinyApiHandlerConfig {
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     return createServerHandler({
-        root: async container => {
+        root: async rootContainer => {
             // ── Transport (Node HTTP) ──────────────────────────────────
             // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.
-            NodeHttpFeature.register(container);
+            NodeHttpFeature.register(rootContainer);
 
             // ── Auth + tenant (extract → shared load) ──────────────────
             // registerDecorator applies LATER registrations as the OUTER wrapper (whose execute()
             // runs first). Identity must be established before tenant, so register tenant first
             // (inner) and identity last (outer) → identity runs, then tenant, then the router.
-            container.registerDecorator(NodeHttpTenantLoaderDecorator);
-            container.registerDecorator(NodeHttpIdentityLoaderDecorator);
+            rootContainer.registerDecorator(NodeHttpTenantLoaderDecorator);
+            rootContainer.registerDecorator(NodeHttpIdentityLoaderDecorator);
 
             // ── Storage + identity provider (variant-supplied) ─────────
-            await config.registerRootStorage(container);
+            await config.registerRootStorage(rootContainer);
 
             // ── WebSockets transport (root) ────────────────────────────
             // Live-socket registry + adapter live in the root as singletons: the connection manager
             // is shared between the upgrade acceptor (attachWebsocketsServer, below) and the
             // per-request ServerWebsocketsTransport that sends to those live sockets. The persistent
             // connection registry (ConnectionRegistry) is the storage variant's job (e.g. sql).
-            container.register(ServerConnectionManager).inSingletonScope();
-            container.register(NodeWsAdapter).inSingletonScope();
+            rootContainer.register(ServerConnectionManager).inSingletonScope();
+            rootContainer.register(NodeWsAdapter).inSingletonScope();
 
             // ── Background tasks (root) ────────────────────────────────
             // Mirrors the AWS handler registering its background-task transport at root. There is no
@@ -81,7 +81,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // gates the route against the worker's callback, so dispatcher and route MUST see the SAME
             // token — a per-request registration would mint a fresh token per request and always 403.
             // The route is an HttpRoute; the per-request HttpRouter collects it via the parent chain.
-            BackgroundTasksServerFeature.register(container);
+            BackgroundTasksServerFeature.register(rootContainer);
 
             // ── Scheduler (root) ───────────────────────────────────────
             // The Bree scheduler is a single long-lived instance for ALL tenants, started once at boot
@@ -90,7 +90,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // mutations manipulate this one live timer set) plus the run/recover HTTP routes + internal
             // token. When a timer fires (outside any request) it POSTs `/scheduled-action-run`, which
             // rebuilds the tenant's request context and executes the action.
-            registerSchedulerServer(container);
+            registerSchedulerServer(rootContainer);
         },
 
         request: async container => {

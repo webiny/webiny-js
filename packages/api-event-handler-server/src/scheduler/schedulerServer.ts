@@ -32,9 +32,9 @@ const serverBase = () => `http://localhost:${process.env.PORT || "3002"}`;
  * When a timer fires (outside any request), the singleton POSTs to `/scheduled-action-run`, which
  * rebuilds the request context for the action's tenant and executes it (see the route).
  */
-export function registerSchedulerServer(container: Container): void {
+export function registerSchedulerServer(rootContainer: Container): void {
     const token = mdbid();
-    container.registerInstance(SchedulerInternalToken, { value: token });
+    rootContainer.registerInstance(SchedulerInternalToken, { value: token });
 
     const service = new BreeSchedulerService({
         logger: consoleLogger,
@@ -68,11 +68,11 @@ export function registerSchedulerServer(container: Container): void {
     // Register the one instance under both the concrete class (for the recover route) and the
     // SchedulerService abstraction (for per-request create/update/delete). Root registration is visible
     // to request containers via the parent chain, and nothing registers a per-request default to shadow it.
-    container.registerInstance(SchedulerSingleton, service);
-    container.registerInstance(SchedulerService, service);
+    rootContainer.registerInstance(SchedulerSingleton, service);
+    rootContainer.registerInstance(SchedulerService, service);
 
-    container.register(ScheduledActionRunRoute);
-    container.register(ScheduledActionRecoverRoute);
+    rootContainer.register(ScheduledActionRunRoute);
+    rootContainer.register(ScheduledActionRecoverRoute);
 }
 
 /**
