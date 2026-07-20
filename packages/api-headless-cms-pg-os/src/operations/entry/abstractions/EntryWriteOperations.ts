@@ -53,8 +53,9 @@ export interface IEntryWriteOperations {
     ): Promise<void>;
 }
 
-export const EntryWriteOperations =
-    createAbstraction<IEntryWriteOperations>("Cms/PgOs/EntryWriteOperations");
+export const EntryWriteOperations = createAbstraction<IEntryWriteOperations>(
+    "Cms/PgOs/EntryWriteOperations"
+);
 
 export namespace EntryWriteOperations {
     export type Interface = IEntryWriteOperations;

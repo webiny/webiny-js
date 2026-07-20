@@ -52,8 +52,7 @@ export const createGetUniqueFieldValuesOperation = (
 
         const aggregations = response.body.aggregations || {};
         const agg = aggregations["getUniqueFieldValues"];
-        const buckets =
-            agg && "buckets" in agg && Array.isArray(agg.buckets) ? agg.buckets : [];
+        const buckets = agg && "buckets" in agg && Array.isArray(agg.buckets) ? agg.buckets : [];
         return buckets.map((bucket: { key: string; doc_count: number }) => ({
             value: bucket.key,
             count: bucket.doc_count

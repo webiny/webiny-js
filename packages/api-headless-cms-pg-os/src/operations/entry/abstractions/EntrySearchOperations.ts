@@ -25,8 +25,9 @@ export interface IEntrySearchOperations {
     ): Promise<CmsEntryUniqueValue[]>;
 }
 
-export const EntrySearchOperations =
-    createAbstraction<IEntrySearchOperations>("Cms/PgOs/EntrySearchOperations");
+export const EntrySearchOperations = createAbstraction<IEntrySearchOperations>(
+    "Cms/PgOs/EntrySearchOperations"
+);
 
 export namespace EntrySearchOperations {
     export type Interface = IEntrySearchOperations;
