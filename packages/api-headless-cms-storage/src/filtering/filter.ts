@@ -4,7 +4,6 @@ import type {
     CmsEntryValues
 } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
-import type { PluginsContainer } from "@webiny/plugins";
 import type { Field } from "./fields/types.js";
 import { createFullTextSearch } from "./fullTextSearch.js";
 import type { Expression, ExpressionCondition, Filter } from "./expressions/createExpressions.js";
@@ -12,6 +11,8 @@ import { createExpressions } from "./expressions/createExpressions.js";
 import { transformValue } from "./transform.js";
 import { getValue } from "./getValue.js";
 import { ValueFilterRegistry } from "@webiny/db-utils";
+import type { FieldFilterCreateRegistry } from "../abstractions/FieldFilterCreateRegistry.js";
+import type { FieldFilterValueTransformRegistry } from "../abstractions/FieldFilterValueTransformRegistry.js";
 
 interface ExecuteFilterParams {
     value: any;
@@ -21,7 +22,6 @@ interface ExecuteFilterParams {
 const executeFilter = (params: ExecuteFilterParams) => {
     const { value, filter } = params;
 
-    /* We need to check if the filter can be used. If it cannot, we will just return true. */
     const canUse = filter.filter.canUse({
         value,
         compareValue: filter.compareValue
@@ -52,7 +52,6 @@ const executeExpressions = (params: ExecuteExpressionsParams): boolean => {
     if (expressions.length === 0 && filters.length === 0) {
         return true;
     }
-    /* Always run filters first as they might trigger an early return. */
     for (const filter of filters) {
         const value = getCachedValue(filter);
 
@@ -60,12 +59,10 @@ const executeExpressions = (params: ExecuteExpressionsParams): boolean => {
             value,
             filter
         });
-        /* Filters are ALWAYS executed as an AND. So if even one is false, everything false. */
         if (!result) {
             return false;
         }
     }
-    /* Then we move onto expressions, which are basically nested upon nested filters with different conditions. */
     for (const expression of expressions) {
         const result = executeExpressions({
             ...expression,
@@ -77,16 +74,12 @@ const executeExpressions = (params: ExecuteExpressionsParams): boolean => {
             return false;
         }
     }
-    /*
-     * If condition is an OR, we can fail the expressions check because the code would return a lot earlier than this line.
-     *
-     * Also, if condition is not an OR, we can say that the expressions check is ok, because it would fail a lot earlier than this line.
-     */
     return condition === "OR" ? false : true;
 };
 
 interface IFilterParams<T extends CmsEntryValues = CmsEntryValues> {
-    plugins: PluginsContainer;
+    filterCreateRegistry: FieldFilterCreateRegistry.Interface;
+    transformRegistry: FieldFilterValueTransformRegistry.Interface;
     valueFilterRegistry: ValueFilterRegistry.Interface;
     items: CmsEntry<T>[];
     where: Partial<CmsEntryListWhere>;
@@ -100,20 +93,28 @@ interface IFilterParams<T extends CmsEntryValues = CmsEntryValues> {
 export const filter = <T extends CmsEntryValues = CmsEntryValues>(
     params: IFilterParams<T>
 ): CmsEntry<T>[] => {
-    const { items: records, where, plugins, fields, fullTextSearch, valueFilterRegistry } = params;
+    const {
+        items: records,
+        where,
+        filterCreateRegistry,
+        transformRegistry,
+        fields,
+        fullTextSearch,
+        valueFilterRegistry
+    } = params;
 
     const keys = Object.keys(where);
     if (keys.length === 0 && !fullTextSearch) {
         return records;
     }
     const expression = createExpressions({
-        plugins,
+        filterCreateRegistry,
+        transformRegistry,
         where,
         fields,
         valueFilterRegistry
     });
 
-    /* No point in going further if there are no expressions to be applied and no full text search to be executed. */
     if (
         expression.filters.length === 0 &&
         expression.expressions.length === 0 &&
@@ -121,7 +122,6 @@ export const filter = <T extends CmsEntryValues = CmsEntryValues>(
     ) {
         return records;
     }
-    /* We need the contains plugin to run the full text search. */
     const fullTextSearchFilter = valueFilterRegistry.get("contains");
     if (!fullTextSearchFilter) {
         throw new WebinyError(
@@ -157,10 +157,6 @@ export const filter = <T extends CmsEntryValues = CmsEntryValues>(
         };
 
         const exprResult = executeExpressions({ ...expression, getCachedValue });
-        /*
-         * If expression result is false we do not need to continue further.
-         * Also, if there is no full text search defined, just return the expression result.
-         */
         if (!exprResult || !search) {
             return exprResult;
         }
