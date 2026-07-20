@@ -25,29 +25,37 @@ export const ErrorOverlay = (props: ErrorOverlayProps) => {
 
     return (
         <OverlayWrapper>
-            <div className="inner">
-                <div className="header">
-                    <div className="header__title">
+            <div className={"box-border flex flex-col w-full h-full overflow-auto bg-white p-4"}>
+                <div className={"flex justify-between items-center mb-4"}>
+                    <div className={"text-[color:var(--mdc-theme-error)]"}>
                         <Typography use={"headline"}>{title}</Typography>
                     </div>
                     {closeable !== false && (
-                        <div className="header__action">
+                        <div>
                             <span onClick={() => setOpen(false)}>
                                 <CloseIcon />
                             </span>
                         </div>
                     )}
                 </div>
-                <div className="body">
-                    <div className="body__summary">{message}</div>
-                    {description && <div className="body__description">{description}</div>}
+                <div>
+                    <div className={"mb-4"}>{message}</div>
+                    {description && <div>{description}</div>}
                 </div>
-                <div className="footer">
+                <div className={"text-[color:var(--mdc-theme-text-secondary-on-background)]"}>
                     <Typography use={"body"}>
                         {t`
                         This screen is only visible if {message} environment variable is set.
                         Read more about it in the {link}. `({
-                            message: <span className={"highlight"}>`REACT_APP_DEBUG=true`</span>,
+                            message: (
+                                <span
+                                    className={
+                                        "bg-[rgba(251,245,180,0.5)] px-1 rounded-[6px] font-mono"
+                                    }
+                                >
+                                    `REACT_APP_DEBUG=true`
+                                </span>
+                            ),
                             link: (
                                 <a
                                     href={ENVIRONMENT_VARIABLES_ARTICLE_LINK}

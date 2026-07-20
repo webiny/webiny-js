@@ -12014,8 +12014,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-graphql-playground@workspace:packages/app-graphql-playground"
   dependencies:
-    "@emotion/react": "npm:^11.14.0"
-    "@emotion/styled": "npm:^11.14.1"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -12442,7 +12440,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app@workspace:packages/app"
   dependencies:
-    "@emotion/styled": "npm:^11.14.1"
     "@types/lodash": "npm:^4.17.24"
     "@types/react": "npm:18.3.31"
     "@types/warning": "npm:^3.0.4"
@@ -13117,8 +13114,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-editor-actions@workspace:packages/lexical-editor-actions"
   dependencies:
-    "@emotion/css": "npm:^11.13.5"
-    "@emotion/styled": "npm:^11.14.1"
     "@lexical/selection": "npm:^0.47.0"
     "@types/react-color": "npm:^3.0.13"
     "@webiny/admin-ui": "npm:0.0.0"

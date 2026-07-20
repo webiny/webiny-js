@@ -1,11 +1,8 @@
 import React from "react";
-import styled from "@emotion/styled";
 
-const Code = styled.code`
-    font-family: monospace;
-    font-size: 0.85rem;
-    line-height: 1rem;
-`;
+const Code = ({ children }: { children: React.ReactNode }) => (
+    <code className={"font-mono text-[0.85rem] leading-[1rem]"}>{children}</code>
+);
 
 export const LocalAwsLambdaTimeoutMessage = () => (
     <>
