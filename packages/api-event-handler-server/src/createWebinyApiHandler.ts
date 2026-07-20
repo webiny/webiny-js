@@ -131,9 +131,9 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // Attach the WebSockets upgrade handler to the running HTTP server, backed by the shared
             // (root) connection manager so request-time sends reach the live sockets.
             //
-            // Each upgrade is authenticated from its `?token` JWT so the connection is registered
-            // under the real identity — targeted server→client sends need this, since SendToIdentity
-            // matches connections by identity id. The catch is that AuthenticationContext lives in the
+            // Each new WebSocket connection (the HTTP upgrade handshake) is authenticated from its
+            // `?token` JWT so the connection is registered under the real identity — targeted
+            // server→client sends need this, since SendToIdentity matches connections by identity id. The catch is that AuthenticationContext lives in the
             // per-request stack (registered by ApiCoreFeature, not registerRootStorage), so we can't
             // resolve it from the root container. Instead we spin up a short-lived request-scoped
             // child container, the same way createHandler does for each HTTP request, and resolve it
