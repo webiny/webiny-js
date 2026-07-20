@@ -1,5 +1,7 @@
+import type { AssetRequestOptions } from "~/delivery/AssetDelivery/AssetRequest.js";
 import { AssetRequestResolver } from "../abstractions/AssetRequestResolver.js";
 import { AssetRequestFactory } from "../AssetRequest/abstractions.js";
+import { normalizeImageOptions } from "../normalizeImageOptions.js";
 
 class PrivateFileAssetRequestResolverImpl implements AssetRequestResolver.Interface {
     private readonly assetRequestFactory: AssetRequestFactory.Interface;
@@ -25,16 +27,16 @@ class PrivateFileAssetRequestResolverImpl implements AssetRequestResolver.Interf
 
         const path = params["*"];
 
+        const options: AssetRequestOptions = { ...query };
+        normalizeImageOptions(options, query, request.headers?.accept as string | undefined);
+
         return this.assetRequestFactory.create({
             key: decodeURI(path).replace("/private/", ""),
             context: {
                 url: request.url,
                 private: true
             },
-            options: {
-                ...query,
-                width: query.width ? parseInt(query.width) : undefined
-            }
+            options
         });
     }
 }

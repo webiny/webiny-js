@@ -31,7 +31,9 @@ export const ImageComponent = (props: ImageProps) => {
     }
 
     // Renders honoring the crop + hotspot (pure CSS), at the crop's own aspect
-    // ratio. The Webiny CDN width parameter drives a responsive srcSet.
+    // ratio. The Webiny asset delivery resizes (width) and serves a modern format
+    // negotiated from the request's Accept header (format=auto -> AVIF/WebP),
+    // driving a responsive srcSet.
     return (
         <WebinyImage
             image={image}
@@ -40,7 +42,7 @@ export const ImageComponent = (props: ImageProps) => {
             style={props.styles}
             sizes={"100vw"}
             loading={highPriority ? "eager" : "lazy"}
-            loader={({ src, width }) => `${src}?width=${width}`}
+            loader={({ src, width }) => `${src}?width=${width}&format=auto`}
         />
     );
 };

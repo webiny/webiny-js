@@ -4,7 +4,12 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import type { AssetRequestOptions } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { AssetTransformationStrategy as AssetTransformationStrategyAbstraction } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
-import { WidthCollection } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
+import {
+    contentTypeForFormat,
+    DEFAULT_IMAGE_QUALITY,
+    type ImageFormat
+} from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
+import { transformImageBuffer } from "@webiny/api-file-manager/features/assetDelivery/transformation/transformImage.js";
 import * as utils from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import { AssetKeyGenerator } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
@@ -12,13 +17,23 @@ import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
 import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
+type TransformOptions = Omit<AssetRequestOptions, "original">;
+
+const hasTransform = (options: TransformOptions): boolean => {
+    return (
+        options.width !== undefined || options.format !== undefined || options.quality !== undefined
+    );
+};
+
 export class LocalSharpTransform implements AssetTransformationStrategyAbstraction.Interface {
     private readonly storagePath: string;
     private readonly imageResizeWidths: number[];
+    private readonly imageQuality: Record<ImageFormat, number>;
 
     constructor(storagePath: string, config: ILocalAssetDeliveryConfig) {
         this.storagePath = storagePath;
         this.imageResizeWidths = config.imageResizeWidths;
+        this.imageQuality = { ...DEFAULT_IMAGE_QUALITY, ...(config.imageQuality ?? {}) };
     }
 
     async transform(
@@ -37,7 +52,7 @@ export class LocalSharpTransform implements AssetTransformationStrategyAbstracti
 
         const transformedAsset = asset.clone();
 
-        if (Object.keys(options).length > 0) {
+        if (hasTransform(options)) {
             return this.transformAsset(transformedAsset, options);
         }
 
@@ -46,56 +61,60 @@ export class LocalSharpTransform implements AssetTransformationStrategyAbstracti
 
     private async transformAsset(
         asset: AssetTransformationStrategyAbstraction.Asset,
-        options: Omit<AssetRequestOptions, "original">
+        options: TransformOptions
     ) {
-        if (options.width) {
-            const assetKey = AssetKeyGenerator.create(asset);
-            const transformedAssetKey = assetKey.getTransformedImageKey(options);
-            const transformedFilePath = path.join(this.storagePath, transformedAssetKey);
+        const assetKey = AssetKeyGenerator.create(asset);
+        const transformedAssetKey = assetKey.getTransformedImageKey(options);
+        const transformedFilePath = path.join(this.storagePath, transformedAssetKey);
 
-            try {
-                const buffer = await fs.readFile(transformedFilePath);
+        const contentType = options.format
+            ? contentTypeForFormat(options.format)
+            : asset.getContentType();
 
-                const newAsset = asset.withProps({ size: buffer.length });
-                newAsset.setContentsReader(CallableContentsReader.create(() => buffer));
+        try {
+            const buffer = await fs.readFile(transformedFilePath);
 
-                console.log(`Return a previously transformed asset`, {
-                    key: transformedAssetKey,
-                    size: newAsset.getSize()
+            const newAsset = asset.withProps({ size: buffer.length, contentType });
+            newAsset.setContentsReader(CallableContentsReader.create(() => buffer));
+
+            console.log(`Return a previously transformed asset`, {
+                key: transformedAssetKey,
+                size: newAsset.getSize()
+            });
+
+            return newAsset;
+        } catch {
+            const optimizedImage = await this.optimizeAsset(asset);
+
+            console.log(`Transform the asset`, options);
+            const baseBuffer = await optimizedImage.getContents();
+            const { buffer: transformedBuffer, contentType: outputContentType } =
+                await transformImageBuffer({
+                    buffer: baseBuffer,
+                    animated: this.isAssetAnimated(asset),
+                    sourceContentType: asset.getContentType(),
+                    widths: this.imageResizeWidths,
+                    options,
+                    qualityDefaults: this.imageQuality
                 });
 
-                return newAsset;
-            } catch {
-                const optimizedImage = await this.optimizeAsset(asset);
+            const newAsset = asset.withProps({
+                size: transformedBuffer.length,
+                contentType: outputContentType
+            });
+            newAsset.setContentsReader(CallableContentsReader.create(() => transformedBuffer));
 
-                const widths = WidthCollection.create(this.imageResizeWidths);
-                const width = widths.getClosestOrMax(options.width);
+            await fs.mkdir(path.dirname(transformedFilePath), { recursive: true });
+            await fs.writeFile(transformedFilePath, await newAsset.getContents());
 
-                console.log(`Resize the asset (width: ${width})`);
-                const buffer = await optimizedImage.getContents();
-                const transformedBuffer = await sharp(buffer, {
-                    animated: this.isAssetAnimated(asset)
-                })
-                    .withMetadata()
-                    .resize({ width, withoutEnlargement: true })
-                    .toBuffer();
+            console.log(`Return the transformed asset`, {
+                key: transformedAssetKey,
+                size: newAsset.getSize(),
+                contentType: newAsset.getContentType()
+            });
 
-                const newAsset = asset.withProps({ size: transformedBuffer.length });
-                newAsset.setContentsReader(CallableContentsReader.create(() => transformedBuffer));
-
-                await fs.mkdir(path.dirname(transformedFilePath), { recursive: true });
-                await fs.writeFile(transformedFilePath, await newAsset.getContents());
-
-                console.log(`Return the resized asset`, {
-                    key: transformedAssetKey,
-                    size: newAsset.getSize()
-                });
-
-                return newAsset;
-            }
+            return newAsset;
         }
-
-        return asset;
     }
 
     private async optimizeAsset(asset: AssetTransformationStrategyAbstraction.Asset) {
