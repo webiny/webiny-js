@@ -456,7 +456,7 @@ Every feature defines domain-specific errors extending `BaseError`:
 
 ```ts
 // domain/errors.ts
-import { BaseError } from "@webiny/feature/api";
+import { BaseError } from "webiny/api";
 
 export class EntityNotFoundError extends BaseError {
   override readonly code = "Entity/NotFound" as const;
@@ -477,7 +477,7 @@ export class EntityPersistenceError extends BaseError<{ error: Error }> {
 
 **Rules:**
 
-- Extend `BaseError` from `@webiny/feature/api`
+- Extend `BaseError` from `webiny/api`
 - Use `override readonly code` with a namespaced string (`"Domain/ErrorType"`)
 - Use `as const` on the code for type narrowing
 - If passing `data`, define a type and pass it as generic: `BaseError<TDataType>`
@@ -519,7 +519,7 @@ export namespace CreateEntityUseCase {
 
 ```ts
 // domain/EntityId.ts
-import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
+import { EntryId } from "webiny/api/cms/entry";
 
 export class EntityId {
   static from(id?: string) {
@@ -610,7 +610,7 @@ export {
 
 ## Code Conventions
 
-- Use `createAbstraction` from `@webiny/feature/api` — never `new Abstraction()`
+- Use `createAbstraction` from `webiny/api` — never `new Abstraction()`
 - All implementations use `createImplementation` with a `dependencies` array matching constructor order
 - Implementation classes are **not exported** — only the `createImplementation` result (as `default`)
 - One class per file. One named import per line.

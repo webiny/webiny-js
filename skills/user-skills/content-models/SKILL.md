@@ -185,9 +185,7 @@ Admin UI and the field may fail to save values. Invented names (e.g. `"fileInput
 Exception: `fields.boolean()` has no multi-value variant — do not call `.list()` on
 boolean fields.
 
-The authoritative source for this list is
-`@webiny/api-headless-cms/features/modelBuilder/fields/DataFieldBuilder.d.ts` (in the
-project's `node_modules`) — if you're unsure, grep there first.
+The authoritative source for these field types is the `webiny/api/cms/model` barrel export — if you're unsure, check the catalog skill `webiny-api-cms-catalog`.
 
 | Builder Method         | Description                              | Single (`list: false`)                                              | Multiple (`list: true`)                                               |
 | ---------------------- | ---------------------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------- |
