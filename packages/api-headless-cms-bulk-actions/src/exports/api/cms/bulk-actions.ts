@@ -1,5 +1,2 @@
 // EntriesBulkAction
-export {
-    EntriesBulkAction,
-    EntriesBulkActionConfig
-} from "~/features/EntriesBulkAction/abstractions.js";
+export { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";

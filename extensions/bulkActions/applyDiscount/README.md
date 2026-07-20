@@ -102,7 +102,7 @@ Authoring a custom bulk action from a project needs API surface that wasn't publ
 before 6.5.0. Exposed via the `webiny` meta-package (each declared in the owning
 package's `src/exports/**` folder, which the `generate-webiny-package` script merges):
 
-- **API** — `EntriesBulkAction`, `EntriesBulkActionConfig` → `webiny/api/cms/bulk-actions`
+- **API** — `EntriesBulkAction` → `webiny/api/cms/bulk-actions`
 - **Admin (trigger)** — `BulkActionFeature`, `BulkActionUseCase` → `webiny/admin/cms/entry/list`
 - **Admin (UI)** — `BulkActionButton`, `useBulkActionDialog` → `webiny/admin`
 
