@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["react"],
+  "jsPlugins": ["./oxlint-plugins/webiny.ts"],
   "categories": {
     "correctness": "off",
     "suspicious": "off"
@@ -43,6 +44,8 @@
     "packages/create-webiny-project/_templates/**/*"
   ],
   "rules": {
+    "webiny/no-inline-class-in-create-implementation": "error",
+    "webiny/require-implements-on-create-implementation": "error",
     "curly": ["error"],
     "no-array-constructor": "error",
     "no-restricted-imports": [

@@ -5,15 +5,16 @@ import type { NextFunction } from "@webiny/event-handler-core";
 import { createLambdaHandler } from "~/createLambdaHandler.js";
 
 describe("createLambdaHandler — RequestInitializer", () => {
+    class HttpEventType implements EventType.Interface {
+        canHandle(e: any): e is any {
+            return !!e.method;
+        }
+        getHandlerAbstraction() {
+            return EventHandler;
+        }
+    }
     const httpType = EventType.createImplementation({
-        implementation: class {
-            canHandle(e: any): e is any {
-                return !!e.method;
-            }
-            getHandlerAbstraction() {
-                return EventHandler;
-            }
-        },
+        implementation: HttpEventType,
         dependencies: []
     });
 
@@ -29,32 +30,35 @@ describe("createLambdaHandler — RequestInitializer", () => {
     it("runs initializers (awaited, in registration order) before the handler", async () => {
         const order: string[] = [];
 
+        class OrderTrackingHandler implements IEventHandler {
+            async execute(_ctx: EventContext, _next: NextFunction) {
+                order.push("handler");
+                return "ok";
+            }
+        }
         const handler = EventHandler.createImplementation({
-            implementation: class implements IEventHandler {
-                async execute(_ctx: EventContext, _next: NextFunction) {
-                    order.push("handler");
-                    return "ok";
-                }
-            },
+            implementation: OrderTrackingHandler,
             dependencies: []
         });
 
+        class InitializerA implements RequestInitializer.Interface {
+            async init() {
+                await Promise.resolve();
+                order.push("a");
+            }
+        }
         const initA = RequestInitializer.createImplementation({
-            implementation: class implements RequestInitializer.Interface {
-                async init() {
-                    await Promise.resolve();
-                    order.push("a");
-                }
-            },
+            implementation: InitializerA,
             dependencies: []
         });
 
+        class InitializerB implements RequestInitializer.Interface {
+            async init() {
+                order.push("b");
+            }
+        }
         const initB = RequestInitializer.createImplementation({
-            implementation: class implements RequestInitializer.Interface {
-                async init() {
-                    order.push("b");
-                }
-            },
+            implementation: InitializerB,
             dependencies: []
         });
 
@@ -73,12 +77,13 @@ describe("createLambdaHandler — RequestInitializer", () => {
     });
 
     it("works with no initializers registered", async () => {
+        class OkHandler implements IEventHandler {
+            async execute() {
+                return "ok";
+            }
+        }
         const handler = EventHandler.createImplementation({
-            implementation: class implements IEventHandler {
-                async execute() {
-                    return "ok";
-                }
-            },
+            implementation: OkHandler,
             dependencies: []
         });
 

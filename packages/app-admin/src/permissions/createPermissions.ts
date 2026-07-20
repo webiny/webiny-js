@@ -208,6 +208,7 @@ export function createPermissionsFeature<const S extends PermissionSchemaConfig>
     schema: S,
     abstraction: Abstraction<UsePermissionsResult<S>>
 ) {
+    // eslint-disable-next-line webiny/require-implements-on-create-implementation -- UsePermissionsResult<S> is a conditional type, not a statically-known object type (TS2422); conformance is enforced by the Abstraction<UsePermissionsResult<S>> generic.
     class PermissionsImpl extends SchemaPermissions<S> {
         constructor(identityContext: IIdentityContext) {
             super(schema, identityContext);
