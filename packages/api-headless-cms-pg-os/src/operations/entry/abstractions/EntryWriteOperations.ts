@@ -6,16 +6,11 @@ import type {
     CmsEntryStorageOperationsDeleteEntriesParams,
     CmsEntryStorageOperationsDeleteParams,
     CmsEntryStorageOperationsDeleteRevisionParams,
-    CmsEntryStorageOperationsGetParams,
-    CmsEntryStorageOperationsGetUniqueFieldValuesParams,
-    CmsEntryStorageOperationsListParams,
-    CmsEntryStorageOperationsListResponse,
     CmsEntryStorageOperationsMoveToBinParams,
     CmsEntryStorageOperationsPublishParams,
     CmsEntryStorageOperationsRestoreFromBinParams,
     CmsEntryStorageOperationsUnpublishParams,
     CmsEntryStorageOperationsUpdateParams,
-    CmsEntryUniqueValue,
     CmsEntryValues,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
@@ -63,26 +58,4 @@ export const EntryWriteOperations =
 
 export namespace EntryWriteOperations {
     export type Interface = IEntryWriteOperations;
-}
-
-export interface IEntrySearchOperations {
-    get<T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetParams
-    ): Promise<CmsEntry<T> | null>;
-    list<T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsListParams
-    ): Promise<CmsEntryStorageOperationsListResponse<CmsEntry<T>>>;
-    getUniqueFieldValues(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetUniqueFieldValuesParams
-    ): Promise<CmsEntryUniqueValue[]>;
-}
-
-export const EntrySearchOperations =
-    createAbstraction<IEntrySearchOperations>("Cms/PgOs/EntrySearchOperations");
-
-export namespace EntrySearchOperations {
-    export type Interface = IEntrySearchOperations;
 }
