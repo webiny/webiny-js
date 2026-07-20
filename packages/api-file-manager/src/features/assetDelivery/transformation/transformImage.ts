@@ -82,6 +82,46 @@ export interface TransformImageResult {
  * resize (snapped to the configured width ladder) → optional format conversion +
  * quality. Returns the resulting buffer and its content type.
  */
+interface CropInsets {
+    top: number;
+    left: number;
+    bottom: number;
+    right: number;
+}
+
+const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
+
+/**
+ * Extract the crop region (edge insets, 0..1) from an image buffer. Returns the
+ * original buffer unchanged if the crop is empty/full or the dimensions are unknown.
+ */
+export const cropImageBuffer = async (buffer: Buffer, crop: CropInsets): Promise<Buffer> => {
+    const image = sharp(buffer);
+    const meta = await image.metadata();
+    const w = meta.width ?? 0;
+    const h = meta.height ?? 0;
+    if (!w || !h) {
+        return buffer;
+    }
+
+    const left = Math.max(0, Math.min(w - 1, Math.round(clamp01(crop.left) * w)));
+    const top = Math.max(0, Math.min(h - 1, Math.round(clamp01(crop.top) * h)));
+    const width = Math.max(
+        1,
+        Math.min(w - left, Math.round((1 - clamp01(crop.left) - clamp01(crop.right)) * w))
+    );
+    const height = Math.max(
+        1,
+        Math.min(h - top, Math.round((1 - clamp01(crop.top) - clamp01(crop.bottom)) * h))
+    );
+
+    if (left === 0 && top === 0 && width === w && height === h) {
+        return buffer;
+    }
+
+    return image.extract({ left, top, width, height }).toBuffer();
+};
+
 export const transformImageBuffer = async (
     params: TransformImageParams
 ): Promise<TransformImageResult> => {

@@ -5,6 +5,7 @@ import {
     ObjectKey
 } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import type { AssetImageEdit } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
 import { S3ContentsReader } from "~/assetDelivery/index.js";
 import { S3Client, S3Bucket } from "~/assetDelivery/abstractions.js";
 
@@ -14,6 +15,7 @@ interface AssetMetadata {
     size: number;
     contentType: string;
     bucketKey: string;
+    imageEdit?: AssetImageEdit;
 }
 
 export class S3AssetResolver implements AssetResolverAbstraction.Interface {
@@ -44,7 +46,8 @@ export class S3AssetResolver implements AssetResolverAbstraction.Interface {
             tenant: metadata.tenant,
             size: metadata.size,
             contentType: metadata.contentType,
-            key: metadata.bucketKey
+            key: metadata.bucketKey,
+            imageEdit: metadata.imageEdit
         });
 
         asset.setContentsReader(S3ContentsReader.create(this.s3, this.bucket));
