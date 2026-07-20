@@ -9,7 +9,15 @@ import {
     DEFAULT_IMAGE_QUALITY,
     type ImageFormat
 } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
-import { transformImageBuffer } from "@webiny/api-file-manager/features/assetDelivery/transformation/transformImage.js";
+import {
+    cropImageBuffer,
+    transformImageBuffer
+} from "@webiny/api-file-manager/features/assetDelivery/transformation/transformImage.js";
+import type { AssetCrop } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
+
+const isCropApplied = (crop: AssetCrop | undefined): crop is AssetCrop => {
+    return !!crop && !(crop.top === 0 && crop.left === 0 && crop.bottom === 0 && crop.right === 0);
+};
 import * as utils from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import { AssetKeyGenerator } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
@@ -140,7 +148,15 @@ export class LocalSharpTransform implements AssetTransformationStrategyAbstracti
             return newAsset;
         } catch {
             console.log("Create an optimized version of the original asset", asset.getKey());
-            const buffer = await asset.getContents();
+            let buffer = await asset.getContents();
+
+            // Bake the asset-level crop first, so both the optimized base and any
+            // downstream transforms inherit it.
+            const crop = asset.getImageEdit()?.crop;
+            const cropped = isCropApplied(crop);
+            if (cropped) {
+                buffer = await cropImageBuffer(buffer, crop);
+            }
 
             const optimizationMap: Record<string, ((buffer: Buffer) => Sharp) | undefined> = {
                 "image/png": (buffer: Buffer) => this.optimizePng(buffer),
@@ -150,17 +166,18 @@ export class LocalSharpTransform implements AssetTransformationStrategyAbstracti
 
             const optimization = optimizationMap[asset.getContentType()];
 
-            if (!optimization) {
+            // Nothing to do (no crop and no optimization for this type) — leave as is.
+            if (!optimization && !cropped) {
                 console.log(`No optimizations defined for ${asset.getContentType()}`);
                 return asset;
             }
 
-            const optimizedBuffer = await optimization(buffer).toBuffer();
+            const finalBuffer = optimization ? await optimization(buffer).toBuffer() : buffer;
 
-            console.log("Optimized asset size", optimizedBuffer.length);
+            console.log("Optimized asset size", finalBuffer.length);
 
-            const newAsset = asset.withProps({ size: optimizedBuffer.length });
-            newAsset.setContentsReader(CallableContentsReader.create(() => optimizedBuffer));
+            const newAsset = asset.withProps({ size: finalBuffer.length });
+            newAsset.setContentsReader(CallableContentsReader.create(() => finalBuffer));
 
             await fs.mkdir(path.dirname(optimizedFilePath), { recursive: true });
             await fs.writeFile(optimizedFilePath, await newAsset.getContents());

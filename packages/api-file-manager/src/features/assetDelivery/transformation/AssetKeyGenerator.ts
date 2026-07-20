@@ -14,11 +14,22 @@ export class AssetKeyGenerator {
         this.utils = newUtils;
     }
 
+    private cropSignature() {
+        return this.utils.getCropSignature(this.asset.getImageEdit()?.crop);
+    }
+
     public getOptimizedImageKey() {
-        return this.utils.getImageKey({ key: this.asset.getKey() });
+        return this.utils.getImageKey({
+            key: this.asset.getKey(),
+            cropSignature: this.cropSignature()
+        });
     }
 
     public getTransformedImageKey(transformations: Record<string, any>) {
-        return this.utils.getImageKey({ key: this.asset.getKey(), transformations });
+        return this.utils.getImageKey({
+            key: this.asset.getKey(),
+            transformations,
+            cropSignature: this.cropSignature()
+        });
     }
 }

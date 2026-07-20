@@ -2,12 +2,26 @@ import type { AssetContentsReader, AssetOutputStrategy } from "~/delivery/index.
 
 type Setter<T> = (arg: T | undefined) => T;
 
+/** Crop expressed as the fraction (0..1) cut off from each edge of the original. */
+export interface AssetCrop {
+    top: number;
+    left: number;
+    bottom: number;
+    right: number;
+}
+
+/** Asset-level, non-destructive image edit applied at delivery time. */
+export interface AssetImageEdit {
+    crop?: AssetCrop;
+}
+
 export interface AssetData {
     id: string;
     tenant: string;
     key: string;
     size: number;
     contentType: string;
+    imageEdit?: AssetImageEdit;
 }
 export class Asset {
     protected readonly props: AssetData;
@@ -51,6 +65,10 @@ export class Asset {
 
     public getContentType() {
         return this.props.contentType;
+    }
+
+    public getImageEdit() {
+        return this.props.imageEdit;
     }
 
     public getExtension() {
