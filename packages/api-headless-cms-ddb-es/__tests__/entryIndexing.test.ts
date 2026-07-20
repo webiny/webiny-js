@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { createFieldRegistry, createFieldIndexRegistry } from "./helpers/createTestContainer.js";
 import type { CmsEntry, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import { extractEntriesFromIndex, prepareEntryToIndex } from "~/helpers/index.js";
+import {
+    extractEntriesFromIndex,
+    prepareEntryToIndex
+} from "@webiny/api-headless-cms-utils-os/helpers/index.js";
 import type { CmsIndexEntry } from "~/types.js";
 
 const mockRichTextValue = [

@@ -8,6 +8,7 @@
     { "path": "../api-event-handler-aws" },
     { "path": "../api-headless-cms-ddb-es" },
     { "path": "../api-opensearch" },
+    { "path": "../api-opensearch-aws" },
     { "path": "../api-websockets-ddb" },
     { "path": "../db" }
   ],
@@ -30,6 +31,8 @@
       "@webiny/api-headless-cms-ddb-es": ["../api-headless-cms-ddb-es/src"],
       "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
       "@webiny/api-opensearch": ["../api-opensearch/src"],
+      "@webiny/api-opensearch-aws/*": ["../api-opensearch-aws/src/*"],
+      "@webiny/api-opensearch-aws": ["../api-opensearch-aws/src"],
       "@webiny/api-websockets-ddb/*": ["../api-websockets-ddb/src/*"],
       "@webiny/api-websockets-ddb": ["../api-websockets-ddb/src"],
       "@webiny/db/*": ["../db/src/*"],

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CmsModelField } from "@webiny/api-headless-cms/types";
-import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex";
 import { createTestContainer } from "~tests/helpers/createTestContainer";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 

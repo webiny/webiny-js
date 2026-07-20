@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/graphql/handler";
 import { createMockPlugins } from "~tests/converters/mocks";
 import { createEntryRawData } from "~tests/converters/mocks/data";
-import { configurations } from "~/configurations";
+import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
 import {
     createGlobalModifierPlugin,
     createGlobalModifierValues,
