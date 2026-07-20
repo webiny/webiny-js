@@ -4,14 +4,14 @@ import * as dotProp from "dot-prop";
 import lodashSortBy from "lodash/sortBy.js";
 import { extractSort } from "./fields/extractSort.js";
 import type { Field } from "./fields/types.js";
-import type { PluginsContainer } from "@webiny/plugins";
+import type { FieldSortingRegistry } from "../abstractions/FieldSortingRegistry.js";
 
 interface Params<T extends CmsEntryValues = CmsEntryValues> {
     model: CmsModel;
     items: CmsEntry<T>[];
     sort?: string[];
     fields: Record<string, Field>;
-    plugins: PluginsContainer;
+    sortingRegistry: FieldSortingRegistry.Interface;
 }
 
 interface SortedItem {
@@ -22,7 +22,7 @@ interface SortedItem {
 export const sort = <T extends CmsEntryValues = CmsEntryValues>(
     params: Params<T>
 ): CmsEntry<T>[] => {
-    const { model, items, sort = [], fields, plugins } = params;
+    const { model, items, sort = [], fields, sortingRegistry } = params;
     if (items.length <= 1) {
         return items;
     } else if (sort.length === 0) {
@@ -47,7 +47,7 @@ export const sort = <T extends CmsEntryValues = CmsEntryValues>(
         model,
         sortBy: firstSort,
         fields,
-        plugins
+        sortingRegistry
     });
 
     const itemsToSort = items.map(item => {
@@ -62,7 +62,6 @@ export const sort = <T extends CmsEntryValues = CmsEntryValues>(
         if (item) {
             return item;
         }
-        /* This is impossible to happen because sorting items does not remove the items. BUT, we need to have this check just in case for development purposes. */
         throw new WebinyError(
             "Could not find item by given id after the sorting.",
             "SORTING_ITEMS_ERROR",

@@ -1,8 +1,7 @@
 import WebinyError from "@webiny/error";
 import type { Field } from "./types.js";
-import type { PluginsContainer } from "@webiny/plugins";
-import { CmsEntryFieldSortingPlugin } from "../../plugins/index.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { FieldSortingRegistry } from "../../abstractions/FieldSortingRegistry.js";
 
 const extractSortInfo = (sortBy: string) => {
     const rootSorting = sortBy.match(/^([a-zA-Z]+)_(ASC|DESC)$/);
@@ -41,15 +40,14 @@ interface IParams {
     model: CmsModel;
     sortBy: string;
     fields: Record<string, Field>;
-    plugins: PluginsContainer;
+    sortingRegistry: FieldSortingRegistry.Interface;
 }
 
 export const extractSort = (params: IParams): IResponse => {
-    const { model, sortBy, fields, plugins } = params;
+    const { model, sortBy, fields, sortingRegistry } = params;
     const { fieldId, isValues: isValuesSorting, order } = extractSortInfo(sortBy);
 
     const field = Object.values(fields).find(f => {
-        /* We do not support sorting by nested fields. */
         const isValues = f.parents[0]?.fieldId === "values";
         if (isValues && isValuesSorting) {
             return f.fieldId === fieldId;
@@ -60,21 +58,16 @@ export const extractSort = (params: IParams): IResponse => {
         return f.fieldId === fieldId;
     });
 
-    const plugin = plugins
-        .byType<CmsEntryFieldSortingPlugin>(CmsEntryFieldSortingPlugin.type)
-        .reverse()
-        .find(plugin => {
-            return plugin.canUse({
-                model,
-                field,
-                fieldId,
-                order,
-                sortBy
-            });
-        });
+    const handler = sortingRegistry.find({
+        model,
+        field,
+        fieldId,
+        order,
+        sortBy
+    });
 
-    if (plugin) {
-        return plugin.createSort({
+    if (handler) {
+        return handler.createSort({
             model,
             fieldId,
             order,
