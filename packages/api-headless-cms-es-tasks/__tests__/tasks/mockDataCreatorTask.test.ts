@@ -1,11 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { useHandler } from "~tests/context/useHandler";
-import { createRunner } from "@webiny/project-utils/testing/tasks";
+import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
 import type { IMockDataCreatorInput, IMockDataCreatorOutput } from "~/tasks/MockDataCreator/types";
 import type { ICreateModelAndGroupResultSuccess } from "~/tasks/MockDataManager/createModelAndGroup";
 import { createModelAndGroup } from "~/tasks/MockDataManager/createModelAndGroup";
 import { CARS_MODEL_ID } from "~/tasks/MockDataManager/constants";
 import { disableIndexing, enableIndexing } from "~/utils";
+import { CmsModelOpenSearchIndex } from "@webiny/api-headless-cms-ddb-es/exports/api/cms/opensearch.js";
 import {
     TaskDefinition,
     TaskResultStatus
@@ -50,7 +51,8 @@ describe("mock data creator task", () => {
 
         await disableIndexing({
             client: context.opensearch,
-            model: modelAndGroupResult.model
+            model: modelAndGroupResult.model,
+            indexConfig: context.container.resolve(CmsModelOpenSearchIndex)
         });
 
         const task = await context.tasks.createTask<IMockDataCreatorInput>({
@@ -74,7 +76,8 @@ describe("mock data creator task", () => {
 
         await enableIndexing({
             client: context.opensearch,
-            model: modelAndGroupResult.model
+            model: modelAndGroupResult.model,
+            indexConfig: context.container.resolve(CmsModelOpenSearchIndex)
         });
 
         expect(result).toMatchObject({
