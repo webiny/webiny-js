@@ -5,6 +5,7 @@ import type {
 } from "~/tasks/MockDataManager/types.js";
 import { CARS_MODEL_ID } from "~/tasks/MockDataManager/constants.js";
 import { enableIndexing } from "~/utils/index.js";
+import { CmsModelOpenSearchIndex } from "@webiny/api-headless-cms-ddb-es/exports/api/cms/opensearch.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { CmsContext } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 
@@ -47,24 +48,31 @@ class MockDataManagerTask implements TaskDefinition.Interface<
             return params.controller.response.error(ex);
         }
     }
+
+    private async findModel() {
+        return (await this.context.cms.listModels()).find(m => m.modelId === CARS_MODEL_ID);
+    }
+
     async onError() {
-        await enableIndexing({
-            client: this.context.opensearch,
-            model: {
-                modelId: CARS_MODEL_ID,
-                tenant: "root"
-            }
-        });
+        const model = await this.findModel();
+        if (model) {
+            await enableIndexing({
+                client: this.context.opensearch,
+                model,
+                indexConfig: this.context.container.resolve(CmsModelOpenSearchIndex)
+            });
+        }
     }
 
     async onAbort() {
-        await enableIndexing({
-            client: this.context.opensearch,
-            model: {
-                modelId: CARS_MODEL_ID,
-                tenant: "root"
-            }
-        });
+        const model = await this.findModel();
+        if (model) {
+            await enableIndexing({
+                client: this.context.opensearch,
+                model,
+                indexConfig: this.context.container.resolve(CmsModelOpenSearchIndex)
+            });
+        }
     }
 }
 

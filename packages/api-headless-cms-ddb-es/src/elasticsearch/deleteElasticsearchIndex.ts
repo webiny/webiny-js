@@ -1,29 +1,24 @@
 import type { Client } from "@webiny/api-opensearch";
-import { isSharedOpenSearchIndex } from "@webiny/api-opensearch";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import { configurations } from "~/configurations.js";
+import type { Configurations } from "~/configurations.js";
+import type { ICmsModelOpenSearchIndexModel } from "~/features/CmsModelOpenSearchIndex/abstractions.js";
 
 interface DeleteElasticsearchIndexParams {
     client: Client;
-    model: Pick<CmsModel, "modelId" | "tenant">;
+    configurations: Configurations;
+    model: ICmsModelOpenSearchIndexModel;
 }
 
 export const deleteElasticsearchIndex = async (
     params: DeleteElasticsearchIndexParams
 ): Promise<void> => {
-    /**
-     * With shared indexes, a single index holds entries from all tenants
-     * for this model. Deleting it would destroy other tenants' data.
-     */
-    if (isSharedOpenSearchIndex()) {
+    const { client, model } = params;
+
+    const { index, shared } = await params.configurations.es({ model });
+
+    if (shared) {
         return;
     }
 
-    const { client, model } = params;
-
-    const { index } = configurations.es({
-        model
-    });
     const { body: exists } = await client.indices.exists({
         index
     });

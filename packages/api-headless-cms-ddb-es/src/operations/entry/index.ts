@@ -29,7 +29,7 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
 import { extractEntriesFromIndex } from "~/helpers/index.js";
-import { configurations } from "~/configurations.js";
+import type { Configurations } from "~/configurations.js";
 import type { Client } from "@webiny/api-opensearch";
 import {
     createLimit,
@@ -84,6 +84,7 @@ export interface CreateEntriesStorageOperationsParams {
     esEntity: IElasticsearchEntity;
     elasticsearch: Client;
     plugins: PluginsContainer;
+    configurations: Configurations;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
     compressionHandler: CompressionHandler.Interface;
@@ -124,6 +125,7 @@ export const createEntriesStorageOperations = (
         esEntity,
         elasticsearch,
         plugins,
+        configurations,
         fieldRegistry,
         fieldIndexRegistry,
         compressionHandler,
@@ -185,7 +187,7 @@ export const createEntriesStorageOperations = (
 
         const esEntry = transformer.transformToIndex();
 
-        const { index: esIndex } = configurations.es({
+        const { index: esIndex } = await configurations.es({
             model
         });
 
@@ -360,7 +362,7 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        const { index: esIndex } = configurations.es({
+        const { index: esIndex } = await configurations.es({
             model
         });
 
@@ -463,7 +465,7 @@ export const createEntriesStorageOperations = (
 
         const elasticsearchEntityBatch = esEntity.createEntityWriter();
 
-        const { index: esIndex } = configurations.es({
+        const { index: esIndex } = await configurations.es({
             model
         });
 
@@ -1151,7 +1153,7 @@ export const createEntriesStorageOperations = (
             tenant: model.tenant
         });
 
-        const { index } = configurations.es({
+        const { index } = await configurations.es({
             model
         });
         /**
@@ -1354,12 +1356,13 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel<T>(initialModel);
 
         const limit = createLimit(params.limit, 50);
-        const { index } = configurations.es({
+        const { index, shared } = await configurations.es({
             model
         });
 
         const body = createElasticsearchBody({
             model,
+            shared,
             fieldRegistry,
             fieldIndexRegistry,
             bodyModifiers,
@@ -1543,7 +1546,7 @@ export const createEntriesStorageOperations = (
 
         const elasticsearchEntityWriter = esEntity.createEntityWriter();
 
-        const { index: esIndex } = configurations.es({
+        const { index: esIndex } = await configurations.es({
             model
         });
 
@@ -1819,7 +1822,7 @@ export const createEntriesStorageOperations = (
          * If we are unpublishing the latest revision, let's also update the latest revision entry's status in both DynamoDB tables.
          */
         if (latestStorageEntry?.id === entry.id) {
-            const { index } = configurations.es({
+            const { index } = await configurations.es({
                 model
             });
 
@@ -2070,12 +2073,13 @@ export const createEntriesStorageOperations = (
     ) => {
         const { where, fieldId } = params;
 
-        const { index } = configurations.es({
+        const { index, shared } = await configurations.es({
             model
         });
 
         const initialBody = createElasticsearchBody({
             model,
+            shared,
             fieldRegistry,
             fieldIndexRegistry,
             bodyModifiers,

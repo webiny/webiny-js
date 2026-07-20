@@ -7,10 +7,9 @@ import type {
     CmsModelStorageOperationsListParams,
     CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { configurations } from "~/configurations.js";
+import type { Configurations } from "~/configurations.js";
 import type { Client } from "@webiny/api-opensearch";
 import type { IModelEntity } from "~/definitions/types.js";
-import { deleteElasticsearchIndex } from "~/elasticsearch/deleteElasticsearchIndex.js";
 
 interface PartitionKeysParams {
     tenant: string;
@@ -53,17 +52,18 @@ const createType = (): string => {
 export interface CreateModelsStorageOperationsParams {
     entity: IModelEntity;
     elasticsearch: Client;
+    configurations: Configurations;
 }
 
 export const createModelsStorageOperations = (
     params: CreateModelsStorageOperationsParams
 ): CmsModelStorageOperations => {
-    const { entity, elasticsearch } = params;
+    const { entity, elasticsearch, configurations } = params;
 
     const create = async (params: CmsModelStorageOperationsCreateParams) => {
         const { model } = params;
 
-        const { index } = configurations.es({
+        const { index } = await configurations.es({
             model
         });
 
@@ -143,10 +143,6 @@ export const createModelsStorageOperations = (
                 }
             );
         }
-        await deleteElasticsearchIndex({
-            client: elasticsearch,
-            model: model
-        });
     };
 
     const get = async (params: CmsModelStorageOperationsGetParams) => {

@@ -1,17 +1,18 @@
 import type { Client } from "@webiny/api-opensearch";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import { configurations } from "@webiny/api-headless-cms-ddb-es/configurations.js";
+import type { CmsModelOpenSearchIndex } from "@webiny/api-headless-cms-ddb-es/exports/api/cms/opensearch.js";
+import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 
 interface IEnableIndexingParams {
     client: Client;
-    model: Pick<CmsModel, "modelId" | "tenant">;
+    model: CmsModelOpenSearchIndex.Params["model"];
+    indexConfig: CmsModelOpenSearchIndex.Interface;
 }
 
 export const enableIndexing = async (params: IEnableIndexingParams) => {
-    const { client, model } = params;
-    const { index } = configurations.es({
-        model
-    });
+    const { client, model, indexConfig } = params;
+    const { index: rawIndex } = await indexConfig.execute({ model });
+    const prefix = getOpenSearchIndexPrefix();
+    const index = prefix ? prefix + rawIndex : rawIndex;
     try {
         await client.indices.putSettings({
             index,
