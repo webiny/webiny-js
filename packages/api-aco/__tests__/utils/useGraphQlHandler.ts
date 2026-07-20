@@ -7,7 +7,6 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
-import { ContextPlugin } from "@webiny/api";
 import { AcoFeature } from "~/index";
 import { createIdentity } from "@webiny/api-core-testing";
 import { createAcoSdk } from "~tests/utils/createAcoSdk.js";
@@ -59,17 +58,15 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             if (params.plugins) {
                 const extraPlugins = [params.plugins].flat(Infinity as 1).filter(Boolean);
                 // DI-native plugins are plain `container => {}` functions; call them directly.
+                // Everything else (storage RegisterExtension presets) goes via processLegacyPlugins.
                 const isFn = (p: any) => typeof p === "function" && !p.prototype;
                 for (const plugin of extraPlugins.filter(isFn)) {
                     (plugin as (c: any) => void)(container);
                 }
-                const rest = extraPlugins.filter(p => !isFn(p));
-                for (const plugin of rest) {
-                    if (plugin instanceof ContextPlugin) {
-                        await plugin.apply({ container } as any);
-                    }
-                }
-                processLegacyPlugins(container, rest);
+                processLegacyPlugins(
+                    container,
+                    extraPlugins.filter(p => !isFn(p))
+                );
             }
 
             container.register(FileModel);
