@@ -10,7 +10,14 @@ import { ScheduledActionRecoverRoute } from "./ScheduledActionRecoverRoute.js";
 
 const SCHEDULER_HEADER = "x-webiny-scheduler-token";
 
-/** Minimal console-backed logger for the root scheduler singleton (the per-request Logger isn't available at root). */
+/**
+ * Minimal console-backed logger for the root scheduler singleton. The real DI Logger is registered
+ * per-request (via ApiCoreFeature/LoggerFeature), so it isn't resolvable here at the root where the
+ * singleton is built. And even if we bridged to it, timers fire outside any request — there's no
+ * request context for a context-aware logger to enrich — so console is functionally equivalent, not
+ * a downgrade. Revisit (a shared boot-time logger for all root singletons) tracked in
+ * https://github.com/webiny/webiny-js/issues/5446.
+ */
 const consoleLogger: Logger.Interface = {
     trace: (...args: any[]) => console.trace(...args),
     debug: (...args: any[]) => console.debug(...args),
