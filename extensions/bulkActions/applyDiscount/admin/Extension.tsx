@@ -10,8 +10,8 @@ const { Browser } = ContentEntryListConfig;
  * Registers a websocket event handler that toasts when a product discount is applied
  * (the backend emits `cms.product.discountApplied` per processed entry).
  */
-const BackgroundTasksDemoFeature = createFeature({
-    name: "BackgroundTasksDemo",
+const ApplyDiscountFeature = createFeature({
+    name: "BulkActions/ApplyDiscount",
     register(container) {
         container.register(DiscountAppliedEventHandler);
     }
@@ -25,7 +25,7 @@ const BackgroundTasksDemoFeature = createFeature({
 export default () => {
     return (
         <>
-            <RegisterFeature feature={BackgroundTasksDemoFeature} />
+            <RegisterFeature feature={ApplyDiscountFeature} />
             <ContentEntryListConfig>
                 <Browser.BulkAction
                     name={"applyDiscount"}

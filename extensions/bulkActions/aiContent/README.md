@@ -23,7 +23,7 @@ a background task", rather than re-implementing AI plumbing per feature. Compare
 
 | File                                 | Role                                                               |
 | ------------------------------------ | ------------------------------------------------------------------ |
-| `AiContentDemo.tsx`                  | Full-stack entry — registers the API + Admin extensions.           |
+| `AiContentExtension.tsx`             | Full-stack entry — registers the API + Admin extensions.           |
 | `api/GenerateAiSummaryBulkAction.ts` | Bulk action; `processData` calls `CmsGenerateEntryContentUseCase`. |
 | `admin/Extension.tsx`                | Registers the button on the Products list.                         |
 | `admin/GenerateAiSummaryAction.tsx`  | The bulk-action button.                                            |

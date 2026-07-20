@@ -10,8 +10,8 @@ const { Browser } = ContentEntryListConfig;
  * Registers a websocket event handler that toasts when an AI summary is generated
  * (the backend emits `cms.product.aiSummaryGenerated` per processed entry).
  */
-const AiContentDemoFeature = createFeature({
-    name: "AiContentDemo",
+const AiContentFeature = createFeature({
+    name: "BulkActions/AiContent",
     register(container) {
         container.register(AiSummaryGeneratedEventHandler);
     }
@@ -24,7 +24,7 @@ const AiContentDemoFeature = createFeature({
 export default () => {
     return (
         <>
-            <RegisterFeature feature={AiContentDemoFeature} />
+            <RegisterFeature feature={AiContentFeature} />
             <ContentEntryListConfig>
                 <Browser.BulkAction
                     name={"generateAiSummary"}

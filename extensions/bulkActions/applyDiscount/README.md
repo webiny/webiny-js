@@ -9,7 +9,7 @@ Organized by side (`api/` + `admin/`), with a full-stack entry component:
 
 | File                                   | Role                                                                                                                                   |
 | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `BackgroundTasksDemo.tsx`              | **Entry.** Full-stack component — wires up the API and Admin extensions below.                                                         |
+| `ApplyDiscountExtension.tsx`           | **Entry.** Full-stack component — wires up the API and Admin extensions below.                                                         |
 | `api/ApplyDiscountBulkAction.ts`       | **API.** A custom `EntriesBulkAction`. Webiny auto-generates a background task from it. Emits a websocket message per processed entry. |
 | `admin/Extension.tsx`                  | **Admin entry.** Registers the bulk-action button + the websocket listener.                                                            |
 | `admin/ApplyDiscountAction.tsx`        | **Admin.** The bulk-action button that triggers the task.                                                                              |
@@ -17,7 +17,7 @@ Organized by side (`api/` + `admin/`), with a full-stack entry component:
 | `../models/ProductModel.ts`            | The demo CMS model (`product`, with `price` + `onSale`).                                                                               |
 | `../models/ProductCategoryModel.ts`    | Referenced by Product; registered so the category picker isn't dangling.                                                               |
 
-Registered in `webiny.config.tsx` as `<BackgroundTasksDemo />` (plus the two model
+Registered in `webiny.config.tsx` as `<ApplyDiscountExtension />` (plus the two model
 `<Api.Extension>` entries under `extensions/models/`).
 
 ## The key idea
