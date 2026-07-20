@@ -2,7 +2,6 @@ import { Worker } from "node:worker_threads";
 import type { WorkerToParentMessage } from "~/worker/TaskOrchestratorMessage.js";
 import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
-import { BuildParams } from "@webiny/api-core/exports/api.js";
 import { InternalToken } from "~/domain/InternalToken.js";
 
 const DEFAULT_SERVER_PORT = 3000;
@@ -22,10 +21,13 @@ class WorkerServiceImpl implements TaskService.Interface {
 
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
-        private readonly buildParams: BuildParams.Interface,
         private readonly internalToken: InternalToken.Interface
     ) {
-        const port = this.buildParams.get<number>("SERVER_PORT") || DEFAULT_SERVER_PORT;
+        // Single-process server flavour: the worker POSTs the task back to THIS server's
+        // `/background-task` route. The port is the one the server actually listens on — injected at
+        // runtime as `process.env.PORT` by `runApiServer` (dynamic, chosen via findFreePort), NOT a
+        // build-time value. It cannot be a build param: the port isn't known until the process starts.
+        const port = process.env.PORT || DEFAULT_SERVER_PORT;
         this.serverUrl = `http://localhost:${port}/background-task`;
     }
 
@@ -105,5 +107,5 @@ class WorkerServiceImpl implements TaskService.Interface {
 
 export const WorkerService = TaskService.createImplementation({
     implementation: WorkerServiceImpl,
-    dependencies: [TenantContext, BuildParams, InternalToken]
+    dependencies: [TenantContext, InternalToken]
 });

@@ -1,7 +1,7 @@
-import { TaskDataStatus, ListTasksUseCase } from "@webiny/background-tasks/api";
+import { TaskDataStatus } from "@webiny/background-tasks/api";
+import type { ListTasksUseCase } from "@webiny/background-tasks/api";
 import type { IBulkActionOperationByModelTaskParams } from "~/types.js";
 import { BulkActionOperationByModelAction } from "~/types.js";
-import { BulkActionContext } from "~/features/BulkActionContext/index.js";
 
 /**
  * The `ProcessTasksByModel` class is responsible for processing tasks for a specific model.
@@ -9,11 +9,11 @@ import { BulkActionContext } from "~/features/BulkActionContext/index.js";
  * the task based on the status.
  */
 export class ProcessTasksByModel {
-    private context: BulkActionContext.Interface;
+    private readonly listTasks: ListTasksUseCase.Interface;
     private readonly taskDefinition: string;
 
-    constructor(context: BulkActionContext.Interface, taskDefinition: string) {
-        this.context = context;
+    constructor(listTasks: ListTasksUseCase.Interface, taskDefinition: string) {
+        this.listTasks = listTasks;
         this.taskDefinition = taskDefinition;
     }
 
@@ -28,7 +28,7 @@ export class ProcessTasksByModel {
                 });
             }
 
-            const { items } = await this.context.container.resolve(ListTasksUseCase).execute({
+            const { items } = await this.listTasks.execute({
                 where: {
                     parentId: controller.state.getTask().id,
                     definitionId: this.taskDefinition,

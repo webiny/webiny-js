@@ -6,7 +6,7 @@ import { nodeHttpRequestFromIncomingMessage } from "~/translators/NodeHttpTransl
 /**
  * Terminal handler for the Node HTTP server transport. Translates the raw `IncomingMessage` into an
  * IHttpRequest, dispatches it through the shared `HttpRouter`, and returns the IHttpResponse (which
- * `createNodeHandler` writes to the Node response). Mirrors AWS's `ApiGatewayHttpRouterHandler`,
+ * `createServerHandler` writes to the Node response). Mirrors AWS's `ApiGatewayHttpRouterHandler`,
  * minus the transport-specific response translation (the server writes IHttpResponse directly).
  */
 class NodeHttpRouterHandlerImpl implements NodeHttpEventHandler.Interface {

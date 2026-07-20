@@ -11,7 +11,6 @@
  */
 import type { Container } from "@webiny/di";
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 import {
     createLambdaHandler,
     ApiGatewayFeature,
@@ -19,12 +18,12 @@ import {
     WebSocketEventType
 } from "@webiny/event-handler-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
-import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { registerExtensions } from "@webiny/handler";
-import { DbFeature } from "@webiny/handler-db";
+import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
-import { registerSchedulerAwsExtension } from "@webiny/api-scheduler-aws";
+import { SchedulerAwsFeature } from "@webiny/api-scheduler-aws";
+import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
 import { WebSocketLambdaHandler } from "@webiny/api-websockets";
 // CognitoIdpFeature must be in the root container so the request auth step
 // (ApiGatewayIdentityLoaderDecorator → RequestIdentityLoader) sees CognitoIdentityProvider
@@ -49,10 +48,6 @@ export interface CreateWebinyApiHandlerConfig {
      */
     documentClient?: ReturnType<typeof getDocumentClient>;
     /**
-     * DynamoDB table name. Defaults to `process.env.DB_TABLE`. Injectable for tests.
-     */
-    dbTable?: string;
-    /**
      * Register the storage-variant features in the ROOT container: the CMS storage operations, the
      * DDB storage registries, and (for the OpenSearch variant) the OpenSearch core. Supplied by the
      * variant package.
@@ -70,7 +65,6 @@ export interface CreateWebinyApiHandlerConfig {
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     const documentClient = config.documentClient ?? getDocumentClient();
-    const table = config.dbTable ?? process.env.DB_TABLE;
 
     return createLambdaHandler({
         root: async container => {
@@ -99,9 +93,8 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             container.register(WebSocketLambdaHandler);
 
             // ── Database ───────────────────────────────────────────────
-            DbFeature.register(container, {
-                documentClient,
-                table
+            DynamoDBCoreFeature.register(container, {
+                documentClient
             });
 
             // ── Identity providers ─────────────────────────────────────
@@ -114,23 +107,25 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
         },
 
         request: async container => {
-            // The per-request feature stack is transport-agnostic (shared with the future server
-            // transport). The two AWS-specific interleave points are supplied as hooks.
+            // The per-request feature stack is transport-agnostic (shared with the server transport).
+            // The AWS-specific interleave points are supplied as the `transports` adapters.
             await registerApiRequestStack(container, {
                 extensions: config.extensions,
                 registerRequestStorage: config.registerRequestStorage,
-                // Real AWS WebSocket transport (API Gateway Management API), registered right after
-                // WebsocketsFeature so it overrides the NullWebsocketsTransport.
-                registerRealtimeTransport: c => {
-                    WebsocketsAwsFeature.register(c);
-                },
-                // Scheduler transport: bridge the scheduler-aws extension (EventBridge Scheduler).
-                registerSchedulerTransport: c => {
-                    registerLegacyPluginsViaGqlContextualSchema(c, [
-                        ...registerSchedulerAwsExtension({
-                            getClient: schedulerConfig => createSchedulerClient(schedulerConfig)
-                        })
-                    ]);
+                transports: {
+                    // Real AWS WebSocket transport (API Gateway Management API), registered right after
+                    // WebsocketsFeature so it overrides the NullWebsocketsTransport.
+                    realtime: c => {
+                        WebsocketsAwsFeature.register(c);
+                    },
+                    // Scheduler transport: the scheduler-aws extension (EventBridge Scheduler).
+                    scheduler: c => {
+                        SchedulerAwsFeature.register(c);
+                    },
+                    // File-manager storage transport: S3 (asset delivery + S3 file operations + schema).
+                    fileManager: c => {
+                        FileManagerS3Feature.register(c, {});
+                    }
                 }
             });
         }

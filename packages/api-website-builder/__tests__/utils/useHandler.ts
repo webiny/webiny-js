@@ -1,19 +1,13 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
-import {
-    createBackgroundTaskContext,
-    createBackgroundTaskGraphQL,
-    TaskService
-} from "@webiny/background-tasks/api";
+import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
 import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
-import { createCmsTestHandler } from "@webiny/api-headless-cms/testing";
-import type { CmsTestHandlerParams } from "@webiny/api-headless-cms/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { createContextPlugin } from "@webiny/api";
-import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
-import { createWebsiteBuilder } from "~/index.js";
+import type { Container } from "@webiny/di";
+import { NoopCloudfrontInvalidateCacheTaskDefinition } from "./noopCloudfrontInvalidateCacheTask.js";
+import { WebsiteBuilderFeature } from "~/index.js";
 import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
-import { PageModelPlugin } from "~/domain/page/page.model.js";
-import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 const DEFAULT_IDENTITY: IdentityData = {
@@ -30,21 +24,17 @@ export const useHandler = (params: Params = {}) => {
         // identity === null → anonymous; the shared harness authenticates the null identity natively
         // (TestAuthenticator returns it), so no post-auth override is needed.
         //
-        // Background-task plugins must come BEFORE the Website Builder plugins: createBackgroundTaskContext
-        // registers the "wbyTask" CMS model, and it has to be present before WB/Languages init lists +
-        // caches the per-request model set (otherwise createBackgroundTaskGraphQL can't find it).
         plugins: [
-            createBackgroundTaskContext(),
-            ...createBackgroundTaskGraphQL(),
-            createContextPlugin(ctx => {
-                ctx.container.register(InvalidateCloudfrontCacheTaskDefinition);
-            }),
-            createWebsiteBuilder(),
+            (container: Container) => {
+                container.register(NoopCloudfrontInvalidateCacheTaskDefinition);
+            },
             ...[params.plugins].flat(Infinity as 1).filter(Boolean)
         ],
         features: container => {
-            container.register(PageModelPlugin);
-            container.register(RedirectModelPlugin);
+            // All DI-native now: background tasks (wbyTask model + TasksCrud + GraphQL) and website
+            // builder (models + features + schema). The mock TaskService override must come after.
+            BackgroundTasksFeature.register(container);
+            WebsiteBuilderFeature.register(container);
             LanguagesExtension.register(container);
             container.registerInstance(TaskService, createMockTaskService());
         }

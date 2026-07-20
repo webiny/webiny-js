@@ -1,12 +1,13 @@
 import WebinyError from "@webiny/error";
+import type { Container } from "@webiny/di";
 import type {
-    Context,
     ITaskAbortParams,
     ITaskCreateData,
     ITaskLog,
     ITasksContextServiceObject,
     ITaskTriggerParams
 } from "~/api/types.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
 import { TaskDataStatus, TaskLogItemType } from "~/api/types.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createService } from "~/api/service/index.js";
@@ -48,7 +49,7 @@ const validateDelay = <T extends TaskService.TaskInput = TaskService.TaskInput>(
     );
 };
 
-export const createServiceCrud = (context: Context): ITasksContextServiceObject => {
+export const createServiceCrud = (container: Container): ITasksContextServiceObject => {
     return {
         trigger: async <
             T extends TaskService.TaskInput = TaskService.TaskInput,
@@ -56,9 +57,9 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
         >(
             params: ITaskTriggerParams<T>
         ): Promise<Result<TaskService.Task<T, O>, BaseError>> => {
-            const service = createService({ container: context.container });
+            const service = createService({ container });
             const { definition: id, input: inputValues, name, parent, delay = 0 } = params;
-            const definition = context.tasks.getDefinition(id);
+            const definition = container.resolve(TasksCrud).getDefinition(id);
             if (!definition) {
                 throw new WebinyError(`Task definition was not found!`, "TASK_DEFINITION_ERROR", {
                     id
@@ -81,7 +82,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
 
             let task: TaskService.Task<T>;
             try {
-                task = await context.tasks.createTask<T>(input);
+                task = await container.resolve(TasksCrud).createTask<T>(input);
             } catch (ex) {
                 console.log("Could not create the task.", ex);
                 throw ex;
@@ -107,11 +108,11 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
                  * In case of failure to create the Event Bridge Event, we need to delete the task that was meant to be created.
                  * TODO maybe we can leave the task and update it as failed - with event bridge error?
                  */
-                await context.tasks.deleteTask(task.id);
+                await container.resolve(TasksCrud).deleteTask(task.id);
                 throw ex;
             }
 
-            const updatedTask = await context.tasks.updateTask<T, O>(task.id, {
+            const updatedTask = await container.resolve(TasksCrud).updateTask<T, O>(task.id, {
                 eventResponse: result
             });
 
@@ -120,8 +121,11 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
         fetchServiceInfo: async (
             input: TaskService.Task | string
         ): Promise<Result<IServiceInfo, BaseError<any>>> => {
-            const service = createService({ container: context.container });
-            const task = typeof input === "object" ? input : await context.tasks.getTask(input);
+            const service = createService({ container });
+            const task =
+                typeof input === "object"
+                    ? input
+                    : await container.resolve(TasksCrud).getTask(input);
             if (!task && typeof input === "string") {
                 throw new NotFoundError(`Task "${input}" was not found!`);
             } else if (!task) {
@@ -149,12 +153,12 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
         >(
             params: ITaskAbortParams
         ): Promise<Result<TaskService.Task<T, O>, BaseError<any>>> => {
-            const task = await context.tasks.getTask<T, O>(params.id);
+            const task = await container.resolve(TasksCrud).getTask<T, O>(params.id);
             if (!task) {
                 return Result.fail(new TaskNotFoundError());
             }
 
-            const definition = context.tasks.getDefinition<T, O>(task.definitionId);
+            const definition = container.resolve(TasksCrud).getDefinition<T, O>(task.definitionId);
             if (!definition) {
                 return Result.fail(new TaskDefinitionNotFoundError(task.definitionId));
             }
@@ -173,19 +177,19 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
             }
             let taskLog: ITaskLog | null = null;
             try {
-                taskLog = await context.tasks.getLatestLog(task.id);
+                taskLog = await container.resolve(TasksCrud).getLatestLog(task.id);
             } catch {}
             if (!taskLog) {
-                taskLog = await context.tasks.createLog(task, {
+                taskLog = await container.resolve(TasksCrud).createLog(task, {
                     iteration: 1,
                     executionName: task.executionName
                 });
             }
             try {
-                const updatedTask = await context.tasks.updateTask<T, O>(task.id, {
+                const updatedTask = await container.resolve(TasksCrud).updateTask<T, O>(task.id, {
                     taskStatus: TaskDataStatus.ABORTED
                 });
-                await context.tasks.updateLog(taskLog.id, {
+                await container.resolve(TasksCrud).updateLog(taskLog.id, {
                     items: taskLog.items.concat([
                         {
                             message: params.message || "Task aborted.",

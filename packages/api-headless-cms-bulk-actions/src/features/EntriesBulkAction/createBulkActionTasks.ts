@@ -1,7 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { BulkActionContext } from "~/features/BulkActionContext/index.js";
+import { ListTasksUseCase, TriggerTaskUseCase, TasksCrud } from "@webiny/background-tasks/api";
 import type {
     IBulkActionOperationByModelInput,
     IBulkActionOperationByModelOutput,
@@ -41,14 +41,23 @@ export const createBulkActionTasks = (
         public readonly maxIterations = 500;
         public readonly databaseLogs = false;
         public readonly isPrivate = true;
-        public readonly context: BulkActionContext.Interface;
         public readonly getModel: GetModelUseCase.Interface;
+        public readonly listTasks: ListTasksUseCase.Interface;
+        public readonly triggerTask: TriggerTaskUseCase.Interface;
+        public readonly tasksCrud: TasksCrud.Interface;
 
         public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
 
-        constructor(context: BulkActionContext.Interface, getModel: GetModelUseCase.Interface) {
-            this.context = context;
+        constructor(
+            getModel: GetModelUseCase.Interface,
+            listTasks: ListTasksUseCase.Interface,
+            triggerTask: TriggerTaskUseCase.Interface,
+            tasksCrud: TasksCrud.Interface
+        ) {
             this.getModel = getModel;
+            this.listTasks = listTasks;
+            this.triggerTask = triggerTask;
+            this.tasksCrud = tasksCrud;
         }
 
         async run({
@@ -67,14 +76,14 @@ export const createBulkActionTasks = (
 
                 switch (action) {
                     case BulkActionOperationByModelAction.PROCESS_SUBTASKS: {
-                        const processTasks = new ProcessTasksByModel(this.context, processTaskId);
+                        const processTasks = new ProcessTasksByModel(this.listTasks, processTaskId);
                         return await processTasks.execute({ input, controller });
                     }
                     case BulkActionOperationByModelAction.CREATE_SUBTASKS:
                     case BulkActionOperationByModelAction.CHECK_MORE_SUBTASKS: {
                         const createTasks = new CreateTasksByModel(
-                            this.context,
                             this.getModel,
+                            this.triggerTask,
                             bulkAction,
                             processTaskId,
                             batchSize
@@ -115,7 +124,7 @@ export const createBulkActionTasks = (
         async cleanup(task: TaskDefinition.Task) {
             const childTasksCleanup = new ChildTasksCleanup();
             try {
-                await childTasksCleanup.execute({ context: this.context, task });
+                await childTasksCleanup.execute({ tasksCrud: this.tasksCrud, task });
             } catch (ex) {
                 console.error(`Error while cleaning "${listTaskId}" child tasks.`, ex);
             }
@@ -157,7 +166,7 @@ export const createBulkActionTasks = (
 
     const BulkListTask = TaskDefinition.createImplementation({
         implementation: BulkActionListTask,
-        dependencies: [BulkActionContext, GetModelUseCase]
+        dependencies: [GetModelUseCase, ListTasksUseCase, TriggerTaskUseCase, TasksCrud]
     });
 
     const BulkProcessTask = TaskDefinition.createImplementation({

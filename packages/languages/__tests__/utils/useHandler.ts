@@ -9,10 +9,10 @@ import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js"
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { Extension } from "~/api/Extension.js";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
-import { AuthTriggerHandler } from "@webiny/api-testing";
-import { RootTenantInitializer } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
+import { AuthTriggerHandler } from "@webiny/api-core-testing";
+import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";

@@ -5,16 +5,15 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type {
     IDeleteCmsModelTask,
     IDeleteModelTaskInput,
-    IDeleteModelTaskOutput,
-    IStoreValue
+    IDeleteModelTaskOutput
 } from "~/features/DeleteModelTask/types.js";
-import { createStoreKey } from "~/helpers/store.js";
+import { createDeleteModelStore } from "~/helpers/store.js";
 import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
 import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { DbInstance } from "@webiny/handler-db/abstractions.js";
+import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import { GetTaskUseCase } from "@webiny/background-tasks/api";
 
 export interface IGetDeleteModelProgress {
@@ -58,12 +57,13 @@ export const getDeleteModelProgress = async (
         throw new NotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
     }
 
-    const storeKey = createStoreKey(model);
-    const result = await context.container
-        .resolve(DbInstance)
-        .store.getValue<IStoreValue>(storeKey);
+    const store = createDeleteModelStore(
+        context.container.resolve(GlobalKeyValueStore),
+        model.tenant
+    );
+    const existing = await store.get(model.modelId);
 
-    const taskId = result.data?.task;
+    const taskId = existing?.task;
     if (!taskId) {
         throw new Error(`Model "${modelId}" is not being deleted.`);
     }

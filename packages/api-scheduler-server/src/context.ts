@@ -1,23 +1,40 @@
-import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
+import type { Container } from "@webiny/di";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
+import type { IRequestContextInitializer } from "@webiny/event-handler-core";
 import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/index.js";
 import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
 import { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { BreeSchedulerService } from "~/BreeSchedulerService.js";
-import { ContextPlugin } from "@webiny/api";
 
-export const registerSchedulerServerExtension = () => {
-    const plugin = new ContextPlugin<CmsContext>(async context => {
-        const tenantContext = context.container.resolve(TenantContext);
+/**
+ * Per-request scheduler initializer for the self-hosted (Bree, in-process) transport. Builds the Bree
+ * service, wires the trigger to ExecuteScheduledActionUseCase, binds `SchedulerService`, and starts it
+ * with the tenant's pending actions.
+ *
+ * IMPORTANT — this MUST be registered via `container.register()` (not `registerInstance()`), and hence
+ * runs in the LATER RequestContextInitializer bucket. Its `init()` lists scheduled actions, which needs
+ * `ScheduledActionModel` — and that model is registered by another RequestContextInitializer
+ * (`SchedulerModelContextualSchema`, registered by `SchedulerFeature` via `register()`). `@webiny/di`
+ * runs `registerInstance` initializers BEFORE `register` ones, so a `registerInstance` here would run
+ * before the model exists → "No registration found for ScheduledActionModel". Registering as an
+ * implementation keeps both in the same (register) bucket, ordered by registration: `SchedulerFeature`
+ * (which registers the model initializer) is registered before this transport hook, so the model is
+ * always available by the time this runs.
+ */
+class SchedulerServerContextInitializerImpl implements IRequestContextInitializer {
+    async init(ctx: Record<string, any>): Promise<void> {
+        const requestContainer = ctx.container as Container;
+        const tenantContext = requestContainer.resolve(TenantContext);
 
         const tenant = tenantContext.getTenant();
         if (!tenant) {
             return;
         }
 
-        const logger = context.container.resolve(Logger);
-        const executeScheduledAction = context.container.resolve(ExecuteScheduledActionUseCase);
+        const logger = requestContainer.resolve(Logger);
+        const executeScheduledAction = requestContainer.resolve(ExecuteScheduledActionUseCase);
 
         const service = new BreeSchedulerService({
             logger,
@@ -36,9 +53,9 @@ export const registerSchedulerServerExtension = () => {
             }
         });
 
-        context.container.registerInstance(SchedulerService, service);
+        requestContainer.registerInstance(SchedulerService, service);
 
-        const listScheduledActions = context.container.resolve(ListScheduledActionsUseCase);
+        const listScheduledActions = requestContainer.resolve(ListScheduledActionsUseCase);
         const listResult = await listScheduledActions.execute({
             where: {},
             limit: 1000
@@ -53,9 +70,19 @@ export const registerSchedulerServerExtension = () => {
             : undefined;
 
         await service.start(pendingActions);
-    });
+    }
+}
 
-    plugin.name = "scheduler.server.extension";
+const SchedulerServerContextInitializer = RequestContextInitializer.createImplementation({
+    implementation: SchedulerServerContextInitializerImpl,
+    dependencies: []
+});
 
-    return plugin;
+/**
+ * Registers the self-hosted (Bree, in-process) scheduler transport. Binds `SchedulerService`
+ * per-request via a RequestContextInitializer (post-tenant) — see the class doc for the ordering
+ * constraint that requires `register()` over `registerInstance()`.
+ */
+export const registerSchedulerServerExtension = (container: Container) => {
+    container.register(SchedulerServerContextInitializer);
 };

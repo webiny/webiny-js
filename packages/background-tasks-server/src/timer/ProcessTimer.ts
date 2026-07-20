@@ -1,4 +1,4 @@
-import type { Timer } from "@webiny/background-tasks/api";
+import type { Timer } from "@webiny/utils/features/Timer/abstraction.js";
 
 const DEFAULT_MAX_DURATION_MS = 86_400_000; /* 24 hours. */
 

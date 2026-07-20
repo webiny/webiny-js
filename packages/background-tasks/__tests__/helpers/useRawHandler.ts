@@ -17,9 +17,9 @@ import { TasksCrud } from "~/api/TasksCrud.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { createMockTaskService } from "~tests/mocks/taskTriggerTransportPlugin";
 import { TaskService } from "~/api/domain/TaskService.js";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
-import { AuthTriggerHandler } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
+import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { TenantFromHeaderInitializer } from "./mocks/TenantFromHeaderInitializer";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -64,7 +64,17 @@ export const useRawHandler = <C = any>(params?: UseRawHandlerParams) => {
             BackgroundTasksFeature.register(container);
 
             container.registerInstance(TaskService, createMockTaskService());
-            registerLegacyPluginsViaGqlContextualSchema(container, [...(params?.plugins || [])]);
+            const flat = [...(params?.plugins || [])].flat(Infinity as 1).filter(Boolean);
+            // DI-native plugins are plain `container => {}` functions; call them directly. Any
+            // remaining legacy plugins still go through the bridge until #39 removes it.
+            const isFn = (p: any) => typeof p === "function" && !p.prototype;
+            for (const plugin of flat.filter(isFn)) {
+                (plugin as (container: any) => void)(container);
+            }
+            registerLegacyPluginsViaGqlContextualSchema(
+                container,
+                flat.filter(p => !isFn(p))
+            );
             const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
             container.registerInstance(GraphQLContextualSchema, {
                 async build(ctx: Record<string, any>) {

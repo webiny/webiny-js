@@ -3,7 +3,7 @@ import {
     EntryAfterRestoreFromBinEventHandler,
     EntryBeforeRestoreFromBinEventHandler
 } from "@webiny/api-headless-cms/features/contentEntry/RestoreEntryFromBin/events.js";
-import { ContextPlugin } from "@webiny/api";
+import type { Container } from "@webiny/di";
 
 export const tracker = new LifecycleEventTracker();
 
@@ -20,14 +20,14 @@ class TrackEntryAfterRestoreHandler implements EntryAfterRestoreFromBinEventHand
 }
 
 export const assignCmsLifecycleEvents = () => {
-    return new ContextPlugin(context => {
-        context.container.registerFactory(
+    return (container: Container) => {
+        container.registerFactory(
             EntryBeforeRestoreFromBinEventHandler,
             () => new TrackEntryBeforeRestoreHandler()
         );
-        context.container.registerFactory(
+        container.registerFactory(
             EntryAfterRestoreFromBinEventHandler,
             () => new TrackEntryAfterRestoreHandler()
         );
-    });
+    };
 };

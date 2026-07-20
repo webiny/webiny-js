@@ -1,7 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
+import type { Container } from "@webiny/di";
 import { createCleanupTaskSubtree } from "~/api/crud/cleanupTaskSubtree.js";
-import type { Context, ITask, ITaskLog, ITasksContextCrudObject } from "~/api/types.js";
+import type { ITask, ITaskLog, ITasksContextCrudObject } from "~/api/types.js";
 import { TaskDataStatus } from "~/api/types.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
 
 const mkTask = (id: string, definitionId: string, parentId?: string): ITask =>
     ({
@@ -75,46 +77,48 @@ const makeContext = (fx: Fixture) => {
         getDefinition: (id: string) => fx.definitions[id] ?? null
     };
 
-    const context = { tasks: crud } as unknown as Context;
-    return { context, deletedTasks, deletedLogs, deleteTaskThrows };
+    const container = {
+        resolve: (abstraction: unknown) => (abstraction === TasksCrud ? crud : undefined)
+    } as unknown as Container;
+    return { container, deletedTasks, deletedLogs, deleteTaskThrows };
 };
 
 describe("cleanupTaskSubtree", () => {
     it("deletes a single task with no descendants", async () => {
-        const { context, deletedTasks, deletedLogs } = makeContext({
+        const { container, deletedTasks, deletedLogs } = makeContext({
             tasks: [mkTask("t1", "defA")],
             logs: [],
             definitions: { defA: { databaseLogs: false } }
         });
-        const cleanup = createCleanupTaskSubtree(context);
+        const cleanup = createCleanupTaskSubtree(container);
         await cleanup("t1");
         expect(deletedTasks).toEqual(["t1"]);
         expect(deletedLogs).toEqual([]);
     });
 
     it("deletes task and its logs when databaseLogs=true", async () => {
-        const { context, deletedTasks, deletedLogs } = makeContext({
+        const { container, deletedTasks, deletedLogs } = makeContext({
             tasks: [mkTask("t1", "defA")],
             logs: [mkLog("log1", "t1"), mkLog("log2", "t1")],
             definitions: { defA: { databaseLogs: true } }
         });
-        await createCleanupTaskSubtree(context)("t1");
+        await createCleanupTaskSubtree(container)("t1");
         expect(deletedTasks).toEqual(["t1"]);
         expect(deletedLogs.sort()).toEqual(["log1", "log2"]);
     });
 
     it("skips log sweep when databaseLogs=false", async () => {
-        const { context, deletedLogs } = makeContext({
+        const { container, deletedLogs } = makeContext({
             tasks: [mkTask("t1", "defA")],
             logs: [mkLog("stray", "t1")],
             definitions: { defA: { databaseLogs: false } }
         });
-        await createCleanupTaskSubtree(context)("t1");
+        await createCleanupTaskSubtree(container)("t1");
         expect(deletedLogs).toEqual([]);
     });
 
     it("deletes descendant tree bottom-up", async () => {
-        const { context, deletedTasks } = makeContext({
+        const { container, deletedTasks } = makeContext({
             tasks: [
                 mkTask("root", "defA"),
                 mkTask("c1", "defA", "root"),
@@ -124,7 +128,7 @@ describe("cleanupTaskSubtree", () => {
             logs: [],
             definitions: { defA: { databaseLogs: false } }
         });
-        await createCleanupTaskSubtree(context)("root");
+        await createCleanupTaskSubtree(container)("root");
         expect([...deletedTasks].sort()).toEqual(["c1", "c2", "gc1", "root"]);
         const pos = (id: string) => deletedTasks.indexOf(id);
         expect(pos("gc1")).toBeLessThan(pos("c1"));
@@ -140,24 +144,24 @@ describe("cleanupTaskSubtree", () => {
         });
         fx.deleteTaskThrows.add("c1");
         const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-        await expect(createCleanupTaskSubtree(fx.context)("root")).resolves.toBeUndefined();
+        await expect(createCleanupTaskSubtree(fx.container)("root")).resolves.toBeUndefined();
         expect(fx.deletedTasks).toContain("root");
         expect(warn).toHaveBeenCalled();
         warn.mockRestore();
     });
 
     it("is idempotent on missing root id", async () => {
-        const { context } = makeContext({ tasks: [], logs: [], definitions: {} });
-        await expect(createCleanupTaskSubtree(context)("ghost")).resolves.toBeUndefined();
+        const { container } = makeContext({ tasks: [], logs: [], definitions: {} });
+        await expect(createCleanupTaskSubtree(container)("ghost")).resolves.toBeUndefined();
     });
 
     it("skips log sweep when definition is missing", async () => {
-        const { context, deletedTasks, deletedLogs } = makeContext({
+        const { container, deletedTasks, deletedLogs } = makeContext({
             tasks: [mkTask("t1", "defMissing")],
             logs: [mkLog("log1", "t1")],
             definitions: {}
         });
-        await createCleanupTaskSubtree(context)("t1");
+        await createCleanupTaskSubtree(container)("t1");
         expect(deletedTasks).toEqual(["t1"]);
         expect(deletedLogs).toEqual([]);
     });
@@ -168,13 +172,13 @@ describe("cleanupTaskSubtree", () => {
         const cyc = mkTask("cyc", "defA", "root");
         (root as any).parentId = "cyc";
 
-        const { context, deletedTasks } = makeContext({
+        const { container, deletedTasks } = makeContext({
             tasks: [root, cyc],
             logs: [],
             definitions: { defA: { databaseLogs: false } }
         });
 
-        await expect(createCleanupTaskSubtree(context)("root")).resolves.toBeUndefined();
+        await expect(createCleanupTaskSubtree(container)("root")).resolves.toBeUndefined();
         expect(deletedTasks.sort()).toEqual(["cyc", "root"]);
     });
 });

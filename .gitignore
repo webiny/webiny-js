@@ -1,5 +1,7 @@
 .idea
 .caveman.json
+.claude/skills/handoff
+.claude/skills/review-fix-loop
 .nx
 .webpack
 .webiny
@@ -69,3 +71,4 @@ CLAUDE.local.md
 .mcp.json
 docs/.reports
 tsconfig.check-tests.json
+tsconfig.build.tmp-*.json

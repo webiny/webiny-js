@@ -12,10 +12,10 @@ import {
 } from "@webiny/api-websockets/exports/api.js";
 import { RecordLockingAppFeature } from "~/index";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
-import { AuthTriggerHandler } from "@webiny/api-testing";
-import { RootTenantInitializer } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
+import { AuthTriggerHandler } from "@webiny/api-core-testing";
+import { RootTenantInitializer } from "@webiny/api-core-testing";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";

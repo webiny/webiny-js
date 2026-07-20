@@ -1,5 +1,5 @@
-export { createNodeHandler } from "./createNodeHandler.js";
-export type { CreateNodeHandlerOptions } from "./createNodeHandler.js";
+export { createServerHandler } from "./createServerHandler.js";
+export type { CreateServerHandlerOptions } from "./createServerHandler.js";
 export * from "./abstractions/NodeHttpEventHandler.js";
 export * from "./eventTypes/NodeHttpEventType.js";
 export * from "./handlers/NodeHttpRouterHandler.js";

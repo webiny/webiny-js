@@ -2,15 +2,16 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../api/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../api-headless-cms-ddb-es/tsconfig.build.json" },
     { "path": "../api-opensearch/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
-    { "path": "../handler-db/tsconfig.build.json" },
+    { "path": "../api-headless-cms-testing/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -20,8 +21,6 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api/*": ["../api/src/*"],
-      "@webiny/api": ["../api/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
@@ -34,10 +33,14 @@
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
+      "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
+      "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"]
     }

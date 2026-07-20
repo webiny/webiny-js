@@ -14,10 +14,10 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { AcoFeature } from "~/index";
-import { createIdentity } from "@webiny/api-testing";
+import { createIdentity } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import type { AcoContext } from "~/types";
 
 export interface UseHandlerParams {

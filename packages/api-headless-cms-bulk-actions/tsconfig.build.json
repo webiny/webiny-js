@@ -13,6 +13,7 @@
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../api-headless-cms-testing/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
@@ -45,6 +46,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
+      "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

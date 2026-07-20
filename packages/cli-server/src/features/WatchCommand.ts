@@ -1,16 +1,14 @@
-import { Transform } from "node:stream";
-import { spawn } from "node:child_process";
-import fs from "node:fs";
-import path from "node:path";
 import { createImplementation } from "@webiny/di";
 import {
     CliCommandFactory,
-    DefaultAppsService,
     GetProjectSdkService,
     StdioService,
     UiService
 } from "@webiny/cli-core/abstractions/index.js";
 import chalk from "chalk";
+import { colorForString, createPrefixer } from "./terminalPrefix.js";
+import { createWatchServerPrefixer } from "./serverProcesses.js";
+import { type Watch } from "@webiny/project/abstractions/index.js";
 
 interface IServerWatchCommandParams {
     _: string[];
@@ -18,132 +16,11 @@ interface IServerWatchCommandParams {
     package?: string | string[];
 }
 
-const COLORS = [
-    "#00CC00",
-    "#00CC99",
-    "#00CCCC",
-    "#00CCFF",
-    "#3300CC",
-    "#3366CC",
-    "#33CC00",
-    "#33CC99",
-    "#6600CC",
-    "#66CC00",
-    "#9900CC",
-    "#99CC00",
-    "#CC0000",
-    "#CC0066",
-    "#CC3300",
-    "#CC6600",
-    "#CCCC00",
-    "#FF0000",
-    "#FF3300",
-    "#FF6600",
-    "#FF9900",
-    "#FFCC00"
-];
-
-function colorForString(value: string) {
-    let hash = 0;
-    for (let i = 0; i < value.length; i++) {
-        hash = (hash << 5) - hash + value.charCodeAt(i);
-        hash |= 0;
-    }
-    return COLORS[Math.abs(hash) % COLORS.length];
-}
-
-/**
- * Boot (and keep booting) the built api handler as a live HTTP server, alongside the build watchers.
- *
- * The api workspace compiles to `<cwd>/.webiny/workspace/apps/api/graphql/build/handler.mjs`, which
- * (for the server flavour) exports the Node `http.Server` from `createNodeHandler`. WCP/deploy builds
- * additionally rename it to `_handler.mjs` and wrap `handler.mjs` with a telemetry client, so the
- * runner prefers `_handler.mjs` when present. We write a tiny runner next to it that imports the
- * handler and calls `.listen(PORT)`, then run it under Node's
- * built-in `--watch` scoped to the build dir — so every rebuild restarts the server in an isolated
- * child process (a server crash never kills the watcher). If the build doesn't exist yet, the runner
- * throws and `--watch` retries once the first build lands.
- */
-function startApiServer(cwd: string, ui: UiService.Interface) {
-    const workspaceApi = path.join(cwd, ".webiny", "workspace", "apps", "api");
-    const buildDir = path.join(workspaceApi, "graphql", "build");
-    const runnerPath = path.join(workspaceApi, ".serve.mjs");
-    // Use a dedicated API port so it never collides with the admin dev server (rsbuild defaults to
-    // 3001). Set WEBINY_API_PORT to override.
-    const port = process.env.WEBINY_API_PORT || "3000";
-
-    // Create the build dir up front so Node's `--watch-path` (below) doesn't ENOENT when the
-    // first build hasn't landed yet. This also creates `workspaceApi` for the runner file.
-    fs.mkdirSync(buildDir, { recursive: true });
-    fs.writeFileSync(
-        runnerPath,
-        [
-            `import fs from "node:fs";`,
-            `const port = Number(process.env.PORT || ${JSON.stringify(port)});`,
-            // Deploy/WCP builds rename the app handler to `_handler.mjs` and put a telemetry
-            // wrapper at `handler.mjs`; dev/watch builds have no telemetry and emit a plain
-            // `handler.mjs`. Prefer the un-wrapped server handler when present, else the plain one.
-            `const wrapped = new URL("./graphql/build/_handler.mjs", import.meta.url);`,
-            `const plain = new URL("./graphql/build/handler.mjs", import.meta.url);`,
-            `const target = fs.existsSync(wrapped) ? wrapped : plain;`,
-            `const { handler } = await import(target.href);`,
-            `handler.listen(port, () => {`,
-            `    console.log("\\n🚀 Webiny API (server flavour) listening on http://localhost:" + port + "\\n");`,
-            `});`,
-            ``
-        ].join("\n")
-    );
-
-    ui.info(`Starting api server on http://localhost:%s ...`, port);
-
-    // `WCP_PROJECT_LICENSE` is a build-time-only var (written plaintext by applyWcpEnvVars for the
-    // build-time feature-flag computation). The AWS lambda deliberately never receives it (see
-    // project-aws lambdaEnvVariables magicPrefixes), so the runtime fetches + decrypts a fresh,
-    // current license. Mirror that: strip it from the api runtime env so getWcpProjectLicense fetches
-    // instead of reading the plaintext value.
-    const { WCP_PROJECT_LICENSE: _buildTimeLicense, ...runtimeEnv } = process.env;
-
-    const child = spawn(process.execPath, ["--watch-path", buildDir, runnerPath], {
-        cwd: workspaceApi,
-        stdio: "inherit",
-        env: { ...runtimeEnv, PORT: port }
-    });
-
-    const cleanup = () => {
-        if (!child.killed) {
-            child.kill();
-        }
-    };
-    process.on("exit", cleanup);
-    process.on("SIGINT", () => {
-        cleanup();
-        process.exit(0);
-    });
-
-    return child;
-}
-
-function createPrefixer(prefix: string) {
-    return new Transform({
-        readableObjectMode: true,
-        writableObjectMode: true,
-        transform(chunk, _encoding, callback) {
-            for (const line of chunk.toString().split(/\r?\n/)) {
-                if (line.trim()) {
-                    this.push(`${prefix}: ${line}\n`);
-                }
-            }
-            callback();
-        }
-    });
-}
-
 export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWatchCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private stdioService: StdioService.Interface,
-        private uiService: UiService.Interface,
-        private defaultAppsService: DefaultAppsService.Interface
+        private uiService: UiService.Interface
     ) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<IServerWatchCommandParams>> {
@@ -172,20 +49,34 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 const stdio = this.stdioService;
                 const ui = this.uiService;
 
-                // Decide which apps to watch.
-                const apps = params.app
-                    ? [params.app]
-                    : !params.package
-                      ? await this.defaultAppsService.execute()
-                      : [];
+                // Watching both apps at once isn't supported yet — the combined output is still
+                // rough. Require an explicit app (or a package whitelist) and run them separately.
+                if (!params.app && !params.package) {
+                    ui.warning(
+                        `Watching all apps at once is not supported yet. Run them separately, e.g. %s and %s.`,
+                        "webiny-server watch api",
+                        "webiny-server watch admin"
+                    );
+                    return;
+                }
 
-                // Collect PackagesWatcher instances — one per app or for package-only mode.
+                // Decide which apps to watch.
+                const apps = params.app ? [params.app] : [];
+
+                // Collect PackagesWatcher instances (one per app or for package-only mode) plus any
+                // long-running server processes the flavour attaches (e.g. the api HTTP server).
                 const watchers = [];
+                const serverProcesses: Watch.Process[] = [];
 
                 if (apps.length > 0) {
                     for (const app of apps) {
-                        const { packagesWatcher } = await projectSdk.watch({ app: app as any });
+                        const { packagesWatcher, serversWatcher } = await projectSdk.watch({
+                            app: app as any
+                        });
                         watchers.push(packagesWatcher);
+                        if (serversWatcher) {
+                            serverProcesses.push(...serversWatcher.prepare());
+                        }
                     }
                 } else {
                     const whitelist = Array.isArray(params.package)
@@ -201,20 +92,15 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     pl.getProcesses ? pl.getProcesses() : []
                 );
 
-                if (allProcesses.length === 0) {
+                if (allProcesses.length === 0 && serverProcesses.length === 0) {
                     ui.warning(
                         `No watch processes were started. Please ensure you have specified a valid "app" or "package" parameter.`
                     );
                     return;
                 }
 
-                // When watching the "api" app, also boot it as a live HTTP server that reloads on
-                // rebuild — so `webiny watch api` both compiles AND serves (no separate command).
-                if (apps.includes("api")) {
-                    startApiServer(process.cwd(), ui);
-                }
-
-                if (allProcesses.length === 1) {
+                // Fast path: a single build process and nothing else — inherit stdio, no prefixing.
+                if (allProcesses.length === 1 && serverProcesses.length === 0) {
                     allProcessLists[0].setForkOptions({ stdio: "inherit", env: process.env });
                     ui.info(`Watching %s package...`, allProcesses[0].pkg.name);
                     await allProcesses[0].run();
@@ -223,8 +109,9 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
 
                 ui.info(`Watching %s packages...`, allProcesses.length);
 
-                stdio.getStdout().setMaxListeners(allProcesses.length + 5);
-                stdio.getStderr().setMaxListeners(allProcesses.length + 5);
+                const listenerCount = allProcesses.length + serverProcesses.length + 5;
+                stdio.getStdout().setMaxListeners(listenerCount);
+                stdio.getStderr().setMaxListeners(listenerCount);
 
                 for (const watchProcess of allProcesses) {
                     const prefix = chalk.hex(colorForString(watchProcess.pkg.name))(
@@ -240,7 +127,24 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     });
                 }
 
-                await Promise.all(allProcesses.map(p => p.run()));
+                // Render the flavour's server processes (filtered/prefixed) then run them alongside
+                // the build watchers.
+                for (const serverProcess of serverProcesses) {
+                    const prefix = chalk.hex(colorForString(serverProcess.name))(
+                        serverProcess.name
+                    );
+                    serverProcess.pipeStdout(stdout => {
+                        stdout.pipe(createWatchServerPrefixer(prefix)).pipe(stdio.getStdout());
+                    });
+                    serverProcess.pipeStderr(stderr => {
+                        stderr.pipe(createWatchServerPrefixer(prefix)).pipe(stdio.getStderr());
+                    });
+                }
+
+                await Promise.all([
+                    ...allProcesses.map(p => p.run()),
+                    ...serverProcesses.map(p => p.run())
+                ]);
             }
         };
     }
@@ -249,5 +153,5 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
 export const serverWatchCommand = createImplementation({
     abstraction: CliCommandFactory,
     implementation: ServerWatchCommand,
-    dependencies: [GetProjectSdkService, StdioService, UiService, DefaultAppsService]
+    dependencies: [GetProjectSdkService, StdioService, UiService]
 });

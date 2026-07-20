@@ -1,6 +1,5 @@
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { Action, App, Entity } from "@webiny/common-audit-logs/types.js";
-import type { DbContext } from "@webiny/handler-db/types.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { IAuditLog } from "~/storage/types.js";
 import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
@@ -44,7 +43,7 @@ export interface AuditLogsContextValue {
     listAuditLogs(params: IListAuditLogsParams): Promise<IListAuditLogsResult>;
 }
 
-export interface AuditLogsContext extends ApiCoreContext, Pick<DbContext, "db"> {
+export interface AuditLogsContext extends ApiCoreContext {
     auditLogs: AuditLogsContextValue;
 }
 

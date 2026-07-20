@@ -1,4 +1,3 @@
-import type { DbContext } from "@webiny/handler-db/types.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
@@ -6,7 +5,7 @@ import type { GenericRecord } from "@webiny/api/types.js";
 
 export type IWebsocketsIdentity = Pick<SecurityIdentity, "id" | "displayName" | "type">;
 
-export interface Context extends DbContext, ApiCoreContext {}
+export interface Context extends ApiCoreContext {}
 
 export interface WebsocketsPermission extends SecurityPermission {
     name: "websockets";

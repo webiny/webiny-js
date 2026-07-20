@@ -1,16 +1,4 @@
-import type { PluginCollection } from "@webiny/plugins/types.js";
-import {
-    createBackgroundTaskGraphQL,
-    createBackgroundTaskContext
-} from "@webiny/background-tasks/api";
-import { createElasticsearchBackgroundTasks } from "@webiny/api-elasticsearch-tasks";
-import { createHeadlessCmsEsTasks } from "@webiny/api-headless-cms-es-tasks";
-
-export const createBackgroundTasks = (): PluginCollection => {
-    return [
-        ...createBackgroundTaskContext(),
-        ...createBackgroundTaskGraphQL(),
-        ...createElasticsearchBackgroundTasks(),
-        createHeadlessCmsEsTasks()
-    ];
-};
+// The OpenSearch background-tasks are DI-native now. background-tasks itself is registered via
+// BackgroundTasksFeature (registerApiRequestStack, all flavours); the OS-specific Elasticsearch
+// tasks are exposed here as a Feature for the OS flavour to register.
+export { ElasticsearchTasksFeature } from "@webiny/api-elasticsearch-tasks";

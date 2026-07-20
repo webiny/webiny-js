@@ -1,17 +1,12 @@
-import {
-    useContextHandler,
-    type UseContextHandlerParams,
-    useGraphQLHandler,
-    type UseGraphQLHandlerParams,
-    FULL_ACCESS_TEAM_ID
-} from "@webiny/testing";
+import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
+import { FULL_ACCESS_TEAM_ID } from "@webiny/api-core-testing";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { WorkflowsFeature } from "~/WorkflowsFeature.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { PluginsContainer } from "@webiny/plugins";
 import { WORKFLOW_MODEL_ID, WORKFLOW_STATE_MODEL_ID } from "~/constants.js";
 import { GetUserTeamsUseCase } from "~/features/internal/GetUserTeams/index.js";
 import { Result } from "@webiny/feature/api";
-import { ContextPlugin } from "@webiny/api";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
     CANCEL_WORKFLOW_STATE_MUTATION,
@@ -70,8 +65,10 @@ class GetUserTeamsUseCaseDecorator implements GetUserTeamsUseCase.Interface {
     async execute(userId: string) {
         const identity = this.identityContext.getIdentity();
 
-        // Return teams from identity if userId matches current identity
-        if (identity.id === userId && identity.teams) {
+        // Return teams from identity if userId matches current identity AND it carries explicit
+        // teams. The DI-native auth layer normalizes a team-less identity to `teams: []` (rather
+        // than leaving it undefined), so guard on length — an empty array means "no explicit teams".
+        if (identity.id === userId && identity.teams && identity.teams.length > 0) {
             return Result.ok(identity.teams.map(teamId => ({ id: teamId })));
         }
 
@@ -85,28 +82,28 @@ const GetUserTeamsTestMock = GetUserTeamsUseCase.createDecorator({
     dependencies: [IdentityContext]
 });
 
-export const createContextHandler = async (params: UseContextHandlerParams = {}) => {
-    const plugins = new PluginsContainer(params.plugins || []);
-
-    // Register mock GetUserTeamsUseCase for testing
-    plugins.register(
-        new ContextPlugin(async context => {
-            context.container.registerDecorator(GetUserTeamsTestMock);
-        })
-    );
-
-    const handler = useContextHandler({
+export const createContextHandler = async (params: CmsTestHandlerParams = {}) => {
+    const handler = createCmsTestHandler({
         ...params,
-        features: container => WorkflowsFeature.register(container),
+        features: container => {
+            WorkflowsFeature.register(container);
+            // GetUserTeamsUseCase is registered inside WorkflowsInitializer.init() (post-auth), so
+            // the mock decorator must be applied AFTER that runs. This RequestContextInitializer is
+            // registered after WorkflowsFeature, so it runs after WorkflowsInitializer and can wrap
+            // the (now-registered) GetUserTeamsUseCase with the test mock.
+            container.registerInstance(RequestContextInitializer, {
+                async init(ctx: Record<string, any>) {
+                    ctx.container.registerDecorator(GetUserTeamsTestMock);
+                }
+            });
+        },
         permissions: [
             {
                 name: "*"
             }
-        ],
-        debug: params.debug === undefined ? true : params.debug,
-        plugins: plugins.all()
+        ]
     });
-    const context = await handler.context();
+    const context = await handler.getContext();
     const workflowModelResult = await context.container
         .resolve(GetModelUseCase)
         .execute(WORKFLOW_MODEL_ID);
@@ -123,26 +120,26 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
     };
 };
 
-export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
-    const plugins = new PluginsContainer(params.plugins || []);
-
-    // Register mock GetUserTeamsUseCase for testing
-    plugins.register(
-        new ContextPlugin(async context => {
-            context.container.registerDecorator(GetUserTeamsTestMock);
-        })
-    );
-
-    const handler = useGraphQLHandler({
+export const createGraphQLHandler = (params: CmsTestHandlerParams = {}) => {
+    const handler = createCmsTestHandler({
         ...params,
-        features: container => WorkflowsFeature.register(container),
+        features: container => {
+            WorkflowsFeature.register(container);
+            // GetUserTeamsUseCase is registered inside WorkflowsInitializer.init() (post-auth), so
+            // the mock decorator must be applied AFTER that runs. This RequestContextInitializer is
+            // registered after WorkflowsFeature, so it runs after WorkflowsInitializer and can wrap
+            // the (now-registered) GetUserTeamsUseCase with the test mock.
+            container.registerInstance(RequestContextInitializer, {
+                async init(ctx: Record<string, any>) {
+                    ctx.container.registerDecorator(GetUserTeamsTestMock);
+                }
+            });
+        },
         permissions: [
             {
                 name: "*"
             }
-        ],
-        debug: params.debug === undefined ? true : params.debug,
-        plugins: plugins.all()
+        ]
     });
     return {
         handler,

@@ -11,10 +11,10 @@ import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.j
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { FileManagerAppFeature } from "~/FileManagerAppFeature";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import { TestIdentity, TestAuthenticator } from "@webiny/api-testing";
-import { TestPermissions, TestAuthorizer } from "@webiny/api-testing";
-import { AuthTriggerHandler } from "@webiny/api-testing";
-import { RootTenantInitializer } from "@webiny/api-testing";
+import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
+import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
+import { AuthTriggerHandler } from "@webiny/api-core-testing";
+import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { createFileManagerSdk } from "./createFileManagerSdk";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
@@ -59,9 +59,18 @@ export default (params: HandlerParams = {}) => {
             HeadlessCmsFeature.register(container, { type: "manage" });
 
             FileManagerAppFeature.register(container);
-            // Bridge test-supplied legacy ContextPlugins (e.g. file lifecycle event subscribers)
-            // so their apply(ctx) runs per request and registers their DI instances before resolvers.
-            registerLegacyPluginsViaGqlContextualSchema(container, plugins);
+            // DI-native plugins are plain `container => {}` functions (e.g. file lifecycle event
+            // subscribers); call them directly. Any remaining legacy plugins still go through the
+            // bridge until #39 removes it.
+            const flat = [plugins].flat(Infinity as 1).filter(Boolean);
+            const isFn = (p: any) => typeof p === "function" && !p.prototype;
+            for (const plugin of flat.filter(isFn)) {
+                (plugin as (container: any) => void)(container);
+            }
+            registerLegacyPluginsViaGqlContextualSchema(
+                container,
+                flat.filter(p => !isFn(p))
+            );
             GraphQLEngineFeature.register(container);
         }
     });

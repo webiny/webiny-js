@@ -5,7 +5,7 @@ import type {
     ITaskEvent
 } from "../../../background-tasks/src/api/types";
 import { TaskRunner } from "../../../background-tasks/src/api/runner";
-import { timerFactory } from "../../../handler-aws/src/utils";
+import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { TaskEventValidation } from "../../../background-tasks/src/api/runner/TaskEventValidation";
 import { ResponseContinueResult } from "../../../background-tasks/src/api/response/ResponseContinueResult";
 import { createMockTaskService } from "./mockTaskTriggerTransportPlugin";

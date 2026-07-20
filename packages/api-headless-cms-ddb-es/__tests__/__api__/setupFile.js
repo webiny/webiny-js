@@ -1,6 +1,6 @@
 import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
-import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver, registerDynamoDBCore } from "@webiny/db-dynamodb";
+import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
+import { registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { registerCmsOpenSearchStorageOperations } from "../../src/index";
 import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenSearchBodyModifier/index.js";
@@ -14,7 +14,7 @@ import {
 import { getBaseConfiguration } from "@webiny/api-opensearch";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
-import { createDdbToEsStreamHandler } from "@webiny/api-dynamodb-to-elasticsearch";
+import { createDdbToOpenSearchStreamHandler } from "@webiny/api-sync-ddb-to-opensearch";
 
 if (typeof registerCmsOpenSearchStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -28,7 +28,7 @@ if (!prefix.includes("api-")) {
 const documentClient = getDocumentClient();
 const opensearchClient = getTestOpenSearchClient();
 
-simulateStream(documentClient, createDdbToEsStreamHandler(opensearchClient));
+simulateStream(documentClient, createDdbToOpenSearchStreamHandler(opensearchClient));
 
 setStorageOps("cms", () => {
     const createIndexName = model => {
@@ -70,12 +70,7 @@ setStorageOps("cms", () => {
     createOrRefreshIndexSubscription.name =
         "headlessCmsDdbEs.context.createOrRefreshIndexSubscription";
 
-    const initializedDbPlugins = dbPlugins({
-        table: process.env.DB_TABLE,
-        driver: new DynamoDbDriver({
-            documentClient
-        })
-    });
+    const initializedDbPlugins = dbPlugins();
 
     createOrRefreshIndexSubscription.name =
         "headlessCmsDdbEs.context.createOrRefreshIndexSubscription";

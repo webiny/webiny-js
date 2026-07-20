@@ -15,7 +15,7 @@ import { RejectWorkflowStateStepUseCase } from "~/features/workflowState/RejectW
 import { TakeOverWorkflowStateStepUseCase } from "~/features/workflowState/TakeOverWorkflowStateStep/index.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
 
-import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
+import { FULL_ACCESS_TEAM_ID } from "@webiny/api-core-testing";
 
 const reviewerIdentity = {
     id: "reviewer-identity-id",

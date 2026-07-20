@@ -4,19 +4,18 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-core" },
-    { "path": "../api-dynamodb-to-elasticsearch" },
     { "path": "../api-opensearch" },
+    { "path": "../api-sync-to-opensearch" },
     { "path": "../aws-sdk" },
     { "path": "../background-tasks" },
     { "path": "../db" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
     { "path": "../feature" },
-    { "path": "../plugins" },
     { "path": "../utils" },
+    { "path": "../api-headless-cms-testing" },
     { "path": "../handler" },
-    { "path": "../handler-aws" },
-    { "path": "../testing" }
+    { "path": "../handler-aws" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -29,10 +28,10 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
-      "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
-      "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
       "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
       "@webiny/api-opensearch": ["../api-opensearch/src"],
+      "@webiny/api-sync-to-opensearch/*": ["../api-sync-to-opensearch/src/*"],
+      "@webiny/api-sync-to-opensearch": ["../api-sync-to-opensearch/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
@@ -45,16 +44,14 @@
       "@webiny/error": ["../error/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
+      "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
+      "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/testing/*": ["../testing/src/*"],
-      "@webiny/testing": ["../testing/src"]
+      "@webiny/handler-aws": ["../handler-aws/src"]
     }
   }
 }

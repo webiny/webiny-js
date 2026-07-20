@@ -1,9 +1,9 @@
-import type { ITask, Context } from "@webiny/background-tasks/api";
-import { TaskLogItemType, TasksCrud } from "@webiny/background-tasks/api";
+import type { ITask, TasksCrud } from "@webiny/background-tasks/api";
+import { TaskLogItemType } from "@webiny/background-tasks/api";
 import type { IUseCase } from "~/abstractions/index.js";
 
 export interface IChildTasksCleanupExecuteParams {
-    context: Context;
+    tasksCrud: TasksCrud.Interface;
     task: ITask;
 }
 
@@ -13,8 +13,7 @@ export interface IChildTasksCleanupExecuteParams {
  */
 export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecuteParams, void> {
     public async execute(params: IChildTasksCleanupExecuteParams): Promise<void> {
-        const { context, task } = params;
-        const tasksCrud = context.container.resolve(TasksCrud);
+        const { tasksCrud, task } = params;
 
         const { items: childTasks } = await tasksCrud.listTasks({
             where: {

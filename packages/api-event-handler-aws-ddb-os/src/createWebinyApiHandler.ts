@@ -24,10 +24,7 @@ import { OpenSearchQueryBuilderOperatorFeature } from "@webiny/api-opensearch/fe
 import { OpenSearchFieldFeature } from "@webiny/api-opensearch/features/OpenSearchField/feature.js";
 import { OpenSearchIndexFeature } from "@webiny/api-opensearch/features/OpenSearchIndex/feature.js";
 
-export type CreateWebinyApiHandlerConfig = Pick<
-    BaseConfig,
-    "extensions" | "documentClient" | "dbTable"
-> & {
+export type CreateAwsDdbOsApiHandlerConfig = Pick<BaseConfig, "extensions" | "documentClient"> & {
     /**
      * OpenSearch client. Defaults to one built from `OPENSEARCH_*` env vars. Injectable so
      * integration tests can point the handler at a local OpenSearch.
@@ -53,13 +50,12 @@ const openSearchClientFromEnv = () => {
     return createOpenSearchClient(openSearchClientOptions);
 };
 
-export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
+export function createAwsDdbOsApiHandler(config: CreateAwsDdbOsApiHandlerConfig) {
     const openSearchClient = config.openSearchClient ?? openSearchClientFromEnv();
 
     return createBaseHandler({
         extensions: config.extensions,
         documentClient: config.documentClient,
-        dbTable: config.dbTable,
         registerRootStorage: (container, { documentClient }) => {
             // ── OpenSearch core (client + query-builder operators + fields + index registries) ──
             // The DDB+ES CMS storage factory resolves all of these.

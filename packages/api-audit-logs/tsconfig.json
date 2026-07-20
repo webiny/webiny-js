@@ -12,15 +12,14 @@
     { "path": "../common-audit-logs" },
     { "path": "../error" },
     { "path": "../feature" },
-    { "path": "../handler-db" },
     { "path": "../handler-graphql" },
     { "path": "../utils" },
     { "path": "../wcp" },
+    { "path": "../api-headless-cms-testing" },
     { "path": "../event-handler-core" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
-    { "path": "../plugins" },
-    { "path": "../testing" }
+    { "path": "../plugins" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -49,14 +48,14 @@
       "@webiny/error": ["../error/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"],
+      "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
+      "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
@@ -64,9 +63,7 @@
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
-      "@webiny/testing/*": ["../testing/src/*"],
-      "@webiny/testing": ["../testing/src"]
+      "@webiny/plugins": ["../plugins/src"]
     }
   }
 }
