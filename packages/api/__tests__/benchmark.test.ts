@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Context } from "~/Context";
 import { BenchmarkMeasurement } from "~/types";
 import { BenchmarkPlugin } from "~/plugins/BenchmarkPlugin";
-import { ContextPlugin } from "~/plugins/ContextPlugin";
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -159,48 +158,6 @@ describe("benchmark", () => {
         });
 
         expect(context.benchmark.measurements).toHaveLength(0);
-
-        const result = await context.benchmark.measure("test", async () => {
-            return true;
-        });
-
-        expect(result).toEqual(true);
-
-        const expected: BenchmarkMeasurement[] = [
-            {
-                name: "test",
-                category: "webiny",
-                start: expect.any(Date),
-                end: expect.any(Date),
-                elapsed: expect.any(Number),
-                memory: expect.any(Number)
-            }
-        ];
-
-        expect(context.benchmark.measurements).toHaveLength(1);
-        expect(context.benchmark.measurements).toEqual(expected);
-        expect(context.benchmark.measurements[0].elapsed).toBeGreaterThanOrEqual(0);
-    });
-
-    it("should enable benchmark when certain conditions are met - via plugin", async () => {
-        process.env.BENCHMARK_ENABLE = "true";
-        const context = new Context({
-            WEBINY_VERSION: "test",
-            plugins: [
-                new ContextPlugin(async ctx => {
-                    ctx.benchmark.enableOn(async () => {
-                        return process.env.BENCHMARK_ENABLE === "true";
-                    });
-                })
-            ]
-        });
-        await Promise.all(
-            context.plugins.byType<ContextPlugin>(ContextPlugin.type).map(plugin => {
-                return plugin.apply(context);
-            })
-        );
-
-        expect(context.benchmark.measurements).toEqual([]);
 
         const result = await context.benchmark.measure("test", async () => {
             return true;

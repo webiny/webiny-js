@@ -100,10 +100,10 @@ export const ApiExtension = defineExtension({
 
             const registerExtensionPluginImportPath =
                 "@webiny/handler/plugins/RegisterExtensionPlugin.js";
-            const existingContextPluginImport = source.getImportDeclaration(
+            const existingRegisterExtensionPluginImport = source.getImportDeclaration(
                 registerExtensionPluginImportPath
             );
-            if (!existingContextPluginImport) {
+            if (!existingRegisterExtensionPluginImport) {
                 source.insertImportDeclaration(index, {
                     namedImports: ["createRegisterExtensionPlugin"],
                     moduleSpecifier: registerExtensionPluginImportPath

@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/api";
+import type { Container } from "@webiny/di";
 import { LifecycleEventTracker } from "@webiny/project-utils/testing/helpers/lifecycleTracker";
 import {
     FileAfterCreateEventHandler,
@@ -20,53 +20,53 @@ import {
 export const tracker = new LifecycleEventTracker();
 
 export const assignFileLifecycleEvents = () => {
-    return new ContextPlugin(async context => {
-        context.container.registerInstance(FileBeforeCreateEventHandler, {
+    return (container: Container) => {
+        container.registerInstance(FileBeforeCreateEventHandler, {
             handle: event => {
                 tracker.track("file:beforeCreate", event.payload);
             }
         });
 
-        context.container.registerInstance(FileAfterCreateEventHandler, {
+        container.registerInstance(FileAfterCreateEventHandler, {
             handle: event => {
                 tracker.track("file:afterCreate", event.payload);
             }
         });
 
-        context.container.registerInstance(FileBeforeBatchCreateEventHandler, {
+        container.registerInstance(FileBeforeBatchCreateEventHandler, {
             handle: event => {
                 tracker.track("file:beforeBatchCreate", event.payload);
             }
         });
 
-        context.container.registerInstance(FileAfterBatchCreateEventHandler, {
+        container.registerInstance(FileAfterBatchCreateEventHandler, {
             handle: event => {
                 tracker.track("file:afterBatchCreate", event.payload);
             }
         });
 
-        context.container.registerInstance(FileBeforeUpdateEventHandler, {
+        container.registerInstance(FileBeforeUpdateEventHandler, {
             handle: event => {
                 tracker.track("file:beforeUpdate", event.payload);
             }
         });
 
-        context.container.registerInstance(FileAfterUpdateEventHandler, {
+        container.registerInstance(FileAfterUpdateEventHandler, {
             handle: event => {
                 tracker.track("file:afterUpdate", event.payload);
             }
         });
 
-        context.container.registerInstance(FileBeforeDeleteEventHandler, {
+        container.registerInstance(FileBeforeDeleteEventHandler, {
             handle: event => {
                 tracker.track("file:beforeDelete", event.payload);
             }
         });
 
-        context.container.registerInstance(FileAfterDeleteEventHandler, {
+        container.registerInstance(FileAfterDeleteEventHandler, {
             handle: event => {
                 tracker.track("file:afterDelete", event.payload);
             }
         });
-    });
+    };
 };

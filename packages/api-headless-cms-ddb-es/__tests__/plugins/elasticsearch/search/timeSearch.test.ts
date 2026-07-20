@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createTestContainer } from "~tests/helpers/createTestContainer";
-import { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch";
-import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch";
+import { CmsEntryOpenSearchValueSearchRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueSearch";
+import type { CmsEntryOpenSearchValueSearch } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValueSearch";
 
 const container = createTestContainer();
 const registry = container.resolve(CmsEntryOpenSearchValueSearchRegistry);

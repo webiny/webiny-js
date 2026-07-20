@@ -3,9 +3,9 @@ import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
 import { registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { registerCmsOpenSearchStorageOperations } from "../../src/index";
-import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenSearchBodyModifier/index.js";
+import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { configurations } from "../../src/configurations";
+import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
 import {
     getTestOpenSearchClient,
@@ -76,23 +76,25 @@ setStorageOps("cms", () => {
         "headlessCmsDdbEs.context.createOrRefreshIndexSubscription";
 
     const fruitModifierPlugin = createRegisterExtensionPlugin(({ container }) => {
-        const FruitBodyModifier = CmsEntryOpenSearchBodyModifier.createImplementation({
-            implementation: class {
-                modelId = "fruit";
-                modifyBody({ body }) {
-                    if (!body.sort.customSorter) {
-                        return;
-                    }
-                    const order = body.sort.customSorter.order;
-                    delete body.sort.customSorter;
-                    body.sort = {
-                        createdOn: {
-                            order,
-                            unmapped_type: "date"
-                        }
-                    };
+        // eslint-disable-next-line webiny/require-implements-on-create-implementation -- plain JS file: TypeScript `implements` is invalid syntax here.
+        class FruitBodyModifierImplementation {
+            modelId = "fruit";
+            modifyBody({ body }) {
+                if (!body.sort.customSorter) {
+                    return;
                 }
-            },
+                const order = body.sort.customSorter.order;
+                delete body.sort.customSorter;
+                body.sort = {
+                    createdOn: {
+                        order,
+                        unmapped_type: "date"
+                    }
+                };
+            }
+        }
+        const FruitBodyModifier = CmsEntryOpenSearchBodyModifier.createImplementation({
+            implementation: FruitBodyModifierImplementation,
             dependencies: []
         });
         container.register(FruitBodyModifier);

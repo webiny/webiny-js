@@ -1,4 +1,5 @@
 import { EventType } from "~/features/events/EventType.js";
+import type { IEventType } from "~/features/events/EventType.js";
 import { TestHttpEventHandler } from "./TestHttpEventHandler.js";
 import type { IHttpRequest } from "~/features/http/index.js";
 
@@ -17,15 +18,16 @@ export function isHttpRequest(event: any): event is IHttpRequest {
  * EventType that recognizes IHttpRequest directly — no transport translation needed.
  * Use in tests to feed IHttpRequest straight into the chain, bypassing AWS/Node adapters.
  */
-export const TestHttpEventType = EventType.createImplementation({
-    implementation: class {
-        canHandle(event: any): event is IHttpRequest {
-            return isHttpRequest(event);
-        }
+class TestHttpEventTypeImplementation implements IEventType<IHttpRequest> {
+    canHandle(event: any): event is IHttpRequest {
+        return isHttpRequest(event);
+    }
 
-        getHandlerAbstraction() {
-            return TestHttpEventHandler;
-        }
-    },
+    getHandlerAbstraction() {
+        return TestHttpEventHandler;
+    }
+}
+export const TestHttpEventType = EventType.createImplementation({
+    implementation: TestHttpEventTypeImplementation,
     dependencies: []
 });

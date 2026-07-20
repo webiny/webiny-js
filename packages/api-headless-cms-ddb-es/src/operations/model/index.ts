@@ -7,7 +7,7 @@ import type {
     CmsModelStorageOperationsListParams,
     CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { configurations } from "~/configurations.js";
+import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import type { Client } from "@webiny/api-opensearch";
 import type { IModelEntity } from "~/definitions/types.js";
 

@@ -122,9 +122,9 @@ export default BuildParam.createImplementation({
             }
 
             const contextPluginImportPath = "@webiny/handler/plugins/RegisterExtensionPlugin.js";
-            const existingContextPluginImport =
+            const existingRegisterExtensionPluginImport =
                 source.getImportDeclaration(contextPluginImportPath);
-            if (!existingContextPluginImport) {
+            if (!existingRegisterExtensionPluginImport) {
                 source.insertImportDeclaration(index, {
                     namedImports: ["createRegisterExtensionPlugin"],
                     moduleSpecifier: contextPluginImportPath

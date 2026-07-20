@@ -5,7 +5,7 @@ import type { Context as TasksContext } from "@webiny/background-tasks/api/types
 import type { CmsContext } from "~/types";
 import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
 import type { IElasticsearchCreateIndexesTaskInput } from "@webiny/api-elasticsearch-tasks/tasks/createIndexes/types";
-import { configurations } from "~/configurations";
+import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
 import { OpenSearchTenantIndexFactory } from "@webiny/api-elasticsearch-tasks";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";

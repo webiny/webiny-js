@@ -4,8 +4,8 @@ import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockT
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { createContextPlugin } from "@webiny/api";
-import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
+import type { Container } from "@webiny/di";
+import { NoopCloudfrontInvalidateCacheTaskDefinition } from "./noopCloudfrontInvalidateCacheTask.js";
 import { WebsiteBuilderFeature } from "~/index.js";
 import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -25,9 +25,9 @@ export const useHandler = (params: Params = {}) => {
         // (TestAuthenticator returns it), so no post-auth override is needed.
         //
         plugins: [
-            createContextPlugin(ctx => {
-                ctx.container.register(InvalidateCloudfrontCacheTaskDefinition);
-            }),
+            (container: Container) => {
+                container.register(NoopCloudfrontInvalidateCacheTaskDefinition);
+            },
             ...[params.plugins].flat(Infinity as 1).filter(Boolean)
         ],
         features: container => {

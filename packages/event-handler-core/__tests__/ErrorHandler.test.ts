@@ -3,7 +3,7 @@ import { createTestHttpHandler } from "~/features/testing/index.js";
 import { HttpRoute } from "~/features/http/abstractions.js";
 import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 
-class ThrowingRoute {
+class ThrowingRoute implements HttpRoute.Interface {
     readonly method = "GET";
     readonly path = "/boom";
 
@@ -17,7 +17,7 @@ const ThrowingRouteImpl = HttpRoute.createImplementation({
     dependencies: []
 });
 
-class OkRoute {
+class OkRoute implements HttpRoute.Interface {
     readonly method = "GET";
     readonly path = "/ok";
 

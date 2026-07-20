@@ -18,17 +18,19 @@ const apiGwEvent = {
 };
 
 describe("ApiGatewayHttpRouterHandler", () => {
-    const makeRoute = (statusCode: number, body: any) =>
-        HttpRoute.createImplementation({
-            implementation: class {
-                readonly method = "POST";
-                readonly path = "/graphql";
-                async handle(_req: IHttpRequest): Promise<IHttpResponse> {
-                    return { statusCode, body };
-                }
-            },
+    const makeRoute = (statusCode: number, body: any) => {
+        class MakeRouteImplementation implements HttpRoute.Interface {
+            readonly method = "POST";
+            readonly path = "/graphql";
+            async handle(_req: IHttpRequest): Promise<IHttpResponse> {
+                return { statusCode, body };
+            }
+        }
+        return HttpRoute.createImplementation({
+            implementation: MakeRouteImplementation,
             dependencies: []
         });
+    };
 
     it("should translate APIGatewayProxyEvent, route, and translate back", async () => {
         const handler = createLambdaHandler({
@@ -59,18 +61,19 @@ describe("ApiGatewayHttpRouterHandler", () => {
     });
 
     it("should set isBase64Encoded for Buffer responses", async () => {
+        class BufferRouteImplementation implements HttpRoute.Interface {
+            readonly method = "POST";
+            readonly path = "/graphql";
+            async handle(_req: IHttpRequest): Promise<IHttpResponse> {
+                return {
+                    statusCode: 200,
+                    headers: { "content-type": "image/png" },
+                    body: Buffer.from("PNG")
+                };
+            }
+        }
         const bufferRoute = HttpRoute.createImplementation({
-            implementation: class {
-                readonly method = "POST";
-                readonly path = "/graphql";
-                async handle(_req: IHttpRequest): Promise<IHttpResponse> {
-                    return {
-                        statusCode: 200,
-                        headers: { "content-type": "image/png" },
-                        body: Buffer.from("PNG")
-                    };
-                }
-            },
+            implementation: BufferRouteImplementation,
             dependencies: []
         });
 

@@ -1,19 +1,16 @@
 /**
  * Real-app integration guard for the Languages api extension registration path: the generated
  * extensions.ts wraps it in createRegisterExtensionPlugin(ctx => registerExtension(ctx.container,
- * Extension)) funnelled through registerLegacyPluginsViaGqlContextualSchema, i.e. registration
- * happens inside a RequestContextInitializer at request time, NOT a direct Extension.register(
- * container). If the wbyLanguage model resolves, the indirection works.
+ * Extension)) dispatched via registerExtensions (how the real app handler applies generated
+ * extensions, at register time), NOT a direct Extension.register(container). If the wbyLanguage
+ * model resolves, the indirection works.
  */
 import { describe, expect, it } from "vitest";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import {
-    GraphQLContextualSchema,
-    GraphQLEngineFeature,
-    registerLegacyPluginsViaGqlContextualSchema
-} from "@webiny/handler-graphql";
+import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { createRegisterExtensionPlugin } from "@webiny/handler/plugins/RegisterExtensionPlugin.js";
+import { registerExtensions } from "@webiny/handler";
 import { registerExtension } from "@webiny/project/utils/registerExtension.js";
 import { buildSchema } from "graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
@@ -62,8 +59,9 @@ describe("Languages api extension — registered via the app indirection", () =>
 
                 HeadlessCmsFeature.register(container, { type: "manage" });
 
-                // The app path: NOT Extension.register(container) directly.
-                registerLegacyPluginsViaGqlContextualSchema(container, [
+                // The app path: NOT Extension.register(container) directly. registerExtensions is
+                // how the real app handler dispatches generated extensions (register-time).
+                await registerExtensions(container, [
                     createRegisterExtensionPlugin(ctx => {
                         registerExtension(ctx.container, Extension);
                     })

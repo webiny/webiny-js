@@ -74,16 +74,16 @@ export const ApiRoute = defineExtension({
             moduleSpecifier: importPath
         });
 
-        // Ensure createContextPlugin import exists.
-        const ctxPluginPath = "@webiny/api/plugins/ContextPlugin.js";
-        if (!source.getImportDeclaration(ctxPluginPath)) {
+        // Ensure createRegisterExtensionPlugin import exists.
+        const registerExtensionPluginPath = "@webiny/handler/plugins/RegisterExtensionPlugin.js";
+        if (!source.getImportDeclaration(registerExtensionPluginPath)) {
             const lastIdx =
                 source
                     .getImportDeclarations()
                     [source.getImportDeclarations().length - 1].getChildIndex() + 1;
             source.insertImportDeclaration(lastIdx, {
-                namedImports: ["createContextPlugin"],
-                moduleSpecifier: ctxPluginPath
+                namedImports: ["createRegisterExtensionPlugin"],
+                moduleSpecifier: registerExtensionPluginPath
             });
         }
 
@@ -118,7 +118,7 @@ export const ApiRoute = defineExtension({
 
         // Register factory in DI container.
         pluginsArray.addElement(
-            `\ncreateContextPlugin(ctx => {\n\tregisterExtension(ctx.container, ${alias});\n})`
+            `\ncreateRegisterExtensionPlugin(ctx => {\n\tregisterExtension(ctx.container, ${alias});\n})`
         );
 
         // Register Fastify route with hardcoded path/method.

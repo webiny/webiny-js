@@ -13,7 +13,7 @@ const NO_CACHE_HEADERS = {
     "cache-control": "no-cache, no-store, must-revalidate"
 };
 
-class AssetDeliveryRouteImpl {
+class AssetDeliveryRouteImpl implements HttpRoute.Interface {
     readonly method = "GET";
     readonly path = "/files/*";
 
