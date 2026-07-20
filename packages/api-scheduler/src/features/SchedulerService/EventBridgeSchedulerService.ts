@@ -59,7 +59,7 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
 
         await client.send(
             new CreateScheduleCommand({
-                Name: id,
+                Name: this.createScheduleName(params),
                 ScheduleExpression: this.createScheduleExpression(scheduleFor),
                 FlexibleTimeWindow: {
                     Mode: "OFF"
@@ -93,7 +93,7 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
 
         await client.send(
             new UpdateScheduleCommand({
-                Name: id,
+                Name: this.createScheduleName(params),
                 ScheduleExpression: this.createScheduleExpression(scheduleFor),
                 FlexibleTimeWindow: {
                     Mode: "OFF"
@@ -173,6 +173,11 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
     }
 
     private createScheduleName(params: SchedulerService.ExistsParams): string {
-        return `schedule_${params.tenant}-${params.namespace}-${params.id}`;
+        // AWS EventBridge Scheduler names must match [0-9a-zA-Z-_.]+ and be <= 64 chars. `id`
+        // (ScheduledActionId: "wby-schedule-<hash>") already satisfies both and is unique per
+        // namespace + action type + target, so use it verbatim. Do NOT interpolate `namespace`
+        // (contains "/", e.g. "Cms/Entry/<modelId>") or `tenant` — that produced names with illegal
+        // characters that exceeded the length limit (ValidationException).
+        return params.id;
     }
 }
