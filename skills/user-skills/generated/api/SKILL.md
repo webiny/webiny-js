@@ -2,7 +2,7 @@
 name: webiny-api-catalog
 context: webiny-api
 description: >
-  api — 21 abstractions.
+  api — 22 abstractions.
 ---
 
 # api
@@ -156,5 +156,11 @@ Inspired by functional programming constructs like `Either` or `Result` in other
 **Name:** `Route`
 **Import:** `import { Route } from "webiny/api"`
 **Source:** `@webiny/handler/abstractions/Route.ts`
+
+---
+
+**Name:** `WebsocketService`
+**Import:** `import { WebsocketService } from "webiny/api"`
+**Source:** `@webiny/api-websockets/features/WebsocketService/index.ts`
 
 ---

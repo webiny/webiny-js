@@ -2,7 +2,7 @@
 name: webiny-admin-cms-catalog
 context: webiny-api
 description: >
-  admin/cms — 74 abstractions.
+  admin/cms — 78 abstractions.
 ---
 
 # admin/cms
@@ -144,19 +144,19 @@ description: >
 
 **Name:** `Divider`
 **Import:** `import { Divider } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `DropDown`
 **Import:** `import { DropDown } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `DropDownItem`
 **Import:** `import { DropDownItem } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -213,7 +213,7 @@ description: >
 
 **Name:** `getNodeFromSelection`
 **Import:** `import { getNodeFromSelection } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -232,7 +232,13 @@ description: >
 **Name:** `Klass`
 **Kind:** type
 **Import:** `import type { Klass } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
+
+---
+
+**Name:** `LexicalEditor`
+**Import:** `import { LexicalEditor } from "webiny/admin/cms/lexical"`
+**Source:** `@webiny/app-headless-cms/admin/components/LexicalCmsEditor/LexicalEditor.tsx`
 
 ---
 
@@ -242,16 +248,23 @@ description: >
 
 ---
 
+**Name:** `LexicalEditorProps`
+**Kind:** type
+**Import:** `import type { LexicalEditorProps } from "webiny/admin/cms/lexical"`
+**Source:** `@webiny/app-headless-cms/admin/components/LexicalCmsEditor/LexicalEditor.tsx`
+
+---
+
 **Name:** `LexicalHtmlRenderer`
 **Import:** `import { LexicalHtmlRenderer } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `LexicalNode`
 **Kind:** type
 **Import:** `import type { LexicalNode } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -276,6 +289,12 @@ description: >
 **Name:** `MultiValueItemContainer`
 **Import:** `import { MultiValueItemContainer } from "webiny/admin/cms/field-renderers/object"`
 **Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/object/MultiValueItemContainer.tsx`
+
+---
+
+**Name:** `ParentFieldProvider`
+**Import:** `import { ParentFieldProvider } from "webiny/admin/cms/entry/editor"`
+**Source:** `@webiny/app-headless-cms/admin/components/ContentEntryForm/ParentValue.tsx`
 
 ---
 
@@ -367,19 +386,19 @@ conditional decorator, which optionally takes a `modelIds` prop, so you can cont
 
 **Name:** `useCurrentElement`
 **Import:** `import { useCurrentElement } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useCurrentSelection`
 **Import:** `import { useCurrentSelection } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useDeriveValueFromSelection`
 **Import:** `import { useDeriveValueFromSelection } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -401,13 +420,13 @@ that returns the effective (intersected) rules.
 
 **Name:** `useFontColorPicker`
 **Import:** `import { useFontColorPicker } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useIsMounted`
 **Import:** `import { useIsMounted } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -419,7 +438,7 @@ that returns the effective (intersected) rules.
 
 **Name:** `useLexicalEditorConfig`
 **Import:** `import { useLexicalEditorConfig } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -433,6 +452,12 @@ that returns the effective (intersected) rules.
 **Name:** `useMutation`
 **Import:** `import { useMutation } from "webiny/admin/cms"`
 **Source:** `@webiny/app-headless-cms/admin/hooks/useMutation.ts`
+
+---
+
+**Name:** `useParentField`
+**Import:** `import { useParentField } from "webiny/admin/cms/entry/editor"`
+**Source:** `@webiny/app-headless-cms/admin/components/ContentEntryForm/ParentValue.tsx`
 
 ---
 
@@ -450,7 +475,7 @@ that returns the effective (intersected) rules.
 
 **Name:** `useRichTextEditor`
 **Import:** `import { useRichTextEditor } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -468,12 +493,12 @@ that returns the effective (intersected) rules.
 
 **Name:** `useTextAlignmentAction`
 **Import:** `import { useTextAlignmentAction } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useTypographyAction`
 **Import:** `import { useTypographyAction } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---

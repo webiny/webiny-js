@@ -2,7 +2,7 @@
 name: webiny-api-cms-catalog
 context: webiny-api
 description: >
-  API — Headless CMS — 124 abstractions.
+  API — Headless CMS — 133 abstractions.
   Entry, model, and group event handlers and use cases.
 ---
 
@@ -62,12 +62,6 @@ Entry, model, and group event handlers and use cases.
 **Name:** `CmsEntryOpenSearchFullTextSearch`
 **Import:** `import { CmsEntryOpenSearchFullTextSearch } from "webiny/api/cms/opensearch"`
 **Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchFullTextSearch/index.ts`
-
----
-
-**Name:** `CmsEntryOpenSearchIndex`
-**Import:** `import { CmsEntryOpenSearchIndex } from "webiny/api/cms/opensearch"`
-**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsEntryOpenSearchIndex/index.ts`
 
 ---
 
@@ -182,6 +176,12 @@ Entry, model, and group event handlers and use cases.
 
 ---
 
+**Name:** `CmsModelOpenSearchIndex`
+**Import:** `import { CmsModelOpenSearchIndex } from "webiny/api/cms/opensearch"`
+**Source:** `@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/index.ts`
+
+---
+
 **Name:** `CmsSortMapper`
 **Import:** `import { CmsSortMapper } from "webiny/api/cms/entry"`
 **Source:** `@webiny/api-headless-cms/features/sortMapper/abstractions.ts`
@@ -200,6 +200,18 @@ Entry, model, and group event handlers and use cases.
 **Import:** `import { ContentEntryTraverserProvider } from "webiny/api/cms/entry"`
 **Source:** `@webiny/api-headless-cms/features/contentEntry/ContentEntryTraverser/index.ts`
 **Description:** Traverse the given content entry data using the model's AST.
+
+---
+
+**Name:** `CreateEntryDataFactory`
+**Import:** `import { CreateEntryDataFactory } from "webiny/api/cms/entry"`
+**Source:** `@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreateEntryDataFactory/abstractions.ts`
+
+---
+
+**Name:** `CreateEntryRevisionFromDataFactory`
+**Import:** `import { CreateEntryRevisionFromDataFactory } from "webiny/api/cms/entry"`
+**Source:** `@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreateEntryRevisionFromDataFactory/abstractions.ts`
 
 ---
 
@@ -235,6 +247,24 @@ Entry, model, and group event handlers and use cases.
 **Import:** `import { CreateModelUseCase } from "webiny/api/cms/model"`
 **Source:** `@webiny/api-headless-cms/features/contentModel/CreateModel/abstractions.ts`
 **Description:** Create a new content model.
+
+---
+
+**Name:** `CreatePublishEntryDataFactory`
+**Import:** `import { CreatePublishEntryDataFactory } from "webiny/api/cms/entry"`
+**Source:** `@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreatePublishEntryDataFactory/abstractions.ts`
+
+---
+
+**Name:** `CreateRepublishEntryDataFactory`
+**Import:** `import { CreateRepublishEntryDataFactory } from "webiny/api/cms/entry"`
+**Source:** `@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreateRepublishEntryDataFactory/abstractions.ts`
+
+---
+
+**Name:** `CreateUnpublishEntryDataFactory`
+**Import:** `import { CreateUnpublishEntryDataFactory } from "webiny/api/cms/entry"`
+**Source:** `@webiny/api-headless-cms/features/contentEntry/entryDataFactories/CreateUnpublishEntryDataFactory/abstractions.ts`
 
 ---
 
@@ -344,6 +374,13 @@ Provides storageId, list, validation, renderer, and other data-field methods.
 
 ---
 
+**Name:** `EntryAfterUpdateRevisionDescriptionEventHandler`
+**Import:** `import { EntryAfterUpdateRevisionDescriptionEventHandler } from "webiny/api/cms/entry"`
+**Source:** `@webiny/api-headless-cms/features/contentEntry/UpdateRevisionDescription/events.ts`
+**Description:** Hook into entry lifecycle after an entry is updated.
+
+---
+
 **Name:** `EntryBeforeCreateEventHandler`
 **Import:** `import { EntryBeforeCreateEventHandler } from "webiny/api/cms/entry"`
 **Source:** `@webiny/api-headless-cms/features/contentEntry/CreateEntry/events.ts`
@@ -403,6 +440,13 @@ Provides storageId, list, validation, renderer, and other data-field methods.
 **Name:** `EntryBeforeUpdateEventHandler`
 **Import:** `import { EntryBeforeUpdateEventHandler } from "webiny/api/cms/entry"`
 **Source:** `@webiny/api-headless-cms/features/contentEntry/UpdateEntry/events.ts`
+**Description:** Hook into entry lifecycle before an entry is updated.
+
+---
+
+**Name:** `EntryBeforeUpdateRevisionDescriptionEventHandler`
+**Import:** `import { EntryBeforeUpdateRevisionDescriptionEventHandler } from "webiny/api/cms/entry"`
+**Source:** `@webiny/api-headless-cms/features/contentEntry/UpdateRevisionDescription/events.ts`
 **Description:** Hook into entry lifecycle before an entry is updated.
 
 ---
@@ -844,6 +888,12 @@ Call .private() or .public() to get the appropriate typed builder.
 
 ---
 
+**Name:** `UpdateEntryDataFactory`
+**Import:** `import { UpdateEntryDataFactory } from "webiny/api/cms/entry"`
+**Source:** `@webiny/api-headless-cms/features/contentEntry/entryDataFactories/UpdateEntryDataFactory/abstractions.ts`
+
+---
+
 **Name:** `UpdateEntryUseCase`
 **Import:** `import { UpdateEntryUseCase } from "webiny/api/cms/entry"`
 **Source:** `@webiny/api-headless-cms/features/contentEntry/UpdateEntry/abstractions.ts`
@@ -862,6 +912,13 @@ Call .private() or .public() to get the appropriate typed builder.
 **Import:** `import { UpdateModelUseCase } from "webiny/api/cms/model"`
 **Source:** `@webiny/api-headless-cms/features/contentModel/UpdateModel/abstractions.ts`
 **Description:** Update a content model.
+
+---
+
+**Name:** `UpdateRevisionDescriptionUseCase`
+**Import:** `import { UpdateRevisionDescriptionUseCase } from "webiny/api/cms/entry"`
+**Source:** `@webiny/api-headless-cms/features/contentEntry/UpdateRevisionDescription/abstractions.ts`
+**Description:** Update a content revision description.
 
 ---
 
