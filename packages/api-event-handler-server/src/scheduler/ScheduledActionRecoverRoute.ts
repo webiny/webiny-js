@@ -13,8 +13,8 @@ import { GetRootTenantUseCase } from "@webiny/api-core/features/tenancy/GetRootT
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
 import type { Container } from "@webiny/feature/api";
-import { SchedulerInternalToken } from "./InternalToken.js";
-import { SchedulerSingleton } from "./SchedulerSingleton.js";
+import { SchedulerInternalToken } from "./abstractions/InternalToken.js";
+import { SchedulerSingleton } from "./abstractions/SchedulerSingleton.js";
 
 const INTERNAL_HEADER = "x-webiny-scheduler-token";
 

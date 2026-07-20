@@ -11,7 +11,7 @@ import {
 } from "@webiny/api-core/features/requestContext/index.js";
 import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/index.js";
 import type { Container } from "@webiny/feature/api";
-import { SchedulerInternalToken } from "./InternalToken.js";
+import { SchedulerInternalToken } from "./abstractions/InternalToken.js";
 
 /* Shared between the Bree singleton and this route to gate access. */
 const INTERNAL_HEADER = "x-webiny-scheduler-token";

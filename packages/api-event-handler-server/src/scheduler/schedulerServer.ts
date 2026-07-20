@@ -3,8 +3,8 @@ import { mdbid } from "@webiny/utils";
 import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 import { BreeSchedulerService } from "@webiny/api-scheduler-server";
 import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
-import { SchedulerInternalToken } from "./InternalToken.js";
-import { SchedulerSingleton } from "./SchedulerSingleton.js";
+import { SchedulerInternalToken } from "./abstractions/InternalToken.js";
+import { SchedulerSingleton } from "./abstractions/SchedulerSingleton.js";
 import { ScheduledActionRunRoute } from "./ScheduledActionRunRoute.js";
 import { ScheduledActionRecoverRoute } from "./ScheduledActionRecoverRoute.js";
 
