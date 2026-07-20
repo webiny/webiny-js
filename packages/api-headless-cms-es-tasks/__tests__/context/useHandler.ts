@@ -1,7 +1,6 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
-import { registerLegacyPluginsViaGqlContextualSchema } from "@webiny/handler-graphql";
 import { BackgroundTasksFeature, TaskService, TasksCrud } from "@webiny/background-tasks/api";
 import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
@@ -27,10 +26,10 @@ export const useHandler = <C extends Context = Context>(params: Params = {}) => 
             HeadlessCmsEsTasksFeature.register(container);
             container.registerInstance(TaskService, createMockTaskService());
 
-            // Any test-supplied plugins (still legacy).
-            registerLegacyPluginsViaGqlContextualSchema(container, [
-                ...[plugins].flat(Infinity as 1).filter(Boolean)
-            ]);
+            // DI-native plugins are plain `container => {}` functions; call them directly.
+            for (const plugin of [plugins].flat(Infinity as 1).filter(Boolean)) {
+                (plugin as (container: any) => void)(container);
+            }
         }
     });
 

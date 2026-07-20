@@ -1,10 +1,7 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import {
-    GraphQLEngineFeature,
-    registerLegacyPluginsViaGqlContextualSchema
-} from "@webiny/handler-graphql";
+import { GraphQLEngineFeature } from "@webiny/handler-graphql";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
@@ -112,17 +109,10 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
             }));
 
             container.registerInstance(TaskService, createMockTaskService());
-            const flat = [...(params?.plugins || [])].flat(Infinity as 1).filter(Boolean);
-            // DI-native plugins are plain `container => {}` functions; call them directly. Any
-            // remaining legacy plugins still go through the bridge until #39 removes it.
-            const isFn = (p: any) => typeof p === "function" && !p.prototype;
-            for (const plugin of flat.filter(isFn)) {
+            // DI-native plugins are plain `container => {}` functions; call them directly.
+            for (const plugin of [...(params?.plugins || [])].flat(Infinity as 1).filter(Boolean)) {
                 (plugin as (container: any) => void)(container);
             }
-            registerLegacyPluginsViaGqlContextualSchema(
-                container,
-                flat.filter(p => !isFn(p))
-            );
 
             GraphQLEngineFeature.register(container);
         }
