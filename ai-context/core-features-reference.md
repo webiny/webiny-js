@@ -631,6 +631,24 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 - **Interface Type:** See `packages/api-opensearch/src/features/OpenSearchIndex/abstractions/OpenSearchIndexRegistry.ts`
 - **Usage:** Registry that collects all `OpenSearchIndex` implementations via `{ multiple: true }` DI. Provides `getLastAdded()` (returns the last registered usable index) and `getAll()`. Registered as singleton by `OpenSearchIndexFeature`.
 
+### AwsOpenSearchClientFactoryFeature
+
+- **Import:** `import { AwsOpenSearchClientFactoryFeature } from "@webiny/api-opensearch-aws"`
+- **Interface Type:** See `packages/api-opensearch-aws/src/features/AwsOpenSearchClientFactory/feature.ts`
+- **Usage:** DI feature that replaces the base `OpenSearchClientFactory` with an AWS SigV4-signed variant. Register this feature in AWS deployments to transparently add SigV4 signing to all OpenSearch clients.
+
+### createAwsOpenSearchClient
+
+- **Import:** `import { createAwsOpenSearchClient } from "@webiny/api-opensearch-aws"`
+- **Interface Type:** See `packages/api-opensearch-aws/src/createAwsOpenSearchClient.ts`
+- **Usage:** Eagerly creates an AWS SigV4-signed OpenSearch client. Use for Lambda handlers that need a client immediately (e.g., event handlers). For DI-managed client creation, use `AwsOpenSearchClientFactoryFeature` instead.
+
+### CmsEntryOpenSearchUtilsFeature
+
+- **Import:** `import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchUtilsFeature.js"`
+- **Interface Type:** See `packages/api-headless-cms-utils-os/src/features/CmsEntryOpenSearchUtilsFeature.ts`
+- **Usage:** Composite feature that registers all CMS OpenSearch utilities (field indexing, filtering, body building, sorting, querying, value search, full-text search, index management). Register once to get the full CMS OpenSearch query infrastructure.
+
 ---
 
 ## Notes
