@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
+import { ReactComponent as ScheduledIcon } from "@webiny/icons/access_time.svg";
 import { Alert } from "@webiny/admin-ui";
 import { useContainer } from "@webiny/app";
 import { ContentEntryForm } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
@@ -58,7 +59,7 @@ const ScheduledActionAlertBar = observer(() => {
         scheduled.actionType === ScheduleActionType.unpublish ? "unpublish" : "publish";
 
     return (
-        <Alert type={"info"} variant={"subtle"} className={"mb-md"}>
+        <Alert type={"warning"} variant={"subtle"} icon={<ScheduledIcon />} className={"mb-md"}>
             {goLiveOn ? (
                 <>
                     This entry is scheduled to {actionLabel} on{" "}

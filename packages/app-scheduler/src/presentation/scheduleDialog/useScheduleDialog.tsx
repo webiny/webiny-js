@@ -4,6 +4,7 @@ import { useContainer } from "@webiny/app";
 import { useToast } from "@webiny/admin-ui";
 import { Alert, Button, Grid, DatePicker } from "@webiny/admin-ui";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
+import { ReactComponent as ScheduledIcon } from "@webiny/icons/access_time.svg";
 import { useDialogs } from "@webiny/app-admin";
 import { Bind, type BindComponentRenderProp } from "@webiny/form";
 import { validation } from "@webiny/validation";
@@ -51,7 +52,7 @@ const ReschedulingAlert = ({ scheduleOn, actionType }: IReschedulingAlertProps) 
     }
     const actionName = actionType === ScheduleActionType.publish ? "publish" : "unpublish";
     return (
-        <Alert type={"danger"}>
+        <Alert type={"warning"} variant={"subtle"} icon={<ScheduledIcon />}>
             <>
                 A {actionName} is already scheduled at
                 <br />
