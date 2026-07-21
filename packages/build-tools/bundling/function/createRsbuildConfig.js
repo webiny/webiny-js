@@ -60,7 +60,17 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                     // node_modules present, so we externalize knex and let Node load it — knex then
                     // lazily require()s ONLY the configured dialect's driver (e.g. better-sqlite3),
                     // never the others.
-                    /^knex(\/|$)/
+                    /^knex(\/|$)/,
+                    // These two server-flavour packages load a SIDECAR file at runtime via
+                    // `import.meta.url`: background-tasks-server spawns dist/worker/workerEntry.js
+                    // (worker_threads), and api-scheduler-server hands bree dist/jobs/pollWorker.js.
+                    // Bundling them freezes import.meta.url to a build-machine source path and never
+                    // emits those files into build/, so a shipped bundle can't find them. Like knex,
+                    // the server flavour runs as a Node process with node_modules present — externalize
+                    // them and let Node resolve them (and their sidecar files) from disk. Unused by the
+                    // AWS flavour, so this is a no-op there. See webiny-js#5429.
+                    /^@webiny\/background-tasks-server(\/|$)/,
+                    /^@webiny\/api-scheduler-server(\/|$)/
                 ],
                 plugins: [
                     // This is necessary to enable JSDOM usage in Lambda.
