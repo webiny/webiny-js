@@ -23,6 +23,19 @@ async function output(target, content) {
 }
 
 /**
+ * Preserve a manually-added `exclude` from an existing generated tsconfig. The generator rewrites
+ * these files from a fixed template, so without this any hand-added `exclude` (e.g. non-TS binaries
+ * under `src`) would be clobbered on every run.
+ */
+function readExistingExclude(target) {
+    try {
+        return JSON.parse(fs.readFileSync(target, "utf8")).exclude;
+    } catch {
+        return undefined;
+    }
+}
+
+/**
  * The key point: both tsconfig.json and tsconfig.build.json should reference source files during
  * development and build. TypeScript's project references handle building dependencies in the correct
  * order, so each package always compiles against the source of its dependencies, not their built
@@ -85,6 +98,9 @@ async function output(target, content) {
         const tsconfigJson = {
             extends: "../../tsconfig.json",
             include: ["src", "__tests__"],
+            ...(readExistingExclude(wpObject.tsConfigJsonPath) && {
+                exclude: readExistingExclude(wpObject.tsConfigJsonPath)
+            }),
             references: dependencies.map(dep => ({
                 path: `${getRelativePath(wpObject.packageFolder, dep.packageFolder)}`
             })),
@@ -114,6 +130,9 @@ async function output(target, content) {
         const tsconfigBuildJson = {
             extends: "../../tsconfig.build.json",
             include: ["src"],
+            ...(readExistingExclude(wpObject.tsConfigBuildJsonPath) && {
+                exclude: readExistingExclude(wpObject.tsConfigBuildJsonPath)
+            }),
             references: dependencies.map(dep => ({
                 path: `${getRelativePath(
                     wpObject.packageFolder,
