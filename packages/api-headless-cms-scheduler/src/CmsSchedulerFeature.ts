@@ -9,8 +9,7 @@ import { ScheduleUnpublishEntryUseCase } from "~/features/ScheduleUnpublishEntry
 export const CmsSchedulerFeature = createFeature({
     name: "CmsScheduler",
     register(container: Container) {
-        // Pure DI registration (was a request-time ContextPlugin bridged via
-        // registerLegacyPluginsViaGqlContextualSchema — none of it needs ctx/post-auth).
+        // Pure DI registration (was a request-time ContextPlugin — none of it needs ctx/post-auth).
         container.register(NamespaceHandler);
         container.register(PublishEntryActionHandler);
         container.register(UnpublishEntryActionHandler);
