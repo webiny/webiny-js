@@ -6,7 +6,10 @@ import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js"
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { InternalToken } from "~/domain/InternalToken.js";
 
-const DEFAULT_SERVER_PORT = 3000;
+// Matches findFreePort's search base in runApiServer (and the scheduler's self-callback default), so
+// every self-callback in the server flavour agrees on the same fallback. In practice never used:
+// runApiServer always injects the resolved port as process.env.PORT.
+const DEFAULT_SERVER_PORT = 3002;
 const DEFAULT_MAX_DURATION_MS = 86_400_000;
 
 interface WorkerHandle {

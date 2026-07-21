@@ -28,6 +28,10 @@ const consoleLogger: Logger.Interface = {
     log: (...args: any[]) => console.log(...args)
 };
 
+// Self-callback base. process.env.PORT is the resolved listening port injected by runApiServer;
+// the 3002 fallback matches findFreePort's search base (and the background-tasks default) so every
+// self-callback agrees, though in practice PORT is always set. A shared helper + fail-loud handling
+// is tracked in https://github.com/webiny/webiny-js/issues/5448.
 const serverBase = () => `http://localhost:${process.env.PORT || "3002"}`;
 
 /**
