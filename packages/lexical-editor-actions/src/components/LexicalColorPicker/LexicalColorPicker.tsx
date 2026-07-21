@@ -8,20 +8,15 @@ import { Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
 import { useRichTextEditor } from "@webiny/lexical-editor";
 
-const colorPickerClass = "relative flex flex-wrap justify-start w-[240px] p-[15px] bg-white";
+// Popover content: design-system tokens, compact swatches, ring-based selected state.
+const colorPickerClass = "flex flex-wrap gap-sm p-sm-extra w-[240px] bg-neutral-base";
 
-const colorBoxClass =
-    "cursor-pointer w-10 h-10 rounded-full m-[5px] border border-solid border-[color:var(--mdc-theme-on-background)] p-[3px] box-content";
+const swatchClass =
+    "flex items-center justify-center size-6 rounded-full cursor-pointer border border-neutral-dimmed transition-transform hover:scale-110";
 
-const selectedColorClass =
-    "shadow-[inset_0px_0px_0px_10px_var(--mdc-theme-secondary)] [&_button]:border-[5px] [&_button]:border-solid [&_button]:border-[color:var(--mdc-theme-surface)]";
+const swatchSelectedClass = "ring-2 ring-offset-2 ring-[color:var(--border-color-accent-default)]";
 
-const colorButtonClass =
-    "cursor-pointer w-10 h-10 flex items-center rounded-full border-transparent [transition:transform_0.1s,_border_0.2s] " +
-    "after:content-[''] after:absolute after:top-0 after:left-0 after:w-full after:h-full after:-z-10 after:opacity-0 after:[transition:opacity_0.5s_cubic-bezier(0.165,0.84,0.44,1)] " +
-    "hover:scale-110 hover:shadow-[0_0.25rem_0.125rem_0_rgba(0,0,0,0.05)] hover:after:opacity-100";
-
-const iconPaletteClass = "h-5 w-full mt-px text-[color:var(--mdc-theme-secondary)]";
+const iconPaletteClass = "size-4 text-neutral-strong";
 
 const chromePickerClass = "w-[270px]! m-[15px_-15px_-15px_-15px]";
 
@@ -98,53 +93,45 @@ export const LexicalColorPicker = ({
         <div className={colorPickerClass}>
             {themeColors.map(color => {
                 return (
-                    <div
+                    <Tooltip
                         key={color.id}
-                        className={
-                            color.id === value
-                                ? `${colorBoxClass} ${selectedColorClass}`
-                                : colorBoxClass
+                        content={<span>{color.label}</span>}
+                        side="bottom"
+                        trigger={
+                            <button
+                                className={
+                                    color.id === value
+                                        ? `${swatchClass} ${swatchSelectedClass}`
+                                        : swatchClass
+                                }
+                                style={{ backgroundColor: color.value }}
+                                onClick={() => {
+                                    onChangeComplete(color.value, color.id);
+                                }}
+                            />
                         }
-                    >
-                        <Tooltip
-                            content={<span>{color.label}</span>}
-                            side="bottom"
-                            trigger={
-                                <button
-                                    className={colorButtonClass}
-                                    style={{ backgroundColor: color.value }}
-                                    onClick={() => {
-                                        onChangeComplete(color.value, color.id);
-                                    }}
-                                />
-                            }
-                        />
-                    </div>
+                    />
                 );
             })}
 
             {allowCustomColor ? (
-                <div
-                    className={
-                        value && !isThemeColor
-                            ? `${colorBoxClass} ${selectedColorClass}`
-                            : colorBoxClass
+                <Tooltip
+                    content={<span>Color picker</span>}
+                    side="bottom"
+                    trigger={
+                        <button
+                            className={
+                                value && !isThemeColor
+                                    ? `${swatchClass} ${swatchSelectedClass}`
+                                    : swatchClass
+                            }
+                            style={{ backgroundColor: isThemeColor ? "#fff" : value }}
+                            onClick={togglePicker}
+                        >
+                            <IconPalette className={iconPaletteClass} />
+                        </button>
                     }
-                >
-                    <Tooltip
-                        content={<span>Color picker</span>}
-                        side="bottom"
-                        trigger={
-                            <button
-                                className={colorButtonClass}
-                                style={{ backgroundColor: isThemeColor ? "#fff" : value }}
-                                onClick={togglePicker}
-                            >
-                                <IconPalette className={iconPaletteClass} />
-                            </button>
-                        }
-                    />
-                </div>
+                />
             ) : null}
 
             <div style={showPicker ? showPickerStyle : hidePickerStyle}>

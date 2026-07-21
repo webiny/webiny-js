@@ -3,9 +3,10 @@
   position: relative;
   padding: 4px;
   vertical-align: middle;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color-neutral-dimmed);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
   will-change: transform;
-  background: #fff;
+  background: var(--color-neutral-base);
   flex-wrap: wrap;
   z-index: 1;
 }
@@ -14,7 +15,7 @@
   border: 0;
   display: flex;
   background: #fff;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 8px;
   cursor: pointer;
   vertical-align: middle;
@@ -31,8 +32,8 @@
 .static-toolbar button.popup-item i.format {
   background-size: contain;
   display: inline-block;
-  height: 18px;
-  width: 18px;
+  height: 16px;
+  width: 16px;
   margin-top: 2px;
   vertical-align: -0.25em;
   display: flex;
@@ -43,7 +44,7 @@
 }
 
 .static-toolbar button.popup-item.active {
-  background-color: rgba(223, 232, 250, 0.3);
+  background-color: var(--color-neutral-dimmed);
 }
 
 .static-toolbar button.popup-item.active i {
@@ -51,20 +52,20 @@
 }
 
 .static-toolbar .popup-item:hover:not([disabled]) {
-  background-color: #eee;
+  background-color: var(--color-neutral-light);
 }
 
 .static-toolbar select.popup-item {
   border: 0;
   display: flex;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 8px;
   vertical-align: middle;
   -webkit-appearance: none;
   -moz-appearance: none;
   width: 70px;
   font-size: 14px;
-  color: #777;
+  color: var(--text-color-neutral-strong);
   text-overflow: ellipsis;
 }
 
@@ -79,7 +80,7 @@
   width: 200px;
   vertical-align: middle;
   font-size: 14px;
-  color: #777;
+  color: var(--text-color-neutral-strong);
   text-overflow: ellipsis;
   width: 70px;
   overflow: hidden;
@@ -116,7 +117,7 @@
 
 .static-toolbar .divider {
   width: 1px;
-  background-color: #eee;
+  background-color: var(--border-color-neutral-dimmed);
   margin: 0 4px;
 }
 
@@ -132,14 +133,14 @@
 
 .static-toolbar .link-editor .button.active,
 .static-toolbar .button.active {
-  background-color: rgb(223, 232, 250);
+  background-color: var(--color-neutral-dimmed);
 }
 
 .static-toolbar button.toolbar-item {
   border: 0;
   display: flex;
   background: none;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 8px;
   cursor: pointer;
   vertical-align: middle;
@@ -159,8 +160,8 @@
 .static-toolbar button.toolbar-item i.format {
   background-size: contain;
   display: inline-block;
-  height: 18px;
-  width: 18px;
+  height: 16px;
+  width: 16px;
   vertical-align: -0.25em;
   display: flex;
   opacity: 0.6;
@@ -174,7 +175,7 @@
 }
 
 .static-toolbar button.toolbar-item.active {
-  background-color: rgba(223, 232, 250, 0.3);
+  background-color: var(--color-neutral-dimmed);
 }
 
 .static-toolbar button.toolbar-item.active i {
@@ -182,7 +183,7 @@
 }
 
 .static-toolbar .toolbar-item:hover:not([disabled]) {
-  background-color: #eee;
+  background-color: var(--color-neutral-light);
 }
 
 .static-toolbar .toolbar-item.font-family .text {
@@ -199,7 +200,7 @@
   line-height: 20px;
   vertical-align: middle;
   font-size: 14px;
-  color: #777;
+  color: var(--text-color-neutral-strong);
   text-overflow: ellipsis;
   overflow: hidden;
   height: 20px;
@@ -237,7 +238,7 @@
 
 .static-toolbar .divider {
   width: 1px;
-  background-color: #eee;
+  background-color: var(--border-color-neutral-dimmed);
   margin: 0 4px;
 }
 
@@ -246,7 +247,7 @@
 }
 
 .static-toolbar button.item.dropdown-item-active {
-  background-color: rgba(223, 232, 250, 0.3);
+  background-color: var(--color-neutral-dimmed);
 }
 
 .static-toolbar button.item.dropdown-item-active i {
@@ -342,12 +343,12 @@ i.font-color,
 
 .link-editor .button.active,
 .toolbar .button.active {
-  background-color: rgb(223, 232, 250);
+  background-color: var(--color-neutral-dimmed);
 }
 
 .toolbar .divider {
   width: 1px;
-  background-color: #eee;
+  background-color: var(--border-color-neutral-dimmed);
   margin: 0 4px;
 }
 
@@ -411,7 +412,7 @@ i.font-color,
 }
 
 .lexical-dropdown .item:hover {
-  background-color: #eee;
+  background-color: var(--color-neutral-light);
 }
 
 .lexical-dropdown .item .text {
@@ -435,7 +436,7 @@ i.font-color,
 
 .lexical-dropdown .divider {
   width: auto;
-  background-color: #eee;
+  background-color: var(--border-color-neutral-dimmed);
   margin: 4px 8px;
   height: 1px;
 }
@@ -457,7 +458,7 @@ button.item i {
 }
 
 button.item.dropdown-item-active {
-  background-color: rgba(223, 232, 250, 0.3);
+  background-color: var(--color-neutral-dimmed);
 }
 
 button.item.dropdown-item-active i {
