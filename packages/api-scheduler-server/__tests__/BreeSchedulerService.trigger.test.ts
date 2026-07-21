@@ -34,7 +34,7 @@ describe("BreeSchedulerService — trigger", () => {
         /* Wait for the bree job to fire. */
         await vi.waitFor(
             () => {
-                expect(onTrigger).toHaveBeenCalledWith("trigger-1", namespace);
+                expect(onTrigger).toHaveBeenCalledWith("trigger-1", namespace, tenant);
             },
             { timeout: 5_000, interval: 200 }
         );

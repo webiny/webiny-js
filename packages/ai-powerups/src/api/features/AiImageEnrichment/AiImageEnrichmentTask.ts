@@ -4,8 +4,8 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
+import { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsById/abstractions.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
-import { GetSettingsUseCase as FmGetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
@@ -38,7 +38,7 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
 
     constructor(
         private getFile: GetFileUseCase.Interface,
-        private fmSettings: FmGetSettingsUseCase.Interface,
+        private getFileContents: GetFileContentsByIdUseCase.Interface,
         private updateFile: UpdateFileUseCase.Interface,
         private ai: Ai.Interface,
         private getSettings: GetSettingsUseCase.Interface,
@@ -70,9 +70,18 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
             return controller.response.done("File is not an image; skipping AI enrichment.");
         }
 
-        const settingsResult = await this.fmSettings.execute();
-        const srcPrefix = settingsResult.isOk() ? (settingsResult.value.srcPrefix ?? "") : "";
-        const imageUrl = `${srcPrefix}${file.key}`;
+        // Read the image bytes and send them to the AI as base64, NOT a URL. A URL forces the
+        // provider to fetch the file — which fails for private/access-controlled files, leaks the
+        // domain, and can't reach a non-public origin (e.g. local dev). base64 is a portable standard
+        // that works on every setup. (Also resolves the AI-SDK "image part" deprecation.)
+        const contentsResult = await this.getFileContents.execute(input.fileId);
+        if (contentsResult.isFail()) {
+            return controller.response.error({
+                message: `Unable to read file contents: ${contentsResult.error.message}`
+            });
+        }
+        const imageBase64 = contentsResult.value.buffer.toString("base64");
+        const imageMediaType = contentsResult.value.contentType;
 
         const aiSettingsResult = await this.getSettings.execute();
 
@@ -107,8 +116,9 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
                         role: "user",
                         content: [
                             {
-                                type: "image",
-                                image: new URL(imageUrl)
+                                type: "file",
+                                data: imageBase64,
+                                mediaType: imageMediaType
                             },
                             {
                                 type: "text",
@@ -163,7 +173,7 @@ export const AiImageEnrichmentTask = TaskDefinition.createImplementation({
     implementation: AiImageEnrichmentTaskImpl,
     dependencies: [
         GetFileUseCase,
-        FmGetSettingsUseCase,
+        GetFileContentsByIdUseCase,
         UpdateFileUseCase,
         Ai,
         GetSettingsUseCase,

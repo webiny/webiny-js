@@ -1,7 +1,5 @@
 import type { SyntheticEvent } from "react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import styled from "@emotion/styled";
-import { css } from "@emotion/css";
 import type { ColorResult, RGBColor } from "react-color";
 import { ChromePicker } from "react-color";
 import { Tooltip } from "@webiny/admin-ui";
@@ -10,105 +8,22 @@ import { Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
 import { useRichTextEditor } from "@webiny/lexical-editor";
 
-const ColorPickerStyle = styled("div")({
-    position: "relative",
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
-    width: 240,
-    padding: 15,
-    backgroundColor: "#fff"
-});
+const colorPickerClass = "relative flex flex-wrap justify-start w-[240px] p-[15px] bg-white";
 
-const ColorBox = styled("div")({
-    cursor: "pointer",
-    width: 40,
-    height: 40,
-    borderRadius: "50%",
-    margin: 5,
-    border: "1px solid var(--mdc-theme-on-background)",
-    padding: 3,
-    boxSizing: "content-box"
-});
+const colorBoxClass =
+    "cursor-pointer w-10 h-10 rounded-full m-[5px] border border-solid border-[color:var(--mdc-theme-on-background)] p-[3px] box-content";
 
-const Color = styled("button")({
-    cursor: "pointer",
-    width: 40,
-    height: 40,
-    transition: "transform 0.1s, border 0.2s",
-    borderColor: "transparent",
-    display: "flex",
-    alignItems: "center",
-    borderRadius: "50%",
-    "&::after": {
-        transition: "opacity 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)",
-        content: '""',
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        zIndex: -1,
-        opacity: 0
-    },
-    "&:hover": {
-        transform: "scale(1.1)",
-        boxShadow: "0 0.25rem 0.125rem 0 rgba(0,0,0,0.05)",
-        "&::after": {
-            opacity: 1
-        }
-    }
-});
+const selectedColorClass =
+    "shadow-[inset_0px_0px_0px_10px_var(--mdc-theme-secondary)] [&_button]:border-[5px] [&_button]:border-solid [&_button]:border-[color:var(--mdc-theme-surface)]";
 
-const iconPaletteStyle = css({
-    height: 20,
-    width: "100%",
-    marginTop: 1,
-    color: "var(--mdc-theme-secondary)"
-});
+const colorButtonClass =
+    "cursor-pointer w-10 h-10 flex items-center rounded-full border-transparent [transition:transform_0.1s,_border_0.2s] " +
+    "after:content-[''] after:absolute after:top-0 after:left-0 after:w-full after:h-full after:-z-10 after:opacity-0 after:[transition:opacity_0.5s_cubic-bezier(0.165,0.84,0.44,1)] " +
+    "hover:scale-110 hover:shadow-[0_0.25rem_0.125rem_0_rgba(0,0,0,0.05)] hover:after:opacity-100";
 
-const COLORS = {
-    lightGray: "hsla(0, 0%, 97%, 1)",
-    gray: "hsla(300, 2%, 92%, 1)",
-    darkGray: "hsla(0, 0%, 70%, 1)",
-    darkestGray: "hsla(0, 0%, 20%, 1)",
-    black: "hsla(208, 100%, 5%, 1)"
-};
+const iconPaletteClass = "h-5 w-full mt-px text-[color:var(--mdc-theme-secondary)]";
 
-const styles = {
-    selectedColor: css({
-        boxShadow: "inset 0px 0px 0px 10px var(--mdc-theme-secondary)",
-        button: {
-            border: "5px solid var(--mdc-theme-surface)"
-        }
-    }),
-    button: css({
-        cursor: "pointer",
-        height: 30,
-        boxSizing: "border-box",
-        "&:hover:not(:disabled)": { backgroundColor: COLORS.gray },
-        "&:focus:not(:disabled)": {
-            outline: "none"
-        },
-        "&:disabled": {
-            opacity: 0.5,
-            cursor: "not-allowed"
-        },
-        "& svg": {
-            width: 16,
-            height: 16
-        }
-    }),
-    color: css({
-        width: "40px",
-        height: "100%"
-    })
-};
-
-const chromePickerStyle = css({
-    width: "270px !important",
-    margin: "15px -15px -15px -15px"
-});
+const chromePickerClass = "w-[270px]! m-[15px_-15px_-15px_-15px]";
 
 interface LexicalColorPickerProps {
     value: string;
@@ -180,18 +95,23 @@ export const LexicalColorPicker = ({
     }, [themeColors, value]);
 
     return (
-        <ColorPickerStyle>
+        <div className={colorPickerClass}>
             {themeColors.map(color => {
                 return (
-                    <ColorBox
+                    <div
                         key={color.id}
-                        className={color.id === value ? styles.selectedColor : ""}
+                        className={
+                            color.id === value
+                                ? `${colorBoxClass} ${selectedColorClass}`
+                                : colorBoxClass
+                        }
                     >
                         <Tooltip
                             content={<span>{color.label}</span>}
                             side="bottom"
                             trigger={
-                                <Color
+                                <button
+                                    className={colorButtonClass}
                                     style={{ backgroundColor: color.value }}
                                     onClick={() => {
                                         onChangeComplete(color.value, color.id);
@@ -199,36 +119,43 @@ export const LexicalColorPicker = ({
                                 />
                             }
                         />
-                    </ColorBox>
+                    </div>
                 );
             })}
 
             {allowCustomColor ? (
-                <ColorBox className={value && !isThemeColor ? styles.selectedColor : ""}>
+                <div
+                    className={
+                        value && !isThemeColor
+                            ? `${colorBoxClass} ${selectedColorClass}`
+                            : colorBoxClass
+                    }
+                >
                     <Tooltip
                         content={<span>Color picker</span>}
                         side="bottom"
                         trigger={
-                            <Color
+                            <button
+                                className={colorButtonClass}
                                 style={{ backgroundColor: isThemeColor ? "#fff" : value }}
                                 onClick={togglePicker}
                             >
-                                <IconPalette className={iconPaletteStyle} />
-                            </Color>
+                                <IconPalette className={iconPaletteClass} />
+                            </button>
                         }
                     />
-                </ColorBox>
+                </div>
             ) : null}
 
             <div style={showPicker ? showPickerStyle : hidePickerStyle}>
                 <ChromePicker
-                    className={chromePickerStyle}
+                    className={chromePickerClass}
                     color={actualSelectedColor}
                     disableAlpha={true}
                     onChange={onColorChange}
                     onChangeComplete={onColorChangeComplete}
                 />
             </div>
-        </ColorPickerStyle>
+        </div>
     );
 };

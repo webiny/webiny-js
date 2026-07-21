@@ -2,12 +2,11 @@ import React, { Fragment, useEffect, useRef, useCallback, useState } from "react
 import { ApolloLink } from "apollo-link";
 import { setContext } from "apollo-link-context";
 import loadScript from "load-script";
-import { Global } from "@emotion/react";
 import { plugins } from "@webiny/plugins";
 import { useIdentity } from "@webiny/app-admin";
 import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 import { OverlayLoader } from "@webiny/admin-ui";
-import { playgroundDialog, PlaygroundContainer } from "./Playground.styles.js";
+import { PLAYGROUND_CONTAINER_ID, playgroundStyles } from "./Playground.styles.js";
 import { settings } from "./settings.js";
 import { config as appConfig } from "@webiny/app/config.js";
 import type ApolloClient from "apollo-client";
@@ -106,7 +105,7 @@ const Playground = ({ createApolloClient }: PlaygroundProps) => {
     useEffect(() => {
         if (!loading) {
             // @ts-expect-error
-            window.GraphQLPlayground.init(document.getElementById("graphql-playground"), {
+            window.GraphQLPlayground.init(document.getElementById(PLAYGROUND_CONTAINER_ID), {
                 tabs,
                 createApolloLink,
                 settings
@@ -119,9 +118,9 @@ const Playground = ({ createApolloClient }: PlaygroundProps) => {
             {loading ? (
                 <OverlayLoader text={"Loading playground..."} />
             ) : (
-                <PlaygroundContainer id={"graphql-playground"} />
+                <div id={PLAYGROUND_CONTAINER_ID} />
             )}
-            <Global styles={playgroundDialog} />
+            <style>{playgroundStyles}</style>
         </Fragment>
     );
 };

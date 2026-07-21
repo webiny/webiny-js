@@ -30,6 +30,13 @@ export const ServerExtensions = () => {
             <Admin.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
             <Infra.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
 
+            {/* NOT required — shown here for visibility/demo only. By default the admin derives the
+                WebSocket URL from the API URL (same origin, http -> ws), which is what the server
+                flavour needs. Set this only when WebSockets are served from a different origin. */}
+            <Admin.WebsocketsUrl
+                url={process.env.WEBINY_ADMIN_WS_API_URL || "ws://localhost:3002"}
+            />
+
             {/* Auth: built-in self-hosted IdP (login screen + JWT). Back the secret with any env var. */}
             <SelfHostedAuth
                 signingSecret={

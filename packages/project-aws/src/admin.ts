@@ -1,7 +1,13 @@
-import { AdminExtension, AdminBuildParam, AdminApiUrl } from "@webiny/project/extensions/index.js";
+import {
+    AdminExtension,
+    AdminBuildParam,
+    AdminApiUrl,
+    AdminWebsocketsUrl
+} from "@webiny/project/extensions/index.js";
 
 export const Admin = {
     Extension: AdminExtension,
     BuildParam: AdminBuildParam,
-    ApiUrl: AdminApiUrl
+    ApiUrl: AdminApiUrl,
+    WebsocketsUrl: AdminWebsocketsUrl
 };

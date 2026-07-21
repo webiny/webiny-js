@@ -16,6 +16,22 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
             host: params.host,
             headers: params.headers
         });
+
+        // Save the connection to the shared registry. This is what lets the server later push a
+        // message to a specific user — e.g. when a background task finishes and calls
+        // SendToIdentity. That flow looks connections up in the registry by identity id to get their
+        // connection ids, then comes back here to fetch each live socket by connection id and send.
+        // The in-memory map above only answers "socket for this connection id?" — it can't be
+        // searched by identity, so without this registry row a targeted send finds nobody. The
+        // registry stores `connectedOn` as an ISO string (it compares connections against a recency
+        // cutoff), so we convert the epoch-ms `connectedAt`.
+        await this.registry.register({
+            connectionId: params.connectionId,
+            identity: params.identity,
+            tenant: params.tenant,
+            endpoint: params.endpoint,
+            connectedOn: new Date(params.connectedAt).toISOString()
+        });
     }
 
     public async remove(connectionId: string): Promise<void> {
