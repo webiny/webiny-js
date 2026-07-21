@@ -8,6 +8,8 @@ interface NamespaceState {
     status: NamespaceStatus;
     // targetId -> scheduled action
     actions: Map<string, SchedulerEntry>;
+    // The mutation-signal version this data was fetched at (see schedulerMutationSignal).
+    version: number;
 }
 
 const PAGE_SIZE = 100;
@@ -18,6 +20,9 @@ const PAGE_SIZE = 100;
  * The entries-list "Live" column cell reads from this store so that rendering the whole list costs
  * a single `listScheduledActions` query per model instead of one `getTargetScheduledAction` query
  * per row. The map is observable, so cells re-render once the data resolves.
+ *
+ * `load()` takes a `version`: cells pass the current `schedulerMutationSignal` version, so a
+ * schedule/cancel (which bumps the signal) triggers exactly one refetch shared by all rows.
  */
 class ScheduledActionsStore {
     // Shallow map: each namespace value is replaced wholesale on status change, so entry-level
@@ -25,6 +30,7 @@ class ScheduledActionsStore {
     private readonly namespaces = observable.map<string, NamespaceState>(undefined, {
         deep: false
     });
+    // Keyed by `namespace@version` so a refetch at a newer version isn't deduped against the old one.
     private readonly inflight = new Map<string, Promise<void>>();
 
     getAction(namespace: string, targetId: string): SchedulerEntry | undefined {
@@ -32,42 +38,40 @@ class ScheduledActionsStore {
     }
 
     /**
-     * Loads and caches all scheduled actions for a namespace. No-op if already loaded, and
-     * concurrent calls for the same namespace share a single in-flight request.
+     * Loads and caches all scheduled actions for a namespace at the given signal version. No-op if
+     * already loaded at that (or a newer) version; a newer version forces a refetch. Concurrent
+     * calls for the same namespace+version share a single in-flight request.
      */
-    load(gateway: ListScheduledActionsGateway.Interface, namespace: string): Promise<void> {
-        if (this.namespaces.get(namespace)?.status === "loaded") {
+    load(
+        gateway: ListScheduledActionsGateway.Interface,
+        namespace: string,
+        version = 0
+    ): Promise<void> {
+        const state = this.namespaces.get(namespace);
+        if (state && state.status === "loaded" && state.version >= version) {
             return Promise.resolve();
         }
-        const existing = this.inflight.get(namespace);
+        const key = `${namespace}@${version}`;
+        const existing = this.inflight.get(key);
         if (existing) {
             return existing;
         }
-        const promise = this.fetchAll(gateway, namespace).finally(() => {
-            this.inflight.delete(namespace);
+        const promise = this.fetchAll(gateway, namespace, version).finally(() => {
+            this.inflight.delete(key);
         });
-        this.inflight.set(namespace, promise);
+        this.inflight.set(key, promise);
         return promise;
-    }
-
-    /**
-     * Drops the cache for a namespace and refetches. Call after a schedule/cancel mutation to
-     * surface the change without a full page reload.
-     */
-    reload(gateway: ListScheduledActionsGateway.Interface, namespace: string): Promise<void> {
-        this.inflight.delete(namespace);
-        runInAction(() => {
-            this.namespaces.delete(namespace);
-        });
-        return this.load(gateway, namespace);
     }
 
     private async fetchAll(
         gateway: ListScheduledActionsGateway.Interface,
-        namespace: string
+        namespace: string,
+        version: number
     ): Promise<void> {
+        // Keep any previously loaded actions visible while refetching to avoid a flicker to empty.
+        const previous = this.namespaces.get(namespace)?.actions ?? new Map();
         runInAction(() => {
-            this.namespaces.set(namespace, { status: "loading", actions: new Map() });
+            this.namespaces.set(namespace, { status: "loading", actions: previous, version });
         });
 
         try {
@@ -92,12 +96,12 @@ class ScheduledActionsStore {
             } while (after);
 
             runInAction(() => {
-                this.namespaces.set(namespace, { status: "loaded", actions });
+                this.namespaces.set(namespace, { status: "loaded", actions, version });
             });
         } catch (error) {
             console.error(error);
             runInAction(() => {
-                this.namespaces.set(namespace, { status: "error", actions: new Map() });
+                this.namespaces.set(namespace, { status: "error", actions: previous, version });
             });
         }
     }

@@ -154,12 +154,17 @@ interface OnCancelCallable {
 export interface IUseScheduleDialogProps {
     namespace: string;
     target: IShowDialogParamsEntry;
+    /**
+     * Called after a scheduled action is successfully created/updated or cancelled. Use it to
+     * refresh anything that displays the scheduled state (e.g. list cells, form banners).
+     */
+    onCompleted?: () => void;
 }
 
 export const useScheduleDialog = (
     props: IUseScheduleDialogProps
 ): UseShowScheduleDialogResponse => {
-    const { target, namespace } = props;
+    const { target, namespace, onCompleted } = props;
     const container = useContainer();
     const dialog = useDialogs();
     const toast = useToast();
@@ -186,6 +191,7 @@ export const useScheduleDialog = (
                 toast.showSuccessToast({
                     title: `Scheduled ${actionType} action for "${target.title}"!`
                 });
+                onCompleted?.();
             } catch (error) {
                 toast.showWarningToast({ title: error.message });
                 console.error(error);
@@ -218,6 +224,7 @@ export const useScheduleDialog = (
             toast.showSuccessToast({
                 title: `Canceled scheduled ${entry.actionType} on "${entry.title}"!`
             });
+            onCompleted?.();
         } catch (error) {
             toast.showWarningToast({ title: error.message });
         }

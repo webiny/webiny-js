@@ -7,6 +7,7 @@ import { useEntry } from "@webiny/app-headless-cms";
 import { useModel } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { usePermissions } from "~/hooks/usePermissions.js";
 import { createNamespace } from "~/utils/index.js";
+import { schedulerMutationSignal } from "../schedulerMutationSignal.js";
 
 export const MenuItem = observer(() => {
     const { model } = useModel();
@@ -20,7 +21,8 @@ export const MenuItem = observer(() => {
             id: entry.id,
             title: entry.meta.title,
             status: entry.meta.status
-        }
+        },
+        onCompleted: () => schedulerMutationSignal.bump()
     });
 
     const { OptionsMenuItem } = ContentEntryListConfig.Browser.Entry.Action;

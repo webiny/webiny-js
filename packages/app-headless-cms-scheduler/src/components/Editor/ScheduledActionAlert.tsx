@@ -9,6 +9,7 @@ import { GetScheduledActionGateway } from "@webiny/app-scheduler/features/getSch
 import { ScheduleActionType } from "@webiny/app-scheduler/types.js";
 import type { SchedulerEntry } from "@webiny/app-scheduler/types.js";
 import { createNamespace, formatScheduledDate } from "~/utils/index.js";
+import { schedulerMutationSignal } from "../schedulerMutationSignal.js";
 
 /**
  * Info alert shown above the content entry form when the entry has a scheduled publish/unpublish.
@@ -22,6 +23,8 @@ const ScheduledActionAlertBar = observer(() => {
     const vm = presenter.vm;
     const entryId = vm.entry?.id;
     const modelId = vm.model?.modelId;
+    // Refetch whenever a schedule/cancel bumps the signal (e.g. scheduling from this editor).
+    const version = schedulerMutationSignal.version;
 
     useEffect(() => {
         if (!entryId || !modelId) {
@@ -48,7 +51,7 @@ const ScheduledActionAlertBar = observer(() => {
         return () => {
             cancelled = true;
         };
-    }, [container, entryId, modelId]);
+    }, [container, entryId, modelId, version]);
 
     if (!scheduled) {
         return null;

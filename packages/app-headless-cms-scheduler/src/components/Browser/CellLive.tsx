@@ -7,14 +7,36 @@ import { useModel } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { ContentEntryListConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
 import { ListScheduledActionsGateway } from "@webiny/app-scheduler/features/listScheduledActions/abstractions.js";
 import { ScheduleActionType } from "@webiny/app-scheduler/types.js";
+import type { SchedulerEntry } from "@webiny/app-scheduler/types.js";
 import { createNamespace, formatScheduledDate } from "~/utils/index.js";
 import { scheduledActionsStore } from "./ScheduledActionsStore.js";
+import { schedulerMutationSignal } from "../schedulerMutationSignal.js";
+
+const scheduledTooltip = (scheduled: SchedulerEntry): string => {
+    const goLiveOn = scheduled.publishOn || scheduled.unpublishOn;
+    const actionLabel =
+        scheduled.actionType === ScheduleActionType.unpublish ? "unpublish" : "publish";
+    return goLiveOn
+        ? `Scheduled to ${actionLabel} on ${formatScheduledDate(goLiveOn)}`
+        : `Scheduled to ${actionLabel}`;
+};
+
+const ScheduledTag = ({ scheduled }: { scheduled: SchedulerEntry }) => (
+    <Tooltip
+        content={scheduledTooltip(scheduled)}
+        trigger={<Tag variant={"warning"} icon={<ScheduledIcon />} content={"Scheduled"} />}
+    />
+);
+
+const LiveTag = ({ version }: { version: number }) => (
+    <Tag swatchColor={"#5AC84C"} variant={"success-light"} content={`Live (v${version})`} />
+);
 
 /**
  * Overrides the CMS "Live" column cell to surface scheduled publish/unpublish actions.
  *
- * When the entry has a scheduled action it renders a "Scheduled" tag with a tooltip stating the
- * action and go-live time; otherwise it falls back to the default "Live (vN)" / "No" rendering.
+ * An entry can be live AND have a scheduled action (e.g. a new revision scheduled to publish), so
+ * both are shown when both apply. Otherwise it falls back to the default "Live (vN)" / "No".
  */
 export const CellLive = observer(() => {
     const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
@@ -23,11 +45,13 @@ export const CellLive = observer(() => {
     const container = useContainer();
 
     const namespace = createNamespace(model);
+    // Refetch whenever a schedule/cancel bumps the signal.
+    const version = schedulerMutationSignal.version;
 
     useEffect(() => {
         const gateway = container.resolve(ListScheduledActionsGateway);
-        scheduledActionsStore.load(gateway, namespace);
-    }, [container, namespace]);
+        scheduledActionsStore.load(gateway, namespace, version);
+    }, [container, namespace, version]);
 
     if (isFolderRow(row)) {
         return <>{"-"}</>;
@@ -35,32 +59,25 @@ export const CellLive = observer(() => {
 
     const entry = row.data;
     const scheduled = scheduledActionsStore.getAction(namespace, entry.id);
+    const liveVersion = entry.live?.version;
 
-    if (scheduled) {
-        const goLiveOn = scheduled.publishOn || scheduled.unpublishOn;
-        const actionLabel =
-            scheduled.actionType === ScheduleActionType.unpublish ? "unpublish" : "publish";
-        const tooltip = goLiveOn
-            ? `Scheduled to ${actionLabel} on ${formatScheduledDate(goLiveOn)}`
-            : `Scheduled to ${actionLabel}`;
-
+    // Live now AND a change scheduled — show both.
+    if (liveVersion && scheduled) {
         return (
-            <Tooltip
-                content={tooltip}
-                trigger={<Tag variant={"warning"} icon={<ScheduledIcon />} content={"Scheduled"} />}
-            />
+            <div className={"flex items-center gap-xs"}>
+                <LiveTag version={liveVersion} />
+                <ScheduledTag scheduled={scheduled} />
+            </div>
         );
     }
 
-    if (!entry.live?.version) {
+    if (scheduled) {
+        return <ScheduledTag scheduled={scheduled} />;
+    }
+
+    if (!liveVersion) {
         return <>No</>;
     }
 
-    return (
-        <Tag
-            swatchColor={"#5AC84C"}
-            variant={"success-light"}
-            content={`Live (v${entry.live.version})`}
-        />
-    );
+    return <LiveTag version={liveVersion} />;
 });
