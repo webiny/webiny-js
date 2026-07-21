@@ -44,4 +44,31 @@ describe("normalizeImageOptions", () => {
         expect(options.quality).toBeUndefined();
         expect(options.format).toBeUndefined();
     });
+
+    it("parses a valid crop into normalized edge insets", () => {
+        expect(normalize({ crop: "0.1,0.2,0.1,0.05" }).crop).toEqual({
+            top: 0.1,
+            left: 0.2,
+            bottom: 0.1,
+            right: 0.05
+        });
+    });
+
+    it("clamps out-of-range crop values to 0..1", () => {
+        // Negatives clamp to 0; the result must still be a valid (non-collapsing) crop.
+        expect(normalize({ crop: "-0.5,-0.2,0.1,0.05" }).crop).toEqual({
+            top: 0,
+            left: 0,
+            bottom: 0.1,
+            right: 0.05
+        });
+    });
+
+    it("drops a full, malformed, or collapsing crop (and the stray string)", () => {
+        expect(normalize({ crop: "0,0,0,0" }).crop).toBeUndefined();
+        expect(normalize({ crop: "0.1,0.2" }).crop).toBeUndefined();
+        expect(normalize({ crop: "a,b,c,d" }).crop).toBeUndefined();
+        expect(normalize({ crop: "0.6,0,0.6,0" }).crop).toBeUndefined();
+        expect(normalize({}).crop).toBeUndefined();
+    });
 });

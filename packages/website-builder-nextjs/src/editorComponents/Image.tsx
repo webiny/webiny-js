@@ -1,11 +1,17 @@
 import React from "react";
+import NextImage from "next/image";
 import type {
     ComponentProps,
     CssProperties,
     WebinyAsset,
     WebinyImageValue
 } from "@webiny/website-builder-react";
-import { WebinyImage } from "@webiny/website-builder-react";
+import {
+    getWebinyAssetUrl,
+    getWebinyImageDimensions,
+    getWebinyImageSrcSet,
+    normalizeToAsset
+} from "@webiny/website-builder-react";
 
 type ImageProps = ComponentProps<{
     title: string;
@@ -17,35 +23,66 @@ type ImageProps = ComponentProps<{
 
 export const ImageComponent = (props: ImageProps) => {
     const { title = "", altText, image, highPriority } = props.inputs;
+    const asset = normalizeToAsset(image);
 
-    if (!image?.src) {
+    if (!asset?.src) {
         return <ImagePlaceholder style={props.styles} />;
     }
 
-    // Explicit alt input wins; otherwise `WebinyImage` falls back to the image's
-    // stored alt (resolved from either value shape).
-    const alt = altText || undefined;
+    const alt = altText || asset.image?.alt || "";
 
-    // SVGs are vector — there's no raster crop/focal point to apply.
-    if (image.src.endsWith(".svg")) {
+    // SVGs are vector — nothing to crop, resize, or re-encode.
+    if (asset.src.endsWith(".svg")) {
         return (
-            <object style={{ maxWidth: "100%", ...props.styles }} title={title} data={image.src} />
+            <object style={{ maxWidth: "100%", ...props.styles }} title={title} data={asset.src} />
         );
     }
 
-    // Renders honoring the crop + hotspot (pure CSS), at the crop's own aspect
-    // ratio. The Webiny asset delivery resizes (width) and serves a modern format
-    // negotiated from the request's Accept header (format=auto -> AVIF/WebP),
-    // driving a responsive srcSet.
+    // The delivery bakes the per-usage crop (`?crop`), resizes (`?width`), and serves
+    // a modern format negotiated from Accept (`?format=auto`). We hand `next/image` a
+    // loader that builds that URL, and it drives the responsive `srcSet`.
+    const loader = ({ width }: { width: number }) =>
+        getWebinyAssetUrl(asset, { width, format: "auto" });
+
+    // Intrinsic size of the *delivered* (cropped) image, so next/image lays out at
+    // the correct aspect ratio. Falls back to a plain <img> when dimensions are
+    // unknown (next/image requires width + height unless `fill`).
+    const { width, height } = getWebinyImageDimensions(asset);
+
+    const style: CssProperties = { maxWidth: "100%", height: "auto", ...props.styles };
+
+    if (!width || !height) {
+        // No intrinsic size to lay out with — fall back to a plain <img>, still
+        // responsive via the SDK's framework-agnostic srcSet (crop/format baked in).
+        const { src, srcSet } = getWebinyImageSrcSet(asset, {
+            format: "auto",
+            cssWidth: props.styles?.width
+        });
+        // eslint-disable-next-line @next/next/no-img-element
+        return (
+            <img
+                src={src}
+                srcSet={srcSet}
+                sizes="100vw"
+                alt={alt}
+                title={title || undefined}
+                loading={highPriority ? "eager" : "lazy"}
+                style={style}
+            />
+        );
+    }
+
     return (
-        <WebinyImage
-            image={image}
+        <NextImage
+            src={asset.src}
+            loader={loader}
             alt={alt}
-            title={title}
-            style={props.styles}
+            title={title || undefined}
+            width={width}
+            height={height}
             sizes={"100vw"}
-            loading={highPriority ? "eager" : "lazy"}
-            loader={({ src, width }) => `${src}?width=${width}&format=auto`}
+            priority={highPriority}
+            style={style}
         />
     );
 };

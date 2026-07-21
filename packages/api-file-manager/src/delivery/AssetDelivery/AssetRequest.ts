@@ -8,6 +8,23 @@ export interface AssetRequestOptions {
     quality?: number;
     /** Concrete output format (already resolved from any "auto" request). */
     format?: ImageFormat;
+    /**
+     * Per-request crop (normalized 0–1 edge insets). When present it is baked into
+     * the delivered image, superseding the file's asset-level crop — so a per-usage
+     * crop can produce its own server-cropped, cacheable URL. Parsed from `?crop=`.
+     */
+    crop?: { top: number; left: number; bottom: number; right: number };
+    /**
+     * Target aspect ratio (`width / height`). The delivery frames the largest region
+     * of that ratio inside the crop, centered on the focal point. Parsed from
+     * `?aspectRatio=` (accepts `16:9` or a decimal).
+     */
+    aspectRatio?: number;
+    /**
+     * Normalized 0–1 focal point kept in frame when `aspectRatio` forces extra
+     * cutting. Parsed from `?focal=x,y`.
+     */
+    focal?: { x: number; y: number };
 }
 
 export type AssetRequestContext<T extends GenericRecord = GenericRecord> = T & {
