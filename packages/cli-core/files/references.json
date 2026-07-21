@@ -151,12 +151,10 @@
         "/packages/app-audit-logs/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-website-builder/package.json",
-        "/packages/lexical-editor-actions/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-audit-logs/package.json",
         "/packages/app-headless-cms/package.json",
-        "/packages/app-website-builder/package.json",
-        "/packages/lexical-editor-actions/package.json"
+        "/packages/app-website-builder/package.json"
       ]
     },
     {
@@ -165,14 +163,12 @@
       "files": [
         "/packages/app-admin/package.json",
         "/packages/app-audit-logs/package.json",
-        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-scheduler/package.json",
         "/packages/app-serverless-cms/package.json",
         "/packages/app-website-builder/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-audit-logs/package.json",
-        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-scheduler/package.json",
         "/packages/app-serverless-cms/package.json",
@@ -183,22 +179,16 @@
       "name": "@emotion/styled",
       "version": "11.14.1",
       "files": [
-        "/packages/app/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-audit-logs/package.json",
-        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-scheduler/package.json",
         "/packages/app-website-builder/package.json",
-        "/packages/lexical-editor-actions/package.json",
-        "/packages/app/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-audit-logs/package.json",
-        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-scheduler/package.json",
-        "/packages/app-website-builder/package.json",
-        "/packages/lexical-editor-actions/package.json"
+        "/packages/app-website-builder/package.json"
       ]
     },
     {
@@ -6664,24 +6654,6 @@
       ]
     },
     {
-      "name": "@emotion/styled",
-      "versions": [
-        {
-          "version": "11.14.1",
-          "files": [
-            { "file": "/packages/app/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-audit-logs/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-scheduler/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-website-builder/package.json", "types": ["dependencies"] },
-            { "file": "/packages/lexical-editor-actions/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
       "name": "apollo-cache",
       "versions": [
         {
@@ -6855,8 +6827,7 @@
             { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-audit-logs/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-website-builder/package.json", "types": ["dependencies"] },
-            { "file": "/packages/lexical-editor-actions/package.json", "types": ["dependencies"] }
+            { "file": "/packages/app-website-builder/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -6869,7 +6840,6 @@
           "files": [
             { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-audit-logs/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-scheduler/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-serverless-cms/package.json", "types": ["dependencies"] },
@@ -6878,6 +6848,21 @@
               "file": "/packages/react-rich-text-lexical-renderer/package.json",
               "types": ["devDependencies"]
             }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "@emotion/styled",
+      "versions": [
+        {
+          "version": "11.14.1",
+          "files": [
+            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
+            { "file": "/packages/app-audit-logs/package.json", "types": ["dependencies"] },
+            { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] },
+            { "file": "/packages/app-scheduler/package.json", "types": ["dependencies"] },
+            { "file": "/packages/app-website-builder/package.json", "types": ["dependencies"] }
           ]
         }
       ]
