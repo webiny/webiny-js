@@ -3,7 +3,8 @@ import {
     EditorConfig,
     BrowserConfig,
     ScheduledActionAlertDecorator,
-    PublishScheduleNoticeDecorator
+    PublishScheduleNoticeDecorator,
+    UnpublishScheduleNoticeDecorator
 } from "./components/index.js";
 
 export const CmsScheduler = () => {
@@ -13,6 +14,7 @@ export const CmsScheduler = () => {
             <EditorConfig />
             <ScheduledActionAlertDecorator />
             <PublishScheduleNoticeDecorator />
+            <UnpublishScheduleNoticeDecorator />
         </>
     );
 };
