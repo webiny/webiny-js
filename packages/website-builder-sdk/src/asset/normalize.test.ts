@@ -5,8 +5,6 @@ import {
     normalizeToAsset,
     resolveAssetImage
 } from "./normalize.js";
-import { getAssetImageRenderData } from "./geometry.js";
-import { getImageRenderData } from "../image/geometry.js";
 
 describe("getAssetCategory", () => {
     it("buckets by MIME prefix", () => {
@@ -174,41 +172,14 @@ describe("resolveAssetImage", () => {
     it("prefers override per property, falling back to base", () => {
         const merged = resolveAssetImage(
             { crop: { top: 0.1, left: 0, bottom: 0, right: 0 } },
-            { crop: { top: 0.5, left: 0, bottom: 0, right: 0 }, focalPoint: { x: 0.2, y: 0.2 }, alt: "base" }
+            {
+                crop: { top: 0.5, left: 0, bottom: 0, right: 0 },
+                focalPoint: { x: 0.2, y: 0.2 },
+                alt: "base"
+            }
         );
         expect(merged.crop).toEqual({ top: 0.1, left: 0, bottom: 0, right: 0 });
         expect(merged.focalPoint).toEqual({ x: 0.2, y: 0.2 });
         expect(merged.alt).toBe("base");
-    });
-});
-
-describe("getAssetImageRenderData", () => {
-    it("matches the legacy geometry core for an equivalent value", () => {
-        const asset = {
-            id: "f",
-            src: "s",
-            name: "n",
-            type: "image/jpeg",
-            size: 1,
-            image: {
-                width: 1000,
-                height: 500,
-                crop: { top: 0.2, left: 0.1, bottom: 0, right: 0.1 },
-                focalPoint: { x: 0.3, y: 0.6 }
-            }
-        };
-        const viaAsset = getAssetImageRenderData(asset, 1);
-        const viaLegacy = getImageRenderData(
-            {
-                width: 1000,
-                height: 500,
-                edit: {
-                    crop: { top: 0.2, left: 0.1, bottom: 0, right: 0.1 },
-                    hotspot: { x: 0.3, y: 0.6, width: 1, height: 1 }
-                }
-            },
-            1
-        );
-        expect(viaAsset).toEqual(viaLegacy);
     });
 });

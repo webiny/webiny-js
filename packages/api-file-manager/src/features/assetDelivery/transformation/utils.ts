@@ -48,6 +48,33 @@ const getCropSignature = (crop?: Crop): string | undefined => {
     return objectHash(crop).slice(0, 16);
 };
 
+interface Framing {
+    crop?: Crop;
+    focal?: { x: number; y: number };
+    aspectRatio?: number;
+}
+
+/**
+ * Signature for a full framing (crop + focal + aspect ratio) used to namespace
+ * cached derivatives. `undefined` when the framing is a no-op. A crop-only framing
+ * intentionally hashes to the same value as `getCropSignature`, so existing
+ * asset-level-crop derivatives keep their cache keys (backward compatible).
+ */
+const getFramingSignature = (framing: Framing): string | undefined => {
+    const { crop, focal, aspectRatio } = framing;
+    const cropped =
+        !!crop && !(crop.top === 0 && crop.left === 0 && crop.bottom === 0 && crop.right === 0);
+
+    if (!cropped && aspectRatio === undefined) {
+        return undefined;
+    }
+    // Preserve the legacy crop-only key.
+    if (cropped && focal === undefined && aspectRatio === undefined) {
+        return objectHash(crop).slice(0, 16);
+    }
+    return objectHash({ crop: cropped ? crop : undefined, focal, aspectRatio }).slice(0, 16);
+};
+
 interface GetImageKeyParams {
     key: string;
     transformations?: any;
@@ -66,6 +93,8 @@ export {
     SUPPORTED_TRANSFORMABLE_IMAGES,
     getImageKey,
     getCropSignature,
+    getFramingSignature,
     getOptimizedImageKeyPrefix,
     getOptimizedTransformedImageKeyPrefix
 };
+export type { Framing };

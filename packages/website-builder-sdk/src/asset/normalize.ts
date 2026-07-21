@@ -12,11 +12,7 @@
  * degrades to "no asset" instead of crashing a render.
  */
 import type { WebinyImageEdit } from "../image/types.js";
-import type {
-    WebinyAsset,
-    WebinyAssetCategory,
-    WebinyAssetImage
-} from "./types.js";
+import type { WebinyAsset, WebinyAssetCategory, WebinyAssetImage } from "./types.js";
 
 /**
  * Bucket a MIME type into one of the three Asset categories. Anything that is not
@@ -202,7 +198,8 @@ export function normalizeToAsset(input: unknown): WebinyAsset | null {
     } else if (category === "video") {
         if (isObject(input.video)) {
             asset.video = {
-                autoplay: typeof input.video.autoplay === "boolean" ? input.video.autoplay : undefined,
+                autoplay:
+                    typeof input.video.autoplay === "boolean" ? input.video.autoplay : undefined,
                 poster: asString(input.video.poster)
             };
         }

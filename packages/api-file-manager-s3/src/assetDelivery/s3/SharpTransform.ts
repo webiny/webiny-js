@@ -9,21 +9,17 @@ import {
     type ImageFormat
 } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import {
-    cropImageBuffer,
-    transformImageBuffer
+    extractFramedRegion,
+    transformImageBuffer,
+    type Framing
 } from "@webiny/api-file-manager/features/assetDelivery/transformation/transformImage.js";
-import type { AssetCrop } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
-
-const isCropApplied = (crop: AssetCrop | undefined): crop is AssetCrop => {
-    return !!crop && !(crop.top === 0 && crop.left === 0 && crop.bottom === 0 && crop.right === 0);
-};
 import * as utils from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import { AssetKeyGenerator } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { IS3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
-type TransformOptions = Omit<AssetRequestOptions, "original">;
+type TransformOptions = Omit<AssetRequestOptions, "original" | "crop" | "focal" | "aspectRatio">;
 
 const hasTransform = (options: TransformOptions): boolean => {
     return (
@@ -56,22 +52,31 @@ export class SharpTransform implements AssetTransformationStrategyAbstraction.In
         }
 
         // oxlint-disable-next-line typescript/no-unused-vars
-        const { original, ...options } = assetRequest.getOptions();
+        const { original, crop, focal, aspectRatio, ...options } = assetRequest.getOptions();
+
+        // A per-request crop supersedes the file's asset-level crop, so a per-usage
+        // crop/focal/aspect ratio can be delivered (and cached) as its own image.
+        const framing: Framing = {
+            crop: crop ?? asset.getImageEdit()?.crop,
+            focal,
+            aspectRatio
+        };
 
         const transformedAsset = asset.clone();
 
         if (hasTransform(options)) {
-            return this.transformAsset(transformedAsset, options);
+            return this.transformAsset(transformedAsset, options, framing);
         }
 
-        return this.optimizeAsset(transformedAsset);
+        return this.optimizeAsset(transformedAsset, framing);
     }
 
     private async transformAsset(
         asset: AssetTransformationStrategyAbstraction.Asset,
-        options: TransformOptions
+        options: TransformOptions,
+        framing: Framing
     ) {
-        const assetKey = AssetKeyGenerator.create(asset);
+        const assetKey = AssetKeyGenerator.create(asset, framing);
         const transformedAssetKey = assetKey.getTransformedImageKey(options);
 
         // Content type is the target format's, or the source format's when only a
@@ -102,7 +107,7 @@ export class SharpTransform implements AssetTransformationStrategyAbstraction.In
 
             return newAsset;
         } catch {
-            const optimizedImage = await this.optimizeAsset(asset);
+            const optimizedImage = await this.optimizeAsset(asset, framing);
 
             console.log(`Transform the asset`, options);
             const baseBuffer = await optimizedImage.getContents();
@@ -139,7 +144,10 @@ export class SharpTransform implements AssetTransformationStrategyAbstraction.In
         }
     }
 
-    private async optimizeAsset(asset: AssetTransformationStrategyAbstraction.Asset) {
+    private async optimizeAsset(
+        asset: AssetTransformationStrategyAbstraction.Asset,
+        framing: Framing
+    ) {
         console.log("Optimize asset", {
             id: asset.getId(),
             key: asset.getKey(),
@@ -147,7 +155,7 @@ export class SharpTransform implements AssetTransformationStrategyAbstraction.In
             type: asset.getContentType()
         });
 
-        const assetKey = AssetKeyGenerator.create(asset);
+        const assetKey = AssetKeyGenerator.create(asset, framing);
         const optimizedAssetKey = assetKey.getOptimizedImageKey();
 
         try {
@@ -172,13 +180,12 @@ export class SharpTransform implements AssetTransformationStrategyAbstraction.In
             console.log("Create an optimized version of the original asset", asset.getKey());
             let buffer = await asset.getContents();
 
-            // Bake the asset-level crop first, so both the optimized base and any
-            // downstream transforms inherit it.
-            const crop = asset.getImageEdit()?.crop;
-            const cropped = isCropApplied(crop);
-            if (cropped) {
-                buffer = await cropImageBuffer(buffer, crop);
-            }
+            // Bake the effective framing (per-request crop/focal/aspect ratio, else
+            // the file's asset-level crop) so the optimized base and any downstream
+            // transforms inherit it.
+            const framed = await extractFramedRegion(buffer, framing);
+            const cropped = framed !== buffer;
+            buffer = framed;
 
             const optimizationMap: Record<string, ((buffer: Buffer) => Sharp) | undefined> = {
                 "image/png": (buffer: Buffer) => this.optimizePng(buffer),
