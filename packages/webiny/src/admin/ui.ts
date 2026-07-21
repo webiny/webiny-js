@@ -39,6 +39,7 @@ export { Dialog } from "@webiny/admin-ui/Dialog/index.js";
 export { Drawer } from "@webiny/admin-ui/Drawer/index.js";
 export { DropdownMenu } from "@webiny/admin-ui/DropdownMenu/index.js";
 export { DynamicFieldset } from "@webiny/admin-ui/DynamicFieldset/index.js";
+export { EmptyState } from "@webiny/admin-ui/EmptyState/index.js";
 export { FilePicker } from "@webiny/admin-ui/FilePicker/index.js";
 export {
     FillViewportHeight,
