@@ -38,6 +38,21 @@ class ScheduledActionsStore {
     }
 
     /**
+     * Finds a scheduled action by target id across all loaded namespaces. Target ids (entry ids)
+     * are globally unique, so this is safe. Used where the namespace isn't known but the data has
+     * already been loaded by the list (e.g. the publish dialog).
+     */
+    getActionByTargetId(targetId: string): SchedulerEntry | undefined {
+        for (const state of this.namespaces.values()) {
+            const action = state.actions.get(targetId);
+            if (action) {
+                return action;
+            }
+        }
+        return undefined;
+    }
+
+    /**
      * Loads and caches all scheduled actions for a namespace at the given signal version. No-op if
      * already loaded at that (or a newer) version; a newer version forces a refetch. Concurrent
      * calls for the same namespace+version share a single in-flight request.
