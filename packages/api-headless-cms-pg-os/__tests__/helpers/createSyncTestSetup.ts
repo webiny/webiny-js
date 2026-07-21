@@ -55,7 +55,21 @@ export const createSyncTestSetup = async () => {
         getStringOrThrow: (key: string) => {
             throw new Error(`Env ${key} not set`);
         },
-        getNumber: (_key: string, fallback?: number) => fallback ?? 0,
+        getNumber: (key: string, fallback?: number) => {
+            if (key === "MAX_ES_PROCESSOR") {
+                return 100;
+            }
+            if (key === "MAX_ES_RETRIES") {
+                return 1;
+            }
+            if (key === "MAX_ES_RETRY_TIME") {
+                return 5000;
+            }
+            if (key === "MAX_ES_TIMEOUT") {
+                return 5000;
+            }
+            return fallback ?? 0;
+        },
         getNumberOrThrow: (key: string) => {
             throw new Error(`Env ${key} not set`);
         },

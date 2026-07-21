@@ -40,6 +40,9 @@ describe("PG-to-OpenSearch sync stream", () => {
 
         expect(body.hits.total.value).toBe(1);
         expect(body.hits.hits[0]._id).toBe("entry1:L");
+        expect(body.hits.hits[0]._source.entryId).toBe("entry1");
+        expect(body.hits.hits[0]._source.TYPE).toBe("cms.entry.l");
+        expect(body.hits.hits[0]._source.__type).toBe("cms.entry.l");
     });
 
     it("should sync a MODIFY event to OpenSearch", { timeout: 120_000 }, async () => {
@@ -47,6 +50,8 @@ describe("PG-to-OpenSearch sync stream", () => {
         const entry = createEntry() as any;
 
         await setup.syncWriter.writeLatest({ model, entry, storageEntry: entry });
+
+        await syncEventHandler.process(setup.capturedEvents);
         setup.capturedEvents.length = 0;
 
         const updatedEntry = { ...entry, values: { title: "Updated Title" } };
@@ -146,6 +151,12 @@ describe("PG-to-OpenSearch sync stream", () => {
         });
 
         expect(body.hits.total.value).toBe(2);
+
+        const hits = body.hits.hits.sort((a: any, b: any) => a._id.localeCompare(b._id));
+        expect(hits[0]._id).toBe("entry1:L");
+        expect(hits[0]._source.TYPE).toBe("cms.entry.l");
+        expect(hits[1]._id).toBe("entry1:P");
+        expect(hits[1]._source.TYPE).toBe("cms.entry.p");
     });
 
     it("should reindex all entries from os_sync", { timeout: 120_000 }, async () => {
