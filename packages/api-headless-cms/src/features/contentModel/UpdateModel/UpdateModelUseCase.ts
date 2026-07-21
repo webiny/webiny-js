@@ -12,6 +12,8 @@ import { createZodError } from "@webiny/utils";
 import { removeUndefinedValues } from "@webiny/utils";
 import { createModelUpdateValidation } from "~/domain/contentModel/schemas.js";
 import { ensureTypeTag } from "~/domain/contentModel/ensureTypeTag.js";
+import { FieldBuilderRegistry } from "~/features/modelBuilder/abstractions.js";
+import { normalizeAssetFields } from "~/features/modelBuilder/fields/normalizeAssetFields.js";
 import type { CmsModel } from "~/types/index.js";
 import type { CmsModelUpdateInput } from "~/types/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
@@ -38,7 +40,8 @@ class UpdateModelUseCaseImpl implements UseCaseAbstraction.Interface {
         private eventPublisher: EventPublisher.Interface,
         private repository: UpdateModelRepository.Interface,
         private accessControl: AccessControl.Interface,
-        private tenantContext: TenantContext.Interface
+        private tenantContext: TenantContext.Interface,
+        private fieldBuilderRegistry: FieldBuilderRegistry.Interface
     ) {}
 
     async execute(
@@ -107,6 +110,9 @@ class UpdateModelUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(ModelNotAuthorizedError.fromModel(model));
         }
 
+        // Stamp the canonical nested schema onto any Asset fields before persisting.
+        normalizeAssetFields(model.fields, this.fieldBuilderRegistry);
+
         // Ensure type tags
         model.tags = ensureTypeTag(model);
 
@@ -144,6 +150,7 @@ export const UpdateModelUseCase = UseCaseAbstraction.createImplementation({
         EventPublisher,
         UpdateModelRepository,
         AccessControl,
-        TenantContext
+        TenantContext,
+        FieldBuilderRegistry
     ]
 });

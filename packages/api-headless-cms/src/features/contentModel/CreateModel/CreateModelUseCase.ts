@@ -13,6 +13,8 @@ import { createZodError } from "@webiny/utils";
 import { removeUndefinedValues } from "@webiny/utils";
 import { createModelCreateValidation } from "~/domain/contentModel/schemas.js";
 import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields.js";
+import { FieldBuilderRegistry } from "~/features/modelBuilder/abstractions.js";
+import { normalizeAssetFields } from "~/features/modelBuilder/fields/normalizeAssetFields.js";
 import type { CmsModel } from "~/types/index.js";
 import type { CmsModelCreateInput } from "~/types/index.js";
 
@@ -40,7 +42,8 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: CreateModelRepository.Interface,
         private accessControl: AccessControl.Interface,
         private tenantContext: TenantContext.Interface,
-        private identityContext: IdentityContext.Interface
+        private identityContext: IdentityContext.Interface,
+        private fieldBuilderRegistry: FieldBuilderRegistry.Interface
     ) {}
 
     async execute(input: CmsModelCreateInput): Promise<Result<CmsModel, UseCaseAbstraction.Error>> {
@@ -64,6 +67,10 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
         if (defaultFields) {
             assignModelDefaultFields(data);
         }
+
+        // Stamp the canonical nested schema onto any Asset fields (from the palette,
+        // default fields, or code) so they all share one definition.
+        normalizeAssetFields(data.fields, this.fieldBuilderRegistry);
 
         // Create the domain model object
         const identity = this.identityContext.getIdentity();
@@ -128,6 +135,7 @@ export const CreateModelUseCase = UseCaseAbstraction.createImplementation({
         CreateModelRepository,
         AccessControl,
         TenantContext,
-        IdentityContext
+        IdentityContext,
+        FieldBuilderRegistry
     ]
 });

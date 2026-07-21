@@ -3,7 +3,7 @@ import { ReactComponent as ArrowDropDownIcon } from "@webiny/icons/arrow_drop_do
 import { Dialog } from "~/Dialog/index.js";
 import { Button } from "~/Button/index.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";
-import { CropHotspotEditor } from "./CropHotspotEditor.js";
+import { CropHotspotEditor, FREE, inferAspectId } from "./CropHotspotEditor.js";
 import { AspectRatioPreview } from "./AspectRatioPreview.js";
 import { MetaFields } from "./MetaFields.js";
 import { SectionLabel } from "./SectionLabel.js";
@@ -59,6 +59,9 @@ export const ImageEditor = ({
     const [hotspot, setHotspot] = useState<ImageEditorHotspot | undefined>(value?.hotspot);
     const [alt, setAlt] = useState(value?.alt ?? "");
     const [caption, setCaption] = useState(value?.caption ?? "");
+    // Selected crop shape. Inferred from the saved crop on open so the selector
+    // reflects the shape the crop was made with (rather than always "free").
+    const [aspectId, setAspectId] = useState<string>(FREE);
     const [selectedRatioIds, setSelectedRatioIds] = useState<string[]>(() => {
         const defaults = aspectRatios
             .filter(ar => DEFAULT_PREVIEW_RATIO_IDS.includes(ar.id))
@@ -110,6 +113,15 @@ export const ImageEditor = ({
         }
     }, [open, value]);
 
+    // Recover the crop shape from the saved crop on open (and once the intrinsic
+    // dimensions resolve). Keyed on `value`, not the live `crop`, so it never snaps
+    // the selector while the user is dragging a free-form crop.
+    useEffect(() => {
+        if (open) {
+            setAspectId(inferAspectId(value?.crop, effectiveImage.width, effectiveImage.height));
+        }
+    }, [open, value, effectiveImage.width, effectiveImage.height]);
+
     const handleSave = () => {
         const next: ImageEditorValue = {};
         if (!isFullCrop(crop)) {
@@ -146,6 +158,8 @@ export const ImageEditor = ({
                     image={effectiveImage}
                     crop={crop}
                     hotspot={hotspot}
+                    aspectId={aspectId}
+                    onChangeAspect={setAspectId}
                     onChangeCrop={setCrop}
                     onChangeHotspot={setHotspot}
                 />

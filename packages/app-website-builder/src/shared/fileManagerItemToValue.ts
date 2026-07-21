@@ -1,19 +1,34 @@
 import type { FileManagerFileItem } from "@webiny/app-admin";
+import {
+    assetImageFromLegacyEdit,
+    getAssetCategory,
+    type WebinyAsset
+} from "@webiny/website-builder-sdk";
 
-export const fileManagerItemToValue = (file: FileManagerFileItem) => {
-    // Seed the per-usage edit from the asset-level default (set in File Manager),
-    // if any. From here on the edit lives on the element's value and is editable
-    // per placement.
-    const assetEdit = file.metadata?.imageEdit;
-
-    return {
+/**
+ * Build the unified {@link WebinyAsset} value from a picked File Manager item.
+ * For images, the per-usage `image` edit is seeded from the asset-level default
+ * (set in File Manager); from here it lives on the element value and is editable
+ * per placement.
+ */
+export const fileManagerItemToValue = (file: FileManagerFileItem): WebinyAsset => {
+    const asset: WebinyAsset = {
         id: file.id,
-        name: file.name,
-        size: file.size,
-        mimeType: file.type,
         src: file.src || "",
-        width: file.width,
-        height: file.height,
-        ...(assetEdit ? { edit: assetEdit } : {})
+        name: file.name,
+        type: file.type,
+        size: file.size
     };
+
+    if (getAssetCategory(file.type) === "image") {
+        const image = assetImageFromLegacyEdit(file.metadata?.imageEdit, {
+            width: file.width,
+            height: file.height
+        });
+        if (image) {
+            asset.image = image;
+        }
+    }
+
+    return asset;
 };

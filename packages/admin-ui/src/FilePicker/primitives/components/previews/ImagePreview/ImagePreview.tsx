@@ -4,7 +4,16 @@ import { previewVariants } from "../variants.js";
 import type { FilePreviewDefaultProps } from "../../types.js";
 import { ItemActions } from "~/FilePicker/primitives/components/previews/ItemActions.js";
 
-type ImagePreviewProps = FilePreviewDefaultProps;
+type ImagePreviewProps = FilePreviewDefaultProps & {
+    /**
+     * Optional custom image renderer. Lets a consumer render, e.g., a cropped /
+     * focal-point-aware thumbnail while keeping all of the preview chrome. When
+     * omitted (or it returns a falsy value) a plain `<img>` is rendered.
+     */
+    renderImage?: (args: { url: string; name: string; className: string }) => React.ReactNode;
+};
+
+const IMAGE_CLASS = "object-contain size-full";
 
 const DecoratableImagePreview = ({
     value,
@@ -13,8 +22,10 @@ const DecoratableImagePreview = ({
     disabled,
     onRemoveItem,
     onReplaceItem,
-    onEditItem
+    onEditItem,
+    renderImage
 }: ImagePreviewProps) => {
+    const custom = renderImage?.({ url: value.url, name: value.name, className: IMAGE_CLASS });
     return (
         <div
             className={cn(
@@ -29,7 +40,7 @@ const DecoratableImagePreview = ({
                 data-role={"select-image"}
                 onClick={onReplaceItem}
             >
-                <img src={value.url} alt={value.name} className={"object-contain size-full"} />
+                {custom || <img src={value.url} alt={value.name} className={IMAGE_CLASS} />}
             </div>
             <div className={"absolute top-1 right-1.5"}>
                 <ItemActions

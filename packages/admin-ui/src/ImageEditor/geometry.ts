@@ -118,7 +118,13 @@ export const getPreviewStyles = (
             height: `${round(100 / safeH)}%`,
             left: `${round(-(rect.x / safeW) * 100)}%`,
             top: `${round(-(rect.y / safeH) * 100)}%`,
-            maxWidth: "none"
+            maxWidth: "none",
+            // Safety net: when the intrinsic dimensions match the image, the box
+            // already has the image's aspect ratio so `cover` is a no-op. If the
+            // dimensions are wrong/missing, this crops toward the focal point
+            // instead of hard-stretching the image.
+            objectFit: "cover",
+            objectPosition: `${round(clamp(hotspot?.x ?? 0.5) * 100)}% ${round(clamp(hotspot?.y ?? 0.5) * 100)}%`
         }
     };
 };
@@ -155,7 +161,11 @@ export const getCroppedImageRenderStyles = (
             height: `${round(100 / safeH)}%`,
             left: `${round(-(rect.x / safeW) * 100)}%`,
             top: `${round(-(rect.y / safeH) * 100)}%`,
-            maxWidth: "none"
+            maxWidth: "none",
+            // See getPreviewStyles: no-op when dimensions are correct, graceful
+            // crop toward the focal point when they aren't (instead of stretching).
+            objectFit: "cover",
+            objectPosition: `${round(clamp(hotspot?.x ?? 0.5) * 100)}% ${round(clamp(hotspot?.y ?? 0.5) * 100)}%`
         };
     };
 

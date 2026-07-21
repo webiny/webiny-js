@@ -2,6 +2,7 @@ import React from "react";
 import type {
     ComponentProps,
     CssProperties,
+    WebinyAsset,
     WebinyImageValue
 } from "@webiny/website-builder-react";
 import { WebinyImage } from "@webiny/website-builder-react";
@@ -10,7 +11,8 @@ type ImageProps = ComponentProps<{
     title: string;
     altText: string;
     highPriority: boolean;
-    image: WebinyImageValue;
+    // Accepts the unified asset shape or a legacy value (existing pages).
+    image: WebinyAsset | WebinyImageValue;
 }>;
 
 export const ImageComponent = (props: ImageProps) => {
@@ -20,10 +22,11 @@ export const ImageComponent = (props: ImageProps) => {
         return <ImagePlaceholder style={props.styles} />;
     }
 
-    // Explicit alt input wins; otherwise fall back to the alt stored with the image.
-    const alt = altText || image.edit?.alt || "";
+    // Explicit alt input wins; otherwise `WebinyImage` falls back to the image's
+    // stored alt (resolved from either value shape).
+    const alt = altText || undefined;
 
-    // SVGs are vector — there's no raster crop/hotspot to apply.
+    // SVGs are vector — there's no raster crop/focal point to apply.
     if (image.src.endsWith(".svg")) {
         return (
             <object style={{ maxWidth: "100%", ...props.styles }} title={title} data={image.src} />

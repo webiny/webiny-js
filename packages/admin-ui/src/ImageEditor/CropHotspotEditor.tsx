@@ -9,6 +9,9 @@ interface CropHotspotEditorProps {
     image: ImageEditorImage;
     crop: ImageEditorCrop | undefined;
     hotspot: ImageEditorHotspot | undefined;
+    /** Currently selected crop shape id ("free" or a preset id). Controlled by the parent. */
+    aspectId: string;
+    onChangeAspect: (id: string) => void;
     onChangeCrop: (crop: ImageEditorCrop) => void;
     onChangeHotspot: (hotspot: ImageEditorHotspot) => void;
 }
@@ -24,7 +27,31 @@ interface Edges {
 type Handle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
 
 const MIN = 0.05;
-const FREE = "free";
+export const FREE = "free";
+
+/**
+ * Infer which crop-shape preset a saved crop corresponds to, by comparing the
+ * crop's on-screen (pixel) aspect ratio against the presets. The crop stores only
+ * edge insets — not the shape used to draw it — so on reopen we recover the shape
+ * here; a crop drawn with a preset matches it closely, while a free crop won't.
+ */
+export const inferAspectId = (
+    crop: ImageEditorCrop | undefined,
+    width: number,
+    height: number
+): string => {
+    if (!crop || !width || !height) {
+        return FREE;
+    }
+    const cropWidth = Math.max(0, 1 - (crop.left ?? 0) - (crop.right ?? 0));
+    const cropHeight = Math.max(0, 1 - (crop.top ?? 0) - (crop.bottom ?? 0));
+    if (cropWidth <= 0 || cropHeight <= 0) {
+        return FREE;
+    }
+    const displayRatio = (cropWidth * width) / (cropHeight * height);
+    const match = DEFAULT_ASPECT_RATIOS.find(ar => Math.abs(ar.ratio - displayRatio) < 0.02);
+    return match?.id ?? FREE;
+};
 
 // Canvas fits within this box (px), preserving the image aspect ratio, so tall
 // images don't take up the full screen height.
@@ -73,6 +100,8 @@ export const CropHotspotEditor = ({
     image,
     crop,
     hotspot,
+    aspectId,
+    onChangeAspect,
     onChangeCrop,
     onChangeHotspot
 }: CropHotspotEditorProps) => {
@@ -83,7 +112,6 @@ export const CropHotspotEditor = ({
         | { mode: "move"; startPointer: { x: number; y: number }; startEdges: Edges }
         | null
     >(null);
-    const [aspectId, setAspectId] = React.useState<string>(FREE);
 
     // Measure the available width so we can fit the canvas into a max box while
     // preserving the image aspect ratio (keeps the box == image aspect, which the
@@ -286,7 +314,7 @@ export const CropHotspotEditor = ({
 
     const onSelectAspect = useCallback(
         (value: string) => {
-            setAspectId(value);
+            onChangeAspect(value);
             const r = DEFAULT_ASPECT_RATIOS.find(ar => ar.id === value)?.ratio;
             if (value === FREE || !r) {
                 return;
@@ -312,7 +340,7 @@ export const CropHotspotEditor = ({
                 bottom: clamp01(cy + h / 2)
             });
         },
-        [edges, commitEdges, imageRatio]
+        [edges, commitEdges, imageRatio, onChangeAspect]
     );
 
     const activeHotspot = clampHotspot(hotspot, edges);
