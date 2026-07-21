@@ -85,7 +85,7 @@ const GetUserTeamsTestMock = GetUserTeamsUseCase.createDecorator({
 export const createContextHandler = async (params: CmsTestHandlerParams = {}) => {
     const handler = createCmsTestHandler({
         ...params,
-        features: container => {
+        setup: container => {
             WorkflowsFeature.register(container);
             // GetUserTeamsUseCase is registered inside WorkflowsInitializer.init() (post-auth), so
             // the mock decorator must be applied AFTER that runs. This RequestContextInitializer is
@@ -123,7 +123,7 @@ export const createContextHandler = async (params: CmsTestHandlerParams = {}) =>
 export const createGraphQLHandler = (params: CmsTestHandlerParams = {}) => {
     const handler = createCmsTestHandler({
         ...params,
-        features: container => {
+        setup: container => {
             WorkflowsFeature.register(container);
             // GetUserTeamsUseCase is registered inside WorkflowsInitializer.init() (post-auth), so
             // the mock decorator must be applied AFTER that runs. This RequestContextInitializer is

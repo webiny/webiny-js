@@ -13,7 +13,7 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.
 import { createOpenSearchTable, createOpenSearchEntity } from "@webiny/api-opensearch";
 import type { Context } from "~/types";
 
-type Params = Omit<CmsTestHandlerParams, "plugins" | "features">;
+type Params = Omit<CmsTestHandlerParams, "legacyPlugins" | "setup">;
 
 const documentClient = getDocumentClient();
 const esTable = createOpenSearchTable({ documentClient });
@@ -24,7 +24,7 @@ export const useHandler = <C extends Context = Context>(params: Params = {}) => 
 
     const inner = createCmsTestHandler({
         ...params,
-        features: container => {
+        setup: container => {
             ProcessEnvFeature.register(container);
             OpenSearchClientFeature.register(container, opensearchClient);
             TimerFeature.register(container, timerFactory());
