@@ -11,7 +11,10 @@ import type { IUi } from "@webiny/mcp";
 import { SetupBaseWebinyProject } from "./CreateWebinyProject/projects/base/SetupBaseWebinyProject.js";
 import { SetupAwsWebinyProject } from "./CreateWebinyProject/projects/aws/SetupAwsWebinyProject.js";
 import { SetupServerWebinyProject } from "./CreateWebinyProject/projects/server/SetupServerWebinyProject.js";
-import { runFlavourPrompt, type Flavour } from "./CreateWebinyProject/projects/runFlavourPrompt.js";
+import {
+    runHostingTypePrompt,
+    type HostingType
+} from "./CreateWebinyProject/projects/runHostingTypePrompt.js";
 import {
     Analytics,
     EnsureNoGlobalWebinyCli,
@@ -89,12 +92,12 @@ export class CreateWebinyProject {
         const analytics = new Analytics();
         await analytics.track("start");
 
-        // AI agent selected during the flavour-specific prompt (used for MCP setup + final messages).
+        // AI agent selected during the hosting-type prompt (used for MCP setup + final messages).
         let aiAgent: string = "other";
 
-        // Hosting flavour. Resolved interactively below, or taken from `--flavour` in non-interactive
+        // Hosting type. Resolved interactively below, or taken from `--hosting-type` in non-interactive
         // mode (defaults to "aws").
-        let flavour: Flavour = cliArgs.flavour === "server" ? "server" : "aws";
+        let hostingType: HostingType = cliArgs.hostingType === "server" ? "server" : "aws";
 
         try {
             const taskItems: ListrTask[] = [
@@ -131,16 +134,16 @@ export class CreateWebinyProject {
 
             console.log();
 
-            // Ask which flavour to scaffold before anything flavour-specific is copied.
+            // Ask which hosting type to scaffold before anything hosting-specific is copied.
             if (cliArgs.interactive !== false) {
-                flavour = await runFlavourPrompt();
+                hostingType = await runHostingTypePrompt();
                 console.log();
             }
 
             const setupBaseWebinyProject = new SetupBaseWebinyProject();
             setupBaseWebinyProject.execute(cliArgs);
 
-            if (flavour === "server") {
+            if (hostingType === "server") {
                 const setupServerWebinyProject = new SetupServerWebinyProject();
                 const serverProjectParams = await setupServerWebinyProject.execute(cliArgs);
                 aiAgent = serverProjectParams.aiAgent;
@@ -221,15 +224,15 @@ export class CreateWebinyProject {
 
         console.log();
 
-        // Self-hosted (server) flavour: no deploy step (ALPHA — dev-first, run with `webiny watch`).
-        if (flavour === "server") {
+        // Self-hosted (server) hosting type: no deploy step (ALPHA — dev-first, run with `webiny watch`).
+        if (hostingType === "server") {
             console.log(
                 `🎉 Your new self-hosted Webiny project ${green(projectName)} has been created!`
             );
             console.log();
             console.log(
                 yellow(
-                    "⚠ The self-hosted (server) flavour is in ALPHA. It is designed for local\n" +
+                    "⚠ The self-hosted (server) hosting type is in ALPHA. It is designed for local\n" +
                         "  development via `webiny watch`. Standalone production packaging is still a\n" +
                         "  work in progress (tracked in webiny-js#5429)."
                 )

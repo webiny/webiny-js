@@ -78,8 +78,8 @@ export class ProjectSdk {
         const env = params.env || "";
         const variant = params.variant || "";
         const region = params.region || "";
-        const flavour = register?.name || "";
-        return `${env}:${variant}:${region}:${flavour}`;
+        const hostingType = register?.name || "";
+        return `${env}:${variant}:${region}:${hostingType}`;
     }
 
     // Project-related methods.
