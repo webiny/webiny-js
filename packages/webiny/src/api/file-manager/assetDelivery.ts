@@ -8,7 +8,11 @@ export { AssetRequestResolver } from "@webiny/api-file-manager/features/assetDel
 export { AssetResolver } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetResolver.js";
 export { AssetProcessor } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetProcessor.js";
 export { AssetOutputStrategy } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetOutputStrategy.js";
-export { AssetTransformationStrategy } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetTransformationStrategy.js";
+export { AssetType } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetType.js";
+export type {
+    IAssetType,
+    IAssetTypeHandler
+} from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetType.js";
 export { AssetContentsReader } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetContentsReader.js";
 export { AssetAuthorizer } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetAuthorizer.js";
 export { AssetFactory } from "@webiny/api-file-manager/features/assetDelivery/Asset/abstractions.js";

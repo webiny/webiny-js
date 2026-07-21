@@ -25,16 +25,12 @@ class MetadataWriterImpl implements MetadataWriterAbstraction.Interface {
 
     private getMetadata(file: MetadataWriterAbstraction.File) {
         const tenant = this.tenantContext.getTenant();
-        // The asset-level image edit (crop) is carried here so the asset-delivery
-        // pipeline can bake the crop in without querying the CMS.
-        const imageEdit = file.metadata?.imageEdit;
         return {
             id: file.id,
             bucketKey: `tenants/${tenant.id}/files/${file.key}`,
             tenant: tenant.id,
             size: file.size,
-            contentType: file.type,
-            ...(imageEdit ? { imageEdit } : {})
+            contentType: file.type
         };
     }
 }

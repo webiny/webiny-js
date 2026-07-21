@@ -24,7 +24,7 @@ export const createLocalAssetDeliveryFeature = (params: AssetDeliveryParams = {}
 
             container.register(LocalAssetResolverImpl);
             container.register(LocalOutputStrategyImpl);
-            container.register(LocalSharpTransformImpl);
+            container.register(LocalSharpTransformImpl).inSingletonScope();
         }
     });
 };

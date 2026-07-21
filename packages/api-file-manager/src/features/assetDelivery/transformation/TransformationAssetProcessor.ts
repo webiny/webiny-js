@@ -1,12 +1,9 @@
+import type { Container } from "@webiny/di";
 import { AssetProcessor } from "../abstractions/AssetProcessor.js";
-import { AssetTransformationStrategy } from "../abstractions/AssetTransformationStrategy.js";
+import { AssetType } from "../abstractions/AssetType.js";
 
-class TransformationAssetProcessorImpl implements AssetProcessor.Interface {
-    private strategy: AssetTransformationStrategy.Interface;
-
-    constructor(strategy: AssetTransformationStrategy.Interface) {
-        this.strategy = strategy;
-    }
+export class TransformationAssetProcessor implements AssetProcessor.Interface {
+    constructor(private readonly container: Container) {}
 
     async process(
         assetRequest: AssetProcessor.AssetRequest,
@@ -19,11 +16,18 @@ class TransformationAssetProcessorImpl implements AssetProcessor.Interface {
             return asset;
         }
 
-        return this.strategy.transform(assetRequest, asset);
+        const assetTypes = this.container.resolveAll(AssetType);
+        const match = assetTypes.find(assetType => assetType.canHandle(asset));
+
+        if (!match) {
+            return asset;
+        }
+
+        try {
+            const handler = this.container.resolve(match.getHandlerAbstraction());
+            return handler.handle(assetRequest, asset);
+        } catch {
+            return asset;
+        }
     }
 }
-
-export const TransformationAssetProcessor = AssetProcessor.createImplementation({
-    implementation: TransformationAssetProcessorImpl,
-    dependencies: [AssetTransformationStrategy]
-});

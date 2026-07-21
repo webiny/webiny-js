@@ -1,8 +1,8 @@
 import sharp from "sharp";
 import type { Sharp } from "sharp";
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
-import type { AssetRequestOptions } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
-import { AssetTransformationStrategy as AssetTransformationStrategyAbstraction } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import {
     contentTypeForFormat,
     DEFAULT_IMAGE_QUALITY,
@@ -11,19 +11,27 @@ import {
 import {
     cropImageBuffer,
     transformImageBuffer
-} from "@webiny/api-file-manager/features/assetDelivery/transformation/transformImage.js";
-import type { AssetCrop } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
+} from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/transformImage.js";
+import type {
+    AssetCrop,
+    AssetImageEdit,
+    ImageRequestOptions
+} from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/imageTypes.js";
+import { normalizeImageOptions } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/normalizeImageOptions.js";
+import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
+import { AssetKeyGenerator } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/index.js";
+import { ImageAssetTypeHandler } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/index.js";
+import type { IAssetTypeHandler } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetType.js";
+import type { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
+import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
+import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
+import type { IS3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
+
+type TransformOptions = Omit<ImageRequestOptions, "original">;
 
 const isCropApplied = (crop: AssetCrop | undefined): crop is AssetCrop => {
     return !!crop && !(crop.top === 0 && crop.left === 0 && crop.bottom === 0 && crop.right === 0);
 };
-import * as utils from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
-import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
-import { AssetKeyGenerator } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
-import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
-import type { IS3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
-
-type TransformOptions = Omit<AssetRequestOptions, "original">;
 
 const hasTransform = (options: TransformOptions): boolean => {
     return (
@@ -31,47 +39,60 @@ const hasTransform = (options: TransformOptions): boolean => {
     );
 };
 
-export class SharpTransform implements AssetTransformationStrategyAbstraction.Interface {
+export class SharpTransform implements IAssetTypeHandler {
     private readonly s3: S3;
     private readonly bucket: string;
     private readonly imageResizeWidths: number[];
     private readonly imageQuality: Record<ImageFormat, number>;
+    private readonly identityContext: IdentityContext.Interface;
+    private readonly getFile: GetFileUseCase.Interface;
 
-    constructor(s3: S3, bucket: string, config: IS3AssetDeliveryConfig) {
+    constructor(
+        s3: S3,
+        bucket: string,
+        config: IS3AssetDeliveryConfig,
+        identityContext: IdentityContext.Interface,
+        getFile: GetFileUseCase.Interface
+    ) {
         this.s3 = s3;
         this.bucket = bucket;
         this.imageResizeWidths = config.imageResizeWidths;
         this.imageQuality = { ...DEFAULT_IMAGE_QUALITY, ...(config.imageQuality ?? {}) };
+        this.identityContext = identityContext;
+        this.getFile = getFile;
     }
 
-    async transform(
-        assetRequest: AssetTransformationStrategyAbstraction.AssetRequest,
-        asset: AssetTransformationStrategyAbstraction.Asset
-    ): Promise<AssetTransformationStrategyAbstraction.Asset> {
-        if (!utils.SUPPORTED_TRANSFORMABLE_IMAGES.includes(asset.getExtension())) {
-            console.log(
-                `Transformations/optimizations of ${asset.getContentType()} assets are not supported. Skipping.`
-            );
-            return asset;
-        }
-
+    async handle(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
+        const rawQuery = assetRequest.getOptions() as Record<string, any>;
+        const acceptHeader = assetRequest.getContext<{ accept?: string }>().accept;
         // oxlint-disable-next-line typescript/no-unused-vars
-        const { original, ...options } = assetRequest.getOptions();
+        const { original, ...options } = normalizeImageOptions(rawQuery, acceptHeader);
 
+        const crop = await this.loadCrop(asset.getId());
         const transformedAsset = asset.clone();
 
         if (hasTransform(options)) {
-            return this.transformAsset(transformedAsset, options);
+            return this.transformAsset(transformedAsset, options, crop);
         }
 
-        return this.optimizeAsset(transformedAsset);
+        return this.optimizeAsset(transformedAsset, crop);
     }
 
-    private async transformAsset(
-        asset: AssetTransformationStrategyAbstraction.Asset,
-        options: TransformOptions
-    ) {
-        const assetKey = AssetKeyGenerator.create(asset);
+    private async loadCrop(fileId: string): Promise<AssetCrop | undefined> {
+        const result = await this.identityContext.withoutAuthorization(() =>
+            this.getFile.execute(fileId)
+        );
+
+        if (result.isFail()) {
+            return undefined;
+        }
+
+        const imageEdit = result.value.metadata?.imageEdit as AssetImageEdit | undefined;
+        return imageEdit?.crop;
+    }
+
+    private async transformAsset(asset: Asset, options: TransformOptions, crop?: AssetCrop) {
+        const assetKey = AssetKeyGenerator.create(asset, crop);
         const transformedAssetKey = assetKey.getTransformedImageKey(options);
 
         // Content type is the target format's, or the source format's when only a
@@ -102,7 +123,7 @@ export class SharpTransform implements AssetTransformationStrategyAbstraction.In
 
             return newAsset;
         } catch {
-            const optimizedImage = await this.optimizeAsset(asset);
+            const optimizedImage = await this.optimizeAsset(asset, crop);
 
             console.log(`Transform the asset`, options);
             const baseBuffer = await optimizedImage.getContents();
@@ -139,7 +160,7 @@ export class SharpTransform implements AssetTransformationStrategyAbstraction.In
         }
     }
 
-    private async optimizeAsset(asset: AssetTransformationStrategyAbstraction.Asset) {
+    private async optimizeAsset(asset: Asset, crop?: AssetCrop) {
         console.log("Optimize asset", {
             id: asset.getId(),
             key: asset.getKey(),
@@ -147,7 +168,7 @@ export class SharpTransform implements AssetTransformationStrategyAbstraction.In
             type: asset.getContentType()
         });
 
-        const assetKey = AssetKeyGenerator.create(asset);
+        const assetKey = AssetKeyGenerator.create(asset, crop);
         const optimizedAssetKey = assetKey.getOptimizedImageKey();
 
         try {
@@ -172,9 +193,6 @@ export class SharpTransform implements AssetTransformationStrategyAbstraction.In
             console.log("Create an optimized version of the original asset", asset.getKey());
             let buffer = await asset.getContents();
 
-            // Bake the asset-level crop first, so both the optimized base and any
-            // downstream transforms inherit it.
-            const crop = asset.getImageEdit()?.crop;
             const cropped = isCropApplied(crop);
             if (cropped) {
                 buffer = await cropImageBuffer(buffer, crop);
@@ -188,7 +206,6 @@ export class SharpTransform implements AssetTransformationStrategyAbstraction.In
 
             const optimization = optimizationMap[asset.getContentType()];
 
-            // Nothing to do (no crop and no optimization for this type) — leave as is.
             if (!optimization && !cropped) {
                 console.log(`No optimizations defined for ${asset.getContentType()}`);
                 return asset;
@@ -212,7 +229,7 @@ export class SharpTransform implements AssetTransformationStrategyAbstraction.In
         }
     }
 
-    private isAssetAnimated(asset: AssetTransformationStrategyAbstraction.Asset) {
+    private isAssetAnimated(asset: Asset) {
         return ["gif", "webp"].includes(asset.getExtension());
     }
 
@@ -231,7 +248,7 @@ export class SharpTransform implements AssetTransformationStrategyAbstraction.In
     }
 }
 
-export const SharpTransformImpl = AssetTransformationStrategyAbstraction.createImplementation({
+export const SharpTransformImpl = ImageAssetTypeHandler.createImplementation({
     implementation: SharpTransform,
-    dependencies: [S3Client, S3Bucket, S3AssetDeliveryConfig]
+    dependencies: [S3Client, S3Bucket, S3AssetDeliveryConfig, IdentityContext, GetFileUseCase]
 });

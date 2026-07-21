@@ -26,7 +26,7 @@ export const createS3AssetDeliveryFeature = (params: AssetDeliveryParams = {}) =
 
             container.register(S3AssetResolverImpl);
             container.register(S3OutputStrategyImpl);
-            container.register(SharpTransformImpl);
+            container.register(SharpTransformImpl).inSingletonScope();
         }
     });
 };

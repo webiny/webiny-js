@@ -6,7 +6,7 @@ import {
     formatFromContentType,
     resolveRequestedFormat
 } from "~/features/assetDelivery/transformation/index.js";
-import { transformImageBuffer } from "~/features/assetDelivery/transformation/transformImage.js";
+import { transformImageBuffer } from "~/features/assetDelivery/assetTypes/image/transformImage.js";
 
 describe("resolveRequestedFormat", () => {
     it("returns undefined when nothing is requested", () => {

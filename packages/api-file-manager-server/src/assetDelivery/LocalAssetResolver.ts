@@ -4,7 +4,6 @@ import {
     ObjectKey
 } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import type { AssetImageEdit } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
 import { LocalContentsReader } from "~/assetDelivery/LocalContentsReader.js";
 import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
 
@@ -14,7 +13,6 @@ interface AssetMetadata {
     size: number;
     contentType: string;
     bucketKey: string;
-    imageEdit?: AssetImageEdit;
 }
 
 export class LocalAssetResolver implements AssetResolverAbstraction.Interface {
@@ -45,8 +43,7 @@ export class LocalAssetResolver implements AssetResolverAbstraction.Interface {
             tenant: metadata.tenant,
             size: metadata.size,
             contentType: metadata.contentType,
-            key: metadata.bucketKey,
-            imageEdit: metadata.imageEdit
+            key: metadata.bucketKey
         });
 
         asset.setContentsReader(LocalContentsReader.create(this.storagePath));
