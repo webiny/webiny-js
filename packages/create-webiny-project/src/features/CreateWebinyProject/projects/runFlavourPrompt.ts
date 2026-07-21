@@ -14,7 +14,7 @@ const FLAVOUR_OPTIONS: { value: Flavour; name: string }[] = [
 ];
 
 export const runFlavourPrompt = async (): Promise<Flavour> => {
-    console.log("Which deployment flavour would you like to use for your new Webiny project?");
+    console.log("How would you like to host your new Webiny project?");
     console.log();
 
     const { flavour } = await inquirer.prompt<{ flavour: Flavour }>([
@@ -22,7 +22,7 @@ export const runFlavourPrompt = async (): Promise<Flavour> => {
             type: "select",
             name: "flavour",
             default: "aws",
-            message: "Please choose the deployment flavour:",
+            message: "Please choose how you would like to host your project:",
             choices: FLAVOUR_OPTIONS
         }
     ]);

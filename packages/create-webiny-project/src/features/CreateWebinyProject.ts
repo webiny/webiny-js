@@ -92,7 +92,7 @@ export class CreateWebinyProject {
         // AI agent selected during the flavour-specific prompt (used for MCP setup + final messages).
         let aiAgent: string = "other";
 
-        // Deployment flavour. Resolved interactively below, or taken from `--flavour` in non-interactive
+        // Hosting flavour. Resolved interactively below, or taken from `--flavour` in non-interactive
         // mode (defaults to "aws").
         let flavour: Flavour = cliArgs.flavour === "server" ? "server" : "aws";
 
