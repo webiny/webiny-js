@@ -1,8 +1,19 @@
 import React, { useCallback, useState } from "react";
+import { makeDecoratable } from "@webiny/react-composition";
 import { Text, Textarea } from "@webiny/admin-ui";
 import { ConfirmationDialog } from "@webiny/app-admin/components/ConfirmationDialog/index.js";
 import { useNamedConfirmationDialog } from "@webiny/app-admin";
 import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
+
+/**
+ * Extension slot rendered at the top of the "Publish entry" dialog body. Renders nothing by
+ * default; features (e.g. the scheduler) decorate it to inject a notice about the entry being
+ * published (such as a warning that a scheduled action will be cancelled).
+ */
+export const PublishEntryConfirmDialogExtra = makeDecoratable(
+    "PublishEntryConfirmDialogExtra",
+    (_props: { entry: CmsContentEntry }): React.ReactElement | null => null
+);
 
 export const PublishEntryConfirmDialog = () => {
     const { onConfirm, onCancel, closeDialog, params } = useNamedConfirmationDialog<
@@ -30,6 +41,7 @@ export const PublishEntryConfirmDialog = () => {
                 closeDialog();
             }}
         >
+            <PublishEntryConfirmDialogExtra entry={params.entry} />
             <Text as={"div"} size={"md"} className={"mb-md"}>
                 You are about to publish a record titled{" "}
                 <span className={"font-bold"}>{params.entry.meta.title}</span>.<br />

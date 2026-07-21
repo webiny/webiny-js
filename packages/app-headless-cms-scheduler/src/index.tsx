@@ -1,5 +1,10 @@
 import React from "react";
-import { EditorConfig, BrowserConfig, ScheduledActionAlertDecorator } from "./components/index.js";
+import {
+    EditorConfig,
+    BrowserConfig,
+    ScheduledActionAlertDecorator,
+    PublishScheduleNoticeDecorator
+} from "./components/index.js";
 
 export const CmsScheduler = () => {
     return (
@@ -7,6 +12,7 @@ export const CmsScheduler = () => {
             <BrowserConfig />
             <EditorConfig />
             <ScheduledActionAlertDecorator />
+            <PublishScheduleNoticeDecorator />
         </>
     );
 };
