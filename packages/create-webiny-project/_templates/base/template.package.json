@@ -1,8 +1,6 @@
 {
   "type": "module",
   "dependencies": {
-    "@webiny/cli-aws": "latest",
-    "@webiny/cognito": "latest",
     "@webiny/mcp": "latest",
     "react": "18.3.1",
     "react-dom": "18.3.1",

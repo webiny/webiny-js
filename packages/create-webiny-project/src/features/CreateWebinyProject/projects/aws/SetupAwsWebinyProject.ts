@@ -5,6 +5,7 @@ import { CliParams } from "../../../../types.js";
 import { GetProjectRootPath } from "../../../../services/index.js";
 import { AwsProjectParams } from "./types.js";
 import { GetTemplatesFolderPath } from "../../../../services/GetTemplatesFolderPath.js";
+import { addProjectDependencies } from "../addProjectDependencies.js";
 
 export class SetupAwsWebinyProject {
     async execute(cliArgs: CliParams): Promise<AwsProjectParams> {
@@ -19,6 +20,12 @@ export class SetupAwsWebinyProject {
         const projectRootFolderPath = getProjectRoot.execute(cliArgs);
 
         fs.copySync(storageTemplatePath, projectRootFolderPath);
+
+        // AWS flavour dependencies: the `webiny` CLI (AWS bin) + Cognito (AWS-managed IdP).
+        addProjectDependencies(projectRootFolderPath, {
+            "@webiny/cli-aws": "latest",
+            "@webiny/cognito": "latest"
+        });
 
         // Update .env file.
         const webinyConfigTsxEnvFilePath = path.join(projectRootFolderPath, "webiny.config.tsx");
