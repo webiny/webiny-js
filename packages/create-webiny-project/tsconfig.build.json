@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-    "exclude": ["src/services/SetupYarn/binaries"],
+  "exclude": ["src/services/SetupYarn/binaries"],
   "references": [{ "path": "../mcp/tsconfig.build.json" }],
   "compilerOptions": {
     "rootDir": "./src",
