@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
+import { ReactComponent as ScheduledIcon } from "@webiny/icons/access_time.svg";
 import { Tag, Tooltip } from "@webiny/admin-ui";
 import { useContainer } from "@webiny/app";
 import { useModel } from "@webiny/app-headless-cms/exports/admin/cms.js";
@@ -46,7 +47,7 @@ export const CellLive = observer(() => {
         return (
             <Tooltip
                 content={tooltip}
-                trigger={<Tag variant={"neutral-light"} content={"Scheduled"} />}
+                trigger={<Tag variant={"warning"} icon={<ScheduledIcon />} content={"Scheduled"} />}
             />
         );
     }
