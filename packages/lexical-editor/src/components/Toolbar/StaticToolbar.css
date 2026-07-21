@@ -44,7 +44,7 @@
 }
 
 .static-toolbar button.popup-item.active {
-  background-color: var(--color-neutral-dimmed);
+  background-color: var(--color-primary-subtle);
 }
 
 .static-toolbar button.popup-item.active i {
@@ -133,7 +133,7 @@
 
 .static-toolbar .link-editor .button.active,
 .static-toolbar .button.active {
-  background-color: var(--color-neutral-dimmed);
+  background-color: var(--color-primary-subtle);
 }
 
 .static-toolbar button.toolbar-item {
@@ -175,7 +175,7 @@
 }
 
 .static-toolbar button.toolbar-item.active {
-  background-color: var(--color-neutral-dimmed);
+  background-color: var(--color-primary-subtle);
 }
 
 .static-toolbar button.toolbar-item.active i {
@@ -247,7 +247,7 @@
 }
 
 .static-toolbar button.item.dropdown-item-active {
-  background-color: var(--color-neutral-dimmed);
+  background-color: var(--color-primary-subtle);
 }
 
 .static-toolbar button.item.dropdown-item-active i {
@@ -343,7 +343,7 @@ i.font-color,
 
 .link-editor .button.active,
 .toolbar .button.active {
-  background-color: var(--color-neutral-dimmed);
+  background-color: var(--color-primary-subtle);
 }
 
 .toolbar .divider {
@@ -458,7 +458,7 @@ button.item i {
 }
 
 button.item.dropdown-item-active {
-  background-color: var(--color-neutral-dimmed);
+  background-color: var(--color-primary-subtle);
 }
 
 button.item.dropdown-item-active i {
