@@ -1,11 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { normalizeImageOptions } from "~/features/assetDelivery/normalizeImageOptions.js";
-import type { AssetRequestOptions } from "~/delivery/AssetDelivery/AssetRequest.js";
+import { normalizeImageOptions } from "~/features/assetDelivery/assetTypes/image/normalizeImageOptions.js";
 
 const normalize = (query: Record<string, any>, accept?: string) => {
-    const options: AssetRequestOptions = { ...query };
-    normalizeImageOptions(options, query, accept);
-    return options;
+    return normalizeImageOptions(query, accept);
 };
 
 describe("normalizeImageOptions", () => {
@@ -43,5 +40,12 @@ describe("normalizeImageOptions", () => {
         expect(options.width).toBeUndefined();
         expect(options.quality).toBeUndefined();
         expect(options.format).toBeUndefined();
+    });
+
+    it("does not mutate the input query", () => {
+        const query = { width: "800", quality: "75", format: "webp" };
+        const original = { ...query };
+        normalizeImageOptions(query, undefined);
+        expect(query).toEqual(original);
     });
 });

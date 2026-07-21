@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import sharp from "sharp";
-import { getCropSignature, getImageKey } from "~/features/assetDelivery/transformation/utils.js";
-import { cropImageBuffer } from "~/features/assetDelivery/transformation/transformImage.js";
+import { getCropSignature, getImageKey } from "~/features/assetDelivery/assetTypes/image/utils.js";
+import { cropImageBuffer } from "~/features/assetDelivery/assetTypes/image/transformImage.js";
 
 const KEY = "tenants/root/files/685abc/photo.jpg";
 

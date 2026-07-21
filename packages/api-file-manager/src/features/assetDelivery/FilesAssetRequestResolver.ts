@@ -1,7 +1,5 @@
-import type { AssetRequestOptions } from "~/delivery/AssetDelivery/AssetRequest.js";
 import { AssetRequestResolver } from "./abstractions/AssetRequestResolver.js";
 import { AssetRequestFactory } from "./AssetRequest/abstractions.js";
-import { normalizeImageOptions } from "./normalizeImageOptions.js";
 
 class FilesAssetRequestResolverImpl implements AssetRequestResolver.Interface {
     private readonly assetRequestFactory: AssetRequestFactory.Interface;
@@ -22,19 +20,16 @@ class FilesAssetRequestResolverImpl implements AssetRequestResolver.Interface {
 
         const path = params["*"];
 
-        const options: AssetRequestOptions = {
-            ...query,
-            original: "original" in query
-        };
-
-        normalizeImageOptions(options, query, request.headers?.accept as string | undefined);
-
         return this.assetRequestFactory.create({
             key: decodeURI(path).replace("/files/", ""),
             context: {
-                url: request.url
+                url: request.url,
+                accept: request.headers?.accept as string | undefined
             },
-            options
+            options: {
+                ...query,
+                original: "original" in query
+            }
         });
     }
 }
