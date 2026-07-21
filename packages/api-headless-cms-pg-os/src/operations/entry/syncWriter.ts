@@ -130,14 +130,10 @@ export const createSyncWriter = (params: SyncWriterParams): SyncWriter => {
                 .delete();
         },
         async removeLatest(removeParams) {
-            await query()
-                .where("id", `${removeParams.entryId}:L`)
-                .delete();
+            await query().where("id", `${removeParams.entryId}:L`).delete();
         },
         async removePublished(removeParams) {
-            await query()
-                .where("id", `${removeParams.entryId}:P`)
-                .delete();
+            await query().where("id", `${removeParams.entryId}:P`).delete();
         }
     };
 };
