@@ -16,7 +16,7 @@ describe("GraphQL Handler", () => {
     });
 
     test("should return introspection query result", async () => {
-        const { introspect } = useGqlHandler({ plugins: [booksSchemaPlugin] });
+        const { introspect } = useGqlHandler({ setup: [booksSchemaPlugin] });
         const [response] = await introspect();
         expect(response.errors).toBeFalsy();
         expect(response.data.__schema).toBeTruthy();
@@ -66,7 +66,7 @@ describe("GraphQL Handler", () => {
         };
 
         const { invoke } = useGqlHandler({
-            plugins: [booksCrudPlugin, booksSchemaPlugin, decoratorsPlugin]
+            setup: [booksCrudPlugin, booksSchemaPlugin, decoratorsPlugin]
         });
         const [response] = await invoke({ body: { query: `{ books { name } }` } });
         expect(response.errors).toBeFalsy();

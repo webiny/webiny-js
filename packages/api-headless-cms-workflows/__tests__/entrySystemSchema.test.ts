@@ -15,7 +15,7 @@ const CMS_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
 describe("CmsEntrySystem workflow field", () => {
     it("exposes `workflow` on the CMS manage endpoint's CmsEntrySystem", async () => {
         const { invokeCms } = createCmsTestHandler({
-            features: container => {
+            setup: container => {
                 CmsWorkflowsFeature.register(container);
             }
         });

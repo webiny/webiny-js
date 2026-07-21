@@ -37,20 +37,21 @@ export interface CmsTestHandlerParams {
     /** Plugins forwarded to `HeadlessCmsFeature.register` as `extraPlugins` (e.g. CMS model plugins). */
     extraCmsPlugins?: any[];
     /**
-     * Legacy plugins, dispatched exactly like the legacy `useContextHandler`:
+     * Legacy escape hatch (being retired — prefer `setup`). A mixed array, dispatched like the old
+     * `useContextHandler`:
      * - RegisterExtensionPlugins are applied at register() time (DI registration);
      * - static plugins (CmsModelPlugin, GraphQLSchemaPlugin, …) are forwarded to HeadlessCmsFeature
      *   as extraPlugins so their models reach the container before any initializer caches them;
-     * - ContextPlugins (`.apply(ctx)`) run post-auth via a per-request initializer.
+     * - plain `container => {}` functions run LAST (after `setup`), so they can override defaults.
      */
-    plugins?: any;
+    legacyPlugins?: any;
     /**
      * Register the consuming package's own features here (e.g. AcoFeature, FileModel, plus its own
      * getStorageOps presets via processLegacyPlugins). Runs in the request phase AFTER ApiCore + CMS
      * storage + HeadlessCmsFeature, and BEFORE the GraphQL engine — i.e. before any initializer or
      * resolver, the same window the real app handler uses.
      */
-    features?: (container: Container) => void | Promise<void>;
+    setup?: (container: Container) => void | Promise<void>;
 }
 
 export interface InvokeParams {
@@ -64,7 +65,7 @@ export interface InvokeParams {
  * Shared integration test handler that wires the real CMS base (ApiCore + HeadlessCms + GraphQL
  * engine + the CMS manage route) the same way the AWS app handler does — auth via Test
  * authenticator/authorizer, root tenant seeded, storage via getStorageOps. Consuming packages add
- * their own features through `params.features` and build their SDKs on top of `invoke`/`invokeCms`,
+ * their own features through `params.setup` and build their SDKs on top of `invoke`/`invokeCms`,
  * or grab the fully-initialized request context via `getContext()`.
  */
 export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
@@ -100,26 +101,27 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
         // registerExtensions.
         processLegacyPlugins(container, cmsStorage.plugins);
 
-        // DI-native plugins are plain `container => {}` functions (called last, after features);
-        // legacy plugins are RegisterExtensionPlugins (register-time) or static Plugins (extraPlugins).
-        const userPlugins = [params.plugins].flat(Infinity as 1).filter(Boolean);
+        // `legacyPlugins` is a mixed bag: plain `container => {}` functions (called last, after
+        // `setup`) plus legacy plugin objects — RegisterExtensionPlugins (register-time) or static
+        // Plugins (extraPlugins).
+        const legacyItems = [params.legacyPlugins].flat(Infinity as 1).filter(Boolean);
         const isFn = (p: any) => typeof p === "function" && !p.prototype;
 
-        const legacyUserPlugins = userPlugins.filter(p => !isFn(p));
-        processLegacyPlugins(container, legacyUserPlugins);
-        const staticUserPlugins = legacyUserPlugins.filter(
+        const legacyObjects = legacyItems.filter(p => !isFn(p));
+        processLegacyPlugins(container, legacyObjects);
+        const staticPlugins = legacyObjects.filter(
             p => typeof (p as any).apply !== "function" && typeof p !== "function"
         );
         HeadlessCmsFeature.register(container, {
             type: cmsType,
-            extraPlugins: [...(params.extraCmsPlugins ?? []), ...staticUserPlugins]
+            extraPlugins: [...(params.extraCmsPlugins ?? []), ...staticPlugins]
         });
 
-        await params.features?.(container);
+        await params.setup?.(container);
 
-        // DI-native function plugins run LAST — after the consuming package's own features — so they
-        // can override defaults those features registered (last-wins).
-        for (const plugin of userPlugins.filter(isFn)) {
+        // Function plugins in `legacyPlugins` run LAST — after the consuming package's own `setup` —
+        // so they can override defaults it registered (last-wins).
+        for (const plugin of legacyItems.filter(isFn)) {
             (plugin as (container: any) => void)(container);
         }
     };

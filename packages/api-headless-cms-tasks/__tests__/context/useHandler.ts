@@ -6,7 +6,7 @@ import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { HcmsTasksContext } from "~/types";
 import { HcmsTasksFeature } from "~/HcmsTasksFeature.js";
 
-type Params = Omit<CmsTestHandlerParams, "features">;
+type Params = Omit<CmsTestHandlerParams, "setup">;
 
 const identity = {
     id: "id-12345678",
@@ -20,7 +20,7 @@ export const useHandler = <C extends HcmsTasksContext = HcmsTasksContext>(params
     const { getContext } = createCmsTestHandler({
         identity,
         ...params,
-        features: container => {
+        setup: container => {
             // The delete-model store is backed by the api-core key-value store, which the shared
             // cms-ddb preset already registers — no extra storage wiring needed here.
             HcmsTasksFeature.register(container);
