@@ -3,9 +3,7 @@ import { createSyncTestSetup, createModel, createEntry } from "./helpers/createS
 import { createReindexEvents } from "../src/testing/createReindexEvents.js";
 import type { SyncEventHandler } from "../src/features/syncEventHandler/abstractions.js";
 
-const isOsAvailable = !!process.env.OPENSEARCH_PORT || !!process.env.OPENSEARCH_ENDPOINT;
-
-describe.skipIf(!isOsAvailable)("PG-to-OpenSearch sync stream", () => {
+describe("PG-to-OpenSearch sync stream", () => {
     let setup: Awaited<ReturnType<typeof createSyncTestSetup>>;
     let syncEventHandler: SyncEventHandler.Interface;
 
