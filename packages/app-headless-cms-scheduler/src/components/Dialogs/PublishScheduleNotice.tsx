@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert } from "@webiny/admin-ui";
 import { useContainer } from "@webiny/app";
-import {
-    PublishEntryConfirmDialogExtra,
-    useModel
-} from "@webiny/app-headless-cms/exports/admin/cms.js";
+import { PublishEntryConfirmDialogExtra } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { GetScheduledActionGateway } from "@webiny/app-scheduler/features/getScheduledAction/abstractions.js";
 import { ScheduleActionType } from "@webiny/app-scheduler/types.js";
 import type { SchedulerEntry } from "@webiny/app-scheduler/types.js";
@@ -18,12 +15,11 @@ import { createNamespace, formatScheduledDate } from "~/utils/index.js";
 export const PublishScheduleNoticeDecorator = PublishEntryConfirmDialogExtra.createDecorator(
     Original => {
         return function PublishEntryScheduleNotice(props: { entry: CmsContentEntry }) {
-            const { model } = useModel();
             const container = useContainer();
             const [scheduled, setScheduled] = useState<SchedulerEntry | null>(null);
 
             const entryId = props.entry?.id;
-            const modelId = model?.modelId;
+            const modelId = props.entry?.modelId;
 
             useEffect(() => {
                 if (!entryId || !modelId) {
