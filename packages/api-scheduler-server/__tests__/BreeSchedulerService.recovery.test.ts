@@ -28,16 +28,19 @@ describe("BreeSchedulerService — recovery", () => {
 
     it("should re-register future actions with bree", async () => {
         const svc = createService();
+        await svc.start();
 
-        await svc.start([
+        await svc.recover([
             {
                 id: "future-1",
                 namespace,
+                tenant,
                 scheduledFor: futureDate(60_000)
             },
             {
                 id: "future-2",
                 namespace,
+                tenant,
                 scheduledFor: futureDate(120_000)
             }
         ]);
@@ -49,44 +52,50 @@ describe("BreeSchedulerService — recovery", () => {
 
     it("should fire overdue actions immediately", async () => {
         const svc = createService();
+        await svc.start();
 
-        await svc.start([
+        await svc.recover([
             {
                 id: "overdue-1",
                 namespace,
+                tenant,
                 scheduledFor: pastDate(60_000)
             }
         ]);
 
-        expect(onTrigger).toHaveBeenCalledWith("overdue-1", namespace);
+        expect(onTrigger).toHaveBeenCalledWith("overdue-1", namespace, tenant);
         expect(await svc.exists({ id: "overdue-1", namespace, tenant })).toBe(false);
     });
 
     it("should handle a mix of overdue and future actions", async () => {
         const svc = createService();
+        await svc.start();
 
-        await svc.start([
+        await svc.recover([
             {
                 id: "overdue-1",
                 namespace,
+                tenant,
                 scheduledFor: pastDate(60_000)
             },
             {
                 id: "future-1",
                 namespace,
+                tenant,
                 scheduledFor: futureDate(60_000)
             }
         ]);
 
         expect(onTrigger).toHaveBeenCalledTimes(1);
-        expect(onTrigger).toHaveBeenCalledWith("overdue-1", namespace);
+        expect(onTrigger).toHaveBeenCalledWith("overdue-1", namespace, tenant);
         expect(await svc.exists({ id: "future-1", namespace, tenant })).toBe(true);
     });
 
     it("should be a noop with an empty list", async () => {
         const svc = createService();
+        await svc.start();
 
-        await svc.start([]);
+        await svc.recover([]);
 
         expect(onTrigger).not.toHaveBeenCalled();
     });

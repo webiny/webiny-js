@@ -161,6 +161,13 @@ describe("BreeSchedulerService", () => {
     });
 
     describe("safeRemove logging", () => {
+        // safeRemove() ignores errors from bree.stop()/remove() and just logs them at debug level.
+        // It's there for the case where a job fires on its own (so bree forgets it) right before we
+        // try to delete it. To reach that branch, our `jobs` map has to still contain an id that bree
+        // no longer knows about — but in normal use create, delete, and firing all keep the two in
+        // sync, so there's no way to set that up through the public API. That's why this test reaches
+        // into the private `jobs` map directly: it's the only way to recreate the mismatch without
+        // making bree injectable, which felt like too much for a bit of defensive logging.
         it("should log debug when stop/remove fail silently", async () => {
             await service.create({
                 id: "schedule-1",
@@ -169,11 +176,13 @@ describe("BreeSchedulerService", () => {
                 scheduleFor: futureDate(60_000)
             });
 
-            /* Delete once to remove the bree job. */
+            // First delete removes the job from both the `jobs` map and bree.
             await service.delete({ id: "schedule-1", namespace, tenant });
 
-            /* Manually re-add namespace so delete doesn't throw "does not exist". */
-            (service as any).namespaces.set("schedule-1", namespace);
+            // Now add it back to the `jobs` map only, so bree no longer has it. exists() reads the
+            // `jobs` map, so the next delete gets past its "does not exist" check and calls
+            // safeRemove(), where bree throws for the unknown job and we log it at debug.
+            (service as any).jobs.set("schedule-1", { namespace, tenant });
             await service.delete({ id: "schedule-1", namespace, tenant });
 
             expect(logger.debug).toHaveBeenCalled();

@@ -5,12 +5,16 @@
     { "path": "../api-core" },
     { "path": "../api-event-handler-core" },
     { "path": "../api-file-manager-server" },
+    { "path": "../api-scheduler" },
     { "path": "../api-scheduler-server" },
     { "path": "../api-websockets-server" },
     { "path": "../background-tasks-server" },
     { "path": "../event-handler-core" },
     { "path": "../event-handler-server" },
-    { "path": "../handler" }
+    { "path": "../feature" },
+    { "path": "../handler" },
+    { "path": "../handler-graphql" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -25,6 +29,8 @@
       "@webiny/api-event-handler-core": ["../api-event-handler-core/src"],
       "@webiny/api-file-manager-server/*": ["../api-file-manager-server/src/*"],
       "@webiny/api-file-manager-server": ["../api-file-manager-server/src"],
+      "@webiny/api-scheduler/*": ["../api-scheduler/src/*"],
+      "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/api-scheduler-server/*": ["../api-scheduler-server/src/*"],
       "@webiny/api-scheduler-server": ["../api-scheduler-server/src"],
       "@webiny/api-websockets-server/*": ["../api-websockets-server/src/*"],
@@ -35,8 +41,14 @@
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/event-handler-server/*": ["../event-handler-server/src/*"],
       "@webiny/event-handler-server": ["../event-handler-server/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }
