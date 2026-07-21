@@ -1,8 +1,8 @@
 import inquirer from "inquirer";
 
-export type Flavour = "aws" | "server";
+export type HostingType = "aws" | "server";
 
-const FLAVOUR_OPTIONS: { value: Flavour; name: string }[] = [
+const HOSTING_TYPE_OPTIONS: { value: HostingType; name: string }[] = [
     {
         value: "aws",
         name: "AWS (Lambda, DynamoDB, API Gateway — deployed with Pulumi)"
@@ -13,19 +13,19 @@ const FLAVOUR_OPTIONS: { value: Flavour; name: string }[] = [
     }
 ];
 
-export const runFlavourPrompt = async (): Promise<Flavour> => {
+export const runHostingTypePrompt = async (): Promise<HostingType> => {
     console.log("How would you like to host your new Webiny project?");
     console.log();
 
-    const { flavour } = await inquirer.prompt<{ flavour: Flavour }>([
+    const { hostingType } = await inquirer.prompt<{ hostingType: HostingType }>([
         {
             type: "select",
-            name: "flavour",
+            name: "hostingType",
             default: "aws",
             message: "Please choose how you would like to host your project:",
-            choices: FLAVOUR_OPTIONS
+            choices: HOSTING_TYPE_OPTIONS
         }
     ]);
 
-    return flavour;
+    return hostingType;
 };

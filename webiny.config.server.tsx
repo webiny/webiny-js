@@ -6,7 +6,7 @@ import { Infra } from "@webiny/project-server";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 
 /**
- * Server-only (self-hosted) extensions, rendered by webiny.config.tsx when WEBINY_FLAVOUR === "server".
+ * Server-only (self-hosted) extensions, rendered by webiny.config.tsx when WEBINY_HOSTING_TYPE === "server".
  * No Pulumi / no AWS infra here.
  */
 export const ServerExtensions = () => {
