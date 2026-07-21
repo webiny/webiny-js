@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as ScheduledIcon } from "@webiny/icons/access_time.svg";
 import { Tag, Tooltip } from "@webiny/admin-ui";
@@ -53,6 +53,19 @@ export const CellLive = observer(() => {
         scheduledActionsStore.load(gateway, namespace, version);
     }, [container, namespace, version]);
 
+    // A direct publish/unpublish changes the entry's status/live and the API may auto-cancel a
+    // scheduled action. Detect that change and bump the signal so the scheduled-actions cache is
+    // refreshed (otherwise a cancelled schedule's badge lingers until a page reload).
+    const rowData = row.data as { meta?: { status?: string }; live?: { version?: number } };
+    const stateFingerprint = `${rowData?.meta?.status ?? ""}:${rowData?.live?.version ?? ""}`;
+    const prevFingerprint = useRef(stateFingerprint);
+    useEffect(() => {
+        if (prevFingerprint.current !== stateFingerprint) {
+            prevFingerprint.current = stateFingerprint;
+            schedulerMutationSignal.bump();
+        }
+    }, [stateFingerprint]);
+
     if (isFolderRow(row)) {
         return <>{"-"}</>;
     }
@@ -61,10 +74,10 @@ export const CellLive = observer(() => {
     const scheduled = scheduledActionsStore.getAction(namespace, entry.id);
     const liveVersion = entry.live?.version;
 
-    // Live now AND a change scheduled — show both.
+    // Live now AND a change scheduled — show both, wrapping to a second line if the column is narrow.
     if (liveVersion && scheduled) {
         return (
-            <div className={"flex items-center gap-xs"}>
+            <div className={"flex flex-wrap items-center gap-xs"}>
                 <LiveTag version={liveVersion} />
                 <ScheduledTag scheduled={scheduled} />
             </div>
