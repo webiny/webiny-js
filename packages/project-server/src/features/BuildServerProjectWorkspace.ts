@@ -8,9 +8,9 @@ import {
 import { getServerTemplatesFolderPath } from "../utils/getServerTemplatesFolderPath.js";
 
 /**
- * Server-flavour counterpart to project-aws's BuildProjectWorkspace: after the base workspace is
+ * Server hosting-type counterpart to project-aws's BuildProjectWorkspace: after the base workspace is
  * built, copy the server `webiny.config.base.tsx` (which renders `<Project />`, not `<ProjectAws />`)
- * into the workspace, overwriting whatever a previous flavour may have left behind.
+ * into the workspace, overwriting whatever a previous hosting type may have left behind.
  */
 class BuildServerProjectWorkspaceImpl implements BuildProjectWorkspaceService.Interface {
     constructor(

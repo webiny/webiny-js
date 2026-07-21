@@ -8,7 +8,7 @@ import { WcpLicenseProvider } from "@webiny/api-core";
  *
  * Lives in api-event-handler-core (the shared API request stack) rather than api-core so the domain
  * layer stays free of the transport request-lifecycle contract, while the refresh still runs for
- * every flavour (aws + server) via registerApiRequestStack.
+ * every hosting type (aws + server) via registerApiRequestStack.
  */
 class WcpLicenseInitializerImpl implements RequestInitializer.Interface {
     constructor(private provider: WcpLicenseProvider.Interface) {}

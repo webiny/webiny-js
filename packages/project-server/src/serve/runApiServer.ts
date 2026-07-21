@@ -24,7 +24,7 @@ interface IRunApiServerOptions {
  * Run the built api handler as a live HTTP server.
  *
  * The api workspace compiles to `<workspace>/apps/api/graphql/build/handler.mjs`, which (for the
- * server flavour) exports the Node `http.Server` from `createServerHandler`. We copy a tiny runner
+ * server hosting type) exports the Node `http.Server` from `createServerHandler`. We copy a tiny runner
  * (`apiServerRunner.mjs`) next to it that imports the handler and calls `.listen(PORT)`, then spawn
  * it in an isolated child process. In watch mode we add `--watch-path <buildDir>` so every rebuild
  * restarts that child (a server crash never kills the watcher).
@@ -74,7 +74,7 @@ export async function runApiServer(
     const sqlFilename = process.env.WEBINY_SQL_FILENAME;
     if (!sqlFilename) {
         throw new Error(
-            `No database configured for the server flavour. Add ${'`<Infra.Sqlite filename="./.webiny/server.sqlite" />`'} ` +
+            `No database configured for the server hosting type. Add ${'`<Infra.Sqlite filename="./.webiny/server.sqlite" />`'} ` +
                 `to your webiny.config (or set WEBINY_SQL_FILENAME).`
         );
     }

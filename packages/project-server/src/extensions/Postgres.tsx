@@ -59,7 +59,7 @@ const SslEnvVars = ({ ssl }: SslEnvVarsProps) => {
 export const Postgres = defineExtension({
     type: "Infra/Postgres",
     tags: { runtimeContext: "project" },
-    description: "Configure the server flavour's Postgres database connection.",
+    description: "Configure the server hosting type's Postgres database connection.",
     paramsSchema: z.object({
         host: z.string().describe("Postgres server hostname."),
         port: z.number().describe("Postgres server port."),

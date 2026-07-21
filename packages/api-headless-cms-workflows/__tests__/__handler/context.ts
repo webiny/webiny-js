@@ -18,9 +18,13 @@ export const createContextHandler = (
 
     const { getContext } = createCmsTestHandler({
         ...params,
-        plugins: [...createModelsPlugins(params), registerNoopFlp, params?.plugins || []],
+        legacyPlugins: [
+            ...createModelsPlugins(params),
+            registerNoopFlp,
+            params?.legacyPlugins || []
+        ],
         // CmsWorkflowsFeature registers WorkflowsFeature + the CMS entry-workflow wiring.
-        features: container => CmsWorkflowsFeature.register(container),
+        setup: container => CmsWorkflowsFeature.register(container),
         testProjectLicense: testLicence
     });
 

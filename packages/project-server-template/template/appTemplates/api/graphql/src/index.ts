@@ -1,5 +1,5 @@
 /**
- * DI-native API GraphQL handler — self-hosted Node server flavour (SQL storage).
+ * DI-native API GraphQL handler — self-hosted Node server hosting type (SQL storage).
  *
  * The composition root lives in @webiny/api-event-handler-server-sql (`createSqlApiHandler`) —
  * the same shared, transport-agnostic request stack the AWS handler uses, over the Node HTTP server

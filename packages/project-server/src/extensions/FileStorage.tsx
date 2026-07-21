@@ -4,7 +4,7 @@ import { z } from "zod";
 import { defineExtension, BuildParam } from "@webiny/project/extensions/index.js";
 
 /**
- * Configure the self-hosted (server) flavour's local file storage (uploaded files) + upload secret.
+ * Configure the self-hosted (server) hosting type's local file storage (uploaded files) + upload secret.
  *
  * Emitted as the API build parameters `WEBINY_LOCAL_STORAGE_PATH` (the on-disk directory uploaded
  * files are written to and served from) and `WEBINY_UPLOAD_SECRET` (used to sign upload tokens),
@@ -16,12 +16,13 @@ import { defineExtension, BuildParam } from "@webiny/project/extensions/index.js
  * A relative storage path is resolved against the project root (not the disposable app workspace), so
  * uploaded files survive rebuilds — same rule as `Infra.Sqlite`.
  *
- * AWS-flavour counterpart concept: the S3 bucket (`ApiFileManager`).
+ * AWS hosting-type counterpart concept: the S3 bucket (`ApiFileManager`).
  */
 export const FileStorage = defineExtension({
     type: "Infra/FileStorage",
     tags: { runtimeContext: "project" },
-    description: "Configure the server flavour's local file storage directory and upload secret.",
+    description:
+        "Configure the server hosting type's local file storage directory and upload secret.",
     paramsSchema: z.object({
         path: z
             .string()

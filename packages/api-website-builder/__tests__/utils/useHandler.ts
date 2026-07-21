@@ -16,7 +16,7 @@ const DEFAULT_IDENTITY: IdentityData = {
     displayName: "John Doe"
 };
 
-type Params = Omit<CmsTestHandlerParams, "features">;
+type Params = Omit<CmsTestHandlerParams, "setup">;
 
 export const useHandler = (params: Params = {}) => {
     const { getContext } = createCmsTestHandler({
@@ -24,13 +24,13 @@ export const useHandler = (params: Params = {}) => {
         // identity === null → anonymous; the shared harness authenticates the null identity natively
         // (TestAuthenticator returns it), so no post-auth override is needed.
         //
-        plugins: [
+        legacyPlugins: [
             (container: Container) => {
                 container.register(NoopInvalidateAssetCacheTaskDefinition);
             },
-            ...[params.plugins].flat(Infinity as 1).filter(Boolean)
+            ...[params.legacyPlugins].flat(Infinity as 1).filter(Boolean)
         ],
-        features: container => {
+        setup: container => {
             // All DI-native now: background tasks (wbyTask model + TasksCrud + GraphQL) and website
             // builder (models + features + schema). The mock TaskService override must come after.
             BackgroundTasksFeature.register(container);
