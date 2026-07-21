@@ -53,7 +53,16 @@ const ScheduledActionAlertBar = observer(() => {
         };
     }, [container, entryId, modelId, version]);
 
-    if (!scheduled) {
+    // Reconcile against the entry's current status: a direct publish/unpublish supersedes the
+    // scheduled action (the API cancels it asynchronously), so hide the banner immediately.
+    const status = vm.entry?.meta?.status;
+    const moot =
+        !!scheduled &&
+        (scheduled.actionType === ScheduleActionType.unpublish
+            ? status === "unpublished"
+            : status === "published");
+
+    if (!scheduled || moot) {
         return null;
     }
 
