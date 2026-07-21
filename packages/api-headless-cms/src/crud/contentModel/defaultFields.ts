@@ -31,15 +31,18 @@ const createDefaultFields = (): CmsModelFieldInput[] => {
             }
         },
         {
+            // Minimal Asset field; CreateModelUseCase's normalizer stamps the
+            // canonical nested schema (image/document/video sub-fields) on save.
             id: generateAlphaNumericLowerCaseId(8),
             fieldId: "image",
-            type: "file",
+            type: "object",
             label: "Image",
             validation: [],
             listValidation: [],
             renderer: {
-                name: "file-input"
+                name: "asset-input"
             },
+            tags: ["wby:asset"],
             settings: {
                 imagesOnly: true
             }

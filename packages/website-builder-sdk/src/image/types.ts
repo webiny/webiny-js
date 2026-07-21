@@ -23,9 +23,27 @@ export interface WebinyImageCrop {
 }
 
 /**
+ * Focal point in normalized coordinates of the *original* image. `x`/`y` mark the
+ * center that must stay in frame when a target aspect ratio forces extra cutting.
+ * The default is the image center `{ x: 0.5, y: 0.5 }`.
+ *
+ * This is the canonical focal-point type for the unified `WebinyAsset` shape
+ * (`asset.image.focalPoint`). It replaces the older `WebinyImageHotspot`, which
+ * additionally carried an unused focal *region* (`width`/`height`).
+ */
+export interface WebinyImageFocalPoint {
+    x: number;
+    y: number;
+}
+
+/**
  * Focal region in normalized coordinates of the *original* image.
  * `x`/`y` are the center of the region; `width`/`height` its size.
  * The default (center, full image) is `{ x: 0.5, y: 0.5, width: 1, height: 1 }`.
+ *
+ * @deprecated Use {@link WebinyImageFocalPoint} (`asset.image.focalPoint`). Only
+ * `x`/`y` were ever consumed; `width`/`height` are ignored by the geometry core.
+ * Legacy values are migrated to `focalPoint` by `normalizeToAsset`.
  */
 export interface WebinyImageHotspot {
     x: number;
@@ -37,6 +55,11 @@ export interface WebinyImageHotspot {
 /**
  * The complete, non-destructive edit applied to an image. Every property is
  * optional so the type is fully backward-compatible with un-edited images.
+ *
+ * @deprecated Superseded by `WebinyAssetImage` (`asset.image`) in the unified
+ * {@link WebinyAsset} shape. Retained for backwards compatibility with existing
+ * Website Builder page values and File `metadata.imageEdit`; `normalizeToAsset`
+ * migrates it (`hotspot` → `focalPoint`).
  */
 export interface WebinyImageEdit {
     crop?: WebinyImageCrop;
@@ -54,6 +77,10 @@ export interface WebinyImageEdit {
  *
  * `edit` is the *effective* edit to render (already resolved from the per-usage
  * override + asset-level default at edit time), so frontends stay self-contained.
+ *
+ * @deprecated Superseded by the unified {@link WebinyAsset} shape. Existing values
+ * of this shape are still accepted everywhere — `normalizeToAsset` converts them
+ * (`mimeType` → `type`, top-level `width`/`height` + `edit` → `image`).
  */
 export interface WebinyImageValue {
     id: string;

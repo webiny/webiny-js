@@ -1,13 +1,17 @@
 import React from "react";
-import type { AspectRatioInput, WebinyImageValue } from "@webiny/website-builder-sdk";
+import type { AspectRatioInput, WebinyAsset, WebinyImageValue } from "@webiny/website-builder-sdk";
 import { getWebinyImageProps } from "./getWebinyImageProps.js";
 
 export interface WebinyImageComponentProps extends Omit<
     React.ImgHTMLAttributes<HTMLImageElement>,
     "src" | "width" | "height" | "style" | "alt"
 > {
-    /** The image value from a Webiny file input (may carry a crop/hotspot/alt). */
-    image: WebinyImageValue;
+    /**
+     * The image value from a Webiny file input. Accepts the unified `WebinyAsset`
+     * shape or a legacy `WebinyImageValue` (existing pages) — both carry an
+     * optional crop / focal point / alt.
+     */
+    image: WebinyAsset | WebinyImageValue;
     /** Target aspect ratio (e.g. `16 / 9` or `{ width, height }`). Omit for the crop's own ratio. */
     aspectRatio?: AspectRatioInput;
     /** Explicit alt text; falls back to the image's stored alt. */

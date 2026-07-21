@@ -53,6 +53,15 @@ export interface ImageRenderData {
         left: string;
         top: string;
         maxWidth: "none";
+        /**
+         * `cover` + focal `objectPosition` are a safety net: when the passed
+         * intrinsic `width`/`height` match the real image (the normal case) the
+         * computed box already has the image's aspect ratio, so `cover` is a no-op.
+         * If the dimensions are wrong/missing, this crops toward the focal point
+         * instead of hard-stretching the image.
+         */
+        objectFit: "cover";
+        objectPosition: string;
     };
     /** Intrinsic pixel dimensions of the original asset (pass-through). */
     intrinsicWidth: number;
@@ -209,7 +218,9 @@ export function getImageRenderData(
             height: `${round(100 / safeH)}%`,
             left: `${round(-(rect.x / safeW) * 100)}%`,
             top: `${round(-(rect.y / safeH) * 100)}%`,
-            maxWidth: "none"
+            maxWidth: "none",
+            objectFit: "cover",
+            objectPosition: `${round(center.x * 100)}% ${round(center.y * 100)}%`
         },
         intrinsicWidth: value.width,
         intrinsicHeight: value.height
