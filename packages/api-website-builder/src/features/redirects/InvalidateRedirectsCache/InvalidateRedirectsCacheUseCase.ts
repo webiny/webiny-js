@@ -9,7 +9,7 @@ class InvalidateRedirectsCacheUseCaseImpl implements UseCaseAbstraction.Interfac
 
     async execute(): UseCaseAbstraction.Return {
         const result = await this.tasks.trigger({
-            definition: "cloudfrontInvalidateCache",
+            definition: "invalidateAssetCache",
             input: {
                 caller: "wb.redirects",
                 paths: [this.path]

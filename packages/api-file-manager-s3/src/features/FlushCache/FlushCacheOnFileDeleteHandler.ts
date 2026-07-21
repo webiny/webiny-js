@@ -13,7 +13,7 @@ class FlushCacheOnFileDeleteHandlerImpl implements FileAfterDeleteEventHandler.I
         const { file } = event.payload;
 
         await this.taskService.trigger({
-            definition: "cloudfrontInvalidateCache",
+            definition: "invalidateAssetCache",
             input: {
                 caller: "fm-before-delete",
                 paths: this.pathsGenerator.generate(file.id)
