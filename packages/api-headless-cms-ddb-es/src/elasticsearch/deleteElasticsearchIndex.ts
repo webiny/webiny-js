@@ -1,10 +1,11 @@
 import type { Client } from "@webiny/api-opensearch";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import { configurations } from "~/configurations.js";
+import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { Configurations } from "~/configurations.js";
 
 interface DeleteElasticsearchIndexParams {
     client: Client;
-    model: CmsModel;
+    configurations: Configurations;
+    model: StorageCmsModel;
 }
 
 export const deleteElasticsearchIndex = async (
@@ -12,9 +13,12 @@ export const deleteElasticsearchIndex = async (
 ): Promise<void> => {
     const { client, model } = params;
 
-    const { index } = configurations.es({
-        model
-    });
+    const { index, shared } = await params.configurations.es({ model });
+
+    if (shared) {
+        return;
+    }
+
     const { body: exists } = await client.indices.exists({
         index
     });
